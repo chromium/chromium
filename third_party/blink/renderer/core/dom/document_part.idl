@@ -1,0 +1,18 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/tbondwilkinson/dom-parts/blob/main/README.md
+
+[RuntimeEnabled=DOMPartsAPI,Exposed=Window]
+interface DocumentPart : PartRoot {
+  constructor((Document or DocumentFragment) document);
+
+  DocumentPart clone();
+};
+
+// TODO(crbug.com/1453291): Implement this on DocumentFragment.
+// [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
+// partial interface DocumentFragment {
+//   DocumentPart getDocumentPart();
+// };

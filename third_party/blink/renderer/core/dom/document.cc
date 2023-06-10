@@ -132,6 +132,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
+#include "third_party/blink/renderer/core/dom/document_part.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -2472,6 +2473,10 @@ CSSToggleInference& Document::EnsureCSSToggleInference() {
     css_toggle_inference_ = MakeGarbageCollected<CSSToggleInference>(this);
   }
   return *css_toggle_inference_;
+}
+
+DocumentPart* Document::getDocumentPart() {
+  return MakeGarbageCollected<DocumentPart>(this);
 }
 
 void Document::ApplyScrollRestorationLogic() {

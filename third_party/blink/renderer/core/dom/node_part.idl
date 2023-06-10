@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/tbondwilkinson/dom-parts
+
+[RuntimeEnabled=DOMPartsAPI,Exposed=Window]
+interface NodePart : Part {
+  constructor(Node node, optional NodePartInit init = {});
+  readonly attribute Node node;
+};
+
+dictionary NodePartInit {
+  FrozenArray<DOMString> metadata;
+};

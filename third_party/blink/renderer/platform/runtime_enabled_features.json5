@@ -1476,6 +1476,10 @@
       base_feature: "none",
     },
     {
+      name: "DOMPartsAPI",
+      status: "experimental",
+    },
+    {
       // Kill-switch for fixes to a bug that detached input elements are retained.
       // See crbug.com/1413100
       name: "DontLeakDetachedInput",

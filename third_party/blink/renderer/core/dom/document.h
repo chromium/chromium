@@ -123,55 +123,55 @@ enum class CSPDisposition : int32_t;
 
 namespace blink {
 
+class AXContext;
+class AXObjectCache;
 class Agent;
 class AnchorElementInteractionTracker;
 class AnimationClock;
 class AriaNotificationOptions;
-class AXContext;
-class AXObjectCache;
 class Attr;
 class BeforeUnloadEventListener;
 class CDATASection;
 class CSSStyleSheet;
 class CSSToggleInference;
 class CanvasFontCache;
+class CheckPseudoHasCacheScope;
 class ChromeClient;
 class Comment;
 class ComputedAccessibleNode;
-class DOMWrapperWorld;
-class DisplayLockDocumentState;
-class DocumentData;
-class ElementIntersectionObserverData;
 class ComputedStyle;
 class ConsoleMessage;
 class ContextFeatures;
 class CookieJar;
+class DOMFeaturePolicy;
 class DOMImplementation;
 class DOMWindow;
+class DOMWrapperWorld;
+class DisplayLockDocumentState;
 class DocumentAnimations;
+class DocumentData;
 class DocumentFragment;
 class DocumentInit;
 class DocumentLoader;
 class DocumentMarkerController;
 class DocumentNameCollection;
 class DocumentParser;
+class DocumentPart;
 class DocumentResourceCoordinator;
 class DocumentState;
 class DocumentTimeline;
 class DocumentType;
-class DOMFeaturePolicy;
 class Element;
 class ElementDataCache;
+class ElementIntersectionObserverData;
 class ElementRegistrationOptions;
 class Event;
 class EventFactoryBase;
 class EventListener;
-template <typename EventType>
-class EventWithHitTestResults;
 class ExceptionState;
+class FocusedElementChangeObserver;
 class FontFaceSet;
 class FontMatchingMetrics;
-class FocusedElementChangeObserver;
 class FormController;
 class FragmentDirective;
 class FrameCallback;
@@ -185,7 +185,6 @@ class HTMLFrameOwnerElement;
 class HTMLHeadElement;
 class HTMLLinkElement;
 class HTMLMetaElement;
-class CheckPseudoHasCacheScope;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IdleRequestOptions;
@@ -194,8 +193,8 @@ class IntersectionObserverController;
 class LayoutUpgrade;
 class LayoutView;
 class LazyLoadImageObserver;
-class LiveNodeListBase;
 class ListedElement;
+class LiveNodeListBase;
 class LocalDOMWindow;
 class LocalFrame;
 class LocalFrameView;
@@ -251,7 +250,12 @@ class ViewportData;
 class VisitedLinkState;
 class WebMouseEvent;
 class WorkletAnimationController;
+
+template <typename EventType>
+class EventWithHitTestResults;
+
 enum class CSSPropertyID;
+
 struct AnnotatedRegionValue;
 struct FocusParams;
 struct IconURL;
@@ -1596,6 +1600,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool SetNeedsStyleRecalcForToggles();
   CSSToggleInference* GetCSSToggleInference() { return css_toggle_inference_; }
   CSSToggleInference& EnsureCSSToggleInference();
+
+  DocumentPart* getDocumentPart();
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().

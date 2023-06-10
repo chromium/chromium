@@ -1260,6 +1260,15 @@ interface CharacterData : Node
     method replaceWith
     method substringData
     setter data
+interface ChildNodePart : Part
+    attribute @@toStringTag
+    getter children
+    getter nextSibling
+    getter previousSibling
+    method clone
+    method constructor
+    method getParts
+    method replaceChildren
 interface Clipboard : EventTarget
     attribute @@toStringTag
     method constructor
@@ -1994,6 +2003,7 @@ interface Document : Node
     method exitPictureInPicture
     method exitPointerLock
     method getAnimations
+    method getDocumentPart
     method getElementById
     method getElementsByClassName
     method getElementsByName
@@ -2172,6 +2182,10 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
+interface DocumentPart : PartRoot
+    attribute @@toStringTag
+    method clone
+    method constructor
 interface DocumentPictureInPicture : EventTarget
     attribute @@toStringTag
     getter onenter
@@ -6503,6 +6517,10 @@ interface NodeList
     method item
     method keys
     method values
+interface NodePart : Part
+    attribute @@toStringTag
+    getter node
+    method constructor
 interface Notification : EventTarget
     static getter maxActions
     static getter permission
@@ -6736,6 +6754,16 @@ interface PannerNode : AudioNode
     setter panningModel
     setter refDistance
     setter rolloffFactor
+interface Part
+    attribute @@toStringTag
+    getter metadata
+    getter root
+    method constructor
+    method disconnect
+interface PartRoot
+    attribute @@toStringTag
+    method constructor
+    method getParts
 interface PasswordCredential : Credential
     attribute @@toStringTag
     getter iconURL

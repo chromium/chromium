@@ -207,6 +207,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
     [RuntimeEnabled=ConfirmationOfAction] void ariaNotify(HTMLString announcement, optional AriaNotificationOptions options = {});
 
+    // The (experimental) DOM Parts API.
+    [RuntimeEnabled=DOMPartsAPI] DocumentPart getDocumentPart();
+
     // Event handler attributes
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;

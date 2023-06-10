@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/tbondwilkinson/dom-parts
+
+[RuntimeEnabled=DOMPartsAPI,Exposed=Window]
+interface ChildNodePart : Part {
+  constructor(Node previousSibling, Node nextSibling, optional NodePartInit init = {});
+  readonly attribute Node previousSibling;
+  readonly attribute Node nextSibling;
+  readonly attribute FrozenArray<Node> children;
+  FrozenArray<Part> getParts();
+  ChildNodePart clone();
+  void replaceChildren((Node or DOMString)... nodes);
+};
