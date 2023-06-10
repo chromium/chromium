@@ -1213,7 +1213,7 @@ std::u16string AXPlatformNodeTextRangeProviderWin::GetString(
 }
 
 AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
-  // Unit tests can't call |GetPlatformNodeFromTree|, so they must provide an
+  // Unit tests can't call `GetPlatformNodeFromTree`, so they must provide an
   // owner node.
   if (owner_for_test_.Get())
     return owner_for_test_.Get();
@@ -1227,14 +1227,16 @@ AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
   const AXNode* anchor = position->GetAnchor();
   DCHECK(anchor);
   const AXTreeManager* ax_tree_manager = position->GetManager();
-  DCHECK(ax_tree_manager);
+  if (ax_tree_manager && ax_tree_manager->IsPlatformTreeManager()) {
+    const AXPlatformTreeManager* platform_tree_manager =
+        static_cast<const AXPlatformTreeManager*>(ax_tree_manager);
+    DCHECK(platform_tree_manager);
 
-  const AXPlatformTreeManager* platform_tree_manager =
-      static_cast<const AXPlatformTreeManager*>(ax_tree_manager);
-  DCHECK(platform_tree_manager);
+    return static_cast<AXPlatformNodeWin*>(
+        platform_tree_manager->GetPlatformNodeFromTree(*anchor));
+  }
 
-  return static_cast<AXPlatformNodeWin*>(
-      platform_tree_manager->GetPlatformNodeFromTree(*anchor));
+  return nullptr;
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(

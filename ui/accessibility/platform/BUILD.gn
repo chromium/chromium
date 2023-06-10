@@ -47,6 +47,7 @@ component("platform") {
     "child_iterator_base.h",
 
     # Used by browser_accessibility_manager.cc.
+    "ax_platform_tree_manager.cc",
     "ax_platform_tree_manager.h",
 
     # Used by browser_accessibility.cc.

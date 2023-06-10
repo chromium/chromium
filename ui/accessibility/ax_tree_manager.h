@@ -16,9 +16,10 @@ namespace ui {
 class AXNode;
 class AXTreeManagerMap;
 
-// Abstract interface for a class that owns an AXTree and manages its
-// connections to other AXTrees in the same page or desktop (parent and child
-// trees).
+// Interface for a class that owns an AXTree and manages its connections
+// to other AXTrees in the same page or desktop (parent and child trees)
+// as well as a mapping of AXNode's by ID for supporting `GetNodeFromTree`
+// and related methods.
 //
 // Note, the tree manager may be created for a tree which has unknown (not
 // valid) tree id. A such tree is not registered with the tree map and thus
@@ -85,6 +86,10 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns the tree id of the parent tree.
   // Returns AXTreeIDUnknown if this tree doesn't have a parent tree.
   virtual AXTreeID GetParentTreeID() const;
+
+  // Whether this manager can access platform nodes. Defaults to false
+  // and is overridden in `AXPlatformTreeManager` to return true.
+  virtual bool IsPlatformTreeManager() const;
 
   // Returns the AXNode that is at the root of the current tree.
   AXNode* GetRoot() const;
