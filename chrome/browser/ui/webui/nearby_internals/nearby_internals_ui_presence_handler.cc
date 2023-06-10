@@ -7,6 +7,36 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 
+namespace {
+
+// Keys in the JSON representation of a device.
+const char kDeviceNameKey[] = "name";
+const char kDeviceIdKey[] = "id";
+const char kTypeKey[] = "type";
+const char kEndpointKey[] = "endpoint_id";
+
+// Converts |presence_device| to a raw dictionary value used as a JSON argument
+// to JavaScript functions.
+base::Value::Dict PresenceDeviceToDictionary(
+    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+        presence_device) {
+  base::Value::Dict dictionary;
+  dictionary.Set(kDeviceNameKey, presence_device.GetName());
+  // TODO(b/277820435): add other device type options.
+  if (presence_device.GetType() ==
+      nearby::internal::DeviceType::DEVICE_TYPE_PHONE) {
+    dictionary.Set(kTypeKey, "DEVICE_TYPE_PHONE");
+  }
+  if (presence_device.GetStableId().has_value()) {
+    dictionary.Set(kDeviceIdKey, presence_device.GetStableId().value());
+  }
+
+  dictionary.Set(kEndpointKey, presence_device.GetEndpointId());
+  return dictionary;
+}
+
+}  // namespace
+
 NearbyInternalsPresenceHandler::NearbyInternalsPresenceHandler(
     content::BrowserContext* context)
     : context_(context) {}
@@ -102,8 +132,8 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
     const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
         presence_device) {
-  // TODO(b/276307539): Pass device back to WebUI.
-  NS_LOG(VERBOSE) << __func__ << " Device Name: " << presence_device.GetName();
+  FireWebUIListener("presence-device-found",
+                    PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(

@@ -1,0 +1,19 @@
+<style>
+  #type {
+    display: inline-block;
+    text-align: start;
+    width: 100%;
+  }
+
+  #item {
+    padding: 6px;
+  }
+</style>
+<div id="item">
+  <span id="status_text_connectable"
+      hidden="[[!item.connectable]]">Connectable Device</span>
+  <span id="status_text_lost"
+      hidden="[[item.connectable]]">Not Connectable Device</span>
+  <span id="type">[[item.type]]</span>
+  <span id="endpoint_id">[[item.endpoint_id]]</span>
+</div>

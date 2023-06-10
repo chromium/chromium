@@ -26,6 +26,7 @@ web_component_files = [
   "logging_tab.js",
   "nearby_internals.js",
   "ui_trigger_list_object.js",
+  "np_list_object.js",
   "ui_trigger_tab.js",
 ]
 
@@ -124,6 +125,7 @@ js_type_check("closure_compile") {
     ":nearby_prefs_browser_proxy",
     ":nearby_presence_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
+    ":np_list_object",
     ":types",
     ":ui_trigger_list_object",
     ":ui_trigger_tab",
@@ -133,6 +135,10 @@ js_type_check("closure_compile") {
 js_library("cross_device_internals") {
   deps = [
     ":nearby_presence_browser_proxy",
+    ":np_list_object",
+    ":types",
+    ":ui_trigger_list_object",
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -150,6 +156,7 @@ js_library("nearby_internals") {
     ":nearby_logs_browser_proxy",
     ":nearby_prefs_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
+    ":np_list_object",
     ":types",
     ":ui_trigger_list_object",
     ":ui_trigger_tab",
@@ -229,6 +236,7 @@ js_library("ui_trigger_tab") {
   deps = [
     ":cross_device_internals",
     ":nearby_ui_trigger_browser_proxy",
+    ":np_list_object",
     ":types",
     ":ui_trigger_list_object",
     "//ash/webui/common/resources:cr.m",
@@ -239,6 +247,13 @@ js_library("ui_trigger_tab") {
 js_library("ui_trigger_list_object") {
   deps = [
     ":nearby_ui_trigger_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("np_list_object") {
+  deps = [
+    ":nearby_presence_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

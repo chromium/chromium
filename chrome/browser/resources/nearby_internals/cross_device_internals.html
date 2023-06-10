@@ -11,16 +11,54 @@
     padding: 5px;
     width: 150px;
   }
+
+  #buttons {
+    margin-bottom: 80px;
+  }
+
+  #header {
+    padding: 20px;
+  }
+
+  #devices-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 6px;
+    white-space: pre-wrap;
+  }
+
+  np-object:last-child {
+    border-bottom: var(--standard-border);
+  }
+
+  np-object {
+    border-inline-end: var(--standard-border);
+    border-inline-start: var(--standard-border);
+    border-top: var(--standard-border);
+    height: 50px;
+  }
+
 </style>
 
-<cr-button class="internals-button" on-click="onStartScanClicked">
-  Presence: Start scan
-</cr-button>
+<div id="buttons">
+  <cr-button class="internals-button" on-click="onStartScanClicked">
+    Presence: Start scan
+  </cr-button>
 
-<cr-button class="internals-button" on-click="onSyncCredentialsClicked">
-  Presence: Sync Credentials
-</cr-button>
+  <cr-button class="internals-button" on-click="onSyncCredentialsClicked">
+    Presence: Sync Credentials
+  </cr-button>
 
-<cr-button class="internals-button" on-click="onFirstTimeFlowClicked">
-  Presence: First time flow
-</cr-button>
+  <cr-button class="internals-button" on-click="onFirstTimeFlowClicked">
+    Presence: First time flow
+  </cr-button>
+</div>
+
+<iron-list items="[[npDiscoveredDevicesList_]]" as="generic-object"
+    id="devices-section">
+  <template>
+    <np-object item="[[generic-object]]">
+    </np-object>
+  </template>
+</iron-list>
