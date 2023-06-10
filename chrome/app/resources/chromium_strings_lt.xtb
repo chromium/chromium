@@ -14,8 +14,10 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="1261119230216066228">Atminties taupymo priemonė paspartino „Chromium“</translation>
+<translation id="1262876892872089030">Kol šis skirtukas buvo neaktyvus, atmintis buvo atlaisvinta, kad „Chromium“ veiktų sparčiai. Galite pasirinkti visada išskirti šią svetainę, kad būtų aktyvi.</translation>
 <translation id="1315551408014407711">Nustatykite naują „Chromium“ profilį</translation>
 <translation id="1414495520565016063">Esate prisijungę prie „Chromium“.</translation>
+<translation id="1478370723027452770">Gauti pagalbos dėl „Chrome for Testing“</translation>
 <translation id="1524282610922162960">„Chromium“ skirtuko bendrinimas</translation>
 <translation id="1553461853655228091">„Chromium“ reikia leidimo naudoti fotoaparatą jūsų aplinkos 3D žemėlapiui kurti</translation>
 <translation id="1555506416658437797">redaguoti mokėjimo metodus</translation>
@@ -73,6 +75,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2711502716910134313">„Chromium“ skirtukas</translation>
 <translation id="2718390899429598676">Kad būtų papildomai užtikrintas saugumas, „Chromium“ užšifruos jūsų duomenis.</translation>
 <translation id="2770231113462710648">Pakeisti numatytąją naršyklę į:</translation>
+<translation id="2785438272836277133">Šiame plėtinyje yra kenkėjiškų programų ir jis nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="2799223571221894425">Paleisti iš naujo</translation>
 <translation id="2837693172913560447">Bus sukurtas naujas <ph name="USER_EMAIL_ADDRESS" /> „Chromium“ profilis</translation>
 <translation id="2847479871509788944">Pašalinti iš „Chromium“...</translation>
@@ -132,9 +135,11 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="388648406173476553">Tinkinkite ir valdykite „Chromium“. Reikia atkreipti dėmesį – spustelėkite ir peržiūrėkite išsamią informaciją.</translation>
 <translation id="3889543394854987837">Spustelėkite savo vardą, kad atidarytumėte „Chromium“ ir pradėtumėte naršyti.</translation>
 <translation id="390528597099634151">Naudotojas (<ph name="EXISTING_USER" />) jau yra prisijungęs prie šio „Chromium“ profilio. Kad naršytumėte atskirai, „Chromium“ gali sukurti jums atskirą profilį.</translation>
+<translation id="3909353120217047026">Šis plėtinys pažeidžia „Chrome“ internetinės parduotuvės politiką ir gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="391789666908693569">Jūsų paskyrą tvarko <ph name="MANAGER_NAME" />. Jūsų administratorius gali matyti ir redaguoti šį „Chromium“ naršyklės profilį bei jo duomenis, pvz., žymes, istoriją ir slaptažodžius.</translation>
 <translation id="3945058413678539331">„Chromium“ bando kopijuoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="3962623956404948996">„Chromium“ rekomenduoja nuskaityti šį failą, nes jis gali būti pavojingas</translation>
+<translation id="3975724895399328945">Apie &amp;„Google Chrome for Testing“</translation>
 <translation id="3997429360543082038">Apie „Chromium“ OS</translation>
 <translation id="4019629340646866719">„Chromium“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4036079820698952681">Padėkite tobulinti „Chromium“ pateikę ataskaitą apie <ph name="BEGIN_LINK" />dabartinius nustatymus<ph name="END_LINK" />.</translation>
@@ -156,6 +161,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4415566066719264597">„Chromium“ leidimas fone</translation>
 <translation id="4423735387467980091">Tinkinkite ir valdykite „Chromium“</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
+<translation id="4447409407328223819">Apie „Chrome for Testing“</translation>
 <translation id="452711251841752011">Sveiki, tai – „Chromium“; atidarytas naujas naršyklės langas</translation>
 <translation id="4544142686420020088">Nepavyko atnaujinti „Chromium“, įvyko klaida. <ph name="BEGIN_LINK" />Pašalinkite „Chromium“ naujinimo problemas ir naujinių klaidas.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Tęsti naudojant naują „Chromium“ profilį?</translation>
@@ -351,6 +357,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8357820681460164151">Jei norite pasiekti „Chromium“ naršyklės duomenis visuose savo įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="8360718212975266891">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 8 versijos „Windows“.</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
+<translation id="8401454788024434101">Kūrėjas anuliavo šio plėtinio paskelbimą ir gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="8417404458978023919">{0,plural, =1{„Chromium“ paleidimas iš naujo po dienos}one{„Chromium“ paleidimas iš naujo po # dienos}few{„Chromium“ paleidimas iš naujo po # dienų}many{„Chromium“ paleidimas iš naujo po # dienos}other{„Chromium“ paleidimas iš naujo po # dienų}}</translation>
 <translation id="8453117565092476964">Diegimo programos archyvas sugadintas arba negalioja. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="8458614432758743027">Kad būtų galima naudoti „Chromium“, reikalinga 10 ar naujesnės versijos „Windows“.</translation>
@@ -363,6 +370,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> svetainėse gali būti renkama su „Chromium“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
 <translation id="8619360774459241877">Pristatoma „Chromium“...</translation>
 <translation id="8621669128220841554">Nepavyko įdiegti dėl nenurodytos klaidos. Atsisiųskite „Chromium“ dar kartą.</translation>
+<translation id="8648201657708811153">„Google Chrome for Testing“ negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="867492205098279939">{NUM_DEVICES,plural, =0{„Chromium“ plėtinys pasiekė ŽSĮ įrenginius}=1{„Chromium“ plėtinys pasiekia vieną ŽSĮ įrenginį}one{„Chromium“ plėtinys pasiekia # ŽSĮ įrenginį}few{„Chromium“ plėtinys pasiekia # ŽSĮ įrenginius}many{„Chromium“ plėtinys pasiekia # ŽSĮ įrenginio}other{„Chromium“ plėtinys pasiekia # ŽSĮ įrenginių}}</translation>
 <translation id="8697124171261953979">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chromium“ arba ieškote „Omnibox“.</translation>
 <translation id="8704119203788522458">Tai jūsų „Chromium“</translation>

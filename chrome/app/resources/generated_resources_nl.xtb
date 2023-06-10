@@ -835,6 +835,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1698796500103229697">&amp;Betaalmethoden</translation>
 <translation id="1700079447639026019">Sites die nooit cookies mogen gebruiken</translation>
 <translation id="1700201317341192482">Je virtuele kaart verwijderen</translation>
+<translation id="1700517974991662022">Bezocht</translation>
 <translation id="1703331064825191675">Maak je nooit meer zorgen over je wachtwoorden</translation>
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
 <translation id="1704097193565924901">Beginhoofdletters van maken</translation>
@@ -1142,6 +1143,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1956167375087861299">Geen toestemming om ID's te gebruiken om beveiligde content af te spelen</translation>
 <translation id="1956390763342388273">Hiermee worden alle bestanden in <ph name="FOLDER_PATH" /> geüpload. Doe dit alleen als je de site vertrouwt.</translation>
 <translation id="1962233722219655970">Deze pagina gebruikt een Native Client-app die niet werkt op je computer.</translation>
+<translation id="1963227389609234879">Alles verwijderen</translation>
 <translation id="1963976881984600709">Standaardbeveiliging</translation>
 <translation id="1966649499058910679">Markeer elk woord terwijl het wordt uitgesproken</translation>
 <translation id="1967970931040389207">Hotspot aanzetten</translation>
@@ -3009,6 +3011,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3566325075220776093">Van dit apparaat</translation>
 <translation id="3566721612727112615">Geen sites toegevoegd</translation>
 <translation id="3567284462585300767">Als je bestanden wilt krijgen en accepteren van mensen bij jou in de buurt, moet je zichtbaar zijn</translation>
+<translation id="356738834800832239">Je wachtwoord is opgeslagen</translation>
 <translation id="3569382839528428029">Wil je je scherm delen met <ph name="APP_NAME" />?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken</translation>
 <translation id="3571734092741541777">Instellen</translation>
@@ -3036,7 +3039,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3593965109698325041">Naambeperkingen voor certificaten</translation>
 <translation id="3596012367874587041">App-instellingen</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
-<translation id="3598010454707842106">Klik op Chrome aanpassen</translation>
 <translation id="3599221874935822507">Verhoogd</translation>
 <translation id="3600051066689725006">Informatie over webverzoek</translation>
 <translation id="360180734785106144">je nieuwe functies aan te bieden zodra deze beschikbaar komen</translation>
@@ -3705,6 +3707,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="4154664944169082762">Vingerafdrukken</translation>
+<translation id="4155585931966064643">Als je je opgeslagen wachtwoorden op je telefoon wilt gebruiken, download je Chrome voor iOS en synchroniseer je je account.</translation>
 <translation id="4157869833395312646">Microsoft SGC (Server Gated Cryptography)</translation>
 <translation id="4158315983204257156">Tekstgrootte en lettertype voor websites</translation>
 <translation id="4158364720893025815">Geslaagd</translation>
@@ -4464,6 +4467,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4833683849865011483">Er is één printer gevonden op de printerserver</translation>
 <translation id="4836504898754963407">Vingerafdrukken beheren</translation>
 <translation id="4837128290434901661">Teruggaan naar Google Zoeken?</translation>
+<translation id="4837274845731134929">Als je je opgeslagen wachtwoorden op je telefoon wilt gebruiken, volg je de QR-code, download je Chrome voor iOS en synchroniseer je je account.</translation>
 <translation id="4837926214103741331">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de eigenaar van het apparaat voor toestemming om in te loggen.</translation>
 <translation id="4837952862063191349">Geef het oude wachtwoord van je <ph name="DEVICE_TYPE" /> op om te ontgrendelen en je lokale gegevens te herstellen.</translation>
 <translation id="4838170306476614339">Foto's, media en meldingen van je telefoon bekijken</translation>
@@ -6052,6 +6056,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6242852299490624841">Focus op dit tabblad plaatsen</translation>
 <translation id="6243774244933267674">Server is niet beschikbaar</translation>
 <translation id="6244245036423700521">ONC-bestand importeren</translation>
+<translation id="6245523954602476652">Je kunt het openen via Google Wachtwoordmanager.</translation>
 <translation id="6246790815526961700">Uploaden via apparaat</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6247620186971210352">Geen apps gevonden</translation>
@@ -6997,7 +7002,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="706626672220389329">Fout bij het activeren van de fileshare. De opgegeven fileshare is al geactiveerd.</translation>
 <translation id="7067396782363924830">Omgevingskleuren</translation>
 <translation id="7067725467529581407">Nooit meer bekijken.</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> vereist mogelijk een nieuwere of een ander type beveiligingssleutel</translation>
 <translation id="7070484045139057854">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="7072010813301522126">Naam van snelkoppeling</translation>
 <translation id="7074066049407662839">Log in om wachtwoorden op te slaan</translation>
@@ -8503,7 +8507,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8376752431516546391">Zijvenster van Google Zoeken</translation>
 <translation id="8377625247046155446">Deze toegangssleutel wordt alleen opgeslagen op dit apparaat. De sleutel blijft op dit apparaat staan nadat je alle incognitovensters hebt gesloten.</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
-<translation id="8379878387931047019">Dit apparaat biedt geen ondersteuning voor het type beveiligingssleutel dat is vereist voor deze website</translation>
 <translation id="8379991678458444070">Je kunt hier snel terugkeren als je een bookmark voor dit tabblad maakt</translation>
 <translation id="8380266723152870797">Vensternaam</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>
@@ -8565,7 +8568,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8427292751741042100">ingesloten in een host</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8428271547607112339">Schoolaccount toevoegen</translation>
-<translation id="8428628598981198790">Je beveiligingssleutel kan niet worden gebruikt voor deze site</translation>
 <translation id="84297032718407999">Je wordt uitgelogd over <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Tikken bekijken</translation>
 <translation id="8431496281632382473">Dit profiel wordt beheerd door <ph name="DOMAIN" />. Als je dit beheerde profiel wilt blijven gebruiken, vereist je organisatie dat je je apparaatsignalen deelt.
@@ -8783,6 +8785,7 @@ Als je ervoor kiest geen signalen te delen, wordt dit profiel gesloten.</transla
 <translation id="8637688295594795546">Systeemupdate beschikbaar. Download voorbereiden...</translation>
 <translation id="8639635302972078117">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="8640575194957831802">Laatst geopend</translation>
+<translation id="8641946446576357115">Je wachtwoorden gebruiken op je iOS-apparaten</translation>
 <translation id="8642900771896232685">2 seconden</translation>
 <translation id="8642947597466641025">De tekst groter maken</translation>
 <translation id="8643403533759285912">Groep verwijderen</translation>
@@ -9061,6 +9064,7 @@ Als je ervoor kiest geen signalen te delen, wordt dit profiel gesloten.</transla
 <translation id="8862003515646449717">Overschakelen naar een snelle browser</translation>
 <translation id="8863753581171631212">Link openen in nieuw <ph name="APP" />-venster</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wordt gedeeld met <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">Je wachtwoord is opgeslagen</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> is verwijderd van dit apparaat</translation>
 <translation id="8865112428068029930">Gebruik je een gedeelde computer? Open een incognitovenster.</translation>
 <translation id="8867102760244540173">Tabbladen doorzoeken...</translation>
@@ -9257,6 +9261,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> wordt niet meer ondersteund</translation>
 <translation id="9031549947500880805">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up bevat app-gegevens.</translation>
 <translation id="9031811691986152304">het opnieuw te proberen</translation>
+<translation id="9032004780329249150">Je wachtwoorden gebruiken op je iOS-apparaten</translation>
 <translation id="9032097289595078011">Snel koppelen uitzetten</translation>
 <translation id="9033765790910064284">Toch doorgaan</translation>
 <translation id="9033857511263905942">&amp;Plakken</translation>

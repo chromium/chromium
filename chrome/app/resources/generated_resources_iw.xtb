@@ -836,6 +836,7 @@
 <translation id="1698796500103229697">אמצעי תשלום</translation>
 <translation id="1700079447639026019">‏אתרים שאף פעם לא יכולים להשתמש בקובצי cookie</translation>
 <translation id="1700201317341192482">הסרת הכרטיס הווירטואלי</translation>
+<translation id="1700517974991662022">הופעל</translation>
 <translation id="1703331064825191675">אין יותר צורך לדאוג לגבי הסיסמאות שלך</translation>
 <translation id="1703666494654169921">לא לאפשר לאתרים להשתמש במכשירי מציאות מדומה או בנתונים כאלה</translation>
 <translation id="1704097193565924901">אותיות רישיות</translation>
@@ -1152,6 +1153,7 @@
 <translation id="1956167375087861299">לא מורשים להשתמש במזהים כדי להפעיל תוכן מוגן</translation>
 <translation id="1956390763342388273">הפעולה הזו תעלה את כל הקבצים מ-"<ph name="FOLDER_PATH" />". יש לעשות זאת רק אם סומכים על האתר.</translation>
 <translation id="1962233722219655970">‏דף זה משתמש ביישום Native Client שאינו פועל במחשב שלך.</translation>
+<translation id="1963227389609234879">‏הסרת כל קובצי ה-cookie</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
 <translation id="1966649499058910679">הדגשה של כל מילה בזמן שהיא נאמרת</translation>
 <translation id="1967970931040389207">הפעלת הנקודה לשיתוף אינטרנט</translation>
@@ -3040,7 +3042,6 @@
 <translation id="3593965109698325041">מגבלות שם אישור </translation>
 <translation id="3596012367874587041">הגדרות האפליקציה</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
-<translation id="3598010454707842106">‏לוחצים על 'התאמה אישית של Chrome'</translation>
 <translation id="3599221874935822507">בולט</translation>
 <translation id="3600051066689725006">פרטי בקשת אינטרנט</translation>
 <translation id="360180734785106144">להציע תכונות חדשות כשהן זמינות</translation>
@@ -6997,7 +6998,6 @@
 <translation id="706626672220389329">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. ההתקן שצוין כבר נטען.</translation>
 <translation id="7067396782363924830">צבעי הסביבה</translation>
 <translation id="7067725467529581407">אין להציג זאת שוב.</translation>
-<translation id="7069811530847688087">ייתכן שיהיה צורך במפתח אבטחה חדש יותר, או מסוג אחר, עבור <ph name="WEBSITE" /></translation>
 <translation id="7070484045139057854">התוסף יכול לקרוא ולשנות נתוני אתרים</translation>
 <translation id="7072010813301522126">שם קיצור הדרך</translation>
 <translation id="7074066049407662839">יש להיכנס לחשבון כדי לשמור סיסמאות</translation>
@@ -8503,7 +8503,6 @@
 <translation id="8376752431516546391">‏החלונית הצדדית של חיפוש Google</translation>
 <translation id="8377625247046155446">מפתח הגישה הזה יישמר רק במכשיר הזה. הוא יישאר במכשיר הזה אחרי שסגרת את כל החלונות הפרטיים.</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
-<translation id="8379878387931047019">המכשיר לא תומך במפתח אבטחה מהסוג המבוקש באתר הזה</translation>
 <translation id="8379991678458444070">הוספת הכרטיסייה לסימניות תאפשר לך לגשת אליה במהירות</translation>
 <translation id="8380266723152870797">שם החלון</translation>
 <translation id="8380941800586852976">מסוכן</translation>
@@ -8565,7 +8564,6 @@
 <translation id="8427292751741042100">מוטמע במארח כלשהו</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428271547607112339">הוספת חשבון בית ספרי</translation>
-<translation id="8428628598981198790">לא ניתן להשתמש במפתח האבטחה שלך באתר הזה</translation>
 <translation id="84297032718407999">בעוד <ph name="LOGOUT_TIME_LEFT" /> תבוצע יציאה מהחשבון</translation>
 <translation id="8431190899827883166">הצגת הקשות</translation>
 <translation id="8431496281632382473">הפרופיל הזה מנוהל על ידי <ph name="DOMAIN" />. לפי דרישת הארגון, צריך לשתף אותות מהמכשיר כדי להמשיך להשתמש בפרופיל המנוהל הזה.

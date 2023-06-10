@@ -14,8 +14,10 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1261119230216066228">「節省記憶體」模式可讓 Chromium 速度更快</translation>
+<translation id="1262876892872089030">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="1414495520565016063">您已登入 Chromium！</translation>
+<translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="1553461853655228091">Chromium 需要取得權限，才能存取相機以建立您身處環境的 3D 地圖</translation>
 <translation id="1555506416658437797">編輯付款方法。</translation>
@@ -73,6 +75,7 @@
 <translation id="2711502716910134313">Chromium 分頁</translation>
 <translation id="2718390899429598676">為提高安全性，Chromium 會將您的資料加密。</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
+<translation id="2785438272836277133">此擴充程式含有惡意軟件且不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2837693172913560447">此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="2847479871509788944">從 Chromium 中移除…</translation>
@@ -132,9 +135,11 @@
 <translation id="388648406173476553">自訂及控制 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下您的名稱即可開啟 Chromium 並開始瀏覽。</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登入此 Chromium 設定檔。Chromium 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
+<translation id="3909353120217047026">此擴充程式違反了 Chrome 網上應用程式商店政策，且可能不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="391789666908693569">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chromium 瀏覽器設定檔和其資料，例如書籤、記錄和密碼。</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="3962623956404948996">此檔案可能不安全，因此 Chromium 建議掃瞄檔案</translation>
+<translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium 作業系統</translation>
 <translation id="4019629340646866719">Chromium 作業系統得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="4036079820698952681">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
@@ -156,6 +161,7 @@
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
+<translation id="4447409407328223819">關於 Chrome for Testing</translation>
 <translation id="452711251841752011">歡迎使用 Chromium；開咗新瀏覽器視窗</translation>
 <translation id="4544142686420020088">發生錯誤，Chromium 未能更新。<ph name="BEGIN_LINK" />請修正 Chromium 更新問題與更新失敗問題。<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">要透過新的 Chromium 設定檔繼續瀏覽嗎？</translation>
@@ -350,6 +356,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
+<translation id="8401454788024434101">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 只支援 Windows 10 或以上版本的作業系統。</translation>
@@ -362,6 +369,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />網站可將您的興趣相關資料儲存在 Chromium 中。例如，如果您瀏覽某個網站想購買適合馬拉松的跑步鞋，網站可能會判斷您的興趣為跑馬拉松。如果您日後瀏覽其他網站報名參加比賽，該網站就可以根據您的興趣向您顯示跑步鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
+<translation id="8648201657708811153">Google Chrome for Testing 無法設為預設瀏覽器。</translation>
 <translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium 擴充程式當時正在存取 HID 裝置}=1{Chromium 擴充程式正在存取 1 部 HID 裝置}other{Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是您專屬的 Chromium</translation>

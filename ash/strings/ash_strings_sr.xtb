@@ -141,6 +141,7 @@
 <translation id="1550406609415860283">Доступни уређаји</translation>
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
+<translation id="1576511610858879060">Chromebook или Bluetooth уређај користи старију верзију Bluetooth-а. Користите други извор улаза за бољи квалитет звука.</translation>
 <translation id="1576623706766186887">Умањите приказ када је лупа укључена</translation>
 <translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
@@ -356,6 +357,7 @@
 <translation id="256712445991462162">монтирана лупа екрана</translation>
 <translation id="2573588302192866788">Није успело повезивање <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Онемогућено је вишеструко пријављивање</translation>
+<translation id="2579264398927991698">Ажурирања фирмвера</translation>
 <translation id="2582112259361606227">Рестартујте да бисте ажурирали</translation>
 <translation id="2586561057878260610">Притисните Ctrl + W да бисте комбиновали са: <ph name="DESK_NAME" />. Притисните Ctrl + Shift + W да бисте затворили радну површину и прозоре.</translation>
 <translation id="2595239820337756193">5 km у миљама</translation>
@@ -687,6 +689,7 @@
 <translation id="4028481283645788203">Треба да унесете лозинку ради додатне безбедности</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Делите екран</translation>
+<translation id="404437169852192935">Ажурирања су завршена</translation>
 <translation id="4049230407053723315">Брза подешавања</translation>
 <translation id="4057003836560082631"><ph name="INDEX" />. картица прегледача од <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Иск. за апл.}one{Иск. за # апл.}few{Иск. за # апл.}other{Иск. за # апл.}}</translation>
@@ -1018,11 +1021,13 @@
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> или <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Доступна су ажурирања фирмвера</translation>
 <translation id="5503884284981862082">Отвори или затвори Google помоћник</translation>
+<translation id="550391772491508736">Настави пребацивање</translation>
 <translation id="5506975627792768506">Укључите или искључите лупу</translation>
 <translation id="5512042095225963688">Избриши претходну реч</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администратор је уклонио све eSIM профиле. Додатне информације потражите од администратора.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се повезује.</translation>
+<translation id="5529587891732734495">Паузирај пребацивање</translation>
 <translation id="5532994612895037630">Додирните било где да бисте снимили цео екран</translation>
 <translation id="5536723544185013515">Недавне апликације, крећите се помоћу тастера са стрелицом налево или надесно да бисте приступали свим недавним апликацијама</translation>
 <translation id="553675580533261935">Напуштање сесије</translation>
@@ -1390,6 +1395,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Враћање на стару резолуцију за <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Освежи</translation>
+<translation id="7185362672357349361">Желите ли да укључите аутоматски подсетник у нечујном режиму? Добићете обавештење ако говорите док је звук искључен. Звук остаје на уређају.</translation>
 <translation id="7187711731540696127">Укључен је <ph name="DEVICE_NAME" /> хотспот, није повезан ниједан уређај</translation>
 <translation id="7188494361780961876">Мени је премештен у горњи леви угао екрана.</translation>
 <translation id="7189412385142492784">Колико далеко је Венера</translation>

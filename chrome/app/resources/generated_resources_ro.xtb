@@ -840,6 +840,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1698796500103229697">&amp;Metode de plată</translation>
 <translation id="1700079447639026019">Site-uri care nu pot folosi niciodată cookie-uri</translation>
 <translation id="1700201317341192482">Elimină cardul virtual</translation>
+<translation id="1700517974991662022">Accesat</translation>
 <translation id="1703331064825191675">Nu-ți face griji în privința parolelor</translation>
 <translation id="1703666494654169921">Nu permite site-urilor să folosească dispozitive de realitate virtuală sau date conexe</translation>
 <translation id="1704097193565924901">Scrie cu majusculă</translation>
@@ -1149,6 +1150,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1956167375087861299">Nu au permisiunea de a folosi identificatori pentru a reda conținut protejat</translation>
 <translation id="1956390763342388273">Vor fi încărcate toate fișierele din „<ph name="FOLDER_PATH" />”. Fă acest lucru doar dacă ai încredere în site.</translation>
 <translation id="1962233722219655970">Această pagină utilizează o aplicație Client nativ care nu funcționează pe computerul dvs.</translation>
+<translation id="1963227389609234879">Elimină tot</translation>
 <translation id="1963976881984600709">Protecție standard</translation>
 <translation id="1966649499058910679">Evidențiază fiecare cuvânt când este rostit</translation>
 <translation id="1967970931040389207">Activează hotspotul</translation>
@@ -3023,6 +3025,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3566325075220776093">De pe acest dispozitiv</translation>
 <translation id="3566721612727112615">Nu s-au adăugat site-uri</translation>
 <translation id="3567284462585300767">Pentru a primi și a accepta fișiere de la persoane din jur, setează dispozitivul ca vizibil</translation>
+<translation id="356738834800832239">Parola s-a salvat</translation>
 <translation id="3569382839528428029">Doriți ca aplicația <ph name="APP_NAME" /> să aibă acces la ecran?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> poate să vadă următoarele fișiere și dosare</translation>
 <translation id="3571734092741541777">Configurează</translation>
@@ -3050,7 +3053,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3593965109698325041">Limitări privind numele certificatului</translation>
 <translation id="3596012367874587041">Setările aplicației</translation>
 <translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
-<translation id="3598010454707842106">Dă clic pe Personalizează Chrome</translation>
 <translation id="3599221874935822507">În relief</translation>
 <translation id="3600051066689725006">Informații despre solicitarea web</translation>
 <translation id="360180734785106144">să ofere noi caracteristici pe măsură ce devin disponibile;</translation>
@@ -3721,6 +3723,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{O filă}few{# file}other{# de file}}</translation>
 <translation id="4154664944169082762">Amprente digitale</translation>
+<translation id="4155585931966064643">Pentru a folosi parolele salvate pe telefon, descarcă Chrome pentru iOS și sincronizează-ți contul.</translation>
 <translation id="4157869833395312646">Criptografie Microsoft bazată pe server</translation>
 <translation id="4158315983204257156">Dimensiunea și fontul textului de pe site</translation>
 <translation id="4158364720893025815">A reușit</translation>
@@ -4482,6 +4485,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4833683849865011483">S-a găsit o imprimantă de la serverul de imprimare</translation>
 <translation id="4836504898754963407">Gestionează amprentele digitale</translation>
 <translation id="4837128290434901661">Revii la Căutarea Google?</translation>
+<translation id="4837274845731134929">Pentru a folosi parolele salvate pe telefon, urmează codul QR, descarcă Chrome pentru iOS și sincronizează-ți contul.</translation>
 <translation id="4837926214103741331">Nu ești autorizat(ă) să folosești acest dispozitiv. Contactează proprietarul dispozitivului pentru permisiunea de conectare.</translation>
 <translation id="4837952862063191349">Pentru a debloca și a restabili datele locale, introdu parola anterioară pentru <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Afișează fotografiile, conținutul media și notificările de pe telefon</translation>
@@ -6081,6 +6085,7 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="6242852299490624841">Focalizează această filă</translation>
 <translation id="6243774244933267674">Server indisponibil</translation>
 <translation id="6244245036423700521">Importă fișierul ONC</translation>
+<translation id="6245523954602476652">Îl poți accesa în Managerul de parole Google.</translation>
 <translation id="6246790815526961700">Încarcă de pe dispozitiv</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6247620186971210352">Nu s-au găsit aplicații</translation>
@@ -7033,7 +7038,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7067396782363924830">Culori ambientale</translation>
 <translation id="7067725467529581407">Nu mai afișa niciodată acest mesaj.</translation>
 <translation id="7068279399556423026">Conectează-te pentru a vedea filele de pe alte dispozitive</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> poate necesita un tip diferit sau mai nou de cheie de securitate</translation>
 <translation id="7070484045139057854">Poate să citească și să modifice datele site-ului</translation>
 <translation id="7072010813301522126">Numele comenzii rapide</translation>
 <translation id="7074066049407662839">Conectează-te pentru a salva parolele</translation>
@@ -8549,7 +8553,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8376752431516546391">Panoul lateral Căutare Google</translation>
 <translation id="8377625247046155446">Cheia de acces va fi salvată numai pe acest dispozitiv. Va rămâne pe acest dispozitiv după ce închizi toate ferestrele incognito.</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>
-<translation id="8379878387931047019">Dispozitivul nu acceptă tipul de cheie de securitate solicitată de acest site</translation>
 <translation id="8379991678458444070">Marchează această filă pentru a o putea accesa din nou rapid</translation>
 <translation id="8380266723152870797">Numele ferestrei</translation>
 <translation id="8380941800586852976">Periculos</translation>
@@ -8611,7 +8614,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8427292751741042100">încorporată în orice gazdă</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8428271547607112339">Adaugă un cont de la școală</translation>
-<translation id="8428628598981198790">Cheia de securitate nu poate fi folosită cu acest site</translation>
 <translation id="84297032718407999">Vei fi deconectat(ă) peste <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Afișează atingerile</translation>
 <translation id="8431496281632382473">Profilul este gestionat de <ph name="DOMAIN" />. Pentru a folosi în continuare acest profil gestionat, organizația ta îți solicită să trimiți semnalele de pe dispozitiv.
@@ -8830,6 +8832,7 @@ Dacă alegi să nu trimiți semnale, acest profil va fi închis.</translation>
 <translation id="8637688295594795546">Este disponibilă o actualizare de sistem. Se pregătește descărcarea...</translation>
 <translation id="8639635302972078117">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
 <translation id="8640575194957831802">Data ultimei deschideri</translation>
+<translation id="8641946446576357115">Folosește parolele pe dispozitivele iOS</translation>
 <translation id="8642900771896232685">2 secunde</translation>
 <translation id="8642947597466641025">Măriți textul</translation>
 <translation id="8643403533759285912">Șterge grupul</translation>
@@ -9110,6 +9113,7 @@ Dacă alegi să nu trimiți semnale, acest profil va fi închis.</translation>
 <translation id="8862003515646449717">Comută la un browser rapid</translation>
 <translation id="8863753581171631212">Deschide linkul într-o fereastră nouă în <ph name="APP" /></translation>
 <translation id="8864055848767439877">Se trimite <ph name="TAB_NAME" /> la <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">Parola s-a salvat</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> a fost eliminat de pe acest dispozitiv</translation>
 <translation id="8865112428068029930">Folosești un computer comun? Încearcă să deschizi o fereastră incognito.</translation>
 <translation id="8867102760244540173">Caută în file...</translation>
@@ -9307,6 +9311,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> nu mai este acceptat</translation>
 <translation id="9031549947500880805">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Backupul include datele aplicațiilor.</translation>
 <translation id="9031811691986152304">încearcă din nou</translation>
+<translation id="9032004780329249150">Folosește parolele pe dispozitivele iOS</translation>
 <translation id="9032097289595078011">Dezactivează Fast Pair</translation>
 <translation id="9033765790910064284">Continuă oricum</translation>
 <translation id="9033857511263905942">&amp;Inserați</translation>

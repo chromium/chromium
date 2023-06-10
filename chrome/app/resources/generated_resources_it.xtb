@@ -836,6 +836,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1698796500103229697">&amp;Metodi di pagamento</translation>
 <translation id="1700079447639026019">Siti che non possono mai usare i cookie</translation>
 <translation id="1700201317341192482">Rimuovi la carta virtuale</translation>
+<translation id="1700517974991662022">Visitato</translation>
 <translation id="1703331064825191675">Non preoccuparti delle tue password</translation>
 <translation id="1703666494654169921">Non consentire ai siti di usare i dati o dispositivi per realtà virtuale</translation>
 <translation id="1704097193565924901">Scrivi in maiuscolo</translation>
@@ -1143,6 +1144,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1956167375087861299">Non autorizzati a usare identificatori per riprodurre contenuti protetti</translation>
 <translation id="1956390763342388273">Verranno caricati tutti i file da "<ph name="FOLDER_PATH" />". Esegui questa operazione solo se ritieni il sito affidabile.</translation>
 <translation id="1962233722219655970">Questa pagina utilizza un'app Native Client che non funziona sul tuo computer.</translation>
+<translation id="1963227389609234879">Rimuovi tutto</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
 <translation id="1966649499058910679">Evidenzia ogni parola mentre viene pronunciata</translation>
 <translation id="1967970931040389207">Attiva l'hotspot</translation>
@@ -3010,6 +3012,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3566325075220776093">Da questo dispositivo</translation>
 <translation id="3566721612727112615">Nessun sito aggiunto</translation>
 <translation id="3567284462585300767">Per ricevere e accettare i file con le persone intorno a te, renditi visibile</translation>
+<translation id="356738834800832239">La password è stata salvata</translation>
 <translation id="3569382839528428029">Vuoi consentire a <ph name="APP_NAME" /> di condividere il tuo schermo?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> può visualizzare i file e le cartelle indicati di seguito</translation>
 <translation id="3571734092741541777">Configura</translation>
@@ -3037,7 +3040,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3593965109698325041">Vincoli nomi certificati</translation>
 <translation id="3596012367874587041">Impostazioni app</translation>
 <translation id="3596414637720633074">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
-<translation id="3598010454707842106">Fai clic su "Personalizza Chrome"</translation>
 <translation id="3599221874935822507">In rilievo</translation>
 <translation id="3600051066689725006">Informazioni sulla richiesta web</translation>
 <translation id="360180734785106144">Offrire nuove funzionalità quando diventano disponibili.</translation>
@@ -3708,6 +3710,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4152011295694446843">Qui troverai i tuoi preferiti</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="4154664944169082762">Impronte digitali</translation>
+<translation id="4155585931966064643">Per usare le password salvate sullo smartphone, scarica Chrome per iOS e sincronizza il tuo account.</translation>
 <translation id="4157869833395312646">Server Gated Cryptography Microsoft</translation>
 <translation id="4158315983204257156">Dimensioni e carattere del testo del sito web</translation>
 <translation id="4158364720893025815">Controllo superato</translation>
@@ -4468,6 +4471,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4833683849865011483">1 stampante trovata sul server di stampa</translation>
 <translation id="4836504898754963407">Gestisci impronte</translation>
 <translation id="4837128290434901661">Tornare a Ricerca Google?</translation>
+<translation id="4837274845731134929">Per usare le password salvate sullo smartphone, segui il codice QR, scarica Chrome per iOS e sincronizza il tuo account.</translation>
 <translation id="4837926214103741331">Non sei autorizzato a utilizzare questo dispositivo. Per ottenere l'autorizzazione di accesso contatta il proprietario del dispositivo.</translation>
 <translation id="4837952862063191349">Per sbloccare e ripristinare i dati locali, inserisci la vecchia password del dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Visualizza foto, contenuti multimediali e notifiche del tuo telefono</translation>
@@ -6058,6 +6062,7 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6242852299490624841">Imposta stato attivo su questa scheda</translation>
 <translation id="6243774244933267674">Server non disponibile</translation>
 <translation id="6244245036423700521">Importa file ONC</translation>
+<translation id="6245523954602476652">Puoi accedervi su Gestore delle password di Google.</translation>
 <translation id="6246790815526961700">Carica dal dispositivo</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6247620186971210352">Nessuna app trovata</translation>
@@ -7004,7 +7009,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="706626672220389329">Errore durante il montaggio della condivisione. La condivisione specificata è già montata.</translation>
 <translation id="7067396782363924830">Colori ambient</translation>
 <translation id="7067725467529581407">Non visualizzare più questo messaggio.</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> potrebbe richiedere un token di sicurezza più recente o di diverso tipo</translation>
 <translation id="7070484045139057854">Può leggere e cambiare i dati dei siti</translation>
 <translation id="7072010813301522126">Nome scorciatoia</translation>
 <translation id="7074066049407662839">Accedi per salvare le password</translation>
@@ -8514,7 +8518,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8376752431516546391">Riquadro laterale della Ricerca Google</translation>
 <translation id="8377625247046155446">La passkey verrà salvata solo su questo dispositivo. Rimarrà su questo dispositivo dopo la chiusura di tutte le finestre di navigazione in incognito.</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>
-<translation id="8379878387931047019">Questo dispositivo non supporta il tipo di token di sicurezza richiesto da questo sito web</translation>
 <translation id="8379991678458444070">Aggiungi questa scheda ai preferiti per ritrovarla rapidamente</translation>
 <translation id="8380266723152870797">Nome della finestra</translation>
 <translation id="8380941800586852976">Pericolosa</translation>
@@ -8576,7 +8579,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8427292751741042100">incorporata su qualsiasi host</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428271547607112339">Aggiungi account della scuola</translation>
-<translation id="8428628598981198790">Impossibile utilizzare il tuo token di sicurezza con questo sito</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">Mostra tocchi</translation>
 <translation id="8431496281632382473">Questo profilo è gestito da <ph name="DOMAIN" />. Per continuare a utilizzare questo profilo gestito, la tua organizzazione richiede la condivisione degli indicatori del tuo dispositivo.
@@ -8794,6 +8796,7 @@ Se scegli di non condividere gli indicatori, questo profilo verrà chiuso.</tran
 <translation id="8637688295594795546">Aggiornamento del sistema disponibile. Preparazione per il download in corso…</translation>
 <translation id="8639635302972078117">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google.</translation>
 <translation id="8640575194957831802">Ultimi aperti</translation>
+<translation id="8641946446576357115">Usa le tue password sui tuoi dispositivi iOS</translation>
 <translation id="8642900771896232685">2 secondi</translation>
 <translation id="8642947597466641025">Ingrandisci le dimensioni del testo</translation>
 <translation id="8643403533759285912">Elimina gruppo</translation>
@@ -9071,6 +9074,7 @@ Se scegli di non condividere gli indicatori, questo profilo verrà chiuso.</tran
 <translation id="8862003515646449717">Passa a un browser veloce</translation>
 <translation id="8863753581171631212">Apri link in nuova finestra di <ph name="APP" /></translation>
 <translation id="8864055848767439877">Condivisione di <ph name="TAB_NAME" /> con <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">La password è stata salvata</translation>
 <translation id="8864458770072227512">L'account <ph name="EMAIL" /> è stato rimosso da questo dispositivo</translation>
 <translation id="8865112428068029930">Condividi il computer con altre persone? Prova ad aprire una finestra di navigazione in incognito.</translation>
 <translation id="8867102760244540173">Cerca tra le schede…</translation>
@@ -9267,6 +9271,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> non è più supportato</translation>
 <translation id="9031549947500880805">Effettua il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. La copia di backup include i dati delle app.</translation>
 <translation id="9031811691986152304">riprova</translation>
+<translation id="9032004780329249150">Usa le tue password sui tuoi dispositivi iOS</translation>
 <translation id="9032097289595078011">Disabilita l'Accoppiamento rapido</translation>
 <translation id="9033765790910064284">Continua comunque</translation>
 <translation id="9033857511263905942">&amp;Incolla</translation>

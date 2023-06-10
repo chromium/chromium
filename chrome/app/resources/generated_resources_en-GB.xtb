@@ -842,6 +842,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1698796500103229697">Payment methods</translation>
 <translation id="1700079447639026019">Sites that can never use cookies</translation>
 <translation id="1700201317341192482">Remove your virtual card</translation>
+<translation id="1700517974991662022">Visited</translation>
 <translation id="1703331064825191675">Never worry about your passwords</translation>
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
 <translation id="1704097193565924901">Capitalise</translation>
@@ -1160,6 +1161,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1956167375087861299">Not allowed to use identifiers to play protected content</translation>
 <translation id="1956390763342388273">This will upload all files from '<ph name="FOLDER_PATH" />'. Only do this if you trust the site.</translation>
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
+<translation id="1963227389609234879">Remove all</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1966649499058910679">Highlight each word as it is spoken</translation>
 <translation id="1967970931040389207">Turn on hotspot</translation>
@@ -3037,6 +3039,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3566325075220776093">From this device</translation>
 <translation id="3566721612727112615">No sites added</translation>
 <translation id="3567284462585300767">To receive and accept files with people around you, become visible</translation>
+<translation id="356738834800832239">Your Password Is Saved</translation>
 <translation id="3569382839528428029">Do you want <ph name="APP_NAME" /> to share your screen?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
 <translation id="3571734092741541777">Set up</translation>
@@ -3064,7 +3067,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3593965109698325041">Certificate Name Constraints</translation>
 <translation id="3596012367874587041">App settings</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
-<translation id="3598010454707842106">Click 'Customise Chrome'</translation>
 <translation id="3599221874935822507">Raised</translation>
 <translation id="3600051066689725006">Web request info</translation>
 <translation id="360180734785106144">Offer new features as they become available</translation>
@@ -3735,6 +3737,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
+<translation id="4155585931966064643">To use your saved passwords on your phone, download Chrome for iOS and sync your account.</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Website text size and font</translation>
 <translation id="4158364720893025815">Pass</translation>
@@ -4497,6 +4500,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4833683849865011483">Found one printer from the print server</translation>
 <translation id="4836504898754963407">Manage fingerprints</translation>
 <translation id="4837128290434901661">Change back to Google Search?</translation>
+<translation id="4837274845731134929">To use your saved passwords on your phone, follow the QR code, download Chrome for iOS and sync your account.</translation>
 <translation id="4837926214103741331">You are not authorised to use this device. Please contact the device owner for sign-in permission.</translation>
 <translation id="4837952862063191349">To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE" /> password.</translation>
 <translation id="4838170306476614339">View your phone's photos, media and notifications</translation>
@@ -6096,6 +6100,7 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
 <translation id="6242852299490624841">Focus this tab</translation>
 <translation id="6243774244933267674">Server unavailable</translation>
 <translation id="6244245036423700521">Import ONC file</translation>
+<translation id="6245523954602476652">You can access it on Google Password Manager.</translation>
 <translation id="6246790815526961700">Upload from device</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6247620186971210352">No apps found.</translation>
@@ -7046,7 +7051,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7067396782363924830">Ambient colours</translation>
 <translation id="7067725467529581407">Never show this again.</translation>
 <translation id="7068279399556423026">Sign in to see tabs from other devices</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> may require a newer or different kind of security key</translation>
 <translation id="7070484045139057854">This Can Read and Change Site Data</translation>
 <translation id="7072010813301522126">Shortcut name</translation>
 <translation id="7074066049407662839">Sign in to save passwords</translation>
@@ -8562,7 +8566,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8376752431516546391">Google Search side panel</translation>
 <translation id="8377625247046155446">This passkey will only be saved on this device. It will remain on this device after you close all incognito windows.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
-<translation id="8379878387931047019">This device doesn't support the type of security key requested by this website</translation>
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
 <translation id="8380266723152870797">Window name</translation>
 <translation id="8380941800586852976">Dangerous</translation>
@@ -8624,7 +8627,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8427292751741042100">embedded on any host</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428271547607112339">Add school account</translation>
-<translation id="8428628598981198790">Your security key can't be used with this site</translation>
 <translation id="84297032718407999">You'll be signed out in <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
 <translation id="8431496281632382473">This profile is managed by <ph name="DOMAIN" />. To continue using this managed profile, your organisation requires you to share your device signals.
@@ -8843,6 +8845,7 @@ If you choose not to share signals, this profile will be closed.</translation>
 <translation id="8637688295594795546">System update available. Preparing to download…</translation>
 <translation id="8639635302972078117">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="8640575194957831802">Last opened</translation>
+<translation id="8641946446576357115">Use Your Passwords on Your iOS Devices</translation>
 <translation id="8642900771896232685">2 seconds</translation>
 <translation id="8642947597466641025">Make Text Larger</translation>
 <translation id="8643403533759285912">Delete group</translation>
@@ -9122,6 +9125,7 @@ If you choose not to share signals, this profile will be closed.</translation>
 <translation id="8862003515646449717">Switch to a fast browser</translation>
 <translation id="8863753581171631212">Open link in new <ph name="APP" /></translation>
 <translation id="8864055848767439877">Sharing <ph name="TAB_NAME" /> to <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">Your password is saved</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> was removed from this device</translation>
 <translation id="8865112428068029930">Using a shared computer? Try opening an Incognito window.</translation>
 <translation id="8867102760244540173">Search tabs…</translation>
@@ -9319,6 +9323,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> is no longer supported</translation>
 <translation id="9031549947500880805">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data.</translation>
 <translation id="9031811691986152304">try again</translation>
+<translation id="9032004780329249150">Use your passwords on your iOS devices</translation>
 <translation id="9032097289595078011">Disable Fast Pair</translation>
 <translation id="9033765790910064284">Continue anyway</translation>
 <translation id="9033857511263905942">&amp;Paste</translation>

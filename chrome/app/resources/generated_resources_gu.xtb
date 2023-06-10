@@ -836,6 +836,7 @@
 <translation id="1698796500103229697">અને ચુકવણી પદ્ધતિઓ</translation>
 <translation id="1700079447639026019">કુકીનો ક્યારેય ઉપયોગ કરી શકતી નથી એવી સાઇટ</translation>
 <translation id="1700201317341192482">તમારું વર્ચ્યુઅલ કાર્ડ કાઢી નાખો</translation>
+<translation id="1700517974991662022">મુલાકાત લીધેલ</translation>
 <translation id="1703331064825191675">તમારા પાસવર્ડ વિશે ક્યારેય ચિંતા કરશો નહીં</translation>
 <translation id="1703666494654169921">સાઇટને વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ કે ડેટાનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1704097193565924901">કૅપિટલ કરો</translation>
@@ -1145,6 +1146,7 @@
 <translation id="1956167375087861299">સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, ઓળખકર્તાઓનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="1956390763342388273">આનાથી "<ph name="FOLDER_PATH" />"માંથી બધી ફાઇલો અપલોડ થશે. જો તમે સાઇટ પર વિશ્વાસ કરતા હો, તો જ આ કરશો.</translation>
 <translation id="1962233722219655970">આ પેજ Native Client ઍપનો ઉપયોગ કરે છે જે તમારા કમ્પ્યુટર પર કામ કરતી નથી.</translation>
+<translation id="1963227389609234879">બધું દૂર કરો</translation>
 <translation id="1963976881984600709">માનક સંરક્ષણ</translation>
 <translation id="1966649499058910679">દરેક શબ્દને બોલવાની રીત પ્રમાણે હાઇલાઇટ કરો</translation>
 <translation id="1967970931040389207">હૉટસ્પૉટ ચાલુ કરો</translation>
@@ -3020,6 +3022,7 @@
 <translation id="3566325075220776093">આ ડિવાઇસમાંથી</translation>
 <translation id="3566721612727112615">કોઈ સાઇટ ઉમેરી નથી</translation>
 <translation id="3567284462585300767">તમારી આસપાસના લોકો પાસેથી ફાઇલો મેળવવા અને સ્વીકારવા માટે, દૃશ્યક્ષમ બનો</translation>
+<translation id="356738834800832239">તમારો પાસવર્ડ સાચવવામાં આવ્યો છે</translation>
 <translation id="3569382839528428029">શું તમે ઇચ્છો છો કે <ph name="APP_NAME" /> તમારી સ્ક્રીનને શેર કરે?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલો અને ફોલ્ડરો જોઈ શકે છે</translation>
 <translation id="3571734092741541777">સેટ અપ</translation>
@@ -3047,7 +3050,6 @@
 <translation id="3593965109698325041">પ્રમાણપત્રના નામની મર્યાદાઓ</translation>
 <translation id="3596012367874587041">ઍપ સેટિંગ</translation>
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
-<translation id="3598010454707842106">“Chrome કસ્ટમાઇઝ કરો” પર ક્લિક કરો</translation>
 <translation id="3599221874935822507">ઉપસેલા</translation>
 <translation id="3600051066689725006">વેબ વિનંતી વિશે માહિતી</translation>
 <translation id="360180734785106144">નવી સુવિધાઓ ઉપલબ્ધ થતાની સાથે જ તેને ઑફર કરો</translation>
@@ -3718,6 +3720,7 @@
 <translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ટેબ}one{# ટેબ્સ}other{# ટેબ્સ}}</translation>
 <translation id="4154664944169082762">ફિંગરપ્રીંટ્સ</translation>
+<translation id="4155585931966064643">તમારા ફોન પર તમારા સાચવેલા પાસવર્ડનો ઉપયોગ કરવા માટે, iOS માટે Chrome ડાઉનલોડ કરો અને તમારું એકાઉન્ટ સિંક કરો.</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">વેબસાઇટ પરની ટેક્સ્ટનું કદ અને ફૉન્ટ</translation>
 <translation id="4158364720893025815">પાસ</translation>
@@ -4479,6 +4482,7 @@
 <translation id="4833683849865011483">પ્રિન્ટ સર્વરમાંથી 1 પ્રિન્ટર મળ્યું</translation>
 <translation id="4836504898754963407">ફિંગરપ્રિન્ટને મેનેજ કરો</translation>
 <translation id="4837128290434901661">બદલીને પાછા Google Search પર આવીએ?</translation>
+<translation id="4837274845731134929">તમારા ફોન પર તમારા સાચવેલા પાસવર્ડનો ઉપયોગ કરવા માટે, QR કોડને અનુસરો, iOS માટે Chrome ડાઉનલોડ કરો અને તમારું એકાઉન્ટ સિંક કરો.</translation>
 <translation id="4837926214103741331">તમે આ ઉપકરણ વાપરવા માટે અધિકૃત નથી. કૃપા કરીને સાઇન ઇન કરવાની પરવાનગી માટે ઉપકરણના માલિકનો સંપર્ક કરો.</translation>
 <translation id="4837952862063191349">તમારો સ્થાનિક ડેટા અનલૉક અને પુનઃસ્થાપિત કરવા માટે, કૃપા કરીને તમારા જૂના <ph name="DEVICE_TYPE" /> નો પાસવર્ડ દાખલ કરો.</translation>
 <translation id="4838170306476614339">તમારા ફોનના ફોટા, મીડિયા અને નોટિફિકેશન જુઓ</translation>
@@ -6080,6 +6084,7 @@ USB ડિવાઇસ</translation>
 <translation id="6242852299490624841">આ ટૅબ પર ફોકસ કરો</translation>
 <translation id="6243774244933267674">સર્વર અનુપલબ્ધ</translation>
 <translation id="6244245036423700521">ONC ફાઇલની આયાત કરો</translation>
+<translation id="6245523954602476652">તમે Google Password Manager પર તેને ઍક્સેસ કરી શકો છો.</translation>
 <translation id="6246790815526961700">ડિવાઇસમાંથી અપડેટ</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6247620186971210352">કોઈ ઍપ મળી નથી</translation>
@@ -7032,7 +7037,6 @@ USB ડિવાઇસ</translation>
 <translation id="7067396782363924830">ઍમ્બિઅન્ટ રંગ</translation>
 <translation id="7067725467529581407">આ ફરી ક્યારેય બતાવશો નહીં.</translation>
 <translation id="7068279399556423026">અન્ય ડિવાઇસમાંથી ટૅબ જોવા માટે સાઇન ઇન કરો</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> માટે વધુ નવો અથવા જુદા પ્રકારનો સુરક્ષા કોડ જરૂરી હોઈ શકે છે</translation>
 <translation id="7070484045139057854">આ સાઇટ ડેટા વાંચી અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="7072010813301522126">શોર્ટકટ નામ</translation>
 <translation id="7074066049407662839">પાસવર્ડ સાચવવા માટે સાઇન ઇન કરો</translation>
@@ -8542,7 +8546,6 @@ USB ડિવાઇસ</translation>
 <translation id="8376752431516546391">Google Searchની બાજુની પૅનલ</translation>
 <translation id="8377625247046155446">આ પાસકીને માત્ર આ ડિવાઇસ પર સાચવવામાં આવશે. તમે બધી છૂપી વિન્ડો બંધ કરો પછી, તે આ ડિવાઇસ પર જ રહેશે.</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
-<translation id="8379878387931047019">આ ઉપકરણ આ વેબસાઇટ દ્વારા વિનંતી કરાયેલ સુરક્ષા કોડના પ્રકારનું સમર્થન કરતું નથી</translation>
 <translation id="8379991678458444070">આ ટૅબને બુકમાર્ક કરીને તમે અહીં ઝડપથી પાછા ફરી શકશો</translation>
 <translation id="8380266723152870797">વિંડોનું નામ</translation>
 <translation id="8380941800586852976">જોખમી</translation>
@@ -8604,7 +8607,6 @@ USB ડિવાઇસ</translation>
 <translation id="8427292751741042100">કોઈ પણ હોસ્ટ પર એમ્બેડ કરેલ</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428271547607112339">શાળાનું એકાઉન્ટ ઉમેરો</translation>
-<translation id="8428628598981198790">આ સાઇટ સાથે તમારા સુરક્ષા કોડનો ઉપયોગ કરી શકાતો નથી</translation>
 <translation id="84297032718407999">તમે <ph name="LOGOUT_TIME_LEFT" />માં સાઇન આઉટ થઈ જશો</translation>
 <translation id="8431190899827883166">ટૅપ બતાવો</translation>
 <translation id="8431496281632382473">આને પ્રોફાઇલ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે. મેનેજ કરાયેલી આ પ્રોફાઇલનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે, તમારી સંસ્થા માટે જરૂરી છે કે તમે તમારા ડિવાઇસ સિગ્નલને શેર કરો.
@@ -8823,6 +8825,7 @@ USB ડિવાઇસ</translation>
 <translation id="8637688295594795546">સિસ્ટમ અપડેટ ઉપલબ્ધ છે. ડાઉનલોડ કરવા માટે તૈયાર થઈ રહ્યું છે...</translation>
 <translation id="8639635302972078117">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારા બાળક માટે વધારાનું વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="8640575194957831802">છેલ્લે ખોલેલું</translation>
+<translation id="8641946446576357115">તમારા iOS ડિવાઇસ પર તમારા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="8642900771896232685">2 સેકન્ડ</translation>
 <translation id="8642947597466641025">ટેક્સ્ટ મોટો કરો</translation>
 <translation id="8643403533759285912">ગ્રૂપ ડિલીટ કરો</translation>
@@ -9103,6 +9106,7 @@ USB ડિવાઇસ</translation>
 <translation id="8862003515646449717">એક ઝડપી બ્રાઉઝર પર સ્વિચ કરો</translation>
 <translation id="8863753581171631212">નવી <ph name="APP" />માં લિંક ખોલો</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" />ને <ph name="APP_NAME" /> પર શેર કરી રહ્યાં છે</translation>
+<translation id="8864104359314908853">તમારો પાસવર્ડ સાચવવામાં આવ્યો છે</translation>
 <translation id="8864458770072227512">આ ડિવાઇસમાંથી <ph name="EMAIL" /> દૂર કરવામાં આવ્યું</translation>
 <translation id="8865112428068029930">શેર કરેલા કમ્પ્યુટરનો ઉપયોગ કરી રહ્યાં છો? છૂપી વિન્ડો ખોલવાનો પ્રયાસ કરો.</translation>
 <translation id="8867102760244540173">ટૅબ શોધો...</translation>
@@ -9300,6 +9304,7 @@ USB ડિવાઇસ</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" />ને હવે સપોર્ટ કરવામાં આવતું નથી</translation>
 <translation id="9031549947500880805">Google ડ્રાઇવ પર બૅકઅપ લો. તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસને કોઈપણ સમયે સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ છે.</translation>
 <translation id="9031811691986152304">ફરી પ્રયાસ કરો</translation>
+<translation id="9032004780329249150">તમારા iOS ડિવાઇસ પર તમારા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="9032097289595078011">ઝડપી જોડાણની સુવિધા બંધ કરો</translation>
 <translation id="9033765790910064284">તો પણ ચાલુ રાખો</translation>
 <translation id="9033857511263905942">&amp;પેસ્ટ કરો</translation>

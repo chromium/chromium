@@ -192,6 +192,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="225943865679747347">Veakood: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lisa konto</translation>
 <translation id="2268044343513325586">Täpsustamine</translation>
+<translation id="2269277877025820298">Kuva rohkem</translation>
 <translation id="2273327106802955778">Rohkem menüü-üksusi</translation>
 <translation id="2286505070150039482">Esiletõstetud tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{See aadress kustutatakse sellest seadmest.}other{Need aadressid kustutatakse sellest seadmest.}}</translation>

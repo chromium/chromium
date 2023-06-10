@@ -838,6 +838,7 @@
 <translation id="1698796500103229697">결제 수단</translation>
 <translation id="1700079447639026019">쿠키를 사용할 수 없는 사이트</translation>
 <translation id="1700201317341192482">가상 카드 삭제</translation>
+<translation id="1700517974991662022">방문함</translation>
 <translation id="1703331064825191675">비밀번호 안심 관리</translation>
 <translation id="1703666494654169921">사이트에서 가상 현실 기기 또는 데이터를 사용하도록 허용하지 않음</translation>
 <translation id="1704097193565924901">Capitalize(첫 글자 대문자로 표시)</translation>
@@ -1154,6 +1155,7 @@
 <translation id="1956167375087861299">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용하지 않음</translation>
 <translation id="1956390763342388273">'<ph name="FOLDER_PATH" />'의 모든 파일이 업로드됩니다. 사이트를 신뢰할 수 있을 때만 실행하세요.</translation>
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
+<translation id="1963227389609234879">모두 삭제</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1966649499058910679">각 단어를 읽을 때 강조 표시
 </translation>
@@ -3026,6 +3028,7 @@
 <translation id="3566325075220776093">이 기기에서 삭제</translation>
 <translation id="3566721612727112615">추가된 사이트 없음</translation>
 <translation id="3567284462585300767">주변의 사람과 파일을 주고받으려면 표시되도록 전환하세요.</translation>
+<translation id="356738834800832239">비밀번호가 저장됨</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" />에서 내 화면을 공유하도록 허용하시겠습니까?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />에서 다음 파일과 폴더를 볼 수 있습니다.</translation>
 <translation id="3571734092741541777">설정</translation>
@@ -3053,7 +3056,6 @@
 <translation id="3593965109698325041">인증서 이름 제약조건</translation>
 <translation id="3596012367874587041">앱 설정</translation>
 <translation id="3596414637720633074">시크릿 모드에서 서드 파티 쿠키 차단</translation>
-<translation id="3598010454707842106">'Chrome 맞춤설정'을 클릭합니다.</translation>
 <translation id="3599221874935822507">양각</translation>
 <translation id="3600051066689725006">웹 요청 정보</translation>
 <translation id="360180734785106144">새로운 기능이 출시되면 즉시 제공합니다.</translation>
@@ -3721,6 +3723,7 @@
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="4154664944169082762">지문</translation>
+<translation id="4155585931966064643">휴대전화에서 저장된 비밀번호를 사용하려면 iOS용 Chrome을 다운로드하고 계정을 동기화하세요.</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">웹사이트 텍스트 크기 및 글꼴</translation>
 <translation id="4158364720893025815">통과</translation>
@@ -4482,6 +4485,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4833683849865011483">인쇄 서버에 프린터 1대가 있습니다.</translation>
 <translation id="4836504898754963407">지문 관리</translation>
 <translation id="4837128290434901661">Google 검색으로 되돌리시겠습니까?</translation>
+<translation id="4837274845731134929">휴대전화에서 저장된 비밀번호를 사용하려면 QR 코드를 따라가 iOS용 Chrome을 다운로드하고 계정을 동기화하세요.</translation>
 <translation id="4837926214103741331">더 이상 이 기기를 사용할 권한이 없습니다. 기기 소유자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="4837952862063191349">로컬 데이터를 잠금 해제하고 복원하려면 이전 <ph name="DEVICE_TYPE" /> 비밀번호 입력</translation>
 <translation id="4838170306476614339">휴대전화의 사진, 미디어, 알림을 봅니다.</translation>
@@ -6074,6 +6078,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6242852299490624841">이 탭에 포커스</translation>
 <translation id="6243774244933267674">서버를 사용할 수 없음</translation>
 <translation id="6244245036423700521">ONC 파일 가져오기</translation>
+<translation id="6245523954602476652">Google 비밀번호 관리자에서 액세스할 수 있습니다</translation>
 <translation id="6246790815526961700">기기에서 업로드</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6247620186971210352">앱이 없습니다.</translation>
@@ -7020,7 +7025,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="706626672220389329">공유를 마운트하는 중에 오류가 발생했습니다. 지정된 공유가 이미 마운트되었습니다.</translation>
 <translation id="7067396782363924830">주변 색상</translation>
 <translation id="7067725467529581407">다시 표시하지 않음</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" />에서 새로운 또는 다른 유형의 보안 키를 요구할 수 있습니다.</translation>
 <translation id="7070484045139057854">사이트 데이터를 읽고 변경할 수 있음</translation>
 <translation id="7072010813301522126">바로가기 이름</translation>
 <translation id="7074066049407662839">비밀번호를 저장하려면 로그인하세요</translation>
@@ -8529,7 +8533,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8376752431516546391">Google 검색 측면 패널</translation>
 <translation id="8377625247046155446">이 패스키는 이 기기에만 저장되며 시크릿 창을 모두 닫은 후에도 이 기기에 남아 있습니다.</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>
-<translation id="8379878387931047019">이 기기는 이 웹사이트에서 요청하는 유형의 보안 키를 지원하지 않습니다.</translation>
 <translation id="8379991678458444070">이 탭을 북마크에 추가하여 간편하게 다시 방문하세요.</translation>
 <translation id="8380266723152870797">창 이름</translation>
 <translation id="8380941800586852976">위험</translation>
@@ -8591,7 +8594,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8427292751741042100">모든 호스트에 삽입됨</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8428271547607112339">학교 계정 추가</translation>
-<translation id="8428628598981198790">이 사이트에서 보안 키를 사용할 수 없습니다</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="8431496281632382473"><ph name="DOMAIN" />에서 관리하는 프로필입니다. 이 관리 프로필을 계속 사용하려면 조직에서 기기 신호를 공유해야 합니다.
@@ -8809,6 +8811,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8637688295594795546">시스템 업데이트 사용가능. 다운로드 준비 중…</translation>
 <translation id="8639635302972078117">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="8640575194957831802">마지막으로 열어본 날짜</translation>
+<translation id="8641946446576357115">iOS 기기에서 비밀번호 사용</translation>
 <translation id="8642900771896232685">2초</translation>
 <translation id="8642947597466641025">텍스트 확대</translation>
 <translation id="8643403533759285912">그룹 삭제</translation>
@@ -9086,6 +9089,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8862003515646449717">빠른 브라우저로 전환</translation>
 <translation id="8863753581171631212">새 <ph name="APP" />에서 링크 열기</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
+<translation id="8864104359314908853">비밀번호가 저장됨</translation>
 <translation id="8864458770072227512">기기에서 <ph name="EMAIL" />이(가) 삭제되었습니다.</translation>
 <translation id="8865112428068029930">공유 컴퓨터를 사용 중이신가요? 시크릿 창에서 열어보세요.</translation>
 <translation id="8867102760244540173">탭 검색...</translation>
@@ -9282,6 +9286,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> 플러그인이 더 이상 지원되지 않습니다.</translation>
 <translation id="9031549947500880805">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.</translation>
 <translation id="9031811691986152304">다시 시도</translation>
+<translation id="9032004780329249150">iOS 기기에서 비밀번호 사용</translation>
 <translation id="9032097289595078011">빠른 페어링 사용 안함</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>

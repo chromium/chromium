@@ -837,6 +837,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1698796500103229697">&amp;Formy płatności</translation>
 <translation id="1700079447639026019">Witryny, które nigdy nie mogą używać plików cookie</translation>
 <translation id="1700201317341192482">Usuń kartę wirtualną</translation>
+<translation id="1700517974991662022">Kliknięty</translation>
 <translation id="1703331064825191675">Nie musisz się już martwić o bezpieczeństwo swoich haseł</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
 <translation id="1704097193565924901">Od wielkiej litery</translation>
@@ -1140,6 +1141,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1956167375087861299">Nie mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="1956390763342388273">Spowoduje to przesłanie wszystkich plików z folderu „<ph name="FOLDER_PATH" />”. Zdecyduj się na ten krok tylko, jeśli ufasz witrynie.</translation>
 <translation id="1962233722219655970">Ta strona używa aplikacji klienta natywnego, która nie działa na Twoim komputerze.</translation>
+<translation id="1963227389609234879">Usuń wszystko</translation>
 <translation id="1963976881984600709">Standardowa ochrona</translation>
 <translation id="1966649499058910679">Zaznacz słowo, gdy jest wymawiane</translation>
 <translation id="1967970931040389207">Włączanie hotspota</translation>
@@ -2996,6 +2998,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3566325075220776093">Z tego urządzenia</translation>
 <translation id="3566721612727112615">Nie dodano żadnych witryn</translation>
 <translation id="3567284462585300767">Aby móc odbierać i akceptować pliki od osób w pobliżu, włącz swoją widoczność</translation>
+<translation id="356738834800832239">Hasło zostało zapisane</translation>
 <translation id="3569382839528428029">Czy chcesz, aby aplikacja <ph name="APP_NAME" /> miała dostęp do Twojego ekranu?</translation>
 <translation id="3569682580018832495">Strona <ph name="ORIGIN" /> może wyświetlać te pliki i foldery:</translation>
 <translation id="3571734092741541777">Konfiguruj</translation>
@@ -3023,7 +3026,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3593965109698325041">Ograniczenia nazwy certyfikatu</translation>
 <translation id="3596012367874587041">Ustawienia aplikacji</translation>
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
-<translation id="3598010454707842106">Kliknij „Dostosuj Chrome”.</translation>
 <translation id="3599221874935822507">Uniesiony</translation>
 <translation id="3600051066689725006">Informacje o żądaniu internetowym</translation>
 <translation id="360180734785106144">Dowiadujesz się o nowych funkcjach, gdy tylko są dostępne</translation>
@@ -3693,6 +3695,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
 <translation id="4154664944169082762">Odciski cyfrowe</translation>
+<translation id="4155585931966064643">Aby korzystać z zapisanych haseł na telefonie, pobierz Chrome na iOS i zsynchronizuj konto.</translation>
 <translation id="4157869833395312646">Kryptografia Server Gated Cryptography firmy Microsoft</translation>
 <translation id="4158315983204257156">Rozmiar i czcionka tekstu w witrynie</translation>
 <translation id="4158364720893025815">Sukces</translation>
@@ -4453,6 +4456,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4833683849865011483">Znaleziono jedną drukarkę na serwerze druku</translation>
 <translation id="4836504898754963407">Zarządzaj odciskami palców</translation>
 <translation id="4837128290434901661">Zmienić z powrotem na wyszukiwarkę Google?</translation>
+<translation id="4837274845731134929">Aby korzystać z zapisanych haseł na telefonie, użyj kodu QR, pobierz Chrome na iOS i zsynchronizuj konto.</translation>
 <translation id="4837926214103741331">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego właścicielem.</translation>
 <translation id="4837952862063191349">Aby odblokować i przywrócić dane lokalne, podaj swoje stare hasło do urządzenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Wyświetlaj zdjęcia, pliki multimedialne i powiadomienia z telefonu</translation>
@@ -6044,6 +6048,7 @@ Możesz go wysłać do Google, aby sprawdzić, czy jest bezpieczny. Skanowanie z
 <translation id="6242852299490624841">Ustaw tę kartę jako aktywną</translation>
 <translation id="6243774244933267674">Serwer niedostępny</translation>
 <translation id="6244245036423700521">Importuj plik ONC</translation>
+<translation id="6245523954602476652">Znajdziesz je w Menedżerze haseł Google.</translation>
 <translation id="6246790815526961700">Prześlij z urządzenia</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6247620186971210352">Nie znaleziono aplikacji</translation>
@@ -6992,7 +6997,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="706626672220389329">Błąd podczas podłączania udziału. Udział jest już podłączony.</translation>
 <translation id="7067396782363924830">Kolory otoczenia</translation>
 <translation id="7067725467529581407">Nie pokazuj tego ponownie.</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> może wymagać nowszego lub innego rodzaju klucza bezpieczeństwa</translation>
 <translation id="7070484045139057854">Może odczytywać i modyfikować dane witryn</translation>
 <translation id="7072010813301522126">Nazwa skrótu</translation>
 <translation id="7074066049407662839">Aby zapisywać hasła, musisz się zalogować</translation>
@@ -8500,7 +8504,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8376752431516546391">Panel boczny wyszukiwarki Google</translation>
 <translation id="8377625247046155446">Ten klucz zostanie zapisany tylko na tym urządzeniu. Po zamknięciu wszystkich okien incognito klucz pozostanie na tym urządzeniu.</translation>
 <translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>
-<translation id="8379878387931047019">To urządzenie nie obsługuje typu klucza bezpieczeństwa, o który prosi ta witryna</translation>
 <translation id="8379991678458444070">Dodaj tę stronę do zakładek, by szybko na nią wrócić</translation>
 <translation id="8380266723152870797">Nazwa okna</translation>
 <translation id="8380941800586852976">Niebezpieczna</translation>
@@ -8562,7 +8565,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8427292751741042100">umieszczone na dowolnym hoście</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428271547607112339">Dodaj konto szkolne</translation>
-<translation id="8428628598981198790">Twojego klucza bezpieczeństwa nie można używać z tą stroną</translation>
 <translation id="84297032718407999">Wylogujemy Cię za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Pokaż kliknięcia</translation>
 <translation id="8431496281632382473">Tym profilem zarządza <ph name="DOMAIN" />. Aby można było nadal korzystać z tego profilu zarządzanego, Twoja organizacja wymaga od Ciebie udostępniania sygnałów z urządzenia.
@@ -8780,6 +8782,7 @@ Jeśli nie zdecydujesz się udostępniać sygnałów, ten profil zostanie zamkni
 <translation id="8637688295594795546">Jest dostępna aktualizacja systemu. Trwa przygotowanie do pobrania…</translation>
 <translation id="8639635302972078117">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
 <translation id="8640575194957831802">Ostatnio otwarto</translation>
+<translation id="8641946446576357115">Używaj haseł na urządzeniach z iOS</translation>
 <translation id="8642900771896232685">2 s</translation>
 <translation id="8642947597466641025">Powiększ tekst</translation>
 <translation id="8643403533759285912">Usuń grupę</translation>
@@ -9057,6 +9060,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8862003515646449717">Przejdź na szybką przeglądarkę</translation>
 <translation id="8863753581171631212">Otwórz link w nowym oknie aplikacji <ph name="APP" /></translation>
 <translation id="8864055848767439877">Udostępniam kartę <ph name="TAB_NAME" /> aplikacji <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">Hasło zostało zapisane</translation>
 <translation id="8864458770072227512">Konto <ph name="EMAIL" /> zostało usunięte z tego urządzenia</translation>
 <translation id="8865112428068029930">Korzystasz ze wspólnego komputera? Otwórz okno incognito.</translation>
 <translation id="8867102760244540173">Wyszukaj karty…</translation>
@@ -9253,6 +9257,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9030855135435061269">Wtyczka <ph name="PLUGIN_NAME" /> nie jest już obsługiwana.</translation>
 <translation id="9031549947500880805">Twórz kopie zapasowe na Dysku Google. W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji.</translation>
 <translation id="9031811691986152304">spróbować jeszcze raz</translation>
+<translation id="9032004780329249150">Używaj haseł na urządzeniach z iOS</translation>
 <translation id="9032097289595078011">Wyłącz Szybkie parowanie</translation>
 <translation id="9033765790910064284">Kontynuuj mimo to</translation>
 <translation id="9033857511263905942">&amp;Wklej</translation>

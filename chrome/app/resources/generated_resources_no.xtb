@@ -839,6 +839,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1698796500103229697">&amp;Betalingsmåter</translation>
 <translation id="1700079447639026019">Nettsteder som aldri kan bruke informasjonskapsler</translation>
 <translation id="1700201317341192482">Fjern det virtuelle kortet</translation>
+<translation id="1700517974991662022">Besøkt.</translation>
 <translation id="1703331064825191675">Slutt å bekymre deg for passordene dine</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="1704097193565924901">Gjør forbokstavene store</translation>
@@ -1154,6 +1155,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1956167375087861299">Nettsteder som ikke har lov til å bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="1956390763342388273">Dette fører til at alle filer fra «<ph name="FOLDER_PATH" />» lastes opp. Du bør bare gjøre dette hvis du stoler på nettstedet.</translation>
 <translation id="1962233722219655970">Denne siden bruker en Native Client-app som ikke fungerer på datamaskinen din.</translation>
+<translation id="1963227389609234879">Fjern alle</translation>
 <translation id="1963976881984600709">Standardbeskyttelse</translation>
 <translation id="1966649499058910679">Fremhev enkeltord når de uttales</translation>
 <translation id="1967970931040389207">Slå på wifi-sone</translation>
@@ -3032,6 +3034,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3566325075220776093">Fra denne enheten</translation>
 <translation id="3566721612727112615">Ingen nettsteder er lagt til</translation>
 <translation id="3567284462585300767">For å motta og godta filer fra folk rundt deg, bli synlig</translation>
+<translation id="356738834800832239">Passordet er lagret</translation>
 <translation id="3569382839528428029">Vil du la <ph name="APP_NAME" /> dele skjermen din?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan se disse filene og mappene</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
@@ -3059,7 +3062,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3593965109698325041">Begrensninger for sertifikatnavn</translation>
 <translation id="3596012367874587041">Appinnstillinger</translation>
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
-<translation id="3598010454707842106">Klikk på «Tilpass Chrome»</translation>
 <translation id="3599221874935822507">Hevet</translation>
 <translation id="3600051066689725006">Informasjon om nettforespørsel</translation>
 <translation id="360180734785106144">tilby nye funksjoner etter hvert som de blir tilgjengelige</translation>
@@ -3728,6 +3730,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4152011295694446843">Her finner du bokmerkene dine</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="4154664944169082762">Fingeravtrykk</translation>
+<translation id="4155585931966064643">For å bruke de lagrede passordene dine på telefonen, last ned Chrome for iOS og synkroniser kontoen din.</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Tekststørrelse og skrifttype på nettsteder</translation>
 <translation id="4158364720893025815">Bestått</translation>
@@ -4489,6 +4492,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4833683849865011483">Fant én skriver på utskriftstjeneren</translation>
 <translation id="4836504898754963407">Administrer fingeravtrykk</translation>
 <translation id="4837128290434901661">Vil du bytte tilbake til Google Søk?</translation>
+<translation id="4837274845731134929">For å bruke de lagrede passordene dine på telefonen, følg QR-koden, last ned Chrome for iOS og synkroniser kontoen din.</translation>
 <translation id="4837926214103741331">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med eieren av enheten for å få tillatelse til å logge på.</translation>
 <translation id="4837952862063191349">For å låse opp og gjenopprette lokale data må du oppgi det gamle <ph name="DEVICE_TYPE" />-passordet ditt.</translation>
 <translation id="4838170306476614339">Se bildene, mediene og varslene på telefonen din</translation>
@@ -6087,6 +6091,7 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
 <translation id="6242852299490624841">Fokusér på denne fanen</translation>
 <translation id="6243774244933267674">Tjeneren er ikke tilgjengelig</translation>
 <translation id="6244245036423700521">Importér ONC-fil</translation>
+<translation id="6245523954602476652">Du finner det i Google Passordlagring.</translation>
 <translation id="6246790815526961700">Last opp fra enheten</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6247620186971210352">Fant ingen apper</translation>
@@ -7037,7 +7042,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7067396782363924830">Omgivelsesfarger</translation>
 <translation id="7067725467529581407">Ikke vis dette igjen.</translation>
 <translation id="7068279399556423026">Logg på for å se faner fra andre enheter</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> krever kanskje en nyere eller en annen type sikkerhetsnøkkel</translation>
 <translation id="7070484045139057854">Dette innebærer lesing og endring av nettstedsdata</translation>
 <translation id="7072010813301522126">Snarveisnavn</translation>
 <translation id="7074066049407662839">Logg på for å lagre passord</translation>
@@ -8553,7 +8557,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8376752431516546391">Google Søk-sidepanelet</translation>
 <translation id="8377625247046155446">Denne tilgangsnøkkelen lagres bare på denne enheten. Den blir værende på denne enheten når du har lukket alle inkognitovinduer.</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
-<translation id="8379878387931047019">Denne enheten støtter ikke den typen sikkerhetsnøkkel som kreves av dette nettstedet</translation>
 <translation id="8379991678458444070">Kom raskt tilbake hit ved å bokmerke denne fanen</translation>
 <translation id="8380266723152870797">Vindusnavn</translation>
 <translation id="8380941800586852976">Farlig</translation>
@@ -8615,7 +8618,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8427292751741042100">innebygd på et hvilket som helst nettsted</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8428271547607112339">Legg til en skolekonto</translation>
-<translation id="8428628598981198790">Sikkerhetsnøkkelen din kan ikke brukes på dette nettstedet</translation>
 <translation id="84297032718407999">Du logges av om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Vis trykk</translation>
 <translation id="8431496281632382473">Denne profilen administreres av <ph name="DOMAIN" />. For at du skal kunne fortsette å bruke denne administrerte profilen, krever organisasjonen din at du deler enhetssignaler.
@@ -8834,6 +8836,7 @@ Hvis du velger å ikke dele signaler, blir denne profilen lukket.</translation>
 <translation id="8637688295594795546">Systemoppdatering er tilgjengelig. Forbereder nedlasting ...</translation>
 <translation id="8639635302972078117">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
 <translation id="8640575194957831802">Sist åpnet</translation>
+<translation id="8641946446576357115">Bruk passordene dine på iOS-enhetene dine</translation>
 <translation id="8642900771896232685">2 sekunder</translation>
 <translation id="8642947597466641025">Forstørr teksten</translation>
 <translation id="8643403533759285912">Slett gruppen</translation>
@@ -9113,6 +9116,7 @@ Hvis du velger å ikke dele signaler, blir denne profilen lukket.</translation>
 <translation id="8862003515646449717">Bytt til en raskere nettleser</translation>
 <translation id="8863753581171631212">Åpne linken i ny <ph name="APP" /></translation>
 <translation id="8864055848767439877">Deler <ph name="TAB_NAME" /> med <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">Passordet er lagret</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> ble fjernet fra denne enheten</translation>
 <translation id="8865112428068029930">Bruker du en delt datamaskin? Prøv å åpne et inkognitovindu.</translation>
 <translation id="8867102760244540173">Søk i faner…</translation>
@@ -9310,6 +9314,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> støttes ikke lenger</translation>
 <translation id="9031549947500880805">Sikkerhetskopiér til Google Disk. Gjenopprett dataene dine enkelt eller bytt enhet når som helst. Sikkerhetskopien din inkluderer appdata.</translation>
 <translation id="9031811691986152304">prøve igjen</translation>
+<translation id="9032004780329249150">Bruk passordene dine på iOS-enhetene dine</translation>
 <translation id="9032097289595078011">Deaktiver rask sammenkobling</translation>
 <translation id="9033765790910064284">Fortsett likevel</translation>
 <translation id="9033857511263905942">&amp;Lim inn</translation>

@@ -838,6 +838,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1698796500103229697">&amp;Metode Pembayaran</translation>
 <translation id="1700079447639026019">Situs yang tidak boleh menggunakan cookie</translation>
 <translation id="1700201317341192482">Hapus kartu virtual Anda</translation>
+<translation id="1700517974991662022">Dikunjungi</translation>
 <translation id="1703331064825191675">Tidak perlu mengkhawatirkan sandi Anda</translation>
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
 <translation id="1704097193565924901">Huruf Besar di Awal Kata</translation>
@@ -1154,6 +1155,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1956167375087861299">Tidak diizinkan menggunakan ID untuk memutar konten yang dilindungi</translation>
 <translation id="1956390763342388273">Tindakan ini akan mengupload semua file dari "<ph name="FOLDER_PATH" />". Hanya lakukan ini jika Anda memercayai situs.</translation>
 <translation id="1962233722219655970">Halaman ini menggunakan aplikasi Native Client yang tidak bekerja di komputer Anda.</translation>
+<translation id="1963227389609234879">Hapus Semua</translation>
 <translation id="1963976881984600709">Perlindungan standar</translation>
 <translation id="1966649499058910679">Tandai setiap kata saat kata tersebut diucapkan</translation>
 <translation id="1967970931040389207">Aktifkan hotspot</translation>
@@ -3024,6 +3026,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3566325075220776093">Dari perangkat ini</translation>
 <translation id="3566721612727112615">Tidak ada situs yang ditambahkan</translation>
 <translation id="3567284462585300767">Setel perangkat menjadi terlihat untuk menerima dan menyetujui file dengan orang di sekitar</translation>
+<translation id="356738834800832239">Sandi Anda Disimpan</translation>
 <translation id="3569382839528428029">Apakah Anda ingin <ph name="APP_NAME" /> membagikan layar Anda?</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> dapat melihat file dan folder berikut ini</translation>
 <translation id="3571734092741541777">Siapkan</translation>
@@ -3051,7 +3054,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3593965109698325041">Kendala Nama Sertifikat</translation>
 <translation id="3596012367874587041">Setelan aplikasi</translation>
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
-<translation id="3598010454707842106">Klik “Sesuaikan Chrome”</translation>
 <translation id="3599221874935822507">Dinaikkan</translation>
 <translation id="3600051066689725006">Info permintaan web</translation>
 <translation id="360180734785106144">Menawarkan fitur baru setelah tersedia</translation>
@@ -3721,6 +3723,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4152011295694446843">Bookmark Anda akan ditampilkan di sini</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="4154664944169082762">Sidik jari</translation>
+<translation id="4155585931966064643">Untuk menggunakan sandi tersimpan Anda di ponsel, download Chrome untuk iOS dan sinkronkan akun Anda.</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Ukuran dan font teks situs</translation>
 <translation id="4158364720893025815">Lulus</translation>
@@ -4482,6 +4485,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4833683849865011483">Menemukan 1 printer dari server cetak</translation>
 <translation id="4836504898754963407">Mengelola sidik jari</translation>
 <translation id="4837128290434901661">Ubah kembali ke Google Penelusuran?</translation>
+<translation id="4837274845731134929">Untuk menggunakan sandi tersimpan Anda di ponsel, ikuti kode QR, download Chrome untuk iOS, dan sinkronkan akun Anda.</translation>
 <translation id="4837926214103741331">Anda tidak diizinkan untuk menggunakan perangkat ini. Untuk izin masuk, hubungi pemilik perangkat.</translation>
 <translation id="4837952862063191349">Untuk membuka kunci dan memulihkan data lokal, masukkan sandi <ph name="DEVICE_TYPE" /> lama.</translation>
 <translation id="4838170306476614339">Lihat foto, media, dan notifikasi ponsel</translation>
@@ -6074,6 +6078,7 @@ Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak a
 <translation id="6242852299490624841">Fokuskan tab ini</translation>
 <translation id="6243774244933267674">Server tidak tersedia</translation>
 <translation id="6244245036423700521">Impor File ONC</translation>
+<translation id="6245523954602476652">Anda dapat mengaksesnya di Pengelola Sandi Google.</translation>
 <translation id="6246790815526961700">Upload dari perangkat</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
 <translation id="6247620186971210352">Tidak ditemukan aplikasi</translation>
@@ -7020,7 +7025,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="706626672220389329">Error saat memasang URL berbagi. URL berbagi yang ditentukan sudah dipasang.</translation>
 <translation id="7067396782363924830">Warna sekitar</translation>
 <translation id="7067725467529581407">Jangan tampilkan ini lagi.</translation>
-<translation id="7069811530847688087"><ph name="WEBSITE" /> mungkin memerlukan jenis kunci keamanan yang lebih baru atau berbeda</translation>
 <translation id="7070484045139057854">Ekstensi Ini Dapat Membaca dan Mengubah Data Situs</translation>
 <translation id="7072010813301522126">Nama pintasan</translation>
 <translation id="7074066049407662839">Login untuk menyimpan sandi</translation>
@@ -8528,7 +8532,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8376752431516546391">Panel samping Google Penelusuran</translation>
 <translation id="8377625247046155446">Kunci sandi ini hanya akan disimpan di perangkat ini. Kunci akan tetap ada di perangkat ini setelah Anda menutup semua jendela Samaran.</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>
-<translation id="8379878387931047019">Perangkat ini tidak mendukung jenis kunci keamanan yang diminta oleh situs ini</translation>
 <translation id="8379991678458444070">Kembali ke halaman secara cepat dengan mem-bookmark tab ini</translation>
 <translation id="8380266723152870797">Nama jendela</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
@@ -8590,7 +8593,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8427292751741042100">disematkan di host mana saja</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8428271547607112339">Tambahkan akun sekolah</translation>
-<translation id="8428628598981198790">Kunci keamanan Anda tidak dapat digunakan dengan situs ini</translation>
 <translation id="84297032718407999">Anda akan logout dalam <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
 <translation id="8431496281632382473">Profil ini dikelola oleh <ph name="DOMAIN" />. Untuk terus menggunakan profil terkelola ini, organisasi mengharuskan Anda membagikan sinyal perangkat.
@@ -8808,6 +8810,7 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="8637688295594795546">Pembaruan sistem tersedia. Bersiap mendownload...</translation>
 <translation id="8639635302972078117">Kirimkan data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda dan akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke Akun Google miliknya.</translation>
 <translation id="8640575194957831802">Terakhir dibuka</translation>
+<translation id="8641946446576357115">Gunakan Sandi Anda di Perangkat iOS</translation>
 <translation id="8642900771896232685">2 detik</translation>
 <translation id="8642947597466641025">Perbesar Teks</translation>
 <translation id="8643403533759285912">Hapus Grup</translation>
@@ -9085,6 +9088,7 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="8862003515646449717">Beralih ke browser cepat</translation>
 <translation id="8863753581171631212">Buka link di <ph name="APP" /> baru</translation>
 <translation id="8864055848767439877">Membagikan <ph name="TAB_NAME" /> ke <ph name="APP_NAME" /></translation>
+<translation id="8864104359314908853">Sandi Anda disimpan</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> dihapus dari perangkat ini</translation>
 <translation id="8865112428068029930">Menggunakan komputer bersama? Coba buka jendela Samaran.</translation>
 <translation id="8867102760244540173">Telusuri tab ...</translation>
@@ -9281,6 +9285,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> tidak lagi didukung</translation>
 <translation id="9031549947500880805">Cadangkan ke Google Drive. Pulihkan data Anda atau beralih perangkat kapan saja dengan mudah. Cadangan Anda mencakup data aplikasi.</translation>
 <translation id="9031811691986152304">mencoba lagi</translation>
+<translation id="9032004780329249150">Gunakan sandi Anda di perangkat iOS</translation>
 <translation id="9032097289595078011">Nonaktifkan Sambungan Cepat</translation>
 <translation id="9033765790910064284">Tetap lanjutkan</translation>
 <translation id="9033857511263905942">&amp;Tempel</translation>

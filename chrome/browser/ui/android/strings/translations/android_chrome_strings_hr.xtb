@@ -276,6 +276,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="2567545343356994513">Brža, proaktivna zaštita od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="2569733278091928697">Moći ćete jednostavno upravljati medijskim kontrolama, anonimnim sesijama, preuzimanjima itd.</translation>
 <translation id="2571711316400087311">Ponudi slanje stranica na drugim jezicima na Google prevoditelj</translation>
+<translation id="2571834852878229351">Izradi moju zaporku</translation>
 <translation id="2573452357057307036">Saznajte kako postaviti Chrome kao zadani preglednik</translation>
 <translation id="257470231920177468">Kad je ta postavka uključena, ovdje se prikazuje popis web-lokacija koje posjećujete, a koje pogađaju vaše interese.</translation>
 <translation id="2580436639406015883">Smanjenje količine neželjenog sadržaja i prijevara oslanja se na privatne oznake koje pomažu web-lokacijama da se bore protiv prijevara i razlikuju botove od osoba.
@@ -567,6 +568,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="4108314971463891922">Prati</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje i upozorava vas na njih kada se dogode.</translation>
 <translation id="4116038641877404294">Preuzmite stranice za izvanmrežnu upotrebu</translation>
+<translation id="4121654769234887259">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki za <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Tijek dopuštenja za obavijesti otvoren je u punoj visini</translation>
 <translation id="4135200667068010335">Popis za odabir uređaja s kojim će se dijeliti kartica zatvoren je.</translation>
 <translation id="4137746084635924146">Trenutačni jezik uređaja</translation>
@@ -779,6 +781,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
 <translation id="5174700554036517242">Kartica je vraćena na početnu visinu</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
+<translation id="5186634140793586141">Upravljajte temama i pretraživanjima koja vas zanimaju</translation>
 <translation id="5191251636205085390">Saznajte o novim tehnologijama čiji je cilj zamijeniti kolačiće treće strane i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano u međuspremnik</translation>
 <translation id="5204967432542742771">Unesite zaporku</translation>
@@ -1362,6 +1365,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8127542551745560481">Uređivanje početne stranice</translation>
 <translation id="8130309322784422030">Pohranjeni podaci o prijavi možda su zastarjeli</translation>
 <translation id="813082847718468539">Prikaz informacija o web-mjestu</translation>
+<translation id="8137562778192957619">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki.</translation>
 <translation id="8156139159503939589">Koje jezike znate čitati?</translation>
 <translation id="8186512483418048923">Preostalo datoteka: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>

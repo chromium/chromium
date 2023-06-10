@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">開咗更新外部裝置韌體嘅視窗。有 <ph name="NUM_UPDATES" /> 項可用嘅更新。</translation>
 <translation id="1145516343487477149">尋找說明文章，並回答 Chromebook 常見問題</translation>
+<translation id="1164939766849482256">黎明到黑夜螢幕保護程式</translation>
 <translation id="1167755866710282443">開啟選單以自訂按鍵。拖曳選單以移動。</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">瀏覽器導覽</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
+<translation id="2880569433548999039">雲朵動態螢幕保護程式</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼，或掃瞄 QR 碼</translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋以進行測試。</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">已偵測到強制網絡入口</translation>
 <translation id="3160172848211257835">傳送<ph name="BEGIN_LINK1" />系統和應用程式資料<ph name="END_LINK1" />，以及<ph name="BEGIN_LINK2" />數據<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">將文件放到掃瞄器上</translation>
+<translation id="3174321110679064523">黎明到黑夜桌布</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="319101249942218879">改咗顯示圖片</translation>
 <translation id="3192947282887913208">音效檔案</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
+<translation id="3373141842870501561">地球動態桌布</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續進行更新，請按一下 [下一步]。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">頂部</translation>
 <translation id="3651050199673793219">揀溫度單位</translation>
 <translation id="3663574643422533538">選取 <ph name="PRODUCT_NAME" /> 獨家藝術圖片</translation>
+<translation id="3668449597372804501">雲朵動態桌布</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3708186454126126312">之前已連接的裝置</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">RGB 控制項</translation>
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
+<translation id="382043424867370667">日落桌布</translation>
 <translation id="3824259034819781947">附加檔案</translation>
 <translation id="3838338534323494292">新密碼</translation>
 <translation id="3845880861638660475">按下 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 鍵，即可關閉對話框。</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">舊密碼</translation>
 <translation id="4453205916657964690">子網絡遮罩</translation>
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
+<translation id="4469288414739283461">地球動態螢幕保護程式</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
 <translation id="4500966230243561393">介面顏色</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">重新執行日常安排</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">背光顏色</translation>
+<translation id="5292579816060236070">日出桌布</translation>
 <translation id="5294769550414936029">版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">將視窗移至桌面</translation>
+<translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 專屬桌布</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃瞄頁面嗎？}=1{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}other{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}}</translation>
 <translation id="6472207088655375767">一次性密碼</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
+<translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> 專屬螢幕保護程式</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6494974875566443634">自訂</translation>
 <translation id="6500818810472529210">查看「Google 搜尋」中的結果</translation>

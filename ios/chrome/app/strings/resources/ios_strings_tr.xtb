@@ -192,6 +192,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="225943865679747347">Hata kodu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hesap Ekle</translation>
 <translation id="2268044343513325586">Hassaslaştır</translation>
+<translation id="2269277877025820298">Daha Fazlasını Göster</translation>
 <translation id="2273327106802955778">Diğer menüsü</translation>
 <translation id="2286505070150039482">Vurgulanan Metin</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu adres bu cihazdan silinecek.}other{Bu adresler bu cihazdan silinecek.}}</translation>

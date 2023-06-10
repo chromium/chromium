@@ -85,7 +85,9 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2399868464369312507">Google Chrome pokušava da izmeni načine plaćanja.</translation>
 <translation id="2401189691232800402">Sistem Chrome OS</translation>
+<translation id="2424440923901031101">Ovaj dodatak krši smernice Chrome veb-prodavnice i možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
 <translation id="2467438592969358367">Google Chrome želi da izveze lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
+<translation id="2472092250898121027">Ovaj dodatak sadrži malver i nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2534507159460261402">Google Pay (kopirano u Chrome)</translation>
 <translation id="2556847002339236023">Organizacija zatvara Chrome kada se ne koristi <ph name="TIMEOUT_DURATION" />. Podaci pregledanja su izbrisani. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.</translation>
@@ -288,6 +290,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6291549208091401781">Google Chrome je već instaliran za sve korisnike na računaru.</translation>
 <translation id="6326175484149238433">Ukloni iz Chrome-a</translation>
 <translation id="6327105987658262776">Nema dostupnih ažuriranja.</translation>
+<translation id="6360449101159168105">Dok je ova kartica bila neaktivna, memorija je oslobođena da bi Chrome bio brz. Možete da odaberete da uvek izuzmete ovaj sajt iz neaktivnosti.</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6418662306461808273">Želite da pređete na postojeći Chrome profil?</translation>
 <translation id="648319183876919572">Poboljšano bezbedno pregledanje doprinosi zaštiti od opasnih veb-sajtova i preuzimanja</translation>
@@ -370,6 +373,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8005666035647241369">U Google menadžeru lozinki na ovom uređaju</translation>
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
+<translation id="8019103195866286235">Programer je objavio ovaj dodatak i on možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
 <translation id="80471789339884597">Hvala vam na instalaciji. Morate da restartujete sve pregledače pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">O &amp;Google Chrome-u</translation>

@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">გახსნილია გარე მოწყობილობების ჩაშენებული პროგრამული უზრუნველყოფის განახლების ფანჯარა. ხელმისაწვდომია <ph name="NUM_UPDATES" /> განახლება.</translation>
 <translation id="1145516343487477149">იპოვეთ დამხმარე სტატიები და პასუხები გავრცელებულ შეკითხვებზე Chromebook-თან დაკავშირებით</translation>
+<translation id="1164939766849482256">ეკრანმზოგი განთიადიდან შებინდებამდე</translation>
 <translation id="1167755866710282443">კლავიშების მოსარგებად გახსენით მენიუ. გადასაადგილებლად ჩავლებით გადაიტანეთ მენიუ.</translation>
 <translation id="1175697296044146566">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ.</translation>
 <translation id="1175951029573070619">საშუალო (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">ნავიგაცია ბრაუზერში</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> განიმუხტა <ph name="NUM_SECONDS" /> წამში.</translation>
+<translation id="2880569433548999039">ღრუბლების ნაკადის ეკრანმზოგი</translation>
 <translation id="2926057806159140518">შეიყვანეთ თქვენი მომხმარებლის სახელი და პაროლი ან დაასკანირეთ თქვენი QR კოდი</translation>
 <translation id="2940811910881150316">მოწყობილობის შემოწმება ვერ ხერხდება. შესამოწმებლად ხელახლა გახსენით თავსახური.</translation>
 <translation id="3008341117444806826">განახლება</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">აღმოჩენილია ავტორიზაციის პორტალი</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />სისტემისა და აპების ინფორმაციის<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />მეტრიკის<ph name="END_LINK2" /> გაგზავნა</translation>
 <translation id="3170673040743561620">მოათავსეთ თქვენი დოკუმენტი სკანერზე</translation>
+<translation id="3174321110679064523">ფონი განთიადიდან შებინდებამდე</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="319101249942218879">ავატარის სურათი შეცვლილია</translation>
 <translation id="3192947282887913208">აუდიო ფაილები</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">ფანჯრები</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
+<translation id="3373141842870501561">მიწის ნაკადის ფონი</translation>
 <translation id="3404249063913988450">ეკრანმზოგის ჩართვა</translation>
 <translation id="3413935475507503304">განახლების გასაგრძელებლად დაწკაპუნებით აირჩიეთ „შემდეგი“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">ზედა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
 <translation id="3663574643422533538">აირჩიეთ ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრები</translation>
+<translation id="3668449597372804501">ღრუბლების ნაკადის ფონი</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">RGB მართვის საშუალებები</translation>
 <translation id="38114475217616659">მთელი ისტორიის გასუფთავება</translation>
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
+<translation id="382043424867370667">მზის ჩასვლის ფონი</translation>
 <translation id="3824259034819781947">ფაილების დართვა</translation>
 <translation id="3838338534323494292">ახალი პაროლი</translation>
 <translation id="3845880861638660475">დიალოგური ფანჯრის დასახურად დააჭირეთ კლავიშთა კომბინაციას <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">ძველი პაროლი</translation>
 <translation id="4453205916657964690">ქვექსელის ნიღაბი</translation>
 <translation id="4454245904991689773">შენახვის ადგილი</translation>
+<translation id="4469288414739283461">მიწის ნაკადის ეკრანმზოგი</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="4500966230243561393">ინტერფეისის ფერი</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">რუტინების ხელახლა გაშვება</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">უკანა განათების ფერი</translation>
+<translation id="5292579816060236070">მზის ამოსვლის ფონი</translation>
 <translation id="5294769550414936029">ვერსია <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ფანჯრის გადატანა სამუშაო მაგიდაზე</translation>
+<translation id="5303837385540978511">ფონი ექსკლუზიურად <ph name="PRODUCT_NAME" />-ისთვის</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">მოწმობა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ხელახლა სკანირება?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">ეკრანმზოგი ექსკლუზიურად <ph name="PRODUCT_NAME" />-ისთვის</translation>
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>
 <translation id="6494974875566443634">მორგება</translation>
 <translation id="6500818810472529210">იხილეთ შედეგები Google Search-ში</translation>

@@ -192,6 +192,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Agregar cuenta</translation>
 <translation id="2268044343513325586">Definir mejor</translation>
+<translation id="2269277877025820298">Ver más</translation>
 <translation id="2273327106802955778">Menú Más</translation>
 <translation id="2286505070150039482">Texto resaltado</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se borrará de este dispositivo.}other{Estas direcciones se borrarán de este dispositivo.}}</translation>

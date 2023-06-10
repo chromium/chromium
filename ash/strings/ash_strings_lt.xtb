@@ -141,6 +141,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1550406609415860283">Pasiekiami įrenginiai</translation>
 <translation id="1550523713251050646">Spustelėkite, jei reikia daugiau parinkčių</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
+<translation id="1576511610858879060">„Chromebook“ ar „Bluetooth“ įrenginyje naudojamas senesnės versijos „Bluetooth“. Naudokite kitą įvesties šaltinį, kad garso kokybė būtų geresnė.</translation>
 <translation id="1576623706766186887">Tolinti, kai įjungtas didintuvas</translation>
 <translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
@@ -356,6 +357,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="256712445991462162">prie doko prijungtas didintuvas</translation>
 <translation id="2573588302192866788">Nepavyko susieti „<ph name="NAME" />“</translation>
 <translation id="2575685495496069081">Neleidžiama prisijungti prie kelių paskyrų</translation>
+<translation id="2579264398927991698">Programinės aparatinės įrangos naujiniai</translation>
 <translation id="2582112259361606227">Paleisti iš naujo, kad būtų atnaujinta</translation>
 <translation id="2586561057878260610">Paspauskite „Ctrl“ + W, kad sujungtumėte su „<ph name="DESK_NAME" />“. Paspauskite „Ctrl“ + „Shift“ + W, kad uždarytumėte darbalaukį ir langus.</translation>
 <translation id="2595239820337756193">5 tūkst. mylių</translation>
@@ -687,6 +689,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4028481283645788203">Norint užtikrinti patikimesnę apsaugą reikalingas slaptažodis</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Bendrinate ekraną</translation>
+<translation id="404437169852192935">Naujinių nebėra</translation>
 <translation id="4049230407053723315">Spartieji nustatymai</translation>
 <translation id="4057003836560082631"><ph name="INDEX" /> naršyklės skirtukas iš <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Prog. pr. išj.}one{# prog. pr. išj.}few{# prog. pr. išj.}many{# prog. pr. išj.}other{# prog. pr. išj.}}</translation>
@@ -1017,11 +1020,13 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /> <ph name="KEY_ONE" /> arba <ph name="MODIFIER_TWO" /> <ph name="MODIFIER_THREE" /> <ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Pasiekiami programinės aparatinės įrangos naujiniai</translation>
 <translation id="5503884284981862082">Atidaryti ir (arba) uždaryti „Google“ padėjėją</translation>
+<translation id="550391772491508736">Tęsti perdavimą</translation>
 <translation id="5506975627792768506">Įjungti arba išjungti didintuvą</translation>
 <translation id="5512042095225963688">Ištrinti ankstesnį žodį</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratorius pašalino visus „eSIM“ kortelių profilius. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5523434445161341166">„<ph name="FEATURE_NAME" />“ prijungiama.</translation>
+<translation id="5529587891732734495">Pristabdyti perdavimą</translation>
 <translation id="5532994612895037630">Palieskite bet kur, kad būtų įrašytas visas ekranas</translation>
 <translation id="5536723544185013515">„Naujausios programos“: naršykite naudodami rodyklės kairėn ar dešinėn klavišus, kad pasiektumėte visas naujausias programas</translation>
 <translation id="553675580533261935">Išeinama iš sesijos</translation>
@@ -1388,6 +1393,7 @@ Naujas įdiegimas</translation>
 <translation id="7165278925115064263">„Alt“ + „Shift“ + K</translation>
 <translation id="7168224885072002358">Po <ph name="TIMEOUT_SECONDS" /> bus grąžinta sena skyra</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
+<translation id="7185362672357349361">Įjungti nutildymo priminimą? Gausite pranešimą, jei kalbėsite nutildę. Garso įrašas visada lieka jūsų įrenginyje.</translation>
 <translation id="7187711731540696127">„<ph name="DEVICE_NAME" />“ viešosios interneto prieigos taškas įjungtas, nėra jokių susietų įrenginių</translation>
 <translation id="7188494361780961876">Meniu perkeltas į viršutinį kairįjį ekrano kampą.</translation>
 <translation id="7189412385142492784">Kaip toli yra Venera</translation>

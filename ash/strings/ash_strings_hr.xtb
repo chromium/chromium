@@ -141,6 +141,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1550406609415860283">Dostupni uređaji</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
+<translation id="1576511610858879060">Chromebook ili Bluetooth uređaj upotrebljava stariju verziju Bluetootha. Upotrijebite drugi izvor ulaza za bolju kvalitetu zvuka.</translation>
 <translation id="1576623706766186887">Smanjivanje kad je povećalo uključeno</translation>
 <translation id="1586324912145647027">Otvaranje radne površine od 1 do 8</translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
@@ -356,6 +357,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="256712445991462162">usidreno povećalo</translation>
 <translation id="2573588302192866788">Povezivanje uređaja <ph name="NAME" /> nije uspjelo</translation>
 <translation id="2575685495496069081">Onemogućena je višestruka prijava</translation>
+<translation id="2579264398927991698">Ažuriranja opreme</translation>
 <translation id="2582112259361606227">Ponovo pokrenite da biste ažurirali</translation>
 <translation id="2586561057878260610">Pritisnite Ctrl + W u kombinaciji s radnom površinom <ph name="DESK_NAME" />. Pritisnite Ctrl + Shift + W da biste zatvorili radnu površinu i prozore.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
@@ -686,6 +688,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4028481283645788203">Radi dodatne sigurnosti potrebna je zaporka</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Dijelite zaslon</translation>
+<translation id="404437169852192935">Ažuriranja su završila</translation>
 <translation id="4049230407053723315">Brze postavke</translation>
 <translation id="4057003836560082631">Kartica preglednika <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Isk. za 1 apl.}one{Isk. za # apl.}few{Iskl. za # apl.}other{Isk. za # apl.}}</translation>
@@ -1016,11 +1019,13 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> ili <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Dostupna su ažuriranja opreme</translation>
 <translation id="5503884284981862082">Otvaranje/zatvaranje Google asistenta</translation>
+<translation id="550391772491508736">Nastavi emitiranje</translation>
 <translation id="5506975627792768506">Uključivanje ili isključivanje povećala</translation>
 <translation id="5512042095225963688">Brisanje prethodne riječi</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator je uklonio sve eSIM profile. Za više informacija obratite se administratoru.</translation>
 <translation id="5523434445161341166">Značajka <ph name="FEATURE_NAME" /> se povezuje.</translation>
+<translation id="5529587891732734495">Pauziraj emitiranje</translation>
 <translation id="5532994612895037630">Dodirnite bilo gdje da biste snimili cijeli zaslon</translation>
 <translation id="5536723544185013515">Nedavne aplikacije, krećite se pomoću tipki sa strelicom lijevo ili desno da biste pristupili svim nedavnim aplikacijama</translation>
 <translation id="553675580533261935">Napuštanje sesije</translation>
@@ -1388,6 +1393,7 @@ Novo instaliranje</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Vraćanje na staru razlučivost za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
+<translation id="7185362672357349361">Želite li uključiti podsjećanje na isključen zvuk? Primit ćete obavijest ako govorite, a zvuk je isključen. Zvuk se nikad ne šalje s uređaja.</translation>
 <translation id="7187711731540696127">Vaša je <ph name="DEVICE_NAME" /> žarišna točka uključena, nije povezan nijedan uređaj</translation>
 <translation id="7188494361780961876">Izbornik je premješten u gornji lijevi kut zaslona.</translation>
 <translation id="7189412385142492784">Kolika je udaljenost do Venere</translation>
