@@ -6699,3 +6699,5 @@ fast/js/iterable-object.html [ Pass Failure ]
 # Sherrif 2023-06-09
 crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Pass Failure ]
 crbug.com/1452003 [ Mac13 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Pass Failure ]
+crbug.com/1072022 [ Mac12-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
+crbug.com/1072022 [ Mac13-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
