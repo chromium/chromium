@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -90,23 +91,8 @@ void WallpaperAsh::SetWallpaperDeprecated(
     const std::string& extension_id,
     const std::string& extension_name,
     SetWallpaperDeprecatedCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(ash::LoginState::Get()->IsUserLoggedIn());
-  // Prevent any in progress decodes from changing wallpaper.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  // Notify the last pending request, if any, that it is canceled.
-  if (deprecated_pending_callback_) {
-    std::move(deprecated_pending_callback_).Run(std::vector<uint8_t>());
-  }
-  deprecated_pending_callback_ = std::move(callback);
-  const std::vector<uint8_t>& data = wallpaper_settings->data;
-  data_decoder::DecodeImage(
-      &data_decoder_, data, data_decoder::mojom::ImageCodec::kDefault,
-      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
-      /*desired_image_frame_size=*/gfx::Size(),
-      base::BindOnce(
-          &WallpaperAsh::OnWallpaperDecoded, weak_ptr_factory_.GetWeakPtr(),
-          std::move(wallpaper_settings), extension_id, extension_name));
+  // Delete this method once deletion is supported. https://crbug.com/1156872.
+  NOTIMPLEMENTED();
 }
 
 void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
@@ -184,32 +170,15 @@ void WallpaperAsh::OnWallpaperDecoded(
 }
 
 void WallpaperAsh::SendErrorResult(const std::string& response) {
-  if (pending_callback_) {
-    DCHECK(!deprecated_pending_callback_)
-        << "There should only be one callback at a time.";
-    std::move(pending_callback_)
-        .Run(crosapi::mojom::SetWallpaperResult::NewErrorMessage(response));
-  }
-  if (deprecated_pending_callback_) {
-    DCHECK(!pending_callback_)
-        << "There should only be one callback at a time.";
-    std::move(deprecated_pending_callback_).Run(std::vector<uint8_t>());
-  }
+  std::move(pending_callback_)
+      .Run(crosapi::mojom::SetWallpaperResult::NewErrorMessage(response));
 }
 
 void WallpaperAsh::SendSuccessResult(
     const std::vector<uint8_t>& thumbnail_data) {
-  if (pending_callback_) {
-    DCHECK(!deprecated_pending_callback_)
-        << "There should only be one callback at a time.";
-    std::move(pending_callback_)
-        .Run(crosapi::mojom::SetWallpaperResult::NewThumbnailData(
-            thumbnail_data));
-  }
-  if (deprecated_pending_callback_) {
-    DCHECK(!pending_callback_)
-        << "There should only be one callback at a time.";
-    std::move(deprecated_pending_callback_).Run(thumbnail_data);
-  }
+  std::move(pending_callback_)
+      .Run(
+          crosapi::mojom::SetWallpaperResult::NewThumbnailData(thumbnail_data));
 }
+
 }  // namespace crosapi

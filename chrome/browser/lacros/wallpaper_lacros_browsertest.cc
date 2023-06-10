@@ -54,8 +54,7 @@ std::vector<uint8_t> WallpaperLacrosBrowserTest::CreateJpeg() {
 }
 
 // Tests that setting the wallpaper via crosapi works
-// TODO(b/258819982): Update in M115.
-IN_PROC_BROWSER_TEST_F(WallpaperLacrosBrowserTest, SetWallpaperDeprecated) {
+IN_PROC_BROWSER_TEST_F(WallpaperLacrosBrowserTest, SetWallpaper) {
   auto* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Wallpaper>()) {
@@ -74,10 +73,12 @@ IN_PROC_BROWSER_TEST_F(WallpaperLacrosBrowserTest, SetWallpaperDeprecated) {
   crosapi::mojom::WallpaperAsyncWaiter async_waiter(
       lacros_service->GetRemote<crosapi::mojom::Wallpaper>().get());
 
-  std::vector<uint8_t> out_thumbnail_data;
-  async_waiter.SetWallpaperDeprecated(std::move(settings), kFakeExtensionId,
-                                      kFakeExtensionName, &out_thumbnail_data);
+  crosapi::mojom::SetWallpaperResultPtr result;
+  async_waiter.SetWallpaper(std::move(settings), kFakeExtensionId,
+                            kFakeExtensionName, &result);
 
-  // If an empty thumbnail is returned it means Ash failed to set the wallpaper.
-  EXPECT_FALSE(out_thumbnail_data.empty());
+  // If a valid thumbnail is returned it means Ash set the wallpaper.
+  ASSERT_FALSE(result->is_error_message());
+  ASSERT_TRUE(result->is_thumbnail_data());
+  EXPECT_FALSE(result->get_thumbnail_data().empty());
 }
