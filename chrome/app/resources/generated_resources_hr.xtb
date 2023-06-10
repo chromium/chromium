@@ -865,7 +865,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1714644264617423774">Omogućite značajke pristupačnosti radi jednostavnije upotrebe uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1718835860248848330">Zadnji sat</translation>
 <translation id="1719312230114180055">Napomena: otisak prsta može biti manje siguran od snažne zaporke ili PIN-a.</translation>
-<translation id="1720318856472900922">Provjera autentičnosti TLS WWW poslužitelja</translation>
+<translation id="1720318856472900922">Autentifikacija TLS WWW poslužitelja</translation>
 <translation id="172123215662733643">Pretraži slike pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">Vašim uređajem <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> upravlja<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
@@ -4585,7 +4585,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4941963255146903244">Pregled fotografija, medija i aplikacija s vašeg telefona</translation>
 <translation id="494286511941020793">Pomoć za proxy konfiguraciju</translation>
 <translation id="4943368462779413526">Američki nogomet</translation>
-<translation id="4944310289250773232">Tu uslugu provjere autentičnosti hostira <ph name="SAML_DOMAIN" /></translation>
+<translation id="4944310289250773232">Tu uslugu autentifikacije hostira <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Da biste postavili otisak prsta, neka vaše dijete dodirne tipku za uključivanje/isključivanje. Podaci o otisku prsta vašeg djeteta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946459324029651239">Imate standardnu zaštitu</translation>
 <translation id="4950993567860689081">Vašom sesijom upravlja vaša organizacija. Administratori mogu izbrisati vaš profil te pratiti vaš mrežni promet.</translation>
@@ -8696,7 +8696,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8597845839771543242">Oblik svojstva:</translation>
 <translation id="8599681327221583254">Najmanje jedno pravilo nije točno konfigurirano. Obratite se administratoru</translation>
 <translation id="8599864823732014237">Želite li preskočiti prijavu poduzeća?</translation>
-<translation id="8601206103050338563">TLS WWW klijentska provjera autentičnosti</translation>
+<translation id="8601206103050338563">TLS WWW klijentska autentifikacija</translation>
 <translation id="8601611099293226919">Pretraži zaslon pomoću Google objektiva</translation>
 <translation id="8602674530529411098">Aplikacije (Beta)</translation>
 <translation id="8602851771975208551">Drugi program na vašem računalu dodao je aplikaciju koja može promijeniti način na koji radi Chrome.</translation>

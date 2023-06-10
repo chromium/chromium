@@ -2799,7 +2799,7 @@ Dodatne pojedinosti:
 <translation id="7791196057686275387">Napusti</translation>
 <translation id="7791543448312431591">Dodavanje</translation>
 <translation id="7798389633136518089">Zanemareno jer pravilo nije postavio izvor u oblaku.</translation>
-<translation id="7800304661137206267">Veza je šifrirana pomoću <ph name="CIPHER" />, za provjeru autentičnosti poruke koristi se <ph name="MAC" />, a <ph name="KX" /> služi za mehanizam razmjene ključeva.</translation>
+<translation id="7800304661137206267">Veza je šifrirana pomoću <ph name="CIPHER" />, za autentifikaciju poruke koristi se <ph name="MAC" />, a <ph name="KX" /> služi za mehanizam razmjene ključeva.</translation>
 <translation id="7800977246388195491">Chrome bilježi teme koje vas zanimaju na temelju vaše nedavne povijesti pregledavanja. Također, web-lokacije koje posjećujete mogu izvući određene zaključke o tome što vam se sviđa. Druge web-lokacije poslije mogu zatražiti te informacije kako bi vam prikazivale personalizirane oglase. Možete odabrati koje će se teme i web-lokacije koristiti za prikazivanje oglasa.</translation>
 <translation id="7802523362929240268">Web-lokacija je legitimna</translation>
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-znamenkasti sigurnosni kôd naveden na kartici <ph name="SIDE_OF_CARD" /> da bi vaša banka mogla potvrditi vaš identitet</translation>

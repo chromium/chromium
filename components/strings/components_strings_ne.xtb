@@ -720,7 +720,7 @@
 <translation id="2701514975700770343">तलतिर फर्केको</translation>
 <translation id="2702801445560668637">पाठ्य सूची</translation>
 <translation id="2704283930420550640">मान ढाँचासँग मेल खाँदैन।</translation>
-<translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
+<translation id="2704606927547763573">कपी गरियो</translation>
 <translation id="2705137772291741111">यस साइटको सुरक्षित गरिएको (क्यास गरिएको) प्रतिलिपि पढ्न मिल्दैनथ्यो</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
 <translation id="2712173769900027643">अनुमतिको लागि सोध्नुहोस्</translation>
@@ -958,7 +958,7 @@
 <translation id="3359565626472459400">विवाह</translation>
 <translation id="3360103848165129075">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना</translation>
 <translation id="3360313521703038580">पर्यावरण विज्ञान तथा वातावरण</translation>
-<translation id="3362968246557010467">यो नीति प्रचलनबाट हटाइएको <ph name="OLD_POLICY" /> नीतिबाट स्वतः प्रतिलिपि गरियो। तपाईंले उक्त नीतिको साटो यो नीतिको प्रयोग गर्नु पर्छ।</translation>
+<translation id="3362968246557010467">यो नीति प्रचलनबाट हटाइएको <ph name="OLD_POLICY" /> नीतिबाट स्वतः कपी गरियो। तपाईंले उक्त नीतिको साटो यो नीतिको प्रयोग गर्नु पर्छ।</translation>
 <translation id="3364869320075768271"><ph name="URL" /> भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="3366477098757335611">कार्डहरू हेर्नुहोस्</translation>
 <translation id="3369192424181595722">घडी त्रुटि</translation>
@@ -2872,7 +2872,7 @@
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8009225694047762179">पासवर्डहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8009843239480947060">१० x ११ इन्च</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{यो कार्ड र यसको बिलिङ ठेगाना सुरक्षित गरिने छ। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यसको प्रयोग गर्न सक्नु हुने छ।}other{यी कार्ड र यिनका बिलिङ ठेगाना सुरक्षित गरिने छन्। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यिनको प्रयोग गर्न सक्नु हुने छ।}}</translation>
+<translation id="8012116502927253373">{NUM_CARDS,plural, =1{यो कार्ड र यसको बिलिङ ठेगाना सेभ गरिने छ। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यसको प्रयोग गर्न सक्नु हुने छ।}other{यी कार्ड र यिनका बिलिङ ठेगाना सेभ गरिने छन्। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यिनको प्रयोग गर्न सक्नु हुने छ।}}</translation>
 <translation id="8012647001091218357">हामी अहिले तपाईँको अविभावकमा पुग्न सकेनौं। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउन ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>

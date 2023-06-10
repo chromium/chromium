@@ -125,7 +125,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 
       Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="1123650965531933634">Nega l'autorizzazione per il posizionamento delle finestre su tutti i siti per impostazione predefinita</translation>
-<translation id="112496019059412872">Consente di stabilire se attivare o meno la funzionalità "Ricorda password" nella finestra di dialogo dell'autenticazione Kerberos. Le password vengono memorizzate criptate su disco e sono accessibili soltanto al daemon del sistema Kerberos durante una sessione utente.
+<translation id="112496019059412872">Consente di stabilire se attivare o meno la funzionalità "Memorizza la password" nella finestra di dialogo dell'autenticazione Kerberos. Le password vengono memorizzate criptate su disco e sono accessibili soltanto al daemon del sistema Kerberos durante una sessione utente.
 
           Se questo criterio viene attivato o se non viene configurato, gli utenti possono decidere se memorizzare o meno le password Kerberos in modo da non doverle inserire nuovamente. I ticket Kerberos vengono recuperati automaticamente, a meno che non sia necessaria un'ulteriore autenticazione (autenticazione a due fattori).
 
@@ -2934,7 +2934,7 @@ Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le
 Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è facoltativo se viene configurato questo criterio.</translation>
 <translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
 <translation id="3642557248926713561">Disattiva la protezione delle estensioni di Navigazione sicura</translation>
-<translation id="3643284063603988867">Attiva la funzionalità "Ricorda password"</translation>
+<translation id="3643284063603988867">Attiva la funzionalità "Memorizza la password"</translation>
 <translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.

@@ -1208,7 +1208,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3963721102035795474">Okuyucu Modu</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yok}=1{1 siteden }other{# siteden }}</translation>
 <translation id="3969052498612555048">Kodunuzu bulamıyor musunuz? <ph name="BEGIN_LINK" />Yeni kod al<ph name="END_LINK" /></translation>
-<translation id="397105322502079400">Hesaplanııyor...</translation>
+<translation id="397105322502079400">Hesaplanıyor...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
 <translation id="3984581365661308170">Zarf #11</translation>
 <translation id="398470910934384994">Kuşlar</translation>

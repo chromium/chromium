@@ -3495,7 +3495,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3967841595862839006">Dilinizi ve klavyenizi seçin</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Kimlik</translation>
-<translation id="397105322502079400">Hesaplanııyor...</translation>
+<translation id="397105322502079400">Hesaplanıyor...</translation>
 <translation id="3971764089670057203">Bu güvenlik anahtarındaki parmak izleri</translation>
 <translation id="3973005893595042880">Kullanıcıya izin verilmiyor</translation>
 <translation id="3973660817924297510">Şifreler kontrol ediliyor (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>

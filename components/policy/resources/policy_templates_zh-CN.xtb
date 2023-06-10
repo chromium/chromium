@@ -377,11 +377,11 @@
 <translation id="1343128241903870688">停用设备应用信息报告功能</translation>
 <translation id="1347198119056266798">此政策已被弃用，请改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果设置了 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 政策、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 政策或（已弃用的）<ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策，则系统会忽略此政策。
 
-      强制启用安全搜索功能来处理 Google 网页搜索中的查询，并禁止用户更改此设置。此设置还会强制启用 YouTube“适中”受限模式。
+      强制启用安全搜索功能来处理 Google 网页搜索中的查询，并禁止用户更改此设置。此设置还会强制启用 YouTube“适中”过滤模式。
 
-      如果您启用此设置，则 Google 搜索中的安全搜索功能和 YouTube 中的“适中”受限模式将始终处于启用状态。
+      如果您启用此设置，则 Google 搜索中的安全搜索功能和 YouTube 中的“适中”过滤模式将始终处于启用状态。
 
-      如果您停用此设置或未设置值，则系统不会在 Google 搜索中强制启用安全搜索功能，也不会在 YouTube 中强制启用受限模式。</translation>
+      如果您停用此设置或未设置值，则系统不会在 Google 搜索中强制启用安全搜索功能，也不会在 YouTube 中强制启用过滤模式。</translation>
 <translation id="134745581157553029">如果您设置了“DeviceArcDataSnapshotHours”政策，系统会开启 ARC 数据快照机制，并可在指定的时间间隔内自动启动 ARC 数据快照更新。当某个时间间隔已开始且 ARC 数据快照需要更新时，如果任何用户均未登录，系统会直接启动 ARC 数据快照更新过程，而不通知用户；如果用户会话正在进行中，系统会显示界面通知，且会等到用户接受通知后才重启设备并启动 ARC 数据快照更新过程。注意：在 ARC 数据快照更新过程中，用户无法使用设备。</translation>
 <translation id="1348603614848418219">禁止将 <ph name="MS_AD_NAME" /> 管理的设备迁移到云管理服务。</translation>
 <translation id="1352799151662469739">当使用交流电源供电时系统应在设备闲置多久（以毫秒为单位）后锁定屏幕</translation>
@@ -1306,7 +1306,7 @@
 <translation id="2175353308236295184">包含一系列键值对的应用专属 JSON 配置对象，例如“"managedConfiguration": { "key1": value1, "key2": value2 }”。这些键是在应用清单中定义的。</translation>
 <translation id="2176115444876446233">阻止用户收集系统级性能跟踪记录。</translation>
 <translation id="2177696016354404697">始终停用隐私保护屏幕</translation>
-<translation id="2178899310296064282">至少强制启用 YouTube“适中”受限模式</translation>
+<translation id="2178899310296064282">至少强制启用 YouTube“适中”过滤模式</translation>
 <translation id="2180958780733364832">控制对无头模式的使用权限</translation>
 <translation id="2182291258410176649">用户可决定是否启用备份和恢复服务</translation>
 <translation id="219297066914002620">指示 <ph name="PRODUCT_OS_NAME" />启用或停用虚拟机管理控制台工具。
@@ -3790,7 +3790,7 @@
 <translation id="4510131075424939993">此政策用于指定评估身份信息时要在 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 中使用的盐值</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4512407512989846472">允许禁止指定网址向剪贴板中复制数据</translation>
-<translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 受限模式</translation>
+<translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 过滤模式</translation>
 <translation id="4515404363392014383">针对可信来源启用安全浏览功能</translation>
 <translation id="4518251772179446575">每次网站尝试跟踪用户的地理位置时都询问我</translation>
 <translation id="4521193243799782295">在用户登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
@@ -4435,13 +4435,13 @@
       </translation>
 <translation id="51859390023061147">停用“完全还原”功能。</translation>
 <translation id="5189360528842591274">仅允许连接到此列表中的蓝牙服务</translation>
-<translation id="5190426551516379357">通过设置此政策，您可以强制启用最基本的 YouTube 受限模式，并禁止用户选择限制条件更加宽松的模式。如果此政策设为：
+<translation id="5190426551516379357">通过设置此政策，您可以强制启用最基本的 YouTube 过滤模式，并禁止用户选择限制条件更加宽松的模式。如果此政策设为：
 
-      *“严格”- YouTube“严格”受限模式将始终处于启用状态。
+      *“严格”- YouTube“严格”过滤模式将始终处于启用状态。
 
-      *“适中”- 用户只可选择启用 YouTube“适中”受限模式和 YouTube“严格”受限模式，但无法关闭受限模式。
+      *“适中”- 用户只可选择启用 YouTube“适中”过滤模式和 YouTube“严格”过滤模式，但无法关闭过滤模式。
 
-      *“关闭”或未设置值 - Chrome 不会强制启用 YouTube 受限模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用受限模式。</translation>
+      *“关闭”或未设置值 - Chrome 不会强制启用 YouTube 过滤模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用过滤模式。</translation>
 <translation id="5191476996923842491">setTimeout() 函数延迟的默认行为。</translation>
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5194683382395300627">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" />来实现诸多目的（例如启用自动更改密码的功能）</translation>
@@ -5850,11 +5850,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6491305972928809525">不在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
 <translation id="6491872498385040936">此政策已被弃用。请考虑使用替换此政策的 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />；借助该政策，您可以进行更加精确的微调。
 
-      强制启用 YouTube“适中”受限模式，并禁止用户更改此设置。
+      强制启用 YouTube“适中”过滤模式，并禁止用户更改此设置。
 
-      如果您启用了此设置，则系统会始终强制启用 YouTube 受限模式，且至少启用“适中”受限模式。
+      如果您启用了此设置，则系统会始终强制启用 YouTube 过滤模式，且至少启用“适中”过滤模式。
 
-      如果您停用此设置或未设置值，则 <ph name="PRODUCT_NAME" /> 不会强制启用 YouTube 受限模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用受限模式。</translation>
+      如果您停用此设置或未设置值，则 <ph name="PRODUCT_NAME" /> 不会强制启用 YouTube 过滤模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用过滤模式。</translation>
 <translation id="6492177700737407141">注册“高级保护计划”的用户将只能获享标准的消费者级别保护功能</translation>
 <translation id="6492737559291967859">通过设置此政策，您可以指定要让 <ph name="PRODUCT_NAME" /> 使用的语言区域。
 
@@ -6324,7 +6324,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6857240169209507953">禁止 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="6857372417233723544">通过设置此政策，您可为 <ph name="PRODUCT_OS_NAME" /> 启用印地语 Inscript 布局。
 如果此政策设为 false 或未设置，布局将不可用。需要重新启动才能生效。</translation>
-<translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
+<translation id="685769593149966548">强制启用 YouTube“严格”过滤模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
 <translation id="6881447940489194100">数据的十六进制编码 SHA-256 哈希。</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
@@ -7622,7 +7622,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 如果 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。</translation>
 <translation id="8113731369695819720">为登录屏幕停用单声道音频</translation>
-<translation id="8114382167597081590">不强制启用 YouTube 受限模式</translation>
+<translation id="8114382167597081590">不强制启用 YouTube 过滤模式</translation>
 <translation id="8117662664312039036">不允许设备使用 PluginVm</translation>
 <translation id="8117921351531866504">该政策让您能够设置是否允许网站检查用户有无已保存的付款方式。
 
@@ -8013,7 +8013,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8455529558077979314">隐私保护屏设置</translation>
 <translation id="8461914792118322307">代理</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
-<translation id="8470317291588703478">不强制使用 YouTube 受限模式</translation>
+<translation id="8470317291588703478">不强制使用 YouTube 过滤模式</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC 会在搜索最佳路径时使用所有可用接口。</translation>
 <translation id="8483004350080020634">先剔除 https:// 网址中关乎隐私和安全性的敏感部分，然后再将网址传递给 PAC（代理自动配置）脚本，以供 <ph name="PRODUCT_NAME" /> 在代理解析期间使用。
@@ -8083,7 +8083,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       警告：最好不要配置版本限制，因为这些限制可能会妨碍用户接收软件更新以及重要的安全性修补程序。限制设备更新为特定版本可能会将用户置于风险之中。</translation>
 <translation id="8519617069657262768">启用 Google 云端硬盘同步</translation>
-<translation id="8520064498689833152">强制在 Google 搜索中使用级别至少为“中等”的安全搜索功能，也强制使用级别至少为“中等”的 YouTube 受限模式</translation>
+<translation id="8520064498689833152">强制在 Google 搜索中使用级别至少为“中等”的安全搜索功能，也强制使用级别至少为“中等”的 YouTube 过滤模式</translation>
 <translation id="8524334245528364388">包含一系列打印服务器的 JSON 文件的网址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>
 <translation id="8526745614158856826">通过设置此政策，您可以罗列一些网址，从而指定自动授权哪些网站访问所有可用的设备。
@@ -8252,7 +8252,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8676959842615154675">如果此政策已启用，远程访问主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。
 
       如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
-<translation id="867708016260789630">强制使用级别至少为“中等”的 YouTube 受限模式</translation>
+<translation id="867708016260789630">强制使用级别至少为“中等”的 YouTube 过滤模式</translation>
 <translation id="8677853537025397834">允许在这些网站上使用 WebHID API</translation>
 <translation id="8684000025871334499">在 <ph name="PRODUCT_OS_NAME" /> 上为 Bruschetta 虚拟机配置安装政策和运行时政策。这样一来，用户便能安装第三方虚拟机。此功能默认处于停用状态。
 
@@ -8314,7 +8314,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       “http://acme.com/ABC”仅在“IESiteListMode”下匹配。</translation>
 <translation id="8728854710675158426">已允许在 TLS 握手时使用不安全哈希</translation>
 <translation id="8734543507835977857">在会话启动后才开始实施电源管理延迟和会话时长限制</translation>
-<translation id="8736538322216687231">强制启用最低级别的 YouTube 受限模式</translation>
+<translation id="8736538322216687231">强制启用最低级别的 YouTube 过滤模式</translation>
 <translation id="8744844164152340112">控制用于在 OOBE 期间和会话期间呈现界面的主题（深色/浅色/自动）。
       自动模式会于日出和日落时自动在深色主题和浅色主题之间切换。
       最好使用此政策，以便用户能在系统设置中更改主题。</translation>

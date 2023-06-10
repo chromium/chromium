@@ -1469,7 +1469,7 @@
 <translation id="2214018885812055163">Спільні папки</translation>
 <translation id="2214884991347062907">Неправильний пароль, повторіть спробу</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Не показано 1 рядок&gt;}one{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядок&gt;}few{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядки&gt;}many{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядків&gt;}other{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядка&gt;}}</translation>
-<translation id="2218019600945559112">Миша та сенсорна панель</translation>
+<translation id="2218019600945559112">Миша й сенсорна панель</translation>
 <translation id="2218320521449013367">Коли Chrome видаляв шкідливі програми, сталася помилка</translation>
 <translation id="2218515861914035131">Вставити як звичайний текст</translation>
 <translation id="2220409419896228519">Додавайте закладки до улюблених додатків Google</translation>

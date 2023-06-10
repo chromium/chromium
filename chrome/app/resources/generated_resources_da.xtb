@@ -3669,7 +3669,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4109135793348361820">Flyt vindue til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Gendan advarsel</translation>
-<translation id="4110490973560452005">[=1]1 download er fuldført: <ph name="FILE_NAME" />. Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
+<translation id="4110490973560452005">Download er fuldført: <ph name="FILE_NAME" />. Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4114524937989710624">Du får vist forslag til filer, som hjælper dig med nemt at vende tilbage til din seneste aktivitet i Google Drev.
         <ph name="BREAK" />

@@ -81,7 +81,7 @@
 <translation id="1293264513303784526">USB-C ಸಾಧನ (ಎಡ ಪೋರ್ಟ್)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1294929383540927798">ಲಾಕ್-ಸ್ಕ್ರೀನ್ ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
+<translation id="1294929383540927798">ಲಾಕ್-ಸ್ಕ್ರೀನ್ ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ಶಿಫಾರಸು ಮಾಡಲಾದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="1312604459020188865">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1446,7 +1446,7 @@
 <translation id="7714767791242455379">ಹೊಸ ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ವರೆಗೆ ಆನ್ ಆಗಿರುತ್ತದೆ</translation>
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ಅಧಿಸೂಚನೆ}one{# ಅಧಿಸೂಚನೆಗಳು}other{# ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ನೋಟಿಫಿಕೇಶನ್}one{# ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}other{# ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}}</translation>
 <translation id="7723703419796509666">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಕನ್ಸೋಲ್ ಅನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7727952505535211425">ಹೊಸ ಟ್ಯಾಬ್‌ ಒಂದರಲ್ಲಿನ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>

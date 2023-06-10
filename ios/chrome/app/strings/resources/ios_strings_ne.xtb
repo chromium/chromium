@@ -239,7 +239,7 @@
 <translation id="2595587704210555261">{COUNT,plural, =1{तपाईं आफूले सबैभन्दा बढी प्रयोग गर्ने ट्याबहरूमा सजिलै ध्यान केन्द्रित गर्न सक्नुहोस् भन्नाका लागि एक दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरिएका ट्याबहरू सारेर "निष्क्रिय ट्याबहरू" खण्डमा लगिन्छ। तपाईं जुनसुकै बेला सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।}other{तपाईं आफूले सबैभन्दा बढी प्रयोग गर्ने ट्याबहरूमा सजिलै ध्यान केन्द्रित गर्न सक्नुहोस् भन्नाका लागि {COUNT} दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरिएका ट्याबहरू सारेर "निष्क्रिय ट्याबहरू" खण्डमा लगिन्छ। तपाईं जुनसुकै बेला सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।}}</translation>
 <translation id="2600682495497606169">साइटका कुकीहरू हटाउनुहोस्</translation>
 <translation id="2609008503159898744">सबै ट्याबहरू बन्द गर्ने हो?</translation>
-<translation id="2625189173221582860">पासवर्ड प्रतिलिपि गरियो</translation>
+<translation id="2625189173221582860">पासवर्ड कपी गरियो</translation>
 <translation id="2626236249646841566">आफ्नो इन्टरनेट जाँच्नुहोस् र फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="2637313651144986786">ट्याबहरू खोज्नुहोस्...</translation>
 <translation id="2647269890314209800">प्रयोगमा रहेका कुकीहरू</translation>
@@ -260,7 +260,7 @@
 <translation id="2700241355396984822">अनुमति तय गर्ने विकल्पहरू</translation>
 <translation id="2702801445560668637">पाठ्य सूची</translation>
 <translation id="2704491540504985681">डाउनलोडहरू</translation>
-<translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
+<translation id="2704606927547763573">कपी गरियो</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2712127207578915686">फाइल खोल्न असमर्थ</translation>
@@ -346,14 +346,14 @@
 <translation id="3224641773458703735">पासवर्डहरू निर्यात गर्नका लागि सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3235063766008841141">यो पासवर्ड भ्रामक साइटमा प्रविष्टि गरिएको थियो र यसलाई अरूले देखेका थिए</translation>
-<translation id="3240426699337459095">लिंक प्रतिलिपि गरियो</translation>
+<translation id="3240426699337459095">लिंक कपी गरियो</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">तपाईंले गरेको परिवर्तन सेभ गर्न सकिएन।</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> को <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">पासवर्डहरू अटोफिल गर्नुहोस्</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
-<translation id="3277021493514034324">साइटको ठेगाना प्रतिलिपि गरियो</translation>
+<translation id="3277021493514034324">साइटको ठेगाना कपी गरियो</translation>
 <translation id="3285962946108803577">पेज सेयर गर्नुहोस्...</translation>
 <translation id="3289505634533552500">भ्वाइस सर्च</translation>
 <translation id="3290875554372353449">कुनै खाता छान्नुहोस्</translation>
@@ -665,7 +665,7 @@
 <translation id="5416022985862681400">पछिल्ला ७ दिन</translation>
 <translation id="5423269318075950257">मूल्य ट्रयाक गर्नुहोस्</translation>
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
-<translation id="5433691172869980887">युजरनेम प्रतिलिपि गरियो</translation>
+<translation id="5433691172869980887">युजरनेम कपी गरियो</translation>
 <translation id="5439599923922718668">बारम्बार हेरिएका</translation>
 <translation id="54401264925851789">पृष्ठ सुरक्षा जानकारी</translation>
 <translation id="5443952882982198570">क्रेडिट कार्डहरू</translation>

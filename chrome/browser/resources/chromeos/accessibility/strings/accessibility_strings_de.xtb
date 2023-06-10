@@ -500,7 +500,7 @@
 <translation id="4225355998815256469">Formularsteuerelemente</translation>
 <translation id="4230834257931120629">Helles Schiefergrau</translation>
 <translation id="4231102694147661229">Entwickleroptionen aktivieren</translation>
-<translation id="423428485095722850">Zum Wechseln die Suchtaste + Leertaste drücken</translation>
+<translation id="423428485095722850">Zum Wechseln die Suchtaste plus Leertaste drücken</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Grad <ph name="GRADE" /></translation>
 <translation id="4246217262268234757">Stahlblau</translation>
 <translation id="4253168017788158739">Notiz</translation>
@@ -964,7 +964,7 @@
 <translation id="762020119231868829">Pausiert alle momentan aktiven Medien-Widgets</translation>
 <translation id="7625690649919402823">Nächste Tabelle</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grad <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Drücke „Suchtaste + Rechtspfeil“, um den Übungsbereich oder die Schaltfläche „Nächste Lektion“ zu markieren. Drücke dann „Suchtaste + Leertaste“, um die Schaltfläche auszuwählen.</translation>
+<translation id="7637342083105831460">Drücke „Suchtaste plus Rechtspfeil“, um den Übungsbereich oder die Schaltfläche „Nächste Lektion“ zu markieren. Drücke dann „Suchtaste plus Leertaste“, um die Schaltfläche auszuwählen.</translation>
 <translation id="7639968568612851608">Dunkelgrau</translation>
 <translation id="7663318257180412551">Überschrift 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{Stunde}other{Stunden}}</translation>
@@ -1118,7 +1118,7 @@
 <translation id="8693391540059827073">Meine Lieblingsjahreszeit</translation>
 <translation id="8696284982970258155">Honigmelone</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{senkrechter Strich}other{# senkrechte Striche}}</translation>
-<translation id="8741370088760768424">Hinweis: Wenn du das aktuelle Element aktivieren möchtest, drücke „Suchtaste + Leertaste“.</translation>
+<translation id="8741370088760768424">Hinweis: Wenn du das aktuelle Element aktivieren möchtest, drücke „Suchtaste plus Leertaste“.</translation>
 <translation id="8743786158317878347">Strukturierte Inhalte wie z. B. Tabellen eingeben</translation>
 <translation id="8746846427395705317">zum vorherigen Wort wechseln</translation>
 <translation id="8747966237988593539">Geordnete Liste</translation>
