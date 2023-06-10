@@ -1460,6 +1460,12 @@ BASE_FEATURE(kLicensePackagedOobeFlow,
              "LicensePackagedOobeFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables cross device supported reports within the feedback tool.
+// (This feature is only available for dogfooders)
+BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
+             "LinkCrossDeviceDogFoodFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Supports the feature to hide sensitive content in notifications on the lock
 // screen. This option is effective when |kLockScreenNotification| is enabled.
 BASE_FEATURE(kLockScreenHideSensitiveNotificationsSupport,
@@ -3109,6 +3115,10 @@ bool IsLauncherNudgeSessionResetEnabled() {
 
 bool IsLicensePackagedOobeFlowEnabled() {
   return base::FeatureList::IsEnabled(kLicensePackagedOobeFlow);
+}
+
+bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
+  return base::FeatureList::IsEnabled(kLinkCrossDeviceDogfoodFeedback);
 }
 
 bool IsLockScreenHideSensitiveNotificationsSupported() {
