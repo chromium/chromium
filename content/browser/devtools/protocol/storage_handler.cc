@@ -377,7 +377,7 @@ class StorageHandler::QuotaManagerObserver
         base::BindOnce(
             [](base::WeakPtr<StorageHandler> owner_storage_handler,
                storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
-              if (!buckets.has_value()) {
+              if (!owner_storage_handler || !buckets.has_value()) {
                 return;
               }
 
