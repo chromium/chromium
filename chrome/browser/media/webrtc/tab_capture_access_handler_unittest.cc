@@ -96,6 +96,12 @@ class TabCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     access_handler_.reset();
   }
 
+  content::RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+  int main_frame_id() { return main_frame()->GetRoutingID(); }
+  int process_id() { return main_frame()->GetProcess()->GetID(); }
+
  protected:
   std::unique_ptr<TabCaptureAccessHandler> access_handler_;
 };
@@ -110,7 +116,7 @@ TEST_F(TabCaptureAccessHandlerTest, PermissionGiven) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, web_contents());
+      GURL(kOrigin), source, process_id(), main_frame_id());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;
@@ -145,7 +151,7 @@ TEST_F(TabCaptureAccessHandlerTest, DlpRestricted) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, web_contents());
+      GURL(kOrigin), source, process_id(), main_frame_id());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;
@@ -177,7 +183,7 @@ TEST_F(TabCaptureAccessHandlerTest, DlpNotRestricted) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, web_contents());
+      GURL(kOrigin), source, process_id(), main_frame_id());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;
@@ -210,7 +216,7 @@ TEST_F(TabCaptureAccessHandlerTest, DlpWebContentsDestroyed) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, web_contents());
+      GURL(kOrigin), source, process_id(), main_frame_id());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;

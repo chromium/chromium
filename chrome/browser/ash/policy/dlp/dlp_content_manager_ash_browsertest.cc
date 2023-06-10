@@ -920,15 +920,16 @@ class DlpContentManagerAshScreenShareBrowserTest
       content::WebContents* web_contents,
       bool expect_allowed = true,
       bool expect_warning = false) {
+    int process_id = web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     const content::DesktopMediaID media_id(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(
-            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
-            web_contents->GetPrimaryMainFrame()->GetRoutingID()));
+        content::WebContentsMediaCaptureId(process_id, frame_id));
+
     extensions::TabCaptureRegistry::Get(browser()->profile())
         ->AddRequest(web_contents, /*extension_id=*/"", /*is_anonymous=*/false,
-                     GURL(kExampleUrl), media_id, web_contents);
+                     GURL(kExampleUrl), media_id, process_id, frame_id);
 
     MaybeStartScreenShare(
         std::make_unique<TabCaptureAccessHandler>(), web_contents,
