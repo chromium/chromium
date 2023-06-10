@@ -90,7 +90,9 @@ enum class InstallResultCode {
   // non-generated icons.
   kIconDownloadingFailed = 30,
 
-  kMaxValue = kIconDownloadingFailed,
+  kCancelledDueToMainFrameNavigation = 31,
+
+  kMaxValue = kCancelledDueToMainFrameNavigation,
 };
 
 // Checks if InstallResultCode is not a failure.

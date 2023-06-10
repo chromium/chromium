@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -16,8 +17,11 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -60,6 +64,13 @@ base::Value ManifestUpdateCheckCommand::ToDebugValue() const {
 void ManifestUpdateCheckCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
+  if (IsWebContentsDestroyed()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kWebContentsDestroyed);
+    return;
+  }
+  Observe(web_contents_.get());
+
   // Runs a linear sequence of asynchronous and synchronous steps.
   // This sequence can be early exited at any point by a call to
   // CompleteCommandAndSelfDestruct().
@@ -77,6 +88,23 @@ void ManifestUpdateCheckCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
                      GetWeakPtr()),
 
       base::BindOnce(&ManifestUpdateCheckCommand::CheckComplete, GetWeakPtr()));
+}
+
+void ManifestUpdateCheckCommand::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (url::IsSameOriginWith(navigation_handle->GetPreviousPrimaryMainFrameURL(),
+                            navigation_handle->GetURL())) {
+    return;
+  }
+
+  CompleteCommandAndSelfDestruct(
+      ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -535,7 +563,7 @@ const WebApp& ManifestUpdateCheckCommand::GetWebApp() const {
   return *web_app;
 }
 
-bool ManifestUpdateCheckCommand::IsWebContentsDestroyed() const {
+bool ManifestUpdateCheckCommand::IsWebContentsDestroyed() {
   return !web_contents_ || web_contents_->IsBeingDestroyed();
 }
 
@@ -554,12 +582,14 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
       case ManifestUpdateCheckResult::kIconDownloadFailed:
       case ManifestUpdateCheckResult::kIconReadFromDiskFailed:
       case ManifestUpdateCheckResult::kWebContentsDestroyed:
+      case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
         return CommandResult::kFailure;
       case ManifestUpdateCheckResult::kSystemShutdown:
         return CommandResult::kShutdown;
     }
   }();
 
+  Observe(nullptr);
   SignalCompletionAndSelfDestruct(
       command_result,
       base::BindOnce(std::move(completed_callback_), check_result,

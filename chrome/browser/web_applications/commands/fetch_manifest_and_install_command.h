@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -18,6 +19,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -27,6 +29,7 @@
 
 namespace content {
 class WebContents;
+class NavigationHandle;
 }
 
 namespace web_app {
@@ -39,7 +42,8 @@ class NoopLockDescription;
 class WebAppDataRetriever;
 
 // Install web app from manifest for current `WebContents`.
-class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock> {
+class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
+                                       public content::WebContentsObserver {
  public:
   // `use_fallback` allows getting fallback information from current document
   // to enable installing a non-promotable site.
@@ -62,6 +66,10 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock> {
   base::Value ToDebugValue() const override;
 
  private:
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
   void Abort(webapps::InstallResultCode code);
   bool IsWebContentsDestroyed();
 

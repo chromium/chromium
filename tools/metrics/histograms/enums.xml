@@ -110188,6 +110188,7 @@ others/histograms.xml -->
   <int value="28" label="HaltedBySyncUninstall"/>
   <int value="29" label="kInstallURLInvalid"/>
   <int value="30" label="kIconDownloadingFailed"/>
+  <int value="31" label="kCancelledDueToMainFrameNavigation"/>
 </enum>
 
 <enum name="WebAppInstallSource">
@@ -110268,6 +110269,7 @@ others/histograms.xml -->
   <int value="12" label="App ID mismatch"/>
   <int value="13" label="Web app origin associations update failed"/>
   <int value="14" label="Web app origin associations updated"/>
+  <int value="15" label="Main frame navigation cancelled manifest update"/>
 </enum>
 
 <enum name="WebAppMoverResult">

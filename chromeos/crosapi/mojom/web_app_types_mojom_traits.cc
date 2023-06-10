@@ -75,6 +75,9 @@ crosapi::mojom::WebAppInstallResultCode EnumTraits<
       return crosapi::mojom::WebAppInstallResultCode::kInstallURLInvalid;
     case webapps::InstallResultCode::kIconDownloadingFailed:
       return crosapi::mojom::WebAppInstallResultCode::kIconDownloadingFailed;
+    case webapps::InstallResultCode::kCancelledDueToMainFrameNavigation:
+      return crosapi::mojom::WebAppInstallResultCode::
+          kCancelledDueToMainFrameNavigation;
   };
 }
 
@@ -166,6 +169,10 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
     case crosapi::mojom::WebAppInstallResultCode::kIconDownloadingFailed:
       *output = webapps::InstallResultCode::kIconDownloadingFailed;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::
+        kCancelledDueToMainFrameNavigation:
+      *output = webapps::InstallResultCode::kCancelledDueToMainFrameNavigation;
       return true;
   };
 

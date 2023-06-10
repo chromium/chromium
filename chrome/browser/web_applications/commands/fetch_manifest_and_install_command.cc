@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -30,7 +31,10 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/app.mojom.h"
@@ -174,16 +178,17 @@ const LockDescription& FetchManifestAndInstallCommand::lock_description()
 void FetchManifestAndInstallCommand::StartWithLock(
     std::unique_ptr<NoopLock> lock) {
   noop_lock_ = std::move(lock);
+  if (IsWebContentsDestroyed()) {
+    Abort(webapps::InstallResultCode::kWebContentsDestroyed);
+    return;
+  }
+
+  Observe(web_contents_.get());
 
   // This metric is recorded regardless of the installation result.
   if (webapps::InstallableMetrics::IsReportableInstallSource(
           install_surface_)) {
     webapps::InstallableMetrics::TrackInstallEvent(install_surface_);
-  }
-
-  if (IsWebContentsDestroyed()) {
-    Abort(webapps::InstallResultCode::kWebContentsDestroyed);
-    return;
   }
 
   DCHECK(AreWebAppsUserInstallable(
@@ -216,11 +221,28 @@ base::Value FetchManifestAndInstallCommand::ToDebugValue() const {
   return base::Value(std::move(debug_value));
 }
 
+void FetchManifestAndInstallCommand::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (url::IsSameOriginWith(navigation_handle->GetPreviousPrimaryMainFrameURL(),
+                            navigation_handle->GetURL())) {
+    return;
+  }
+
+  Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+}
+
 void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
   if (!install_callback_)
     return;
   debug_log_.Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
+  Observe(nullptr);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
       base::BindOnce(std::move(install_callback_), AppId(), code));
