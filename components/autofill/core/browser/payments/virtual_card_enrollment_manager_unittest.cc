@@ -38,6 +38,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 using testing::_;
+using testing::NiceMock;
 
 namespace autofill {
 
@@ -98,15 +99,14 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     personal_data_manager_->OnCardArtImagesFetched(std::move(images));
   }
 
-  void SetNetworkImageInResourceBundle(const std::string& network,
+  void SetNetworkImageInResourceBundle(ui::MockResourceBundleDelegate* delegate,
+                                       const std::string& network,
                                        const gfx::Image& network_image) {
-    ui::ResourceBundle::CleanupSharedInstance();
-    ui::MockResourceBundleDelegate delegate;
     ui::ResourceBundle::InitSharedInstanceWithLocale(
-        personal_data_manager_->app_locale(), &delegate,
+        personal_data_manager_->app_locale(), delegate,
         ui::ResourceBundle::LoadResources::DO_NOT_LOAD_COMMON_RESOURCES);
     int resource_id = CreditCard::IconResourceId(network);
-    ON_CALL(delegate, GetImageNamed(resource_id))
+    ON_CALL(*delegate, GetImageNamed(resource_id))
         .WillByDefault(testing::Return(network_image));
 
     // Cache the image so that the ui::ResourceBundle::GetImageSkiaNamed()
@@ -319,10 +319,16 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
       state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
           source;
 
+      NiceMock<ui::MockResourceBundleDelegate> delegate;
+      ui::ResourceBundle* orig_resource_bundle = nullptr;
+
       gfx::Image network_image;
       if (!make_image_present) {
         network_image = gfx::test::CreateImage(32, 30);
+        orig_resource_bundle =
+            ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
         SetNetworkImageInResourceBundle(
+            &delegate,
             state->virtual_card_enrollment_fields.credit_card.network(),
             network_image);
       }
@@ -363,6 +369,11 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
               PaymentsRpcResultToMetricsSuffix(
                   AutofillClient::PaymentsRpcResult::kSuccess),
           /*sample=*/5, make_image_present ? 1 : 2);
+
+      if (!make_image_present) {
+        ui::ResourceBundle::CleanupSharedInstance();
+        ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle);
+      }
     }
   }
 }
