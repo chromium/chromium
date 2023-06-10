@@ -407,9 +407,10 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
     // Popup is now expanded and first item will be selected.
     NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
-        result_view_at(0)) {
-      FireAXEventsForNewActiveDescendant(result_view_at(0));
+    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+      if (OmniboxResultView* result_view = result_view_at(0)) {
+        FireAXEventsForNewActiveDescendant(result_view);
+      }
     }
 
 #if BUILDFLAG(IS_MAC)
@@ -450,7 +451,9 @@ void OmniboxPopupViewViews::OnMatchIconUpdated(size_t match_index) {
     return;
   }
 
-  result_view_at(match_index)->OnMatchIconUpdated();
+  if (OmniboxResultView* result_view = result_view_at(match_index)) {
+    result_view->OnMatchIconUpdated();
+  }
 }
 
 void OmniboxPopupViewViews::OnDragCanceled() {
@@ -472,8 +475,7 @@ void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
   int32_t popup_view_id = GetViewAccessibility().GetUniqueId().Get();
   node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                                  {popup_view_id});
-  OmniboxResultView* selected_result_view = GetSelectedResultView();
-  if (selected_result_view) {
+  if (OmniboxResultView* selected_result_view = GetSelectedResultView()) {
     node_data->AddIntAttribute(
         ax::mojom::IntAttribute::kActivedescendantId,
         selected_result_view->GetViewAccessibility().GetUniqueId().Get());
@@ -482,9 +484,13 @@ void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
 
 std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
     size_t line) {
-  views::LabelButton* button = static_cast<views::LabelButton*>(
-      result_view_at(line)->GetActiveAuxiliaryButtonForAccessibility());
-  return button->GetText();
+  if (OmniboxResultView* result_view = result_view_at(line)) {
+    return static_cast<views::LabelButton*>(
+               result_view->GetActiveAuxiliaryButtonForAccessibility())
+        ->GetText();
+  } else {
+    return u"";
+  }
 }
 
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {
