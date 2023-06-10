@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 134 tests; 130 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 134 tests; 132 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value
@@ -80,8 +80,8 @@ PASS e.style['background-image'] = "image-set(url(\"example.png\") 0dpcm)" shoul
 PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 0dpcm)" should set the property value
 FAIL e.style['background-image'] = "image-set(url(\"example.png\") calc(-1 * 1x))" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") calc(-1 * 1x))" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "image-set(url(\"example.png\") calc(1x + -1x))" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"example.png\") calc(1x + -1x))" but got "image-set(url(\"example.png\") calc(0dppx))"
-FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") calc(1x + -1x))" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"example.png\") calc(1x + -1x))" but got "image-set(url(\"example.png\") calc(0dppx))"
+PASS e.style['background-image'] = "image-set(url(\"example.png\") calc(1x + -1x))" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") calc(1x + -1x))" should set the property value
 PASS e.style['background-image'] = "image-set(url(\"example.png\") -1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") -1x)" should not set the property value
 PASS e.style['background-image'] = "image-set(url(\"example.png\") -3dppx)" should not set the property value

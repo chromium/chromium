@@ -2016,7 +2016,7 @@ crbug.com/1218715 external/wpt/content-security-policy/reporting-api/reporting-a
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Crash Failure Pass Timeout ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
-crbug.com/1072022 [ Mac13 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
+crbug.com/1072022 [ Mac13 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
 crbug.com/1072022 [ Mac10.13 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.14 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.15 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
@@ -2869,6 +2869,14 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-fonts/separators.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
+crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color/oklab-009.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/oklch-011.html [ Failure ]
@@ -6676,23 +6684,23 @@ crbug.com/1451711 [ Mac10.15 ] http/tests/inspector-protocol/tracing/prerender.j
 crbug.com/1451810 [ Linux ] wpt_internal/css/css-contain/container-queries/state-initially-stuck.html [ Failure ]
 
 # Sheriff 2023-06-07
-crbug.com/1452003 [ Mac12 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Pass Failure ]
+crbug.com/1452003 [ Mac12 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]
 crbug.com/1451210 [ Mac ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
 crbug.com/1452222 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure Pass ]
 crbug.com/1452163 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Failure Pass Timeout ]
-crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Pass Failure Timeout ]
-crbug.com/1072022 [ Mac12 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
-crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Pass Failure ]
-crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Pass Failure ]
-crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Pass Failure ]
+crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ]
+crbug.com/1072022 [ Mac12 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
+crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Failure Pass ]
+crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
+crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/4594631
-fast/js/array-foreach.html [ Pass Failure ]
-fast/js/array-some.html [ Pass Failure ]
-fast/js/iterable-object.html [ Pass Failure ]
+fast/js/array-foreach.html [ Failure Pass ]
+fast/js/array-some.html [ Failure Pass ]
+fast/js/iterable-object.html [ Failure Pass ]
 
 # Sherrif 2023-06-09
-crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Pass Failure ]
-crbug.com/1452003 [ Mac13 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Pass Failure ]
-crbug.com/1072022 [ Mac12-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
-crbug.com/1072022 [ Mac13-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
+crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Failure Pass ]
+crbug.com/1452003 [ Mac13 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]
+crbug.com/1072022 [ Mac12-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
+crbug.com/1072022 [ Mac13-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
