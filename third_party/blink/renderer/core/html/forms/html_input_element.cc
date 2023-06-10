@@ -995,7 +995,6 @@ void HTMLInputElement::ResetImpl() {
     SetNonDirtyValue(String());
     SetNeedsValidityCheck();
   }
-
   SetChecked(FastHasAttribute(html_names::kCheckedAttr));
   dirty_checkedness_ = false;
   HTMLFormControlElementWithState::ResetImpl();

@@ -385,7 +385,9 @@ bool HTMLSelectMenuElement::open() const {
 
 void HTMLSelectMenuElement::SetAutofillValue(const String& value,
                                              WebAutofillState autofill_state) {
+  bool user_has_edited_the_field = user_has_edited_the_field_;
   setValue(value, /*send_events=*/true, autofill_state);
+  SetUserHasEditedTheField(user_has_edited_the_field);
 }
 
 void HTMLSelectMenuElement::OpenListbox() {

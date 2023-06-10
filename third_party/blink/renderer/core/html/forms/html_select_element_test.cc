@@ -74,6 +74,24 @@ void HTMLSelectElementTest::TearDown() {
   PageTestBase::TearDown();
 }
 
+// Tests that HtmlSelectElement::SetAutofillValue() doesn't change the
+// `user_has_edited_the_field_` attribute of the field.
+TEST_F(HTMLSelectElementTest, SetAutofillValuePreservesEditedState) {
+  SetHtmlInnerHTML(
+      "<!DOCTYPE HTML><select id='sel'>"
+      "<option value='111' selected>111</option>"
+      "<option value='222'>222</option></select>");
+  HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("sel"));
+
+  select->SetUserHasEditedTheField(false);
+  select->SetAutofillValue("222", WebAutofillState::kAutofilled);
+  EXPECT_EQ(select->UserHasEditedTheField(), false);
+
+  select->SetUserHasEditedTheField(true);
+  select->SetAutofillValue("111", WebAutofillState::kAutofilled);
+  EXPECT_EQ(select->UserHasEditedTheField(), true);
+}
+
 TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {
   SetHtmlInnerHTML(
       "<!DOCTYPE HTML><select id='sel'>"

@@ -321,7 +321,9 @@ void HTMLSelectElement::SetValue(const String& value,
 
 void HTMLSelectElement::SetAutofillValue(const String& value,
                                          WebAutofillState autofill_state) {
+  bool user_has_edited_the_field = user_has_edited_the_field_;
   SetValue(value, true, autofill_state);
+  SetUserHasEditedTheField(user_has_edited_the_field);
 }
 
 String HTMLSelectElement::SuggestedValue() const {

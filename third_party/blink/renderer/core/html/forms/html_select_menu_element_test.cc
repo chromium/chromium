@@ -40,6 +40,25 @@ class HTMLSelectMenuElementTest : public PageTestBase {
   }
 };
 
+// Tests that HtmlSelectMenuElement::SetAutofillValue() doesn't change the
+// `user_has_edited_the_field_` attribute of the field.
+TEST_F(HTMLSelectMenuElementTest, SetAutofillValuePreservesEditedState) {
+  SetHtmlInnerHTML(
+      "<!DOCTYPE HTML><selectmenu id='sel'>"
+      "<option value='111' selected>111</option>"
+      "<option value='222'>222</option></selectmenu>");
+  HTMLSelectMenuElement* select_menu =
+      To<HTMLSelectMenuElement>(GetElementById("sel"));
+
+  select_menu->SetUserHasEditedTheField(false);
+  select_menu->SetAutofillValue("222", WebAutofillState::kAutofilled);
+  EXPECT_EQ(select_menu->UserHasEditedTheField(), false);
+
+  select_menu->SetUserHasEditedTheField(true);
+  select_menu->SetAutofillValue("111", WebAutofillState::kAutofilled);
+  EXPECT_EQ(select_menu->UserHasEditedTheField(), true);
+}
+
 // Test that SelectMenuElement::GetListItems() return value is updated upon
 // adding <option>s.
 TEST_F(HTMLSelectMenuElementTest, GetListItemsAdd) {
