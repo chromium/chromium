@@ -28,7 +28,7 @@ interface VpnServiceOption {
 
 const NetworkAlwaysOnVpnElementBase = I18nMixin(PolymerElement);
 
-class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
+export class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
   static get is() {
     return 'network-always-on-vpn' as const;
   }
