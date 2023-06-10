@@ -1741,10 +1741,9 @@ CSSValue* ComputedStyleUtils::ValueForGridAutoTrackList(
     const LayoutObject* layout_object,
     const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  const GridTrackList& grid_auto_track_list = track_direction == kForColumns
-                                                  ? style.GridAutoColumns()
-                                                  : style.GridAutoRows();
-  const NGGridTrackList& auto_track_list = grid_auto_track_list.NGTrackList();
+  const NGGridTrackList& auto_track_list = track_direction == kForColumns
+                                               ? style.GridAutoColumns()
+                                               : style.GridAutoRows();
   if (auto_track_list.RepeaterCount() == 1) {
     for (wtf_size_t i = 0; i < auto_track_list.RepeatSize(0); ++i) {
       list->Append(*SpecifiedValueForGridTrackSize(
@@ -1979,7 +1978,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
 
   // Handle the 'none' case.
   bool is_track_list_empty =
-      !computed_grid_track_list.TrackList().RepeaterCount();
+      !computed_grid_track_list.track_list.RepeaterCount();
   if (grid && is_track_list_empty) {
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
@@ -2003,7 +2002,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
 
   wtf_size_t auto_repeat_insertion_point =
       computed_grid_track_list.auto_repeat_insertion_point;
-  const NGGridTrackList& ng_track_list = computed_grid_track_list.TrackList();
+  const NGGridTrackList& ng_track_list = computed_grid_track_list.track_list;
 
   if (grid) {
     // The number of auto repeat tracks. For 'repeat(auto-fill, [x][y])' this
@@ -2012,7 +2011,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     // standalone grids, this will be the number of track sizes, as this can
     // can differ from the count on the track definition.
     wtf_size_t auto_repeat_track_list_length =
-        computed_grid_track_list.TrackList().AutoRepeatTrackCount();
+        ng_track_list.AutoRepeatTrackCount();
 
     // Standalone grids will report the track sizes in the computed style
     // string, so base the start and end indices on it.

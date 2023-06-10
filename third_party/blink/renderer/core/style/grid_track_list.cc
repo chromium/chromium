@@ -220,39 +220,4 @@ bool NGGridTrackList::operator==(const NGGridTrackList& other) const {
          axis_type_ == other.axis_type_;
 }
 
-GridTrackList::GridTrackList(const GridTrackList& other) {
-  ng_track_list_ = other.ng_track_list_;
-}
-
-GridTrackList::GridTrackList(const GridTrackSize& default_track_size) {
-  ng_track_list_.AddRepeater({default_track_size});
-}
-
-GridTrackList::GridTrackList(const Vector<GridTrackSize, 1>& track_sizes) {
-  ng_track_list_.AddRepeater(track_sizes);
-}
-
-NGGridTrackList& GridTrackList::NGTrackList() {
-  return ng_track_list_;
-}
-const NGGridTrackList& GridTrackList::NGTrackList() const {
-  return ng_track_list_;
-}
-
-void GridTrackList::SetNGGridTrackList(const NGGridTrackList& other) {
-  ng_track_list_ = other;
-}
-
-void GridTrackList::operator=(const GridTrackList& other) {
-  ng_track_list_ = other.ng_track_list_;
-}
-
-bool GridTrackList::operator==(const GridTrackList& other) const {
-  return ng_track_list_ == other.ng_track_list_;
-}
-
-bool GridTrackList::operator!=(const GridTrackList& other) const {
-  return !(*this == other);
-}
-
 }  // namespace blink

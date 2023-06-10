@@ -227,7 +227,7 @@ NGGridLineResolver::NGGridLineResolver(
          wtf_size_t auto_repetitions, bool is_opposite_direction_to_parent,
          bool is_nested_subgrid) -> void {
     const wtf_size_t auto_repeat_track_count =
-        track_list.TrackList().AutoRepeatTrackCount();
+        track_list.track_list.AutoRepeatTrackCount();
     const wtf_size_t auto_repeat_total_tracks =
         auto_repeat_track_count * auto_repetitions;
     if (auto_repeat_total_tracks == 0) {
@@ -490,24 +490,24 @@ wtf_size_t NGGridLineResolver::ExplicitGridColumnCount() const {
   if (subgridded_column_span_size_ != kNotFound)
     return subgridded_column_span_size_;
 
-  return std::min<wtf_size_t>(std::max(style_->GridTemplateColumns()
-                                               .track_sizes.NGTrackList()
-                                               .TrackCountWithoutAutoRepeat() +
-                                           AutoRepeatTrackCount(kForColumns),
-                                       style_->NamedGridAreaColumnCount()),
-                              kGridMaxTracks);
+  return std::min<wtf_size_t>(
+      std::max(style_->GridTemplateColumns()
+                       .track_list.TrackCountWithoutAutoRepeat() +
+                   AutoRepeatTrackCount(kForColumns),
+               style_->NamedGridAreaColumnCount()),
+      kGridMaxTracks);
 }
 
 wtf_size_t NGGridLineResolver::ExplicitGridRowCount() const {
   if (subgridded_row_span_size_ != kNotFound)
     return subgridded_row_span_size_;
 
-  return std::min<wtf_size_t>(std::max(style_->GridTemplateRows()
-                                               .track_sizes.NGTrackList()
-                                               .TrackCountWithoutAutoRepeat() +
-                                           AutoRepeatTrackCount(kForRows),
-                                       style_->NamedGridAreaRowCount()),
-                              kGridMaxTracks);
+  return std::min<wtf_size_t>(
+      std::max(
+          style_->GridTemplateRows().track_list.TrackCountWithoutAutoRepeat() +
+              AutoRepeatTrackCount(kForRows),
+          style_->NamedGridAreaRowCount()),
+      kGridMaxTracks);
 }
 
 wtf_size_t NGGridLineResolver::ExplicitGridTrackCount(
@@ -526,8 +526,7 @@ wtf_size_t NGGridLineResolver::AutoRepeatTrackCount(
     GridTrackSizingDirection track_direction) const {
   return AutoRepetitions(track_direction) *
          ComputedGridTrackList(track_direction)
-             .TrackList()
-             .AutoRepeatTrackCount();
+             .track_list.AutoRepeatTrackCount();
 }
 
 wtf_size_t NGGridLineResolver::SubgridSpanSize(

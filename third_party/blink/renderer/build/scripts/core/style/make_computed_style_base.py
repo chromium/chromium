@@ -29,7 +29,7 @@ ALIGNMENT_ORDER = [
     'ScaleTransformOperation',
     'RotateTransformOperation',
     'TranslateTransformOperation',
-    'GridTrackList',
+    'NGGridTrackList',
     'ComputedGridTrackList',
     'absl::optional<gfx::Size>',
     'double',

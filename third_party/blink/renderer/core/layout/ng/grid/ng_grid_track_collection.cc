@@ -73,11 +73,11 @@ NGGridRangeBuilder::NGGridRangeBuilder(
                         : placement_data.row_start_offset),
       must_sort_grid_lines_(false),
       explicit_tracks_((track_direction == kForColumns)
-                           ? grid_style.GridTemplateColumns().TrackList()
-                           : grid_style.GridTemplateRows().TrackList()),
+                           ? grid_style.GridTemplateColumns().track_list
+                           : grid_style.GridTemplateRows().track_list),
       implicit_tracks_((track_direction == kForColumns)
-                           ? grid_style.GridAutoColumns().NGTrackList()
-                           : grid_style.GridAutoRows().NGTrackList()) {
+                           ? grid_style.GridAutoColumns()
+                           : grid_style.GridAutoRows()) {
   // The implicit track list should have only one repeater, if any.
   DCHECK_LE(implicit_tracks_.RepeaterCount(), 1u);
   DCHECK_NE(auto_repetitions_, kNotFound);
@@ -986,11 +986,11 @@ void NGGridSizingTrackCollection::BuildSets(const ComputedStyle& grid_style,
                                             LayoutUnit grid_available_size) {
   const bool is_for_columns = track_direction_ == kForColumns;
 
-  BuildSets(is_for_columns ? grid_style.GridTemplateColumns().TrackList()
-                           : grid_style.GridTemplateRows().TrackList(),
-            is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
-                           : grid_style.GridAutoRows().NGTrackList(),
-            grid_available_size == kIndefiniteSize);
+  BuildSets(
+      is_for_columns ? grid_style.GridTemplateColumns().track_list
+                     : grid_style.GridTemplateRows().track_list,
+      is_for_columns ? grid_style.GridAutoColumns() : grid_style.GridAutoRows(),
+      grid_available_size == kIndefiniteSize);
 }
 
 void NGGridSizingTrackCollection::BuildSets(

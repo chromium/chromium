@@ -1340,8 +1340,8 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
     GridTrackSizingDirection track_direction) const {
   const bool is_for_columns = track_direction == kForColumns;
   const auto& track_list = is_for_columns
-                               ? Style().GridTemplateColumns().TrackList()
-                               : Style().GridTemplateRows().TrackList();
+                               ? Style().GridTemplateColumns().track_list
+                               : Style().GridTemplateRows().track_list;
 
   if (!track_list.HasAutoRepeater())
     return 0;
@@ -1469,7 +1469,7 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
   const auto& computed_track_list = (track_direction == kForColumns)
                                         ? Style().GridTemplateColumns()
                                         : Style().GridTemplateRows();
-  const auto& track_list = computed_track_list.TrackList();
+  const auto& track_list = computed_track_list.track_list;
   DCHECK(track_list.HasAutoRepeater());
 
   const wtf_size_t non_auto_repeat_line_count =
