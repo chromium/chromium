@@ -52,7 +52,7 @@ struct FieldTemplate {
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
   FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
-  FormGlobalId host_form;
+  absl::optional<FormGlobalId> host_form;
 };
 
 // These are helper functions that set a special flag in a field_template.
@@ -78,6 +78,9 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     std::vector<FieldTemplate> fields) {
   FormData form;
   form.url = GURL("http://foo.com");
+  form.main_frame_origin = url::Origin::Create(form.url);
+  form.host_frame = test::MakeLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
 
   // Build the fields for the form.
   for (const auto& field_template : fields) {
@@ -93,8 +96,10 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.max_length = field_template.max_length;
     field.parsed_autocomplete = field_template.parsed_autocomplete;
     field.role = field_template.role;
-    field.host_frame = field_template.host_form.frame_token;
-    field.host_form_id = field_template.host_form.renderer_id;
+    field.host_frame =
+        field_template.host_form.value_or(form.global_id()).frame_token;
+    field.host_form_id =
+        field_template.host_form.value_or(form.global_id()).renderer_id;
     field.unique_renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(std::move(field));
   }
