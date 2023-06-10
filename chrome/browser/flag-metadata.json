@@ -356,6 +356,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "ash-capture-mode-audio-mixing",
+    "owners": [ "afakhry", "gzadina" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "ash-capture-mode-demo-tools",
     "owners": [ "michelefan", "gzadina" ],
     "expiry_milestone": 122

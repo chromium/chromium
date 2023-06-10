@@ -59358,6 +59358,7 @@ from previous Chrome versions.
   <int value="-1883170077" label="EnableHtmlBaseUsernameDetector:disabled"/>
   <int value="-1882427024" label="IwaControlledFrame:disabled"/>
   <int value="-1882330924" label="NTPArticleSuggestions:enabled"/>
+  <int value="-1880633355" label="CaptureModeAudioMixing:disabled"/>
   <int value="-1880355454" label="disable-topchrome-md"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
   <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
@@ -62257,6 +62258,7 @@ from previous Chrome versions.
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>
   <int value="-355931495" label="FastPair:enabled"/>
   <int value="-355278724" label="CorbAllowlistAlsoAppliesToOorCors:disabled"/>
+  <int value="-355005246" label="CaptureModeAudioMixing:enabled"/>
   <int value="-354783358" label="NTPSaveToOffline:disabled"/>
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>

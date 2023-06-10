@@ -5324,6 +5324,13 @@ const char kCalendarJellyName[] = "Enable Calendar Jelly features";
 const char kCalendarJellyDescription[] =
     "Enables Jelly changes for the sys tray Calendar views.";
 
+const char kCaptureModeAudioMixingName[] =
+    "Enable screen capture advanced audio settings";
+const char kCaptureModeAudioMixingDescription[] =
+    "Enables the ability to record the microphone, or system audio each "
+    "separately, or mix them together in a single stream in the screen capture "
+    "tool.";
+
 const char kCaptureModeDemoToolsName[] =
     "Enable demo tools feature in screen capture";
 const char kCaptureModeDemoToolsDescription[] =
@@ -5333,7 +5340,7 @@ const char kCaptureModeDemoToolsDescription[] =
 const char kCaptureModeGifRecordingName[] =
     "Enable GIF recording in screen capture";
 const char kCaptureModeGifRecordingDescription[] =
-    "Enables the ability to record the screen into animated GIFs";
+    "Enables the ability to record the screen into animated GIFs.";
 
 const char kCrosWebAppShortcutUiUpdateName[] =
     "New ChromeOS Web app Shortcut UI";

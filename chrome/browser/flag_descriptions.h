@@ -3050,6 +3050,9 @@ extern const char kBluetoothLongAutosuspendDescription[];
 extern const char kCalendarJellyName[];
 extern const char kCalendarJellyDescription[];
 
+extern const char kCaptureModeAudioMixingName[];
+extern const char kCaptureModeAudioMixingDescription[];
+
 extern const char kCaptureModeDemoToolsName[];
 extern const char kCaptureModeDemoToolsDescription[];
 
