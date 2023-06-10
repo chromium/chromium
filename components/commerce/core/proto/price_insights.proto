@@ -1,0 +1,73 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package commerce;
+
+option java_package = "org.chromium.components.commerce";
+
+option optimize_for = LITE_RUNTIME;
+
+// These messages are primarily used for over-the-wire communications. If this
+// information needs to be stored locally, consider building a separate proto.
+message PriceInsightsData {
+  optional uint64 product_cluster_id = 1;
+
+  // Typical price range of this product cluster.
+  optional PriceRange price_range = 2;
+
+  // Price history of one catalog under this product cluster that has relatively
+  // low price compared to other catalogs.
+  optional PriceHistory price_history = 3;
+
+  enum PriceBucket {
+    UNKNOWN = 0;
+    LOW_PRICE = 1;
+    TYPICAL_PRICE = 2;
+    HIGH_PRICE = 3;
+  }
+
+  // Position of the catalog's latest price with respect to the 90-day price
+  // range.
+  optional PriceBucket price_bucket = 4;
+
+  // Whether we have multiple catalogs under this product cluster in the page.
+  optional bool has_multiple_catalogs = 5;
+}
+
+message PriceRange {
+  // Code for the currency e.g. USD.
+  optional string currency_code = 1;
+
+  // Price considered to be lowest typical among offers of this product.
+  optional int64 lowest_typical_price_micros = 2;
+
+  // Price considered to be highest typical among offers of this product.
+  optional int64 highest_typical_price_micros = 3;
+}
+
+message PricePoint {
+  // Date in format 'yyyy-mm-dd'.
+  optional string date = 1;
+
+  // The lowest price for the date.
+  optional int64 min_price_micros = 2;
+}
+
+message PriceHistory {
+  // Code for the currency e.g. USD.
+  optional string currency_code = 1;
+
+  // Attributes for this catalog, e.g. Unlocked, 4GB, Black.
+  optional string attributes = 2;
+
+  // The price points list where index 0 contains the start_date' price, and the
+  // next index contains the next date, and so on.
+  repeated PricePoint price_points = 3;
+
+  // Direct link to the Jackpot page of this product, and specify the attributes
+  // if applicable.
+  optional string jackpot_url = 4;
+}

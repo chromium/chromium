@@ -72,6 +72,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "proto/merchant_trust.proto",
+    "proto/price_insights.proto",
     "proto/price_tracking.proto",
   ]
 }

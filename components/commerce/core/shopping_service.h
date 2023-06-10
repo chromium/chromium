@@ -130,6 +130,7 @@ struct ProductInfo {
   ~ProductInfo();
 
   std::string title;
+  std::string product_cluster_title;
   GURL image_url;
   absl::optional<uint64_t> product_cluster_id;
   absl::optional<uint64_t> offer_id;
@@ -190,12 +191,42 @@ struct MerchantInfo {
   bool proactive_message_disabled;
 };
 
+// Position of current price with respect to the typical price range.
+enum class PriceBucket {
+  kUnknown = 0,
+  kLowPrice = 1,
+  kTypicalPrice = 2,
+  kHighPrice = 3,
+  kMaxValue = kHighPrice,
+};
+
+// Information returned by the price insights APIs.
+struct PriceInsightsInfo {
+  PriceInsightsInfo();
+  PriceInsightsInfo(const PriceInsightsInfo&);
+  PriceInsightsInfo& operator=(const PriceInsightsInfo&);
+  ~PriceInsightsInfo();
+
+  absl::optional<uint64_t> product_cluster_id;
+  std::string currency_code;
+  absl::optional<int64_t> typical_low_price_micros;
+  absl::optional<int64_t> typical_high_price_micros;
+  absl::optional<std::string> catalog_attributes;
+  std::vector<std::tuple<std::string, int64_t>> catalog_history_prices;
+  absl::optional<GURL> jackpot_url;
+  PriceBucket price_bucket;
+  bool has_multiple_catalogs;
+};
+
 // Callbacks for querying a single URL or observing information from all
 // navigated urls.
 using ProductInfoCallback =
     base::OnceCallback<void(const GURL&, const absl::optional<ProductInfo>&)>;
 using MerchantInfoCallback =
     base::OnceCallback<void(const GURL&, absl::optional<MerchantInfo>)>;
+using PriceInsightsInfoCallback =
+    base::OnceCallback<void(const GURL&,
+                            const absl::optional<PriceInsightsInfo>&)>;
 
 // A callback for getting updated ProductInfo for a bookmark. This provides the
 // bookmark ID being updated, the URL, and the product info.
@@ -255,6 +286,13 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // none available.
   virtual void GetMerchantInfoForUrl(const GURL& url,
                                      MerchantInfoCallback callback);
+
+  // This API fetches price insights information of the product on the provided
+  // |url| and passes the payload back to the caller via |callback|. Call will
+  // run after the fetch is completed. The price insights info object will be
+  // null if there is none available.
+  virtual void GetPriceInsightsInfoForUrl(const GURL& url,
+                                          PriceInsightsInfoCallback callback);
 
   // Create new subscriptions in batch if needed, and will notify |callback| if
   // the operation completes successfully.
@@ -484,6 +522,16 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // Update the cache storing product info for a navigation away from the
   // provided URL or closing of a tab.
   void UpdateProductInfoCacheForRemoval(const GURL& url);
+
+  // Whether APIs like |GetPriceInsightsInfoForURL| are enabled and allowed to
+  // be used.
+  bool IsPriceInsightsInfoApiEnabled();
+
+  void HandleOptGuidePriceInsightsInfoResponse(
+      const GURL& url,
+      PriceInsightsInfoCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;

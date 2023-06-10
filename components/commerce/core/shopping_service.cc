@@ -27,6 +27,7 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
+#include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
 #include "components/commerce/core/shopping_power_bookmark_data_provider.h"
@@ -88,6 +89,12 @@ MerchantInfo& MerchantInfo::operator=(const MerchantInfo&) = default;
 MerchantInfo::MerchantInfo(MerchantInfo&&) = default;
 MerchantInfo::~MerchantInfo() = default;
 
+PriceInsightsInfo::PriceInsightsInfo() = default;
+PriceInsightsInfo::PriceInsightsInfo(const PriceInsightsInfo&) = default;
+PriceInsightsInfo& PriceInsightsInfo::operator=(const PriceInsightsInfo&) =
+    default;
+PriceInsightsInfo::~PriceInsightsInfo() = default;
+
 ShoppingService::ShoppingService(
     const std::string& country_on_startup,
     const std::string& locale_on_startup,
@@ -126,6 +133,10 @@ ShoppingService::ShoppingService(
     if (IsMerchantViewerEnabled()) {
       types.push_back(optimization_guide::proto::OptimizationType::
                           MERCHANT_TRUST_SIGNALS_V2);
+    }
+    if (IsPriceInsightsInfoApiEnabled()) {
+      types.push_back(
+          optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
     }
 
     opt_guide_->RegisterOptimizationTypes(types);
@@ -553,6 +564,21 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
+void ShoppingService::GetPriceInsightsInfoForUrl(
+    const GURL& url,
+    PriceInsightsInfoCallback callback) {
+  if (!opt_guide_ || !IsPriceInsightsInfoApiEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), url, absl::nullopt));
+    return;
+  }
+
+  opt_guide_->CanApplyOptimization(
+      url, optimization_guide::proto::OptimizationType::PRICE_INSIGHTS,
+      base::BindOnce(&ShoppingService::HandleOptGuidePriceInsightsInfoResponse,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
 bool ShoppingService::IsProductInfoApiEnabled() {
   return IsRegionLockedFeatureEnabled(
              kShoppingList, kShoppingListRegionLaunched, country_on_startup_,
@@ -589,6 +615,12 @@ bool ShoppingService::IsPriceInsightsEligible() {
   }
   return account_checker_ &&
          account_checker_->IsAnonymizedUrlDataCollectionEnabled();
+}
+
+bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
+  return IsRegionLockedFeatureEnabled(kPriceInsights,
+                                      kPriceInsightsRegionLaunched,
+                                      country_on_startup_, locale_on_startup_);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
@@ -653,6 +685,10 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
 
   if (buyable_product.has_title())
     info->title = buyable_product.title();
+
+  if (buyable_product.has_gpc_title()) {
+    info->product_cluster_title = buyable_product.gpc_title();
+  }
 
   if (buyable_product.has_image_url()) {
     info->server_image_available = true;
@@ -871,6 +907,77 @@ void ShoppingService::HandleOptGuideMerchantInfoResponse(
             merchant_data.proactive_message_disabled();
       }
     }
+  }
+
+  std::move(callback).Run(url, std::move(info));
+}
+
+void ShoppingService::HandleOptGuidePriceInsightsInfoResponse(
+    const GURL& url,
+    PriceInsightsInfoCallback callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue ||
+      !metadata.any_metadata().has_value()) {
+    std::move(callback).Run(url, absl::nullopt);
+    return;
+  }
+
+  absl::optional<commerce::PriceInsightsData> parsed_any =
+      optimization_guide::ParsedAnyMetadata<commerce::PriceInsightsData>(
+          metadata.any_metadata().value());
+  commerce::PriceInsightsData insights_data = parsed_any.value();
+
+  if (!parsed_any.has_value() || !insights_data.IsInitialized() ||
+      !insights_data.has_product_cluster_id()) {
+    std::move(callback).Run(url, absl::nullopt);
+    return;
+  }
+
+  absl::optional<PriceInsightsInfo> info;
+  info.emplace();
+
+  info->product_cluster_id = insights_data.product_cluster_id();
+
+  if (insights_data.has_price_range()) {
+    info->currency_code = insights_data.price_range().currency_code();
+    info->typical_low_price_micros =
+        insights_data.price_range().lowest_typical_price_micros();
+    info->typical_high_price_micros =
+        insights_data.price_range().highest_typical_price_micros();
+  }
+
+  if (insights_data.has_price_history()) {
+    bool currency_code_match =
+        insights_data.has_price_range()
+            ? insights_data.price_history().currency_code() ==
+                  insights_data.price_range().currency_code()
+            : true;
+    if (currency_code_match) {
+      const commerce::PriceHistory history = insights_data.price_history();
+
+      if (history.has_attributes()) {
+        info->catalog_attributes = history.attributes();
+      }
+
+      for (int i = 0; i < history.price_points_size(); i++) {
+        info->catalog_history_prices.emplace_back(
+            history.price_points(i).date(),
+            history.price_points(i).min_price_micros());
+      }
+
+      if (history.has_jackpot_url()) {
+        info->jackpot_url = GURL(history.jackpot_url());
+      }
+    }
+  }
+
+  if (insights_data.has_price_bucket()) {
+    info->price_bucket = PriceBucket(insights_data.price_bucket());
+  }
+
+  if (insights_data.has_has_multiple_catalogs()) {
+    info->has_multiple_catalogs = insights_data.has_multiple_catalogs();
   }
 
   std::move(callback).Run(url, std::move(info));

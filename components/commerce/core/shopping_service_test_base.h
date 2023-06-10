@@ -93,7 +93,8 @@ class MockOptGuideDecider
       const uint64_t product_cluster_id,
       const std::string& country_code,
       const int64_t amount_micros = 0,
-      const std::string& currency_code = "USD");
+      const std::string& currency_code = "USD",
+      const std::string& gpc_title = "example_gpc_title");
 
   void AddPriceUpdateToPriceTrackingResponse(OptimizationMetadata* out_meta,
                                              const std::string& currency_code,
@@ -106,6 +107,18 @@ class MockOptGuideDecider
       const std::string& details_page_url,
       const bool has_return_policy,
       const bool contains_sensitive_content);
+
+  OptimizationMetadata BuildPriceInsightsResponse(
+      const uint64_t product_cluster_id,
+      const std::string& price_range_currency_code,
+      const int64_t low_typical_price_micros,
+      const int64_t high_typical_price_micros,
+      const std::string& price_history_currency_code,
+      const std::string& attributes,
+      const std::vector<std::tuple<std::string, int64_t>>& history_prices,
+      const std::string& jackpot_url,
+      const PriceBucket& price_bucket,
+      const bool has_multiple_catalogs);
 
  private:
   absl::optional<GURL> response_url_;
