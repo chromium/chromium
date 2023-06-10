@@ -839,8 +839,8 @@ enum EvalJsOptions {
 //  - |script| doesn't need to call domAutomationController.send directly.
 //  - When a script doesn't produce a result, it's likely an assertion
 //    failure rather than a hang.  Doesn't get confused by crosstalk with
-//    other callers of domAutomationController.send() -- script results carry
-//    a GUID.
+//    callers of domAutomationController.send() -- EvalJs does not rely on
+//    domAutomationController.
 //  - Lists, dicts, null values, etc. can be returned as base::Values.
 //
 // It is guaranteed that EvalJs works even when the target frame is frozen.
