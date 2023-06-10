@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- This cannot be upstreamed as a WPT test because the autoplay policy to
+     permit AudioContext to start without user gesture is implementation defined
+     behavior, and other browsers just suspend the playback for lack of user
+     gestures while prerendering. -->
+<title>Same-origin prerendering cannot start AudioContext even with the autoplay policy</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+
+<body>
+  <script>
+
+    promise_test(async t => {
+      const uid = token();
+      const channel = new PrerenderChannel('prerender-channel', uid);
+      const messageQueue = new BroadcastMessageQueue(
+          new PrerenderChannel('result-channel', uid));
+      t.add_cleanup(_ => channel.close());
+
+      const url = `resources/web-audio.html?uid=${uid}`;
+      window.open(url, '_blank', 'noopener');
+
+      const state_on_prerendering =
+          JSON.stringify(await messageQueue.nextMessage());
+      assert_equals(state_on_prerendering,
+          '{"event":"start","prerendering":true,"audiocontext":"suspended"}');
+      channel.postMessage('readyToActivate');
+      const state_on_activation =
+          JSON.stringify(await messageQueue.nextMessage());
+      assert_equals(state_on_activation,
+          '{"event":"resume","prerendering":false,"audiocontext":"running"}');
+    }, 'prerendering pages should not be able to start AudioContext');
+
+  </script>
+</body>

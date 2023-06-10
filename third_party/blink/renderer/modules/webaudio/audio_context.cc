@@ -265,6 +265,18 @@ AudioContext::AudioContext(LocalDOMWindow& window,
 
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:
+      CHECK(window.document());
+      if (window.document()->IsPrerendering()) {
+        // In prerendering, the AudioContext will not start even if the
+        // AutoplayPolicy permits it. the context will resume automatically
+        // once the page is activated. See:
+        // https://wicg.github.io/nav-speculation/prerendering.html#web-audio-patch
+        autoplay_status_ = AutoplayStatus::kFailed;
+        blocked_by_prerendering_ = true;
+        window.document()->AddPostPrerenderingActivationStep(
+            WTF::BindOnce(&AudioContext::ResumeOnPrerenderActivation,
+                          WrapWeakPersistent(this)));
+      }
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
       // kUserGestureRequire policy only applies to cross-origin iframes for Web
@@ -735,6 +747,12 @@ void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
 }
 
 bool AudioContext::IsAllowedToStart() const {
+  if (blocked_by_prerendering_) {
+    // In prerendering, the AudioContext will not start rendering. See:
+    // https://wicg.github.io/nav-speculation/prerendering.html#web-audio-patch
+    return false;
+  }
+
   if (!user_gesture_required_) {
     return true;
   }
@@ -1138,6 +1156,20 @@ bool AudioContext::IsValidSinkDescriptor(
   return sink_descriptor.Type() ==
              WebAudioSinkDescriptor::AudioSinkType::kSilent ||
          output_device_ids_.Contains(sink_descriptor.SinkId());
+}
+
+void AudioContext::ResumeOnPrerenderActivation() {
+  CHECK(blocked_by_prerendering_);
+  blocked_by_prerendering_ = false;
+  switch (ContextState()) {
+    case kSuspended:
+      StartRendering();
+      break;
+    case kRunning:
+      NOTREACHED_NORETURN();
+    case kClosed:
+      break;
+  }
 }
 
 }  // namespace blink

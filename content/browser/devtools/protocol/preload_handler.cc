@@ -23,8 +23,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
   switch (feature) {
     case PrerenderFinalStatus::kActivated:
       return Preload::PrerenderFinalStatusEnum::Activated;
-    case PrerenderFinalStatus::kAudioOutputDeviceRequested:
-      return Preload::PrerenderFinalStatusEnum::AudioOutputDeviceRequested;
     case PrerenderFinalStatus::kBlockedByClient:
       return Preload::PrerenderFinalStatusEnum::BlockedByClient;
     case PrerenderFinalStatus::kCancelAllHostsForTesting:

@@ -227,6 +227,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // updated.
   void UpdateV8SinkId();
 
+  // Called on prerendering activation time if this AudioContext is blocked by
+  // prerendering.
+  void ResumeOnPrerenderActivation();
+
   unsigned context_id_;
   Member<ScriptPromiseResolver> close_resolver_;
 
@@ -235,6 +239,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   // Whether a user gesture is required to start this AudioContext.
   bool user_gesture_required_ = false;
+
+  // Whether this AudioContext is blocked to start because the page is still in
+  // prerendering state.
+  bool blocked_by_prerendering_ = false;
 
   // Autoplay status associated with this AudioContext, if any.
   // Will only be set if there is an autoplay policy in place.

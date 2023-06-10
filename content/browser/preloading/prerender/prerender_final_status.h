@@ -54,7 +54,9 @@ enum class PrerenderFinalStatus {
   kLoginAuthRequested = 26,
   kUaChangeRequiresReload = 27,
   kBlockedByClient = 28,
-  kAudioOutputDeviceRequested = 29,
+  // Deprecate in favor of newly defined behavior to support Web Audio while
+  // prerendering. See https://github.com/WICG/nav-speculation/issues/165.
+  // kAudioOutputDeviceRequested = 29,
   kMixedContent = 30,
   kTriggerBackgrounded = 31,
   // Break down into kEmbedderTriggeredAndSameOriginRedirected and

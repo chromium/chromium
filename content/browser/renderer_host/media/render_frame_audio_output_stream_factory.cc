@@ -25,7 +25,6 @@
 #include "base/unguessable_token.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -62,7 +61,9 @@ class RenderFrameAudioOutputStreamFactory::Core final
  public:
   Core(RenderFrameHost* frame,
        media::AudioSystem* audio_system,
-       MediaStreamManager* media_stream_manager);
+       MediaStreamManager* media_stream_manager,
+       mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
+           receiver);
 
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
@@ -183,72 +184,17 @@ class RenderFrameAudioOutputStreamFactory::Core final
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
 };
 
-class RenderFrameAudioOutputStreamFactory::RestrictedModeCore final
-    : public blink::mojom::RendererAudioOutputStreamFactory {
- public:
-  RestrictedModeCore(
-      mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
-          receiver,
-      base::OnceClosure callback)
-      : on_requested_callback_(std::move(callback)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    receiver_.Bind(std::move(receiver));
-  }
-
-  ~RestrictedModeCore() final = default;
-
-  // blink::mojom::RendererAudioOutputStreamFactory implementation.
-  void RequestDeviceAuthorization(
-      mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
-          provider_receiver,
-      const absl::optional<base::UnguessableToken>& session_id,
-      const std::string& device_id,
-      RequestDeviceAuthorizationCallback callback) final {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    // Send an error signal to the renderer to release the lock.
-    std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL,
-                            media::AudioParameters::UnavailableDeviceParams(),
-                            std::string());
-    if (on_requested_callback_)
-      std::move(on_requested_callback_).Run();
-  }
-
-  mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
-  Unbind() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return receiver_.Unbind();
-  }
-
- private:
-  base::OnceClosure on_requested_callback_;
-  mojo::Receiver<blink::mojom::RendererAudioOutputStreamFactory> receiver_{
-      this};
-};
-
 RenderFrameAudioOutputStreamFactory::RenderFrameAudioOutputStreamFactory(
-    RenderFrameHostImpl* frame,
+    RenderFrameHost* frame,
     media::AudioSystem* audio_system,
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
-        receiver,
-    absl::optional<base::OnceClosure> restricted_callback) {
+        receiver)
+    : core_(new Core(frame,
+                     audio_system,
+                     media_stream_manager,
+                     std::move(receiver))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  core_ = std::make_unique<Core>(frame, audio_system, media_stream_manager);
-
-  if (restricted_callback) {
-    // RestrictedModeCore controls the receiver end. `this` rebinds the receiver
-    // and releases the control when ReleaseRestriction is called.
-    restricted_mode_core_ = std::make_unique<RestrictedModeCore>(
-        std::move(receiver), std::move(restricted_callback.value()));
-  } else {
-    // Unretained is safe since the destruction of |core_| is posted to the IO
-    // thread.
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RenderFrameAudioOutputStreamFactory::Core::Init,
-                       base::Unretained(core_.get()), std::move(receiver)));
-  }
 }
 
 RenderFrameAudioOutputStreamFactory::~RenderFrameAudioOutputStreamFactory() {
@@ -268,23 +214,6 @@ void RenderFrameAudioOutputStreamFactory::
       std::move(hashed_device_id));
 }
 
-void RenderFrameAudioOutputStreamFactory::ReleaseRestriction() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(restricted_mode_core_);
-
-  // Rebind the receiver. Now the document is allowed to request output devices.
-  mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
-      receiver = restricted_mode_core_->Unbind();
-  restricted_mode_core_.reset();
-
-  // Unretained is safe since the destruction of |core_| is posted to the IO
-  // thread.
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RenderFrameAudioOutputStreamFactory::Core::Init,
-                     base::Unretained(core_.get()), std::move(receiver)));
-}
-
 size_t
 RenderFrameAudioOutputStreamFactory::CurrentNumberOfProvidersForTesting() {
   return core_->current_number_of_providers_for_testing();
@@ -293,7 +222,9 @@ RenderFrameAudioOutputStreamFactory::CurrentNumberOfProvidersForTesting() {
 RenderFrameAudioOutputStreamFactory::Core::Core(
     RenderFrameHost* frame,
     media::AudioSystem* audio_system,
-    MediaStreamManager* media_stream_manager)
+    MediaStreamManager* media_stream_manager,
+    mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
+        receiver)
     : process_id_(frame->GetProcess()->GetID()),
       frame_id_(frame->GetRoutingID()),
       authorization_handler_(audio_system, media_stream_manager, process_id_) {
@@ -310,6 +241,12 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
   }
 
   forwarding_factory_ = tmp_factory->AsWeakPtr();
+
+  // Unretained is safe since the destruction of |this| is posted to the IO
+  // thread.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::Init, base::Unretained(this), std::move(receiver)));
 }
 
 void RenderFrameAudioOutputStreamFactory::Core::Init(
