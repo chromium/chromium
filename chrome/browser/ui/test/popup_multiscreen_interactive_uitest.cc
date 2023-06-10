@@ -205,78 +205,11 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MoveToAnotherScreen) {
             "w.moveTo($1, $2);", target_display.work_area().x(),
             target_display.work_area().y());
         {
-          // TODO(crbug.com/1444721): Resolve any WaitForBoundsChange flakes.
-          auto log = [](const std::vector<display::Display>& displays) {
-            std::string log;
-            for (const display::Display& d : displays) {
-              log += "  " + d.ToString() + "\n";
-            }
-            return log;
-          };
-          content::RenderFrameHost* opener_rfh =
-              opener_contents->GetPrimaryMainFrame();
-          content::WebContents* popup_contents =
-              popup->tab_strip_model()->GetActiveWebContents();
-          content::RenderFrameHost* popup_rfh =
-              popup_contents->GetPrimaryMainFrame();
           SCOPED_TRACE(
-              testing::Message()
-              << "\n"
-              << "script: " << open_script << " " << move_script
-              << "\n"
-              // Opener details:
-              << "opener bounds: "
-              << browser()->window()->GetBounds().ToString()
-              << " GetVisibleURL: "
-              << opener_contents->GetVisibleURL().possibly_invalid_spec()
-              << " GetLastCommittedURL: "
-              << opener_rfh->GetLastCommittedURL().possibly_invalid_spec()
-              << " GetLastCommittedOrigin: "
-              << opener_rfh->GetLastCommittedOrigin().GetDebugString()
-              << " IsInPrimaryMainFrame: " << opener_rfh->IsInPrimaryMainFrame()
-              << " GetLifecycleState: "
-              << static_cast<std::underlying_type<
-                     content::RenderFrameHost::LifecycleState>::type>(
-                     opener_rfh->GetLifecycleState())
-              << " IsActive: " << opener_rfh->IsActive()
-              << " IsDOMContentLoaded: " << opener_rfh->IsDOMContentLoaded()
-              << " IsFeatureEnabled: "
-              << opener_rfh->IsFeatureEnabled(
-                     blink::mojom::PermissionsPolicyFeature::kWindowManagement)
-              << "\n"
-              // Popup details:
-              << "popup bounds: " << popup->window()->GetBounds().ToString()
-              << " GetVisibleURL: "
-              << popup_contents->GetVisibleURL().possibly_invalid_spec()
-              << " GetLastCommittedURL: "
-              << popup_rfh->GetLastCommittedURL().possibly_invalid_spec()
-              << " GetLastCommittedOrigin: "
-              << popup_rfh->GetLastCommittedOrigin().GetDebugString()
-              << " IsInPrimaryMainFrame: " << popup_rfh->IsInPrimaryMainFrame()
-              << " GetLifecycleState: "
-              << static_cast<std::underlying_type<
-                     content::RenderFrameHost::LifecycleState>::type>(
-                     popup_rfh->GetLifecycleState())
-              << " IsActive: " << popup_rfh->IsActive()
-              << " IsDOMContentLoaded: " << popup_rfh->IsDOMContentLoaded()
-              << " IsFeatureEnabled: "
-              << popup_rfh->IsFeatureEnabled(
-                     blink::mojom::PermissionsPolicyFeature::kWindowManagement)
-              << "\n"
-              // Display details:
-              << "cached displays:\n"
-              << log(displays) << "current displays:\n"
-              << log(screen->GetAllDisplays()));
-          ASSERT_TRUE(content::WaitForLoadStop(opener_contents));
-          ASSERT_TRUE(content::WaitForRenderFrameReady(opener_rfh));
-          ASSERT_EQ("complete", EvalJs(opener_contents, "document.readyState"));
-          ASSERT_EQ("visible",
-                    EvalJs(opener_contents, "document.visibilityState"));
-          ASSERT_TRUE(content::WaitForLoadStop(popup_contents));
-          ASSERT_TRUE(content::WaitForRenderFrameReady(popup_rfh));
-          ASSERT_EQ("complete", EvalJs(popup_contents, "document.readyState"));
-          ASSERT_EQ("visible",
-                    EvalJs(popup_contents, "document.visibilityState"));
+              testing::Message() << "\n"
+              << "script: " << open_script << " " << move_script << "\n"
+              << "opener: " << browser()->window()->GetBounds().ToString()
+              << " popup: " << popup->window()->GetBounds().ToString());
           content::ExecuteScriptAsync(opener_contents, move_script);
           WaitForBoundsChange(popup, /*move_by=*/40, /*resize_by=*/0);
         }
