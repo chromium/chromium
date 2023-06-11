@@ -1798,7 +1798,6 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 
 # Popover test timeout/flakiness
 crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
-crbug.com/1443372 [ Mac ] external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure Pass ]
 crbug.com/1446719 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
@@ -4775,7 +4774,6 @@ crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iter
 crbug.com/1196620 [ Mac10.13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac10.15 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac11 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
-crbug.com/1196620 [ Mac11-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac12 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac12-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac13-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
@@ -5167,7 +5165,6 @@ crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-font-8px.html [
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
@@ -5574,7 +5571,6 @@ crbug.com/1296449 [ Linux Release ] external/wpt/workers/SharedWorker-MessageEve
 
 # Sheriff 2022-04-20
 crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
-crbug.com/1385472 [ Win ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/local-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
