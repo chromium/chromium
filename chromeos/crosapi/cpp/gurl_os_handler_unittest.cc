@@ -131,40 +131,25 @@ TEST(GurlOsHandlerUtilsTest, IsAshOsAsciiScheme) {
   EXPECT_FALSE(IsAshOsAsciiScheme("soo"));
 }
 
-TEST(GurlOsHandlerUtilsTest, AshOsUrlHost) {
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags")), "flags");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags/test")), "flags/test");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags?foo::bar")), "flags");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags#foo")), "flags");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags/foo")), "flags/foo");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://FlagS/foo")), "flags/foo");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://FlagS/foo/1")), "flags/foo");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://")), "");
-  EXPECT_EQ(AshOsUrlHost(GURL("")), "");
-  EXPECT_EQ(AshOsUrlHost(GURL("foo")), "");
-  EXPECT_EQ(AshOsUrlHost(GURL("://")), "");
-}
-
-TEST(GurlOsHandlerUtilsTest, GetSystemUrlFromChromeUrl) {
+TEST(GurlOsHandlerUtilsTest, GetOsUrlFromChromeUrl) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
-  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://flags/")),
+  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://flags/")), GURL("os://flags"));
+  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://flags/abc")),
             GURL("os://flags"));
-  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://flags/abc")),
+  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://flags?foo")),
             GURL("os://flags"));
-  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://flags?foo")),
-            GURL("os://flags"));
-  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://foo")), GURL("os://foo"));
+  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://foo")), GURL("os://foo"));
 }
 
-TEST(GurlOsHandlerUtilsTest, GetChromeUrlFromSystemUrl) {
-  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags/abc/def")),
+TEST(GurlOsHandlerUtilsTest, GetChromeUrlFromOsUrl) {
+  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://flags/abc/def")),
             GURL("chrome://flags/abc"));
-  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags/abc")),
+  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://flags/abc")),
             GURL("chrome://flags/abc"));
-  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags?foo")),
+  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://flags?foo")),
             GURL("chrome://flags"));
-  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://foo")), GURL("chrome://foo"));
+  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://foo")), GURL("chrome://foo"));
 }
 
 TEST(GurlOsHandlerUtilsTest, GetAshUrlFromLacrosUrl) {
@@ -175,15 +160,24 @@ TEST(GurlOsHandlerUtilsTest, GetAshUrlFromLacrosUrl) {
   // os://settings need to be converted to chrome://os-settings
   EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://settings/foo")),
             GURL("chrome://os-settings/foo"));
-  // os-settings should not be changed
+  // os://os-settings doesn't really matter but we treat it the same:
   EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://os-settings")),
-            GURL("os://os-settings"));
-  // chrome://settings should also not be touched.
+            GURL("chrome://os-settings/"));
+  // chrome://settings should not be touched.
   EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("chrome://settings/foo")),
             GURL("chrome://settings/foo"));
   // Needs to be sanitized.
   EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("chrome://settings/foo#bar")),
             GURL("chrome://settings/foo"));
+  // os:// is changed to chrome://
+  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://flags")),
+            GURL("chrome://flags"));
+  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://flags/")),
+            GURL("chrome://flags"));
+  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://scanning")),
+            GURL("chrome://scanning"));
+  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://scanning/")),
+            GURL("chrome://scanning"));
 }
 
 }  // namespace gurl_os_handler_utils

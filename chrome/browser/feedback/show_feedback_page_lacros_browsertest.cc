@@ -17,6 +17,12 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:
+  void SetUp() override {
+    StartUniqueAshChrome(
+        {}, {}, {}, "crbug.com/1446083 The test leaves Ash windows behind");
+    InProcessBrowserTest::SetUp();
+  }
+
   void ShowFeedbackPageWithFeedbackSource(chrome::FeedbackSource source) {
     std::string unused;
     chrome::ShowFeedbackPage(browser(), source,

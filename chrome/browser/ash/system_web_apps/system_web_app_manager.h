@@ -125,8 +125,14 @@ class SystemWebAppManager : public KeyedService,
   // Returns whether |app_id| points to an installed System App.
   bool IsSystemWebApp(const web_app::AppId& app_id) const;
 
-  // Returns the SystemWebAppType that should capture the navigation to
-  // |url|.
+  // Returns the SystemWebAppType that should handle |url|.
+  //
+  // Under the hood, it returns the system web app whose `start_url` shares
+  // the same origin with the given |url|. It does not take
+  // `SystemWebAppDelegate::IsURLInSystemAppScope` into account.
+  absl::optional<SystemWebAppType> GetSystemAppForURL(const GURL& url) const;
+
+  // Returns the SystemWebAppType that should capture the navigation to |url|.
   absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 

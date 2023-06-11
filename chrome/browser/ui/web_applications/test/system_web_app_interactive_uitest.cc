@@ -839,8 +839,14 @@ class SystemWebAppOpenInAshFromLacrosTests
   // A function to wait until a window activation change was observed.
   void LaunchAndWaitForActivationChange(const GURL& url) {
     TestActivationObserver observer;
-    url_handler_->OpenUrl(url);
+    EXPECT_TRUE(url_handler_->OpenUrlInternal(url));
     observer.Wait();
+  }
+
+  void CloseApp(ash::SystemWebAppType type) {
+    Browser* app_browser = FindSystemWebAppBrowser(browser()->profile(), type);
+    app_browser->window()->Close();
+    ui_test_utils::WaitForBrowserToClose(app_browser);
   }
 
  protected:
@@ -879,6 +885,147 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
 }
 
+IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
+  WaitForTestSystemAppInstall();
+
+  // There might be an initial browser from the testing framework.
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+
+  {
+    GURL url = GURL("chrome://os-settings");
+    DCHECK_EQ(url, "chrome://os-settings/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SETTINGS);
+  }
+
+  {
+    GURL url = GURL("chrome://os-settings//");
+    // Non-empty path. The app may not expect this but it mustn't crash.
+    DCHECK_NE(url, "chrome://os-settings/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SETTINGS);
+  }
+
+  {
+    GURL url = GURL("os://settings");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SETTINGS);
+  }
+
+  {
+    GURL url = GURL("os://settings/");
+    // os:// is not a real scheme, so there is no canonicalization.
+    DCHECK_NE(url, "os://settings");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SETTINGS);
+  }
+
+  {
+    GURL url = GURL("os://settings//");
+    // Non-empty path. The app may not expect this but it mustn't crash.
+    DCHECK_NE(url, "os://settings/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SETTINGS);
+  }
+
+  {
+    GURL url = GURL("os://flags");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::OS_FLAGS);
+  }
+
+  {
+    GURL url = GURL("os://flags/");
+    // os:// is not a real scheme, so there is no canonicalization.
+    DCHECK_NE(url, "os://flags");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::OS_FLAGS);
+  }
+
+  {
+    GURL url = GURL("os://flags//");
+    // Non-empty path. The app may not expect this but it mustn't crash.
+    DCHECK_NE(url, "os://flags/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::OS_FLAGS);
+  }
+
+  {
+    GURL url = GURL("chrome://scanning");
+    DCHECK_EQ(url, "chrome://scanning/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SCANNING);
+  }
+
+  {
+    GURL url = GURL("chrome://scanning//");
+    // Non-empty path. The app may not expect this but it mustn't crash.
+    DCHECK_NE(url, "chrome://scanning/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SCANNING);
+  }
+
+  {
+    GURL url = GURL("os://scanning");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SCANNING);
+  }
+
+  {
+    GURL url = GURL("os://scanning/");
+    // os:// is not a real scheme, so there is no canonicalization.
+    DCHECK_NE(url, "os://scanning");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SCANNING);
+  }
+
+  {
+    GURL url = GURL("os://scanning//");
+    DCHECK_NE(url, "os://scanning/");
+    EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
+    LaunchAndWaitForActivationChange(url);
+    EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    CloseApp(ash::SystemWebAppType::SCANNING);
+  }
+}
+
 // This test will make sure that opening the same system URL multiple times will
 // re-use the existing app.
 IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
@@ -889,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   size_t initial_browser_count = BrowserList::GetInstance()->size();
 
   // Start an application which uses the OS url handler.
-  LaunchAndWaitForActivationChange(GURL(chrome::kOsUICreditsURL));
+  LaunchAndWaitForActivationChange(GURL("os://credits"));
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
   EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
 
@@ -899,7 +1046,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
 
   // Start an application of the first type and see that no new app got created.
-  LaunchAndWaitForActivationChange(GURL(chrome::kOsUICreditsURL));
+  LaunchAndWaitForActivationChange(GURL("os://credits"));
   EXPECT_EQ(initial_browser_count + 2, BrowserList::GetInstance()->size());
   EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
 }
@@ -914,7 +1061,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   size_t initial_browser_count = BrowserList::GetInstance()->size();
 
   // Start an application using the OS Url handler.
-  LaunchAndWaitForActivationChange(GURL(chrome::kOsUICreditsURL));
+  LaunchAndWaitForActivationChange(GURL("os://credits"));
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
   EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
 

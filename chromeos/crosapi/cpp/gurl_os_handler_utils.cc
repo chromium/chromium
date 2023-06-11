@@ -92,22 +92,28 @@ GURL SanitizeAshURL(const GURL& url, bool include_path) {
 }
 
 GURL GetTargetURLFromLacrosURL(const GURL& url) {
+  const bool is_os_settings_url =
+      crosapi::gurl_os_handler_utils::SanitizeAshURL(
+          url, /*include_path=*/false) == GURL(kOsUISettingsURL);
+
   GURL target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
-  GURL short_target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(
-      url, /*include_path=*/false);
+  if (IsAshOsUrl(url)) {
+    // GURL doesn't know about the os:// scheme, which limits operations on
+    // os:// URLs. Convert such URLs to chrome:// URLs in order to simplify
+    // subsequent code.
+    target_url =
+        crosapi::gurl_os_handler_utils::GetChromeUrlFromOsUrl(target_url);
+  }
 
-  if (short_target_url != GURL(kOsUISettingsURL))
-    return target_url;
-  // Change os://settings/* into chrome://os-settings/* which will be the long
-  // term home for our OS-settings.
+  if (is_os_settings_url) {
+    // Change os://settings/* into chrome://os-settings/* which will be the long
+    // term home for our OS-settings.
+    GURL::Replacements replacements;
+    replacements.SetHostStr(kChromeUIOSSettingsHost);
+    return target_url.ReplaceComponents(replacements);
+  }
 
-  // This converts the os (GURL lib unusable) address into a chrome
-  // (GURL lib usable) address.
-  target_url =
-      crosapi::gurl_os_handler_utils::GetChromeUrlFromSystemUrl(target_url);
-  GURL::Replacements replacements;
-  replacements.SetHostStr(kChromeUIOSSettingsHost);
-  return target_url.ReplaceComponents(replacements);
+  return target_url;
 }
 
 bool IsUrlInList(const GURL& test_url, const std::vector<GURL>& list) {
@@ -142,30 +148,17 @@ bool IsAshOsAsciiScheme(const base::StringPiece& scheme) {
   return base::EqualsCaseInsensitiveASCII(scheme, kOsScheme);
 }
 
-std::string AshOsUrlHost(const GURL& url) {
-  if (!url.is_valid())
-    return "";
-
-  // If we are using a default scheme, GURL does all for us.
-  if (!IsAshOsUrl(url)) {
-    if (!url.has_host())
-      return "";
-    return url.host() + (url.path().length() > 1 ? url.path() : "");
-  }
-
-  return GetValidHostAndSubhostFromOsUrl(url, /*include_path=*/true);
-}
-
-// Convert a passed GURL from os:// to chrome://.
-GURL GetSystemUrlFromChromeUrl(const GURL& url) {
+// Convert a passed GURL from chrome:// to os://.
+GURL GetOsUrlFromChromeUrl(const GURL& url) {
   DCHECK(url.SchemeIs(kChromeUIScheme));
   return GURL(kOsUrlPrefix + url.host());
 }
 
-// Convert a passed GURL from chrome:// to os://.
-GURL GetChromeUrlFromSystemUrl(const GURL& url) {
+// Convert a passed GURL from os:// to chrome://.
+GURL GetChromeUrlFromOsUrl(const GURL& url) {
   DCHECK(IsAshOsUrl(url));
-  return GURL(kChromeUrlPrefix + AshOsUrlHost(url));
+  return GURL(kChromeUrlPrefix +
+              GetValidHostAndSubhostFromOsUrl(url, /*include_path=*/true));
 }
 
 }  // namespace gurl_os_handler_utils

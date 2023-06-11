@@ -12,6 +12,8 @@
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -19,29 +21,13 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
-
-namespace {
-
-// Various schemes which we use and which are not defined anywhere.
-const char kChromeScheme[] = "chrome";
-const char kChromeUrlPrefix[] = "chrome://";
-const char kChromeUntrustedScheme[] = "chrome-untrusted";
-
-const char kFileManagerHost[] = "file-manager";
-
-// Checks if a given URL is a valid file manager URL (trusted or untrusted).
-bool IsFileManagerUrl(const GURL& url) {
-  return url.has_host() && url.host() == kFileManagerHost && url.has_scheme() &&
-         (url.scheme() == kChromeScheme ||
-          url.scheme() == kChromeUntrustedScheme);
-}
-
-}  // namespace
 
 namespace crosapi {
 
@@ -57,85 +43,69 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
   OpenUrlInternal(url);
 }
 
-bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
-  GURL target_url =
-      crosapi::gurl_os_handler_utils::GetTargetURLFromLacrosURL(url);
-  GURL short_target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(
-      target_url, /*include_path=*/false);
+namespace {
 
-  // Settings will be handled.
-  if (short_target_url == GURL(chrome::kChromeUIOSSettingsURL)) {
-    chrome::SettingsWindowManager* settings_window_manager =
-        chrome::SettingsWindowManager::GetInstance();
-    settings_window_manager->ShowChromePageForProfile(
-        ProfileManager::GetPrimaryUserProfile(), target_url,
-        display::kInvalidDisplayId);
-    return true;
+absl::optional<ash::SystemWebAppType> GetSystemAppForURL(Profile* profile,
+                                                         const GURL& url) {
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::Get(profile);
+  return swa_manager ? swa_manager->GetSystemAppForURL(url) : absl::nullopt;
+}
+
+void OpenUrlInternalContinue(Profile* profile,
+                             GURL target_url,
+                             const GURL& original_url) {
+  DCHECK(ash::SystemWebAppManager::Get(profile)->IsAppEnabled(
+      ash::SystemWebAppType::OS_URL_HANDLER));
+
+  absl::optional<ash::SystemWebAppType> swa_type =
+      GetSystemAppForURL(profile, target_url);
+  if (!swa_type.has_value()) {
+    swa_type = ash::SystemWebAppType::OS_URL_HANDLER;
   }
 
-  ash::SystemWebAppType app_id;
+  // This is a hack for chrome://camera-app URLs with queries, as sent by
+  // assistant.
+  // TODO(crbug.com/1445145): Figure out how to get rid of this.
+  if (*swa_type == ash::SystemWebAppType::CAMERA &&
+      !gurl_os_handler_utils::IsAshOsUrl(original_url)) {
+    target_url = original_url;
+  }
 
-  // As there are different apps which need to be driven by some URLs, the
-  // following code does pick the proper app for a given URL.
-  // TODO: As Chrome_web_ui_controller_factory gets refactored, this function
-  // should get refactored as well to improve long term stability.
-  if (target_url == GURL(chrome::kChromeUIFlagsURL) ||
-      target_url == GURL(chrome::kOsUIFlagsURL)) {
-    app_id = ash::SystemWebAppType::OS_FLAGS;
-    target_url = GURL(chrome::kChromeUIFlagsURL);
-  } else if (target_url == GURL(chrome::kChromeUIUntrustedCroshURL)) {
-    app_id = ash::SystemWebAppType::CROSH;
-  } else if (IsFileManagerUrl(target_url)) {
-    app_id = ash::SystemWebAppType::FILE_MANAGER;
-  } else if (target_url == GURL(chrome::kChromeUIScanningAppURL)) {
-    app_id = ash::SystemWebAppType::SCANNING;
-  } else if (target_url == GURL(chrome::kOsUIHelpAppURL)) {
-    app_id = ash::SystemWebAppType::HELP;
-    target_url = GURL(ash::kChromeUIHelpAppURL);
-  } else if (target_url == GURL(chrome::kOsUIPrintManagementAppURL)) {
-    app_id = ash::SystemWebAppType::PRINT_MANAGEMENT;
-    target_url = GURL(ash::kChromeUIPrintManagementAppUrl);
-  } else if (target_url == GURL(chrome::kOsUIConnectivityDiagnosticsAppURL)) {
-    app_id = ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS;
-    target_url = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
-  } else if (target_url == GURL(chrome::kOsUIScanningAppURL)) {
-    app_id = ash::SystemWebAppType::SCANNING;
-    target_url = GURL(ash::kChromeUIScanningAppUrl);
-  } else if (target_url == GURL(chrome::kOsUIDiagnosticsAppURL)) {
-    app_id = ash::SystemWebAppType::DIAGNOSTICS;
-    target_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
-  } else if (target_url == GURL(chrome::kOsUIFirmwareUpdaterAppURL)) {
-    app_id = ash::SystemWebAppType::FIRMWARE_UPDATE;
-    target_url = GURL(ash::kChromeUIFirmwareUpdateAppURL);
-  } else if (short_target_url == GURL(ash::kChromeUICameraAppURL)) {
-    app_id = ash::SystemWebAppType::CAMERA;
-    target_url = url;
-  } else if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
-                 target_url)) {
-    app_id = ash::SystemWebAppType::OS_URL_HANDLER;
-    if (crosapi::gurl_os_handler_utils::IsAshOsUrl(target_url)) {
-      target_url =
-          GURL(kChromeUrlPrefix +
-               crosapi::gurl_os_handler_utils::AshOsUrlHost(target_url));
-    }
-    absl::optional<ash::SystemWebAppType> swa_type =
-        ash::GetCapturingSystemAppForURL(
-            ProfileManager::GetPrimaryUserProfile(), target_url);
-    if (swa_type.has_value()) {
-      return false;
-    }
-  } else {
-    LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl:" << url;
+  ash::SystemAppLaunchParams launch_params;
+  launch_params.url = target_url;
+  int64_t display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  ash::LaunchSystemWebAppAsync(profile, *swa_type, launch_params,
+                               std::make_unique<apps::WindowInfo>(display_id));
+}
+
+}  // namespace
+
+// TODO(neis): Find a way to unify this code with the one in os_url_handler.cc.
+bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser()));
+  if (!profile) {
+    base::debug::DumpWithoutCrashing();
+    DVLOG(1)
+        << "UrlHandlerAsh::OpenUrl is called when the primary user profile "
+           "does not exist. This is a bug.";
+    NOTREACHED();
     return false;
   }
 
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  ash::SystemAppLaunchParams params;
-  params.url = target_url;
-  int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  ash::LaunchSystemWebAppAsync(profile, app_id, params,
-                               std::make_unique<apps::WindowInfo>(display_id));
+  GURL target_url = gurl_os_handler_utils::GetTargetURLFromLacrosURL(url);
+  if (!ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(target_url)) {
+    LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl: " << url;
+    return false;
+  }
+
+  // Wait for all SWAs to be registered before continuing.
+  ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
+      FROM_HERE,
+      base::BindOnce(&OpenUrlInternalContinue, profile, target_url, url));
   return true;
 }
 

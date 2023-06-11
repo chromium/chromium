@@ -113,7 +113,7 @@ bool OsUrlHandlerSystemWebAppDelegate::IsUrlInSystemAppScope(
   // chrome:// scheme urls anymore, we should be safely able to assume that they
   // might have been os:// schemed URLs when being called from Lacros.
   target_url =
-      crosapi::gurl_os_handler_utils::GetSystemUrlFromChromeUrl(target_url);
+      crosapi::gurl_os_handler_utils::GetOsUrlFromChromeUrl(target_url);
   return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(target_url);
 }
 

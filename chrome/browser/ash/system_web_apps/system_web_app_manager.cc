@@ -511,8 +511,8 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   }
 }
 
-absl::optional<SystemWebAppType>
-SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
+absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
+    const GURL& url) const {
   if (!HasSystemWebAppScheme(url))
     return absl::nullopt;
 
@@ -534,6 +534,18 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   if (!delegate)
     return absl::nullopt;
 
+  return type;
+}
+
+absl::optional<SystemWebAppType>
+SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
+  absl::optional<SystemWebAppType> type = GetSystemAppForURL(url);
+  if (!type.has_value()) {
+    return absl::nullopt;
+  }
+
+  const SystemWebAppDelegate* delegate =
+      GetSystemWebApp(system_app_delegates_, type.value());
   if (!delegate->ShouldCaptureNavigations())
     return absl::nullopt;
 
