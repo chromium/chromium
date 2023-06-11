@@ -1622,12 +1622,18 @@ bool FrameLoader::ShouldClose(bool is_reload) {
 }
 
 void FrameLoader::DidDropNavigation() {
-  if (!client_navigation_)
+  recordreplay::Assert("[RUN-2123] FrameLoader::DidDropNavigation");
+
+  if (!client_navigation_) {
+    recordreplay::Assert("[RUN-2123] FrameLoader::DidDropNavigation #1");
     return;
+  }
   // TODO(dgozman): should we ClearClientNavigation instead and not
   // notify the client in response to its own call?
   CancelClientNavigation(CancelNavigationReason::kDropped);
   DidFinishNavigation(FrameLoader::NavigationFinishState::kSuccess);
+
+  recordreplay::Assert("[RUN-2123] FrameLoader::DidDropNavigation #2");
 
   // Forcibly instantiate WindowProxy for initial frame document.
   // This is only required when frame navigation is aborted, e.g. due to
@@ -1637,10 +1643,13 @@ void FrameLoader::DidDropNavigation() {
   // and relying on the number of created window proxies.
   Settings* settings = frame_->GetSettings();
   if (settings && settings->GetForceMainWorldInitialization()) {
+    recordreplay::Assert("[RUN-2123] FrameLoader::DidDropNavigation #3");
     // Forcibly instantiate WindowProxy.
     frame_->DomWindow()->GetScriptController().WindowProxy(
         DOMWrapperWorld::MainWorld());
   }
+
+  recordreplay::Assert("[RUN-2123] FrameLoader::DidDropNavigation Done");
 }
 
 bool FrameLoader::CancelProvisionalLoaderForNewNavigation() {
