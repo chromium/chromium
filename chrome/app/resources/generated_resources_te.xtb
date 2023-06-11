@@ -527,6 +527,7 @@
 <translation id="1448779317883494811">బ్రష్ టూల్</translation>
 <translation id="1449191289887455076">కేటాయింపును నిర్ధారించి, <ph name="RESPONSE" /> కోసం "<ph name="CURRENTKEY" />"ని మళ్లీ నొక్కండి</translation>
 <translation id="1451375123200651445">వెబ్ పేజీ, ఒకే ఫైల్</translation>
+<translation id="145280054552001290">క్యాప్షన్‌కు భాషలను జోడించండి, తీసివేయండి</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     డీబగ్ లాగ్‌ల<ph name="END_LINK" />ను పంపండి (సిఫార్సు చేయబడింది)</translation>
 <translation id="1454223536435069390">స్క్రీన్‌షాట్ తీ&amp;యి</translation>
@@ -3614,6 +3615,7 @@
 <translation id="4044612648082411741">మీ ప్రమాణపత్రం పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="4044708573046946214">స్క్రీన్ లాక్ పాస్‌వర్డ్</translation>
 <translation id="404493185430269859">డిఫాల్ట్ శోధన ఇంజిన్</translation>
+<translation id="4045196801416070837">పరికరం సౌండ్స్</translation>
 <translation id="4046013316139505482">ఈ సైట్‌లో సమాచారాన్ని ఈ ఎక్స్‌టెన్షన్‌లు చూడవలసిన, మార్చవలసిన అవసరం లేదు.</translation>
 <translation id="4046123991198612571">తర్వాత ట్రాక్</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -5217,6 +5219,7 @@
 <translation id="5481941284378890518">సమీప ప్రింటర్‌లను జోడించండి</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈరోజే ఈ <ph name="DEVICE_TYPE" />ను రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ను {NUM_DAYS} రోజులలోపు రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">యాప్‌ను జోడించండి</translation>
+<translation id="5485435764083510385">ప్రాధాన్యత గల క్యాప్షన్ భాష</translation>
 <translation id="5485754497697573575">అన్ని ట్యాబ్‌లను పునరుద్ధరించు</translation>
 <translation id="5486261815000869482">పాస్‌వర్డ్‌ని నిర్ధారించండి</translation>
 <translation id="5486561344817861625">బ్రౌజర్ పునఃప్రారంభాన్ని ప్రారంభించండి</translation>
@@ -7400,6 +7403,7 @@
 <translation id="7400839060291901923">మీ <ph name="PHONE_NAME" />లో కనెక్షన్‌ని సెటప్ చేయండి</translation>
 <translation id="7401778920660465883">ఈ మెసేజ్‌ను రద్దు చేయండి</translation>
 <translation id="7402198013420237102">సేవ్ చేసిన పాస్‌వర్డ్‌లను మీ Google ఖాతాకు తరలించాలా?</translation>
+<translation id="740333000181878130">పరికరం స్టార్టప్ సౌండ్</translation>
 <translation id="7403642243184989645">రిసోర్స్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="7404065585741198296">USB కేబుల్‌తో కనెక్ట్ చేయబడిన మీ ఫోన్</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{భద్రతా తనిఖీ జరిగి 1 గంట అయింది}other{భద్రతా తనిఖీ జరిగి {NUM_HOURS} గంటలు అయింది}}</translation>
