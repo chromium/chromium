@@ -112,9 +112,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {
 }
 
 // Test how locking the screen affects an active fullscreen window.
-// TODO(crbug.com/1364698): Fix flakiness on ASAN builder.
-// TODO(crbug.com/1385852): Fix flakiness in general.
-IN_PROC_BROWSER_TEST_F(ScreenLockerTest, DISABLED_TestFullscreenExit) {
+IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestFullscreenExit) {
   // 1) If the active browser window is in fullscreen and the fullscreen window
   // does not have all the pixels (e.g. the shelf is auto hidden instead of
   // hidden), locking the screen should exit fullscreen. The shelf is
