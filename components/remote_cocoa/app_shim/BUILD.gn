@@ -11,6 +11,46 @@ config("app_shim_warnings") {
   }
 }
 
+# TODO(https://crbug.com/1280317): Merge back into the `app_shim` target once all
+# .mm files are ARCed.
+source_set("app_shim_arc") {
+  configs += [
+    ":app_shim_warnings",
+    "//build/config/compiler:enable_arc",
+  ]
+  sources = [
+    "immersive_mode_controller.h",
+    "immersive_mode_controller.mm",
+    "immersive_mode_delegate_mac.h",
+    "immersive_mode_tabbed_controller.h",
+    "immersive_mode_tabbed_controller.mm",
+  ]
+  defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]
+  deps = [
+    "//base",
+    "//base:base_arc",
+    "//base:i18n",
+    "//components/crash/core/common",
+    "//components/remote_cocoa/common:mojo",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//ui/accelerated_widget_mac",
+    "//ui/base",
+    "//ui/base/dragdrop:types",
+    "//ui/base/emoji",
+    "//ui/base/ime:ime",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/strings:ui_strings_grit",
+  ]
+  frameworks = [
+    "Cocoa.framework",
+    "QuartzCore.framework",
+    "SecurityInterface.framework",
+  ]
+}
+
 # This component is for code that is to run in the app shim process.
 component("app_shim") {
   assert(is_mac)
@@ -31,11 +71,6 @@ component("app_shim") {
     "color_panel_bridge.h",
     "color_panel_bridge.mm",
     "drag_drop_client.h",
-    "immersive_mode_controller.h",
-    "immersive_mode_controller.mm",
-    "immersive_mode_delegate_mac.h",
-    "immersive_mode_tabbed_controller.h",
-    "immersive_mode_tabbed_controller.mm",
     "mouse_capture.h",
     "mouse_capture.mm",
     "mouse_capture_delegate.h",
@@ -62,6 +97,8 @@ component("app_shim") {
     "window_touch_bar_delegate.h",
   ]
   defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]
+  public_deps = [ ":app_shim_arc" ]
+  allow_circular_includes_from = [ ":app_shim_arc" ]
   deps = [
     "//base",
     "//base:i18n",

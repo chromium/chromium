@@ -7,7 +7,6 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/mac/scoped_nsobject.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
@@ -75,11 +74,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // fullscreen.
   virtual bool ShouldObserveChildWindow(NSWindow* child);
 
-  NSWindow* browser_window() { return browser_window_; }
-  NSWindow* overlay_window() { return overlay_window_; }
-  BridgedContentView* overlay_content_view() { return overlay_content_view_; }
+  NSWindow* browser_window();
+  NSWindow* overlay_window();
+  BridgedContentView* overlay_content_view();
 
-  // Caled when `immersive_mode_titlebar_view_controller_`'s view is moved to
+  // Called when `immersive_mode_titlebar_view_controller_`'s view is moved to
   // a different window.
   void ImmersiveModeViewWillMoveToWindow(NSWindow* window);
 
@@ -107,27 +106,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 
   bool enabled_ = false;
 
-  NSWindow* const browser_window_;
-  NSWindow* const overlay_window_;
-  BridgedContentView* overlay_content_view_;
-
-  // A controller for top chrome.
-  base::scoped_nsobject<ImmersiveModeTitlebarViewController>
-      immersive_mode_titlebar_view_controller_;
-
-  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
-  // NSWindow on screen.
-  // This controller is used as a workaround for an AppKit bug that displays a
-  // black bar when changing a NSTitlebarAccessoryViewController's
-  // fullScreenMinHeight from zero to non-zero.
-  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
-  base::scoped_nsobject<NSTitlebarAccessoryViewController>
-      thin_titlebar_view_controller_;
-
-  base::scoped_nsobject<ImmersiveModeMapper> immersive_mode_mapper_;
-  base::scoped_nsobject<ImmersiveModeTitlebarObserver>
-      immersive_mode_titlebar_observer_;
-
   int reveal_lock_count_ = 0;
 
   mojom::ToolbarVisibilityStyle last_used_style_ =
@@ -137,8 +115,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // complete.
   bool fullscreen_transition_complete_ = false;
 
-  // Keeps track of which windows have received titlebar and reveal locks.
-  std::set<NSWindow*> window_lock_received_;
+  // TODO(https://crbug.com/1280317): Merge the contents back into the header
+  // file once all files that include this header are compiled with ARC.
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 
   base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
 };

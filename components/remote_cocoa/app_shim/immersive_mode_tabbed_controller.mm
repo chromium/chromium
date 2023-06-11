@@ -9,87 +9,103 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace remote_cocoa {
+
+struct ImmersiveModeTabbedController::ObjCStorage {
+  NSWindow* __weak tab_window;
+  BridgedContentView* __weak tab_content_view;
+  NSTitlebarAccessoryViewController* __strong tab_titlebar_view_controller;
+};
 
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(
     NSWindow* browser_window,
     NSWindow* overlay_window,
     NSWindow* tab_window)
     : ImmersiveModeController(browser_window, overlay_window),
-      tab_window_(tab_window) {
+      objc_storage_(std::make_unique<ObjCStorage>()) {
+  objc_storage_->tab_window = tab_window;
+
   browser_window.titleVisibility = NSWindowTitleHidden;
 
-  tab_titlebar_view_controller_.reset(
-      [[NSTitlebarAccessoryViewController alloc] init]);
-  tab_titlebar_view_controller_.get().view =
-      [[[NSView alloc] init] autorelease];
+  objc_storage_->tab_titlebar_view_controller =
+      [[NSTitlebarAccessoryViewController alloc] init];
+  objc_storage_->tab_titlebar_view_controller.view = [[NSView alloc] init];
 
   // The view is pinned to the opposite side of the traffic lights. A view long
   // enough is able to paint underneath the traffic lights. This also works with
   // RTL setups.
-  tab_titlebar_view_controller_.get().layoutAttribute =
+  objc_storage_->tab_titlebar_view_controller.layoutAttribute =
       NSLayoutAttributeTrailing;
 }
 
 ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
-  StopObservingChildWindows(tab_window_);
+  StopObservingChildWindows(objc_storage_->tab_window);
   browser_window().toolbar = nil;
-  [tab_content_view_ retain];
-  [tab_content_view_ removeFromSuperview];
-  tab_window_.contentView = tab_content_view_;
-  [tab_content_view_ release];
-  [tab_titlebar_view_controller_ removeFromParentViewController];
-  tab_titlebar_view_controller_.reset();
+  BridgedContentView* tab_content_view = objc_storage_->tab_content_view;
+  [tab_content_view removeFromSuperview];
+  objc_storage_->tab_window.contentView = tab_content_view;
+  [objc_storage_->tab_titlebar_view_controller removeFromParentViewController];
+  objc_storage_->tab_titlebar_view_controller = nil;
 }
 
 void ImmersiveModeTabbedController::Enable() {
   ImmersiveModeController::Enable();
-  tab_content_view_ =
-      base::mac::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
-  [tab_content_view_ retain];
-  [tab_content_view_ removeFromSuperview];
+  BridgedContentView* tab_content_view =
+      base::mac::ObjCCastStrict<BridgedContentView>(
+          objc_storage_->tab_window.contentView);
+  [tab_content_view removeFromSuperview];
+  objc_storage_->tab_content_view = tab_content_view;
 
   // The ordering of resetting the `contentView` is important for macOS 12 and
-  // below. `tab_content_view_` needs to be removed from the
-  // `tab_window_.contentView` property before adding `tab_content_view_` to a
-  // new NSView tree. We will be left with a blank view if this ordering is not
-  // maintained.
-  tab_window_.contentView =
-      [[[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
-                                           bounds:gfx::Rect()] autorelease];
+  // below. `objc_storage_->tab_content_view` needs to be removed from the
+  // `objc_storage_->tab_window.contentView` property before adding
+  // `objc_storage_->tab_content_view` to a new NSView tree. We will be left
+  // with a blank view if this ordering is not maintained.
+  objc_storage_->tab_window.contentView = [[BridgedContentView alloc]
+      initWithBridge:objc_storage_->tab_content_view.bridge
+              bounds:gfx::Rect()];
 
   // This will allow the NSToolbarFullScreenWindow to become key when
   // interacting with the tab strip.
   // The `overlay_window_` is handled the same way in ImmersiveModeController.
   // See the comment there for more details.
-  tab_window_.ignoresMouseEvents = YES;
+  objc_storage_->tab_window.ignoresMouseEvents = YES;
 
-  [tab_titlebar_view_controller_.get().view addSubview:tab_content_view_];
-  [tab_content_view_ release];
-  [tab_titlebar_view_controller_.get().view
-      setFrameSize:tab_window_.frame.size];
-  tab_titlebar_view_controller_.get().fullScreenMinHeight =
-      tab_window_.frame.size.height;
+  [objc_storage_->tab_titlebar_view_controller.view
+      addSubview:tab_content_view];
+  [objc_storage_->tab_titlebar_view_controller.view
+      setFrameSize:objc_storage_->tab_window.frame.size];
+  objc_storage_->tab_titlebar_view_controller.fullScreenMinHeight =
+      objc_storage_->tab_window.frame.size.height;
 
   // Keep the tab content view's size in sync with its parent view.
-  tab_content_view_.translatesAutoresizingMaskIntoConstraints = NO;
-  [tab_content_view_.heightAnchor
-      constraintEqualToAnchor:tab_content_view_.superview.heightAnchor]
+  objc_storage_->tab_content_view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [objc_storage_->tab_content_view.heightAnchor
+      constraintEqualToAnchor:objc_storage_->tab_content_view.superview
+                                  .heightAnchor]
       .active = YES;
-  [tab_content_view_.widthAnchor
-      constraintEqualToAnchor:tab_content_view_.superview.widthAnchor]
+  [objc_storage_->tab_content_view.widthAnchor
+      constraintEqualToAnchor:objc_storage_->tab_content_view.superview
+                                  .widthAnchor]
       .active = YES;
-  [tab_content_view_.centerXAnchor
-      constraintEqualToAnchor:tab_content_view_.superview.centerXAnchor]
+  [objc_storage_->tab_content_view.centerXAnchor
+      constraintEqualToAnchor:objc_storage_->tab_content_view.superview
+                                  .centerXAnchor]
       .active = YES;
-  [tab_content_view_.centerYAnchor
-      constraintEqualToAnchor:tab_content_view_.superview.centerYAnchor]
+  [objc_storage_->tab_content_view.centerYAnchor
+      constraintEqualToAnchor:objc_storage_->tab_content_view.superview
+                                  .centerYAnchor]
       .active = YES;
 
-  ObserveChildWindows(tab_window_);
+  ObserveChildWindows(objc_storage_->tab_window);
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
-  NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
+  NSToolbar* toolbar = [[NSToolbar alloc] init];
 
   // Remove the baseline separator for macOS 10.15 and earlier. This has no
   // effect on macOS 11 and above. See
@@ -145,29 +161,31 @@ void ImmersiveModeTabbedController::UpdateToolbarVisibility(
   // `RevealUnlock` to pickup the slack. There is no harm in extra layout calls
   // on newer versions of macOS, -setFrameOrigin: is essentially a NOP when the
   // frame size doesn't change.
-  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
+  LayoutWindowWithAnchorView(objc_storage_->tab_window,
+                             objc_storage_->tab_content_view);
 }
 
 void ImmersiveModeTabbedController::AddController() {
   NSWindow* window = browser_window();
   if (![window.titlebarAccessoryViewControllers
-          containsObject:tab_titlebar_view_controller_]) {
-    [window addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
+          containsObject:objc_storage_->tab_titlebar_view_controller]) {
+    [window addTitlebarAccessoryViewController:objc_storage_->
+                                               tab_titlebar_view_controller];
   }
 }
 
 void ImmersiveModeTabbedController::RemoveController() {
-  [tab_titlebar_view_controller_ removeFromParentViewController];
+  [objc_storage_->tab_titlebar_view_controller removeFromParentViewController];
 }
 
 void ImmersiveModeTabbedController::OnTopViewBoundsChanged(
     const gfx::Rect& bounds) {
   ImmersiveModeController::OnTopViewBoundsChanged(bounds);
   NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
-  [tab_titlebar_view_controller_.get().view
+  [objc_storage_->tab_titlebar_view_controller.view
       setFrameSize:NSMakeSize(frame.size.width,
-                              tab_titlebar_view_controller_.get()
-                                  .view.frame.size.height)];
+                              objc_storage_->tab_titlebar_view_controller.view
+                                  .frame.size.height)];
 }
 
 void ImmersiveModeTabbedController::RevealLock() {
@@ -175,7 +193,8 @@ void ImmersiveModeTabbedController::RevealLock() {
 
   // Call after TitlebarReveal() for a proper layout.
   ImmersiveModeController::RevealLock();
-  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
+  LayoutWindowWithAnchorView(objc_storage_->tab_window,
+                             objc_storage_->tab_content_view);
 }
 
 void ImmersiveModeTabbedController::RevealUnlock() {
@@ -188,7 +207,8 @@ void ImmersiveModeTabbedController::RevealUnlock() {
 
   // Call after TitlebarHide() for a proper layout.
   ImmersiveModeController::RevealUnlock();
-  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
+  LayoutWindowWithAnchorView(objc_storage_->tab_window,
+                             objc_storage_->tab_content_view);
 }
 
 void ImmersiveModeTabbedController::TitlebarReveal() {
@@ -201,13 +221,14 @@ void ImmersiveModeTabbedController::TitlebarHide() {
 
 void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
   ImmersiveModeController::OnTitlebarFrameDidChange(frame);
-  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
+  LayoutWindowWithAnchorView(objc_storage_->tab_window,
+                             objc_storage_->tab_content_view);
 }
 
 void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
-  // The `tab_window_` is a child of the `overlay_window_`. Ignore the
-  // `tab_window_`.
-  if (child == tab_window_) {
+  // The `objc_storage_->tab_window` is a child of the `overlay_window_`. Ignore
+  // the `objc_storage_->tab_window`.
+  if (child == objc_storage_->tab_window) {
     return;
   }
 
@@ -216,17 +237,17 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
 }
 
 void ImmersiveModeTabbedController::OnChildWindowRemoved(NSWindow* child) {
-  // The `tab_window_` is a child of the `overlay_window_`. Ignore the
-  // `tab_window_`.
-  if (child == tab_window_) {
+  // The `objc_storage_->tab_window` is a child of the `overlay_window_`. Ignore
+  // the `objc_storage_->tab_window`.
+  if (child == objc_storage_->tab_window) {
     return;
   }
   ImmersiveModeController::OnChildWindowRemoved(child);
 }
 
 bool ImmersiveModeTabbedController::ShouldObserveChildWindow(NSWindow* child) {
-  // Filter out the `tab_window_`.
-  if (child == tab_window_) {
+  // Filter out the `objc_storage_->tab_window`.
+  if (child == objc_storage_->tab_window) {
     return false;
   }
   return ImmersiveModeController::ShouldObserveChildWindow(child);
@@ -241,9 +262,10 @@ void ImmersiveModeTabbedController::OrderTabWindowZOrderOnTop() {
   // window to always be z-order on top of overlay window children.
   // Practically this allows for the tab preview hover card to be z-order on top
   // of omnibox results popup.
-  if (overlay_window().childWindows.lastObject != tab_window_) {
-    [overlay_window() removeChildWindow:tab_window_];
-    [overlay_window() addChildWindow:tab_window_ ordered:NSWindowAbove];
+  if (overlay_window().childWindows.lastObject != objc_storage_->tab_window) {
+    [overlay_window() removeChildWindow:objc_storage_->tab_window];
+    [overlay_window() addChildWindow:objc_storage_->tab_window
+                             ordered:NSWindowAbove];
   }
 }
 

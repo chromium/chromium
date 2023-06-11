@@ -7,7 +7,6 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
-#include "base/mac/scoped_nsobject.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
 @class TabTitlebarViewController;
@@ -51,10 +50,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   // parented to overlay window regardless of the current parent.
   void OrderTabWindowZOrderOnTop();
 
-  NSWindow* const tab_window_;
-  BridgedContentView* tab_content_view_;
-  base::scoped_nsobject<NSTitlebarAccessoryViewController>
-      tab_titlebar_view_controller_;
+  // TODO(https://crbug.com/1280317): Merge the contents back into the header
+  // file once all files that include this header are compiled with ARC.
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
 }  // namespace remote_cocoa
