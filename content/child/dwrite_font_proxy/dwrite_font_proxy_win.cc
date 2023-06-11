@@ -117,7 +117,9 @@ HRESULT DWriteFontCollectionProxy::Create(
       proxy_out, dwrite_factory, std::move(proxy));
 }
 
-DWriteFontCollectionProxy::DWriteFontCollectionProxy() = default;
+DWriteFontCollectionProxy::DWriteFontCollectionProxy()
+  : families_lock_("DWriteFontCollectionProxy.families_lock_")
+{}
 
 DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
