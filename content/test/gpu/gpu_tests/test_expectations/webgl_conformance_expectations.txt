@@ -700,9 +700,9 @@ crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/e
 # Roll WebGL d1b65aa..b934957.
 crbug.com/1448573 [ android angle-disabled no-passthrough qualcomm renderer-skia-gl ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1448573 [ android-pie android-shield-android-tv angle-disabled no-clang-coverage no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/oes-texture-float.html [ Failure ]
-crbug.com/1448573 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/oes-texture-float.html [ Failure ]
+crbug.com/1448573 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
-crbug.com/1448743 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/1448743 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
