@@ -289,7 +289,7 @@
 <translation id="2848086008667475748">[設定] でデフォルトにする…</translation>
 <translation id="2858204748079866344">プライバシー保護のため、Chrome ではこの欄のパスワードの自動入力は行われません。</translation>
 <translation id="285960592395650245">ダウンロードを再試行</translation>
-<translation id="2870560284913253234">サイト</translation>
+<translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2871695793448672541">非表示のパスワード</translation>
 <translation id="2876369937070532032">セキュリティ上のリスクがある場合に、アクセスした一部のページの URL が Google に送信されます</translation>
 <translation id="2883151425485251736">アカウントで非表示にしたトピックの表示と編集</translation>
@@ -530,7 +530,7 @@
 <translation id="457292989631956153">{COUNT,plural, =1{アクティブでない {COUNT} 個のタブを閉じますか？}other{アクティブでない {COUNT} 個のタブを閉じますか？}}</translation>
 <translation id="457386861538956877">その他...</translation>
 <translation id="4587235830039045480">Google アカウントにパスワードを保存します</translation>
-<translation id="4587589328781138893">サイト</translation>
+<translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4588014171431912783">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">キーボード</translation>
 <translation id="4606247758155004938">お使いのブラウザは組織によって管理されています。</translation>

@@ -1491,7 +1491,7 @@
 <translation id="2247870315273396641">音声プレビュー</translation>
 <translation id="2249111429176737533">タブ付きウィンドウとして開く</translation>
 <translation id="2249605167705922988">例 1-5, 8, 11-13</translation>
-<translation id="2249635629516220541">サイトが広告表示に使用する情報をカスタマイズします</translation>
+<translation id="2249635629516220541">ウェブサイトが広告表示に使用する情報をカスタマイズします</translation>
 <translation id="2251218783371366160">システム ビューアで開く</translation>
 <translation id="225163402930830576">ネットワークを更新</translation>
 <translation id="2251809247798634662">新しいシークレット ウィンドウ</translation>
@@ -1961,7 +1961,7 @@
 <translation id="264083724974021997">電話に接続 - ダイアログ</translation>
 <translation id="2642111877055905627">サッカーボール</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" /> では常に許可</translation>
-<translation id="2643064289437760082">広告測定データは、閲覧データを削除することでいつでも削除できます</translation>
+<translation id="2643064289437760082">閲覧データを消去することで、ユーザーは広告効果の測定データをいつでも削除できます</translation>
 <translation id="2643698698624765890">[ウィンドウ] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="2645047101481282803">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。</translation>
 <translation id="2645388244376970260">このタブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
@@ -2209,7 +2209,7 @@
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
 <translation id="2844809857160214557">印刷ジョブの表示と管理</translation>
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
-<translation id="2845751331501453107">ブラウジング中に表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK1" />サイト提案広告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定<ph name="LINK_END2" />、アクセスしたサイトが広告をパーソナライズしているかどうかによって決まります</translation>
+<translation id="2845751331501453107">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK1" />ウェブサイトが提案する広告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定状況<ph name="LINK_END2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="284581348330507117">新たなパスワードを作成してください</translation>
 <translation id="284805635805850872">有害なソフトウェアを削除しますか？</translation>
 <translation id="2849035674501872372">調べる</translation>
@@ -2232,7 +2232,7 @@
 <translation id="286674810810214575">電源を確認しています...</translation>
 <translation id="2867768963760577682">固定されたタブとして開く</translation>
 <translation id="2868746137289129307">この拡張機能は古く、企業のポリシーによって無効にされました。新しいバージョンが利用可能になったときに自動的に有効になる可能性があります。</translation>
-<translation id="2870560284913253234">サイト</translation>
+<translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2870909136778269686">更新しています...</translation>
 <translation id="2871733351037274014">ページをプリロードする</translation>
 <translation id="2871813825302180988">このアカウントは既にこのデバイスで使用されています。</translation>
@@ -2359,7 +2359,7 @@
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2981113813906970160">大きいマウスカーソルを表示する</translation>
 <translation id="2981293774053328982">このファイルには、個人アカウントまたはソーシャル ネットワークのアカウントを侵害する恐れのあるマルウェアが含まれています</translation>
-<translation id="2983102365694924129">サイトでのアクティビティに基づいて提案されます。この設定はオフになっています。</translation>
+<translation id="2983102365694924129">ユーザーのウェブサイト上でのアクティビティに基づいて提案されます。この設定は無効になっています。</translation>
 <translation id="2983373101216420412">ケースのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2985348301114641460">「<ph name="EXTENSION_NAME" />」をインストールするよう管理者にリクエストを送信しますか？</translation>
 <translation id="2987620471460279764">他のデバイスからテキストが共有されました</translation>
@@ -2425,7 +2425,7 @@
 <translation id="3024374909719388945">24 時間形式を使用する</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{保存されているパスワードはありません}=1{{COUNT} 件のサイトのパスワードを確認しました}other{{COUNT} 件のサイトやアプリのパスワードを確認しました}}</translation>
 <translation id="3027296729579831126">ニアバイシェアをオンにする</translation>
-<translation id="3027644380269727216">サイトでのアクティビティに基づいて提案されます。この設定はオンになっています。</translation>
+<translation id="3027644380269727216">ユーザーのウェブサイト上でのアクティビティに基づいて提案されます。この設定は有効になっています。</translation>
 <translation id="3029276696788198026">プリロードなし</translation>
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
 <translation id="3029808567601324798">ロックまでの時間</translation>
@@ -2684,7 +2684,7 @@
 <translation id="3288047731229977326">デベロッパー モードで実行される拡張機能はパソコンにダメージを与える恐れがあります。デベロッパーでない場合は、安全のため、デベロッパー モードで実行されているこれらの拡張機能を無効にしてください。</translation>
 <translation id="3289668031376215426">自動大文字変換</translation>
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
-<translation id="3289886661311231677">サイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。</translation>
+<translation id="3289886661311231677">ユーザーはウェブサイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。</translation>
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
 <translation id="3293181007446299124">閲覧履歴はプライバシーを保つためデバイスに保存され、レポートはユーザーを特定できないように遅れて送信されます</translation>
 <translation id="3293644607209440645">このページを送信</translation>
@@ -2774,7 +2774,7 @@
 <translation id="3371140690572404006">USB-C デバイス（右手前のポート）</translation>
 <translation id="337286756654493126">アプリケーションで開いたフォルダに書き込む</translation>
 <translation id="3373059063088819384">読み上げモードで開く</translation>
-<translation id="3373701465337594448">オンにすると、ユーザーの興味 / 関心を推測できるサイトのリストがここに表示されます</translation>
+<translation id="3373701465337594448">この設定が有効な場合、閲覧履歴に基づいたウェブサイトのリストがここに表示されます。</translation>
 <translation id="3374294321938930390">「<ph name="BOOKMARK_TITLE" />」を「<ph name="NEW_FOLDER_TITLE" />」に移動しました。</translation>
 <translation id="3378572629723696641">この拡張機能は破損している可能性があります。</translation>
 <translation id="3378627645871606983">Steam に対して許可した権限は、すべての Steam ゲームとアプリに適用されます。</translation>
@@ -3213,7 +3213,7 @@
 <translation id="3747077776423672805">アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。</translation>
 <translation id="3748424433435232460">このアカウントのパスワードはすでにこのデバイスに保存されています</translation>
 <translation id="3748706263662799310">バグを報告</translation>
-<translation id="3749724428455457489">サイト提案広告の詳細</translation>
+<translation id="3749724428455457489">ウェブサイトによる広告提案の詳細</translation>
 <translation id="3750562496035670393">パスワードが Chrome によってこのデバイスに保存されました。パスワードは、Google アカウントに保存することもできます。この場合、Google アカウントにログインしている間、アカウントに保存されたすべてのパスワードを使用できます。</translation>
 <translation id="3752253558646317685">指紋を保存するには、お子様に指をかざしてもらってください</translation>
 <translation id="3753033997400164841">一度保存すればどこでも使用可能</translation>
@@ -3231,7 +3231,7 @@
 <translation id="3760460896538743390">バックグラウンド ページの検証(&amp;B)</translation>
 <translation id="37613671848467444">シークレット ウィンドウで開く(&amp;I)</translation>
 <translation id="3761556954875533505">サイトにファイルの編集を許可しますか？</translation>
-<translation id="3763433740586298940">広告の提案を希望しないサイトをブロックできます。また、30 日以上経過したサイトはリストから自動削除されます。</translation>
+<translation id="3763433740586298940">広告主のウェブサイトを訪れた後、その企業からの広告を希望しない場合はブロックすることができます。また、30 日以上経過した広告主のウェブサイトはリストから自動削除されます。</translation>
 <translation id="3763549179847864476">プライバシー ガイドの戻るボタン</translation>
 <translation id="3764314093345384080">ビルド情報の詳細</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{1 台の USB デバイスと通信します}other{# 台の USB デバイスと通信します}}</translation>
@@ -3916,7 +3916,7 @@
 <translation id="4367513928820380646">削除された権限を確認</translation>
 <translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
 <translation id="436926121798828366">これは <ph name="SETTINGS_LINK" /> でいつでも変更できます</translation>
-<translation id="4369735607080757018">広告のパフォーマンスを測定するため、広告が表示された時刻など、限定的な種類のデータがサイト間で共有されます</translation>
+<translation id="4369735607080757018">広告効果を測定するため、測定の対象となる広告が表示された時刻など、限定的な種類のデータが関係するウェブサイト間で共有されます</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4374805630006466253">別のスマートフォンまたはタブレットを使用する</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
@@ -4172,7 +4172,7 @@
 <translation id="4582563038311694664">すべての設定をリセット</translation>
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
-<translation id="4587589328781138893">サイト</translation>
+<translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
 <translation id="4590324241397107707">データベース ストレージ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> に保存されたデバイスはありません</translation>
@@ -4287,7 +4287,7 @@
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4687613760714619596">不明なデバイス（<ph name="DEVICE_ID" />）</translation>
-<translation id="4687718960473379118">サイトによる広告の提案</translation>
+<translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="4689235506267737042">デモ設定の選択</translation>
@@ -4718,14 +4718,14 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
 <translation id="5089763948477033443">サイドパネルのサイズ変更ハンドル</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
-<translation id="5093477827231450397">他のサイトに広告を提案しないようブロックしたサイトのリスト</translation>
+<translation id="5093477827231450397">他のサイトに広告を提案しないようブロックしたウェブサイトのリスト</translation>
 <translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094042205195563542">インストールを開始しています</translation>
 <translation id="5094176498302660097">ファイルアプリからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="5094721898978802975">連携するネイティブ アプリケーションと通信</translation>
 <translation id="5097002363526479830">ネットワーク「<ph name="NAME" />」に接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">位置情報の使用について詳細を確認する</translation>
-<translation id="5097349930204431044">サイトがユーザーの興味 / 関心を判断し、それ以降にアクセスするサイトで広告を提案することを許可します</translation>
+<translation id="5097349930204431044">ユーザーが訪れた広告主のウェブサイトがユーザーの興味 / 関心を判断し、後に訪問する別のウェブサイトで広告を提案することができます</translation>
 <translation id="5097649414558628673">ツール: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">カーソルの停止時に自動的にクリックする</translation>
 <translation id="5101839224773798795">カーソルの停止時に自動的にクリックする</translation>
@@ -6217,7 +6217,7 @@
 <translation id="6444070574980481588">日時の設定</translation>
 <translation id="6444147596556711162">「次へ」と「前へ」を画面上でアイテム間の移動に使用します</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Bluetooth のスキャンを実行中です</translation>
-<translation id="6445395161658447009">閲覧履歴に基づいてサイトのリストがここに表示されるようになるまで 1 週間ほどかかる場合があります</translation>
+<translation id="6445395161658447009">閲覧履歴に基づいてウェブサイトのリストがここに表示されるようになるまで 1 週間ほどかかる場合があります</translation>
 <translation id="6445450263907939268">この変更を受け入れない場合は、以前の設定を復元できます。</translation>
 <translation id="6446213738085045933">デスクトップにショートカットを作成する</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -6836,7 +6836,7 @@
 <translation id="697508444536771064">Linux をシャットダウン</translation>
 <translation id="6975361011348772931">読み取りと変更をリクエストしています</translation>
 <translation id="6978121630131642226">検索エンジン</translation>
-<translation id="6978717888677691380">ブロックしたサイト</translation>
+<translation id="6978717888677691380">ブロックしたウェブサイト</translation>
 <translation id="6979041727349121225">省エネモード</translation>
 <translation id="6979044105893951891">管理対象のゲスト セッションの開始と終了</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
@@ -7138,7 +7138,7 @@
 <translation id="7258192266780953209">変換</translation>
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7260186537988033909">キオスクとサイネージ デバイスの登録が完了しました</translation>
-<translation id="7260367682327802201">お使いの Android デバイスにも、同様の設定が含まれていることがあります。Chrome と Android デバイスで広告測定が有効になっている場合、企業はユーザーが利用するウェブサイトやアプリで広告の効果を測定できる可能性があります。</translation>
+<translation id="7260367682327802201">お使いの Android デバイスにも、同様の設定が含まれていることがあります。Chrome と Android デバイスで広告測定が有効になっている場合、ユーザーが利用するウェブサイトやアプリ間で広告の効果が測定される可能性があります。</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{1 件のサイトの権限を削除しました}other{{NUM_SITES} 件のサイトの権限を削除しました}}</translation>
@@ -7275,7 +7275,7 @@
 <translation id="7387273928653486359">許容範囲内</translation>
 <translation id="7387951778417998929">既定と異なる検索エンジンを使用するには、アドレスバーに検索エンジンのショートカットを入力して、設定したキーボード ショートカットを押します。ここで既定の検索エンジンを変更することもできます。</translation>
 <translation id="7388209873137778229">サポートされているデバイスのみが表示されます。</translation>
-<translation id="7388615499319468910">サイトと広告主は広告のパフォーマンスを把握できます。この設定はオフになっています。</translation>
+<translation id="7388615499319468910">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は無効になっています。</translation>
 <translation id="738903649531469042">タブをリーディング リストに追加</translation>
 <translation id="7392118418926456391">ウイルス スキャンに失敗しました</translation>
 <translation id="7392915005464253525">閉じたウィンドウを開く（&amp;E）</translation>
@@ -7357,7 +7357,7 @@
 <translation id="7453467225369441013">ほとんどのサイトからログアウトします。Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="7454548535253569100">ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">他のコンテナの管理</translation>
-<translation id="7455988709578031708">閲覧履歴に基づいて特定されます。この設定はオンになっています。</translation>
+<translation id="7455988709578031708">ユーザーの閲覧履歴に基づいて特定されます。この設定は有効になっています。</translation>
 <translation id="7456142309650173560">Dev</translation>
 <translation id="7456774706094330779">拡張プリロード</translation>
 <translation id="7456847797759667638">場所を開く...</translation>
@@ -7560,7 +7560,7 @@
 <translation id="7634337648687970851">ローカルデータの復元は現在サポートされていません。</translation>
 <translation id="7634566076839829401">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7635048370253485243">管理者によって固定されています</translation>
-<translation id="7635711411613274199">ブラウジング中に表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK1" />広告のトピック<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定<ph name="LINK_END2" />、アクセスしたサイトが広告をパーソナライズしているかどうかによって決まります</translation>
+<translation id="7635711411613274199">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK1" />広告のトピック<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定状況<ph name="LINK_END2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="7636919061354591437">このデバイスにインストール</translation>
 <translation id="7637253234491814483">キーボードの右上にある電源ボタンの横の指紋認証センサーに触れてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7637272932128132922">このタブがアクティブでないときに、メモリセーバーがメモリを他のタスクに解放しました。これは <ph name="SETTINGS_LINK" /> でいつでも変更できます。</translation>
@@ -7633,7 +7633,7 @@
 <translation id="7684718995427157417">アプリを作成してテストするには、Android Debug Bridge（ADB）を有効にします。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
 <translation id="7685049629764448582">JavaScript メモリ</translation>
 <translation id="7685087414635069102">PIN が必要です</translation>
-<translation id="7686086654630106285">サイト提案広告の詳細</translation>
+<translation id="7686086654630106285">ウェブサイトによる広告提案の詳細</translation>
 <translation id="7686581688229391955">このサイトで拡張機能を許可するよう選択します</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" />（<ph name="DEVICE_PATH" />）</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
@@ -7844,7 +7844,7 @@
 <translation id="7866941897628979955"><ph name="MEMORY_SAVINGS" /> 節約</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
 <translation id="7869655448736341731">指定なし</translation>
-<translation id="787069710204604994">たとえば、長距離ランニング用シューズを販売しているサイトにアクセスすると、マラソンに興味があると判断されます。その後、別のサイトにアクセスすると、最初にアクセスしたサイトにより提案されたランニング用シューズの広告が表示されます。</translation>
+<translation id="787069710204604994">たとえば、長距離ランニング用シューズを販売しているウェブサイトにアクセスすると、ウェブサイトが、そのユーザーはマラソンに興味があると判断するかもしれません。その後、ユーザーがアクセスした別のウェブサイトでは、最初にアクセスしたウェブサイトからの提案によってランニング用シューズの広告を表示することができます。</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7870790288828963061">新しいバージョンのキオスクアプリが見つかりませんでした。更新するものはありません。USB スティックを取り外してください。</translation>
 <translation id="7871049986386271121">このサイトで常に許可する</translation>
@@ -8643,7 +8643,7 @@
 <translation id="8557180006508471423">Mac の位置情報サービスで「Google Chrome」をオンにしてください</translation>
 <translation id="8557856025359704738">次回のダウンロードは <ph name="NEXT_DATE_DOWNLOAD" /> に行われます。</translation>
 <translation id="8559858985063901027">パスキー</translation>
-<translation id="8559961053328923750">Chrome は、サイトが広告のパフォーマンスを測定するためにブラウザを介して共有できるデータの量を制限しています</translation>
+<translation id="8559961053328923750">Chrome は、ウェブサイトが広告効果を測定するためにブラウザを介して共有できるデータの量を制限しています</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="8561206103590473338">ゾウ</translation>
 <translation id="8561565784790166472">続行する場合は十分ご注意ください</translation>
@@ -8743,7 +8743,7 @@
 <translation id="8648408795949963811">夜間モードの色温度</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" /> など</translation>
 <translation id="864892689521194669">ChromeOS Flex の機能と動作の改善に協力する</translation>
-<translation id="8649026945479135076">多くのサイトでは、アクセスしたユーザーの興味 / 関心を記憶して、エクスペリエンスをカスタマイズするのが一般的です。そうしたサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合もあります。</translation>
+<translation id="8649026945479135076">多くのウェブサイトでは、アクセスしたユーザーの興味 / 関心を記録して、ユーザー体験をパーソナライズするのが一般的です。そうしたウェブサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合があります。</translation>
 <translation id="8650543407998814195">古いプロフィールにアクセスすることはできませんが、削除することはできます。</translation>
 <translation id="8651585100578802546">ページを再読み込み</translation>
 <translation id="8652400352452647993">拡張機能のパッケージ化のエラー</translation>
@@ -8921,7 +8921,7 @@
 <translation id="8797459392481275117">このサイトは翻訳しない</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
-<translation id="8803526663383843427">オンにした場合</translation>
+<translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8803953437405899238">新しいタブをワンクリックで開くことができます</translation>
 <translation id="8804419452060773146">次で開く</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{タブを別のウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
@@ -9178,7 +9178,7 @@
 <translation id="9021662811137657072">ウイルスを検出しました</translation>
 <translation id="902236149563113779">多くのサイトは、ゲームや HUD のナビ表示などで AR 機能を使用するためにカメラ位置を追跡します。</translation>
 <translation id="9022847679183471841">このアカウントは既にこのパソコンで <ph name="AVATAR_NAME" /> によって使用されています。</translation>
-<translation id="9022871169049522985">サイトと広告主が広告のパフォーマンスを測定することを許可します</translation>
+<translation id="9022871169049522985">ウェブサイトと広告主が広告効果を測定することができます</translation>
 <translation id="9023015617655685412">このタブをブックマークに追加...</translation>
 <translation id="9023909777842748145">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="9024127637873500333">新しいタブで開く(&amp;O)</translation>
@@ -9272,12 +9272,12 @@
 <translation id="9095364055741191097">ローカルデータを復元できませんでした</translation>
 <translation id="909554839118732438">シークレット モードを終了</translation>
 <translation id="9096776523567481218">ローカルにインストールされていません</translation>
-<translation id="9099220545925418560">閲覧履歴に基づいて特定されます。この設定はオフになっています。</translation>
+<translation id="9099220545925418560">ユーザーの閲覧履歴に基づいて特定されます。この設定は無効になっています。</translation>
 <translation id="9100416672768993722">前回使用した入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="9100765901046053179">詳細設定</translation>
 <translation id="9101691533782776290">アプリを起動</translation>
 <translation id="9102610709270966160">拡張機能を有効にする</translation>
-<translation id="9102864637938129124">サイトと広告主は広告のパフォーマンスを把握できます。この設定はオンになっています。</translation>
+<translation id="9102864637938129124">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は有効になっています。</translation>
 <translation id="9103479157856427471">キーボード フォーカスに合わせて画面を拡大する</translation>
 <translation id="9103868373786083162">ボタンを押して前に戻ります。履歴を表示するにはコンテキスト メニューを選択します</translation>
 <translation id="9108035152087032312">ウィンドウに名前を付ける(&amp;W)...</translation>

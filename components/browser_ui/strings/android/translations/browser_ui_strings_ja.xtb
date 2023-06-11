@@ -104,7 +104,7 @@
 <translation id="2750481671343847896">サイトで ID サービスからのログイン メッセージを表示できるようにします。</translation>
 <translation id="2822354292072154809">「<ph name="CHOSEN_OBJECT_NAME" />」に関するすべてのサイト権限をリセットしてもよろしいですか？</translation>
 <translation id="2850913818900871965">モバイルビューをリクエストする</translation>
-<translation id="2870560284913253234">サイト</translation>
+<translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2874939134665556319">前のトラック</translation>
 <translation id="2891975107962658722">サイトによるデバイスへのデータ保存をブロックします</translation>
 <translation id="2903493209154104877">住所</translation>
@@ -430,7 +430,7 @@
 <translation id="8737217482364735741"><ph name="ORIGIN" /> により保存されたすべてのデータと Cookie が削除されます。</translation>
 <translation id="8751914237388039244">画像を選択</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>
-<translation id="8803526663383843427">オンにした場合</translation>
+<translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8805385115381080995">サイトであなたが実在のユーザーであることを確認する頻度が減るため、ブラウジングが高速化されます</translation>
 <translation id="8816026460808729765">サイトによるセンサーへのアクセスをブロックする</translation>
 <translation id="8823559166155093873">Cookie をブロック</translation>

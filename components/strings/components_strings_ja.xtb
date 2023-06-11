@@ -269,7 +269,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> インチ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
-<translation id="1584492003828271317">ブラウジング中に表示される広告がパーソナライズされるかどうかは、この設定、サイト提案広告、Cookie の設定、アクセスしたサイトが広告をパーソナライズしているかどうかによって決まります</translation>
+<translation id="1584492003828271317">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、ウェブサイトが提案する広告、Cookie の設定状況、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="1592005682883173041">ローカルデータへのアクセス</translation>
@@ -458,7 +458,7 @@
 <translation id="205212645995975601">バーベキュー、グリル</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />のページは翻訳されません。</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}=1{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}other{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは {NUM_DAYS} 日ごとに更新されます。}}</translation>
-<translation id="2056658168519009885">パーソナライズド広告を表示するため、サイトから Chrome に情報を要求されることがあります。</translation>
+<translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトから Chrome に情報を要求することがあります。</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
 <translation id="2066915425250589881">削除のリクエスト</translation>
@@ -833,7 +833,7 @@
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3016780570757425217">ユーザーの現在地の認識</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> です。Tab キー、Enter キーの順に押すと、候補を削除します。</translation>
-<translation id="3023165109041533893">サイトによる広告の提案は、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。アクセスするサイトでは、ユーザーのアクティビティに基づき、関連する広告をそれ以降のブラウジング時に提案できます。設定で、これらのサイトのリストを確認したり、必要のないサイトをブロックしたりできます。</translation>
+<translation id="3023165109041533893">ウェブサイトによる広告の提案は、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。アクセスするサイトでは、ユーザーのアクティビティに基づき、関連する広告をそれ以降のブラウジング時に提案できます。設定で、これらのサイトのリストを確認したり、必要のないサイトをブロックしたりできます。</translation>
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
 <translation id="3029752078111257850">世界のニュース</translation>
 <translation id="3037177537145227281">価格をトラッキングします</translation>
@@ -845,7 +845,7 @@
 <translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3068991664510324412">TV ゲーム、PC ゲーム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
-<translation id="3081538120861307764">広告のパフォーマンスを測定するため、広告が表示された日時など、限られた種類のデータがサイト間で共有されます。</translation>
+<translation id="3081538120861307764">また、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイト間で共有されます。</translation>
 <translation id="3082007635241601060">カートに入れたアイテムの割引情報の検索を Google に許可する</translation>
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下</translation>
@@ -954,7 +954,7 @@
 <translation id="3339440062908617027">ランニング、ウォーキング</translation>
 <translation id="3339446062576134663">クラウド（Ash）</translation>
 <translation id="3340978935015468852">設定</translation>
-<translation id="3342018947887487892">その後、アクセスするサイトから、この情報（広告のトピックまたはアクセスしたサイトによる広告の提案）を求められることがあります。</translation>
+<translation id="3342018947887487892">その後、ユーザーがアクセスする別のウェブサイトから、この情報（広告のトピックまたはアクセスしたウェブウェブサイトによる広告の提案）を求められることがあります。</translation>
 <translation id="3342366525167526994">ボディアート</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
@@ -1080,7 +1080,7 @@
 <translation id="3634530185120165534">トレイ 5</translation>
 <translation id="3634567936866541746">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
 <translation id="3642638418806704195">アプリケーション:</translation>
-<translation id="3646643500201740985">広告のパフォーマンスの測定</translation>
+<translation id="3646643500201740985">広告効果の測定</translation>
 <translation id="3647286794400715637">各 urls 文字列エントリには 1 つまたは 2 つの URL を含める必要があります。</translation>
 <translation id="3650584904733503804">検証が正常に完了しました</translation>
 <translation id="3650594806107685466">カードの安全を守るために、<ph name="SIDE_OF_CARD" />に記載されている CVC を入力してください</translation>
@@ -1099,7 +1099,7 @@
 <translation id="3678342917559046352">無効な拡張機能です。値は &lt;extension_id&gt; または &lt;extension_id&gt;;&lt;update_url&gt; のいずれかの形式で指定する必要があります。</translation>
 <translation id="3678529606614285348">ページを新しいシークレット ウィンドウで開く（Ctrl-Shift-N）</translation>
 <translation id="3681007416295224113">証明書情報</translation>
-<translation id="3681421644246505351">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックが記録されます。</translation>
+<translation id="3681421644246505351">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。</translation>
 <translation id="3693327506115126094">本人確認の方法を選択してください</translation>
 <translation id="3701427423622901115">リセットを確認しました。</translation>
 <translation id="3704162925118123524">ご利用のネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
@@ -1188,7 +1188,7 @@
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">この設定は Chrome の設定でいつでも変更できます</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> 30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、サイトによる広告の提案をブロックしたり、サイト提案広告を無効にしたりできます。</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> 30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトによる広告の提案をブロックしたり、サイト提案広告を無効にしたりできます。</translation>
 <translation id="3921869355029467742">セキュリティ コードを入力する</translation>
 <translation id="3927932062596804919">拒否</translation>
 <translation id="393316646445601645">インターネット、通信</translation>
@@ -1227,7 +1227,7 @@
 <translation id="4023431997072828269">このフォームは安全ではない接続を使用して送信されているため、情報が他人に読み取られる可能性があります。</translation>
 <translation id="4025913568718019429">[Google のプライバシー設定を管理] ボタンです。Enter キーを押すと Google アカウントのプライバシー設定に移動します</translation>
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
-<translation id="4030545038933060179">オンにすると、最近の閲覧履歴に基づくトピックのリストがここに表示されます</translation>
+<translation id="4030545038933060179">この設定が有効な場合、最近の閲覧履歴に基づいたトピックのリストがここに表示されます</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4040350669425716613">大学</translation>
 <translation id="4047351652147966654">18x24 インチ</translation>
@@ -1238,7 +1238,7 @@
 <translation id="4063924980214801036">デバイスのロック解除を使用してカードをすばやく確認する</translation>
 <translation id="4067098466788473230">奨学金</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
-<translation id="4070790659619547722">広告測定では、広告のパフォーマンスを測定するため、広告が表示された時刻など、限定的な種類のデータがサイト間で共有されます。</translation>
+<translation id="4070790659619547722">広告測定では、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイト間で共有されます。</translation>
 <translation id="4072193657607981494">ポリシーを読み込んでいます</translation>
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="4073376909608563327">デバイスのロック解除を使用できませんでした</translation>
@@ -1352,7 +1352,7 @@
 <translation id="4282346679996504092">この商品のアラートをオフにし、ブックマークを削除しました</translation>
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{このカードを Google アカウントに保存しました}other{これらのカードを Google アカウントに保存しました}}</translation>
-<translation id="4287495839370498922">Chrome における広告のプライバシー強化</translation>
+<translation id="4287495839370498922">Chrome で表示される広告プライバシーの強化について</translation>
 <translation id="4287885627794386150">試用版を使用できますが有効になっていません</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
 <translation id="4298000214066716287">投資</translation>
@@ -1435,7 +1435,7 @@
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
 <translation id="4492519888999857993">これらの機能はデフォルトで無効になっています。Chrome の今後のバージョンではご利用いただけません。</translation>
 <translation id="4493480324863638523">URL が無効です。標準のスキームを使用した URL を指定してください（例: http://example.com、https://example.com）。</translation>
-<translation id="4494323206460475851">設定で広告のトピックを確認して、サイトと共有したくないトピックをブロックできます。Chrome では、4 週間以上経過した広告のトピックも自動削除されます。</translation>
+<translation id="4494323206460475851">設定で広告のトピックを確認して、ウェブサイトと共有したくないトピックをブロックできます。Chrome では、4 週間以上経過した広告のトピックは自動削除されます。</translation>
 <translation id="4500587658229086076">安全でないコンテンツ</translation>
 <translation id="4506176782989081258">検証エラー: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">システム管理者に問い合わせる</translation>
@@ -1500,7 +1500,7 @@
 <translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4666114623408286498">医薬品、バイオテクノロジー</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4669856024297417878">Chrome では、過去数週間の閲覧履歴に基づいて興味 / 関心のあるトピックが保存されます。</translation>
+<translation id="4669856024297417878">Chrome では、過去数週間のユーザーの閲覧履歴に基づいて興味 / 関心のあるトピックが保存されます。</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4671339777629075741">DL 封筒</translation>
 <translation id="4673460618347856347">Dino ゲーム、プレイ</translation>
@@ -1509,7 +1509,7 @@
 <translation id="467809019005607715">Google スライド</translation>
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="468314109939257734">仮想カード番号を表示します</translation>
-<translation id="4687718960473379118">サイトによる広告の提案</translation>
+<translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
 <translation id="4692623383562244444">検索エンジン</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側面</translation>
@@ -1781,7 +1781,7 @@
 <translation id="5306593769196050043">両方のシート</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">接続</translation>
-<translation id="5308406951783863385">Chrome 設定で変更できます</translation>
+<translation id="5308406951783863385">また、これらは Chrome の設定で変更できます</translation>
 <translation id="5308689395849655368">障害レポートが無効になっています。</translation>
 <translation id="5310178588836736698">オフロード車</translation>
 <translation id="5314967030527622926">ブックレット メーカー</translation>
@@ -2073,7 +2073,7 @@
 <translation id="6051898664905071243">ページ数:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053584886670442526">保存した住所は Google サービス全体で使用できます。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
-<translation id="6053735090575989697">Google によるユーザーデータの保護について詳しくは、プライバシー ポリシーをご覧ください。</translation>
+<translation id="6053735090575989697">Google によるユーザーデータの保護について、詳しくはプライバシー ポリシーをご覧ください。</translation>
 <translation id="6055888660316801977">保護されたお支払い認証情報（認証情報の一致なし）シート</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
@@ -2346,7 +2346,7 @@
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
 <translation id="67862343314499040">バイオレット</translation>
 <translation id="6786747875388722282">拡張機能</translation>
-<translation id="6787094689637422836">表示される広告について選択の幅が広がる新たなプライバシー機能がリリースされます。</translation>
+<translation id="6787094689637422836">ユーザーの選択の幅が広がる新たなプライバシー機能がリリースされます。</translation>
 <translation id="678982761784843853">保護されたコンテンツ ID</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="679355240208270552">ポリシーによって既定の検索エンジンが有効になっていないため、無視されました。</translation>
@@ -2586,7 +2586,7 @@
 <translation id="7365849542400970216">デバイスのアクティブ状態を知らせますか？</translation>
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">支払いハンドラ</translation>
-<translation id="7367985555340314048">興味 / 関心のあるトピックを最近の閲覧履歴に基づいて判断し、サイトでパーソナライズド広告を表示するために使うことを許可します</translation>
+<translation id="7367985555340314048">興味 / 関心のあるトピックをユーザーの最近の閲覧履歴に基づいて判断し、ウェブサイトでパーソナライズド広告を表示するために使うことを許可します</translation>
 <translation id="7372973238305370288">検索結果</translation>
 <translation id="7374461526650987610">プロトコル ハンドラ</translation>
 <translation id="7374733840632556089">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chrome では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chrome ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
@@ -2795,13 +2795,13 @@
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
 <translation id="7785790577395078482">このタブレット</translation>
 <translation id="7786368602962652765">必須項目が空白です。保存する前に入力してください。</translation>
-<translation id="7790488044432570133">アクセスしたサイトから、広告のパフォーマンスを測定するための情報が Chrome に求められることがあります。Chrome では、広告が表示された日時など、限られた種類のデータをサイトが収集できるようにします。</translation>
+<translation id="7790488044432570133">広告が表示されたウェブサイトやユーザーがアクセスしたウェブサイトから、広告効果を測定するための情報が Chrome に求められることがあります。Chrome からは、広告が表示された日時など、限られた種類のデータをそのウェブサイトが収集することができます。</translation>
 <translation id="7791011319128895129">未公開</translation>
 <translation id="7791196057686275387">梱包</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798389633136518089">ポリシーがクラウドソースによって設定されていないため、無視されました。</translation>
 <translation id="7800304661137206267">この接続は <ph name="CIPHER" /> で暗号化されており、メッセージ認証には <ph name="MAC" />、鍵交換メカニズムには <ph name="KX" /> が使用されています。</translation>
-<translation id="7800977246388195491">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックが記録されます。また、アクセスしたサイトによりユーザーの好みが特定される場合もあります。その後、パーソナライズド広告を表示するために、このような情報をサイトから求められることがあります。広告を表示するために使用するトピックやサイトは選択できます。</translation>
+<translation id="7800977246388195491">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。また、アクセスしたウェブサイトの情報からユーザーの好みを決定します。その後、ユーザーが訪れた別のウェブサイトにてパーソナライズド広告を表示させるために、これらの情報が求められます。ユーザーは、その際に提供するトピックやウェブサイトの情報を選択できます。</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
 <translation id="780301667611848630">同意しない</translation>
@@ -2815,7 +2815,7 @@
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="7857116075376571629">その後にアクセスしたサイトは、表示する広告をパーソナライズするためのトピックを Chrome に要求できます。Chrome では、共有するトピックを 3 つまでにして、閲覧履歴と個人情報を保護します。</translation>
+<translation id="7857116075376571629">その後にユーザーが訪れたウェブサイトは、表示する広告をパーソナライズするためのトピックを Chrome に要求できます。Chrome では、共有するトピックを 3 つまでにすることで、閲覧履歴と個人情報を保護します。</translation>
 <translation id="7860345425589240791">新しい有効期限と <ph name="SIDE_OF_CARD" /> に記載されている CVC を入力してください</translation>
 <translation id="7862185352068345852">このサイトを離れますか？</translation>
 <translation id="7865448901209910068">最高速度</translation>
@@ -2880,7 +2880,7 @@
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" />（<ph name="ADDITIONAL_TEXT" />）</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome をシステムの既定のブラウザとして設定できます</translation>
 <translation id="8025119109950072390">このサイトを利用すると、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（例: パスワード、電話番号、クレジット カード番号）の入力などの危険な操作を行うよう誘導される可能性があります。</translation>
-<translation id="8026126421313327427">Chrome では、4 週間以上経過したトピックは自動削除されます。ブラウジングを続けていると、トピックがリストに再度表示される場合もあります。サイトと共有したくないトピックはブロックできます。</translation>
+<translation id="8026126421313327427">Chrome では、4 週間以上経過したトピックは自動削除されます。閲覧を続けていると、トピックがリストに再度表示される場合もあります。ウェブサイトと共有したくないトピックはブロックできます。</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
 <translation id="8027077570865220386">トレイ 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google フォームで新しいフォームをすばやく作成します</translation>
@@ -3112,7 +3112,7 @@
 <translation id="860043288473659153">カード名義人</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> このデバイスで Chrome を使用してアクセスしたサイトでのアクティビティ。</translation>
 <translation id="8606726445206553943">MIDI デバイスの使用</translation>
-<translation id="8606988009912891950">広告のトピックは、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックが保存されます。その後、アクセスしたサイトは、パーソナライズド広告を表示するために関連性の高いトピックを Chrome に要求できます。</translation>
+<translation id="8606988009912891950">広告のトピックは、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。その後、ユーザーが訪れた別のウェブサイトにてパーソナライズド広告を表示させるために、これらの情報が求められます。</translation>
 <translation id="8617269623452051934">デバイスのアクティブ状態</translation>
 <translation id="861775596732816396">サイズ 4</translation>
 <translation id="8620276786115098679">角形 7 号封筒</translation>
@@ -3155,7 +3155,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
 <translation id="8731544501227493793">パスワードを管理するボタンです。Enter キーを押すと Chrome の設定でパスワードを表示、管理します</translation>
-<translation id="8733764070897080460">サイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。詳細</translation>
+<translation id="8733764070897080460">ユーザーはウェブサイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。詳細</translation>
 <translation id="8734529307927223492">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="8736059027199600831">30x40 インチ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングします</translation>
@@ -3308,7 +3308,7 @@
 <translation id="91108059142052966">管理者のポリシーによって、機密コンテンツが表示されているときは、<ph name="APPLICATION_TITLE" /> との画面共有が無効になります</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="9116548361133462832">Chrome の広告の詳細</translation>
+<translation id="9116548361133462832">Chrome で表示される広告の詳細</translation>
 <translation id="9117930699067497412">フレッシュ</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
@@ -3331,8 +3331,8 @@
 <translation id="9155211586651734179">接続されたオーディオ周辺機器</translation>
 <translation id="9157595877708044936">セットアップ中...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">アクセスするサイトでは、サイトでのアクティビティに基づいてユーザーの好みが特定される場合もあります。たとえば、長距離ランニング シューズを販売するサイトにアクセスすると、そのユーザーはマラソンに興味があると判断されます。</translation>
-<translation id="9166851138617700776">サイトによる広告の提案と広告測定の詳細</translation>
+<translation id="9165305804774426672">アクセスするウェブサイトによっては、そのウェブサイト上でのアクティビティに基づいてユーザーの好みが判断される場合もあります。たとえば、長距離ランニング シューズを販売するウェブサイトにアクセスすると、そのユーザーはマラソンに興味があるとされるかもしれません。</translation>
+<translation id="9166851138617700776">ウェブサイトによる広告提案と広告測定の詳細</translation>
 <translation id="9168814207360376865">お支払い方法を保存しているかどうかの確認をサイトに許可する</translation>
 <translation id="9169664750068251925">このサイトでは常にブロック</translation>
 <translation id="9169931577761441333">ホーム画面に <ph name="APP_NAME" /> を追加</translation>
