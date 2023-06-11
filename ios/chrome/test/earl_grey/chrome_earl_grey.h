@@ -489,7 +489,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Signs the user out, clears the known accounts entirely and checks whether the
 // accounts were correctly removed from the keychain. Induces a GREYAssert if
-// the operation fails.
+// the operation fails. This will block the UI with a spinner until all
+// identities are cleared. In order to interact with the UI again call
+// `WaitForActivityOverlayToDisappear()`.
 - (void)signOutAndClearIdentities;
 
 #pragma mark - Sync Utilities (EG2)

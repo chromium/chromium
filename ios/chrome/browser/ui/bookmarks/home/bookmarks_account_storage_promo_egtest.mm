@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -97,8 +98,11 @@ using chrome_test_util::SecondarySignInButton;
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   // Sign-in+sync with identity1.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:YES];
-  [SigninEarlGrey signOut];
-  [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
+  [ChromeEarlGrey signOutAndClearIdentities];
+  // Wait for the spinner triggered by the previous method to disappear.
+  // TODO(crbug.com/1448618): This can be removed once
+  // `signOutAndClearIdentities` has a completion block.
+  WaitForActivityOverlayToDisappear();
   // Sign-in with bookmark account storage with identity2.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
@@ -112,6 +116,22 @@ using chrome_test_util::SecondarySignInButton;
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
                                         consent:signin::ConsentLevel::kSignin];
+}
+
+// Tests that the signin promo is not shown when last signed-in user did not
+// remove data during sign-out.
+- (void)testPromoViewNotShownWhenSyncDataNotRemoved {
+  // Sign-in with sync with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+  // Sign-out without removing data.
+  [SigninEarlGrey signOut];
+
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 // Tests to sign-in in incognito mode with the promo.
