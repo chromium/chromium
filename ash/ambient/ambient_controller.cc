@@ -254,11 +254,9 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
       kManagedScreensaverImageRefreshInterval.InSeconds());
 
-  if (ash::features::IsScreenSaverDurationEnabled()) {
-    registry->RegisterIntegerPref(
-        ambient::prefs::kAmbientModeRunningDurationMinutes,
-        kDefaultScreenSaverDuration.InMinutes());
-  }
+  registry->RegisterIntegerPref(
+      ambient::prefs::kAmbientModeRunningDurationMinutes,
+      kDefaultScreenSaverDuration.InMinutes());
 }
 
 AmbientController::AmbientController(
