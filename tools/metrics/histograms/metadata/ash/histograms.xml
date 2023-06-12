@@ -5234,6 +5234,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Projector.PolicyChangeHandlingError"
     enum="ProjectorPolicyChangeHandlingError" expires_after="2023-10-17">
+  <obsolete>
+    Deprecated in M116. No longer needed since no error reported and converted
+    to CHECK.
+  </obsolete>
   <owner>llin@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>

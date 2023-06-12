@@ -88063,6 +88063,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProjectorPolicyChangeHandlingError">
+  <obsolete>
+    Deprecated in M116. No longer needed since no error reported and converted
+    to CHECK.
+  </obsolete>
   <int value="0" label="SWA manager is not available"/>
   <int value="1" label="Web app provider is not available"/>
   <int value="2"

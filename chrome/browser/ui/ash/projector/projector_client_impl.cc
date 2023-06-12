@@ -360,13 +360,7 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::Get(profile);
-  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
-  // always available at this point.
-  if (!swa_manager) {
-    RecordPolicyChangeHandlingError(
-        ash::ProjectorPolicyChangeHandlingError::kSwaManager);
-    return;
-  }
+  CHECK(swa_manager);
   const bool is_installed =
       swa_manager->IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   // We can't enable or disable the app if it's not already installed.
@@ -381,13 +375,7 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
     CloseProjectorApp();
 
   auto* web_app_provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
-  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
-  // always available at this point.
-  if (!web_app_provider) {
-    RecordPolicyChangeHandlingError(
-        ash::ProjectorPolicyChangeHandlingError::kWebAppProvider);
-    return;
-  }
+  CHECK(web_app_provider);
   web_app_provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&ProjectorClientImpl::SetAppIsDisabled,
                                 weak_ptr_factory_.GetWeakPtr(), !is_enabled));
@@ -397,13 +385,7 @@ void ProjectorClientImpl::SetAppIsDisabled(bool disabled) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   auto* web_app_provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
-  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
-  // always available at this point.
-  if (!web_app_provider) {
-    RecordPolicyChangeHandlingError(ash::ProjectorPolicyChangeHandlingError::
-                                        kWebAppProviderOnRegistryReady);
-    return;
-  }
+  CHECK(web_app_provider);
 
   web_app_provider->scheduler().SetAppIsDisabled(
       ash::kChromeUITrustedProjectorSwaAppId, disabled, base::DoNothing());
