@@ -4,12 +4,15 @@
 
 #include "content/browser/back_forward_cache_browsertest.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -933,9 +936,34 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheAuthorizationHeaderBrowserTest,
                     {}, {}, {}, FROM_HERE);
 }
 
+// A subclass of `ContentBrowserTestContentBrowserClient` for testing the logic
+// that checks if cookie is enabled.
+class CookieDisabledContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  void SetIsCookieEnabled(bool new_value) { is_cookie_enabled_ = new_value; }
+
+  bool CanBackForwardCachedPageReceiveCookieChanges(
+      content::BrowserContext& browser_context,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      const net::CookieSettingOverrides overrides) override {
+    return is_cookie_enabled_;
+  }
+
+ private:
+  bool is_cookie_enabled_ = true;
+};
 class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
     : public BackForwardCacheBrowserTest {
  protected:
+  void SetUpOnMainThread() override {
+    BackForwardCacheBrowserTest::SetUpOnMainThread();
+    content_browser_client_ =
+        std::make_unique<CookieDisabledContentBrowserClient>();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
     EnableFeatureAndSetParams(
@@ -943,6 +971,14 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
         "restore-unless-cookie-change");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
+
+  void SetIsCookieEnabled(bool is_cookie_enabled) {
+    CHECK(content_browser_client_);
+    content_browser_client_->SetIsCookieEnabled(is_cookie_enabled);
+  }
+
+ private:
+  std::unique_ptr<CookieDisabledContentBrowserClient> content_browser_client_;
 };
 
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
@@ -1421,6 +1457,52 @@ IN_PROC_BROWSER_TEST_F(
                   NotRestoredReasons(
                       {NotRestoredReason::kCacheControlNoStoreCookieModified}),
                   BlockListedFeatures()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
+    PagesWithCacheControlNoStoreIsNotCacheIfCookieIsDisabled) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/title1.html");
+  net::test_server::ControllableHttpResponse response2(embedded_test_server(),
+                                                       "/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Load the document and specify no-store for the main resource.
+  TestNavigationObserver observer(shell()->web_contents());
+  shell()->LoadURL(url_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  response.WaitForRequest();
+  response.Send(kResponseWithNoCache);
+  response.Done();
+  observer.Wait();
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+
+  // 2) Navigate away and back. `rfh_a` should be restored from BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 3) Disable cookies. `rfh_a` should not be stored in BFCache.
+  SetIsCookieEnabled(false);
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 4) Go back and check that the reason contains
+  // `BlocklistedFeature::kMainResourceHasCacheControlNoStore`.
+  TestNavigationObserver observer2(shell()->web_contents());
+  shell()->web_contents()->GetController().GoBack();
+  response2.WaitForRequest();
+  response2.Send(kResponseWithNoCache);
+  response2.Done();
+  observer2.Wait();
+  ExpectNotRestored({NotRestoredReason::kCacheControlNoStore,
+                     NotRestoredReason::kCookieDisabled},
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange
