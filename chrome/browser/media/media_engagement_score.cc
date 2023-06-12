@@ -155,7 +155,7 @@ void MediaEngagementScore::Commit(bool force_update) {
     return;
 
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_expiration(base::Time::Now() + kScoreExpirationDuration);
+  constraints.set_lifetime(kScoreExpirationDuration);
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
       base::Value(std::move(score_dict_)), constraints);

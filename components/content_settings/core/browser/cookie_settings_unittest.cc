@@ -1019,8 +1019,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
 
   ContentSettingConstraints constraints;
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(base::Seconds(100)));
+  constraints.set_lifetime(base::Seconds(100));
   constraints.set_session_model(SessionModel::UserSession);
 
   settings_map_->SetContentSettingCustomScope(

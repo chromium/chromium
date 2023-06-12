@@ -175,13 +175,6 @@ bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
   return constraints.session_model() == SessionModel::Durable;
 }
 
-// Convenience helper to calculate the expiration time of a constraint given a
-// desired |duration|
-base::Time GetConstraintExpiration(const base::TimeDelta duration) {
-  DCHECK(!duration.is_zero());
-  return base::Time::Now() + duration;
-}
-
 bool CanTrackLastVisit(ContentSettingsType type) {
   // Last visit is not tracked for notification permission as it shouldn't be
   // auto-revoked.

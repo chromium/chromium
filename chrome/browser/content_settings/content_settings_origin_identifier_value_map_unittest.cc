@@ -207,8 +207,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, base::Value(2),
                {.last_modified = t1,
-                .expiration = content_settings::GetConstraintExpiration(
-                    base::Seconds(100)),
+                .expiration = base::Time::Now() + base::Seconds(100),
                 .session_model = content_settings::SessionModel::UserSession});
   map.GetLock().Release();
 

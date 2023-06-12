@@ -239,8 +239,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           ->Build();
 
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(kGrantDuration));
+  constraints.set_lifetime(kGrantDuration);
   constraints.set_session_model(
       content_settings::SessionModel::NonRestorableUserSession);
 

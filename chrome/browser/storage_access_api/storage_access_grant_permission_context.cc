@@ -84,14 +84,12 @@ content_settings::ContentSettingConstraints ComputeConstraints(
   content_settings::ContentSettingConstraints constraints;
   switch (outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
-      constraints.set_expiration(
-          content_settings::GetConstraintExpiration(kImplicitGrantDuration));
+      constraints.set_lifetime(kImplicitGrantDuration);
       constraints.set_session_model(
           content_settings::SessionModel::NonRestorableUserSession);
       return constraints;
     case RequestOutcome::kGrantedByAllowance:
-      constraints.set_expiration(
-          content_settings::GetConstraintExpiration(kImplicitGrantDuration));
+      constraints.set_lifetime(kImplicitGrantDuration);
       constraints.set_session_model(
           content_settings::SessionModel::UserSession);
       return constraints;
@@ -102,8 +100,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
-      constraints.set_expiration(
-          content_settings::GetConstraintExpiration(kExplicitGrantDuration));
+      constraints.set_lifetime(kExplicitGrantDuration);
       constraints.set_session_model(content_settings::SessionModel::Durable);
       return constraints;
   }

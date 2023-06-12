@@ -273,11 +273,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
   NavigateNestedFrameTo(kHostC, "/echoheader?cookie");
 
   // Manually create a pre-expired grant and ensure it doesn't grant access.
-  base::Time expiration_time = base::Time::Now() - base::Minutes(5);
+  const base::TimeDelta lifetime = base::Hours(24);
+  const base::Time creation_time =
+      base::Time::Now() - base::Minutes(5) - lifetime;
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  content_settings::ContentSettingConstraints constraints;
-  constraints.set_expiration(expiration_time);
+  content_settings::ContentSettingConstraints constraints(creation_time);
+  constraints.set_lifetime(lifetime);
   constraints.set_session_model(content_settings::SessionModel::UserSession);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostB), GetURL(kHostA),
@@ -296,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostB)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
-      /*incognito=*/false, {.expiration = expiration_time}));
+      /*incognito=*/false, {.expiration = creation_time + lifetime}));
   settings.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),

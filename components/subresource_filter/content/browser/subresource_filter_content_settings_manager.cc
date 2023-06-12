@@ -163,20 +163,23 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   if (url.is_empty())
     return;
 
+  content_settings::ContentSettingConstraints constraints;
   // Metadata expires after kMaxPersistMetadataDuration by default. If
   // kNonRenewingExpiryTime was previously set, then we are storing ads
   // intervention metadata and should not override the expiry time that
   // was previously set.
-  base::Time expiry_time = base::Time::Now() + kMaxPersistMetadataDuration;
+  base::TimeDelta setting_lifetime = kMaxPersistMetadataDuration;
   if (dict && dict->Find(kNonRenewingExpiryTime)) {
+    // TODO(https://crbug.com/1450356): we should store the lifetime of the
+    // permission, rather than just its expiration.
     absl::optional<double> metadata_expiry_time =
         dict->FindDouble(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
-    expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+    base::Time expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+    setting_lifetime = constraints.DeltaFromCreationTime(expiry_time);
   }
+  constraints.set_lifetime(setting_lifetime);
 
-  content_settings::ContentSettingConstraints constraints;
-  constraints.set_expiration(expiry_time);
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::ADS_DATA,
       dict ? base::Value(std::move(*dict)) : base::Value(), constraints);

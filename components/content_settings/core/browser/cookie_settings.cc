@@ -92,12 +92,9 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
 
 void CookieSettings::SetCookieSettingForUserBypass(
     const GURL& first_party_url) {
-  base::TimeDelta expiration =
-      content_settings::features::kUserBypassUIExceptionExpiration.Get();
-  base::Time expiry_time =
-      expiration.is_zero() ? base::Time() : GetConstraintExpiration(expiration);
   ContentSettingConstraints constraints;
-  constraints.set_expiration(expiry_time);
+  constraints.set_lifetime(
+      content_settings::features::kUserBypassUIExceptionExpiration.Get());
   constraints.set_session_model(SessionModel::Durable);
 
   host_content_settings_map_->SetContentSettingCustomScope(

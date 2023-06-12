@@ -54,6 +54,7 @@ static_library("common") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_settings_constraints_unittest.cc",
     "content_settings_mojom_traits_unittest.cc",
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",

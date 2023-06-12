@@ -426,26 +426,35 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
                                /*store_last_modified=*/true,
                                /*restore_session=*/false);
 
-  ContentSettingConstraints constraints;
-  constraints.set_session_model(SessionModel::UserSession);
+  {
+    ContentSettingConstraints constraints;
+    constraints.set_session_model(SessionModel::UserSession);
 
-  normal_provider.SetWebsiteSetting(pattern_1, wildcard,
-                                    ContentSettingsType::COOKIES,
-                                    base::Value(CONTENT_SETTING_ALLOW), {});
-  normal_provider.SetWebsiteSetting(
-      pattern_3, pattern_3, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), constraints);
-  // Durable and not expired
-  constraints.set_expiration(base::Time::Now() + base::Days(1));
-  constraints.set_session_model(SessionModel::Durable);
-  normal_provider.SetWebsiteSetting(
-      pattern_4, pattern_4, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), constraints);
-  // Durable but expired
-  constraints.set_expiration(base::Time::Now() - base::Days(1));
-  normal_provider.SetWebsiteSetting(
-      pattern_5, pattern_5, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), constraints);
+    normal_provider.SetWebsiteSetting(pattern_1, wildcard,
+                                      ContentSettingsType::COOKIES,
+                                      base::Value(CONTENT_SETTING_ALLOW), {});
+    normal_provider.SetWebsiteSetting(
+        pattern_3, pattern_3, ContentSettingsType::COOKIES,
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
+  }
+  {
+    // Durable and not expired
+    ContentSettingConstraints constraints;
+    constraints.set_lifetime(base::Days(1));
+    constraints.set_session_model(SessionModel::Durable);
+    normal_provider.SetWebsiteSetting(
+        pattern_4, pattern_4, ContentSettingsType::COOKIES,
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
+  }
+  {
+    // Durable but expired
+    ContentSettingConstraints constraints(base::Time::Now() - base::Days(2));
+    constraints.set_lifetime(base::Days(1));
+    constraints.set_session_model(SessionModel::Durable);
+    normal_provider.SetWebsiteSetting(
+        pattern_5, pattern_5, ContentSettingsType::COOKIES,
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
+  }
   // Non-OTR provider, Non-OTR iterator has one setting (pattern 1) using
   // default params and one scoped to a UserSession lifetime model.
   {
@@ -799,8 +808,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
   ContentSettingConstraints constraints;
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(base::Seconds(123)));
+  constraints.set_lifetime(base::Seconds(123));
   constraints.set_session_model(SessionModel::Durable);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
@@ -841,8 +849,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
   ContentSettingConstraints constraints;
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(base::Seconds(123)));
+  constraints.set_lifetime(base::Seconds(123));
   constraints.set_session_model(SessionModel::Durable);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
@@ -894,8 +901,7 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
   ContentSettingConstraints constraints;
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(base::Seconds(123)));
+  constraints.set_lifetime(base::Seconds(123));
   constraints.set_session_model(SessionModel::Durable);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,

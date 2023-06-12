@@ -70,9 +70,6 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b);
 // Returns whether or not the supplied constraint should be persistently stored.
 bool IsConstraintPersistent(const ContentSettingConstraints& constraints);
 
-// Returns the expiration time for a supplied |duration|.
-base::Time GetConstraintExpiration(const base::TimeDelta duration);
-
 // Returns whether the given type supports tracking last_visit timestamps.
 bool CanTrackLastVisit(ContentSettingsType type);
 

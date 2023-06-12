@@ -875,11 +875,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, ThirdPartyGrantsExpiry) {
 
   // Manually create a pre-expired grant and ensure it doesn't grant access for
   // HostB.
-  base::Time expiration_time = base::Time::Now() - base::Minutes(5);
+  const base::TimeDelta lifetime = base::Days(30);
+  const base::Time creation_time =
+      base::Time::Now() - base::Minutes(5) - lifetime;
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  content_settings::ContentSettingConstraints constraints;
-  constraints.set_expiration(expiration_time);
+  content_settings::ContentSettingConstraints constraints(creation_time);
+  constraints.set_lifetime(lifetime);
   constraints.set_session_model(content_settings::SessionModel::UserSession);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostB), GetURL(kHostA), ContentSettingsType::STORAGE_ACCESS,

@@ -2065,18 +2065,16 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
   // Set permissions with our first two urls with different expiry times and our
   // third with no expiration.
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(base::Seconds(100)));
+  constraints.set_lifetime(base::Seconds(100));
   constraints.set_session_model(content_settings::SessionModel::UserSession);
   map->SetContentSettingDefaultScope(example_url1, example_url1,
                                      persistent_type, CONTENT_SETTING_BLOCK,
                                      constraints);
-  constraints.set_expiration(
-      content_settings::GetConstraintExpiration(base::Seconds(200)));
+  constraints.set_lifetime(base::Seconds(200));
   map->SetContentSettingDefaultScope(example_url2, example_url2,
                                      persistent_type, CONTENT_SETTING_ALLOW,
                                      constraints);
-  constraints.set_expiration(base::Time());
+  constraints.set_lifetime(base::TimeDelta());
   map->SetContentSettingDefaultScope(example_url3, example_url3,
                                      persistent_type, CONTENT_SETTING_ALLOW,
                                      constraints);

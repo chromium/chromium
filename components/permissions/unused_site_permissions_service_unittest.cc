@@ -457,7 +457,9 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
 
   // Permission remains revoked after regrant and undo.
   content_settings::ContentSettingConstraints expiration_constraint;
-  expiration_constraint.set_expiration(revoked_permission.metadata.expiration);
+  expiration_constraint.set_lifetime(
+      expiration_constraint.DeltaFromCreationTime(
+          revoked_permission.metadata.expiration));
   service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
   service()->UndoRegrantPermissionsForOrigin({type}, expiration_constraint,
                                              url::Origin::Create(url1));
@@ -613,8 +615,8 @@ TEST_F(UnusedSitePermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
   auto cleanUpThreshold =
       content_settings::features::
           kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
-  content_settings::ContentSettingConstraints constraint;
-  constraint.set_expiration(clock()->Now() + cleanUpThreshold);
+  content_settings::ContentSettingConstraints constraint(clock()->Now());
+  constraint.set_lifetime(cleanUpThreshold);
 
   // Add `url` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
