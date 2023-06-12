@@ -40,6 +40,12 @@ declare global {
   }
 }
 
+export interface KeyboardDiagramTopRowKey {
+  icon?: string;
+  ariaNameI18n?: string;
+  text?: string;
+}
+
 /**
  * @fileoverview
  * 'keyboard-tester' displays a tester UI for a keyboard.
@@ -49,37 +55,33 @@ declare global {
  * Map from Mojo TopRowKey constants to keyboard diagram top row key
  * definitions.
  */
-const topRowKeyMap:
-    {[index: number]: {icon?: string, ariaNameI18n?: string, text?: string}} = {
-      [TopRowKey.kNone]: DiagramTopRowKey['kNone'],
-      [TopRowKey.kBack]: DiagramTopRowKey['kBack'],
-      [TopRowKey.kForward]: DiagramTopRowKey['kForward'],
-      [TopRowKey.kRefresh]: DiagramTopRowKey['kRefresh'],
-      [TopRowKey.kFullscreen]: DiagramTopRowKey['kFullscreen'],
-      [TopRowKey.kOverview]: DiagramTopRowKey['kOverview'],
-      [TopRowKey.kScreenshot]: DiagramTopRowKey['kScreenshot'],
-      [TopRowKey.kScreenBrightnessDown]:
-          DiagramTopRowKey['kScreenBrightnessDown'],
-      [TopRowKey.kScreenBrightnessUp]: DiagramTopRowKey['kScreenBrightnessUp'],
-      [TopRowKey.kPrivacyScreenToggle]:
-          DiagramTopRowKey['kPrivacyScreenToggle'],
-      [TopRowKey.kMicrophoneMute]: DiagramTopRowKey['kMicrophoneMute'],
-      [TopRowKey.kVolumeMute]: DiagramTopRowKey['kVolumeMute'],
-      [TopRowKey.kVolumeDown]: DiagramTopRowKey['kVolumeDown'],
-      [TopRowKey.kVolumeUp]: DiagramTopRowKey['kVolumeUp'],
-      [TopRowKey.kKeyboardBacklightToggle]:
-          DiagramTopRowKey['kKeyboardBacklightToggle'],
-      [TopRowKey.kKeyboardBacklightDown]:
-          DiagramTopRowKey['kKeyboardBacklightDown'],
-      [TopRowKey.kKeyboardBacklightUp]:
-          DiagramTopRowKey['kKeyboardBacklightUp'],
-      [TopRowKey.kNextTrack]: DiagramTopRowKey['kNextTrack'],
-      [TopRowKey.kPreviousTrack]: DiagramTopRowKey['kPreviousTrack'],
-      [TopRowKey.kPlayPause]: DiagramTopRowKey['kPlayPause'],
-      [TopRowKey.kScreenMirror]: DiagramTopRowKey['kScreenMirror'],
-      [TopRowKey.kDelete]: DiagramTopRowKey['kDelete'],
-      [TopRowKey.kUnknown]: DiagramTopRowKey['kUnknown'],
-    };
+const topRowKeyMap: {[index: number]: KeyboardDiagramTopRowKey} = {
+  [TopRowKey.kNone]: DiagramTopRowKey['kNone'],
+  [TopRowKey.kBack]: DiagramTopRowKey['kBack'],
+  [TopRowKey.kForward]: DiagramTopRowKey['kForward'],
+  [TopRowKey.kRefresh]: DiagramTopRowKey['kRefresh'],
+  [TopRowKey.kFullscreen]: DiagramTopRowKey['kFullscreen'],
+  [TopRowKey.kOverview]: DiagramTopRowKey['kOverview'],
+  [TopRowKey.kScreenshot]: DiagramTopRowKey['kScreenshot'],
+  [TopRowKey.kScreenBrightnessDown]: DiagramTopRowKey['kScreenBrightnessDown'],
+  [TopRowKey.kScreenBrightnessUp]: DiagramTopRowKey['kScreenBrightnessUp'],
+  [TopRowKey.kPrivacyScreenToggle]: DiagramTopRowKey['kPrivacyScreenToggle'],
+  [TopRowKey.kMicrophoneMute]: DiagramTopRowKey['kMicrophoneMute'],
+  [TopRowKey.kVolumeMute]: DiagramTopRowKey['kVolumeMute'],
+  [TopRowKey.kVolumeDown]: DiagramTopRowKey['kVolumeDown'],
+  [TopRowKey.kVolumeUp]: DiagramTopRowKey['kVolumeUp'],
+  [TopRowKey.kKeyboardBacklightToggle]:
+      DiagramTopRowKey['kKeyboardBacklightToggle'],
+  [TopRowKey.kKeyboardBacklightDown]:
+      DiagramTopRowKey['kKeyboardBacklightDown'],
+  [TopRowKey.kKeyboardBacklightUp]: DiagramTopRowKey['kKeyboardBacklightUp'],
+  [TopRowKey.kNextTrack]: DiagramTopRowKey['kNextTrack'],
+  [TopRowKey.kPreviousTrack]: DiagramTopRowKey['kPreviousTrack'],
+  [TopRowKey.kPlayPause]: DiagramTopRowKey['kPlayPause'],
+  [TopRowKey.kScreenMirror]: DiagramTopRowKey['kScreenMirror'],
+  [TopRowKey.kDelete]: DiagramTopRowKey['kDelete'],
+  [TopRowKey.kUnknown]: DiagramTopRowKey['kUnknown'],
+};
 
 /** Maps top-right key evdev codes to the corresponding DiagramTopRightKey. */
 const topRightKeyByCode: Map<number, DiagramTopRightKey> = new Map([
@@ -186,22 +188,14 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   keyboard: KeyboardInfo;
-  // TODO(crbug.com/1257138): use the proper type annotation instead of
-  // string.
   protected isLoggedIn: boolean;
-  protected diagramTopRightKey: string;
+  protected diagramTopRightKey: DiagramTopRightKey|null;
   private lostFocusToastLingerMs: number;
   private layoutIsKnown: boolean;
-  // TODO(crbug.com/1257138): use the proper type annotation instead of
-  // string.
-  private diagramMechanicalLayout: string;
-  // TODO(crbug.com/1257138): use the proper type annotation instead of
-  // string.
-  private diagramPhysicalLayout: string;
+  private diagramMechanicalLayout: DiagramMechanicalLayout|null;
+  private diagramPhysicalLayout: DiagramPhysicalLayout|null;
   private showNumberPad: boolean;
-  // TODO(crbug.com/1257138): use the proper type annotation instead of
-  // Object.
-  private topRowKeys: Object[];
+  private topRowKeys: KeyboardDiagramTopRowKey[];
   private receiver: KeyboardObserverReceiver|null = null;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
@@ -232,11 +226,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     // a number pad event we weren't expecting.
   }
 
-  /**
-   * TODO(crbug.com/1257138): use the proper type annotation instead of string.
-   */
-  private computeDiagramMechanicalLayout(keyboardInfo?: KeyboardInfo): string
-      |null {
+  private computeDiagramMechanicalLayout(keyboardInfo?: KeyboardInfo):
+      DiagramMechanicalLayout|null {
     if (!keyboardInfo) {
       return null;
     }
@@ -248,8 +239,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }[keyboardInfo.mechanicalLayout];
   }
 
-  private computeDiagramPhysicalLayout(keyboardInfo?: KeyboardInfo): string
-      |null {
+  private computeDiagramPhysicalLayout(keyboardInfo?: KeyboardInfo):
+      DiagramPhysicalLayout|null {
     if (!keyboardInfo) {
       return null;
     }
@@ -263,10 +254,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }[keyboardInfo.physicalLayout];
   }
 
-  /**
-   * TODO(crbug.com/1257138): use the proper type annotation instead of string.
-   */
-  private computeDiagramTopRightKey(keyboardInfo?: KeyboardInfo): string|null {
+  private computeDiagramTopRightKey(keyboardInfo?: KeyboardInfo):
+      DiagramTopRightKey|null {
     if (!keyboardInfo) {
       return null;
     }
@@ -284,7 +273,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
 
-  private computeTopRowKeys(keyboard?: KeyboardInfo): Object[] {
+  private computeTopRowKeys(keyboard?: KeyboardInfo):
+      KeyboardDiagramTopRowKey[] {
     if (!keyboard) {
       return [];
     }
