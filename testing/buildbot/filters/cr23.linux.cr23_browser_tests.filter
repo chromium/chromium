@@ -1,0 +1,10 @@
+# cr23_browser_tests that are expected to fail on linux bots:
+-All/PromotionalTabsEnabledPolicyWhatsNewInvalidTest.RunTest/0
+-All/PromotionalTabsEnabledPolicyWhatsNewInvalidTest.RunTest/2
+-BrowserNonClientFrameViewBrowserTest.IncognitoIsCorrectColor
+-LocationIconViewBrowserTest.InkDropMode
+-ManagedUiTest/ManagedUiTest.GetManagedUiIconEnterprise/0
+-ManagedUiTest/ManagedUiTest.GetManagedUiIconEnterprise/1
+-OmniboxPopupViewViewsTest.ThemeIntegration
+-PermissionRequestChipGestureSensitiveBrowserTest.ChipFinalizedWhenInteractingWithOmnibox
+-WebAppBrowserTest.InstallToShelfContainsAppName

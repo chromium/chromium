@@ -1,0 +1,14 @@
+# interactive_ui_tests that are run on the bots with the Chrome2023Refresh
+# feature flag enabled as the cr23_interactive_ui_tests test suite:
+AppMenuModelInteractiveTest.*
+ExtensionsMenuModelInteractiveTest.*
+ExtensionsMenuModelPresenceTest.*
+FindInPageTest.*
+FocusRingBrowserTest.*
+LocalCardMigrationBrowserTest.*
+PasswordManagerMenuItemInteractiveTest.*
+TabDragging/DetachToBrowserTabDragControllerTest.*
+TestMenuControllerUITest.*
+
+# This may be a flaky failure unrelated to the c23 code paths.
+SitePerProcessInteractivePDFTest.ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
