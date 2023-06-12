@@ -26,7 +26,7 @@ import { loadTimeData } from '../../i18n_setup.js';
  * UI mode for the screen.
  * @enum {string}
  */
-const QuickStartUIState = {
+export const QuickStartUIState = {
   LOADING: 'loading',
   VERIFICATION: 'verification',
   FIGURES: 'figures',

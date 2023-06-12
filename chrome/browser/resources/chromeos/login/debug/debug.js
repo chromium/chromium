@@ -8,11 +8,23 @@
 
 import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
 import {MessageType, ProblemType} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
+import { QuickStartUIState } from '../screens/oobe/quick_start.js';
 import {$} from '//resources/ash/common/util.js';
 
 import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
 import {Oobe} from '../cr_ui.js';
 import {loadTimeData} from '../i18n_setup.js';
+
+function createQuickStartQR() {
+  // Fake data extracted from the real flow.
+  const qrDataStr = '1111111000011000010010000001101111111100000100111100001001010011100100000110111010111011101001111010110010111011011101010100011110010001110001011101101110101101101100110111100010101110110000010100011001010100001010010000011111111010101010101010101010101111111000000001101010010001111101010000000010111110011000100101111000101011111001001100011111111111111111100111101010101100110001000001101110111110101101110001100111101101001111010100101010010110111010110000010001110111011110111110100000110010111110101010000010001000100111000111111100110001010111110111111010100000101000011001000100110001111010111010100110011110101011100011111111101111011010000110001001001011100000111100010101100000100111100111011100110011100000100001110101111101000110011011110010111100000001100110110000111000100010000000111110000100001010010100101101000101100100010111011100111001001011010111001111100010001100001101001101010010010001110110011000100111100000110011111101111001001110010010110111011001000010101001110110110111010100001100110100111001011010001011101100110011010001101111111011111010100000000101011111000111111011000110101111111001110111010000100100101010111100000101001001010100100000010001101110111010110000010000101001011111101011011101011001111011010011111111011011101110101100011110000000001010000111110000010000011110000110100001010100011111111011011110100010001111001010111';
+  // Screen expects an array of booleans representing the pixels.
+  const qrData = [];
+  for (const pixel of qrDataStr) {
+    qrData.push(pixel === '1' ? true : false);
+  }
+  return qrData;
+}
 
 const createAssistantData = (isMinor) => {
   const data = {};
@@ -1714,6 +1726,50 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'cryptohome-recovery',
       kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'quick-start',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'verification,connecting_to_wifi,connected_to_wifi,gaia_credentials,fido_assertion_received',
+      states: [
+        {
+          id: 'PinVerification',
+          trigger: (screen) => {
+            screen.setDiscoverableName('Chromebook (123)');
+            screen.setPin('1234');
+          },
+        },
+        {
+          id: 'QRVerification',
+          trigger: (screen) => {
+            screen.setQRCode(createQuickStartQR());
+          },
+        },
+        {
+          id: 'ConnectingToWifi',
+          trigger: (screen) => {
+            screen.showConnectingToWifi();
+          },
+        },
+        {
+          id: 'ConnectedToWifi',
+          trigger: (screen) => {
+            screen.showConnectedToWifi('TestNetwork', 'TestPassword');
+          },
+        },
+        {
+          id: 'TransferringGaiaCreds',
+          trigger: (screen) => {
+            screen.showTransferringGaiaCredentials();
+          },
+        },
+        {
+          id: 'TransferredGaiaCreds',
+          trigger: (screen) => {
+            screen.showFidoAssertionReceived('testUser@gmail.com');
+          },
+        },
+      ],
     },
   ];
 
