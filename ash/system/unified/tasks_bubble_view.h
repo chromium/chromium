@@ -6,13 +6,11 @@
 #define ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -23,17 +21,16 @@ class ImageView;
 }  // namespace views
 
 namespace ash {
-class TasksComboboxModel;
 
-// 'TasksBubbleView' uses nested `FlexLayoutView`s to layout the tasks bubble.
+// 'contents_view_' uses nested `FlexLayoutView`s to layout the tasks bubble.
 // configurations.
 // +---------------------------------------------------------------+
-// |`TasksBubbleView`                                              |
+// |`contents_view_`                                               |
 // | +-----------------------------------------------------------+ |
-// | |'tasks_header_view_'                                       | |
+// | |tasks_header_view_                                         | |
 // | +-----------------------------------------------------------+ |
 // | +-----------------------------------------------------------+ |
-// | |'task_items_container_view_'                               | |
+// | |task_items_list_view_                                      | |
 // | +-----------------------------------------------------------+ |
 // +---------------------------------------------------------------+
 //
@@ -45,13 +42,14 @@ class TasksComboboxModel;
 // |+---------------+ +-------------------------+ +--------------+  |
 // +----------------------------------------------------------------+
 //
+// TODO(b:277268122): Add TaskItemListView and TaskCheckboxView classes.
 // +----------------------------------------------------------------+
-// |'task_items_container_view_'                                    |
+// |task_items_list_view_                                           |
 // | +----------------------------------------------------------- + |
-// | |GlanceablesTaskView                                         | |
+// | |TaskCheckboxView                                            | |
 // | +----------------------------------------------------------- + |
 // | +----------------------------------------------------------- + |
-// | |GlanceablesTaskView                                         | |
+// | |TaskCheckboxView                                            | |
 // | +----------------------------------------------------------- + |
 // +----------------------------------------------------------------+
 
@@ -70,9 +68,6 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
     return task_list_combo_box_view_;
   }
 
-  views::FlexLayoutView* task_items_container_view() const {
-    return task_items_container_view_;
-  }
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
@@ -87,11 +82,6 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
 
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();
-  void ScheduleUpdateTasksList();
-  void UpdateTasksList(ui::ListModel<GlanceablesTask>* tasks);
-
-  // Model for the combobox used to change the active task list.
-  std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
 
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ =
       nullptr;  // Owned by views hierarchy.
@@ -102,7 +92,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   // TODO(b:277268122): replace stand-in button.
   raw_ptr<views::ImageButton, ExperimentalAsh> action_button_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_container_view_ =
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_list_view_ =
       nullptr;  // Owned by views hierarchy.
 
   base::WeakPtrFactory<TasksBubbleView> weak_ptr_factory_{this};
