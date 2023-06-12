@@ -209,7 +209,7 @@ suite('WallpaperCollectionsTest', function() {
   });
 
   test('customizes text for managed google photos', async () => {
-    const managedIconSelector = `iron-icon[icon='personalization:managed']`;
+    const managedIconSelector = `iron-icon[icon^='personalization:managed']`;
 
     personalizationStore.data.wallpaper.googlePhotos.enabled =
         GooglePhotosEnablementState.kEnabled;
