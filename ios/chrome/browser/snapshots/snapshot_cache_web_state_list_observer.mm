@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,12 +35,12 @@ void SnapshotCacheWebStateListObserver::WebStateActivatedAt(
   NSMutableSet<NSString*>* set = [NSMutableSet set];
   if (active_index > 0) {
     web::WebState* web_state = web_state_list->GetWebStateAt(active_index - 1);
-    [set addObject:web_state->GetStableIdentifier()];
+    [set addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 
   if (active_index + 1 < web_state_list->count()) {
     web::WebState* web_state = web_state_list->GetWebStateAt(active_index + 1);
-    [set addObject:web_state->GetStableIdentifier()];
+    [set addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 
   snapshot_cache_.pinnedSnapshotIDs = [set copy];
