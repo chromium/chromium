@@ -617,6 +617,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.TabDragging.DragAmongTabsPresentationTime" units="ms"
+    expires_after="2023-12-07">
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Compositor presentation time when dragging tabs left or right to a different
+    index. This metric is used to measure tab dragging performance. Record on
+    the next compositor frame when the data is collected.
+  </summary>
+</histogram>
+
+<histogram name="Browser.TabDragging.DragToNewBrowserPresentationTime"
+    units="ms" expires_after="2023-12-07">
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Compositor presentation time when dragging tabs out to a new browser. This
+    metric is used to measure tab dragging performance. Record on the next
+    compositor frame when the data is collected.
+  </summary>
+</histogram>
+
+<histogram name="Browser.TabDragging.PresentationTime" units="ms"
+    expires_after="2023-12-07">
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Compositor presentation time when dragging tabs. This metric is used to
+    measure tab dragging performance. Record on the next compositor frame when
+    the data is collected.
+  </summary>
+</histogram>
+
+<histogram name="Browser.TabDragging.PresentationTimeMax" units="ms"
+    expires_after="2023-12-07">
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Maxinum compositor presentation time when dragging tabs. This metric is used
+    to measure tab dragging performance. Record after a drag and drop session is
+    ended.
+  </summary>
+</histogram>
+
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
     units="microseconds" expires_after="2023-09-10">
   <owner>jonross@chromium.org</owner>

@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
@@ -57,6 +58,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/gestures/gesture_recognizer.h"
@@ -127,6 +129,15 @@ bool PlatformProvidesAbsoluteWindowPositions() {
   return true;
 #endif
 }
+
+constexpr char kTabDraggingPresentationTimeHistogram[] =
+    "Browser.TabDragging.PresentationTime";
+constexpr char kTabDraggingPresentationTimeMaxHistogram[] =
+    "Browser.TabDragging.PresentationTimeMax";
+constexpr char kDragAmongTabsPresentationTimeHistogram[] =
+    "Browser.TabDragging.DragAmongTabsPresentationTime";
+constexpr char kDragToNewBrowserPresentationTimeHistogram[] =
+    "Browser.TabDragging.DragToNewBrowserPresentationTime";
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -361,6 +372,10 @@ void TabDragController::Init(TabDragContext* source_context,
   source_context_ = source_context;
   was_source_maximized_ = source_context->GetWidget()->IsMaximized();
   was_source_fullscreen_ = source_context->GetWidget()->IsFullscreen();
+  presentation_time_recorder_ = ui::CreatePresentationTimeHistogramRecorder(
+      source_context->GetWidget()->GetCompositor(),
+      kTabDraggingPresentationTimeHistogram,
+      kTabDraggingPresentationTimeMaxHistogram);
   // Do not release capture when transferring capture between widgets on:
   // - Desktop Linux
   //     Mouse capture is not synchronous on desktop Linux. Chrome makes
@@ -651,6 +666,7 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 
 void TabDragController::EndDrag(EndDragReason reason) {
   TRACE_EVENT0("views", "TabDragController::EndDrag");
+  presentation_time_recorder_.reset();
 
   if (tab_strip_scroll_session_)
     tab_strip_scroll_session_->Stop();
@@ -838,6 +854,9 @@ TabDragController::Liveness TabDragController::ContinueDragging(
     const gfx::Point& point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::ContinueDragging",
                "point_in_screen", point_in_screen.ToString());
+  if (presentation_time_recorder_) {
+    presentation_time_recorder_->RequestNext();
+  }
 
   DCHECK(attached_context_);
 
@@ -1161,6 +1180,18 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
           views, source_view_drag_data()->attached_view, dragged_view_point,
           initial_move_);
       did_layout = true;
+    }
+
+    // Only record the metric when the tab is moved to a different index.
+    if (!just_attached && index_of_last_item != to_index) {
+      attached_context_->GetWidget()
+          ->GetCompositor()
+          ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+              [](base::TimeTicks now, base::TimeTicks presentation_timestamp) {
+                UmaHistogramTimes(kDragAmongTabsPresentationTimeHistogram,
+                                  presentation_timestamp - now);
+              },
+              base::TimeTicks::Now()));
     }
 
     attached_model->MoveSelectedTabsTo(to_index);
@@ -2322,6 +2353,14 @@ Browser* TabDragController::CreateBrowserForDrag(
     const gfx::Point& point_in_screen,
     gfx::Vector2d* drag_offset,
     std::vector<gfx::Rect>* drag_bounds) {
+  source->GetWidget()
+      ->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+          [](base::TimeTicks now, base::TimeTicks presentation_timestamp) {
+            UmaHistogramTimes(kDragToNewBrowserPresentationTimeHistogram,
+                              presentation_timestamp - now);
+          },
+          base::TimeTicks::Now()));
   gfx::Rect new_bounds(
       CalculateDraggedBrowserBounds(source, point_in_screen, drag_bounds));
   *drag_offset = point_in_screen - new_bounds.origin();
