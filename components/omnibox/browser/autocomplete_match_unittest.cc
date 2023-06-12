@@ -14,15 +14,20 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
 using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
@@ -1244,3 +1249,39 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
     }
   }
 }
+
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
+  AutocompleteMatch match;
+
+  // Irrespective of match type, bookmark suggestions should have a non-empty
+  // icon.
+  EXPECT_FALSE(match.GetVectorIcon(/*is_bookmark=*/true).is_empty());
+
+  for (int type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+       type != AutocompleteMatchType::NUM_TYPES; type++) {
+    match.type = static_cast<AutocompleteMatchType::Type>(type);
+
+    if (match.type == AutocompleteMatchType::STARTER_PACK) {
+      // All STARTER_PACK suggestions should have non-empty vector icons.
+      for (int starter_pack_id = TemplateURLStarterPackData::kBookmarks;
+           starter_pack_id != TemplateURLStarterPackData::kMaxStarterPackID;
+           starter_pack_id++) {
+        TemplateURLData turl_data;
+        turl_data.starter_pack_id = starter_pack_id;
+        TemplateURL turl(turl_data);
+        EXPECT_FALSE(
+            match.GetVectorIcon(/*is_bookmark=*/false, &turl).is_empty());
+      }
+    } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
+               match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+      // SEARCH_SUGGEST_TAIL and NULL_RESULT_MESSAGE suggestions use an empty
+      // vector icon.
+      EXPECT_TRUE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
+    } else {
+      // All other suggestion types should result in non-empty vector icons.
+      EXPECT_FALSE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
+    }
+  }
+}
+#endif

@@ -226,7 +226,7 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
 
   EXPECT_EQ(page_url, kUrl);
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests GetStateChanges correctly determines if text was deleted.
 TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {

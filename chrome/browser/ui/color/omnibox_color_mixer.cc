@@ -170,6 +170,9 @@ void ApplyCR2023OmniboxExpandedStateColors(
                                  SkColorSetRGB(153, 153, 153));
   mixer[kColorOmniboxResultsButtonInkDropSelected] = {
       kColorOmniboxResultsButtonInkDrop};
+
+  // Update starter pack icon color.
+  mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysPrimary};
 }
 
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.

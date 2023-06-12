@@ -274,7 +274,10 @@ struct AutocompleteMatch {
   // AutocompleteMatch is likely that 1) this info is not used elsewhere in the
   // Autocomplete machinery except before displaying the match and 2) obtaining
   // this info is trivially done by calling BookmarkModel::IsBookmarked().
-  const gfx::VectorIcon& GetVectorIcon(bool is_bookmark) const;
+  // `turl` is used to identify the proper vector icon associated with a given
+  // starter pack suggestion (e.g. @tabs, @history, @bookmarks, etc.).
+  const gfx::VectorIcon& GetVectorIcon(bool is_bookmark,
+                                       const TemplateURL* turl = nullptr) const;
 #endif
 
   // Comparison function for determining whether the first match is better than

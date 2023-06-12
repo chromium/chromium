@@ -102,6 +102,7 @@ aggregate_vector_icons("components_vector_icons") {
     "help.icon",
     "help_outline.icon",
     "history.icon",
+    "history_chrome_refresh.icon",
     "https_valid.icon",
     "https_valid_arrow.icon",
     "https_valid_chrome_refresh.icon",

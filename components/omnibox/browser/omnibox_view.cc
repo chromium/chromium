@@ -218,9 +218,16 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
         std::move(on_icon_fetched));
 
   } else if (match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
-    // For site suggestions, display site's favicon.
-    favicon = model()->client()->GetFaviconForPageUrl(
-        match.destination_url, std::move(on_icon_fetched));
+    // The starter pack suggestions are a unique case. These suggestions
+    // normally use a favicon image that cannot be styled further by client
+    // code. In order to apply custom styling to the icon (e.g. colors), we
+    // ignore this favicon in favor of using a vector icon which has better
+    // styling support.
+    if (!AutocompleteMatch::IsStarterPackType(match.type)) {
+      // For site suggestions, display site's favicon.
+      favicon = model()->client()->GetFaviconForPageUrl(
+          match.destination_url, std::move(on_icon_fetched));
+    }
   }
 
   if (!favicon.IsEmpty())
@@ -235,8 +242,18 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   const bool is_bookmarked =
       bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 
-  const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
-  const auto& color = match.type == AutocompleteMatchType::HISTORY_CLUSTER
+  // For starter pack suggestions, use template url to generate proper vector
+  // icon.
+  const TemplateURL* turl =
+      match.associated_keyword
+          ? model()
+                ->client()
+                ->GetTemplateURLService()
+                ->GetTemplateURLForKeyword(match.associated_keyword->keyword)
+          : nullptr;
+  const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked, turl);
+  const auto& color = (match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
+                       match.type == AutocompleteMatchType::STARTER_PACK)
                           ? color_bright_vectors
                           : color_vectors;
   return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);

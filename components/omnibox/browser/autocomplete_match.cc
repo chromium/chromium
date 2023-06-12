@@ -30,6 +30,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_utils.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -481,7 +482,8 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
 }
 
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
-    bool is_bookmark) const {
+    bool is_bookmark,
+    const TemplateURL* turl) const {
   // TODO(https://crbug.com/1024114): Remove crash logging once fixed.
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
@@ -580,6 +582,23 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                                       : omnibox::kJourneysIcon;
 
     case Type::STARTER_PACK:
+      if (turl) {
+        switch (turl->GetBuiltinEngineType()) {
+          case KEYWORD_MODE_STARTER_PACK_BOOKMARKS:
+            return use_chrome_refresh_icons
+                       ? omnibox::kStarActiveChromeRefreshIcon
+                       : omnibox::kStarActiveIcon;
+          case KEYWORD_MODE_STARTER_PACK_HISTORY:
+            return use_chrome_refresh_icons
+                       ? vector_icons::kHistoryChromeRefreshIcon
+                       : vector_icons::kHistoryIcon;
+          case KEYWORD_MODE_STARTER_PACK_TABS:
+            return use_chrome_refresh_icons ? omnibox::kProductChromeRefreshIcon
+                                            : omnibox::kProductIcon;
+          default:
+            break;
+        }
+      }
       return use_chrome_refresh_icons ? omnibox::kProductChromeRefreshIcon
                                       : omnibox::kProductIcon;
 
