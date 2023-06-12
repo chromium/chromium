@@ -108,7 +108,6 @@ void FileChooserChromeOs::Core::RunCallback(const FileChooser::Result& result) {
   std::move(callback_).Run(result);
 }
 
-// TODO(b/284754221): Replace title to select file dialog.
 void FileChooserChromeOs::Core::Show() {
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE,
