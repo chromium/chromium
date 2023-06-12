@@ -152,6 +152,9 @@ class BASE_EXPORT BuildInfo {
 
   const char* codename() const { return codename_; }
 
+  // Available only on Android T+.
+  int32_t vulkan_deqp_level() const { return vulkan_deqp_level_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -193,6 +196,7 @@ class BASE_EXPORT BuildInfo {
   const bool is_at_least_u_;
   const bool targets_at_least_u_;
   const char* const codename_;
+  const int32_t vulkan_deqp_level_;
 };
 
 }  // namespace android

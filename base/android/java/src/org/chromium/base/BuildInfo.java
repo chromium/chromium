@@ -9,6 +9,7 @@ import static android.content.Context.UI_MODE_SERVICE;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -65,6 +66,10 @@ public class BuildInfo {
     public final boolean isTV;
     /** Whether we're running on an Android Automotive OS device or not. */
     public final boolean isAutomotive;
+    /**
+     * version of the FEATURE_VULKAN_DEQP_LEVEL, if available. Queried only on Android T or above
+     */
+    public final int vulkanDeqpLevel;
 
     private static class Holder { private static BuildInfo sInstance = new BuildInfo(); }
 
@@ -112,6 +117,7 @@ public class BuildInfo {
                 BuildCompat.isAtLeastU() ? "1" : "0",
                 targetsAtLeastU() ? "1" : "0",
                 Build.VERSION.CODENAME,
+                String.valueOf(vulkanDeqpLevel),
         };
     }
 
@@ -228,6 +234,20 @@ public class BuildInfo {
             isAutomotive = false;
         }
         this.isAutomotive = isAutomotive;
+
+        int vulkanLevel = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            FeatureInfo[] features = pm.getSystemAvailableFeatures();
+            if (features != null) {
+                for (FeatureInfo feature : features) {
+                    if (PackageManager.FEATURE_VULKAN_DEQP_LEVEL.equals(feature.name)) {
+                        vulkanLevel = feature.version;
+                        break;
+                    }
+                }
+            }
+        }
+        vulkanDeqpLevel = vulkanLevel;
     }
 
     /**
