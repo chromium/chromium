@@ -150,6 +150,7 @@
   #customizeButtonContainer:has(help-bubble) {
     /* help-bubble parent needs z-index to overlay ntp-iframe */
     z-index: 1001;
+    background-color: var(--color-new-tab-page-button-background) !important;
   }
 
   :host-context([dir='ltr']) #customizeButtonContainer {
@@ -168,7 +169,10 @@
     background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
-  #customizeButton {
+  /* TODO(crbug.com/1454193): Show collapsed Customize Chrome button
+  for first step of Panorama tutorial after M115 is released to Stable. */
+  #customizeButton,
+  #customizeButtonContainer:has(help-bubble) #customizeButton {
     --hover-bg-color: var(--color-new-tab-page-button-background-hovered);
     --text-color: var(--color-new-tab-page-button-foreground);
     border: none;
@@ -176,6 +180,7 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
     font-weight: 400;
     min-width: 32px;
+    padding: 8px 16px;
   }
 
   :host([show-background-image_]) #customizeButton {
@@ -187,7 +192,7 @@
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  #customizeIcon {
+  #customizeIcon, #customizeButtonContainer:has(help-bubble) #customizeIcon {
     -webkit-mask-image: url(icons/icon_pencil.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
@@ -199,7 +204,15 @@
 
   :host([show-background-image_]) #customizeIcon {
     background-color: white;
-    margin: 0;
+    margin-inline-end: 0;
+  }
+
+  :host([show-background-image_]) #customizeText {
+      display: none;
+  }
+
+  #customizeButtonContainer:has(help-bubble) #customizeText {
+      display: inherit;
   }
 
   @media (max-width: 550px) {
@@ -412,7 +425,7 @@
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}" aria-pressed="[[showCustomize_]]">
           <div id="customizeIcon"></div>
-          <div id="customizeText" hidden$="[[showBackgroundImage_]]">
+          <div id="customizeText">
             $i18n{customizeButton}
           </div>
         </cr-button>
