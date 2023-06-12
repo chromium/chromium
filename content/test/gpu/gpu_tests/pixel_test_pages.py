@@ -598,6 +598,11 @@ class PixelTestPages():
         cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
     ]
 
+    # The sRGB tests have been observed to create a large number
+    # (~15,000) of pixels with difference ~3.
+    srgb_fuzzy_algo = algo.FuzzyMatchingAlgorithm(max_different_pixels=20000,
+                                                  pixel_delta_threshold=3)
+
     return [
         PixelTestPage('pixel_offscreenCanvas_transfer_after_style_resize.html',
                       base_name + '_OffscreenCanvasTransferAfterStyleResize',
@@ -682,16 +687,19 @@ class PixelTestPages():
         PixelTestPage('pixel_canvas_display_srgb.html',
                       base_name + '_CanvasDisplaySRGBAccelerated2D',
                       test_rect=[0, 0, 140, 140],
-                      browser_args=browser_args + accelerated_args),
+                      browser_args=browser_args + accelerated_args,
+                      matching_algorithm=srgb_fuzzy_algo),
         PixelTestPage('pixel_canvas_display_srgb.html',
                       base_name + '_CanvasDisplaySRGBUnaccelerated2D',
                       test_rect=[0, 0, 140, 140],
-                      browser_args=browser_args + unaccelerated_args),
+                      browser_args=browser_args + unaccelerated_args,
+                      matching_algorithm=srgb_fuzzy_algo),
         PixelTestPage(
             'pixel_canvas_display_srgb.html',
             base_name + '_CanvasDisplaySRGBUnaccelerated2DGPUCompositing',
             test_rect=[0, 0, 140, 140],
-            browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+            browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS],
+            matching_algorithm=srgb_fuzzy_algo),
         PixelTestPage('pixel_webgl_webcodecs_breakoutbox_displays_frame.html',
                       base_name + '_WebGLWebCodecsBreakoutBoxDisplaysFrame',
                       test_rect=[0, 0, 300, 300],
