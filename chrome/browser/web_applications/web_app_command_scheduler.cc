@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -368,8 +369,10 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
           provider_->web_contents_manager().CreateUrlLoader(),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
-          InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
-              *profile_->GetPrefs())),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(
+              url_info,
+              IsolatedWebAppInstallCommandHelper::
+                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
       call_location);
 }
 

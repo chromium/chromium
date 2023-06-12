@@ -8,9 +8,9 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <type_traits>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -19,7 +19,7 @@
 #include "base/version.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -32,9 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
-class GURL;
 class Profile;
-class PrefService;
 
 namespace content {
 class WebContents;
@@ -70,9 +68,6 @@ struct InstallIsolatedWebAppCommandError {
 // re-using web contents.
 class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-  CreateDefaultResponseReaderFactory(const PrefService& prefs);
-
   // `url_info` holds the origin information of the app. It is randomly
   // generated for dev-proxy and the public key of signed bundle. It is
   // guarantee to be valid.
@@ -101,8 +96,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
-      std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-          response_reader_factory);
+      std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper);
 
   InstallIsolatedWebAppCommand(const InstallIsolatedWebAppCommand&) = delete;
   InstallIsolatedWebAppCommand& operator=(const InstallIsolatedWebAppCommand&) =
@@ -127,45 +121,48 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 
-  Profile& profile();
-  const PrefService& prefs();
+  template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>
+  void RunNextStepOnSuccess(base::OnceClosure next_step_callback,
+                            base::expected<T, std::string> status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!status.has_value()) {
+      ReportFailure(status.error());
+    } else {
+      std::move(next_step_callback).Run();
+    }
+  }
 
-  void DownloadIcons(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      WebAppInstallInfo install_info);
-  void OnGetIcons(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      WebAppInstallInfo install_info,
-      IconsDownloadedResult result,
-      std::map<GURL, std::vector<SkBitmap>> icons_map,
-      std::map<GURL, int /*http_status_code*/> icons_http_results);
+  template <typename T, std::enable_if_t<!std::is_void_v<T>, bool> = true>
+  void RunNextStepOnSuccess(base::OnceCallback<void(T)> next_step_callback,
+                            base::expected<T, std::string> status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!status.has_value()) {
+      ReportFailure(status.error());
+    } else {
+      std::move(next_step_callback).Run(std::move(*status));
+    }
+  }
+
+  Profile& profile();
 
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
-
-  void CheckTrustAndSignaturesOfBundle(const base::FilePath& path,
-                                       base::OnceClosure next_step_callback);
-  void OnTrustAndSignaturesChecked(
-      base::OnceClosure next_step_callback,
-      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                     UnusableSwbnFileError> status);
 
   void CreateStoragePartition(base::OnceClosure next_step_callback);
 
   void LoadInstallUrl(base::OnceClosure next_step_callback);
-  void OnLoadInstallUrl(base::OnceClosure next_step_callback,
-                        WebAppUrlLoaderResult result);
 
   void CheckInstallabilityAndRetrieveManifest(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback);
-  void OnCheckInstallabilityAndRetrieveManifest(
+      base::OnceCallback<
+          void(IsolatedWebAppInstallCommandHelper::ManifestAndUrl)>
+          next_step_callback);
+
+  void ValidateManifestAndCreateInstallInfo(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      blink::mojom::ManifestPtr opt_manifest,
-      const GURL& manifest_url,
-      bool valid_manifest_for_web_app,
-      webapps::InstallableStatusCode error_code);
-  base::expected<WebAppInstallInfo, std::string> CreateInstallInfoFromManifest(
-      const blink::mojom::Manifest& manifest,
-      const GURL& manifest_url);
+      IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url);
+
+  void RetrieveIconsAndPopulateInstallInfo(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+      WebAppInstallInfo install_info);
 
   void FinalizeInstall(WebAppInstallInfo info);
   void OnFinalizeInstall(const AppId& unused_app_id,
@@ -177,11 +174,11 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
+  std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
+
   IsolatedWebAppUrlInfo url_info_;
   IsolatedWebAppLocation location_;
   absl::optional<base::Version> expected_version_;
-
-  std::unique_ptr<IsolatedWebAppResponseReaderFactory> response_reader_factory_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 
@@ -189,8 +186,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
-
-  std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                          InstallIsolatedWebAppCommandError>)>

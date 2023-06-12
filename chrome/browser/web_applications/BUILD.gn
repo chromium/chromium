@@ -80,6 +80,8 @@ source_set("web_applications") {
     "isolated_web_apps/isolated_web_app_dev_mode.h",
     "isolated_web_apps/isolated_web_app_error_page.cc",
     "isolated_web_apps/isolated_web_app_error_page.h",
+    "isolated_web_apps/isolated_web_app_install_command_helper.cc",
+    "isolated_web_apps/isolated_web_app_install_command_helper.h",
     "isolated_web_apps/isolated_web_app_location.cc",
     "isolated_web_apps/isolated_web_app_location.h",
     "isolated_web_apps/isolated_web_app_reader_registry.cc",

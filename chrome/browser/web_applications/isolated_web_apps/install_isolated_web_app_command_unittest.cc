@@ -29,6 +29,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -289,12 +290,9 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     auto command = CreateCommand(
         parameters.url_info, std::move(web_contents), parameters.location,
         parameters.expected_version, std::move(url_loader),
-        test_future.GetCallback(), std::move(parameters.bundle_status));
+        std::move(data_retriever), test_future.GetCallback(),
+        std::move(parameters.bundle_status));
 
-    command->SetDataRetrieverForTesting(
-        data_retriever != nullptr ? std::move(data_retriever)
-                                  : CreateDefaultDataRetriever(
-                                        parameters.url_info.origin().GetURL()));
     ScheduleCommand(std::move(command));
     return test_future.Get();
   }
@@ -305,6 +303,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       absl::optional<IsolatedWebAppLocation> location,
       absl::optional<base::Version> expected_version,
       std::unique_ptr<WebAppUrlLoader> url_loader,
+      std::unique_ptr<WebAppDataRetriever> data_retriever,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
@@ -313,11 +312,20 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       location = CreateDevProxyLocation();
     }
 
+    auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+        url_info,
+        std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
+    command_helper->SetDataRetrieverForTesting(
+        data_retriever != nullptr
+            ? std::move(data_retriever)
+            : CreateDefaultDataRetriever(url_info.origin().GetURL()));
+
     return std::make_unique<InstallIsolatedWebAppCommand>(
         url_info, location.value(), expected_version, std::move(web_contents),
-        std::move(url_loader), /*optional_keep_alive=*/nullptr,
+        std::move(url_loader),
+        /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, std::move(callback),
-        std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
+        std::move(command_helper));
   }
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -630,13 +638,14 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
       test_future;
 
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command = CreateCommand(
-      url_info,
-      content::WebContents::Create(
-          content::WebContents::CreateParams(profile())),
-      CreateDevProxyLocation(),
-      /*expected_version=*/absl::nullopt,
-      std::make_unique<TestWebAppUrlLoader>(), test_future.GetCallback());
+  auto command =
+      CreateCommand(url_info,
+                    content::WebContents::Create(
+                        content::WebContents::CreateParams(profile())),
+                    CreateDevProxyLocation(),
+                    /*expected_version=*/absl::nullopt,
+                    std::make_unique<TestWebAppUrlLoader>(),
+                    /*data_retriever=*/nullptr, test_future.GetCallback());
   EXPECT_THAT(
       command->lock_description(),
       AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),
