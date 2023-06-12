@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/popup_menu_helper_ios.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "ui/base/cocoa/animation_utils.h"
 
@@ -225,5 +226,41 @@ void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
 }
 
 void WebContentsViewIOS::SetOverscrollControllerEnabled(bool enabled) {}
+
+int WebContentsViewIOS::GetTopControlsHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetTopControlsHeight() : 0;
+}
+
+int WebContentsViewIOS::GetTopControlsMinHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetTopControlsMinHeight() : 0;
+}
+
+int WebContentsViewIOS::GetBottomControlsHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetBottomControlsHeight() : 0;
+}
+
+int WebContentsViewIOS::GetBottomControlsMinHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetBottomControlsMinHeight() : 0;
+}
+
+bool WebContentsViewIOS::ShouldAnimateBrowserControlsHeightChanges() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate && delegate->ShouldAnimateBrowserControlsHeightChanges();
+}
+
+bool WebContentsViewIOS::DoBrowserControlsShrinkRendererSize() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate &&
+         delegate->DoBrowserControlsShrinkRendererSize(web_contents_);
+}
+
+bool WebContentsViewIOS::OnlyExpandTopControlsAtPageTop() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate && delegate->OnlyExpandTopControlsAtPageTop();
+}
 
 }  // namespace content
