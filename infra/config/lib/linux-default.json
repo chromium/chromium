@@ -80,6 +80,7 @@
     "Linux Builder (j-500) (reclient)": "Ubuntu-22.04",
     "Linux Builder (reclient compare)": "Ubuntu-22.04",
     "Linux CFI": "Ubuntu-22.04",
+    "Linux Chromium OS ASan LSan Builder": "Ubuntu-22.04",
     "Linux ChromiumOS Full": "Ubuntu-22.04",
     "Linux Debug (NVIDIA)": "Ubuntu-22.04",
     "Linux FYI Debug (NVIDIA)": "Ubuntu-22.04",
