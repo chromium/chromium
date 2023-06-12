@@ -150,7 +150,6 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
         ui::kAXConsiderInvisibleAndIgnoreChildren, true);
     host_window_->AddChild(root_surface_->window());
     UpdateHostWindowBounds();
-    root_surface_->window()->Show();
   }
   set_bounds_is_dirty(true);
 }
