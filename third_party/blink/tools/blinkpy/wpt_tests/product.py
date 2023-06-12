@@ -10,7 +10,11 @@ import logging
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
 
-try:
+
+def do_delay_imports():
+    global devil_chromium, devil_env, apk_helper
+    global device_utils, webview_app, avd
+    global CommandFailedError, SyncParallelizer
     # Packages here are only isolated when running test for Android
     # This import adds `devil` to `sys.path`.
     path_finder.add_build_android_to_sys_path()
@@ -22,9 +26,6 @@ try:
     from devil.android.tools import webview_app
     from devil.utils.parallelizer import SyncParallelizer
     from pylib.local.emulator import avd
-    _ANDROID_ENABLED = True
-except ImportError:
-    _ANDROID_ENABLED = False
 
 
 @memoized
@@ -194,12 +195,13 @@ class ChromeiOS(Product):
 
 class ChromeAndroidBase(Product):
     def __init__(self, port, options):
+        do_delay_imports()
         super().__init__(port, options)
         if options.browser_apk:
             self.browser_apk = options.browser_apk
         else:
             self.browser_apk = self.default_browser_apk
-        self.adb_binary = devil_env.config.FetchPath('adb')
+        self.adb_binary = devil_env.config.FetchPath('adb')  # pylint: disable=undefined-variable;
         self.devices = []
 
     @contextlib.contextmanager
@@ -213,14 +215,12 @@ class ChromeAndroidBase(Product):
 
     @contextlib.contextmanager
     def get_devices(self):
-        if not _ANDROID_ENABLED:
-            raise Exception('Packages required for Android are not available')
         instances = []
         try:
             if self._options.avd_config:
                 logging.info(
                     f'Installing emulator from {self._options.avd_config}')
-                config = avd.AvdConfig(self._options.avd_config)
+                config = avd.AvdConfig(self._options.avd_config)  # pylint: disable=undefined-variable;
                 config.Install()
 
                 # use '--child-processes' to decide how many emulators to launch
@@ -228,20 +228,20 @@ class ChromeAndroidBase(Product):
                     instance = config.CreateInstance()
                     instances.append(instance)
 
-                SyncParallelizer(instances).Start(
+                SyncParallelizer(instances).Start(  # pylint: disable=undefined-variable;
                     writable_system=True,
                     window=self._options.emulator_window,
                     require_fast_start=True)
 
             #TODO(weizhong): when choose device, make sure abi matches with target
-            yield device_utils.DeviceUtils.HealthyDevices()
+            yield device_utils.DeviceUtils.HealthyDevices()  # pylint: disable=undefined-variable;
         finally:
-            SyncParallelizer(instances).Stop()
+            SyncParallelizer(instances).Stop()  # pylint: disable=undefined-variable;
 
     @contextlib.contextmanager
     def test_env(self):
         with super().test_env():
-            devil_chromium.Initialize(adb_path=self.adb_binary)
+            devil_chromium.Initialize(adb_path=self.adb_binary)  # pylint: disable=undefined-variable;
             self.devices = self._tasks.enter_context(self.get_devices())
             if not self.devices:
                 raise Exception('No devices attached to this host. '
@@ -271,7 +271,7 @@ class ChromeAndroidBase(Product):
                 logging.info('Product version: %s %s (package: %r)', self.name,
                              version, version_provider)
                 return version
-            except CommandFailedError:
+            except CommandFailedError:  # pylint: disable=undefined-variable;
                 logging.warning(
                     'Failed to retrieve version of %s (package: %r)',
                     self.name, version_provider)
@@ -294,6 +294,7 @@ class ChromeAndroidBase(Product):
             https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L867-L924
         """
         if self.browser_apk:
+            # pylint: disable=undefined-variable;
             with contextlib.suppress(apk_helper.ApkHelperError):
                 return apk_helper.GetPackageName(self.browser_apk)
         return None
@@ -319,7 +320,7 @@ class ChromeAndroidBase(Product):
     def provision_devices(self):
         """Provisions a set of Android devices in parallel."""
         contexts = [self._provision_device(device) for device in self.devices]
-        self._tasks.enter_context(SyncParallelizer(contexts))
+        self._tasks.enter_context(SyncParallelizer(contexts))  # pylint: disable=undefined-variable;
 
     @contextlib.contextmanager
     def _provision_device(self, device):
@@ -356,6 +357,7 @@ class WebView(ChromeAndroidBase):
 
     def _install_webview(self, device):
         # Prioritize local builds.
+        # pylint: disable=undefined-variable;
         return webview_app.UseWebViewProvider(device, self.webview_provider)
 
     def get_browser_package_name(self):
@@ -366,6 +368,7 @@ class WebView(ChromeAndroidBase):
         # Use the version from the webview provider, not the shell, since the
         # provider is distributed to end users. The shell is developer-facing,
         # so its version is usually not actively updated.
+        # pylint: disable=undefined-variable;
         with contextlib.suppress(apk_helper.ApkHelperError):
             return apk_helper.GetPackageName(self.webview_provider)
 
