@@ -126,39 +126,41 @@ void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
     return;
   }
 
-  NSMutableArray<NSString*>* old_identifiers =
+  // Snapshots used to be identified by the web state stable identifier, but are
+  // now identified by a snapshot ID.
+  NSMutableArray<NSString*>* stable_identifiers =
       [NSMutableArray arrayWithCapacity:web_state_list_count];
-  NSMutableArray<NSString*>* new_identifiers =
+  NSMutableArray<NSString*>* snapshot_identifiers =
       [NSMutableArray arrayWithCapacity:web_state_list_count];
 
   for (int index = 0; index < web_state_list_count; ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [old_identifiers addObject:web_state->GetStableIdentifier()];
-    [new_identifiers addObject:SnapshotTabHelper::FromWebState(web_state)
-                                   ->GetSnapshotIdentifier()];
+    [stable_identifiers addObject:web_state->GetStableIdentifier()];
+    [snapshot_identifiers
+        addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 
-  [snapshot_cache_ renameSnapshotWithIdentifiers:old_identifiers
-                                   toIdentifiers:new_identifiers];
+  [snapshot_cache_ renameSnapshotsWithIDs:stable_identifiers
+                                    toIDs:snapshot_identifiers];
 }
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {
   DCHECK(snapshot_cache_);
-  NSSet<NSString*>* snapshot_ids = GetTabIDs();
+  NSSet<NSString*>* snapshot_ids = GetSnapshotIDs();
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
   const base::Time one_minute_ago = base::Time::Now() - base::Minutes(1);
   [snapshot_cache_ purgeCacheOlderThan:one_minute_ago keeping:snapshot_ids];
 }
 
-NSSet<NSString*>* SnapshotBrowserAgent::GetTabIDs() {
+NSSet<NSString*>* SnapshotBrowserAgent::GetSnapshotIDs() {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  NSMutableSet<NSString*>* tab_ids =
+  NSMutableSet<NSString*>* snapshot_ids =
       [NSMutableSet setWithCapacity:web_state_list->count()];
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [tab_ids addObject:SnapshotTabHelper::FromWebState(web_state)
-                           ->GetSnapshotIdentifier()];
+    [snapshot_ids
+        addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
-  return tab_ids;
+  return snapshot_ids;
 }

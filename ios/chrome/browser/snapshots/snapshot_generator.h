@@ -24,9 +24,8 @@ class WebState;
 
 // Designated initializer.
 - (instancetype)initWithWebState:(web::WebState*)webState
-              snapshotIdentifier:(NSString*)snapshotIdentifier
+                      snapshotID:(NSString*)snapshotID
     NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 // Gets a color snapshot for the current page, calling `callback` once it has
@@ -54,12 +53,12 @@ class WebState;
 // snapshot image.
 - (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay;
 
-// Hint that the snapshot will likely be saved to disk when the application is
+// Hints that the snapshot will likely be saved to disk when the application is
 // backgrounded.  The snapshot is then saved in memory, so it does not need to
 // be read off disk.
 - (void)willBeSavedGreyWhenBackgrounding;
 
-// Write a grey copy of the snapshot to disk, but if and only if a color
+// Writes a grey copy of the snapshot to disk, but if and only if a color
 // version of the snapshot already exists in memory or on disk.
 - (void)saveGreyInBackground;
 
@@ -69,8 +68,8 @@ class WebState;
 // The SnapshotGenerator delegate.
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
 
-// The snapshot identifier.
-@property(nonatomic, readonly) NSString* snapshotIdentifier;
+// The snapshot ID.
+@property(nonatomic, readonly) NSString* snapshotID;
 
 @end
 

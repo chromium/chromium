@@ -246,16 +246,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 #pragma mark - SnapshotCacheObserver
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
-    didUpdateSnapshotForIdentifier:(NSString*)identifier {
-  // The given identifier is a snapshot identifier, not to be confused with a
-  // web state stable identifier (being phased out), nor a web state unique
-  // identifier.
+    didUpdateSnapshotForID:(NSString*)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = 0; i < _webStateList->count(); i++) {
     SnapshotTabHelper* snapshotTabHelper =
         SnapshotTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
-    NSString* snapshotIdentifier = snapshotTabHelper->GetSnapshotIdentifier();
-    if ([identifier isEqualToString:snapshotIdentifier]) {
+    if ([snapshotID isEqualToString:snapshotTabHelper->GetSnapshotID()]) {
       webState = _webStateList->GetWebStateAt(i);
       break;
     }
@@ -266,8 +262,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // consumer's responsibility to ignore any updates before inserts.
     TabSwitcherItem* item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    // Items are indexed with the stable identifier. Don't pass a snapshot
-    // identifier here.
+    // Items are indexed with the stable identifier. Don't pass a snapshot ID
+    // here.
     [_consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
   }
 }

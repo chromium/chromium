@@ -76,8 +76,8 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // version of the snapshot already exists in memory or on disk.
   void SaveGreyInBackground();
 
-  // Returns the identifier to use for the snapshot.
-  NSString* GetSnapshotIdentifier() const;
+  // Returns the ID to use for the snapshot.
+  NSString* GetSnapshotID() const;
 
  private:
   friend class web::WebStateUserData<SnapshotTabHelper>;

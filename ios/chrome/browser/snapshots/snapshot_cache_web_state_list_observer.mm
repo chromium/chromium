@@ -42,5 +42,5 @@ void SnapshotCacheWebStateListObserver::WebStateActivatedAt(
     [set addObject:web_state->GetStableIdentifier()];
   }
 
-  snapshot_cache_.pinnedIDs = [set copy];
+  snapshot_cache_.pinnedSnapshotIDs = [set copy];
 }

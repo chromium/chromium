@@ -32,14 +32,13 @@ static const NSUInteger kSnapshotCount = 10;
 static const NSUInteger kSnapshotPixelSize = 8;
 
 @interface FakeSnapshotCacheObserver : NSObject<SnapshotCacheObserver>
-@property(nonatomic, copy) NSString* lastUpdatedIdentifier;
+@property(nonatomic, copy) NSString* lastUpdatedID;
 @end
 
 @implementation FakeSnapshotCacheObserver
-@synthesize lastUpdatedIdentifier = _lastUpdatedIdentifier;
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
-    didUpdateSnapshotForIdentifier:(NSString*)identifier {
-  self.lastUpdatedIdentifier = identifier;
+    didUpdateSnapshotForID:(NSString*)snapshotID {
+  self.lastUpdatedID = snapshotID;
 }
 @end
 
@@ -402,14 +401,13 @@ TEST_F(SnapshotCacheTest, RenameSnapshots) {
   base::FilePath image2_path = [cache imagePathForSnapshotID:image2_id];
   ASSERT_TRUE(base::WriteFile(image2_path, "image2"));
 
-  NSString* new_identifier = [[NSUUID UUID] UUIDString];
-  [cache renameSnapshotWithIdentifiers:@[ image1_id ]
-                         toIdentifiers:@[ new_identifier ]];
+  NSString* new_id = [[NSUUID UUID] UUIDString];
+  [cache renameSnapshotsWithIDs:@[ image1_id ] toIDs:@[ new_id ]];
   FlushRunLoops();
 
   // image1 should have been moved.
   EXPECT_FALSE(base::PathExists(image1_path));
-  EXPECT_TRUE(base::PathExists([cache imagePathForSnapshotID:new_identifier]));
+  EXPECT_TRUE(base::PathExists([cache imagePathForSnapshotID:new_id]));
 
   // image2 should not have moved.
   EXPECT_TRUE(base::PathExists(image2_path));
@@ -427,7 +425,7 @@ TEST_F(SnapshotCacheTest, HandleMemoryWarning) {
   NSMutableSet* set = [NSMutableSet set];
   [set addObject:firstPinnedID];
   [set addObject:secondPinnedID];
-  cache.pinnedIDs = set;
+  cache.pinnedSnapshotIDs = set;
 
   TriggerMemoryWarning();
 
@@ -676,14 +674,14 @@ TEST_F(SnapshotCacheTest, ObserversNotifiedOnSetAndRemoveImage) {
   FakeSnapshotCacheObserver* observer =
       [[FakeSnapshotCacheObserver alloc] init];
   [cache addObserver:observer];
-  EXPECT_NSEQ(nil, observer.lastUpdatedIdentifier);
+  EXPECT_NSEQ(nil, observer.lastUpdatedID);
   UIImage* image = [testImages_ objectAtIndex:0];
   NSString* snapshotID = [snapshotIDs_ objectAtIndex:0];
   [cache setImage:image withSnapshotID:snapshotID];
-  EXPECT_NSEQ(snapshotID, observer.lastUpdatedIdentifier);
-  observer.lastUpdatedIdentifier = nil;
+  EXPECT_NSEQ(snapshotID, observer.lastUpdatedID);
+  observer.lastUpdatedID = nil;
   [cache removeImageWithSnapshotID:snapshotID];
-  EXPECT_NSEQ(snapshotID, observer.lastUpdatedIdentifier);
+  EXPECT_NSEQ(snapshotID, observer.lastUpdatedID);
   [cache removeObserver:observer];
 }
 }  // namespace

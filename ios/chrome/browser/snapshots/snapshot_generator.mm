@@ -71,16 +71,16 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   std::unique_ptr<web::WebStateObserver> _webStateObserver;
 
   // The unique ID for WebState's snapshot.
-  __strong NSString* _snapshotIdentifier;
+  __strong NSString* _snapshotID;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-              snapshotIdentifier:(NSString*)snapshotIdentifier {
+                      snapshotID:(NSString*)snapshotID {
   if ((self = [super init])) {
     DCHECK(webState);
-    DCHECK(snapshotIdentifier.length);
+    DCHECK(snapshotID.length > 0);
     _webState = webState;
-    _snapshotIdentifier = [snapshotIdentifier copy];
+    _snapshotID = [snapshotID copy];
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
@@ -99,8 +99,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 - (void)retrieveSnapshot:(void (^)(UIImage*))callback {
   DCHECK(callback);
   if (_snapshotCache) {
-    [_snapshotCache retrieveImageForSnapshotID:_snapshotIdentifier
-                                      callback:callback];
+    [_snapshotCache retrieveImageForSnapshotID:_snapshotID callback:callback];
   } else {
     callback(nil);
   }
@@ -121,7 +120,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
   SnapshotCache* snapshotCache = _snapshotCache;
   if (snapshotCache) {
-    [snapshotCache retrieveGreyImageForSnapshotID:_snapshotIdentifier
+    [snapshotCache retrieveGreyImageForSnapshotID:_snapshotID
                                          callback:wrappedCallback];
   } else {
     wrappedCallback(nil);
@@ -183,15 +182,15 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 }
 
 - (void)willBeSavedGreyWhenBackgrounding {
-  [_snapshotCache willBeSavedGreyWhenBackgrounding:_snapshotIdentifier];
+  [_snapshotCache willBeSavedGreyWhenBackgrounding:_snapshotID];
 }
 
 - (void)saveGreyInBackground {
-  [_snapshotCache saveGreyInBackgroundForSnapshotID:_snapshotIdentifier];
+  [_snapshotCache saveGreyInBackgroundForSnapshotID:_snapshotID];
 }
 
 - (void)removeSnapshot {
-  [_snapshotCache removeImageWithSnapshotID:_snapshotIdentifier];
+  [_snapshotCache removeImageWithSnapshotID:_snapshotID];
 }
 
 #pragma mark - Private methods
@@ -312,10 +311,10 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 // Updates the snapshot cache with `snapshot`.
 - (void)updateSnapshotCacheWithImage:(UIImage*)snapshot {
   if (snapshot) {
-    [_snapshotCache setImage:snapshot withSnapshotID:_snapshotIdentifier];
+    [_snapshotCache setImage:snapshot withSnapshotID:_snapshotID];
   } else {
     // Remove any stale snapshot since the snapshot failed.
-    [_snapshotCache removeImageWithSnapshotID:_snapshotIdentifier];
+    [_snapshotCache removeImageWithSnapshotID:_snapshotID];
   }
 }
 

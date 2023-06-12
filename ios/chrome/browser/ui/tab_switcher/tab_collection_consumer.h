@@ -18,6 +18,7 @@
 // indicates that no item should be selected (typically because there are no
 // items). It is up to the consumer to determine how to handle a
 // `selectedItemID` that is not the identifier of any current items.
+// TODO(crbug.com/1450598): Migrate to unique identifier.
 
 // Tells the consumer to replace its current set of items with `items` and
 // update the selected item ID to be `selectedItemID`. It's an error to pass

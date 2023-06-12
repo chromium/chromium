@@ -63,7 +63,7 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
       source_browser->GetWebStateList()->DetachWebStateAt(source_tab_index);
   SnapshotTabHelper* snapshot_tab_helper =
       SnapshotTabHelper::FromWebState(web_state.get());
-  MoveSnapshot(snapshot_tab_helper->GetSnapshotIdentifier(), source_browser,
+  MoveSnapshot(snapshot_tab_helper->GetSnapshotID(), source_browser,
                destination_browser);
 
   int insertion_flags = flags;

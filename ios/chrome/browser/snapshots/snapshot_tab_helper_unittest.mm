@@ -111,9 +111,9 @@ class SnapshotTabHelperTest : public PlatformTest {
   ~SnapshotTabHelperTest() override { [snapshot_cache_ shutdown]; }
 
   void SetCachedSnapshot(UIImage* image) {
-    NSString* snapshot_identifier =
-        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotIdentifier();
-    [snapshot_cache_ setImage:image withSnapshotID:snapshot_identifier];
+    NSString* snapshot_id =
+        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotID();
+    [snapshot_cache_ setImage:image withSnapshotID:snapshot_id];
   }
 
   UIImage* GetCachedSnapshot() {
@@ -121,9 +121,9 @@ class SnapshotTabHelperTest : public PlatformTest {
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    NSString* snapshot_identifier =
-        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotIdentifier();
-    [snapshot_cache_ retrieveImageForSnapshotID:snapshot_identifier
+    NSString* snapshot_id =
+        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotID();
+    [snapshot_cache_ retrieveImageForSnapshotID:snapshot_id
                                        callback:^(UIImage* cached_snapshot) {
                                          snapshot = cached_snapshot;
                                          run_loop_ptr->Quit();
@@ -354,9 +354,9 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   auto web_state = std::make_unique<web::FakeWebState>();
 
   SnapshotTabHelper::CreateForWebState(web_state.get());
-  NSString* snapshot_identifier =
-      SnapshotTabHelper::FromWebState(web_state.get())->GetSnapshotIdentifier();
-  [[partialMock reject] removeImageWithSnapshotID:snapshot_identifier];
+  NSString* snapshot_id =
+      SnapshotTabHelper::FromWebState(web_state.get())->GetSnapshotID();
+  [[partialMock reject] removeImageWithSnapshotID:snapshot_id];
 
   // Use @try/@catch as -reject raises an exception.
   @try {

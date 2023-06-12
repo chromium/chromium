@@ -94,16 +94,15 @@ class BrowserUtilTest : public PlatformTest {
     return web_state->GetStableIdentifier();
   }
 
-  // Returns the cached snapshot for the given identifier in the given snapshot
+  // Returns the cached snapshot for the given snapshot ID in the given snapshot
   // cache.
-  UIImage* GetSnapshot(SnapshotCache* snapshot_cache,
-                       NSString* snapshot_identifier) {
+  UIImage* GetSnapshot(SnapshotCache* snapshot_cache, NSString* snapshot_id) {
     CHECK(snapshot_cache);
     base::RunLoop run_loop;
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    [snapshot_cache retrieveImageForSnapshotID:snapshot_identifier
+    [snapshot_cache retrieveImageForSnapshotID:snapshot_id
                                       callback:^(UIImage* cached_snapshot) {
                                         snapshot = cached_snapshot;
                                         run_loop_ptr->Quit();
@@ -208,10 +207,10 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
   SnapshotTabHelper* snapshot_tab_helper =
       SnapshotTabHelper::FromWebState(web_state);
-  NSString* snapshot_identifier = snapshot_tab_helper->GetSnapshotIdentifier();
-  [snapshot_cache setImage:snapshot withSnapshotID:snapshot_identifier];
-  ASSERT_TRUE(UIImagesAreEqual(
-      snapshot, GetSnapshot(snapshot_cache, snapshot_identifier)));
+  NSString* snapshot_id = snapshot_tab_helper->GetSnapshotID();
+  [snapshot_cache setImage:snapshot withSnapshotID:snapshot_id];
+  ASSERT_TRUE(
+      UIImagesAreEqual(snapshot, GetSnapshot(snapshot_cache, snapshot_id)));
   // Check that the other browser doesn’t have a snapshot for that identifier.
   SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
   SnapshotBrowserAgent* other_agent =
@@ -219,12 +218,12 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   other_agent->SetSessionID([[NSUUID UUID] UUIDString]);
   SnapshotCache* other_snapshot_cache = other_agent->snapshot_cache();
   ASSERT_NE(nil, other_snapshot_cache);
-  ASSERT_EQ(nil, GetSnapshot(other_snapshot_cache, snapshot_identifier));
+  ASSERT_EQ(nil, GetSnapshot(other_snapshot_cache, snapshot_id));
 
   // Migrate the tab between browsers.
   MoveTabFromBrowserToBrowser(browser_.get(), 0, other_browser_.get(), 0);
 
-  EXPECT_EQ(nil, GetSnapshot(snapshot_cache, snapshot_identifier));
-  EXPECT_TRUE(UIImagesAreEqual(
-      snapshot, GetSnapshot(other_snapshot_cache, snapshot_identifier)));
+  EXPECT_EQ(nil, GetSnapshot(snapshot_cache, snapshot_id));
+  EXPECT_TRUE(UIImagesAreEqual(snapshot,
+                               GetSnapshot(other_snapshot_cache, snapshot_id)));
 }

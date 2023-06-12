@@ -67,8 +67,8 @@ class SnapshotBrowserAgent : public BrowserObserver,
   // Purges the snapshots folder of unused snapshots.
   void PurgeUnusedSnapshots();
 
-  // Returns the Tab IDs of all the WebStates in the Browser.
-  NSSet<NSString*>* GetTabIDs();
+  // Returns the snapshot IDs of all the WebStates in the Browser.
+  NSSet<NSString*>* GetSnapshotIDs();
 
   __strong SnapshotCache* snapshot_cache_;
 

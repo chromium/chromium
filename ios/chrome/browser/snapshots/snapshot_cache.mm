@@ -286,22 +286,22 @@ void PurgeCacheOlderThan(const base::FilePath& cache_directory,
 }
 
 void RenameSnapshots(const base::FilePath& cache_directory,
-                     NSArray<NSString*>* old_identifiers,
-                     NSArray<NSString*>* new_identifiers,
+                     NSArray<NSString*>* old_ids,
+                     NSArray<NSString*>* new_ids,
                      ImageScale snapshot_scale) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
   DCHECK(base::DirectoryExists(cache_directory));
-  DCHECK_EQ(old_identifiers.count, new_identifiers.count);
+  DCHECK_EQ(old_ids.count, new_ids.count);
 
-  const NSUInteger count = old_identifiers.count;
+  const NSUInteger count = old_ids.count;
   for (NSUInteger index = 0; index < count; ++index) {
     for (const ImageType image_type : kImageTypes) {
       const base::FilePath old_image_path = ImagePath(
-          old_identifiers[index], image_type, snapshot_scale, cache_directory);
+          old_ids[index], image_type, snapshot_scale, cache_directory);
       const base::FilePath new_image_path = ImagePath(
-          new_identifiers[index], image_type, snapshot_scale, cache_directory);
+          new_ids[index], image_type, snapshot_scale, cache_directory);
 
       // Only migrate snapshots which are needed.
       if (!base::PathExists(old_image_path) ||
@@ -478,7 +478,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                       CGImageGetHeight(image.CGImage) * [_lruCache count];
   base::UmaHistogramMemoryKB("IOS.Snapshots.CacheSize", imageSizes / 1024);
 
-  [self.observers snapshotCache:self didUpdateSnapshotForIdentifier:snapshotID];
+  [self.observers snapshotCache:self didUpdateSnapshotForID:snapshotID];
 
   // Save the image to disk.
   _taskRunner->PostTask(
@@ -492,7 +492,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
   [_lruCache removeObjectForKey:snapshotID];
 
-  [self.observers snapshotCache:self didUpdateSnapshotForIdentifier:snapshotID];
+  [self.observers snapshotCache:self didUpdateSnapshotForID:snapshotID];
 
   if (!_taskRunner)
     return;
@@ -536,18 +536,17 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                                 liveSnapshotIDs, _snapshotsScale));
 }
 
-- (void)renameSnapshotWithIdentifiers:(NSArray<NSString*>*)oldIdentifiers
-                        toIdentifiers:(NSArray<NSString*>*)newIdentifiers {
+- (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
+                         toIDs:(NSArray<NSString*>*)newIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_taskRunner) {
     return;
   }
 
-  DCHECK_EQ(oldIdentifiers.count, newIdentifiers.count);
+  DCHECK_EQ(oldIDs.count, newIDs.count);
   _taskRunner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RenameSnapshots, _cacheDirectory, oldIdentifiers,
-                     newIdentifiers, _snapshotsScale));
+      FROM_HERE, base::BindOnce(&RenameSnapshots, _cacheDirectory, oldIDs,
+                                newIDs, _snapshotsScale));
 }
 
 - (void)willBeSavedGreyWhenBackgrounding:(NSString*)snapshotID {
@@ -563,15 +562,16 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSMutableDictionary<NSString*, UIImage*>* dictionary =
       [NSMutableDictionary dictionaryWithCapacity:2];
-  for (NSString* snapshotID in self.pinnedIDs) {
+  for (NSString* snapshotID in self.pinnedSnapshotIDs) {
     UIImage* image = [_lruCache objectForKey:snapshotID];
     if (image)
       [dictionary setObject:image forKey:snapshotID];
   }
   [_lruCache removeAllObjects];
-  for (NSString* snapshotID in self.pinnedIDs)
+  for (NSString* snapshotID in self.pinnedSnapshotIDs) {
     [_lruCache setObject:[dictionary objectForKey:snapshotID]
                   forKey:snapshotID];
+  }
 }
 
 // Remove all UIImages from `lruCache_`.
@@ -583,10 +583,11 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 // Restore adjacent UIImages to `lruCache_`.
 - (void)handleBecomeActive {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (NSString* snapshotID in self.pinnedIDs)
+  for (NSString* snapshotID in self.pinnedSnapshotIDs) {
     [self retrieveImageForSnapshotID:snapshotID
                             callback:^(UIImage*){
                             }];
+  }
 }
 
 // Save grey image to `greyImageDictionary_` and call into most recent
