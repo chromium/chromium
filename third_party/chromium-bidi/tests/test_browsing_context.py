@@ -874,8 +874,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 @pytest.mark.parametrize("ignoreCache", [True, False])
 async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
     if not ignoreCache:
-        pytest.xfail(
-            reason="TODO: Find a way to distinguish cache hits from misses.")
+        pytest.xfail(reason="TODO: Fix flakiness with ignoreCache=False")
 
     url = "https://example.com/"
 
@@ -917,7 +916,7 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": ANY_DICT,
-            "response": AnyExtending({"fromCache": not ignoreCache}),
+            "response": AnyExtending({"status": 200 if ignoreCache else 304}),
             "timestamp": ANY_TIMESTAMP,
         },
     }

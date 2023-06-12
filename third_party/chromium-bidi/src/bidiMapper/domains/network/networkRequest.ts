@@ -294,8 +294,8 @@ export class NetworkRequest {
             this.#responseReceivedEvent.response.status,
           statusText: this.#responseReceivedEvent.response.statusText,
           fromCache:
-            (this.#responseReceivedEvent.response.fromDiskCache ||
-              this.#responseReceivedEvent.response.fromPrefetchCache) ??
+            this.#responseReceivedEvent.response.fromDiskCache ||
+            this.#responseReceivedEvent.response.fromPrefetchCache ||
             this.#servedFromCache,
           headers: NetworkRequest.#getHeaders(
             this.#responseReceivedEvent.response.headers
