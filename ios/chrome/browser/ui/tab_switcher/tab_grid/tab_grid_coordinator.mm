@@ -1033,6 +1033,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
+
+  [_bookmarksCoordinator shutdown];
+  _bookmarksCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
