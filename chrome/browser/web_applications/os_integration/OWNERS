@@ -1,0 +1,4 @@
+per-file web_app_file_handler*=davidbienvenu@chromium.org
+per-file web_app_file_handler*=jessemckenna@google.com
+per-file web_app_shortcut_win*=davidbienvenu@chromium.org
+per-file web_app_shortcut_win*=jessemckenna@google.com
