@@ -2,14 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addColorChangeListener, colorProviderChangeHandler, COLORS_CSS_SELECTOR, refreshColorCss, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+// clang-format off
+import {COLORS_CSS_SELECTOR, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+// <if expr="chromeos_ash">
+import {addColorChangeListener, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+// </if>
+
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// clang-format on
 
 suite('ColorChangeListenerTest', () => {
+  let updater: ColorChangeUpdater;
+
   setup(() => {
     document.body.innerHTML = getTrustedHTML`
       <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui"/>`;
+    updater = ColorChangeUpdater.forDocument();
   });
 
   /**
@@ -19,7 +28,7 @@ suite('ColorChangeListenerTest', () => {
   function getSearchParam(matcher: string, param: string) {
     const nodes =
         document.querySelectorAll<HTMLLinkElement>(`link[href*='${matcher}']`);
-    // Since refreshColorCSS() won't remove the old link until the new link has
+    // Since refreshColorsCss() won't remove the old link until the new link has
     // finished loading we may have multiple matches. Pick the last one to
     // ensure were getting the most recently added element.
     const node = nodes[nodes.length - 1];
@@ -33,8 +42,9 @@ suite('ColorChangeListenerTest', () => {
   test('CorrectlyUpdatesColorsStylesheetURL', async () => {
     assertEquals(getSearchParam('chrome://theme/colors.css', 'version'), null);
 
-    // refreshColorCss() should append search params to the chrome://theme href.
-    assertTrue(await refreshColorCss());
+    // refreshColorsCss() should append search params to the chrome://theme
+    // href.
+    assertTrue(await updater.refreshColorsCss());
 
     let version = getSearchParam('chrome://theme/colors.css', 'version');
     assertNotEquals(version, null);
@@ -44,9 +54,9 @@ suite('ColorChangeListenerTest', () => {
     // Wait 1 millisecond before refresh. Otherwise the timestamp-based
     // version might not yet be updated.
     await new Promise(resolve => setTimeout(resolve, 1));
-    assertTrue(await refreshColorCss());
-    // refreshColorCss() should append search params to the colors CSS href.
-    assertTrue(await refreshColorCss());
+    assertTrue(await updater.refreshColorsCss());
+    // refreshColorsCss() should append search params to the colors CSS href.
+    assertTrue(await updater.refreshColorsCss());
 
     version = getSearchParam('chrome://theme/colors.css', 'version');
     assertTrue(!!version);
@@ -57,11 +67,10 @@ suite('ColorChangeListenerTest', () => {
   test('IgnoresNonTargetStylesheetURLs', async () => {
     document.body.innerHTML = getTrustedHTML`
       <link rel="stylesheet" href="chrome://resources/colors.css"/>`;
-
     assertEquals(
         getSearchParam('chrome://resources/colors.css', 'version'), null);
 
-    assertFalse(await refreshColorCss());
+    assertFalse(await updater.refreshColorsCss());
 
     assertEquals(
         getSearchParam('chrome://resources/colors.css', 'version'), null);
@@ -75,7 +84,7 @@ suite('ColorChangeListenerTest', () => {
     `;
     assertEquals(getSearchParam('//theme/colors.css', 'version'), null);
 
-    assertTrue(await refreshColorCss());
+    assertTrue(await updater.refreshColorsCss());
 
     assertTrue(!!getSearchParam('//theme/colors.css', 'version'));
   });
@@ -85,23 +94,24 @@ suite('ColorChangeListenerTest', () => {
     // malformed.
     document.body.innerHTML =
         getTrustedHTML`<link rel="stylesheet" bad_href="chrome://theme/colors.css?sets=ui"/>`;
-    assertFalse(await refreshColorCss());
+    assertFalse(await updater.refreshColorsCss());
 
     // Handles the case where the link element does not exist.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    assertFalse(await refreshColorCss());
+    assertFalse(await updater.refreshColorsCss());
   });
 
   test('HandlesCasesWhereColorCssIsRefreshedMultipleTimes', async () => {
     // Emulate multiple color change events from the mojo pipe. Do not await
     // the first call so that multiple events are in flight at the same time.
     await Promise.all(
-        [colorProviderChangeHandler(), colorProviderChangeHandler()]);
+        [updater.onColorProviderChanged(), updater.onColorProviderChanged()]);
 
     // Verify only one colors.css exists.
     assertEquals(1, document.querySelectorAll(COLORS_CSS_SELECTOR).length);
   });
 
+  // <if expr="chromeos_ash">
   test('RegistersColorChangeListener', async () => {
     let listenerCalledTimes = 0;
     addColorChangeListener(() => {
@@ -109,7 +119,7 @@ suite('ColorChangeListenerTest', () => {
     });
 
     // Emulate a color change event from the mojo pipe.
-    await colorProviderChangeHandler();
+    await updater.onColorProviderChanged();
 
     assertEquals(listenerCalledTimes, 1);
   });
@@ -122,13 +132,14 @@ suite('ColorChangeListenerTest', () => {
     addColorChangeListener(listener);
 
     // Emulate a color change event from the mojo pipe.
-    await colorProviderChangeHandler();
+    await updater.onColorProviderChanged();
 
     removeColorChangeListener(listener);
 
     // Emulate a color change event from the mojo pipe.
-    await colorProviderChangeHandler();
+    await updater.onColorProviderChanged();
 
     assertEquals(listenerCalledTimes, 1);
   });
+  // </if>
 });

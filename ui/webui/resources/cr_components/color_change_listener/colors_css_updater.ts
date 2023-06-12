@@ -7,6 +7,8 @@
  * colors CSS stylesheet when a ColorProvider change in the browser is detected.
  */
 
+import {assert} from '//resources/js/assert_ts.js';
+
 import {BrowserProxy} from './browser_proxy.js';
 
 /**
@@ -15,99 +17,148 @@ import {BrowserProxy} from './browser_proxy.js';
  */
 export const COLORS_CSS_SELECTOR: string = 'link[href*=\'//theme/colors.css\']';
 
-/**
- * Forces the root to refresh its colors.css stylesheet. This is used to
- * fetch an updated stylesheet when the ColorProvider associated with the WebUI
- * has changed.
- * Returns a promise which resolves to true once the new colors are loaded and
- * installed into the DOM. In the case of an error returns false. When a new
- * colors.css is loaded, this will always freshly query the existing colors.css,
- * allowing multiple calls to successfully remove existing, outdated CSS.
- */
-export async function refreshColorCss(root: Document|ShadowRoot = document):
-    Promise<boolean> {
-  const colorCssNode = root.querySelector(COLORS_CSS_SELECTOR);
-  if (!colorCssNode) {
-    return false;
-  }
-  const href = colorCssNode.getAttribute('href');
-  if (!href) {
-    return false;
-  }
+let documentInstance: ColorChangeUpdater|null = null;
 
-  const hrefURL = new URL(href, location.href);
-  const params = new URLSearchParams(hrefURL.search);
-  params.set('version', new Date().getTime().toString());
-  const newHref = `${hrefURL.origin}${hrefURL.pathname}?${params.toString()}`;
+// <if expr="chromeos_ash">
+type ColorChangeListener = () => void;
+// </if>
 
-  // A flickering effect may take place when setting the href property of the
-  // existing color css node with a new value. In order to avoid flickering, we
-  // create a new link element and once it is loaded we remove the old one. See
-  // crbug.com/1365320 for additional details.
-  const newColorsCssLink = document.createElement('link');
-  newColorsCssLink.setAttribute('href', newHref);
-  newColorsCssLink.rel = 'stylesheet';
-  newColorsCssLink.type = 'text/css';
-  const newColorsLoaded = new Promise(resolve => {
-    newColorsCssLink.onload = resolve;
-  });
-  if (root === document) {
-    document.getElementsByTagName('body')[0]!.appendChild(newColorsCssLink);
-  } else {
-    root.appendChild(newColorsCssLink);
+export class ColorChangeUpdater {
+  private listenerId_: null|number = null;
+  private root_: Document|ShadowRoot;
+
+  // <if expr="chromeos_ash">
+  private listeners_: ColorChangeListener[] = [];
+  // </if>
+
+  constructor(root: Document|ShadowRoot) {
+    assert(documentInstance === null || root !== document);
+    this.root_ = root;
   }
 
-  await newColorsLoaded;
+  start() {
+    if (this.listenerId_ !== null) {
+      return;
+    }
 
-  const oldColorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
-  if (oldColorCssNode) {
-    oldColorCssNode.remove();
+    this.listenerId_ = BrowserProxy.getInstance()
+                           .callbackRouter.onColorProviderChanged.addListener(
+                               this.onColorProviderChanged.bind(this));
   }
-  return true;
+
+  // TODO(dpapad): Figure out how to properly trigger
+  // `callbackRouter.onColorProviderChanged` listeners from tests and make this
+  // method private.
+  async onColorProviderChanged() {
+    await this.refreshColorsCss();
+    // <if expr="chromeos_ash">
+    for (const listener of this.listeners_) {
+      listener();
+    }
+    // </if>
+  }
+
+  /**
+   * Forces `root_` to refresh its colors.css stylesheet. This is used to
+   * fetch an updated stylesheet when the ColorProvider associated with the
+   * WebUI has changed.
+   * @return A promise which resolves to true once the new colors are loaded and
+   *     installed into the DOM. In the case of an error returns false. When a
+   *     new colors.css is loaded, this will always freshly query the existing
+   *     colors.css, allowing multiple calls to successfully remove existing,
+   *     outdated CSS.
+   */
+  async refreshColorsCss(): Promise<boolean> {
+    const colorCssNode = this.root_.querySelector(COLORS_CSS_SELECTOR);
+    if (!colorCssNode) {
+      return false;
+    }
+
+    const href = colorCssNode.getAttribute('href');
+    if (!href) {
+      return false;
+    }
+
+    const hrefURL = new URL(href, location.href);
+    const params = new URLSearchParams(hrefURL.search);
+    params.set('version', new Date().getTime().toString());
+    const newHref = `${hrefURL.origin}${hrefURL.pathname}?${params.toString()}`;
+
+    // A flickering effect may take place when setting the href property of
+    // the existing color css node with a new value. In order to avoid
+    // flickering, we create a new link element and once it is loaded we
+    // remove the old one. See crbug.com/1365320 for additional details.
+    const newColorsCssLink = document.createElement('link');
+    newColorsCssLink.setAttribute('href', newHref);
+    newColorsCssLink.rel = 'stylesheet';
+    newColorsCssLink.type = 'text/css';
+    const newColorsLoaded = new Promise(resolve => {
+      newColorsCssLink.onload = resolve;
+    });
+    if (this.root_ === document) {
+      document.getElementsByTagName('body')[0]!.appendChild(newColorsCssLink);
+    } else {
+      this.root_.appendChild(newColorsCssLink);
+    }
+
+    await newColorsLoaded;
+
+    const oldColorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
+    if (oldColorCssNode) {
+      oldColorCssNode.remove();
+    }
+    return true;
+  }
+
+  static forDocument(): ColorChangeUpdater {
+    return documentInstance ||
+        (documentInstance = new ColorChangeUpdater(document));
+  }
+
+  // <if expr="chromeos_ash">
+  /**
+   * Register a function to be called every time the page's color provider
+   * changes. Note that the listeners will only be invoked AFTER start() is
+   * called, and only after the updated styles have been loaded.
+   */
+  addListener(listener: ColorChangeListener): void {
+    this.listeners_.push(listener);
+  }
+
+  /**
+   * Remove a listener that was previously registered via addListener().
+   * If provided with a listener that was not previously registered does
+   * nothing.
+   * @return Whether a listener was actually removed.
+   */
+  removeListener(changeListener: ColorChangeListener): boolean {
+    const toRemove =
+        this.listeners_.findIndex(listener => listener === changeListener);
+    if (toRemove === -1) {
+      return false;
+    }
+
+    this.listeners_.splice(toRemove, 1);
+    return true;
+  }
+  // </if>
 }
 
-
-
-let listenerId: number|null = null;
-let clientColorChangeListeners: Array<() => void> = [];
-
-/**
- * Calls `refreshColorCss()` and any listeners previously registered via
- * `addColorChangeListener()`
- */
-export async function colorProviderChangeHandler(
-    root: Document|ShadowRoot = document) {
-  // The webui's current css variables may now be stale, force update them.
-  await refreshColorCss(root);
-  // Notify any interested javascript that the color scheme has changed.
-  for (const listener of clientColorChangeListeners) {
-    listener();
-  }
+// <if expr="chromeos_ash">
+export function addColorChangeListener(listener: ColorChangeListener) {
+  ColorChangeUpdater.forDocument().addListener(listener);
 }
 
-/**
- * Register a function to be called every time the page's color provider
- * changes. Note that the listeners will only be invoked AFTER
- * startColorChangeUpdater() is called.
- */
-export function addColorChangeListener(changeListener: () => void) {
-  clientColorChangeListeners.push(changeListener);
+export function removeColorChangeListener(listener: ColorChangeListener) {
+  ColorChangeUpdater.forDocument().removeListener(listener);
 }
+// </if>
 
 /**
- * Remove a listener that was previously registered via addColorChangeListener.
- * If provided with a listener that was not previously registered does nothing.
+ * Starts listening for ColorProvider changes from the browser and updates the
+ * top level HTML document whenever changes occur.
  */
-export function removeColorChangeListener(changeListener: () => void) {
-  clientColorChangeListeners = clientColorChangeListeners.filter(
-      listener => listener !== changeListener);
-}
-
-/** Starts listening for ColorProvider change updates from the browser. */
-export function startColorChangeUpdater(root: Document|ShadowRoot = document) {
-  if (listenerId === null) {
-    listenerId = BrowserProxy.getInstance()
-                     .callbackRouter.onColorProviderChanged.addListener(
-                         colorProviderChangeHandler.bind(undefined, root));
-  }
+export function startColorChangeUpdater() {
+  const updater = ColorChangeUpdater.forDocument();
+  updater.start();
 }
