@@ -45,8 +45,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                     jint compression_queue_max_size,
                     jint write_queue_max_size,
                     jboolean use_approximation_thumbnail,
-                    jboolean save_jpeg_thumbnails,
-                    jdouble jpeg_aspect_ratio);
+                    jboolean save_jpeg_thumbnails);
 
   TabContentManager(const TabContentManager&) = delete;
   TabContentManager& operator=(const TabContentManager&) = delete;

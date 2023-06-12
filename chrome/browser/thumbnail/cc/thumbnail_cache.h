@@ -55,8 +55,7 @@ class ThumbnailCache : ThumbnailDelegate {
                  size_t compression_queue_max_size,
                  size_t write_queue_max_size,
                  bool use_approximation_thumbnail,
-                 bool save_jpeg_thumbnails,
-                 double jpeg_aspect_ratio);
+                 bool save_jpeg_thumbnails);
 
   ThumbnailCache(const ThumbnailCache&) = delete;
   ThumbnailCache& operator=(const ThumbnailCache&) = delete;

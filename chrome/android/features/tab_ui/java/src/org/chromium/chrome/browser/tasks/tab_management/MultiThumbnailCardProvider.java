@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -228,28 +229,36 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         }
 
         private void drawThumbnailBitmapOnCanvasWithFrame(Bitmap thumbnail, int index) {
+            final RectF rect = mThumbnailRects.get(index);
             if (thumbnail == null) {
                 Paint emptyThumbnailPaint =
                         mIsTabSelected ? mSelectedEmptyThumbnailPaint : mEmptyThumbnailPaint;
-                mCanvas.drawRoundRect(
-                        mThumbnailRects.get(index), mRadius, mRadius, emptyThumbnailPaint);
+                mCanvas.drawRoundRect(rect, mRadius, mRadius, emptyThumbnailPaint);
                 return;
             }
+
+            mCanvas.save();
+            mCanvas.clipRect(rect);
+            Matrix m = new Matrix();
+
+            final float newWidth = rect.width();
+            final float scale = Math.max(
+                    newWidth / thumbnail.getWidth(), rect.height() / thumbnail.getHeight());
+            m.setScale(scale, scale);
+            final float xOffset =
+                    rect.left + (int) ((newWidth - (thumbnail.getWidth() * scale)) / 2);
+            final float yOffset = rect.top;
+            m.postTranslate(xOffset, yOffset);
 
             // Draw the base paint first and set the base for thumbnail to draw. Setting the xfer
             // mode as SRC_OVER so the thumbnail can be drawn on top of this paint. See
             // https://crbug.com/1227619.
             mThumbnailBasePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
-            mCanvas.drawRoundRect(
-                    mThumbnailRects.get(index), mRadius, mRadius, mThumbnailBasePaint);
+            mCanvas.drawRoundRect(rect, mRadius, mRadius, mThumbnailBasePaint);
 
-            thumbnail =
-                    Bitmap.createScaledBitmap(thumbnail, (int) mThumbnailRects.get(index).width(),
-                            (int) mThumbnailRects.get(index).height(), true);
             mThumbnailBasePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            mCanvas.drawBitmap(thumbnail,
-                    new Rect(0, 0, thumbnail.getWidth(), thumbnail.getHeight()),
-                    mThumbnailRects.get(index), mThumbnailBasePaint);
+            mCanvas.drawBitmap(thumbnail, m, mThumbnailBasePaint);
+            mCanvas.restore();
             thumbnail.recycle();
         }
 

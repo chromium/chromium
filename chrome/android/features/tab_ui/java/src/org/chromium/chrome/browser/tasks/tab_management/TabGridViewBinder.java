@@ -342,9 +342,8 @@ class TabGridViewBinder {
 
         final Matrix m = new Matrix();
 
-        // Scale image to larger of the two dimensions.
         final float scale = Math.max(
-                (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight()); //
+                (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight());
         m.setScale(scale, scale);
 
         /**

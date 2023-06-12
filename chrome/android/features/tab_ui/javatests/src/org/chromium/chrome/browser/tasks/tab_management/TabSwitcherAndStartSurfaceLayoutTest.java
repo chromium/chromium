@@ -54,7 +54,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -156,6 +155,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
             + "/zooming-min-memory-mb/512";
 
+    private static final String TEST_URL = "/chrome/test/data/android/google.html";
+
     // Tests need animation on.
     @ClassRule
     public static DisableAnimationsTestRule sEnableAnimationsRule =
@@ -197,8 +198,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Before
     public void setUp() throws ExecutionException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer = mActivityTestRule.getTestServer();
         ChromeFeatureList.sStartSurfaceRefactor.setForTesting(mIsStartSurfaceRefactorEnabled);
 
         // After setUp, Chrome is launched and has one NTP.
@@ -234,7 +234,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null));
-        mTestServer.stopAndDestroyServer();
     }
 
     @Test
@@ -256,6 +255,28 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_web_tabs");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR, ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @CommandLineFlags.Add({BASE_PARAMS})
+    public void testRenderGrid_3WebTabs_ThumbnailCacheRefactor(boolean isStartSurfaceRefactorEnabled) throws IOException {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        prepareTabs(3, 0, mTestServer.getURL(TEST_URL));
+        // Make sure all thumbnails are there before switching tabs.
+        enterGTSWithThumbnailRetry();
+        leaveTabSwitcher(cta);
+
+        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
+        enterGTSWithThumbnailRetry();
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_list_view), "3_web_tabs_thumbnail_cache_refactor");
     }
 
     @Test
@@ -372,6 +393,36 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_incognito_ntps");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
+    @EnableFeatures({ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR})
+    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1313747",
+        supported_abis_includes = "x86")
+    public void testRenderGrid_3NativeTabs_ThumbnailCacheRefactor(boolean isStartSurfaceRefactorEnable)
+            throws IOException {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        // Prepare some incognito native tabs and enter tab switcher.
+        // NTP in incognito mode is chosen for its consistency in look, and we don't have to mock
+        // away the MV tiles, login promo, feed, etc.
+        prepareTabs(1, 3, null);
+        assertTrue(cta.getCurrentTabModel().isIncognito());
+        // Make sure all thumbnails are there before switching tabs.
+        enterGTSWithThumbnailRetry();
+        leaveTabSwitcher(cta);
+        // Espresso.pressBack();
+
+        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
+        enterTabSwitcher(cta);
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_list_view), "3_incognito_ntps_thumbnail_cache_refactor");
     }
 
     @Test
@@ -953,7 +1004,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         // TODO(meiliang): Avoid using static variable for tracking state,
         // TabSuggestionMessageService.isSuggestionAvailableForTesting(). Instead, we can add a
-        // dummy MessageObserver to track the availability of the suggestions.
+        // mock/fake MessageObserver to track the availability of the suggestions.
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
@@ -1350,6 +1401,20 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR, ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
+    public void testExpandTab_withAspectRatioPoint75_ThumbnailCacheRefactor(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
+        // clang-format on
+        prepareTabs(1, 0, mUrl);
+        enterTabSwitcher(mActivityTestRule.getActivity());
+        leaveGTSAndVerifyThumbnailsAreReleased();
+    }
+
+    @Test
+    @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
@@ -1367,6 +1432,29 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // Make sure all tabs have thumbnail.
         enterGTSWithThumbnailRetry();
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "aspect_ratio_of_one");
+    }
+
+    @Test
+    @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
+    @Feature({"RenderTest"})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR, ChromeFeatureList.TAB_GROUPS_ANDROID,
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
+    public void testRenderGrid_withAspectRatioOfOne_ThumbnailCacheRefactor(
+            boolean isStartSurfaceRefactorEnabled) throws IOException {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        prepareTabs(3, 0, mTestServer.getURL(TEST_URL));
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup = new ArrayList<>(
+                Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup);
+        // Make sure all tabs have thumbnail.
+        enterGTSWithThumbnailRetry();
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view),
+                "aspect_ratio_of_one_thumbnail_cache_refactor");
     }
 
     @Test

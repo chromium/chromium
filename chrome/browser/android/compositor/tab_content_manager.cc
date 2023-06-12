@@ -76,10 +76,13 @@ class TabContentManager::TabReadbackRequest {
       std::move(result_callback).Run(SkBitmap());
       return;
     }
-    if (crop_to_match_aspect_ratio) {
-      int height = std::min(view_size_in_pixels.height(),
-                            (int)(view_size_in_pixels.width() / aspect_ratio));
-      view_size_in_pixels.set_height(height);
+    if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
+      if (crop_to_match_aspect_ratio) {
+        int height =
+            std::min(view_size_in_pixels.height(),
+                     (int)(view_size_in_pixels.width() / aspect_ratio));
+        view_size_in_pixels.set_height(height);
+      }
     }
     gfx::Rect source_rect = gfx::Rect(view_size_in_pixels);
     gfx::Size thumbnail_size(
@@ -132,15 +135,14 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jint compression_queue_max_size,
                                      jint write_queue_max_size,
                                      jboolean use_approximation_thumbnail,
-                                     jboolean save_jpeg_thumbnails,
-                                     jdouble jpeg_aspect_ratio)
+                                     jboolean save_jpeg_thumbnails)
     : weak_java_tab_content_manager_(env, obj) {
   thumbnail_cache_ = std::make_unique<thumbnail::ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
       static_cast<size_t>(approximation_cache_size),
       static_cast<size_t>(compression_queue_max_size),
       static_cast<size_t>(write_queue_max_size), use_approximation_thumbnail,
-      save_jpeg_thumbnails, jpeg_aspect_ratio);
+      save_jpeg_thumbnails);
   thumbnail_cache_->AddThumbnailCacheObserver(this);
 }
 
@@ -508,10 +510,17 @@ void TabContentManager::SendThumbnailToJava(
     // in landscape mode.
     int scale = need_downsampling ? 2 : 1;
 
-    int width = std::min(bitmap.width() / scale,
-                         (int)(bitmap.height() * aspect_ratio / scale));
-    int height = std::min(bitmap.height() / scale,
-                          (int)(bitmap.width() / aspect_ratio / scale));
+    int width = 0;
+    int height = 0;
+    if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
+      width = std::min(bitmap.width() / scale,
+                       (int)(bitmap.height() * aspect_ratio / scale));
+      height = std::min(bitmap.height() / scale,
+                        (int)(bitmap.width() / aspect_ratio / scale));
+    } else {
+      width = bitmap.width() / scale;
+      height = bitmap.height() / scale;
+    }
     // When cropping the thumbnails, we want to keep the top center portion.
     int begin_x = (bitmap.width() / scale - width) / 2;
     int end_x = begin_x + width;
@@ -544,15 +553,14 @@ jlong JNI_TabContentManager_Init(JNIEnv* env,
                                  jint compression_queue_max_size,
                                  jint write_queue_max_size,
                                  jboolean use_approximation_thumbnail,
-                                 jboolean save_jpeg_thumbnails,
-                                 jdouble jpeg_aspect_ratio) {
+                                 jboolean save_jpeg_thumbnails) {
   // Ensure this and its thumbnail cache are created on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   TabContentManager* manager = new TabContentManager(
       env, obj, default_cache_size, approximation_cache_size,
       compression_queue_max_size, write_queue_max_size,
-      use_approximation_thumbnail, save_jpeg_thumbnails, jpeg_aspect_ratio);
+      use_approximation_thumbnail, save_jpeg_thumbnails);
   return reinterpret_cast<intptr_t>(manager);
 }
 

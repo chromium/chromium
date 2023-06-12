@@ -25,7 +25,6 @@ constexpr int kApproximationCacheSize = 5;
 constexpr int kCompressionQueueMaxSize = 2;
 constexpr int kWriteQueueMaxSize = 2;
 constexpr bool kUseApproximationThumbnail = true;
-constexpr bool kSaveJpegThumbnails = true;
 constexpr double kJpegAspectRatio = 0.85;
 
 class MockUIResourceProvider : public ui::UIResourceProvider {
@@ -52,8 +51,7 @@ class ThumbnailCacheTest : public ::testing::Test {
   void SetUp() override {
     thumbnail_cache_ = std::make_unique<ThumbnailCache>(
         kDefaultCacheSize, kApproximationCacheSize, kCompressionQueueMaxSize,
-        kWriteQueueMaxSize, kUseApproximationThumbnail, kSaveJpegThumbnails,
-        kJpegAspectRatio);
+        kWriteQueueMaxSize, kUseApproximationThumbnail, kJpegAspectRatio);
     thumbnail_cache_->SetUIResourceProvider(ui_resource_provider_.GetWeakPtr());
 
     EXPECT_CALL(ui_resource_provider_, CreateUIResource(::testing::_))
