@@ -100,7 +100,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/0);
-  EXPECT_EQ(header_value, "t=(), p=P000000000000000000000000000");
+  EXPECT_EQ(header_value, "();p=P0000000000000000000000000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -109,7 +109,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
-  EXPECT_EQ(header_value, "t=(), p=P000000000000000000000000000");
+  EXPECT_EQ(header_value, "();p=P0000000000000000000000000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -119,7 +119,7 @@ TEST_F(BrowsingTopicsUtilTest,
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
   EXPECT_EQ(header_value,
-            "t=(), p=P0000000000000000000000000000000000000000000");
+            "();p=P00000000000000000000000000000000000000000000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -128,9 +128,10 @@ TEST_F(BrowsingTopicsUtilTest,
 
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/3);
-  EXPECT_EQ(header_value,
-            "t=(), "
-            "p=P00000000000000000000000000000000000000000000000000000000000");
+  EXPECT_EQ(
+      header_value,
+      "();p="
+      "P000000000000000000000000000000000000000000000000000000000000000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -141,7 +142,7 @@ TEST_F(BrowsingTopicsUtilTest,
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
 
-  EXPECT_EQ(header_value, "t=(1;v=chrome.1:1:2), p=P00000000000");
+  EXPECT_EQ(header_value, "(1);v=chrome.1:1:2, ();p=P00000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -153,7 +154,7 @@ TEST_F(BrowsingTopicsUtilTest,
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
 
   EXPECT_EQ(header_value,
-            "t=(1;v=chrome.1:1:2), p=P000000000000000000000000000");
+            "(1);v=chrome.1:1:2, ();p=P000000000000000000000000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -164,9 +165,9 @@ TEST_F(BrowsingTopicsUtilTest,
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/3);
 
-  EXPECT_EQ(
-      header_value,
-      "t=(1;v=chrome.1:1:2), p=P0000000000000000000000000000000000000000000");
+  EXPECT_EQ(header_value,
+            "(1);v=chrome.1:1:2, "
+            "();p=P0000000000000000000000000000000000000000000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -178,7 +179,7 @@ TEST_F(BrowsingTopicsUtilTest,
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
 
-  EXPECT_EQ(header_value, "t=(123;v=chrome.1:1:2), p=P000000000");
+  EXPECT_EQ(header_value, "(123);v=chrome.1:1:2, ();p=P000000000");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -190,7 +191,7 @@ TEST_F(BrowsingTopicsUtilTest,
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
 
-  EXPECT_EQ(header_value, "t=(1;v=chrome.1:1:2 2), p=P000000000");
+  EXPECT_EQ(header_value, "(1 2);v=chrome.1:1:2, ();p=P000000000");
 }
 
 TEST_F(
@@ -203,7 +204,7 @@ TEST_F(
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
 
-  EXPECT_EQ(header_value, "t=(123;v=chrome.1:1:2 45), p=P000000");
+  EXPECT_EQ(header_value, "(123 45);v=chrome.1:1:2, ();p=P000000");
 }
 
 TEST_F(
@@ -217,7 +218,7 @@ TEST_F(
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
 
   EXPECT_EQ(header_value,
-            "t=(1;v=chrome.1:1:2 2), p=P0000000000000000000000000");
+            "(1 2);v=chrome.1:1:2, ();p=P0000000000000000000000000000");
 }
 
 TEST_F(
@@ -231,7 +232,7 @@ TEST_F(
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
 
   EXPECT_EQ(header_value,
-            "t=(1;v=chrome.1:1:2 1;v=chrome.1:1:4), p=P0000000000");
+            "(1);v=chrome.1:1:2, (1);v=chrome.1:1:4, ();p=P0000000000");
 }
 
 TEST_F(
@@ -243,10 +244,9 @@ TEST_F(
 
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/3);
-
   EXPECT_EQ(header_value,
-            "t=(1;v=chrome.1:1:2 1;v=chrome.1:1:4), "
-            "p=P00000000000000000000000000");
+            "(1);v=chrome.1:1:2, (1);v=chrome.1:1:4, "
+            "();p=P00000000000000000000000000000");
 }
 
 TEST_F(
@@ -260,7 +260,7 @@ TEST_F(
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
 
-  EXPECT_EQ(header_value, "t=(1;v=chrome.1:1:2 2 3), p=P0000000");
+  EXPECT_EQ(header_value, "(1 2 3);v=chrome.1:1:2, ();p=P0000000");
 }
 
 TEST_F(
@@ -274,7 +274,7 @@ TEST_F(
   std::string header_value =
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/1);
 
-  EXPECT_EQ(header_value, "t=(100;v=chrome.1:1:20 200 300), p=P");
+  EXPECT_EQ(header_value, "(100 200 300);v=chrome.1:1:20, ();p=P");
 }
 
 TEST_F(
@@ -289,8 +289,7 @@ TEST_F(
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
 
   EXPECT_EQ(header_value,
-            "t=(100;v=chrome.1:1:2 200 300;v=chrome.1:1:4), "
-            "p=P00");
+            "(100 200);v=chrome.1:1:2, (300);v=chrome.1:1:4, ();p=P00");
 }
 
 TEST_F(
@@ -305,8 +304,7 @@ TEST_F(
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
 
   EXPECT_EQ(header_value,
-            "t=(100;v=chrome.1:1:2 200;v=chrome.1:1:4 300), "
-            "p=P00");
+            "(100);v=chrome.1:1:2, (200 300);v=chrome.1:1:4, ();p=P00");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -320,8 +318,8 @@ TEST_F(BrowsingTopicsUtilTest,
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/3);
 
   EXPECT_EQ(header_value,
-            "t=(100;v=chrome.1:1:20 200;v=chrome.1:1:40 300;v=chrome.1:1:60), "
-            "p=P");
+            "(100);v=chrome.1:1:20, (200);v=chrome.1:1:40, "
+            "(300);v=chrome.1:1:60, ();p=P");
 }
 
 TEST_F(
@@ -336,8 +334,8 @@ TEST_F(
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/2);
 
   EXPECT_EQ(header_value,
-            "t=(100;v=chrome.1:1:20 200;v=chrome.1:1:40 300;v=chrome.1:1:60), "
-            "p=P");
+            "(100);v=chrome.1:1:20, (200);v=chrome.1:1:40, "
+            "(300);v=chrome.1:1:60, ();p=P");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
@@ -357,8 +355,8 @@ TEST_F(BrowsingTopicsUtilTest,
       DeriveTopicsHeaderValue(topics, /*num_versions_in_epochs=*/3);
 
   EXPECT_EQ(header_value,
-            "t=(100;v=chrome.1:1:20 200;v=chrome.1:1:40 300;v=chrome.1:1:600), "
-            "p=P");
+            "(100);v=chrome.1:1:20, (200);v=chrome.1:1:40, "
+            "(300);v=chrome.1:1:600, ();p=P");
 }
 
 TEST_F(BrowsingTopicsUtilTest,
