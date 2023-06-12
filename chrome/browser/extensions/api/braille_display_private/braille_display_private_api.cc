@@ -146,11 +146,13 @@ BrailleDisplayPrivateGetDisplayStateFunction::Run() {
   auto get_display_state_on_io = []() {
     return BrailleController::GetInstance()->GetDisplayState()->ToValue();
   };
-  bool rv = content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(get_display_state_on_io),
-      base::BindOnce(
-          &BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState, this));
-  DCHECK(rv);
+  bool did_post_task =
+      content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(get_display_state_on_io),
+          base::BindOnce(
+              &BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState,
+              this));
+  DCHECK(did_post_task);
   return RespondLater();
 }
 
@@ -173,13 +175,13 @@ BrailleDisplayPrivateWriteDotsFunction::Run() {
       params_->cells.size() >=
       static_cast<size_t>(params_->columns * params_->rows));
 
-  bool rv = content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+  bool did_post_task = content::GetIOThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO,
                      this),
       base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::Respond, this,
                      NoArguments()));
-  DCHECK(rv);
+  DCHECK(did_post_task);
   return RespondLater();
 }
 
