@@ -1,6 +1,0 @@
-cert_net/ contains certificate functionality that depends on network loading (OCSP, CRL, AIA fetching).
-
-Conceptually certificates (net/cert/) is a separable concept from net/ and may
-end up becoming its own build target. This file organization encourages not
-adding dependencies in cert/ for doing network loading. Instead that code
-should be placed here.
