@@ -1750,11 +1750,6 @@ targets.console_test_launcher(
     label = "//chrome/browser/metrics/perf:profile_provider_unittest",
 )
 
-targets.console_test_launcher(
-    name = "pthreadpool_unittests",
-    label = "//third_party/pthreadpool:pthreadpool_unittests",
-)
-
 targets.compile_target(
     name = "push_apps_to_background_apk",
     label = "//tools/android/push_apps_to_background:push_apps_to_background_apk",
