@@ -24,7 +24,6 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/spdy/spdy_log_util.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
@@ -330,11 +329,6 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
 
   spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(*request_info_, request_headers, &headers);
-  stream_->net_log().AddEvent(
-      NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
-      [&](NetLogCaptureMode capture_mode) {
-        return Http2HeaderBlockNetLogParams(&headers, capture_mode);
-      });
   DispatchRequestHeadersCallback(headers);
 
   bool will_send_data =

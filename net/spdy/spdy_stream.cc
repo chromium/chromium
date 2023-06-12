@@ -27,6 +27,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/spdy/spdy_buffer_producer.h"
 #include "net/spdy/spdy_http_utils.h"
+#include "net/spdy/spdy_log_util.h"
 #include "net/spdy/spdy_session.h"
 
 namespace net {
@@ -728,6 +729,11 @@ base::WeakPtr<SpdyStream> SpdyStream::GetWeakPtr() {
 
 int SpdyStream::SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
                                    SpdySendStatus send_status) {
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
+      [&](NetLogCaptureMode capture_mode) {
+        return Http2HeaderBlockNetLogParams(&request_headers, capture_mode);
+      });
   CHECK_NE(type_, SPDY_PUSH_STREAM);
   CHECK_EQ(pending_send_status_, MORE_DATA_TO_SEND);
   CHECK(!request_headers_valid_);
