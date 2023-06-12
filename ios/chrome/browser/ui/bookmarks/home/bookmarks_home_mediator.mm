@@ -184,6 +184,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   _accountBookmarkModelBridge.reset();
 }
 
+- (void)dealloc {
+  DCHECK(!_bookmarkPromoController);
+}
+
 #pragma mark - Initial Model Setup
 
 // Computes the bookmarks table view based on the currently displayed node.
