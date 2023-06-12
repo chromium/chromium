@@ -128,7 +128,7 @@ suite('WallpaperPreviewTest', function() {
 
     function getManagedIcon(): HTMLElement|null {
       return wallpaperPreviewElement!.shadowRoot!.querySelector(
-          `iron-icon[icon='personalization:managed']`);
+          `iron-icon[icon^='personalization:managed']`);
     }
 
     assertEquals(null, getManagedIcon(), 'no managed icon visible');
