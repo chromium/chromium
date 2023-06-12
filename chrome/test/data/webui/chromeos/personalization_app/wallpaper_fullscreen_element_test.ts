@@ -132,12 +132,13 @@ suite('WallpaperFullscreenTest', function() {
   });
 
   test('sets fullscreen class on body when entering fullscreen', async () => {
+    const fullscreenClassName = 'fullscreen-preview';
     wallpaperFullscreenElement = initElement(WallpaperFullscreen);
     const {requestFullscreenPromise, exitFullscreenPromise} =
         mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    assertEquals('', document.body.className);
+    assertFalse(document.body.classList.contains(fullscreenClassName));
 
     personalizationStore.data.wallpaper.fullscreen = true;
     personalizationStore.data.wallpaper.currentSelected =
@@ -146,13 +147,13 @@ suite('WallpaperFullscreenTest', function() {
 
     await requestFullscreenPromise;
 
-    assertEquals('fullscreen-preview', document.body.className);
+    assertTrue(document.body.classList.contains(fullscreenClassName));
 
     wallpaperFullscreenElement.exitFullscreen();
 
     await exitFullscreenPromise;
 
-    assertEquals('', document.body.className);
+    assertFalse(document.body.classList.contains(fullscreenClassName));
   });
 
   test('exits full screen on exit button click', async () => {
