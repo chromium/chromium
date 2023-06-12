@@ -218,10 +218,6 @@ class QuicChromiumClientSessionTest
     }
   }
 
-  void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
-    FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
-  }
-
   void CompleteCryptoHandshake() {
     ASSERT_THAT(session_->CryptoConnect(callback_.callback()), IsOk());
   }
@@ -1731,8 +1727,6 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionPooledWithMatchingPin) {
 }
 
 TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
-
   quic::QuicConnectionId cid_on_new_path =
       quic::test::TestConnectionId(12345678);
   MockQuicData quic_data(version_);
@@ -1811,7 +1805,6 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
 }
 
 TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   MockQuicData quic_data(version_);
   socket_data_.reset();
   int packet_num = 1;
@@ -1927,7 +1920,6 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
 }
 
 TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   MockQuicData quic_data(version_);
   socket_data_.reset();
   int packet_num = 1;
@@ -2157,7 +2149,6 @@ TEST_P(QuicChromiumClientSessionTest, DegradingWithMultiPortEnabled) {
   connectivity_monitor_ =
       std::make_unique<QuicConnectivityMonitor>(default_network_);
   allow_port_migration_ = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   auto options = config_.SendConnectionOptions();
   config_.SetClientConnectionOptions(quic::QuicTagVector{quic::kMPQC});
   config_.SetConnectionOptionsToSend(options);

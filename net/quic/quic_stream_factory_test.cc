@@ -300,10 +300,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         &crypto_client_stream_factory_, &context_);
   }
 
-  void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
-    FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
-  }
-
   void InitializeConnectionMigrationV2Test(
       NetworkChangeNotifier::NetworkList connected_networks) {
     scoped_mock_network_change_notifier_ =
@@ -315,7 +311,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     quic_params_->migrate_sessions_on_network_change_v2 = true;
     quic_params_->migrate_sessions_early_v2 = true;
     socket_factory_ = std::make_unique<TestConnectionMigrationSocketFactory>();
-    SetIetfConnectionMigrationFlagsAndConnectionOptions();
     Initialize();
   }
 
@@ -1897,7 +1892,6 @@ TEST_P(QuicStreamFactoryTest, PoolingWithServerMigration) {
                                             "192.168.0.1", "");
   IPEndPoint alt_address = IPEndPoint(IPAddress(1, 2, 3, 4), 443);
   quic::QuicConfig config;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   config.SetIPv4AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
   config.SetPreferredAddressConnectionIdAndTokenToSend(
       kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
@@ -4988,7 +4982,6 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, MultiPortSessionWithMigration) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   // Turning on MPQC will implicitly turn on port migration.
   quic_params_->client_connection_options.push_back(quic::kMPQC);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5138,7 +5131,6 @@ TEST_P(QuicStreamFactoryTest, MultiPortSessionWithMigration) {
 
 TEST_P(QuicStreamFactoryTest, SuccessfullyMigratedToServerPreferredAddress) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   FLAGS_quic_enable_chaos_protection = false;
   quic_params_->connection_options.push_back(quic::kSPAD);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5224,7 +5216,6 @@ TEST_P(QuicStreamFactoryTest, SuccessfullyMigratedToServerPreferredAddress) {
 
 TEST_P(QuicStreamFactoryTest, FailedToValidateServerPreferredAddress) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   FLAGS_quic_enable_chaos_protection = false;
   quic_params_->connection_options.push_back(quic::kSPAD);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5318,7 +5309,6 @@ TEST_P(QuicStreamFactoryTest, FailedToValidateServerPreferredAddress) {
 
 TEST_P(QuicStreamFactoryTest,
        MigratePortOnPathDegrading_WithoutNetworkHandle_PathValidator) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5326,7 +5316,6 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5428,7 +5417,6 @@ TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
 
 TEST_P(QuicStreamFactoryTest,
        PortMigrationProbingReceivedStatelessReset_PathValidator) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -5554,7 +5542,6 @@ TEST_P(QuicStreamFactoryTest,
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5574,7 +5561,6 @@ TEST_P(QuicStreamFactoryTest,
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5623,25 +5609,16 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  if (FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2) {
-    quic_data2.AddWrite(SYNCHRONOUS,
-                        client_maker_.MakeAckAndRetireConnectionIdPacket(
-                            packet_number++,
-                            /*largest_received=*/2,
-                            /*smallest_received=*/1, /*sequence_number=*/0u));
-    quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeDataPacket(
-            packet_number++, GetQpackDecoderStreamId(),
-            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
-  } else {
-    quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeAckAndDataPacket(
-            packet_number++, GetQpackDecoderStreamId(),
-            /*largest_received=*/2, /*smallest_received=*/2, /*fin=*/false,
-            StreamCancellationQpackDecoderInstruction(0)));
-  }
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.MakeAckAndRetireConnectionIdPacket(
+                          packet_number++,
+                          /*largest_received=*/2,
+                          /*smallest_received=*/1, /*sequence_number=*/0u));
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeDataPacket(
+          packet_number++, GetQpackDecoderStreamId(),
+          /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
   quic_data2.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeRstPacket(packet_number++,
@@ -5765,7 +5742,6 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 
 TEST_P(QuicStreamFactoryTest,
        MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5833,11 +5809,8 @@ TEST_P(QuicStreamFactoryTest,
     uint64_t new_cid = 12345678;
     quic::QuicConnectionId cid_on_new_path =
         quic::test::TestConnectionId(new_cid + i);
-    if (FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2) {
-      client_maker_.set_connection_id(cid_on_new_path);
-      MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session,
-                                                 i + 1);
-    }
+    client_maker_.set_connection_id(cid_on_new_path);
+    MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session, i + 1);
     quic_data2.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeConnectivityProbingPacket(packet_number));
@@ -5951,7 +5924,6 @@ TEST_P(QuicStreamFactoryTest,
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
   quic_params_->migrate_idle_sessions = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -11314,7 +11286,6 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
 
 TEST_P(QuicStreamFactoryTest, ServerMigration) {
   quic_params_->allow_server_migration = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   Initialize();
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -11453,7 +11424,6 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
 
 TEST_P(QuicStreamFactoryTest, ServerMigrationNonMigratableStream) {
   quic_params_->allow_server_migration = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   Initialize();
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -11573,7 +11543,6 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv4ToIPv4) {
   // Add alternate IPv4 server address to config.
   IPEndPoint alt_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
   quic::QuicConfig config;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   config.SetIPv4AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
   config.SetPreferredAddressConnectionIdAndTokenToSend(
       kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
@@ -11588,7 +11557,6 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv6ToIPv6) {
   IPEndPoint alt_address = IPEndPoint(
       IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), 123);
   quic::QuicConfig config;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   config.SetIPv6AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
   config.SetPreferredAddressConnectionIdAndTokenToSend(
       kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
