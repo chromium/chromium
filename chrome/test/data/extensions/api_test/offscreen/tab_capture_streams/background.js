@@ -46,11 +46,7 @@ chrome.action.onClicked.addListener(() => {
       chrome.test.assertEq(1, tabs.length);
       const tab = tabs[0];
       const streamId =
-          await new Promise((resolve) => {
-            chrome.tabCapture.getMediaStreamId(
-                {targetTabId: tab.id},
-                resolve);
-          });
+          await chrome.tabCapture.getMediaStreamId({targetTabId: tab.id});
       chrome.test.assertTrue(!!streamId);
       // Tell the offscreen document to start capturing.
       let response =
@@ -63,9 +59,7 @@ chrome.action.onClicked.addListener(() => {
       // Verify the tab is currently being captured (and test
       // `tabCapture.getCapturedTabs()`).
       const capturedTabs =
-          await new Promise((resolve) => {
-            chrome.tabCapture.getCapturedTabs(resolve);
-          });
+          await chrome.tabCapture.getCapturedTabs();
       chrome.test.assertEq(1, capturedTabs.length);
       chrome.test.assertEq('active', capturedTabs[0].status);
       chrome.test.assertEq(tab.id, capturedTabs[0].tabId);
