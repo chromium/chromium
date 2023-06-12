@@ -585,10 +585,10 @@ TEST_P(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
 }
 
 struct DetermineExpirationDateFormatTestCase {
-  const std::string label;
-  const int max_length;
   const std::string expected_separator;
   const uint8_t expected_year_length;
+  const std::string label;
+  const int max_length;
 };
 
 class DetermineExpirationDateFormat
@@ -606,12 +606,76 @@ class DetermineExpirationDateFormat
   base::test::ScopedFeatureList scoped_features_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardFieldTest,
+    DetermineExpirationDateFormat,
+    testing::Values(
+        // The order of parameters is:
+        // label, max length, expected separator, expected digits in year:
+        //
+        // No label, no maxlength. -> "MM/YYYY"
+        DetermineExpirationDateFormatTestCase{"/", 4, "", 0},
+        // No label, maxlength 4. -> "MMYY"
+        DetermineExpirationDateFormatTestCase{"", 2, "", 4},
+        // No label, maxlength 5. -> "MM/YY"
+        DetermineExpirationDateFormatTestCase{"/", 2, "", 5},
+        // No label, maxlength 6. -> "MMYYYY"
+        DetermineExpirationDateFormatTestCase{"", 4, "", 6},
+        // No label, maxlength 7. -> "MM/YYYY"
+        DetermineExpirationDateFormatTestCase{"/", 4, "", 7},
+        // No label, large maxlength. -> "MM/YYYY"
+        DetermineExpirationDateFormatTestCase{"/", 4, "", 12},
+
+        // Unsupported maxlength, general label.
+        DetermineExpirationDateFormatTestCase{"", 2, "", 3},
+        // Unsupported maxlength, two digit year label.
+        DetermineExpirationDateFormatTestCase{"", 2, "MM/YY", 3},
+        // Unsupported maxlength, four digit year label.
+        DetermineExpirationDateFormatTestCase{"", 2, "MM/YYYY", 3},
+
+        // Two digit year, simple label.
+        DetermineExpirationDateFormatTestCase{" / ", 2, "MM / YY", 0},
+        // Two digit year, with slash (MM/YY).
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YY)", 0},
+        // Two digit year, no slash (MMYY).
+        DetermineExpirationDateFormatTestCase{"", 2, "(MMYY)", 4},
+        // Two digit year, with slash and maxlength (MM/YY).
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YY)", 5},
+        // Two digit year, with slash and large maxlength (MM/YY).
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YY)", 12},
+
+        // Four digit year, simple label.
+        DetermineExpirationDateFormatTestCase{" / ", 4, "MM / YYYY", 0},
+        // Four digit year, with slash (MM/YYYY).
+        DetermineExpirationDateFormatTestCase{"/", 4, "(MM/YYYY)", 0},
+        // Four digit year, no slash (MMYYYY).
+        DetermineExpirationDateFormatTestCase{"", 4, "(MMYYYY)", 6},
+        // Four digit year, with slash and maxlength (MM/YYYY).
+        DetermineExpirationDateFormatTestCase{"/", 4, "(MM/YYYY)", 7},
+        // Four digit year, with slash and large maxlength (MM/YYYY).
+        DetermineExpirationDateFormatTestCase{"/", 4, "(MM/YYYY)", 12},
+
+        // Four digit year label with restrictive maxlength (4).
+        DetermineExpirationDateFormatTestCase{"", 2, "(MM/YYYY)", 4},
+        // Four digit year label with restrictive maxlength (5).
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YYYY)", 5},
+
+        // Spanish format.
+        DetermineExpirationDateFormatTestCase{" / ", 2, "MM / AA", 0},
+        DetermineExpirationDateFormatTestCase{" / ", 4, "MM / AAAA", 0},
+
+        // Different separator.
+        DetermineExpirationDateFormatTestCase{" - ", 2, "MM - YY", 0},
+
+        // Date fits after stripping whitespaces from separator.
+        DetermineExpirationDateFormatTestCase{"-", 2, "MM - YY", 5}));
+
 TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
   // Assists in identifying which case has failed.
-  SCOPED_TRACE(test_case().label);
-  SCOPED_TRACE(test_case().max_length);
   SCOPED_TRACE(test_case().expected_separator);
   SCOPED_TRACE(test_case().expected_year_length);
+  SCOPED_TRACE(test_case().label);
+  SCOPED_TRACE(test_case().max_length);
 
   AutofillField field;
   field.max_length = test_case().max_length;
@@ -625,70 +689,6 @@ TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
             result.separator);
   EXPECT_EQ(test_case().expected_year_length, result.digits_in_expiration_year);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    DetermineExpirationDateFormat,
-    testing::Values(
-        // The order of parameters is:
-        // label, max length, expected separator, expected digits in year:
-        //
-        // No label, no maxlength. -> "MM/YYYY"
-        DetermineExpirationDateFormatTestCase{"", 0, "/", 4},
-        // No label, maxlength 4. -> "MMYY"
-        DetermineExpirationDateFormatTestCase{"", 4, "", 2},
-        // No label, maxlength 5. -> "MM/YY"
-        DetermineExpirationDateFormatTestCase{"", 5, "/", 2},
-        // No label, maxlength 6. -> "MMYYYY"
-        DetermineExpirationDateFormatTestCase{"", 6, "", 4},
-        // No label, maxlength 7. -> "MM/YYYY"
-        DetermineExpirationDateFormatTestCase{"", 7, "/", 4},
-        // No label, large maxlength. -> "MM/YYYY"
-        DetermineExpirationDateFormatTestCase{"", 12, "/", 4},
-
-        // Unsupported maxlength, general label.
-        DetermineExpirationDateFormatTestCase{"", 3, "", 2},
-        // Unsupported maxlength, two digit year label.
-        DetermineExpirationDateFormatTestCase{"MM/YY", 3, "", 2},
-        // Unsupported maxlength, four digit year label.
-        DetermineExpirationDateFormatTestCase{"MM/YYYY", 3, "", 2},
-
-        // Two digit year, simple label.
-        DetermineExpirationDateFormatTestCase{"MM / YY", 0, " / ", 2},
-        // Two digit year, with slash (MM/YY).
-        DetermineExpirationDateFormatTestCase{"(MM/YY)", 0, "/", 2},
-        // Two digit year, no slash (MMYY).
-        DetermineExpirationDateFormatTestCase{"(MMYY)", 4, "", 2},
-        // Two digit year, with slash and maxlength (MM/YY).
-        DetermineExpirationDateFormatTestCase{"(MM/YY)", 5, "/", 2},
-        // Two digit year, with slash and large maxlength (MM/YY).
-        DetermineExpirationDateFormatTestCase{"(MM/YY)", 12, "/", 2},
-
-        // Four digit year, simple label.
-        DetermineExpirationDateFormatTestCase{"MM / YYYY", 0, " / ", 4},
-        // Four digit year, with slash (MM/YYYY).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 0, "/", 4},
-        // Four digit year, no slash (MMYYYY).
-        DetermineExpirationDateFormatTestCase{"(MMYYYY)", 6, "", 4},
-        // Four digit year, with slash and maxlength (MM/YYYY).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 7, "/", 4},
-        // Four digit year, with slash and large maxlength (MM/YYYY).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 12, "/", 4},
-
-        // Four digit year label with restrictive maxlength (4).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 4, "", 2},
-        // Four digit year label with restrictive maxlength (5).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 5, "/", 2},
-
-        // Spanish format.
-        DetermineExpirationDateFormatTestCase{"MM / AA", 0, " / ", 2},
-        DetermineExpirationDateFormatTestCase{"MM / AAAA", 0, " / ", 4},
-
-        // Different separator.
-        DetermineExpirationDateFormatTestCase{"MM - YY", 0, " - ", 2},
-
-        // Date fits after stripping whitespaces from separator.
-        DetermineExpirationDateFormatTestCase{"MM - YY", 5, "-", 2}));
 
 }  // namespace
 }  // namespace autofill
