@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
+#include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -1616,12 +1617,21 @@ void BrowserManager::ResumeLaunch() {
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
   WaitForDeviceOwnerFetchedAndThen(
-      base::BindOnce(&BrowserManager::WritePostLoginData,
+      base::BindOnce(&BrowserManager::WaitForProfileAddedBeforeResuming,
                      weak_factory_.GetWeakPtr()),
       /*launching_at_login_screen=*/false);
 }
 
+void BrowserManager::WaitForProfileAddedBeforeResuming() {
+  primary_profile_creation_waiter_ = PrimaryProfileCreationWaiter::WaitOrRun(
+      g_browser_process->profile_manager(),
+      base::BindOnce(&BrowserManager::WritePostLoginData,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void BrowserManager::WritePostLoginData() {
+  primary_profile_creation_waiter_.reset();
+
   lacros_resume_time_ = base::TimeTicks::Now();
   // Write post-login parameters into the anonymous pipe.
   bool write_success = browser_util::WritePostLoginData(

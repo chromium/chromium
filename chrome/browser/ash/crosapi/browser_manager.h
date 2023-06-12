@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
+#include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -618,6 +619,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Resume Lacros startup process after login.
   void ResumeLaunch();
 
+  // Wait for the primary user profile to be fully created before
+  // resuming Lacros post-login.
+  void WaitForProfileAddedBeforeResuming();
+
   // Writes post login data to the Lacros process after login.
   void WritePostLoginData();
 
@@ -759,6 +764,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
   std::unique_ptr<EnvironmentProvider> environment_provider_;
+
+  // Used to wait for the primary user profile to be fully created.
+  std::unique_ptr<PrimaryProfileCreationWaiter>
+      primary_profile_creation_waiter_;
 
   // The features that are currently registered to keep Lacros alive.
   std::set<Feature> keep_alive_features_;
