@@ -176,7 +176,7 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
 // TODO(crbug.com/1427153) Remove once autofilling <selectmenu> is launched.
 BASE_FEATURE(kAutofillEnableSelectMenu,
              "AutofillEnableSelectMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing between streets.
 // TODO(crbug.com/1441904) Remove once launched.
