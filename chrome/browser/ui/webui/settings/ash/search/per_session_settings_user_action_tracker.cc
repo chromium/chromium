@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash::settings {
 
@@ -215,28 +216,29 @@ void PerSessionSettingsUserActionTracker::ResetMetricsCountersAndTimestamp() {
 absl::optional<int>
 PerSessionSettingsUserActionTracker::UpdateSettingsPrefTotalUniqueChanged() {
   // Fetch the dictionary from the pref.
-  base::Value::Dict writeable_dict =
-      pref_service_->GetDict(::prefs::kTotalUniqueOsSettingsChanged).Clone();
-  int current_count = writeable_dict.size();
+  ScopedDictPrefUpdate total_unique_settings_changed_(
+      pref_service_, ::prefs::kTotalUniqueOsSettingsChanged);
+  base::Value::Dict& pref_data = total_unique_settings_changed_.Get();
+  int current_count = pref_data.size();
 
   // Set the dictionary.
   // Value is a constant 1 since we only want to know which Setting has been
   // used, not how many times it has been used.
   constexpr int value = 1;
   for (const std::string& setting_string : changed_settings_) {
-    if (!writeable_dict.contains(setting_string)) {
-      writeable_dict.Set(setting_string, value);
+    if (!pref_data.contains(setting_string)) {
+      pref_data.Set(setting_string, value);
     }
   }
 
-  // Save to pref.
-  int new_count = writeable_dict.size();
-  pref_service_->SetDict(::prefs::kTotalUniqueOsSettingsChanged,
-                         std::move(writeable_dict));
+  int new_count = pref_data.size();
 
   // If the new size of the pref dictionary is the same as before, we do not
   // want to record that in UMA so we will return a nullopt to flag not to add
   // to histogram bucket.
+  //
+  // The value of pref_data will automatically get stored to pref_service_ upon
+  // destruction.
   return current_count == new_count ? absl::nullopt
                                     : absl::optional<int>{new_count};
 }
