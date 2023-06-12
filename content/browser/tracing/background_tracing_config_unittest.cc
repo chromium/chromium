@@ -8,7 +8,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
@@ -61,7 +64,8 @@ class BackgroundTracingConfigTest : public testing::Test {
   BackgroundTracingConfigTest() = default;
 
  protected:
-  BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 std::unique_ptr<BackgroundTracingConfigImpl> ReadFromJSONString(
@@ -661,6 +665,38 @@ TEST_F(BackgroundTracingConfigTest, NamedRuleFromValidProto) {
   EXPECT_EQ(0.5, result.trigger_chance());
   EXPECT_EQ(500U, result.delay_ms());
   EXPECT_EQ("test_trigger", result.manual_trigger_name());
+}
+
+TEST_F(BackgroundTracingConfigTest, TimerRuleFromValidProto) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(R"pb(
+                     name: "test_rule" trigger_chance: 0.5 delay_ms: 500
+                   )pb",
+                   config);
+  auto rule = BackgroundTracingRule::Create(config);
+  auto result = rule->ToProtoForTesting();
+  EXPECT_EQ("test_rule", result.name());
+  EXPECT_EQ(0.5, result.trigger_chance());
+  EXPECT_EQ(500U, result.delay_ms());
+}
+
+TEST_F(BackgroundTracingConfigTest, TimerRuleTriggersAfterDelay) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(R"pb(
+                     name: "test_rule" delay_ms: 10000
+                   )pb",
+                   config);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  auto rule = BackgroundTracingRule::Create(config);
+  base::RunLoop run_loop;
+  rule->Install(base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    run_loop.Quit();
+    return true;
+  }));
+  run_loop.Run();
+  DCHECK_GE(base::TimeTicks::Now(), start + base::Milliseconds(10000));
+  rule->Uninstall();
 }
 
 }  // namespace content

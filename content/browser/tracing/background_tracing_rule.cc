@@ -428,6 +428,32 @@ class HistogramRule : public BackgroundTracingRule,
       histogram_sample_callback_;
 };
 
+class TimerRule : public BackgroundTracingRule {
+ private:
+  explicit TimerRule() = default;
+
+ public:
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    return base::WrapUnique<TimerRule>(new TimerRule());
+  }
+
+  void DoInstall() override { OnRuleTriggered(); }
+  void DoUninstall() override {}
+
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(MetadataProto::TRIGGER_UNSPECIFIED);
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return "org.chromium.background_tracing.timer";
+  }
+};
+
 }  // namespace
 
 std::unique_ptr<BackgroundTracingRule>
@@ -455,6 +481,8 @@ std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
     tracing_rule = NamedTriggerRule::Create(config);
   } else if (config.has_histogram()) {
     tracing_rule = HistogramRule::Create(config);
+  } else {
+    tracing_rule = TimerRule::Create(config);
   }
   if (tracing_rule) {
     tracing_rule->Setup(config);
