@@ -76,6 +76,7 @@ export class OobeScreensList extends OobeScreensListBase {
   init(screens) {
     this.screensList_ = screens;
     this.screensSelected = [];
+    this.selectedScreensCount = 0;
   }
 
   /**
