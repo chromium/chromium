@@ -268,6 +268,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)shutdown {
+  [self stopFolderChooserCoordinator];
   [self.bookmarksCoordinator shutdown];
   self.bookmarksCoordinator = nil;
   [self.mediator disconnect];
@@ -1101,10 +1102,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // TODO(crbug.com/1446131): Change the type of `editedNodes` to std::vector.
   std::vector<const bookmarks::BookmarkNode*> editedNodesVector(
       editedNodesSet.begin(), editedNodesSet.end());
-
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
+  [self stopFolderChooserCoordinator];
 
   DCHECK(!folder->is_url());
   DCHECK_GE(editedNodesVector.size(), 1u);
@@ -1120,9 +1118,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
     (BookmarksFolderChooserCoordinator*)coordinator {
   DCHECK(_folderChooserCoordinator);
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
+  [self stopFolderChooserCoordinator];
   [self setTableViewEditing:NO];
 }
 
@@ -1233,6 +1229,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 #pragma mark - private
+
+// Stops the folder chooser coordinator.
+- (void)stopFolderChooserCoordinator {
+  [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
+  _folderChooserCoordinator = nil;
+}
 
 // Returns a bookmark node reference for `bookmarkNode`.
 - (BookmarkNodeReference)bookmarkNodeReferenceWithNode:

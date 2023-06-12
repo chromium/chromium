@@ -109,6 +109,10 @@
   _mediator.selectedFolderNode = _selectedFolder;
 }
 
+- (void)dealloc {
+  DCHECK(!_viewController);
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
