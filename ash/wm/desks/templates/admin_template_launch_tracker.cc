@@ -461,6 +461,12 @@ void AdminTemplateLaunchTracker::LaunchTemplate(SavedDeskDelegate* delegate,
   delegate->LaunchAppsFromSavedDesk(std::move(admin_template));
 }
 
+void AdminTemplateLaunchTracker::FlushPendingUpdate() {
+  if (update_delay_timer_.IsRunning()) {
+    update_delay_timer_.FireNow();
+  }
+}
+
 void AdminTemplateLaunchTracker::OnObserverCreated(
     std::unique_ptr<base::CheckedObserver> observer) {
   window_observers_.push_back(std::move(observer));

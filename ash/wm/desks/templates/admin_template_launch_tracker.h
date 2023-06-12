@@ -85,6 +85,11 @@ class ASH_EXPORT AdminTemplateLaunchTracker {
   // then launches the template using `delegate`.
   void LaunchTemplate(SavedDeskDelegate* delegate, int64_t default_display_id);
 
+  // If there is an existing pending update to this template, it will be
+  // dispatched using the update callback. If there are no pending updates, then
+  // this is a no-op.
+  void FlushPendingUpdate();
+
  private:
   // Called when an observer is created (either a desk or window observer).
   void OnObserverCreated(std::unique_ptr<base::CheckedObserver> observer);
