@@ -8,19 +8,19 @@
 # well.
 
 # Keep all junit3 classes and tests
--keep class junit.** { *; }
--keep class * extends junit.** { *; }
+-keep class !cr_allowunused,junit.** { *; }
+-keep class !cr_allowunused,** extends junit.** { *; }
 
 # Keep all junit4 and hamcrest classes and tests
--keep class org.hamcrest.** { *; }
--keep class org.junit.** { *; }
--keep class * extends org.hamcrest.** { *; }
--keep class * extends org.junit.** { *; }
+-keep class !cr_allowunused,org.hamcrest.** { *; }
+-keep class !cr_allowunused,org.junit.** { *; }
+-keep class !cr_allowunused,* extends org.hamcrest.** { *; }
+-keep class !cr_allowunused,* extends org.junit.** { *; }
 -keep @**.RunWith class * { *; }
 
 # Keep classes implementing ParameterProvider -- these will be instantiated
 # via reflection.
--keep class * implements org.chromium.base.test.params.ParameterProvider {
+-keep class !cr_allowunused,** implements org.chromium.base.test.params.ParameterProvider {
   *;
 }
 
@@ -33,25 +33,25 @@
 # Keep all classes that are in test packages. There is no benefit in testing
 # Proguarding of test classes, but this is as close as we can get to selecting
 # all classes from the test apk.
--keep class **.test.** { *; }
+-keep class !cr_allowunused,**.test.** { *; }
 
 # Keep all interfaces that are mocked by Mockito. Since Mockito generates these
 # mocks at runtime, R8 doesn't know to preserve them (without these rules).
--if class * {
+-if class ** {
   @org.mockito.Mock ** *;
 }
 -keep class <2> {
   <methods>;
 }
 
--if class * {
+-if class ** {
   @org.mockito.Spy ** *;
 }
 -keep class <2> {
   <methods>;
 }
 
--if class * {
+-if class ** {
   @org.mockito.Captor ** *;
 }
 -keep class <2> {
@@ -62,12 +62,12 @@
 # abstract method for the subsclass FeedOfflineIndicator, which Mockito would not
 # mock.
 -keep,allowobfuscation @interface org.chromium.build.annotations.MockedInTests
--keep @org.chromium.build.annotations.MockedInTests class * {
+-keep @org.chromium.build.annotations.MockedInTests class ** {
   <methods>;
 }
 
 # Keep all enum members since they might be reflectively called by JUnit4 runner
--keepclassmembers enum * { *; }
+-keepclassmembers enum !cr_allowunused,** { *; }
 
 # Keep any annotation used by tests for instrumentation runner to list out
 # test annotation information

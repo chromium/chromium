@@ -35,8 +35,24 @@ _IGNORE_WARNINGS = (
     r'GeneratedExtensionRegistryLite\.CONTAINING_TYPE_',
     # Relevant for R8 when optimizing an app that doesn't use protobuf.
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
-    # TODO(crbug.com/1303951): Don't ignore all such warnings.
-    r'Proguard configuration rule does not match anything:',
+    # Ignore Unused Rule Warnings in third_party libraries.
+    r'/third_party/.*Proguard configuration rule does not match anything',
+    # Ignore cronet's test rules (low priority to fix).
+    r'cronet/android/test/proguard.cfg.*Proguard configuration rule does not',
+    r'Proguard configuration rule does not match anything:.*(?:' + '|'.join([
+        # aapt2 generates keeps for these.
+        r'class android\.',
+        # Used internally.
+        r'com.no.real.class.needed.receiver',
+        # Ignore Unused Rule Warnings for annotations.
+        r'@',
+        # Ignore rules that opt out of this check.
+        r'!cr_allowunused',
+        # https://crbug.com/1441225
+        r'EditorDialogToolbar',
+        # https://crbug.com/1441226
+        r'PaymentRequest[BH]',
+    ]) + ')',
     # TODO(agrieve): Remove once we update to U SDK.
     r'OnBackAnimationCallback',
     # We enforce that this class is removed via -checkdiscard.

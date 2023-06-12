@@ -15,6 +15,6 @@
 -whyareyounotinlining class java.util.ServiceLoader { *** load(...); }
 
 # This has a ServiceLoader.load() failure that we filter out in dex.py.
--checkdiscard class kotlinx.coroutines.internal.FastServiceLoader {
+-checkdiscard class !cr_allowunused,kotlinx.coroutines.internal.FastServiceLoader {
   *;
 }

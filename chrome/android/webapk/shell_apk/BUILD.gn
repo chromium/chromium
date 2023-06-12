@@ -282,10 +282,7 @@ template("webapk_tmpl") {
 
     if (!is_java_debug) {
       proguard_enabled = true
-      proguard_configs = [
-        "//chrome/android/webapk/shell_apk/proguard.flags",
-        "//chrome/android/proguard/main.flags",
-      ]
+      proguard_configs = [ "//chrome/android/webapk/shell_apk/proguard.flags" ]
     }
   }
 }
