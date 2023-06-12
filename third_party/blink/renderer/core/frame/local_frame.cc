@@ -2417,11 +2417,11 @@ BlockingDetailsList LocalFrame::ConvertFeatureAndLocationToMojomStruct(
     const BFCacheBlockingFeatureAndLocations& non_sticky,
     const BFCacheBlockingFeatureAndLocations& sticky) {
   BlockingDetailsList blocking_details_list;
-  for (auto feature : non_sticky) {
+  for (auto feature : non_sticky.details_list) {
     auto blocking_details = CreateBlockingDetailsMojom(feature);
     blocking_details_list.push_back(std::move(blocking_details));
   }
-  for (auto feature : sticky) {
+  for (auto feature : sticky.details_list) {
     auto blocking_details = CreateBlockingDetailsMojom(feature);
     blocking_details_list.push_back(std::move(blocking_details));
   }
