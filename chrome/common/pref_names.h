@@ -815,8 +815,6 @@ extern const char kDeviceName[];
 extern const char kDiskCacheDir[];
 extern const char kDiskCacheSize[];
 
-extern const char kChromeOsReleaseChannel[];
-
 extern const char kPerformanceTracingEnabled[];
 
 extern const char kRegisteredBackgroundContents[];
