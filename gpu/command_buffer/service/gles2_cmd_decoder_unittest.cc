@@ -268,7 +268,7 @@ TEST_P(GLES2DecoderTest, IsTexture) {
   EXPECT_FALSE(DoIsTexture(client_texture_id_));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
   const GLuint service_id = 123;
   EXPECT_CALL(*gl_, GenTextures(1, _))
@@ -284,22 +284,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
                                           GL_RGBA, GL_UNSIGNED_BYTE);
   scoped_refptr<gl::GLImage> image(new GLImageStub);
 
-#if BUILDFLAG(IS_MAC)
-  abstract_texture->SetUnboundImage(image.get());
-#else
   abstract_texture->SetBoundImage(image.get());
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  auto* validating_texture =
-      static_cast<ValidatingAbstractTextureImpl*>(abstract_texture.get());
-  TextureRef* texture_ref = validating_texture->GetTextureRefForTesting();
-  EXPECT_EQ(texture_ref->texture()->GetLevelImage(target, 0), image.get());
-
-#if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
-#endif
-#endif
 
   EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
   abstract_texture.reset();
@@ -340,13 +325,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   // Attach an image and see if it works.
   scoped_refptr<gl::GLImage> image(new GLImageStub);
 
-  // NOTE: For this test, it doesn't actually matter whether the image is
-  // client-managed or decoder-managed.
-#if BUILDFLAG(IS_MAC)
-  abstract_texture->SetUnboundImage(image.get());
-#else
   abstract_texture->SetBoundImage(image.get());
-#endif
 
   // Binding an image should make the texture renderable.
   EXPECT_EQ(texture->SafeToRenderFrom(), true);
@@ -356,11 +335,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
 #endif
 
   // Unbinding should make it not renderable.
-#if BUILDFLAG(IS_MAC)
-  abstract_texture->SetUnboundImage(nullptr);
-#else
   abstract_texture->SetBoundImage(nullptr);
-#endif
 
   EXPECT_EQ(texture->SafeToRenderFrom(), false);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

@@ -1895,15 +1895,6 @@ void Texture::SetBoundLevelImage(GLenum target,
   SetLevelImageInternal(target, level, image, ImageState::BOUND);
 }
 
-#if BUILDFLAG(IS_APPLE)
-void Texture::SetUnboundLevelImage(GLenum target,
-                                   GLint level,
-                                   gl::GLImage* image) {
-  SetStreamTextureServiceId(0);
-  SetLevelImageInternal(target, level, image, ImageState::UNBOUND);
-}
-#endif
-
 void Texture::UnsetLevelImage(GLenum target, GLint level) {
   SetStreamTextureServiceId(0);
   SetLevelImageInternal(target, level, nullptr, ImageState::NOIMAGE);
@@ -2611,16 +2602,6 @@ void TextureManager::SetBoundLevelImage(TextureRef* ref,
   DCHECK(ref);
   ref->texture()->SetBoundLevelImage(target, level, image);
 }
-
-#if BUILDFLAG(IS_APPLE)
-void TextureManager::SetUnboundLevelImage(TextureRef* ref,
-                                          GLenum target,
-                                          GLint level,
-                                          gl::GLImage* image) {
-  DCHECK(ref);
-  ref->texture()->SetUnboundLevelImage(target, level, image);
-}
-#endif
 
 void TextureManager::UnsetLevelImage(TextureRef* ref,
                                      GLenum target,

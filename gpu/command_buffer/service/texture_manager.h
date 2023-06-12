@@ -319,14 +319,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // set by the BindToServiceId.
   void SetBoundLevelImage(GLenum target, GLint level, gl::GLImage* image);
 
-#if BUILDFLAG(IS_APPLE)
-  // Set an image that needs binding for a particular level. If a
-  // GLImage was previously set with BindToServiceId(), this will reset
-  // |service_id_| back to |owned_service_id_|, removing the service id
-  // override set by the BindToServiceId.
-  void SetUnboundLevelImage(GLenum target, GLint level, gl::GLImage* image);
-#endif
-
   // Unset the image for a particular level. After this call, GetLevelImage()
   // will return nullptr.
   void UnsetLevelImage(GLenum target, GLint level);
@@ -1128,13 +1120,6 @@ class GPU_GLES2_EXPORT TextureManager
                           GLenum target,
                           GLint level,
                           gl::GLImage* image);
-
-#if BUILDFLAG(IS_APPLE)
-  void SetUnboundLevelImage(TextureRef* ref,
-                            GLenum target,
-                            GLint level,
-                            gl::GLImage* image);
-#endif
 
   void UnsetLevelImage(TextureRef* ref, GLenum target, GLint level);
 
