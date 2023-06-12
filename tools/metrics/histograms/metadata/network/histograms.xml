@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ApnTypes">
+  <variant name="DEFAULT" summary="Default/Data APN"/>
+  <variant name="DUN" summary="Tethering APN"/>
+</variants>
+
 <variants name="AshNetworkType">
 <!-- The following variants are names of network types tracked in the Chrome layer.
   These are used for various Network.Ash.* histograms to record network connection
@@ -1978,17 +1983,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Cellular.ConnectResult"
+<histogram name="Network.Shill.Cellular.ConnectResult.{ApnType}"
     enum="PlatformCellularConnectResult" expires_after="2023-12-31">
   <owner>danielwinkler@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
   <summary>
     Reports the result of Cellular connection attempts through the platform
-    layers. This captures any success or failure as a result of a Connect call
-    through ModemManager, or any causes of early failure in shill that prevents
-    a connect attempt altogether. Refer to go/cros-cellular-apn-metrics for
-    details.
+    layers when using the {ApnType}. This captures any success or failure as a
+    result of a Connect call through ModemManager, or any causes of early
+    failure in shill that prevents a connect attempt altogether. Refer to
+    go/cros-cellular-apn-metrics for details.
   </summary>
+  <token key="ApnType" variants="ApnTypes"/>
 </histogram>
 
 <histogram name="Network.Shill.Cellular.DevicePresenceStatus"
