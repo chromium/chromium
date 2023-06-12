@@ -786,6 +786,13 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return internal::TagAddr(SlotStartToObjectAddr(slot_start));
   }
 
+  PA_ALWAYS_INLINE void* TaggedSlotStartToObject(
+      void* tagged_slot_start) const {
+    // TODO(bartekn): Check that |slot_start| is indeed a slot start.
+    return reinterpret_cast<void*>(
+        SlotStartToObjectAddr(reinterpret_cast<uintptr_t>(tagged_slot_start)));
+  }
+
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
     return UntagPtr(object) - settings.extras_offset;
     // TODO(bartekn): Check that the result is indeed a slot start.
@@ -1238,7 +1245,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooks(void* object) {
     if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
       // slot_span is untagged at this point, so we have to recover its tag
       // again to increment and provide use-after-free mitigations.
-      uintptr_t slot_start_to_object_delta = object_addr - slot_start;
       size_t tag_size = slot_size;
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       tag_size -= root->settings.ref_count_size;
@@ -1247,9 +1253,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooks(void* object) {
           internal::TagAddr(slot_start), tag_size);
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
-      object = reinterpret_cast<void*>(
-          reinterpret_cast<uintptr_t>(retagged_slot_start) +
-          slot_start_to_object_delta);
+      object = root->TaggedSlotStartToObject(retagged_slot_start);
     }
   }
 #else
