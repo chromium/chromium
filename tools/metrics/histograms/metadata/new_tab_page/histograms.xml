@@ -1413,6 +1413,10 @@ chromium-metrics-reviews@google.com.
     Emitted each time a user action within an NTP module launches a module's
     feature. Every usage emits a 1 which has no inherent meaning aside from a
     usage occurred.
+
+    Note for the Journeys module: Pre-M115, we only considered visit and
+    suggestion clicks as usage. Since M115, we consider visit, suggestion,
+    &quot;Show all&quot; and &quot;Open all in tab group&quot; as usage.
   </summary>
 </histogram>
 

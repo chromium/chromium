@@ -75619,6 +75619,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Suggest"/>
   <int value="2" label="ShowAll"/>
   <int value="3" label="Cart"/>
+  <int value="4" label="OpenAll"/>
 </enum>
 
 <enum name="NTPHistoryClustersImageDisplayState">

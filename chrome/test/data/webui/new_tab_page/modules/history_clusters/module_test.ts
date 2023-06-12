@@ -171,7 +171,9 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           headerElement.querySelector('#showAllButton') as HTMLElement;
       assertTrue(!!showAllButton);
 
+      const waitForUsageEvent = eventToPromise('usage', moduleElement);
       showAllButton.click();
+
       const query = await handler.whenCalled('showJourneysSidePanel');
       assertEquals(sampleClusterUnquotedLabel, query);
       assertEquals(
@@ -185,6 +187,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               HistoryClusterElementType.SHOW_ALL));
       const clusterId = await handler.whenCalled('recordClick');
       assertEquals(BigInt(111), clusterId);
+      await waitForUsageEvent;
     });
 
     test(
@@ -201,6 +204,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               (loadTimeData.getString(
                   'modulesJourneysOpenAllInNewTabGroupButtonText')),
               openAllButton.innerText.trim());
+
+          const waitForUsageEvent = eventToPromise('usage', moduleElement);
           openAllButton.click();
 
           const [urls, tabGroupName] =
@@ -210,6 +215,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           assertEquals('https://www.foo.com/1', urls[1].url);
           assertEquals('https://www.foo.com/2', urls[2].url);
           assertEquals('My Tab Group Name', tabGroupName);
+          await waitForUsageEvent;
         });
 
     test('Backend is notified when module is dismissed', async () => {
@@ -288,6 +294,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                 $$(moduleElement, 'ntp-history-clusters-tile') as HTMLElement;
             assertTrue(!!tileElement);
 
+            const waitForUsageEvent = eventToPromise('usage', moduleElement);
             removeHrefAndClick($$(tileElement, '#content') as HTMLElement);
             assertEquals(
                 1,
@@ -304,6 +311,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                     HistoryClusterElementType.VISIT));
             const clusterId = await handler.whenCalled('recordClick');
             assertEquals(BigInt(111), clusterId);
+            await waitForUsageEvent;
           });
 
           test(`Layout ${layoutType}: Suggest tile click metrics`, async () => {
@@ -317,6 +325,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                 $$(moduleElement, 'ntp-history-clusters-suggest-tile');
             assertTrue(!!suggestTileElement);
 
+            const waitForUsageEvent = eventToPromise('usage', moduleElement);
             removeHrefAndClick(
                 $$(suggestTileElement, '.related-search') as HTMLElement);
             assertEquals(
@@ -334,6 +343,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                     HistoryClusterElementType.SUGGEST));
             const clusterId = await handler.whenCalled('recordClick');
             assertEquals(BigInt(111), clusterId);
+            await waitForUsageEvent;
           });
 
           const LAYOUT_MIN_VISITS =
@@ -561,6 +571,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       assertTrue(!!moduleElement.cart);
 
       // Act.
+      const waitForUsageEvent = eventToPromise('usage', moduleElement);
       cartTile.click();
 
       // Assert.
@@ -571,6 +582,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               HistoryClusterElementType.CART));
       const clusterId = await handler.whenCalled('recordClick');
       assertEquals(BigInt(111), clusterId);
+      await waitForUsageEvent;
     });
   });
 });
