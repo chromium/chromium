@@ -50,7 +50,7 @@ async function getElementCenter(
     {}
   );
   if (result.type === 'exception') {
-    throw new Message.NoSuchNodeException(
+    throw new Message.NoSuchElementException(
       `Origin element ${element.sharedId} was not found`
     );
   }

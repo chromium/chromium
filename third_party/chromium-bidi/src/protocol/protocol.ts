@@ -94,6 +94,7 @@ export namespace Message {
     InvalidSessionId = 'invalid session id',
     MoveTargetOutOfBounds = 'move target out of bounds',
     NoSuchAlert = 'no such alert',
+    NoSuchElement = 'no such element',
     NoSuchFrame = 'no such frame',
     NoSuchHandle = 'no such handle',
     NoSuchNode = 'no such node',
@@ -167,6 +168,12 @@ export namespace Message {
   export class NoSuchNodeException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
       super(ErrorCode.NoSuchNode, message, stacktrace);
+    }
+  }
+
+  export class NoSuchElementException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.NoSuchElement, message, stacktrace);
     }
   }
 
