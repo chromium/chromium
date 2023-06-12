@@ -218,8 +218,7 @@ bool PrerendererImpl::MaybePrerender(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
             "The SpeculationRules API does not support cross-site prerender "
-            "yet (kSameSiteCrossOriginForSpeculationRulesPrerender2 is "
-            "enabled). (initiator origin: %s, prerender origin: %s). "
+            "yet (initiator origin: %s, prerender origin: %s). "
             "https://crbug.com/1176054 tracks cross-site support.",
             rfhi.GetLastCommittedOrigin().Serialize().c_str(),
             url::Origin::Create(candidate->url).Serialize().c_str()));
