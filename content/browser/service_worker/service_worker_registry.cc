@@ -1167,7 +1167,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     DCHECK(!scopes);
     registration_scope_cache_.erase(key);
     ScheduleDeleteAndStartOver();
-  } else if (scopes) {
+  } else if (scopes && !scopes->empty()) {
     registration_scope_cache_.insert_or_assign(
         key, std::set<GURL>(scopes->begin(), scopes->end()));
   } else {

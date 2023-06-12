@@ -1276,7 +1276,8 @@ class ServiceWorkerScopeAndRegistrationCacheTest
       scoped_refptr<ServiceWorkerRegistration> expected_registration,
       int expected_inflight_call_count,
       int expected_registration_scope_cache_size,
-      int expected_registration_id_cache_size) {
+      int expected_registration_id_cache_size,
+      const base::Location& location = FROM_HERE) {
     base::RunLoop loop;
     registry()->FindRegistrationForClientUrl(
         ServiceWorkerRegistry::Purpose::kNotForNavigation, scope,
@@ -1284,18 +1285,22 @@ class ServiceWorkerScopeAndRegistrationCacheTest
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status,
                 scoped_refptr<ServiceWorkerRegistration> found_registration) {
-              EXPECT_EQ(expected_status, status);
-              EXPECT_EQ(expected_registration, found_registration);
+              EXPECT_EQ(expected_status, status) << location.ToString();
+              EXPECT_EQ(expected_registration, found_registration)
+                  << location.ToString();
               EXPECT_EQ(
                   static_cast<size_t>(expected_registration_scope_cache_size),
-                  registration_scope_cache().size());
+                  registration_scope_cache().size())
+                  << location.ToString();
               EXPECT_EQ(
                   static_cast<size_t>(expected_registration_id_cache_size),
-                  registration_id_cache().size());
+                  registration_id_cache().size())
+                  << location.ToString();
               loop.Quit();
             }));
     EXPECT_EQ(static_cast<size_t>(expected_inflight_call_count),
-              inflight_call_count());
+              inflight_call_count())
+        << location.ToString();
     loop.Run();
   }
 };
@@ -1390,38 +1395,33 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, SkipMojoCallIfPossible) {
   // When registration_scope_cache doesn't have an entry,
   // expected_inflight_call_count should be 1 because we don't know if there is
   // a registration or not. After this call, registration_scope_cache should
-  // have an additional entry for `kDifferentOrigin`.
+  // not have an additional entry for `kDifferentOrigin` because
+  // `kDifferentOrigin` does not have any registration.
   EXPECT_FALSE(registration_scope_cache().contains(kDifferentOriginKey));
   CheckRegistration(kDifferentOrigin,
                     blink::ServiceWorkerStatusCode::kErrorNotFound,
                     /*expected_registration=*/nullptr,
                     /*expected_inflight_call_count=*/1,
-                    /*expected_registration_scope_cache_size=*/2,
+                    /*expected_registration_scope_cache_size=*/1,
                     /*expected_registration_id_cache_size=*/2);
+  EXPECT_FALSE(registration_scope_cache().contains(kDifferentOriginKey));
   EXPECT_TRUE(registration_scope_cache().contains(kKey));
   EXPECT_EQ(std::set<GURL>({kScope1, kScope2}),
             registration_scope_cache()[kKey]);
   EXPECT_EQ(std::set<GURL>({kScope1, kScope2}), registration_id_cache_urls());
-  EXPECT_TRUE(registration_scope_cache().contains(kDifferentOriginKey));
-  EXPECT_EQ(std::set<GURL>(), registration_scope_cache()[kDifferentOriginKey]);
 
   // Delete registration1
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             DeleteRegistration(registration1));
-  EXPECT_EQ(2U, registration_scope_cache().size());
+  EXPECT_EQ(1U, registration_scope_cache().size());
   EXPECT_TRUE(registration_scope_cache().contains(kKey));
   EXPECT_EQ(std::set<GURL>({kScope2}), registration_scope_cache()[kKey]);
   EXPECT_EQ(std::set<GURL>({kScope2}), registration_id_cache_urls());
-  EXPECT_TRUE(registration_scope_cache().contains(kDifferentOriginKey));
-  EXPECT_EQ(std::set<GURL>(), registration_scope_cache()[kDifferentOriginKey]);
 
   // Delete registration2
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             DeleteRegistration(registration2));
-  EXPECT_EQ(1U, registration_scope_cache().size());
-  EXPECT_TRUE(registration_scope_cache().contains(kDifferentOriginKey));
-  EXPECT_EQ(std::set<GURL>(), registration_scope_cache()[kDifferentOriginKey]);
-  EXPECT_EQ(std::set<GURL>(), registration_id_cache_urls());
+  EXPECT_EQ(0U, registration_scope_cache().size());
 }
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
