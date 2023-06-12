@@ -95,7 +95,9 @@ Example bugs:
 bugs fall into this category, as they allow script execution in the context of
 an arbitrary origin ([534923](https://crbug.com/534923)).
 * A bug that allows arbitrary code execution within the confines of the sandbox,
-such as renderer, network, or GPU process memory corruption
+such as renderer or network process memory corruption (the GPU process is
+sandboxed only on some platforms, so if the bug impacts all Chromium platforms,
+it should be considered unsandboxed)
 ([570427](https://crbug.com/570427), [468936](https://crbug.com/468936)).
 * Complete control over the apparent origin in the omnibox
 ([76666](https://crbug.com/76666)).
