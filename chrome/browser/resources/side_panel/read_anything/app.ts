@@ -27,7 +27,7 @@ const darkThemeBackgroundSkColor =
 const lightThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
 const yellowThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-yellow-200-rgb'));
+    rgbToSkColor(style.getPropertyValue('--google-yellow-100-rgb'));
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const darkThemeLinkColors: LinkColor = {

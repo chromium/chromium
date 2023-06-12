@@ -87,6 +87,8 @@ html {
 
   --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
   --google-yellow-50: rgb(var(--google-yellow-50-rgb));
+  --google-yellow-100-rgb: 254, 239, 195; /*feefc3*/
+  --google-yellow-100: rgb(var(--google-yellow-100-rgb));
   --google-yellow-200-rgb: 253, 226, 147;  /* #fde293 */
   --google-yellow-200: rgb(var(--google-yellow-200-rgb));
   --google-yellow-300-rgb: 253, 214, 51;  /* #fdd633 */
