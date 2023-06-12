@@ -1018,6 +1018,30 @@
             ]
         }
     ],
+    "AutofillConvergeToExtremeLengthStreetAddress": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Converge_To_Shorter",
+                    "params": {
+                        "converge_to_longer": "false"
+                    },
+                    "enable_features": [
+                        "AutofillConvergeToExtremeLengthStreetAddress"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillDetectRemovedFormControls": [
         {
             "platforms": [
