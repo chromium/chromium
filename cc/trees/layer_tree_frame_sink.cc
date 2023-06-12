@@ -86,10 +86,6 @@ bool LayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
       context_provider_ = nullptr;
       return false;
     }
-
-    // The compositor context still has some GLES2Interface usage so make sure
-    // it provides that.
-    CHECK(context_provider_->ContextGL());
   }
 
   if (auto* worker_context_provider_ptr = worker_context_provider()) {

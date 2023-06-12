@@ -3845,10 +3845,11 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
 #endif
 
   if (should_finish && layer_tree_frame_sink_->context_provider()) {
-    // TODO(ericrk): Remove this once all uses of ContextGL from LTFS are
-    // removed.
-    auto* gl = layer_tree_frame_sink_->context_provider()->ContextGL();
-    gl->Finish();
+    // TODO(kylechar): Exactly where this finish call is still required is not
+    // obvious. Attempts have been made to remove it which caused problems, eg.
+    // https://crbug.com/846709. We should test removing it via finch to find
+    // out if this is still needed on any platforms.
+    layer_tree_frame_sink_->context_provider()->RasterInterface()->Finish();
   }
 
   // Release any context visibility before we destroy the LayerTreeFrameSink.

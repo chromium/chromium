@@ -66,9 +66,11 @@ TEST(LayerTreeFrameSinkTest, ContextLossInformsClient) {
 
   // Verify DidLoseLayerTreeFrameSink callback is hooked up correctly.
   EXPECT_FALSE(client.did_lose_layer_tree_frame_sink_called());
-  layer_tree_frame_sink.context_provider()->ContextGL()->LoseContextCHROMIUM(
-      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-  layer_tree_frame_sink.context_provider()->ContextGL()->Flush();
+  layer_tree_frame_sink.context_provider()
+      ->RasterInterface()
+      ->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
+                            GL_INNOCENT_CONTEXT_RESET_ARB);
+  layer_tree_frame_sink.context_provider()->RasterInterface()->Flush();
   EXPECT_TRUE(client.did_lose_layer_tree_frame_sink_called());
 }
 

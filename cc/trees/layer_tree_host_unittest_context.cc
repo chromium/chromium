@@ -828,12 +828,12 @@ class LayerTreeHostContextTestDontUseLostResources
                                    bool lost) {}
 
   void SetupTree() override {
-    gpu::gles2::GLES2Interface* gl = child_context_provider_->ContextGL();
+    auto* ri = child_context_provider_->RasterInterface();
 
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
     gpu::SyncToken sync_token;
-    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+    ri->GenSyncTokenCHROMIUM(sync_token.GetData());
 
     scoped_refptr<Layer> root = Layer::Create();
     root->SetBounds(gfx::Size(10, 10));

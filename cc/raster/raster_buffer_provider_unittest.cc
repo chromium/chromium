@@ -390,21 +390,6 @@ TEST_P(RasterBufferProviderTest, Basic) {
   EXPECT_FALSE(completed_tasks()[1].canceled);
 }
 
-TEST_P(RasterBufferProviderTest, FailedMapResource) {
-  if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_BITMAP)
-    return;
-
-  viz::TestGLES2Interface* gl = context_provider_->TestContextGL();
-  gl->set_times_map_buffer_chromium_succeeds(0);
-  AppendTask(0u);
-  ScheduleTasks();
-
-  RunMessageLoopUntilAllTasksHaveCompleted();
-
-  ASSERT_EQ(1u, completed_tasks().size());
-  EXPECT_FALSE(completed_tasks()[0].canceled);
-}
-
 // This test checks that replacing a pending raster task with another does
 // not prevent the DidFinishRunningTileTasks notification from being sent.
 TEST_P(RasterBufferProviderTest, FalseThrottling) {

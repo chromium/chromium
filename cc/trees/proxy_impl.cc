@@ -285,10 +285,11 @@ void ProxyImpl::FinishGLOnImpl(CompletionEvent* completion) {
   TRACE_EVENT0("cc", "ProxyImpl::FinishGLOnImplThread");
   DCHECK(IsImplThread());
   if (host_impl_->layer_tree_frame_sink()) {
-    viz::RasterContextProvider* context_provider =
+    auto* context_provider =
         host_impl_->layer_tree_frame_sink()->context_provider();
-    if (context_provider)
-      context_provider->ContextGL()->Finish();
+    if (context_provider) {
+      context_provider->RasterInterface()->Finish();
+    }
   }
   completion->Signal();
 }
