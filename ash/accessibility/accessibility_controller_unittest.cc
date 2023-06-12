@@ -61,7 +61,8 @@ class AccessibilityControllerTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition},
+         ash::features::kOnDeviceSpeechRecognition,
+         ::features::kExperimentalAccessibilityColorEnhancementSettings},
         {});
     AshTestBase::SetUp();
   }
@@ -177,9 +178,11 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
   if (::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilitySepiaAmount));
-    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityHueRotationAmount));
-    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityGreyscaleAmount));
+    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityColorFiltering));
+    EXPECT_TRUE(
+        prefs->FindPreference(prefs::kAccessibilityColorVisionDeficiencyType));
+    EXPECT_TRUE(prefs->FindPreference(
+        prefs::kAccessibilityColorVisionCorrectionAmount));
   }
 }
 

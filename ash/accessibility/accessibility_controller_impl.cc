@@ -1022,6 +1022,11 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
                                 false);
 
+  if (::features::
+          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+    registry->RegisterBooleanPref(prefs::kAccessibilityColorFiltering, false);
+  }
+
   // TODO(b/266816160): Make ChromeVox prefs are syncable, to so that ChromeOS
   // backs up users' ChromeVox settings and reflects across their devices.
   registry->RegisterBooleanPref(prefs::kAccessibilityChromeVoxAutoRead, false);
@@ -1205,21 +1210,6 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
 
   if (::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityColorFiltering, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityGreyscaleAmount, 0,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilitySaturationAmount, 100,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilitySepiaAmount, 0,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityHueRotationAmount, 0,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterIntegerPref(
         prefs::kAccessibilityColorVisionCorrectionAmount, 100,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -2040,26 +2030,6 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
             &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
             base::Unretained(this)));
     pref_change_registrar_->Add(
-        prefs::kAccessibilityGreyscaleAmount,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
-            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilitySaturationAmount,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
-            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilitySepiaAmount,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
-            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityHueRotationAmount,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
-            base::Unretained(this)));
-    pref_change_registrar_->Add(
         prefs::kAccessibilityColorVisionCorrectionAmount,
         base::BindRepeating(
             &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
@@ -2272,23 +2242,6 @@ void AccessibilityControllerImpl::UpdateColorFilteringFromPrefs() {
         false);
     return;
   }
-  const float greyscale_amount =
-      active_user_prefs_->GetInteger(prefs::kAccessibilityGreyscaleAmount) /
-      100.f;
-  color_enhancement_controller->SetGreyscaleAmount(greyscale_amount);
-
-  const float saturation_amount =
-      active_user_prefs_->GetInteger(prefs::kAccessibilitySaturationAmount) /
-      100.f;
-  color_enhancement_controller->SetSaturationAmount(saturation_amount);
-
-  const float sepia_amount =
-      active_user_prefs_->GetInteger(prefs::kAccessibilitySepiaAmount) / 100.f;
-  color_enhancement_controller->SetSepiaAmount(sepia_amount);
-
-  const int hue_rotation_amount =
-      active_user_prefs_->GetInteger(prefs::kAccessibilityHueRotationAmount);
-  color_enhancement_controller->SetHueRotationAmount(hue_rotation_amount);
 
   const float cvd_correction_amount =
       active_user_prefs_->GetInteger(

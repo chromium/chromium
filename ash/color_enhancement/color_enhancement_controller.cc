@@ -15,12 +15,6 @@ namespace ash {
 
 namespace {
 
-// Sepia filter above .3 should enable cursor compositing. Beyond this point,
-// users can perceive the mouse is too white if compositing does not occur.
-// TODO (crbug.com/1031959): Check this value with UX to see if it can be
-// larger.
-const float kMinSepiaPerceptableDifference = 0.3f;
-
 //
 // Parameters for simulating color vision deficiency.
 // Copied from the Javascript ColorEnhancer extension:
@@ -130,6 +124,8 @@ gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionDeficiencyType type,
       // channels.
       correction_matrix.set(1.0, 0.0, 0.7, 0.0, 1.0, 0.7, 0.0, 0.0, 0.0);
       break;
+    case ash::ColorVisionDeficiencyType::kGrayscale:
+      NOTREACHED() << "Grayscale should be handled in SetGreyscaleAmount";
   }
 
   // For Daltonization of an image `original_img`, we would calculate the
@@ -200,36 +196,16 @@ void ColorEnhancementController::SetGreyscaleAmount(float amount) {
   // Note: No need to do cursor compositing since cursors are greyscale already.
 }
 
-void ColorEnhancementController::SetSaturationAmount(float amount) {
-  if (saturation_amount_ == amount || amount < 0)
-    return;
-
-  saturation_amount_ = amount;
-  // Note: No need to do cursor compositing since cursors are greyscale and not
-  // impacted by saturation.
-}
-
-void ColorEnhancementController::SetSepiaAmount(float amount) {
-  if (sepia_amount_ == amount || amount < 0 || amount > 1)
-    return;
-
-  sepia_amount_ = amount;
-  // The cursor should be tinted sepia as well. Update cursor compositing.
-  Shell::Get()->UpdateCursorCompositingEnabled();
-}
-
-void ColorEnhancementController::SetHueRotationAmount(int amount) {
-  if (hue_rotation_amount_ == amount || amount < 0 || amount > 359)
-    return;
-
-  hue_rotation_amount_ = amount;
-  // Note: No need to do cursor compositing since cursors are greyscale and not
-  // impacted by hue rotation.
-}
-
 void ColorEnhancementController::SetColorVisionCorrectionFilter(
     ColorVisionDeficiencyType type,
     float amount) {
+  if (type == ColorVisionDeficiencyType::kGrayscale) {
+    SetGreyscaleAmount(amount);
+    cvd_correction_matrix_.reset();
+    return;
+  }
+
+  SetGreyscaleAmount(0);
   if ((amount <= 0 || amount > 1) && cvd_correction_matrix_) {
     cvd_correction_matrix_.reset();
     return;
@@ -254,18 +230,6 @@ void ColorEnhancementController::SetColorVisionCorrectionFilter(
   }
 }
 
-bool ColorEnhancementController::ShouldEnableCursorCompositingForSepia() const {
-  if (!::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    return false;
-  }
-
-  // Enable cursor compositing if the sepia filter is on enough that
-  // the white mouse cursor stands out. Sepia will not be set on the root
-  // window if the setting value is greater than 1, so ignore that state.
-  return sepia_amount_ >= kMinSepiaPerceptableDifference && sepia_amount_ <= 1;
-}
-
 void ColorEnhancementController::OnRootWindowAdded(aura::Window* root_window) {
   UpdateDisplay(root_window);
 }
@@ -288,16 +252,11 @@ void ColorEnhancementController::UpdateDisplay(aura::Window* root_window) {
     // Reset layer state to defaults.
     layer->SetLayerGrayscale(0.0);
     layer->SetLayerSaturation(1.0);
-    layer->SetLayerSepia(0);
-    layer->SetLayerHueRotation(0);
     layer->ClearLayerCustomColorMatrix();
     return;
   }
 
   layer->SetLayerGrayscale(greyscale_amount_);
-  layer->SetLayerSaturation(saturation_amount_);
-  layer->SetLayerSepia(sepia_amount_);
-  layer->SetLayerHueRotation(hue_rotation_amount_);
   if (cvd_correction_matrix_) {
     layer->SetLayerCustomColorMatrix(*cvd_correction_matrix_);
   } else {

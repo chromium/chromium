@@ -151,54 +151,6 @@
         id="colorFilteringIntensitySlider">
       </settings-slider>
     </div>
-    <div class="settings-box settings-box-row">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{greyscaleLabel}
-      </div>
-      <settings-slider
-          pref="{{prefs.settings.a11y.color_filtering.greyscale_amount}}"
-          min="0" max="100"
-          label-aria="$i18n{greyscaleLabel}"
-          label-min="$i18n{colorFilterMinLabel}"
-          label-max="$i18n{colorFilterMaxLabel}">
-      </settings-slider>
-    </div>
-    <div class="settings-box settings-box-row">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{saturationLabel}
-      </div>
-      <settings-slider
-        pref="{{prefs.settings.a11y.color_filtering.saturation_amount}}"
-        min="100" max="1000"
-        label-aria="$i18n{saturationLabel}"
-        label-min="$i18n{colorFilterMinLabel}"
-        label-max="$i18n{colorFilterMaxLabel}">
-      </settings-slider>
-    </div>
-    <div class="settings-box settings-box-row">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{sepiaLabel}
-      </div>
-      <settings-slider
-        pref="{{prefs.settings.a11y.color_filtering.sepia_amount}}"
-        min="0" max="100"
-        label-aria="$i18n{sepiaLabel}"
-        label-min="$i18n{colorFilterMinLabel}"
-        label-max="$i18n{colorFilterMaxLabel}">
-      </settings-slider>
-    </div>
-    <div class="settings-box settings-box-row">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{hueRotationLabel}
-      </div>
-      <settings-slider
-        pref="{{prefs.settings.a11y.color_filtering.hue_rotation_amount}}"
-        min="0" max="359"
-        label-aria="$i18n{hueRotationLabel}"
-        label-min="$i18n{colorFilterMinLabel}"
-        label-max="$i18n{colorFilterMaxLabel}">
-      </settings-slider>
-    </div>
   </template>
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">

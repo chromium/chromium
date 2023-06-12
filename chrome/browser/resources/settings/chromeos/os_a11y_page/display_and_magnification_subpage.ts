@@ -88,13 +88,15 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
         readOnly: true,
         type: Array,
         value() {
-          // These values correspond to ColorVisionDeficiencyType enums in
+          // The first 3 values correspond to ColorVisionDeficiencyType enums in
           // ash/color_enhancement/color_enhancement_controller.cc.
           // CVD types are ordered here by how common they are.
+          // The final value is a greyscale color filter.
           return [
             {value: 1, name: loadTimeData.getString('deuteranomalyFilter')},
             {value: 0, name: loadTimeData.getString('protanomalyFilter')},
             {value: 2, name: loadTimeData.getString('tritanomalyFilter')},
+            {value: 3, name: loadTimeData.getString('greyscaleLabel')},
           ];
         },
       },

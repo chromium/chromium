@@ -428,18 +428,6 @@ const char kAccessibilityAutoclickMenuPosition[] =
 // Whether to enable color filtering settings.
 const char kAccessibilityColorFiltering[] =
     "settings.a11y.color_filtering.enabled";
-// How much to greyscale the display.
-const char kAccessibilityGreyscaleAmount[] =
-    "settings.a11y.color_filtering.greyscale_amount";
-// How much to saturate the display.
-const char kAccessibilitySaturationAmount[] =
-    "settings.a11y.color_filtering.saturation_amount";
-// How much sepia the display.
-const char kAccessibilitySepiaAmount[] =
-    "settings.a11y.color_filtering.sepia_amount";
-// How much to rotate the hue on the display.
-const char kAccessibilityHueRotationAmount[] =
-    "settings.a11y.color_filtering.hue_rotation_amount";
 // The amount of a color vision correction filter to apply.
 const char kAccessibilityColorVisionCorrectionAmount[] =
     "settings.a11y.color_filtering.color_vision_correction_amount";

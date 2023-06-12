@@ -1109,15 +1109,6 @@
   <message name="IDS_SETTINGS_GREYSCALE_LABEL" desc="Label for slider which controls greyscale UI filter.">
     Greyscale
   </message>
-  <message name="IDS_SETTINGS_SEPIA_LABEL" desc="Label for slider which controls sepia UI filter.">
-    Sepia
-  </message>
-  <message name="IDS_SETTINGS_SATURATION_LABEL" desc="Label for slider which controls saturation filter UI.">
-    Saturation
-  </message>
-  <message name="IDS_SETTINGS_HUE_ROTATION_LABEL" desc="Label for slider which controls hue rotation filter UI.">
-    Hue rotation
-  </message>
   <message name="IDS_SETTINGS_PROTANOMALY_FILTER" desc="Label for a setting drop-down menu option for a color filter that helps people with protanomaly.">
     Red-green filter (red weak, protanomaly)
   </message>

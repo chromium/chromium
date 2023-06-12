@@ -101105,9 +101105,9 @@ would be helpful to identify which type is being sent.
   <int value="100036"
       label="AccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="100037" label="AccessibilityFloatingMenuPosition"/>
-  <int value="100038" label="AccessibilityGreyscaleAmount"/>
-  <int value="100039" label="AccessibilityHueRotationAmount"/>
-  <int value="100040" label="AccessibilitySaturationAmount"/>
+  <int value="100038" label="(obsolete) AccessibilityGreyscaleAmount"/>
+  <int value="100039" label="(obsolete) AccessibilityHueRotationAmount"/>
+  <int value="100040" label="(obsolete) AccessibilitySaturationAmount"/>
   <int value="100041" label="AccessibilityScreenMagnifierCenterFocus"/>
   <int value="100042"
       label="AccessibilityScreenMagnifierFocusFollowingEnabled"/>
@@ -101122,7 +101122,7 @@ would be helpful to identify which type is being sent.
   <int value="100050" label="AccessibilitySelectToSpeakVoiceName"/>
   <int value="100051" label="AccessibilitySelectToSpeakVoiceSwitching"/>
   <int value="100052" label="AccessibilitySelectToSpeakWordHighlight"/>
-  <int value="100053" label="AccessibilitySepiaAmount"/>
+  <int value="100053" label="(obsolete) AccessibilitySepiaAmount"/>
   <int value="100054" label="AccessibilitySwitchAccessAutoScanEnabled"/>
   <int value="100055" label="AccessibilitySwitchAccessAutoScanKeyboardSpeedMs"/>
   <int value="100056" label="AccessibilitySwitchAccessAutoScanSpeedMs"/>
