@@ -48,6 +48,9 @@ def __rewrite_rewrapper(ctx, cmd):
         if line.startswith("exec_strategy="):
             reproxy_config["exec_strategy"] = line.removeprefix("exec_strategy=")
 
+        if line.startswith("exec_timeout="):
+            reproxy_config["exec_timeout"] = line.removeprefix("exec_timeout=")
+
         if line.startswith("inputs="):
             reproxy_config["inputs"] = line.removeprefix("inputs").split(",")
 
