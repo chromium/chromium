@@ -238,6 +238,10 @@ source_set("ax_assistant") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "platform/ax_platform_node_test_helper.cc",
+    "platform/ax_platform_node_test_helper.h",
+    "platform/inspect/ax_inspect_test_helper.cc",
+    "platform/inspect/ax_inspect_test_helper.h",
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
     "test_ax_tree_update.cc",
@@ -255,7 +259,11 @@ static_library("test_support") {
     ]
   }
 
-  public_deps = [ ":accessibility" ]
+  public_deps = [
+    ":accessibility",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
 
 test("accessibility_unittests") {

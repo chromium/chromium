@@ -5,7 +5,6 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_
 
-#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,7 +21,7 @@ namespace ui {
 class AXInspectScenario;
 
 // A helper class for writing accessibility tree dump tests.
-class COMPONENT_EXPORT(AX_PLATFORM) AXInspectTestHelper {
+class AXInspectTestHelper {
  public:
   explicit AXInspectTestHelper(AXApiType::Type type);
   explicit AXInspectTestHelper(const char* expectation_type);

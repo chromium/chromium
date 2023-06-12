@@ -1727,6 +1727,7 @@ test("content_browsertests") {
     "//third_party/zlib",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
+    "//ui/accessibility:test_support",
     "//ui/base:test_support",
     "//ui/base/clipboard",
     "//ui/base/cursor",
