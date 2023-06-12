@@ -220,6 +220,15 @@ class SyncEngineImpl : public SyncEngine,
 
   std::unique_ptr<ActiveDevicesProvider> active_devices_provider_;
 
+  // Time when current object has been created. Used for metrics only.
+  const base::TimeTicks engine_created_time_for_metrics_;
+
+  // Whether the histogram for enabled invalidations has been already recorded.
+  // This is used to record only the first "invalidatons enabled" event,
+  // otherwise the metrics would be skewed by invalidations disabling and
+  // re-enabling.
+  bool invalidations_enabled_reported_ = false;
+
   // Checks that we're on the same thread this was constructed on (UI thread).
   SEQUENCE_CHECKER(sequence_checker_);
 

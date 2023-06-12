@@ -139,7 +139,8 @@ SyncEngineImpl::SyncEngineImpl(
 #else
       sessions_invalidation_enabled_(true),
 #endif
-      active_devices_provider_(std::move(active_devices_provider)) {
+      active_devices_provider_(std::move(active_devices_provider)),
+      engine_created_time_for_metrics_(base::TimeTicks::Now()) {
   DCHECK(prefs_);
   DCHECK(sync_invalidations_service_);
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
@@ -556,6 +557,14 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
     host_->OnBackedOffTypesChanged();
   }
   if (invalidation_status_changed) {
+    if (status.notifications_enabled && !invalidations_enabled_reported_) {
+      // Record the time since the engine was created until invalidations are
+      // initialized.
+      base::UmaHistogramMediumTimes(
+          "Sync.InvalidationsInitializationTime",
+          base::TimeTicks::Now() - engine_created_time_for_metrics_);
+      invalidations_enabled_reported_ = true;
+    }
     host_->OnInvalidationStatusChanged();
   }
   if (has_new_invalidated_data_types) {
