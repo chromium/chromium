@@ -38,7 +38,7 @@ import './tether_connection_dialog.js';
 
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
-import {isActiveSim, processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
+import {getApnDisplayName, isActiveSim, processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
@@ -1725,8 +1725,8 @@ class SettingsInternetDetailPageElement extends
       return '';
     }
 
-    return this.managedProperties_!.typeProperties.cellular!.connectedApn
-        .accessPointName;
+    return getApnDisplayName(
+        this.managedProperties_!.typeProperties.cellular!.connectedApn);
   }
 
 

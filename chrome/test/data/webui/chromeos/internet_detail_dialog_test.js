@@ -337,6 +337,18 @@ suite('internet-detail-dialog', () => {
         assertEquals(accessPointName, getApnSectionSublabel());
         assertFalse(isApnListShowing());
 
+        // Update the APN's name property.
+        const name = 'name';
+        await setupCellularNetwork(
+            /* isPrimary= */ true, /* isInhibited= */ false,
+            {accessPointName: accessPointName, name: name});
+
+        // Force a refresh.
+        internetDetailDialog.onDeviceStateListChanged();
+        await flushAsync();
+        assertEquals(name, getApnSectionSublabel());
+        assertFalse(isApnListShowing());
+
         // Expand the section, the sublabel should no longer show.
         apnSection.click();
         await flushAsync();
@@ -346,7 +358,7 @@ suite('internet-detail-dialog', () => {
         // Collapse the section, the sublabel should show.
         apnSection.click();
         await flushAsync();
-        assertEquals(accessPointName, getApnSectionSublabel());
+        assertEquals(name, getApnSectionSublabel());
         assertFalse(isApnListShowing());
       } else {
         assertTrue(!!legacyApnElement);

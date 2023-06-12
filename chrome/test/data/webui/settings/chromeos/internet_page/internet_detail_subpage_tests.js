@@ -1593,15 +1593,24 @@ suite('InternetDetailPage', function() {
           }],
         });
         await flushAsync();
-        const crLink =
+        const getCrLink = () =>
             internetDetailPage.shadowRoot.querySelector('#apnSubpageButton');
-        const apn =
-            crLink ? crLink.shadowRoot.querySelector('#subLabel') : null;
+        const getApn = () => getCrLink() ?
+            getCrLink().shadowRoot.querySelector('#subLabel') :
+            null;
         if (isApnRevampEnabled) {
-          assertTrue(!!apn);
-          assertEquals(apn.textContent.trim(), apnName);
+          assertTrue(!!getApn());
+          assertEquals(apnName, getApn().textContent.trim());
+
+          const name = 'name';
+          cellularNetwork.typeProperties.cellular.connectedApn.name = name;
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          await flushAsync();
+          assertTrue(!!getApn());
+          assertEquals(name, getApn().textContent.trim());
         } else {
-          assertFalse(!!apn);
+          assertFalse(!!getApn());
         }
       });
     });

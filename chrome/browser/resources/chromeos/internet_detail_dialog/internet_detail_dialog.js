@@ -25,7 +25,7 @@ import './strings.m.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {isActiveSim} from 'chrome://resources/ash/common/network/cellular_utils.js';
+import {getApnDisplayName, isActiveSim} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
@@ -495,8 +495,8 @@ Polymer({
     if (apnExpanded) {
       return '';
     }
-    return managedProperties.typeProperties.cellular.connectedApn
-        .accessPointName;
+    return getApnDisplayName(
+        managedProperties.typeProperties.cellular.connectedApn);
   },
 
   /**

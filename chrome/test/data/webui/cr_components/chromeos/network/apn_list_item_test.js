@@ -62,6 +62,13 @@ suite('ApnListItemTest', function() {
     await flushTasks();
     assertEquals(
         apnListItem.$.apnName.innerText, apnListItem.apn.accessPointName);
+
+    apnListItem.apn = {
+      accessPointName: apnListItem.apn.accessPointName,
+      name: 'name',
+    };
+    await flushTasks();
+    assertEquals(apnListItem.$.apnName.innerText, apnListItem.apn.name);
   });
 
   test('Check if connected sublabel is shown', async function() {
