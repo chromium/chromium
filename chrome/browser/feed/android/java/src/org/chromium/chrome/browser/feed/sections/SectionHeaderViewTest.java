@@ -37,7 +37,6 @@ import org.chromium.components.feature_engagement.Tracker;
 /** Test for the WebFeedFollowIntroView class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class SectionHeaderViewTest {
-    private static final String TAG = "SectionHeaderViewTst";
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
 

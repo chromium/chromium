@@ -125,9 +125,6 @@ public class TabsTest {
 
     private boolean mNotifyChangedCalled;
 
-    private static final int SWIPE_TO_RIGHT_DIRECTION = 1;
-    private static final int SWIPE_TO_LEFT_DIRECTION = -1;
-
     private static final long WAIT_RESIZE_TIMEOUT_MS = 3000;
 
     private static final int STRESSFUL_TAB_COUNT = 100;

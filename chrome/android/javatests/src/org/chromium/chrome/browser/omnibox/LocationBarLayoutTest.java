@@ -67,7 +67,6 @@ import java.util.concurrent.ExecutionException;
 public class LocationBarLayoutTest {
     private static final String SEARCH_TERMS = "machine learning";
     private static final String SEARCH_TERMS_URL = "testing.com";
-    private static final String GOOGLE_SRP_URL = "https://www.google.com/search?q=machine+learning";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

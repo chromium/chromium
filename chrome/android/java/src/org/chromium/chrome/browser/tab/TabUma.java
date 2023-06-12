@@ -38,9 +38,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
     private static final int TAB_STATE_INITIAL = 0;
     private static final int TAB_STATE_ACTIVE = 1;
     private static final int TAB_STATE_INACTIVE = 2;
-    private static final int TAB_STATE_DETACHED = 3;
     private static final int TAB_STATE_CLOSED = 4;
-    private static final int TAB_STATE_MAX = TAB_STATE_CLOSED;
 
     // Counter of tab shows (as per onShow()) for all tabs.
     private static long sAllTabsShowCount;

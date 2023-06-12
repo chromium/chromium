@@ -50,8 +50,6 @@ import java.util.Map;
  * manipulating the views as needed.
  */
 public class TileRenderer {
-    private static final String TAG = "TileRenderer";
-
     private final Context mContext;
     private final Resources.Theme mTheme;
     private RoundedIconGenerator mIconGenerator;

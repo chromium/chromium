@@ -55,8 +55,6 @@ public class FilePersistedTabDataStorageTest {
 
     private static final byte[] DATA_A = {13, 14};
     private static final byte[] DATA_B = {9, 10};
-    private static final byte[] DATA_C = {15, 1};
-    private static final byte[] DATA_D = {16, 31};
 
     @Rule
     public TestRule mProcessor = new Features.InstrumentationProcessor();

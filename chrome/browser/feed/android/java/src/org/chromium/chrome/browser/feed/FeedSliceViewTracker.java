@@ -28,7 +28,6 @@ import java.util.HashSet;
  * the observer is notified.
  */
 public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener {
-    private static final String TAG = "FeedSliceViewTracker";
     private static final float DEFAULT_VIEW_LOG_THRESHOLD = .66f;
     private static final float GOOD_VISITS_EXPOSURE_THRESHOLD = 0.5f;
     private static final float GOOD_VISITS_COVERAGE_THRESHOLD = 0.25f;

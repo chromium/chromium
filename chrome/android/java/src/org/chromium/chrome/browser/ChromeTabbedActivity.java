@@ -236,8 +236,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         implements ChromeAccessibilityUtil.Observer {
     private static final String TAG = "ChromeTabbedActivity";
 
-    private static final String HELP_URL_PREFIX = "https://support.google.com/chrome/";
-
     protected static final String WINDOW_INDEX = "window_index";
 
     private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_INDEX;

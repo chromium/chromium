@@ -43,7 +43,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
     private static final int FAKE_NATIVE_HOLDER = 1;
-    private static final long INVALID_START_TIME = -1;
     private static final long START_TIME = 1000;
     private static final long TOTAL_BYTES = 100;
     private static final @ConnectionType int CONNECTION_TYPE = ConnectionType.CONNECTION_3G;

@@ -35,7 +35,6 @@ import dagger.Lazy;
 @ActivityScope
 public class DisclosureInfobar
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
-    private static final String TAG = "RunningInChrome";
     private final Resources mResources;
     private final Lazy<SnackbarManager> mSnackbarManager;
     private final TrustedWebActivityModel mModel;

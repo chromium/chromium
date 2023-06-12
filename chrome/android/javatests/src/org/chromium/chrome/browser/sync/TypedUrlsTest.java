@@ -50,8 +50,6 @@ public class TypedUrlsTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private static final String TAG = "TypedUrlsTest";
-
     private static final String TYPED_URLS_TYPE = "Typed URLs";
 
     // EmbeddedTestServer is preferred here but it can't be used. The test server

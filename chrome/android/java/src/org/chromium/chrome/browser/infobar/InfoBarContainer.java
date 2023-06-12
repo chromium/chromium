@@ -47,8 +47,6 @@ import java.util.ArrayList;
  * sync, see NativeInfoBar.
  */
 public class InfoBarContainer implements UserData, KeyboardVisibilityListener, InfoBar.Container {
-    private static final String TAG = "InfoBarContainer";
-
     private static final Class<InfoBarContainer> USER_DATA_KEY = InfoBarContainer.class;
 
     private static final ChromeAccessibilityUtil.Observer sAccessibilityObserver;

@@ -41,8 +41,6 @@ import java.util.Map;
  * Contains utility methods for interacting with WebAPKs.
  */
 public class WebApkUtils {
-    private static final String TAG = "cr_WebApkUtils";
-
     private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
 
     /** Returns whether the application is installed and enabled. */

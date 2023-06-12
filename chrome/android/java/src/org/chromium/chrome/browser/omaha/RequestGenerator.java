@@ -25,8 +25,6 @@ import java.util.Locale;
  * Generates XML requests to send to the Omaha server.
  */
 public abstract class RequestGenerator {
-    private static final String TAG = "RequestGenerator";
-
     // The Omaha specs say that new installs should use "-1".
     public static final int INSTALL_AGE_IMMEDIATELY_AFTER_INSTALLING = -1;
 

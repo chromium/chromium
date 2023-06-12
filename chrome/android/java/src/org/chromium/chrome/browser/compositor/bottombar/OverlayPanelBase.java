@@ -67,13 +67,10 @@ abstract class OverlayPanelBase {
     // interface.
     //
     /** The opacity of the Open-Tab icon when the Panel is peeking. */
-    private static final float OPEN_TAB_ICON_OPACITY_STATE_PEEKED = 1.f;
 
     /** The opacity of the Open-Tab icon when the Panel is expanded. */
-    private static final float OPEN_TAB_ICON_OPACITY_STATE_EXPANDED = 0.f;
 
     /** The opacity of the Open-Tab icon when the Panel is maximized. */
-    private static final float OPEN_TAB_ICON_OPACITY_STATE_MAXIMIZED = 0.f;
 
     /** The opacity of the close icon when the Panel is peeking. */
     private static final float CLOSE_ICON_OPACITY_STATE_PEEKED = 0.f;

@@ -91,9 +91,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
     // These entries duplicate some of the enum values from
     // `CableV2MobileEvent`. The C++ enum is the source of truth for these
     // values.
-    private static final int EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED = 23;
-    private static final int EVENT_BLUETOOTH_ADVERTISE_PERMISSION_GRANTED = 24;
-    private static final int EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REJECTED = 25;
 
     private enum Mode {
         QR, // QR code scanned by external app.

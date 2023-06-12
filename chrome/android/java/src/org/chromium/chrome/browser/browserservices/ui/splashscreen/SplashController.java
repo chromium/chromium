@@ -81,8 +81,6 @@ public class SplashController
         int ON_SPLASH_HIDDEN = 2;
     }
 
-    private static final String TAG = "SplashController";
-
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabObserverRegistrar mTabObserverRegistrar;

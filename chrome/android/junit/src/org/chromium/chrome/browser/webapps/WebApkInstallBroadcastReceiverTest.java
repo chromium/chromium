@@ -51,7 +51,6 @@ import org.chromium.components.webapps.WebApkInstallResult;
 @Features.EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
         ChromeFeatureList.WEB_APK_INSTALL_RETRY})
 public class WebApkInstallBroadcastReceiverTest {
-    private static final String PACKAGE_NAME = "org.chromium.webapk.for.testing";
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";
     private static final String URL = "https://test.com";

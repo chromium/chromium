@@ -52,7 +52,6 @@ public class TwaVerifierTest {
     private static final String INITIAL_URL = "https://www.initialurl.com/page.html";
     private static final String ADDITIONAL_ORIGIN = "https://www.otherverifiedorigin.com";
     private static final String OTHER_URL = "https://www.notverifiedurl.com/page2.html";
-    private static final String PACKAGE_NAME = "some.package.name";
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();

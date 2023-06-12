@@ -32,7 +32,6 @@ import org.chromium.base.test.util.JniMocker;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchContextTest {
     private static final int INVALID = ContextualSearchContext.INVALID_OFFSET;
-    private static final String UTF_8 = "UTF-8";
     private static final String SAMPLE_TEXT =
             "Now Barack Obama is not the best example.  And Clinton is ambiguous.";
     private static final String HOME_COUNTRY = "unused";

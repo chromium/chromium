@@ -47,7 +47,6 @@ public class RelatedSearchesStampTest {
     private static final String RELATED_SEARCHES_CONTENT_EXPERIMENT = "c";
     private static final String RELATED_SEARCHES_BOTH_EXPERIMENT = "b";
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
-    private static final String RELATED_SEARCHES_DARK_LAUNCH = "d";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
 

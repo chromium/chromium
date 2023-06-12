@@ -84,8 +84,6 @@ import java.lang.annotation.RetentionPolicy;
  * Chrome for a while.
  */
 public final class ReturnToChromeUtil {
-    private static final String TAG = "TabSwitcherOnReturn";
-
     /**
      * The reasons of failing to show the home surface UI on a NTP.
      *
@@ -124,7 +122,6 @@ public final class ReturnToChromeUtil {
     public static final String FAIL_TO_SHOW_HOME_SURFACE_UI_UMA =
             "NewTabPage.FailToShowHomeSurfaceUI";
 
-    private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
 
     private static boolean sIsHomepagePolicyManagerInitializedRecorded;

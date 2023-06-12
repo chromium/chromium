@@ -112,7 +112,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;
-    private static final int sKeyboardAndAccessoryDp = sKeyboardHeightDp + sAccessoryHeightDp;
 
     @Mock
     private ChromeWindow mMockWindow;

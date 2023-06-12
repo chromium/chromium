@@ -80,7 +80,6 @@ public class TabbedAppMenuTest {
                     .build();
 
     private static final String TEST_URL = UrlUtils.encodeHtmlDataUri("<html>foo</html>");
-    private static final String TEST_URL2 = UrlUtils.encodeHtmlDataUri("<html>bar</html>");
 
     private AppMenuHandler mAppMenuHandler;
 

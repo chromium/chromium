@@ -15,7 +15,6 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
@@ -119,7 +118,6 @@ public class TileRendererTest {
     private ShadowPostTaskImpl mPostTaskRunner;
     private Activity mActivity;
     private LinearLayout mSharedParent;
-    private final ArgumentCaptor<Drawable> mIconCaptor = ArgumentCaptor.forClass(Drawable.class);
     private final ArgumentCaptor<LargeIconCallback> mImageFetcherCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 

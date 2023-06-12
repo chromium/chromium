@@ -19,8 +19,6 @@ import org.chromium.components.version_info.VersionInfo;
  * - reporting that all partner bookmarks were read to the C++ side.
  */
 public class PartnerBookmarksShim {
-    private static final String TAG = "PartnerBookmarksShim";
-
     private static boolean sIsReadingAttempted;
 
     /**
@@ -44,5 +42,4 @@ public class PartnerBookmarksShim {
 
         reader.readBookmarks();
     }
-
 }

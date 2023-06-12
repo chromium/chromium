@@ -32,8 +32,6 @@ public class HostBrowserUtils {
 
     private static final String VERSION_NAME_DEVELOPER_BUILD = "Developer Build";
 
-    private static final String TAG = "cr_HostBrowserUtils";
-
     public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
 
     public static String ARC_WEBAPK_BROWSER = "org.chromium.arc.webapk";

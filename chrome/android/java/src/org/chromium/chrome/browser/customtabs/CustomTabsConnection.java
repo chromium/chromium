@@ -126,17 +126,14 @@ public class CustomTabsConnection {
     private static final int SPECULATION_STATUS_ON_START_ALLOWED = 0;
     // What kind of speculation was started, counted in addition to
     // SPECULATION_STATUS_ALLOWED.
-    private static final int SPECULATION_STATUS_ON_START_PREFETCH = 1;
     private static final int SPECULATION_STATUS_ON_START_PRERENDER = 2;
     private static final int SPECULATION_STATUS_ON_START_BACKGROUND_TAB = 3;
-    private static final int SPECULATION_STATUS_ON_START_PRERENDER_NOT_STARTED = 4;
     // The following describe reasons why a speculation was not allowed, and are
     // counted instead of SPECULATION_STATUS_ALLOWED.
     private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_DEVICE_CLASS = 5;
     private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_BLOCK_3RD_PARTY_COOKIES = 6;
     private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED =
             7;
-    private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_DATA_REDUCTION_ENABLED = 8;
     // Obsolete due to no longer running the experiment
     // "PredictivePrefetchingAllowedOnAllConnectionTypes".
     // private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_METERED = 9;
@@ -145,8 +142,6 @@ public class CustomTabsConnection {
     // For CustomTabs.SpeculationStatusOnSwap, see tools/metrics/enums.xml. Append only.
     private static final int SPECULATION_STATUS_ON_SWAP_BACKGROUND_TAB_TAKEN = 0;
     private static final int SPECULATION_STATUS_ON_SWAP_BACKGROUND_TAB_NOT_MATCHED = 1;
-    private static final int SPECULATION_STATUS_ON_SWAP_PRERENDER_TAKEN = 2;
-    private static final int SPECULATION_STATUS_ON_SWAP_PRERENDER_NOT_MATCHED = 3;
     private static final int SPECULATION_STATUS_ON_SWAP_MAX = 4;
 
     // Constants for sending connection characteristics.

@@ -105,7 +105,6 @@ public class BookmarkImageFetcherTest {
     private final BookmarkId mBookmarkId2 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
     private final BookmarkId mReadingListFolderId =
             new BookmarkId(/*id=*/5, BookmarkType.READING_LIST);
-    private final BookmarkId mReadingListId = new BookmarkId(/*id=*/6, BookmarkType.READING_LIST);
 
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false);

@@ -32,8 +32,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ChromiumAndroidLinkerMetricsTest {
-    private static final String TAG = "ChromiumAndroidLinkerMetricsTest";
-
     private static final String BROWSER_HISTOGRAM = "ChromiumAndroidLinker.BrowserLoadTime2";
     private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 

@@ -77,7 +77,6 @@ public final class TabGridViewBinderUnitTest {
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
     private Bitmap mBitmap;
-    private static final float RESOURCE_DIMEN = 10;
 
     @Before
     public void setUp() {

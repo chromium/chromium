@@ -30,8 +30,6 @@ public class IntentWithRequestMetadataHandler {
     public static final String EXTRA_REQUEST_METADATA_TOKEN =
             "org.chromium.chrome.browser.request_metadata_token";
 
-    private static final String TAG = "MetadataHandler";
-
     private static final Object INSTANCE_LOCK = new Object();
     private static IntentWithRequestMetadataHandler sIntentWithRequestMetadataHandler;
     private SecureRandom mSecureRandom = new SecureRandom();

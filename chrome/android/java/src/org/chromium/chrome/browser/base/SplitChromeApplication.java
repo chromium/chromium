@@ -28,8 +28,6 @@ import org.chromium.build.annotations.IdentifierNameString;
  * This class will be used when isolated splits are enabled.
  */
 public class SplitChromeApplication extends SplitCompatApplication {
-    private static final String TAG = "SplitChromeApp";
-
     @IdentifierNameString
     private static String sImplClassName = "org.chromium.chrome.browser.ChromeApplicationImpl";
 

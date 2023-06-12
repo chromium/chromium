@@ -30,7 +30,6 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  * Glues download dialogs UI code and handles the communication to download native backend.
  */
 public class DownloadDialogBridge implements DownloadLocationDialogController {
-    private static final long INVALID_START_TIME = -1;
     private long mNativeDownloadDialogBridge;
 
     private final DownloadLocationDialogCoordinator mLocationDialog;

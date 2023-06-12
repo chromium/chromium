@@ -101,12 +101,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private static final int INVALID_INSTANCE_ID = MultiInstanceManagerApi31.INVALID_INSTANCE_ID;
     private static final int INSTANCE_ID_1 = 1;
-    private static final int PASSED_ID_1 = 1;
     private static final int PASSED_ID_2 = 2;
-    private static final int PASSED_ID_3 = 3;
-    private static final int PASSED_ID_4 = 4;
     private static final int PASSED_ID_INVALID = INVALID_INSTANCE_ID;
-    private static final int SAVED_ID_INVALID = INVALID_INSTANCE_ID;
     private static final int TASK_ID_56 = 56;
     private static final int TASK_ID_57 = 57;
     private static final int TASK_ID_58 = 58;

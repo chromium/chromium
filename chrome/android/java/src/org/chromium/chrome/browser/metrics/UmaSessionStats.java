@@ -34,7 +34,6 @@ import org.chromium.url.GURL;
  */
 public class UmaSessionStats {
     private static final String TAG = "UmaSessionStats";
-    private static final String SAMSUNG_MULTWINDOW_PACKAGE = "com.sec.feature.multiwindow";
 
     private static long sNativeUmaSessionStats;
 

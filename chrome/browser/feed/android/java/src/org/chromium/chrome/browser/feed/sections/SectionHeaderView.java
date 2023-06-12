@@ -48,8 +48,6 @@ import org.chromium.ui.widget.ViewRectProvider;
  * This view can be inflated from one of two layouts, hence many @Nullables.
  */
 public class SectionHeaderView extends LinearLayout {
-    private static final String TAG = "SectionHeaderView";
-
     /** OnTabSelectedListener that delegates calls to the SectionHeadSelectedListener. */
     private class SectionHeaderTabListener implements TabLayout.OnTabSelectedListener {
         private @Nullable OnSectionHeaderSelectedListener mListener;
@@ -132,7 +130,6 @@ public class SectionHeaderView extends LinearLayout {
     private @Px int mToolbarHeight;
     private @Px int mTouchSize;
     // Action ID for accessibility.
-    private int mActionId = -1;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

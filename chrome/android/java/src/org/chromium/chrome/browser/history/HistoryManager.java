@@ -95,7 +95,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     // dividing by 10 until it gets under 100, reaching 10 for both
     // UMA_MAX_BUCKET_VALUE and UMA_MAX_SUBSET_BUCKET_VALUE, and adds +1
     // for overflow. How do we keep that in sync with this code?
-    private static final int UMA_BUCKET_COUNT = 11;
     private static final int HISTORY_TAB_INDEX = 0;
     private static final int JOURNEYS_TAB_INDEX = 1;
 

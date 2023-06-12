@@ -81,9 +81,7 @@ import java.util.Map;
 public class SingleWebFeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
     private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
-    private static final String TEST_DATA = "test";
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final String HEADER_PREFIX = "header";
     private static final OpenUrlOptions DEFAULT_OPEN_URL_OPTIONS = new OpenUrlOptions() {};
 
     private Activity mActivity;

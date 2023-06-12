@@ -39,7 +39,6 @@ import java.util.List;
  */
 public class TabGroupUtils {
     private static TabModelSelectorTabObserver sTabModelSelectorTabObserver;
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     public static void maybeShowIPH(@FeatureConstants String featureName, View view,
             @Nullable BottomSheetController bottomSheetController) {

@@ -46,14 +46,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -72,22 +69,6 @@ import java.util.Arrays;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest {
-    private static class FakeTabCreator extends MockTabCreator {
-        FakeTabCreator() {
-            super(false, null);
-        }
-
-        @Override
-        public Tab launchUrl(String url, @TabLaunchType int type) {
-            mLastLaunchedUrl = url;
-            return null;
-        }
-
-        String mLastLaunchedUrl;
-    };
-
-    private static final FakeTabCreator sTabCreator = new FakeTabCreator();
-
     private static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
     private static final String TEST_ETLD_PLUS_ONE_1 = "one.com";
     private static final String TEST_ETLD_PLUS_ONE_2 = "two.com";

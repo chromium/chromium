@@ -107,7 +107,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InstantStartTabSwitcherTest {
     // clang-format on
     private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
-    private static final long MAX_TIMEOUT_MS = 30000L;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

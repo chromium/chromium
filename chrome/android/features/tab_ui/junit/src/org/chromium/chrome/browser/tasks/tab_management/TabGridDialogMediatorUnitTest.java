@@ -96,7 +96,6 @@ public class TabGridDialogMediatorUnitTest {
     private static final String TAB3_TITLE = "Tab3";
     private static final String DIALOG_TITLE1 = "1 tab";
     private static final String DIALOG_TITLE2 = "2 tabs";
-    private static final String REMOVE_BUTTON_STRING = "Remove";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;

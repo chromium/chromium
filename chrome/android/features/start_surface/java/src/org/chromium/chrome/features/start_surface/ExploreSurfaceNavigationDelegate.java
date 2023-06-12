@@ -16,8 +16,6 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** Implementation of the {@link NativePageNavigationDelegate} for the explore surface. */
 class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
-    private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
-
     private final Supplier<Tab> mParentTabSupplier;
 
     ExploreSurfaceNavigationDelegate(Supplier<Tab> parentTabSupplier) {

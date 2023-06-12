@@ -37,8 +37,6 @@ import java.util.Set;
  * or open a web app.
  */
 public class ShortcutHelper {
-    private static final String TAG = "ShortcutHelper";
-
     // Holds splash images for web apps that are currently being installed. After installation is
     // complete, the image associated with the web app will be moved to the appropriate {@link
     // WebappDataStorage}.

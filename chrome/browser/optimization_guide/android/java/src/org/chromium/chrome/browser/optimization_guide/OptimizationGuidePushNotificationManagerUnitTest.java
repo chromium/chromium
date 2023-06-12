@@ -63,8 +63,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @Mock
     OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
-    private static final String TEST_URL = "https://testurl.com/";
-
     private static final HintNotificationPayload NOTIFICATION_WITH_PAYLOAD =
             HintNotificationPayload.newBuilder()
                     .setOptimizationType(OptimizationType.PERFORMANCE_HINTS)

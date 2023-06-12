@@ -56,8 +56,6 @@ import org.chromium.ui.util.ColorUtils;
  * The activity for custom tabs. It will be launched on top of a client's task.
  */
 public class CustomTabActivity extends BaseCustomTabActivity {
-    private static final String TAG = "CustomTabActivity";
-
     private CustomTabsSessionToken mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();

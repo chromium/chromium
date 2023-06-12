@@ -45,10 +45,7 @@ import java.util.TreeSet;
  */
 public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     // Enum values for the Translate.ExplicitLanguageAsk.Event histogram.
-    private static final int PROMPT_EVENT_SHOWN = 0;
-    private static final int PROMPT_EVENT_SAVED = 1;
     private static final int PROMPT_EVENT_CANCELLED = 2;
-    private static final int PROMPT_EVENT_MAX = PROMPT_EVENT_CANCELLED;
 
     private class SeparatorViewHolder extends ViewHolder {
         SeparatorViewHolder(View view) {

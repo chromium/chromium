@@ -21,7 +21,6 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
  */
 public class PasswordMigrationWarningOptionsFragment extends Fragment {
     private Context mContext;
-    private boolean mShouldSignIn = true;
     private Runnable mNextCallback;
     private Runnable mCancelCallback;
     private String mChannelString;

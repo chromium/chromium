@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -23,8 +22,6 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -35,15 +32,12 @@ import org.chromium.ui.widget.ViewRectProvider;
  * they can follow.
  */
 class WebFeedFollowIntroView {
-    private static final String TAG = "WFFollowIntroView";
-
     private static final int DEFAULT_SHOW_TIMEOUT_MILLIS = 8 * 1000;
     private static final String PARAM_SHOW_TIMEOUT_MILLIS = "intro-show-timeout-millis";
 
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
     private final Handler mHandler = new Handler();
-    private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final View mMenuButtonAnchorView;
     @Nullable
     private final Tracker mFeatureEngagementTracker;

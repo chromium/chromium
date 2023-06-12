@@ -19,7 +19,6 @@ import org.chromium.ui.util.ColorUtils;
  * Internal themes are provided via @{@link TabUiThemeProvider}
  */
 public class TabUiThemeUtil {
-    private static final String TAG = "TabUiThemeProvider";
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
     private static final float DETACHED_TAB_OVERLAY_ALPHA = 0.85f;
     private static final float DETACHED_TAB_OVERLAY_ALPHA_EDIT_MODE = 0.2f;

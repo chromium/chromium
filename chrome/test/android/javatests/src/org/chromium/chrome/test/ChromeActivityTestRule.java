@@ -70,12 +70,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @param <T> The {@link Activity} class under test.
  */
 public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivityTestRule<T> {
-    private static final String TAG = "ChromeATR";
-
     // The number of ms to wait for the rendering activity to be started.
     private static final int ACTIVITY_START_TIMEOUT_MS = 1000;
-
-    private static final long OMNIBOX_FIND_SUGGESTION_TIMEOUT_MS = 10 * 1000;
 
     private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
     private String mCurrentTestName;

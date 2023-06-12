@@ -84,7 +84,6 @@ import java.util.List;
 @Config(manifest = Config.NONE, shadows = {ShadowLog.class, ShadowLooper.class, ShadowGURL.class})
 @Features.EnableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
 public class AutocompleteMediatorUnitTest {
-    private static final int MINIMUM_NUMBER_OF_SUGGESTIONS_TO_SHOW = 5;
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;
 

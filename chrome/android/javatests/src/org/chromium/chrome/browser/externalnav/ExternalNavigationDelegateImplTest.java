@@ -42,8 +42,6 @@ import java.util.function.Function;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExternalNavigationDelegateImplTest {
-    private static final boolean IS_GOOGLE_REFERRER = true;
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 

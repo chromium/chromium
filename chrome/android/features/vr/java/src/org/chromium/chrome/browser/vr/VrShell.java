@@ -40,7 +40,6 @@ import org.chromium.ui.display.DisplayAndroid;
 @JNINamespace("vr")
 public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
     private static final String TAG = "VrShellImpl";
-    private static final float INCHES_TO_METERS = 0.0254f;
 
     private final Activity mActivity;
     private final VrShellDelegate mDelegate;

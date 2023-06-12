@@ -120,7 +120,6 @@ public class StripLayoutHelperTest {
     private static final float SCREEN_WIDTH_LANDSCAPE = 1200.f;
     private static final float SCREEN_HEIGHT = 1600.f;
     private static final float TAB_WIDTH_1 = 140.f;
-    private static final float TAB_WIDTH_2 = 160.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_OVERLAP_WIDTH = 28.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
@@ -130,14 +129,12 @@ public class StripLayoutHelperTest {
     private static final float NEW_TAB_BTN_Y = 1400.f;
     private static final float NEW_TAB_BTN_WIDTH = 100.f;
     private static final float NEW_TAB_BTN_HEIGHT = 100.f;
-    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
     private static final float BUTTON_END_PADDING_FOLIO = 10.f;
     private static final float BUTTON_END_PADDING_DETACHED = 9.f;
     private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO = 36.f;
     private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_DETACHED = 38.f;
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
-    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END_MODEL_SELECTOR = 120;
 
     private static final float EPSILON = 0.001f;
 

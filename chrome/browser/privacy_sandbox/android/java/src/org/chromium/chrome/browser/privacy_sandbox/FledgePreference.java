@@ -21,8 +21,6 @@ import org.chromium.url.GURL;
  * A Preference to represent a site using FLEDGE.
  */
 public class FledgePreference extends ImageButtonPreference {
-    private static final int FAVICON_PADDING_DP = 4;
-
     // The ETLD+1 that used Fledge.
     private final @NonNull String mSite;
     private final LargeIconBridge mLargeIconBridge;

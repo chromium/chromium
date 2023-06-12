@@ -64,8 +64,6 @@ public class InfoBarTest {
     public BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    private static final long MAX_TIMEOUT = 2000L;
-    private static final int CHECK_INTERVAL = 500;
     private static final String POPUP_PAGE =
             "/chrome/test/data/popup_blocker/popup-window-open.html";
     private static final String HELLO_WORLD_URL = UrlUtils.encodeHtmlDataUri("<html>"
@@ -74,7 +72,6 @@ public class InfoBarTest {
             + "</html>");
     private static final String SHARED_PREF_DISPLAYED_FRE_OR_SECOND_PROMO_VERSION =
             "displayed_data_reduction_promo_version";
-    private static final String M51_VERSION = "Chrome 51.0.2704.0";
 
     private static EmbeddedTestServer sTestServer = sActivityTestRule.getTestServer();
     private InfoBarTestAnimationListener mListener;

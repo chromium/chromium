@@ -74,7 +74,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
     private static final int CARD_ISSUER_UNKNOWN = 0;
-    private static final int CARD_ISSUER_GOOGLE = 1;
 
     private static final CreditCard SAMPLE_CARD_VISA = new CreditCard(/* guid= */ "",
             /* origin= */ "",

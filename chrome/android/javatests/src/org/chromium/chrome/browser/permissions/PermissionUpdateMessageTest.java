@@ -64,7 +64,6 @@ public class PermissionUpdateMessageTest {
     private static final String GEOLOCATION_PAGE =
             "/chrome/test/data/geolocation/geolocation_on_load.html";
     private static final String MEDIASTREAM_PAGE = "/content/test/data/media/getusermedia.html";
-    private static final String DOWNLOAD_PAGE = "/chrome/test/data/android/download/get.html";
     private EmbeddedTestServer mTestServer;
 
     @Rule

@@ -22,8 +22,6 @@ import androidx.core.view.WindowCompat;
  * Status Bar.
  */
 public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
-    private static final String TAG = "EdgeToEdgeController";
-
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
 

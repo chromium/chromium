@@ -60,7 +60,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
 public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCase {
-    private static final long CURRENCY_MUTLIPLIER = 1000000;
     private static final String TITLE = "PowerBookmarkShoppingItemRow";
 
     @Rule

@@ -60,7 +60,6 @@ public class NativeUiUtils {
 
     // Arbitrary but reasonable amount of time to expect the UI to stop updating after interacting
     // with an element.
-    private static final int DEFAULT_UI_QUIESCENCE_TIMEOUT_MS = 2000;
 
     /**
      * Blocks until the specified number of frames have been triggered by the Choreographer.

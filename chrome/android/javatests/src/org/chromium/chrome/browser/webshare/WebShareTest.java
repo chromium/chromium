@@ -51,10 +51,7 @@ public class WebShareTest {
 
     private static final String TEST_FILE = "/content/test/data/android/webshare.html";
     private static final String TEST_FILE_APK = "/content/test/data/android/webshare-apk.html";
-    private static final String TEST_FILE_BMP = "/content/test/data/android/webshare-bmp.html";
-    private static final String TEST_FILE_CSV = "/content/test/data/android/webshare-csv.html";
     private static final String TEST_FILE_DEX = "/content/test/data/android/webshare-dex.html";
-    private static final String TEST_FILE_OGG = "/content/test/data/android/webshare-ogg.html";
     private static final String TEST_FILE_MANY = "/content/test/data/android/webshare-many.html";
     private static final String TEST_FILE_LARGE = "/content/test/data/android/webshare-large.html";
     private static final String TEST_FILE_SEPARATOR =

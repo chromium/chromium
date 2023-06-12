@@ -88,8 +88,6 @@ public class TabImpl implements Tab {
 
     private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
 
-    private static final String REQUEST_DESKTOP_ENABLED_PARAM = "enabled";
-
     private long mNativeTabAndroid;
 
     /** Unique id of this tab (within its container). */

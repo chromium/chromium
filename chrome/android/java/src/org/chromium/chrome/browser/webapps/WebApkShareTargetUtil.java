@@ -27,8 +27,6 @@ import java.util.List;
  * Computes data for Post Share Target.
  */
 public class WebApkShareTargetUtil {
-    private static final String TAG = "WebApkShareTargetUtil";
-
     // A class containing data required to generate a share target post request.
     protected static class PostData {
         public boolean isMultipartEncoding;

@@ -15,9 +15,6 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
  * Records download related metrics on Android.
  */
 public class DownloadMetrics {
-    private static final String TAG = "DownloadMetrics";
-    private static final int MAX_VIEW_RETENTION_MINUTES = 30 * 24 * 60;
-
     /**
      * Records download open source.
      * @param source The source where the user opened the download media file.

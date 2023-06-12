@@ -33,8 +33,6 @@ import java.lang.annotation.RetentionPolicy;
  * single entry point here to make more complex tracking easier to add in the future.
  */
 public class NotificationUmaTracker {
-    private static final String TAG = "NotifsUMATracker";
-
     /*
      * A list of notification types.  To add a type to this list please update
      * SystemNotificationType in enums.xml and make sure to keep this list in sync.  Additions

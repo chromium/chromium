@@ -39,8 +39,6 @@ import java.util.Set;
  * to a Bluetooth device or scanning for nearby Bluetooth devices.
  */
 public class BluetoothNotificationManager {
-    private static final String TAG = "BluetoothNotificationManager";
-
     private static final String NOTIFICATION_NAMESPACE = "BluetoothNotificationManager";
 
     public static final String ACTION_BLUETOOTH_UPDATE =

@@ -57,7 +57,6 @@ public final class NoteCreationMetrics {
     }
 
     // Max expected number of dynamically loaded templates.
-    private static final int MAX_NUMBER_OF_TEMPLATES = 50;
 
     /**
      * Records metrics related to the user starting the creation flow.

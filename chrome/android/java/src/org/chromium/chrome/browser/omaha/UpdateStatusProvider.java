@@ -20,7 +20,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
@@ -231,7 +230,6 @@ public class UpdateStatusProvider {
     }
 
     private static final class UpdateQuery extends AsyncTask<UpdateStatus> {
-        private final Context mContext = ContextUtils.getApplicationContext();
         private final Runnable mCallback;
 
         private @Nullable UpdateStatus mStatus;

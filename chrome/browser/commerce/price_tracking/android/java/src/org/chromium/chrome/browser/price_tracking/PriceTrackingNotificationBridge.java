@@ -40,7 +40,6 @@ import java.util.List;
  */
 public class PriceTrackingNotificationBridge {
     private static final String TAG = "PriceTrackNotif";
-    private static final long UNITS_TO_MICROS = 1000000L;
     private final long mNativePriceTrackingNotificationBridge;
     private final PriceDropNotifier mNotifier;
     private final PriceDropNotificationManager mPriceDropNotificationManager;

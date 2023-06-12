@@ -86,8 +86,6 @@ public class StartSurfaceBackButtonTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = sClassParamsForStartSurfaceTest;
 
-    private static final long MAX_TIMEOUT_MS = 40000L;
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule

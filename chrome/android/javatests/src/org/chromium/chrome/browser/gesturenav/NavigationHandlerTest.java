@@ -59,7 +59,6 @@ public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
-    private static final int PAGELOAD_TIMEOUT_MS = 4000;
 
     private EmbeddedTestServer mTestServer;
     private HistoryNavigationLayout mNavigationLayout;

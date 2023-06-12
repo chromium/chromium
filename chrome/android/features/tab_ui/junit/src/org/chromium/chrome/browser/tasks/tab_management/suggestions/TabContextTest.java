@@ -49,7 +49,6 @@ public class TabContextTest {
     private static final int RELATED_TAB_1_ID = 2;
     private static final int NEW_TAB_1_ID = 3;
     private static final int NEW_TAB_2_ID = 4;
-    private static final int LAST_COMMITTED_INDEX = 1;
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

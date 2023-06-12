@@ -22,7 +22,6 @@ import org.chromium.components.omnibox.SuggestionAnswer;
  * AnswerTextNewLayout builds Omnibox styled Answer suggestion texts for revamped answer layouts.
  */
 class AnswerTextNewLayout extends AnswerText {
-    private static final String TAG = "AnswerTextNewLayout";
     private final boolean mIsAnswer;
     private final @AnswerType int mAnswerType;
     private final boolean mStockTextColorReverse;

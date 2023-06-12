@@ -25,7 +25,6 @@ public class AdaptiveToolbarStatePredictor {
      * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
      * components/segmentation_platform/internal/constants.cc.
      */
-    private static final String ADAPTIVE_TOOLBAR_SEGMENTATION_KEY = "adaptive_toolbar";
 
     private static Pair<Boolean, Integer> sSegmentationResultsForTesting;
     private static Integer sToolbarStateForTesting;

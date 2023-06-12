@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACT
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Process;
 
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -85,7 +84,6 @@ public class CustomTabsConnectionUnitTest {
             new ArrayList<String>(List.of(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
                     ChromeFeatureList.CCT_BRAND_TRANSPARENCY));
     private CustomTabsConnection mConnection;
-    private int mUid = Process.myUid();
 
     @Implements(UmaSessionStats.class)
     public static class ShadowUmaSessionStats {

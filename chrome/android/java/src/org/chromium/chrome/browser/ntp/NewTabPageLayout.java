@@ -80,7 +80,6 @@ public class NewTabPageLayout extends LinearLayout {
     private final int mTileGridLayoutBleed;
     private int mSearchBoxTwoSideMargin;
     private final Context mContext;
-    private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
 
     private final int mMvtLandscapeLateralMarginTablet;
     private final int mMvtExtraRightMarginTablet;

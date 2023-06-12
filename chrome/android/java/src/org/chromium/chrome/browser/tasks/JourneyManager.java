@@ -34,7 +34,6 @@ import org.chromium.ui.base.PageTransition;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Manages Journey related signals, specifically those related to tab engagement.
@@ -47,7 +46,6 @@ public class JourneyManager implements DestroyObserver {
 
     // We track this in seconds because UMA can only handle 32-bit signed integers, which 45 days
     // will overflow.
-    private static final int MAX_ENGAGEMENT_TIME_S = (int) TimeUnit.DAYS.toSeconds(45);
 
     private final TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;

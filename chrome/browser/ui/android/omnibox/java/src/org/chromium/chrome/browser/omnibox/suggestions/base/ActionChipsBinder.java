@@ -16,14 +16,11 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /**
  * Binds ActionChipsView properties.
  */
 public final class ActionChipsBinder {
-    private static final ViewBinder<PropertyModel, View, PropertyKey> NOOP_BINDER = (m, v, p) -> {};
-
     public static void bind(PropertyModel model, ActionChipsView view, PropertyKey propertyKey) {
         if (ActionChipsProperties.ACTION_CHIPS == propertyKey) {
             var isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)

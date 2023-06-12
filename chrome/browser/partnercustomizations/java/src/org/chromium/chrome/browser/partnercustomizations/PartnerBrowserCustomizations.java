@@ -50,7 +50,6 @@ public class PartnerBrowserCustomizations {
     static final String PARTNER_DISABLE_BOOKMARKS_EDITING_PATH = "disablebookmarksediting";
     @VisibleForTesting
     static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
-    private static String sProviderAuthority = PROVIDER_AUTHORITY;
     private static Boolean sIgnoreSystemPackageCheck;
     private static Boolean sValid;
 

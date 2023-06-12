@@ -108,7 +108,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
     private static final int ORDER_CHECK_PASSWORDS = 2;
     private static final int ORDER_TRUSTED_VAULT_BANNER = 3;
     private static final int ORDER_MANAGE_ACCOUNT_LINK = 4;
-    private static final int ORDER_SECURITY_KEY = 5;
     private static final int ORDER_SAVED_PASSWORDS = 6;
     private static final int ORDER_EXCEPTIONS = 7;
     private static final int ORDER_SAVED_PASSWORDS_NO_TEXT = 8;

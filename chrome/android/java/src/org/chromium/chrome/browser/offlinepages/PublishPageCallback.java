@@ -17,7 +17,6 @@ public class PublishPageCallback implements Callback<String> {
     private Callback<ShareParams> mShareCallback;
     OfflinePageItem mPage;
     private WindowAndroid mWindow;
-    private static final String TAG = "PublishPageCallback";
 
     /** Create a callback for use when page publishing is completed. */
     public PublishPageCallback(

@@ -74,8 +74,6 @@ public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final GURL SEARCH_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
-    private static final int FALLBACK_COLOR = 0xACE0BA5E;
-    private static final int DESIRED_FAVICON_SIZE_PX = 100;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();

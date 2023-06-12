@@ -63,20 +63,16 @@ public class WebApkUpdateIntegrationTest {
 
     private static final String TAG = "WebApkIntegratTest";
 
-    private static final long STARTUP_TIMEOUT = 15000L;
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test";
 
     // Android Manifest meta data for {@link WEBAPK_PACKAGE_NAME}.
     // TODO(eirage): change all to use mTestServer.
-    private static final String WEBAPK_HOST_NAME = "pwa-directory.appspot.com";
     private static final String WEBAPK_MANIFEST_URL = "/chrome/test/data/banners/manifest.json";
     private static final String WEBAPK_START_URL =
             "/chrome/test/data/banners/manifest_test_page.html";
     private static final String WEBAPK_SCOPE_URL = "/chrome/test/data/banners/";
     private static final String WEBAPK_NAME = "Manifest test app";
     private static final String WEBAPK_SHORT_NAME = "Manifest test app";
-    private static final String WEBAPK_MANIFEST_ID = "/id";
-    private static final String WEBAPK_APP_KEY = "/key";
     private static final String ICON_URL = "/chrome/test/data/banners/image-512px.png";
     private static final String ICON_MURMUR2_HASH = "7742433188808797392";
     private static final String DISPLAY_MODE = "standalone";

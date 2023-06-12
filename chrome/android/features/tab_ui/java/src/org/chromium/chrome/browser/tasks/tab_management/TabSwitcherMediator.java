@@ -82,8 +82,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                                      TabSwitcherCustomViewManager.Delegate, BackPressHandler {
     private static final String TAG = "TabSwitcherMediator";
 
-    private static final int DEFAULT_TOP_PADDING = 0;
-
     /** Field trial parameter for the {@link TabListRecyclerView} cleanup delay. */
     private static final String SOFT_CLEANUP_DELAY_PARAM = "soft-cleanup-delay";
     private static final int DEFAULT_SOFT_CLEANUP_DELAY_MS = 3_000;

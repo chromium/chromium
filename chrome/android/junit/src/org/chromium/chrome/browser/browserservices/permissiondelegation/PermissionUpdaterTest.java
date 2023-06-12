@@ -40,7 +40,6 @@ public class PermissionUpdaterTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
     private static final String URL = "https://www.website.com";
     private static final String PACKAGE_NAME = "com.package.name";
-    private static final String OTHER_PACKAGE_NAME = "com.other.package.name";
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

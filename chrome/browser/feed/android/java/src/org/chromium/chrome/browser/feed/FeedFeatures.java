@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
  * Helper methods covering more complex Feed related feature checks and states.
  */
 public final class FeedFeatures {
-    private static final String TAG = "FeedFeatures";
-
     // Finch param constants for controlling the feed tab stickiness logic to use.
     private static final String FEED_TAB_STICKYNESS_LOGIC_PARAM = "feed_tab_stickiness_logic";
     private static final String RESET_UPON_CHROME_RESTART = "reset_upon_chrome_restart";

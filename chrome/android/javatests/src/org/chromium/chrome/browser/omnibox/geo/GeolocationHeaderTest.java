@@ -55,13 +55,10 @@ public class GeolocationHeaderTest {
 
     private static final String SEARCH_URL_1 = "https://www.google.com/search?q=potatoes";
     private static final String SEARCH_URL_2 = "https://www.google.co.jp/webhp?#q=dinosaurs";
-    private static final String DISABLE_FEATURES = "disable-features=";
-    private static final String ENABLE_FEATURES = "enable-features=";
     private static final String GOOGLE_BASE_URL_SWITCH = "google-base-url=https://www.google.com";
     private static final double LOCATION_LAT = 20.3;
     private static final double LOCATION_LONG = 155.8;
     private static final float LOCATION_ACCURACY = 20f;
-    private static final String TAG = "GeolocationHeaderTst";
 
     @Before
     public void setUp() throws InterruptedException {

@@ -75,7 +75,6 @@ import java.util.ArrayList;
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL FAVICON_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();

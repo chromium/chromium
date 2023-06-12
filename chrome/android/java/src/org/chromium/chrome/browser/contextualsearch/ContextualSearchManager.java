@@ -100,8 +100,6 @@ public class ContextualSearchManager
     // having the manager itself implement the interface because that exposes all the public methods
     // of that interface at the manager level.
 
-    private static final String TAG = "ContextualSearch";
-
     private static final String INTENT_URL_PREFIX = "intent:";
 
     // We denylist this URL because malformed URLs may bring up this page.

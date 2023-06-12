@@ -60,8 +60,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowUrlBarData.class})
 public class BasicSuggestionProcessorUnitTest {
-    private static final GURL EXTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL INTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
     private static final @DrawableRes int ICON_BOOKMARK = R.drawable.btn_star;
     private static final @DrawableRes int ICON_GLOBE = R.drawable.ic_globe_24dp;
     private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_googblue_24dp;

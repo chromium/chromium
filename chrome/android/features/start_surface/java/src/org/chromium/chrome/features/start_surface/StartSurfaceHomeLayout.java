@@ -22,8 +22,6 @@ import org.chromium.chrome.features.tasks.TasksView;
  * A {@link Layout} that shows Start Surface home view.
  */
 public class StartSurfaceHomeLayout extends Layout {
-    private static final String TAG = "SSHomeLayout";
-
     private static final String TRACE_SHOW_START_SURFACE =
             "StartSurfaceHomeLayout.Show.StartSurface";
     private static final String TRACE_HIDE_START_SURFACE =

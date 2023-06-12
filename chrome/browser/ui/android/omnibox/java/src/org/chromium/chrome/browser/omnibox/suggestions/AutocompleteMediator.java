@@ -77,7 +77,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     // Delay triggering the omnibox results upon key press to allow the location bar to repaint
     // with the new characters.
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
-    private static final int OMNIBOX_HISTOGRAMS_MAX_SUGGESTIONS = 10;
 
     private final @NonNull Context mContext;
     private final @NonNull AutocompleteControllerProvider mControllerProvider;

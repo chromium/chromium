@@ -83,7 +83,6 @@ public class FeedSurfaceCoordinator
         implements FeedSurfaceProvider, FeedBubbleDelegate, SwipeRefreshLayout.OnRefreshListener,
                    BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator,
                    FeedAutoplaySettingsDelegate, HasContentListener, FeedContentFirstLoadWatcher {
-    private static final String TAG = "FeedSurfaceCoordinator";
     private static final long DELAY_FEED_HEADER_IPH_MS = 50;
 
     protected final Activity mActivity;

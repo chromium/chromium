@@ -42,8 +42,6 @@ import java.security.NoSuchAlgorithmException;
  */
 class CableAuthenticator {
     private static final String TAG = "CableAuthenticator";
-    private static final String FIDO2_KEY_CREDENTIAL_EXTRA = "FIDO2_CREDENTIAL_EXTRA";
-    private static final long TIMEOUT_SECONDS = 20;
 
     private static final int REGISTER_REQUEST_CODE = 1;
     private static final int SIGN_REQUEST_CODE = 2;

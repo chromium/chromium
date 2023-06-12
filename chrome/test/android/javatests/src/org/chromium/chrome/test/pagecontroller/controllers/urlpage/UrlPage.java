@@ -23,7 +23,6 @@ public class UrlPage extends PageController {
     private static final IUi2Locator LOCATOR_URL_BAR = Ui2Locators.withAnyResEntry(R.id.url_bar);
     private static final IUi2Locator LOCATOR_TAB_SWITCHER =
             Ui2Locators.withAnyResEntry(R.id.tab_switcher_button);
-    private static final IUi2Locator LOCATOR_MENU = Ui2Locators.withAnyResEntry(R.id.menu_button);
 
     private static final UrlPage sInstance = new UrlPage();
     private UrlPage() {}

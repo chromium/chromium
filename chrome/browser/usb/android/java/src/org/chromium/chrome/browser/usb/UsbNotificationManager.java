@@ -37,8 +37,6 @@ import java.util.Set;
  * to a USB device.
  */
 public class UsbNotificationManager {
-    private static final String TAG = "UsbNotificationManager";
-
     private static final String NOTIFICATION_NAMESPACE = "UsbNotificationManager";
 
     public static final String ACTION_USB_UPDATE = "org.chromium.chrome.browser.app.usb.USB_UPDATE";

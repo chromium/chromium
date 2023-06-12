@@ -49,7 +49,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ScreenshotMonitorTest {
-    private static final String FILENAME = "image.jpeg";
     private static final String TAG = "ScreenshotTest";
     private static final Uri TEST_URI = Uri.parse("content://media/external/images/media/101");
 

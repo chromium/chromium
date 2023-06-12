@@ -21,7 +21,6 @@ import org.chromium.components.browser_ui.widget.tile.TileView;
  */
 public class MostVisitedTilesCarouselLayout extends LinearLayout implements MostVisitedTilesLayout {
     // There's a minimum limit of 4.
-    private static final int MIN_RESULTS = 4;
 
     private int mTileViewWidth;
     private int mTileViewMinIntervalPaddingTablet;

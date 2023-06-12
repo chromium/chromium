@@ -65,7 +65,6 @@ public abstract class AsyncInitializationActivity
         extends ChromeBaseAppCompatActivity implements ChromeActivityNativeDelegate, BrowserParts {
     @VisibleForTesting
     public static final String FIRST_DRAW_COMPLETED_TIME_MS_UMA = "FirstDrawCompletedTime";
-    private static final String TAG = "AsyncInitActivity";
     static Boolean sOverrideNativeLibraryCannotBeLoadedForTesting;
     protected final Handler mHandler;
 

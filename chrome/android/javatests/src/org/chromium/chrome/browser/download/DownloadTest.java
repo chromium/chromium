@@ -68,7 +68,6 @@ public class DownloadTest implements CustomMainActivityStart {
     @Rule
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
-    private static final String TAG = "DownloadTest";
     private static final String SUPERBO_CONTENTS =
             "plain text response from a POST";
 

@@ -65,7 +65,6 @@ public class JavascriptAppModalDialogTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
-    private static final String TAG = "JSAppModalDialogTest";
     private static final String EMPTY_PAGE = UrlUtils.encodeHtmlDataUri(
             "<html><title>Modal Dialog Test</title><p>Testcase.</p></title></html>");
     private static final String BEFORE_UNLOAD_URL = UrlUtils.encodeHtmlDataUri("<html>"

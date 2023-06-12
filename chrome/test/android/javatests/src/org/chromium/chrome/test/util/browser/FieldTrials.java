@@ -24,7 +24,6 @@ public class FieldTrials {
     private static FieldTrials sInstance;
     private final Map<String, Map<String, String>> mTrialToParamValueMap = new HashMap<>();
     private final Map<String, Set<String>> mTrialToFeatureNameMap = new HashMap<>();
-    private static final String TAG = "FieldTrials";
 
     private FieldTrials() {}
 

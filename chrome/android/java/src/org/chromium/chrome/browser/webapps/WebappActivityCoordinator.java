@@ -38,7 +38,6 @@ public class WebappActivityCoordinator
     private final WebappDeferredStartupWithStorageHandler mDeferredStartupWithStorageHandler;
 
     // Whether the current page is within the webapp's scope.
-    private boolean mInScope = true;
 
     @Inject
     public WebappActivityCoordinator(SharedActivityCoordinator sharedActivityCoordinator,

@@ -73,9 +73,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     private static final String PREF_ACCOUNTS_CATEGORY = "accounts_category";
     private static final String PREF_PARENT_ACCOUNT_CATEGORY = "parent_account_category";
-    private static final String PREF_PARENTAL_SETTINGS = "parental_settings";
-    private static final String PREF_PARENT_ACCOUNTS = "parent_accounts";
-    private static final String PREF_CHILD_CONTENT = "child_content";
     private static final String PREF_SIGN_OUT = "sign_out";
     private static final String PREF_SIGN_OUT_DIVIDER = "sign_out_divider";
 

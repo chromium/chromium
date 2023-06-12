@@ -42,12 +42,8 @@ import org.chromium.components.version_info.VersionConstants;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UpdateSuccessMetricsTest {
-    private static final int FAILED = 0;
-    private static final int SUCCESS = 1;
-
     private static final int NOT_UPDATING = 0;
     private static final int UPDATING = 1;
-    private static final String NOT_CURRENT_VERSION = "---";
 
     @Mock
     private TrackingProvider mProvider;

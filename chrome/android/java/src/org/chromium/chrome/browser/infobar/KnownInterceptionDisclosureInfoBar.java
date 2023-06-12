@@ -17,7 +17,6 @@ import org.chromium.components.infobars.InfoBarLayout;
  * standard ConfirmInfoBar to provide a description as well as a title.
  */
 public class KnownInterceptionDisclosureInfoBar extends ConfirmInfoBar {
-    private static final String TAG = "KnownInterceptionDisclosureInfoBar";
     private String mDescription;
 
     /**

@@ -66,7 +66,6 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
             "/chrome/test/data/push_messaging/push_messaging_test_android.html";
     private static final String ABOUT_BLANK = "about:blank";
     private static final int TITLE_UPDATE_TIMEOUT_SECONDS = 5;
-    private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "chrome";
 
     private final CallbackHelper mMessageHandledHelper;
     private String mPushTestPage;
