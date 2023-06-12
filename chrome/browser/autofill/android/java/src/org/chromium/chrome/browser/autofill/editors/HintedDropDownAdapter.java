@@ -33,7 +33,7 @@ import java.util.List;
  * (with selected item) | option X |                       .    ...     .
  *                       ----------                        .------------.
  */
-public class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
+class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
     protected final int mTextViewResourceId;
     protected TextView mTextView;
 

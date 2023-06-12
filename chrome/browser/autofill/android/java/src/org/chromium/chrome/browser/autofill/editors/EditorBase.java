@@ -18,7 +18,7 @@ import org.chromium.components.autofill.EditableOption;
  */
 public abstract class EditorBase<T extends EditableOption> {
     @Nullable
-    protected EditorDialog mEditorDialog;
+    protected EditorDialogView mEditorDialog;
     @Nullable
     protected Context mContext;
 
@@ -27,7 +27,7 @@ public abstract class EditorBase<T extends EditableOption> {
      *
      * @param editorDialog The user interface to be used.
      */
-    public void setEditorDialog(EditorDialog editorDialog) {
+    public void setEditorDialog(EditorDialogView editorDialog) {
         assert editorDialog != null;
         mEditorDialog = editorDialog;
         mContext = mEditorDialog.getContext();

@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -32,7 +32,7 @@ class AutofillTestRule
     final CallbackHelper mConfirmationDialogUpdate;
     final CallbackHelper mFragmentShown;
 
-    private EditorDialog mEditorDialog;
+    private EditorDialogView mEditorDialog;
     private Fragment mLastestShownFragment;
 
     AutofillTestRule() {
@@ -117,7 +117,7 @@ class AutofillTestRule
         mPreferenceUpdate.waitForCallback(callCount);
     }
 
-    protected void setEditorDialogAndWait(EditorDialog editorDialog) throws TimeoutException {
+    protected void setEditorDialogAndWait(EditorDialogView editorDialog) throws TimeoutException {
         int callCount = mClickUpdate.getCallCount();
         mEditorDialog = editorDialog;
         mClickUpdate.waitForCallback(callCount);

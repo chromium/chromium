@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class AddressEditor {
     private final AddressEditorMediator mMediator;
-    private final EditorDialog mEditorDialog;
+    private final EditorDialogView mEditorDialog;
 
     /**
      * Delegate used to subscribe to AddressEditor user interactions.
@@ -58,7 +58,7 @@ public class AddressEditor {
      * @param saveToDisk Whether to save changes to disk after editing.
      */
     public AddressEditor(
-            EditorDialog editorDialog, Delegate delegate, Profile profile, boolean saveToDisk) {
+            EditorDialogView editorDialog, Delegate delegate, Profile profile, boolean saveToDisk) {
         this(editorDialog, delegate, profile,
                 new AutofillAddress(editorDialog.getContext(), AutofillProfile.builder().build()),
                 UserFlow.CREATE_NEW_ADDRESS_PROFILE, saveToDisk);
@@ -74,7 +74,7 @@ public class AddressEditor {
      * @param userFlow
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditor(EditorDialog editorDialog, Delegate delegate, Profile profile,
+    public AddressEditor(EditorDialogView editorDialog, Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
         mMediator = new AddressEditorMediator(
                 editorDialog.getContext(), delegate, profile, addressToEdit, userFlow, saveToDisk);

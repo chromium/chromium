@@ -37,7 +37,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -299,7 +299,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      * hidePaymentRequestDialog() instead.
      */
     private final DimmingDialog mDialog;
-    private final EditorDialog mEditorDialog;
+    private final EditorDialogView mEditorDialog;
     private final ViewGroup mRequestView;
     private final Callback<PaymentInformation> mUpdateSectionsCallback;
     private final ShippingStrings mShippingStrings;
@@ -407,7 +407,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
-        mEditorDialog = new EditorDialog(activity, /*deleteRunnable =*/null,
+        mEditorDialog = new EditorDialogView(activity, /*deleteRunnable =*/null,
                 HelpAndFeedbackLauncherImpl.getForProfile(profile));
         DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
 
@@ -847,7 +847,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     }
 
     /** @return The common editor user interface. */
-    public EditorDialog getEditorDialog() {
+    public EditorDialogView getEditorDialog() {
         return mEditorDialog;
     }
 
@@ -1363,7 +1363,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest editorObserverForTest) {
         sEditorObserverForTest = editorObserverForTest;
-        EditorDialog.setEditorObserverForTest(sEditorObserverForTest);
+        EditorDialogView.setEditorObserverForTest(sEditorObserverForTest);
     }
 
     @VisibleForTesting

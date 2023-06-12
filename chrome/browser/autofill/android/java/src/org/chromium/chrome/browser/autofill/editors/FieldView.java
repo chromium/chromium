@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors;
 
 /** The interface for editor fields that handle validation, display errors, and can be updated. */
-public interface EditorFieldView {
+interface FieldView {
     /**
      * Updates the error display.
      *

@@ -24,15 +24,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditor.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldAdapter.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorBase.java",
-    "java/src/org/chromium/chrome/browser/autofill/editors/EditorDialog.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorDialogToolbar.java",
-    "java/src/org/chromium/chrome/browser/autofill/editors/EditorDropdownField.java",
-    "java/src/org/chromium/chrome/browser/autofill/editors/EditorFieldView.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/EditorDialogView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorObserverForTest.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorProperties.java",
-    "java/src/org/chromium/chrome/browser/autofill/editors/EditorTextField.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/FieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/HintedDropDownAdapter.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/TextFieldView.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.autofill"

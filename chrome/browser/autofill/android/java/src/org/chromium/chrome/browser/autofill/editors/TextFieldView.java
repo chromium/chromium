@@ -53,7 +53,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
 /** Handles validation and display of one field from the {@link EditorProperties.ItemType}. */
 // TODO(b/173103628): Re-enable this
 //@VisibleForTesting
-public class EditorTextField extends FrameLayout implements EditorFieldView {
+class TextFieldView extends FrameLayout implements FieldView {
     // TODO(crbug.com/1300201): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */
     public static final String REQUIRED_FIELD_INDICATOR = "*";
@@ -72,7 +72,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     private ImageView mActionIcon;
     private boolean mHasFocusedAtLeastOnce;
 
-    public EditorTextField(Context context, final PropertyModel fieldModel,
+    public TextFieldView(Context context, final PropertyModel fieldModel,
             OnEditorActionListener actionListener, @Nullable TextWatcher formatter,
             boolean focusAndShowKeyboard, boolean hasRequiredIndicator) {
         super(context);

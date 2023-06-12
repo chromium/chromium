@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Helper class for creating a dropdown view with a label.
  */
-class EditorDropdownField implements EditorFieldView {
+class DropdownFieldView implements FieldView {
     @Nullable
     private static EditorObserverForTest sObserverForTest;
 
@@ -71,7 +71,7 @@ class EditorDropdownField implements EditorFieldView {
      *                             been processed.
      * @param hasRequiredIndicator Whether the required (*) indicator is visible.
      */
-    public EditorDropdownField(Context context, ViewGroup root, final PropertyModel fieldModel,
+    public DropdownFieldView(Context context, ViewGroup root, final PropertyModel fieldModel,
             final Runnable changedCallback, boolean hasRequiredIndicator) {
         mContext = context;
         mFieldModel = fieldModel;
@@ -81,7 +81,7 @@ class EditorDropdownField implements EditorFieldView {
 
         mLabel = (TextView) mLayout.findViewById(R.id.spinner_label);
         mLabel.setText(mFieldModel.get(IS_REQUIRED) && hasRequiredIndicator
-                        ? mFieldModel.get(LABEL) + EditorDialog.REQUIRED_FIELD_INDICATOR
+                        ? mFieldModel.get(LABEL) + EditorDialogView.REQUIRED_FIELD_INDICATOR
                         : mFieldModel.get(LABEL));
 
         mUnderline = mLayout.findViewById(R.id.spinner_underline);
@@ -161,7 +161,7 @@ class EditorDropdownField implements EditorFieldView {
         return mLayout;
     }
 
-    /** @return The PropertyModel that the EditorDropdownField represents. */
+    /** @return The PropertyModel that the DropdownFieldView represents. */
     public PropertyModel getFieldModel() {
         return mFieldModel;
     }

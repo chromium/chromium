@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @param <T> The type of element to be inserted into the adapter.
  */
-public class DropdownFieldAdapter<T> extends ArrayAdapter<T> {
+class DropdownFieldAdapter<T> extends ArrayAdapter<T> {
     /**
      * Creates an array adapter.
      *

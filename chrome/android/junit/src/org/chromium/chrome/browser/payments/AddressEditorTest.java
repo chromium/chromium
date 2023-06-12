@@ -64,7 +64,7 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiCompo
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.chrome.test.util.browser.Features;
@@ -127,7 +127,7 @@ public class AddressEditorTest {
     private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
 
     @Mock
-    private EditorDialog mEditorDialog;
+    private EditorDialogView mEditorDialog;
     @Mock
     private PersonalDataManager mPersonalDataManager;
     @Mock

@@ -158,7 +158,7 @@ public class AddressEditorTest {
     private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
 
     @Mock
-    private EditorDialog mEditorDialog;
+    private EditorDialogView mEditorDialog;
     @Mock
     private SyncService mSyncService;
     @Mock

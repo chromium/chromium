@@ -14,7 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import org.chromium.chrome.browser.autofill.R;
 
 /** Simple class for displaying a toolbar in the editor dialog. */
-public class EditorDialogToolbar extends Toolbar {
+class EditorDialogToolbar extends Toolbar {
     private boolean mShowDeleteMenuItem = true;
 
     /** Constructor for when the toolbar is inflated from XML. */

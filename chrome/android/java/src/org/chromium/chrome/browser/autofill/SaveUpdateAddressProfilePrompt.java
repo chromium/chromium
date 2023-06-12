@@ -25,7 +25,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditor;
 import org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,7 +47,7 @@ public class SaveUpdateAddressProfilePrompt {
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
     private final View mDialogView;
-    private final EditorDialog mEditorDialog;
+    private final EditorDialogView mEditorDialog;
     private AddressEditor mAddressEditor;
     private boolean mEditorClosingPending;
 
@@ -86,7 +86,7 @@ public class SaveUpdateAddressProfilePrompt {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 
-        mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null,
+        mEditorDialog = new EditorDialogView(activity, /*deleteRunnable=*/null,
                 HelpAndFeedbackLauncherImpl.getForProfile(browserProfile));
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         AddressEditor.Delegate delegate = new AddressEditor.Delegate() {

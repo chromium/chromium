@@ -43,7 +43,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
@@ -71,7 +71,7 @@ public class ContactEditorTest {
     @Mock
     private PersonalDataManager mPersonalDataManager;
     @Mock
-    private EditorDialog mEditorDialog;
+    private EditorDialogView mEditorDialog;
 
     @Captor
     private ArgumentCaptor<PropertyModel> mPropertyModelCapture;

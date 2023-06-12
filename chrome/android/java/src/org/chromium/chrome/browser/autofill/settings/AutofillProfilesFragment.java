@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.editors.AddressEditor;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -76,7 +76,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     };
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
-    private @Nullable EditorDialog mEditorDialog;
+    private @Nullable EditorDialogView mEditorDialog;
 
     private Profile mProfile;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -215,7 +215,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     @VisibleForTesting
     public static void setObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
-        EditorDialog.setEditorObserverForTest(sObserverForTest);
+        EditorDialogView.setEditorObserverForTest(sObserverForTest);
     }
 
     @Override
@@ -242,7 +242,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     }
 
     @VisibleForTesting
-    EditorDialog prepareEditorDialog(String guid) {
+    EditorDialogView prepareEditorDialog(String guid) {
         Runnable runnable = guid == null ? null : () -> {
             PersonalDataManager.getInstance().deleteProfile(guid);
             SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
@@ -251,7 +251,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             }
         };
 
-        return new EditorDialog(
+        return new EditorDialogView(
                 getActivity(), runnable, HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
     }
 
@@ -286,7 +286,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     }
 
     @VisibleForTesting
-    EditorDialog getEditorDialogForTest() {
+    EditorDialogView getEditorDialogForTest() {
         return mEditorDialog;
     }
 

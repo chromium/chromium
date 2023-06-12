@@ -75,7 +75,7 @@ import java.util.List;
  *
  * TODO(https://crbug.com/799905): Move payment specific functionality to separate class.
  */
-public class EditorDialog
+public class EditorDialogView
         extends AlwaysDismissedDialog implements OnClickListener, DialogInterface.OnShowListener,
                                                  DialogInterface.OnDismissListener {
     /** The indicator for input fields that are required. */
@@ -94,7 +94,7 @@ public class EditorDialog
     private final Handler mHandler;
     private final TextView.OnEditorActionListener mEditorActionListener;
     private final int mHalfRowMargin;
-    private final List<EditorFieldView> mFieldViews;
+    private final List<FieldView> mFieldViews;
     private final List<EditText> mEditableTextFields;
     private final List<Spinner> mDropdownFields;
 
@@ -122,7 +122,7 @@ public class EditorDialog
      * @param deleteRunnable       The runnable that when called will delete the profile.
      * @param helpLauncher         The launcher of user help activity.
      */
-    public EditorDialog(
+    public EditorDialogView(
             Activity activity, Runnable deleteRunnable, HelpAndFeedbackLauncher helpLauncher) {
         super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
@@ -240,18 +240,18 @@ public class EditorDialog
      * @return Whether all fields contain valid information.
      */
     public boolean validateForm() {
-        final List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(true);
+        final List<FieldView> invalidViews = getViewsWithInvalidInformation(true);
 
         // Iterate over all the fields to update what errors are displayed, which is necessary to
         // to clear existing errors on any newly valid fields.
         for (int i = 0; i < mFieldViews.size(); i++) {
-            EditorFieldView fieldView = mFieldViews.get(i);
+            FieldView fieldView = mFieldViews.get(i);
             fieldView.updateDisplayedError(invalidViews.contains(fieldView));
         }
 
         if (!invalidViews.isEmpty()) {
             // Make sure that focus is on an invalid field.
-            EditorFieldView focusedField = getEditorTextField(getCurrentFocus());
+            FieldView focusedField = getTextFieldView(getCurrentFocus());
             if (invalidViews.contains(focusedField)) {
                 // The focused field is invalid, but it may be scrolled off screen. Scroll to it.
                 focusedField.scrollToAndFocus();
@@ -270,12 +270,11 @@ public class EditorDialog
     }
 
     /** @return The validatable item for the given view. */
-    private EditorFieldView getEditorTextField(View v) {
-        if (v instanceof TextView && v.getParent() != null
-                && v.getParent() instanceof EditorFieldView) {
-            return (EditorFieldView) v.getParent();
+    private FieldView getTextFieldView(View v) {
+        if (v instanceof TextView && v.getParent() != null && v.getParent() instanceof FieldView) {
+            return (FieldView) v.getParent();
         } else if (v instanceof Spinner && v.getTag() != null) {
-            return (EditorFieldView) v.getTag();
+            return (FieldView) v.getTag();
         } else {
             return null;
         }
@@ -476,9 +475,9 @@ public class EditorDialog
     }
 
     private void removeTextChangedListeners() {
-        for (EditorFieldView view : mFieldViews) {
-            if (view instanceof EditorTextField) {
-                EditorTextField textView = (EditorTextField) view;
+        for (FieldView view : mFieldViews) {
+            if (view instanceof TextFieldView) {
+                TextFieldView textView = (TextFieldView) view;
                 textView.removeTextChangedListeners();
             }
         }
@@ -498,7 +497,7 @@ public class EditorDialog
                     prepareFooter();
                     if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
                 };
-                EditorDropdownField dropdownView = new EditorDropdownField(mActivity, parent,
+                DropdownFieldView dropdownView = new DropdownFieldView(mActivity, parent,
                         fieldItem.model, prepareEditorRunnable,
                         mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
                 mFieldViews.add(dropdownView);
@@ -508,7 +507,7 @@ public class EditorDialog
                 break;
             }
             case TEXT_INPUT: {
-                EditorTextField inputLayout = new EditorTextField(mActivity, fieldItem.model,
+                TextFieldView inputLayout = new TextFieldView(mActivity, fieldItem.model,
                         mEditorActionListener, fieldItem.model.get(TEXT_FORMATTER),
                         /* focusAndShowKeyboard= */ false,
                         mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
@@ -604,7 +603,7 @@ public class EditorDialog
             // because the user would not learn about the elements that are
             // above the focused field.
             if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-                List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
+                List<FieldView> invalidViews = getViewsWithInvalidInformation(false);
                 if (!invalidViews.isEmpty()) {
                     // Immediately focus the first invalid field to make it faster to edit.
                     invalidViews.get(0).scrollToAndFocus();
@@ -664,10 +663,10 @@ public class EditorDialog
         }
     }
 
-    private List<EditorFieldView> getViewsWithInvalidInformation(boolean findAll) {
-        List<EditorFieldView> invalidViews = new ArrayList<>();
+    private List<FieldView> getViewsWithInvalidInformation(boolean findAll) {
+        List<FieldView> invalidViews = new ArrayList<>();
         for (int i = 0; i < mFieldViews.size(); i++) {
-            EditorFieldView fieldView = mFieldViews.get(i);
+            FieldView fieldView = mFieldViews.get(i);
             if (!fieldView.isValid()) {
                 invalidViews.add(fieldView);
                 if (!findAll) break;
@@ -702,8 +701,8 @@ public class EditorDialog
     @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
-        EditorDropdownField.setEditorObserverForTest(sObserverForTest);
-        EditorTextField.setEditorObserverForTest(sObserverForTest);
+        DropdownFieldView.setEditorObserverForTest(sObserverForTest);
+        TextFieldView.setEditorObserverForTest(sObserverForTest);
     }
 
     private Drawable getTintedBackIcon() {

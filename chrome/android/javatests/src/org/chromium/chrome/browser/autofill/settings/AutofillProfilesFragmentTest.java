@@ -38,7 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
-import org.chromium.chrome.browser.autofill.editors.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -275,7 +275,7 @@ public class AutofillProfilesFragmentTest {
 
         // Delete the profile, but cancel on confirmation.
         TestThreadUtils.runOnUiThreadBlocking(sebProfile::performClick);
-        EditorDialog editorDialog = autofillProfileFragment.getEditorDialogForTest();
+        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
         rule.setEditorDialogAndWait(editorDialog);
         rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
 
@@ -332,7 +332,7 @@ public class AutofillProfilesFragmentTest {
 
         // Delete Artik's account profile.
         TestThreadUtils.runOnUiThreadBlocking(artikProfile::performClick);
-        EditorDialog editorDialog = autofillProfileFragment.getEditorDialogForTest();
+        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
         rule.setEditorDialogAndWait(editorDialog);
         rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
 
@@ -373,7 +373,7 @@ public class AutofillProfilesFragmentTest {
 
         // Edit a profile.
         TestThreadUtils.runOnUiThreadBlocking(johnProfile::performClick);
-        EditorDialog editorDialog = autofillProfileFragment.getEditorDialogForTest();
+        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
         rule.setEditorDialogAndWait(editorDialog);
         rule.setTextInEditorAndWait(new String[] {"Dr.", "Emily Doe", "Google", "111 Edited St",
                 "Los Angeles", "CA", "90291", "650-253-0000", "edit@profile.com"});
@@ -430,7 +430,7 @@ public class AutofillProfilesFragmentTest {
         Assert.assertNotNull(johnProfile);
 
         TestThreadUtils.runOnUiThreadBlocking(johnProfile::performClick);
-        EditorDialog editorDialog = autofillProfileFragment.getEditorDialogForTest();
+        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
         rule.setEditorDialogAndWait(editorDialog);
 
         // Verify the profile source notice.
