@@ -55,18 +55,6 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
 
 ClipboardHistoryMainButton::~ClipboardHistoryMainButton() = default;
 
-void ClipboardHistoryMainButton::OnHostPseudoFocusUpdated() {
-  SetShouldHighlight(container_->IsMainButtonPseudoFocused());
-}
-
-void ClipboardHistoryMainButton::SetShouldHighlight(bool should_highlight) {
-  if (should_highlight_ == should_highlight)
-    return;
-
-  should_highlight_ = should_highlight;
-  SchedulePaint();
-}
-
 void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {
   DCHECK(event.IsMouseEvent());
 
@@ -95,8 +83,10 @@ void ClipboardHistoryMainButton::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
-  if (!should_highlight_)
+  // Only paint a highlight when the button has pseudo focus.
+  if (!container_->IsMainButtonPseudoFocused()) {
     return;
+  }
 
   // Highlight the background when the menu item is selected or pressed.
   cc::PaintFlags flags;

@@ -19,9 +19,7 @@ class MenuItemView;
 
 namespace ash {
 class ClipboardHistory;
-class ClipboardHistoryDeleteButton;
 class ClipboardHistoryItem;
-class ClipboardHistoryMainButton;
 
 // The base class for menu items of the clipboard history menu.
 class ASH_EXPORT ClipboardHistoryItemView : public views::View {
@@ -80,29 +78,13 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
     ContentsView& operator=(const ContentsView& rhs) = delete;
     ~ContentsView() override;
 
-    // Install DeleteButton on the contents view.
-    void InstallDeleteButton();
-
-    void OnHostPseudoFocusUpdated();
-
-    ClipboardHistoryDeleteButton* delete_button() { return delete_button_; }
-    const ClipboardHistoryDeleteButton* delete_button() const {
-      return delete_button_;
-    }
-
    protected:
-    virtual ClipboardHistoryDeleteButton* CreateDeleteButton() = 0;
-
     ClipboardHistoryItemView* container() { return container_; }
 
    private:
     // views::ViewTargeterDelegate:
     bool DoesIntersectRect(const views::View* target,
                            const gfx::Rect& rect) const override;
-
-    // Owned by the view hierarchy.
-    raw_ptr<ClipboardHistoryDeleteButton, ExperimentalAsh> delete_button_ =
-        nullptr;
 
     // The parent of ContentsView.
     const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
@@ -147,6 +129,10 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // Calculates the action type when `main_button_` is clicked.
   clipboard_history_util::Action CalculateActionForMainButtonClick() const;
 
+  // Creates the delete button and any necessary containers for its formatting.
+  // Sets `delete_button_` in the process.
+  std::unique_ptr<views::View> CreateDeleteButton();
+
   bool ShouldShowDeleteButton() const;
 
   // Called when receiving pseudo focus for the first time.
@@ -163,9 +149,10 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   const raw_ptr<views::MenuItemView, ExperimentalAsh> container_;
 
-  raw_ptr<ContentsView, ExperimentalAsh> contents_view_ = nullptr;
-
-  raw_ptr<ClipboardHistoryMainButton, ExperimentalAsh> main_button_ = nullptr;
+  // Owned by the view hierarchy.
+  raw_ptr<views::View, ExperimentalAsh> main_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> contents_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> delete_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
 

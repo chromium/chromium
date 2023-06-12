@@ -5,9 +5,7 @@
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_label.h"
-#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -30,24 +28,11 @@ class ClipboardHistoryTextItemView::TextContentsView
 
     auto* label =
         AddChildView(std::make_unique<ClipboardHistoryLabel>(container->text_));
-    layout->SetFlexForView(label, /*flex_weight=*/1);
-
-    InstallDeleteButton();
+    layout->SetFlexForView(label, /*flex=*/1);
   }
   TextContentsView(const TextContentsView& rhs) = delete;
   TextContentsView& operator=(const TextContentsView& rhs) = delete;
   ~TextContentsView() override = default;
-
- private:
-  // ContentsView:
-  ClipboardHistoryDeleteButton* CreateDeleteButton() override {
-    auto delete_button =
-        std::make_unique<ClipboardHistoryDeleteButton>(container());
-    delete_button->SetProperty(
-        views::kMarginsKey,
-        ClipboardHistoryViews::kDefaultItemDeleteButtonMargins);
-    return AddChildView(std::move(delete_button));
-  }
 };
 
 BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView, ContentsView)

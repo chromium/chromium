@@ -5,8 +5,8 @@
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/style/ash_color_id.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -27,7 +28,6 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -182,8 +182,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
                   kColorAshHairlineBorderColor)))
           .BuildChildren();
     }
-
-    InstallDeleteButton();
   }
   BitmapContentsView(const BitmapContentsView& rhs) = delete;
   BitmapContentsView& operator=(const BitmapContentsView& rhs) = delete;
@@ -191,28 +189,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
  private:
   // ContentsView:
-  ClipboardHistoryDeleteButton* CreateDeleteButton() override {
-    auto delete_button_container = std::make_unique<views::View>();
-    auto* layout_manager = delete_button_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal));
-    layout_manager->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kEnd);
-    layout_manager->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
-
-    auto delete_button =
-        std::make_unique<ClipboardHistoryDeleteButton>(container_);
-    delete_button->SetProperty(
-        views::kMarginsKey,
-        ClipboardHistoryViews::kBitmapItemDeleteButtonMargins);
-    ClipboardHistoryDeleteButton* delete_button_ptr =
-        delete_button_container->AddChildView(std::move(delete_button));
-    AddChildView(std::move(delete_button_container));
-
-    return delete_button_ptr;
-  }
-
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
     // Create rounded corners around the contents area through the clip path
     // instead of layer clip. Because we have to avoid using any layer here.
