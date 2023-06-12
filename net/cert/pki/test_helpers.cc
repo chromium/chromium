@@ -67,23 +67,23 @@ std::string StrSetToString(const std::set<std::string>& str_set) {
   return out;
 }
 
-std::string_view StripString(std::string_view str) {
+std::string StripString(std::string_view str) {
   size_t start = str.find_first_not_of(' ');
   if (start == str.npos) {
-    return std::string_view();
+    return std::string();
   }
   str = str.substr(start);
   size_t end = str.find_last_not_of(' ');
   if (end != str.npos) {
     ++end;
   }
-  return str.substr(0, end);
+  return std::string(str.substr(0, end));
 }
 
-std::vector<std::string_view> SplitString(std::string_view str) {
+std::vector<std::string> SplitString(std::string_view str) {
   std::vector<std::string_view> split = string_util::SplitString(str, ',');
 
-  std::vector<std::string_view> out;
+  std::vector<std::string> out;
   for (const auto& s : split) {
     out.push_back(StripString(s));
   }
@@ -354,7 +354,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       }
     } else if (GetValue("expected_user_constrained_policy_set: ", line_piece,
                         &value, &has_user_constrained_policy_set)) {
-      std::vector<std::string_view> split_value(SplitString(value));
+      std::vector<std::string> split_value(SplitString(value));
       test->expected_user_constrained_policy_set =
           std::set<std::string>(split_value.begin(), split_value.end());
     } else if (net::string_util::StartsWith(line_piece, "#")) {
