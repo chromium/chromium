@@ -432,6 +432,23 @@ TEST_F(WindowFloatTest, FloatWindowBoundsWithZoomDisplay) {
                   .Contains(window->GetBoundsInScreen()));
 }
 
+TEST_F(WindowFloatTest, FloatWindowBoundsWithShelfChange) {
+  UpdateDisplay("1600x1000");
+
+  // This test makes some assumptions that the shelf starts bottom aligned.
+  ASSERT_EQ(ShelfAlignment::kBottom, GetPrimaryShelf()->alignment());
+
+  // Create a floated window and position so it is semi offscreen.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  const gfx::Rect ideal_bounds(1400, 0, 400, 300);
+  const SetBoundsWMEvent set_bounds_event(ideal_bounds);
+  WindowState::Get(window.get())->OnWMEvent(&set_bounds_event);
+
+  // Changing the shelf alignment should not alter the floated window bounds.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(ideal_bounds, window->GetBoundsInScreen());
+}
+
 // Test float window per desk logic.
 TEST_F(WindowFloatTest, OneFloatWindowPerDeskLogic) {
   // Test one float window per desk is allowed.

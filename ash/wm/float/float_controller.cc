@@ -733,8 +733,10 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  if ((display::DisplayObserver::DISPLAY_METRIC_WORK_AREA & metrics) == 0)
+  const uint32_t filter = DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_WORK_AREA;
+  if ((filter & metrics) == 0) {
     return;
+  }
 
   DCHECK(!floated_window_info_map_.empty());
   std::vector<aura::Window*> windows_need_reset;
@@ -742,11 +744,18 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
     if (!chromeos::wm::CanFloatWindow(window)) {
       windows_need_reset.push_back(window);
     } else {
-      // Let the state object handle the work area change. This is normally
+      // Let the state object handle the display change. This is normally
       // handled by the `WorkspaceLayoutManager`, but the float container does
       // not have one attached.
-      const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
-      WindowState::Get(window)->OnWMEvent(&event);
+      if (metrics & display::DisplayObserver::DISPLAY_METRIC_BOUNDS) {
+        const DisplayMetricsChangedWMEvent wm_event(metrics);
+        WindowState::Get(window)->OnWMEvent(&wm_event);
+      }
+
+      if (metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA) {
+        const WMEvent wm_event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+        WindowState::Get(window)->OnWMEvent(&wm_event);
+      }
     }
   }
   for (auto* window : windows_need_reset)
