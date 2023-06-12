@@ -84,17 +84,6 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   return indexPath;
 }
 
-// TODO(crbug.com/1254652): Large titles appear collapsed in some case when
-// opening a tableView. e.g when opening History screen without entry. Remove
-// this method when iOS 14 is dropped.
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  if (@available(iOS 15, *)) {
-  } else {
-    [self.navigationController.navigationBar sizeToFit];
-  }
-}
-
 #pragma mark - Accessors
 
 - (void)setStyler:(ChromeTableViewStyler*)styler {
