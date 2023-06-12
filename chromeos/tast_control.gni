@@ -331,6 +331,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/281983222
   "inputs.InputMethodShelfInputs",
 
+  # b/286590113
+  "health.ProbeBlockDevices",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
