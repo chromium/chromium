@@ -301,8 +301,11 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
                                features::BackupRefPtrMode::kDisabled) {
     brp_nondefault_behavior = true;
   }
-  if (brp_finch_enabled && features::kBackupRefPtrModeParam.Get() ==
-                               features::BackupRefPtrMode::kEnabled) {
+  if (brp_finch_enabled &&
+      (features::kBackupRefPtrModeParam.Get() ==
+           features::BackupRefPtrMode::kEnabled ||
+       features::kBackupRefPtrModeParam.Get() ==
+           features::BackupRefPtrMode::kEnabledWithMemoryReclaimer)) {
     brp_truly_enabled = true;
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

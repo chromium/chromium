@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -126,6 +127,13 @@ constexpr base::StringPiece kBRPEnabledMode =
     "EnabledBeforeAlloc_";
 #endif
 
+constexpr base::StringPiece kBRPEnabledWithMemoryReclaimerMode =
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+    "EnabledPrevSlotWithMemoryReclaimer_";
+#else
+    "EnabledBeforeAllocWithMemoryReclaimer_";
+#endif
+
 // Parameterized basic test for BRP + PCScan enablement.
 // The parameter denotes
 // *  whether PCScan is enabled,
@@ -147,6 +155,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             BRPConfigPair{"disabled", "Disabled"},
             BRPConfigPair{"enabled", kBRPEnabledMode},
+            BRPConfigPair{"enabled-with-memory-reclaimer",
+                          kBRPEnabledWithMemoryReclaimerMode},
             BRPConfigPair{"disabled-but-2-way-split", "DisabledBut2WaySplit_"},
             BRPConfigPair{"disabled-but-3-way-split", "DisabledBut3WaySplit_"}),
         testing::Values(BRPConfigPair{"browser-only", "BrowserOnly"},
@@ -177,7 +187,7 @@ TEST_P(PCScanBRPPerProcessTest, DetailedProposeSyntheticFinchTrials) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   brp_expectation =
       pcscan_enabled ? "Ignore_PCScanIsOn" : brp_mode.mapped_feature_string;
-  brp_truly_enabled = (brp_mode.arg_string == "enabled");
+  brp_truly_enabled = base::StartsWith(brp_mode.arg_string, "enabled");
   brp_nondefault_behavior = (brp_mode.arg_string != "disabled");
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_expectation[brp_expectation.length() - 1] == '_') {
