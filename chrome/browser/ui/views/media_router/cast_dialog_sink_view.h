@@ -70,8 +70,8 @@ class CastDialogSinkView : public views::View {
 
   // Gets accessible names for buttons based on if the current route is tab
   // mirroring, screen mirroring, or something else.
-  const std::u16string GetFreezeButtonAccessibleName();
-  const std::u16string GetStopButtonAccessibleName();
+  std::u16string GetFreezeButtonAccessibleName() const;
+  std::u16string GetStopButtonAccessibleName() const;
 
   const raw_ptr<Profile> profile_;
   UIMediaSink sink_;
