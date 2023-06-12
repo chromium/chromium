@@ -19,6 +19,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx20_to_address.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_math.h"
 
 namespace base {
@@ -452,7 +453,9 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
   }
 
  private:
-  T* data_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  RAW_PTR_EXCLUSION T* data_;
 };
 
 // span<T, Extent>::extent can not be declared inline prior to C++17, hence this

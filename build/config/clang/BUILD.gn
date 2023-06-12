@@ -48,18 +48,6 @@ config("find_bad_constructs") {
         "-Xclang",
         "check-raw-ptr-fields",
 
-        # TODO(keishi): Remove this once crrev.com/c/4387753 is rolled out.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=base/no_destructor.h",
-
-        # TODO(keishi): Remove this once crrev.com/c/4086161 lands.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=base/containers/span.h",
-
         # TODO(mikt): Remove this once crrev.com/c/4565714 is rolled out.
         "-Xclang",
         "-plugin-arg-find-bad-constructs",
