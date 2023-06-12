@@ -8,9 +8,7 @@ for more details on the presubmit API built into depot_tools.
 """
 
 import copy
-import glob
 import io
-import itertools
 import json
 import re
 import sys
@@ -327,48 +325,11 @@ def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
   ]
 
 
-def _FindDeclaredFeatures(input_api):
-  """Finds all declared feature names in the source code.
-
-  This function will scan all *.cc and *.mm files and look for features
-  defined with the BASE_FEATURE macro. It will extract the feature names.
-
-  Args:
-    input_api: InputApi instance for opening files
-  Returns:
-    Set of defined feature names in the source tree.
-  """
-  # Features are supposed to be defined in .cc files.
-  cc_glob = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                   "**/*.cc")
-  cc_files = glob.iglob(cc_glob, recursive=True)
-
-  # Additional features for iOS can be found in mm files.
-  mm_glob = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                   "ios/**/*.mm")
-  mm_files = glob.iglob(mm_glob, recursive=True)
-
-  def find_features_in_file(filepath):
-    file_contents = input_api.ReadFile(filepath)
-    matches = BASE_FEATURE_RE.finditer(file_contents)
-    # Remove whitespace and surrounding " from the second argument
-    # which is the feature name.
-    return [m.group(2).strip().strip('"') for m in matches]
-
-  found_features = map(find_features_in_file,
-                       itertools.chain(cc_files, mm_files))
-
-  feature_names = set()
-  for feature_list in found_features:
-    feature_names.update(feature_list)
-  return feature_names
-
-
 def CheckUndeclaredFeatures(input_api, json_data, changed_lines, message_type):
   """Checks that feature names are all valid declared features.
 
   There have been more than one instance of developers accidentally mistyping
-  a feature name in the fieldtrial_testng_config.json file, which leads
+  a feature name in the fieldtrial_testing_config.json file, which leads
   to the config silently doing nothing.
 
   This check aims to catch these errors by validating that the feature name
@@ -383,7 +344,22 @@ def CheckUndeclaredFeatures(input_api, json_data, changed_lines, message_type):
   Returns:
     List of validation messages - empty if there are no errors.
   """
-  declared_features = _FindDeclaredFeatures(input_api)
+
+  declared_features = set()
+  # I was unable to figure out how to do a proper top-level include that did
+  # not depend on getting the path from input_api. I found this pattern
+  # elsewhere in the code base. Please change to a top-level include if you
+  # know how.
+  old_sys_path = sys.path[:]
+  try:
+    sys.path.append(input_api.os_path.join(
+            input_api.PresubmitLocalPath(), 'presubmit'))
+    # pylint: disable=import-outside-toplevel
+    import find_features
+    # pylint: enable=import-outside-toplevel
+    declared_features = find_features.FindDeclaredFeatures(input_api)
+  finally:
+    sys.path = old_sys_path
 
   if not declared_features:
     return [message_type("Presubmit unable to find any declared flags "
