@@ -98,6 +98,7 @@ handlers
   * mojom handler unit tests
 
 ### Debugging tests
+* [Debugging BrowserTest failures](https://g3doc.corp.google.com/chrome/chromeos/system_services_team/dev_instructions/g3doc/debugging.md#debugging-browsertest-failures).
 * The [browser test doc](https://www.chromium.org/developers/testing/browser-tests/#debugging)
 has some useful information.
 * Inject `debugger;` as a breakpoint.
