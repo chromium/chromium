@@ -7583,16 +7583,31 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
 
 class PrerenderBackForwardCacheRestorationBrowserTest
     : public PrerenderBrowserTest,
-      public BackForwardCacheMetricsTestMatcher {
+      public BackForwardCacheMetricsTestMatcher,
+      public testing::WithParamInterface<bool> {
  public:
   PrerenderBackForwardCacheRestorationBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            /*ignore_outstanding_network_request=*/false),
-        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    auto enabled_features = GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+        /*ignore_outstanding_network_request=*/false);
+    auto disabled_features =
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting();
+
+    if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
+      enabled_features.emplace_back(
+          blink::features::kRetriggerPreloadingOnBFCacheRestoration,
+          base::FieldTrialParams{});
+    } else {
+      disabled_features.emplace_back(
+          blink::features::kRetriggerPreloadingOnBFCacheRestoration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
  protected:
+  bool IsRetriggerPreloadingOnBFCacheRestorationEnabled() { return GetParam(); }
+
   // implementation for `BackForwardCacheMetricsTestMatcher`
 
   const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
@@ -7607,14 +7622,16 @@ class PrerenderBackForwardCacheRestorationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1449163): Fix this behavior to retrigger prerendering on
-// BFCache restoration.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderBackForwardCacheRestorationBrowserTest,
+                         testing::Bool());
+
 // Test whether speculation rules prerendering is processed again on pages
 // restored from BFCache via forward navigation.
 // When the eagerness is kEager(default), speculation rules prerendering will no
 // longer be processed after restoration.
 // TODO(crbug.com/1449163): add test cases on kModerate, kConservative.
-IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheRestorationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
                        RestoredViaForwardNavigation) {
   const GURL initial_url = GetUrl("/empty.html");
   const GURL next_url = GetUrl("/empty.html?next");
@@ -7640,19 +7657,33 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheRestorationBrowserTest,
   GoForward();
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), next_url);
   ExpectRestored(FROM_HERE);
-  // The next page contains speculation rules for the prerendering page, but
-  // it's not processed on BFCache restoration.
-  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+
+  if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
+    // preredering will be processed by retriggering.
+    WaitForPrerenderLoadCompletion(prerendering_url);
+    int host_id_retriggered = GetHostForUrl(prerendering_url);
+
+    test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                   host_id_retriggered);
+
+    // Activate the prerendered page.
+    NavigatePrimaryPage(prerendering_url);
+    prerender_observer.WaitForActivation();
+    ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+    EXPECT_TRUE(prerender_observer.was_activated());
+  } else {
+    // The next page contains speculation rules for the prerendering page, but
+    // it's not processed on BFCache restoration.
+    EXPECT_FALSE(HasHostForUrl(prerendering_url));
+  }
 }
 
-// TODO(crbug.com/1449163): Fix this behavior to retrigger prerendering on
-// BFCache restoration.
 // Test whether speculation rules prerendering is processed again on pages
 // restored from BFCache via backward navigation.
 // When the eagerness is kEager(default), speculation rules prerendering will no
 // longer be processed after restoration.
 // TODO(crbug.com/1449163): add test cases on kModerate, kConservative.
-IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheRestorationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
                        RestoredViaBackwardNavigation) {
   const GURL initial_url = GetUrl("/empty.html");
   const GURL prerendering_url_a = GetUrl("/empty.html?prerender_a");
@@ -7681,10 +7712,27 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheRestorationBrowserTest,
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
   ExpectRestored(FROM_HERE);
 
-  // The initial page contains speculation rules for page A/B, but neither of
-  // them are processed on BFCache restoration.
-  EXPECT_FALSE(HasHostForUrl(prerendering_url_a));
-  EXPECT_FALSE(HasHostForUrl(prerendering_url_b));
+  if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
+    // Preredering for both the page A and the page B will be processed by
+    // retriggering.
+    WaitForPrerenderLoadCompletion(prerendering_url_a);
+    WaitForPrerenderLoadCompletion(prerendering_url_b);
+    int host_id_a_retriggered = GetHostForUrl(prerendering_url_a);
+
+    test::PrerenderHostObserver prerender_observer_a_retriggered(
+        *web_contents(), host_id_a_retriggered);
+
+    // Activate the page A again.
+    NavigatePrimaryPage(prerendering_url_a);
+    prerender_observer_a_retriggered.WaitForActivation();
+    ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url_a);
+    EXPECT_TRUE(prerender_observer_a_retriggered.was_activated());
+  } else {
+    // The initial page contains speculation rules for page A/B, but neither of
+    // them are processed on BFCache restoration.
+    EXPECT_FALSE(HasHostForUrl(prerendering_url_a));
+    EXPECT_FALSE(HasHostForUrl(prerendering_url_b));
+  }
 }
 
 // Tests that PrerenderHostRegistry can hold up to two prerendering for the

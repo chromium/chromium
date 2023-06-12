@@ -66,6 +66,8 @@ class CORE_EXPORT DocumentSpeculationRules
   void DidStyleChildren(Element* root);
   void DisplayLockedElementDisconnected(Element* root);
 
+  void DocumentRestoredFromBFCache();
+
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
   void Trace(Visitor*) const override;

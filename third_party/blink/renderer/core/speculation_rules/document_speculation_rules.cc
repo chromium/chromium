@@ -430,6 +430,10 @@ void DocumentSpeculationRules::DisplayLockedElementDisconnected(Element* root) {
   // |root|'s children will also be disconnected shortly after this.
 }
 
+void DocumentSpeculationRules::DocumentRestoredFromBFCache() {
+  QueueUpdateSpeculationCandidates();
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);

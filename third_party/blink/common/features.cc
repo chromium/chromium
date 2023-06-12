@@ -354,6 +354,10 @@ BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRetriggerPreloadingOnBFCacheRestoration,
+             "RetriggerPreloadingOnBFCacheRestoration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
 }

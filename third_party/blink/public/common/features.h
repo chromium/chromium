@@ -185,6 +185,11 @@ BLINK_COMMON_EXPORT extern const char
 // See https://crbug.com/1350676.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InNewTab);
 
+// Enables to retrigger speculation rules preloading on BFCache restoration.
+// See crbug.com/1449163 for more details.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRetriggerPreloadingOnBFCacheRestoration);
+
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
