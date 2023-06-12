@@ -4,6 +4,7 @@
 
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -79,6 +80,38 @@ NSString* const kReadURL = @"http://readfoobar.com";
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 }
+
+// Tests that the signin promo is shown again when last signed-in user removes
+// data during sign-out.
+- (void)testPromoShownWhenSyncDataIsRemoved {
+  // Sign-in with sync with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+  // Sign-out and remove data.
+  [ChromeEarlGrey signOutAndClearIdentities];
+  // Wait for the spinner triggered by the previous method to disappear.
+  // TODO(crbug.com/1448618): This can be removed once
+  // `signOutAndClearIdentities` has a completion block.
+  WaitForActivityOverlayToDisappear();
+
+  [ReadingListEarlGreyUI openReadingList];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+}
+
+// Tests that the signin promo is not shown when last signed-in user did not
+// remove data during sign-out.
+- (void)testPromoNotShownWhenSyncDataNotRemoved {
+  // Sign-in with sync with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+  // Sign-out without removing data.
+  [SigninEarlGrey signOut];
+
+  [ReadingListEarlGreyUI openReadingList];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
 // Tests to sign-in in incognito mode with the promo.
 // See http://crbug.com/1432747.
 - (void)testSignInPromoInIncognito {

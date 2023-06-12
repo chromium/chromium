@@ -106,6 +106,7 @@ source_set("eg2_tests") {
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:test_constants",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
