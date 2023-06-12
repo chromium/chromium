@@ -83,12 +83,13 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
   UpdateMemoryUsage();
 }
 
-OffscreenCanvas* OffscreenCanvas::Create(ExecutionContext* context,
+OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
                                          unsigned width,
                                          unsigned height) {
   UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.NewOffscreenCanvas", true);
   return MakeGarbageCollected<OffscreenCanvas>(
-      context, gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
+      ExecutionContext::From(script_state),
+      gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
 }
 
 OffscreenCanvas::~OffscreenCanvas() {

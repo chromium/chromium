@@ -536,7 +536,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_Filter) {
   });
   V8UnionCanvasFilterOrString* filter =
       MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
-  Context2D()->setFilter(GetExecutionContext(), filter);
+  Context2D()->setFilter(ToScriptStateForMainWorld(GetDocument().GetFrame()),
+                         filter);
   Context2D()->clearRect(0, 0, 10, 10);
   VerifyExpectations();
 }
@@ -627,7 +628,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Filter) {
   NonThrowableExceptionState exception_state;
   V8UnionCanvasFilterOrString* filter =
       MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
-  Context2D()->setFilter(GetExecutionContext(), filter);
+  Context2D()->setFilter(ToScriptStateForMainWorld(GetDocument().GetFrame()),
+                         filter);
   Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
                          exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -1436,8 +1438,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   CanvasElement().SetResourceProviderForTesting(
       nullptr, std::move(fake_accelerate_surface), size);
   NonThrowableExceptionState exception_state;
-  Context2D()->beginLayer(GetExecutionContext(), /*filter_init=*/nullptr,
-                          exception_state);
+  Context2D()->beginLayer(ToScriptStateForMainWorld(GetDocument().GetFrame()),
+                          /*filter_init=*/nullptr, exception_state);
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
   while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=

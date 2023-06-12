@@ -137,7 +137,7 @@ TEST(BaseRenderingContextLayerTests, ContextLost) {
   NonThrowableExceptionState exception_state;
 
   context->SetContextLost(true);
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -160,7 +160,7 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresShadowStates) {
   EXPECT_EQ(context->shadowOffsetY(), 3.0);
   EXPECT_EQ(context->shadowColor(), "#ff0000");
 
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
 
   EXPECT_EQ(context->shadowBlur(), 0.0);
@@ -187,7 +187,7 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresCompositeStates) {
   EXPECT_EQ(context->globalAlpha(), 0.7);
   EXPECT_EQ(context->globalCompositeOperation(), "xor");
 
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
 
   EXPECT_EQ(context->globalAlpha(), 1.0);
@@ -205,12 +205,12 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
   NonThrowableExceptionState exception_state;
 
   V8UnionCanvasFilterOrString* filter = MakeBlurCanvasFilter(20.0f);
-  context->setFilter(context->GetTopExecutionContext(), filter);
+  context->setFilter(scope.GetScriptState(), filter);
 
   ASSERT_TRUE(context->filter()->IsCanvasFilter());
   EXPECT_EQ(context->filter()->GetAsCanvasFilter()->Operations(),
             filter->GetAsCanvasFilter()->Operations());
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   ASSERT_TRUE(context->filter()->IsString());
   EXPECT_EQ(context->filter()->GetAsString(), "none");
@@ -226,7 +226,7 @@ TEST(BaseRenderingContextLayerTests, DefaultRenderingStates) {
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -242,7 +242,7 @@ TEST(BaseRenderingContextLayerTests, GlobalAlpha) {
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -258,7 +258,7 @@ TEST(BaseRenderingContextLayerTests, BlendingOperation) {
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("multiply");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -276,7 +276,7 @@ TEST(BaseRenderingContextLayerTests, CompositeOperation) {
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("source-in");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -295,7 +295,7 @@ TEST(BaseRenderingContextLayerTests, Shadow) {
 
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -315,7 +315,7 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndBlending) {
 
   context->setGlobalAlpha(0.3);
   context->setGlobalCompositeOperation("multiply");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -335,7 +335,7 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndComposite) {
 
   context->setGlobalAlpha(0.3);
   context->setGlobalCompositeOperation("source-in");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -357,7 +357,7 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->setGlobalAlpha(0.5);
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -382,7 +382,7 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaBlendingAndShadow) {
   context->setShadowColor("red");
   context->setGlobalAlpha(0.5);
   context->setGlobalCompositeOperation("multiply");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -408,7 +408,7 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaCompositeAndShadow) {
   context->setShadowColor("red");
   context->setGlobalAlpha(0.5);
   context->setGlobalCompositeOperation("source-in");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -433,7 +433,7 @@ TEST(BaseRenderingContextLayerTests, BlendingAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->setGlobalCompositeOperation("multiply");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -457,7 +457,7 @@ TEST(BaseRenderingContextLayerTests, CompositeAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->setGlobalCompositeOperation("source-in");
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -479,7 +479,7 @@ TEST(BaseRenderingContextLayerTests, Filter) {
   NonThrowableExceptionState exception_state;
 
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 10})"),
       exception_state);
   context->endLayer();
@@ -499,7 +499,7 @@ TEST(BaseRenderingContextLayerTests, FilterAndGlobalAlpha) {
 
   context->setGlobalAlpha(0.3);
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -520,7 +520,7 @@ TEST(BaseRenderingContextLayerTests, FilterAndBlending) {
 
   context->setGlobalCompositeOperation("multiply");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -541,7 +541,7 @@ TEST(BaseRenderingContextLayerTests, FilterAndComposite) {
 
   context->setGlobalCompositeOperation("source-in");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -568,7 +568,7 @@ TEST(BaseRenderingContextLayerTests, FilterAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -597,7 +597,7 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndBlending) {
   context->setGlobalAlpha(0.3);
   context->setGlobalCompositeOperation("multiply");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -620,7 +620,7 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndComposite) {
   context->setGlobalAlpha(0.3);
   context->setGlobalCompositeOperation("source-in");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -649,7 +649,7 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -681,7 +681,7 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaBlendingAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -714,7 +714,7 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaCompositeAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -746,7 +746,7 @@ TEST(BaseRenderingContextLayerTests, FilterBlendingAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -777,7 +777,7 @@ TEST(BaseRenderingContextLayerTests, FilterCompositeAndShadow) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer();
@@ -804,9 +804,8 @@ TEST(BaseRenderingContextLayerTests, BeginLayerIgnoresGlobalFilter) {
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
 
-  context->setFilter(context->GetTopExecutionContext(),
-                     MakeBlurCanvasFilter(20.0f));
-  context->beginLayer(context->GetTopExecutionContext(),
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
+  context->beginLayer(scope.GetScriptState(),
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
@@ -994,7 +993,7 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresLayers) {
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
   context->beginLayer(
-      context->GetTopExecutionContext(),
+      scope.GetScriptState(),
       ParseFilter(scope, "({filter: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
 

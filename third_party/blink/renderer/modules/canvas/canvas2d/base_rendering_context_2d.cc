@@ -183,7 +183,7 @@ void BaseRenderingContext2D::restore() {
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
+void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
                                         const V8CanvasFilterInput* filter_init,
                                         ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
@@ -219,7 +219,8 @@ void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
     state.SetLayerFilter(paint_filter_builder::Build(
         filter_effect_builder.BuildFilterEffect(
             CanvasFilterOperationResolver::CreateFilterOperations(
-                CHECK_DEREF(filter_init), CHECK_DEREF(execution_context),
+                CHECK_DEREF(filter_init),
+                CHECK_DEREF(ExecutionContext::From(script_state)),
                 exception_state),
             !OriginClean()),
         kInterpolationSpaceSRGB));
@@ -249,7 +250,7 @@ void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
   DCHECK(!GetState().ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
-  setFilter(GetTopExecutionContext(),
+  setFilter(script_state,
             MakeGarbageCollected<V8UnionCanvasFilterOrString>("none"));
 }
 
@@ -818,7 +819,7 @@ const V8UnionCanvasFilterOrString* BaseRenderingContext2D::filter() const {
 }
 
 void BaseRenderingContext2D::setFilter(
-    const ExecutionContext* execution_context,
+    ScriptState* script_state,
     const V8UnionCanvasFilterOrString* input) {
   if (!input)
     return;
@@ -843,12 +844,11 @@ void BaseRenderingContext2D::setFilter(
           filter_string == GetState().UnparsedCSSFilter()) {
         return;
       }
-      if (!execution_context)
-        return;
       const CSSValue* css_value = CSSParser::ParseSingleValue(
           CSSPropertyID::kFilter, filter_string,
           MakeGarbageCollected<CSSParserContext>(
-              kHTMLStandardMode, execution_context->GetSecureContextMode()));
+              kHTMLStandardMode,
+              ExecutionContext::From(script_state)->GetSecureContextMode()));
       if (!css_value || css_value->IsCSSWideKeyword())
         return;
       GetState().SetUnparsedCSSFilter(filter_string);

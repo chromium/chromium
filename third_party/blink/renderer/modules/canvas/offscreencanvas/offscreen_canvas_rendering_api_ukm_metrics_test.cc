@@ -8,6 +8,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -34,7 +35,8 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     DummyExceptionStateForTesting exception_state;
     offscreen_canvas_element_ =
         HTMLCanvasElementModule::transferControlToOffscreen(
-            GetDocument().domWindow(), *canvas_element, exception_state);
+            ToScriptStateForMainWorld(GetDocument().GetFrame()),
+            *canvas_element, exception_state);
     UpdateAllLifecyclePhasesForTest();
   }
 

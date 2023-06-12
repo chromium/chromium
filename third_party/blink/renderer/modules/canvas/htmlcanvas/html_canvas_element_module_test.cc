@@ -77,7 +77,8 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
   HTMLCanvasElement& canvas_element() const { return *canvas_element_; }
   OffscreenCanvas* TransferControlToOffscreen(ExceptionState& exception_state) {
     return HTMLCanvasElementModule::TransferControlToOffscreenInternal(
-        GetWindow(), canvas_element(), exception_state);
+        ToScriptStateForMainWorld(GetWindow()->GetFrame()), canvas_element(),
+        exception_state);
   }
 
   frame_test_helpers::WebViewHelper web_view_helper_;

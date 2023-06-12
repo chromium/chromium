@@ -16,6 +16,6 @@ typedef (CanvasRenderingContext2D or
 {
     [HighEntropy, MeasureAs=HTMLCanvasGetContext, RaisesException] RenderingContext? getContext(DOMString contextId, optional CanvasContextCreationAttributesModule attributes = {});
 
-    [CallWith=ExecutionContext,
+    [CallWith=ScriptState,
      RaisesException, MeasureAs=OffscreenCanvas] OffscreenCanvas transferControlToOffscreen();
 };

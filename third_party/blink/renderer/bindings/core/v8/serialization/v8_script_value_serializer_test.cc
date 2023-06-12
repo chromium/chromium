@@ -1521,7 +1521,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
   // More exhaustive tests in web_tests/. This is a sanity check.
   V8TestingScope scope;
   OffscreenCanvas* canvas =
-      OffscreenCanvas::Create(scope.GetExecutionContext(), 10, 7);
+      OffscreenCanvas::Create(scope.GetScriptState(), 10, 7);
   canvas->SetPlaceholderCanvasId(519);
   v8::Local<v8::Value> wrapper = ToV8(canvas, scope.GetScriptState());
   Transferables transferables;
