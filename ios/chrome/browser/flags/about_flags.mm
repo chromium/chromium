@@ -1564,6 +1564,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableSupportForLandmarkDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSupportForLandmark)},
+    {"spotlight-open-tabs-source",
+     flag_descriptions::kSpotlightOpenTabsSourceName,
+     flag_descriptions::kSpotlightOpenTabsSourceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSpotlightOpenTabsSource)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

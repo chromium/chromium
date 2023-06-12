@@ -850,6 +850,10 @@ extern const char kShowInactiveTabsCountDescription[];
 extern const char kSmartSortingPriceTrackingDestinationName[];
 extern const char kSmartSortingPriceTrackingDestinationDescription[];
 
+// Title and description for the flag to index open tabs items in Spotlight.
+extern const char kSpotlightOpenTabsSourceName[];
+extern const char kSpotlightOpenTabsSourceDescription[];
+
 // Title and description for th eflag to index Reading List items in Spotlight.
 extern const char kSpotlightReadingListSourceName[];
 extern const char kSpotlightReadingListSourceDescription[];

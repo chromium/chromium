@@ -147,6 +147,9 @@ BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 
+// Enables indexing Open tabs items in Spotlight.
+BASE_DECLARE_FEATURE(kSpotlightOpenTabsSource);
+
 // Enables indexing Reading List items in Spotlight.
 BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
 

@@ -970,6 +970,10 @@ const char kSmartSortingPriceTrackingDestinationDescription[] =
     "Adds the Price Tracking destination (with Smart Sorting) to the "
     "new overflow menu.";
 
+const char kSpotlightOpenTabsSourceName[] = "Show Open local tabs in Spotlight";
+const char kSpotlightOpenTabsSourceDescription[] =
+    "Donate local open tabs items to iOS Search Engine Spotlight";
+
 const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
 const char kSpotlightReadingListSourceDescription[] =
     "Donate Reading List items to iOS Search Engine Spotlight";
