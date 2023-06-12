@@ -68,6 +68,7 @@
     "Lacros FYI x64 Release (AMD)": "Ubuntu-22.04",
     "Lacros FYI x64 Release (Intel)": "Ubuntu-22.04",
     "Leak Detection Linux": "Ubuntu-22.04",
+    "Libfuzzer Upload Linux ASan Debug": "Ubuntu-22.04",
     "Linux Builder": "Ubuntu-22.04",
     "Linux Builder (Wayland)": "Ubuntu-22.04",
     "Linux Builder (dbg)": "Ubuntu-22.04",
