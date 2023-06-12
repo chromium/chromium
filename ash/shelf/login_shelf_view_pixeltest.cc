@@ -63,28 +63,28 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_login_user_expand_button",
-      /*revision_number=*/1, primary_big_user_view_.get(),
+      /*revision_number=*/2, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the login shelf shutdown button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
-      /*revision_number=*/1, primary_big_user_view_.get(),
+      /*revision_number=*/2, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the browser as guest button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_browser_as_guest_button",
-      /*revision_number=*/1, primary_big_user_view_.get(),
+      /*revision_number=*/2, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the add person button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_add_person_button",
-      /*revision_number=*/1, primary_big_user_view_.get(),
+      /*revision_number=*/2, primary_big_user_view_.get(),
       primary_shelf_window));
 }
 
@@ -140,7 +140,7 @@ TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
   FocusOnShutdownButton();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
-      /*revision_number=*/1, primary_big_user_view_.get(),
+      /*revision_number=*/2, primary_big_user_view_.get(),
       GetPrimaryShelf()->GetWindow()));
 }
 

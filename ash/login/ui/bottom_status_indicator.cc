@@ -26,9 +26,11 @@ BottomStatusIndicator::BottomStatusIndicator(TappedCallback on_tapped_callback)
 BottomStatusIndicator::~BottomStatusIndicator() = default;
 
 void BottomStatusIndicator::SetIcon(const gfx::VectorIcon& vector_icon,
-                                    ui::ColorId color_id) {
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(vector_icon, color_id));
+                                    ui::ColorId color_id,
+                                    int icon_size /* = 0 */) {
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(vector_icon, color_id, icon_size));
 }
 
 void BottomStatusIndicator::GetAccessibleNodeData(ui::AXNodeData* node_data) {

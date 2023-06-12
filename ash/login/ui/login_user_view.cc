@@ -24,11 +24,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -57,6 +59,7 @@ constexpr int kDistanceBetweenUsernameAndDropdownDp = 8;
 constexpr int kSmallManyDistanceFromUserIconToUserLabelDp = 16;
 
 constexpr int kDropdownIconSizeDp = 28;
+constexpr int kJellyDropdownIconSizeDp = 20;
 
 // Width/height of the user view. Ensures proper centering.
 constexpr int kLargeUserViewWidthDp = 306;
@@ -276,7 +279,11 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     user_name_ = new views::Label();
     user_name_->SetSubpixelRenderingEnabled(false);
     user_name_->SetAutoColorReadabilityEnabled(false);
-    user_name_->SetEnabledColorId(kColorAshTextColorPrimary);
+    if (chromeos::features::IsJellyrollEnabled()) {
+      user_name_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    } else {
+      user_name_->SetEnabledColorId(kColorAshTextColorPrimary);
+    }
 
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
     const gfx::FontList font_list(
@@ -443,13 +450,20 @@ LoginUserView::LoginUserView(
     dropdown_ = new LoginButton(base::BindRepeating(
         &LoginUserView::DropdownButtonPressed, base::Unretained(this)));
     dropdown_->SetHasInkDropActionOnClick(false);
-    dropdown_->SetPreferredSize(
-        gfx::Size(kDropdownIconSizeDp, kDropdownIconSizeDp));
     dropdown_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    dropdown_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
-                                       kColorAshIconColorPrimary));
+    if (!chromeos::features::IsJellyrollEnabled()) {
+      dropdown_->SetImageModel(
+          views::Button::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
+                                         kColorAshIconColorPrimary,
+                                         kDropdownIconSizeDp));
+    } else {
+      dropdown_->SetImageModel(
+          views::Button::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
+                                         cros_tokens::kCrosSysOnSurface,
+                                         kJellyDropdownIconSizeDp));
+    }
   }
   tap_button_ = new TapButton(on_tap_, this);
   SetTapEnabled(true);
