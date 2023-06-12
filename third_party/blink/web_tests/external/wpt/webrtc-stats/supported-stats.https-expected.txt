@@ -74,7 +74,7 @@ PASS inbound-rtp's id
 PASS outbound-rtp's mid
 PASS outbound-rtp's mediaSourceId
 PASS outbound-rtp's remoteId
-NOTRUN outbound-rtp's rid outbound-rtp.rid marked as not testable.
+PRECONDITION_FAILED outbound-rtp's rid outbound-rtp.rid marked as not testable.
 PASS outbound-rtp's headerBytesSent
 PASS outbound-rtp's retransmittedPacketsSent
 PASS outbound-rtp's retransmittedBytesSent
@@ -158,8 +158,8 @@ PASS data-channel's id
 PASS media-source's audioLevel
 PASS media-source's totalAudioEnergy
 PASS media-source's totalSamplesDuration
-NOTRUN media-source's echoReturnLoss media-source.echoReturnLoss marked as not testable.
-NOTRUN media-source's echoReturnLossEnhancement media-source.echoReturnLossEnhancement marked as not testable.
+PRECONDITION_FAILED media-source's echoReturnLoss media-source.echoReturnLoss marked as not testable.
+PRECONDITION_FAILED media-source's echoReturnLossEnhancement media-source.echoReturnLossEnhancement marked as not testable.
 FAIL media-source's droppedSamplesDuration assert_true: Is droppedSamplesDuration present expected true got false
 FAIL media-source's droppedSamplesEvents assert_true: Is droppedSamplesEvents present expected true got false
 FAIL media-source's totalCaptureDelay assert_true: Is totalCaptureDelay present expected true got false
@@ -215,7 +215,7 @@ PASS candidate-pair's lastPacketReceivedTimestamp
 PASS candidate-pair's totalRoundTripTime
 PASS candidate-pair's currentRoundTripTime
 PASS candidate-pair's availableOutgoingBitrate
-NOTRUN candidate-pair's availableIncomingBitrate candidate-pair.availableIncomingBitrate marked as not testable.
+PRECONDITION_FAILED candidate-pair's availableIncomingBitrate candidate-pair.availableIncomingBitrate marked as not testable.
 PASS candidate-pair's requestsReceived
 PASS candidate-pair's requestsSent
 PASS candidate-pair's responsesReceived
@@ -232,11 +232,11 @@ PASS local-candidate's port
 PASS local-candidate's protocol
 PASS local-candidate's candidateType
 PASS local-candidate's priority
-NOTRUN local-candidate's url local-candidate.url marked as not testable.
-NOTRUN local-candidate's relayProtocol local-candidate.relayProtocol marked as not testable.
+PRECONDITION_FAILED local-candidate's url local-candidate.url marked as not testable.
+PRECONDITION_FAILED local-candidate's relayProtocol local-candidate.relayProtocol marked as not testable.
 PASS local-candidate's foundation
-NOTRUN local-candidate's relatedAddress local-candidate.relatedAddress marked as not testable.
-NOTRUN local-candidate's relatedPort local-candidate.relatedPort marked as not testable.
+PRECONDITION_FAILED local-candidate's relatedAddress local-candidate.relatedAddress marked as not testable.
+PRECONDITION_FAILED local-candidate's relatedPort local-candidate.relatedPort marked as not testable.
 PASS local-candidate's usernameFragment
 PASS local-candidate's tcpType
 PASS local-candidate's timestamp
@@ -248,20 +248,20 @@ PASS remote-candidate's port
 PASS remote-candidate's protocol
 PASS remote-candidate's candidateType
 PASS remote-candidate's priority
-NOTRUN remote-candidate's url remote-candidate.url marked as not testable.
-NOTRUN remote-candidate's relayProtocol remote-candidate.relayProtocol marked as not testable.
+PRECONDITION_FAILED remote-candidate's url remote-candidate.url marked as not testable.
+PRECONDITION_FAILED remote-candidate's relayProtocol remote-candidate.relayProtocol marked as not testable.
 PASS remote-candidate's foundation
-NOTRUN remote-candidate's relatedAddress remote-candidate.relatedAddress marked as not testable.
-NOTRUN remote-candidate's relatedPort remote-candidate.relatedPort marked as not testable.
+PRECONDITION_FAILED remote-candidate's relatedAddress remote-candidate.relatedAddress marked as not testable.
+PRECONDITION_FAILED remote-candidate's relatedPort remote-candidate.relatedPort marked as not testable.
 PASS remote-candidate's usernameFragment
-NOTRUN remote-candidate's tcpType remote-candidate.tcpType marked as not testable.
+PRECONDITION_FAILED remote-candidate's tcpType remote-candidate.tcpType marked as not testable.
 PASS remote-candidate's timestamp
 PASS remote-candidate's type
 PASS remote-candidate's id
 PASS certificate's fingerprint
 PASS certificate's fingerprintAlgorithm
 PASS certificate's base64Certificate
-NOTRUN certificate's issuerCertificateId certificate.issuerCertificateId marked as not testable.
+PRECONDITION_FAILED certificate's issuerCertificateId certificate.issuerCertificateId marked as not testable.
 PASS certificate's timestamp
 PASS certificate's type
 PASS certificate's id

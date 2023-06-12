@@ -1,23 +1,23 @@
 This is a testharness.js-based test.
-NOTRUN sec-fetch-site - Same origin Application Cache supported.
-NOTRUN sec-fetch-site - Cross-site Application Cache supported.
-NOTRUN sec-fetch-site - Same site Application Cache supported.
-NOTRUN sec-fetch-site - HTTPS downgrade (header not sent) Application Cache supported.
-NOTRUN sec-fetch-site - HTTPS upgrade Application Cache supported.
-NOTRUN sec-fetch-site - HTTPS downgrade-upgrade Application Cache supported.
-NOTRUN sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect Application Cache supported.
-NOTRUN sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect Application Cache supported.
-NOTRUN sec-fetch-site - Cross-Site -> Same Origin Application Cache supported.
-NOTRUN sec-fetch-site - Cross-Site -> Same-Site Application Cache supported.
-NOTRUN sec-fetch-site - Cross-Site -> Cross-Site Application Cache supported.
-NOTRUN sec-fetch-site - Same-Origin -> Same Origin Application Cache supported.
-NOTRUN sec-fetch-site - Same-Origin -> Same-Site Application Cache supported.
-NOTRUN sec-fetch-site - Same-Origin -> Cross-Site Application Cache supported.
-NOTRUN sec-fetch-site - Same-Site -> Same Origin Application Cache supported.
-NOTRUN sec-fetch-site - Same-Site -> Same-Site Application Cache supported.
-NOTRUN sec-fetch-site - Same-Site -> Cross-Site Application Cache supported.
-NOTRUN sec-fetch-mode Application Cache supported.
-NOTRUN sec-fetch-dest Application Cache supported.
-NOTRUN sec-fetch-user Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same origin Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Cross-site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - HTTPS downgrade (header not sent) Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - HTTPS upgrade Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - HTTPS downgrade-upgrade Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Cross-Site -> Same Origin Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Cross-Site -> Same-Site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Cross-Site -> Cross-Site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Origin -> Same Origin Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Origin -> Same-Site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Origin -> Cross-Site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Site -> Same Origin Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Site -> Same-Site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-site - Same-Site -> Cross-Site Application Cache supported.
+PRECONDITION_FAILED sec-fetch-mode Application Cache supported.
+PRECONDITION_FAILED sec-fetch-dest Application Cache supported.
+PRECONDITION_FAILED sec-fetch-user Application Cache supported.
 Harness: the test ran to completion.
 

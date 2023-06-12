@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-NOTRUN Testing BFCache support for page with open WebTransport connection. BFCache not supported.
+PRECONDITION_FAILED Testing BFCache support for page with open WebTransport connection. BFCache not supported.
 Harness: the test ran to completion.
 
