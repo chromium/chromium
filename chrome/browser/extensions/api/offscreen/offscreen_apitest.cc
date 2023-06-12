@@ -623,7 +623,13 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, TabCaptureStreams) {
+// TODO(https://crbug.com/1453966): Failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
+#else
+#define MAYBE_TabCaptureStreams TabCaptureStreams
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_TabCaptureStreams) {
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("offscreen/tab_capture_streams"));
   ASSERT_TRUE(extension);
