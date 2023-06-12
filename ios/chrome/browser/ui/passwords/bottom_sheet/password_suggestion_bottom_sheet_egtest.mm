@@ -551,4 +551,31 @@ id<GREYMatcher> DeleteConfirmationButton() {
   WaitForKeyboardToAppear();
 }
 
+- (void)testOpenPasswordBottomSheetNoUsername {
+  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+  [PasswordSuggestionBottomSheetAppInterface
+      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                   kSuccess];
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@""
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form.html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(l10n_util::GetNSString(
+                          IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME))];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

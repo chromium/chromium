@@ -397,7 +397,7 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
                                   withString:@""];
   }
   if (!username || [username length] == 0) {
-    return kPasswordFormSuggestionSuffix;
+    return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME);
   }
   return username;
 }
