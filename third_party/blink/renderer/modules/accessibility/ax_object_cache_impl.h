@@ -168,13 +168,14 @@ class MODULES_EXPORT AXObjectCacheImpl
   // recompute the parent's children and reserialize the parent.
   void Remove(AXObject*, bool notify_parent);
   void Remove(Node*, bool notify_parent);
-  // This will remove all AXObjects in the subtree, whether they or not they are
-  // marked as included for serialization. They can only be called while flat
-  // tree traversal is safe and there are no slot assignments pending.
-  // To remove only included nodes, use RemoveIncludedSubtree(), which can be
-  // called at any time.
-  void RemoveSubtreeWithFlatTraversal(Node* node);
-  void RemoveSubtreeWithFlatTraversal(AXObject*, bool notify_parent);
+
+  // If |remove_root|, remove the root of the subtree, otherwise only
+  // descendants are removed. If |notify_parent|, call ChildrenChanged() on the
+  // parent.
+  void RemoveSubtreeWithFlatTraversal(Node*,
+                                      bool remove_root = true,
+                                      bool notify_parent = true);
+  void RemoveSubtreeWhenSafe(Node*) override;
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
@@ -232,6 +233,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void InlineTextBoxesUpdated(LayoutObject*) override;
   // Called during the accessibility lifecycle to refresh the AX tree.
   void ProcessDeferredAccessibilityEvents(Document&) override;
+  // Remove AXObject subtrees (once flat tree traversal is safe).
+  void ProcessSubtreeRemovals() override;
   // Is there work to be done when layout becomes clean?
   bool IsDirty() override;
 
@@ -602,7 +605,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Remove the cached subtree of included AXObjects. If |remove_root| is false,
   // then only descendants will be removed. To remove unincluded AXObjects as
-  // well, call RemoveSubtreeWithFlatTraversal().
+  // well, call RemoveSubtreeWithFlatTraversal() or RemoveSubtreeWhenSafe().
   void RemoveIncludedSubtree(AXObject* object, bool remove_root);
 
   // Helper to remove the object from the cache.
@@ -889,6 +892,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Nodes with document markers that have received accessibility updates.
   HeapHashSet<WeakMember<Node>> nodes_with_spelling_or_grammar_markers_;
+
+  // Nodes renoved from flat tree.
+  HeapVector<Member<Node>> nodes_for_subtree_removal_;
 
   // True when layout has changed, and changed locations must be serialized.
   bool need_to_send_location_changes_ = false;

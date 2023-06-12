@@ -5708,8 +5708,9 @@ void AXObject::ClearChildren() const {
         // Since this code only runs when |map| is set, and therefore
         // |node| is an image outside the map, this only needs to happen for
         // the map descendants, not the image descendants.
-        AXObjectCache().RemoveSubtreeWithFlatTraversal(ax_child_from_node,
-                                                       false);
+        AXObjectCache().RemoveSubtreeWithFlatTraversal(
+            child_node,
+            /* remove_root */ true, /* notify_parent */ false);
       } else {
         ax_child_from_node->DetachFromParent();
       }

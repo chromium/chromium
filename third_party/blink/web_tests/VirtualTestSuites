@@ -1208,6 +1208,14 @@
     "expires": "never"
   },
   {
+  "prefix": "force-renderer-accessibility-parser-yield-and-delay-often",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/accessibility/crashtests/removed-from-flat-tree.html"],
+    "args": ["--force-renderer-accessibility",
+             "--enable-blink-features=HTMLParserYieldAndDelayOftenForTesting"],
+    "expires": "never"
+  },
+  {
     "prefix": "no-alloc-direct-call",
     "platforms": ["Linux"],
     "bases": ["fast/canvas"],

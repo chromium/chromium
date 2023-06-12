@@ -3404,7 +3404,7 @@ void Node::RemovedFromFlatTree() {
 
   // Ensure removal from accessibility cache even if it doesn't have layout.
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->Remove(this);
+    cache->RemoveSubtreeWhenSafe(this);
   }
 }
 
