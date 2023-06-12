@@ -172,6 +172,7 @@
     "chromeos-jacuzzi-rel": "Ubuntu-22.04",
     "chromeos-octopus-rel": "Ubuntu-22.04",
     "fuchsia-angle-builder": "Ubuntu-22.04",
+    "fuchsia-arm64-rel": "Ubuntu-22.04",
     "fuchsia-official": "Ubuntu-22.04",
     "fuchsia-x64-accessibility-rel": "Ubuntu-22.04",
     "ios-angle-intel": "Ubuntu-22.04",
