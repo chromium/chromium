@@ -704,6 +704,8 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
+crbug.com/1454201 [ chromeos lacros-chrome chromeos-board-jacuzzi ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+
 ###########################
 # Lacros/Wayland failures #
 ###########################
