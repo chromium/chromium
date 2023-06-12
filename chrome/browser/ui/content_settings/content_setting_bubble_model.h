@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -113,14 +114,7 @@ class ContentSettingBubbleModel {
     int default_item = 0;
   };
 
-  struct DomainList {
-    DomainList();
-    DomainList(const DomainList& other);
-    ~DomainList();
-
-    std::u16string title;
-    std::set<std::string> hosts;
-  };
+  typedef std::map<net::SchemefulSite, /*allowed*/ bool> SiteList;
 
   struct MediaMenu {
     MediaMenu();
@@ -158,7 +152,7 @@ class ContentSettingBubbleModel {
     bool is_user_modifiable = true;
     ListItems list_items;
     RadioGroup radio_group;
-    std::vector<DomainList> domain_lists;
+    SiteList site_list;
     std::u16string custom_link;
     bool custom_link_enabled = false;
     std::u16string manage_text;
@@ -191,6 +185,8 @@ class ContentSettingBubbleModel {
   void set_owner(Owner* owner) { owner_ = owner; }
 
   virtual void OnListItemClicked(int index, const ui::Event& event) {}
+  virtual void OnSiteRowClicked(const net::SchemefulSite& site,
+                                bool is_allowed) {}
   virtual void OnCustomLinkClicked() {}
   virtual void OnManageButtonClicked() {}
   virtual void OnManageCheckboxChecked(bool is_checked) {}
@@ -255,8 +251,8 @@ class ContentSettingBubbleModel {
   void set_radio_group(const RadioGroup& radio_group) {
     bubble_content_.radio_group = radio_group;
   }
-  void add_domain_list(const DomainList& domain_list) {
-    bubble_content_.domain_lists.push_back(domain_list);
+  void set_site_list(const SiteList& site_list) {
+    bubble_content_.site_list = site_list;
   }
   void set_custom_link(const std::u16string& link) {
     bubble_content_.custom_link = link;
@@ -553,13 +549,21 @@ class ContentSettingStorageAccessBubbleModel
  public:
   ContentSettingStorageAccessBubbleModel(Delegate* delegate,
                                          content::WebContents* web_contents);
+  ~ContentSettingStorageAccessBubbleModel() override;
 
   ContentSettingStorageAccessBubbleModel(
       const ContentSettingStorageAccessBubbleModel&) = delete;
   ContentSettingStorageAccessBubbleModel& operator=(
       const ContentSettingStorageAccessBubbleModel&) = delete;
 
-  ~ContentSettingStorageAccessBubbleModel() override;
+  // ContentSettingBubbleModel:
+  void OnManageButtonClicked() override;
+  void CommitChanges() override;
+  void OnSiteRowClicked(const net::SchemefulSite& site,
+                        bool is_allowed) override;
+
+ private:
+  std::map<net::SchemefulSite, bool> changed_permissions_;
 };
 
 // The bubble that informs users that Chrome does not have access to Location

@@ -36,6 +36,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -49,6 +50,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -69,6 +71,8 @@
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
 using custom_handlers::ProtocolHandler;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -1082,7 +1086,7 @@ TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
   EXPECT_FALSE(bubble_content.title.empty());
   EXPECT_FALSE(bubble_content.radio_group.radio_items.empty());
   EXPECT_TRUE(bubble_content.list_items.empty());
-  EXPECT_TRUE(bubble_content.domain_lists.empty());
+  EXPECT_TRUE(bubble_content.site_list.empty());
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
@@ -1521,4 +1525,41 @@ TEST_F(ContentSettingBubbleModelTest, InvalidUrl) {
       content_setting_bubble_model->bubble_content();
 
   EXPECT_FALSE(bubble_content.is_user_modifiable);
+}
+
+TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  net::SchemefulSite site(GURL("https://example.com"));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(site.GetURL(), web_contents()->GetURL(),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK);
+
+  content_settings->OnTwoSitePermissionRequested(
+      ContentSettingsType::STORAGE_ACCESS, site, false);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::STORAGE_ACCESS));
+  const ContentSettingBubbleModel::BubbleContent& bubble_content =
+      content_setting_bubble_model->bubble_content();
+
+  EXPECT_FALSE(bubble_content.title.empty());
+  EXPECT_EQ(0U, bubble_content.radio_group.radio_items.size());
+  EXPECT_THAT(bubble_content.site_list,
+              UnorderedElementsAre(Pair(site, false)));
+
+  content_setting_bubble_model->OnSiteRowClicked(site, true);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(site.GetURL(), web_contents()->GetURL(),
+                                   ContentSettingsType::STORAGE_ACCESS));
+
+  content_setting_bubble_model->CommitChanges();
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(site.GetURL(), web_contents()->GetURL(),
+                                   ContentSettingsType::STORAGE_ACCESS));
 }

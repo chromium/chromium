@@ -13,10 +13,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/content_setting_domain_list_view.h"
+#include "chrome/browser/ui/views/content_setting_site_row_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -142,7 +143,7 @@ class MediaMenuBlock : public views::View {
                    views::TableLayout::ColumnSize::kFixed, 0, 0);
 
     bool first_row = true;
-    for (auto i = media.cbegin(); i != media.cend(); ++i) {
+    for (const auto& entry : media) {
       if (!first_row) {
         layout->AddPaddingRow(views::TableLayout::kFixedSize,
                               provider->GetDistanceMetric(
@@ -151,8 +152,8 @@ class MediaMenuBlock : public views::View {
       first_row = false;
 
       layout->AddRows(1, views::TableLayout::kFixedSize);
-      blink::mojom::MediaStreamType stream_type = i->first;
-      const ContentSettingBubbleModel::MediaMenu& menu = i->second;
+      blink::mojom::MediaStreamType stream_type = entry.first;
+      const ContentSettingBubbleModel::MediaMenu& menu = entry.second;
 
       AddChildView(std::make_unique<views::Label>(menu.label))
           ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -191,7 +192,7 @@ MediaComboboxModel::MediaComboboxModel(blink::mojom::MediaStreamType type)
          type_ == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
 }
 
-MediaComboboxModel::~MediaComboboxModel() {}
+MediaComboboxModel::~MediaComboboxModel() = default;
 
 const blink::MediaStreamDevices& MediaComboboxModel::GetDevices() const {
   MediaCaptureDevicesDispatcher* dispatcher =
@@ -517,9 +518,8 @@ void ContentSettingBubbleContents::Init() {
   const ContentSettingBubbleModel::RadioGroup& radio_group =
       bubble_content.radio_group;
   if (!radio_group.radio_items.empty()) {
-    for (auto i(radio_group.radio_items.begin());
-         i != radio_group.radio_items.end(); ++i) {
-      auto radio = std::make_unique<views::RadioButton>(*i, 0);
+    for (const auto& radio_item : radio_group.radio_items) {
+      auto radio = std::make_unique<views::RadioButton>(radio_item, 0);
       radio->SetVisible(bubble_content.is_user_modifiable);
       radio->SetMultiLine(true);
       radio_group_.push_back(radio.get());
@@ -541,11 +541,13 @@ void ContentSettingBubbleContents::Init() {
          LayoutRowType::INDENTED});
   }
 
-  for (auto i(bubble_content.domain_lists.begin());
-       i != bubble_content.domain_lists.end(); ++i) {
-    auto list_view =
-        std::make_unique<ContentSettingDomainListView>(i->title, i->hosts);
-    rows.push_back({std::move(list_view), LayoutRowType::DEFAULT});
+  for (const auto& entry : bubble_content.site_list) {
+    auto domain_row = std::make_unique<ContentSettingSiteRowView>(
+        entry.first, entry.second,
+        base::BindRepeating(
+            &ContentSettingBubbleModel::OnSiteRowClicked,
+            base::Unretained(content_setting_bubble_model_.get())));
+    rows.push_back({std::move(domain_row), LayoutRowType::DEFAULT});
   }
 
   if (!bubble_content.custom_link.empty()) {

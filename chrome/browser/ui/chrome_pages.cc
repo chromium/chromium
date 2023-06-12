@@ -192,14 +192,17 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // will no longer be needed.
 
   static constexpr auto kSettingsPathOverrides =
-      base::MakeFixedFlatMap<ContentSettingsType, base::StringPiece>(
-          {{ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
-           {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},
-           {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
-           {ContentSettingsType::MEDIASTREAM_CAMERA, "camera"},
-           {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
-           {ContentSettingsType::ADS, "ads"},
-           {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"}});
+      base::MakeFixedFlatMap<ContentSettingsType, base::StringPiece>({
+          {ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
+          {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},
+          {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
+          {ContentSettingsType::MEDIASTREAM_CAMERA, "camera"},
+          {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
+          {ContentSettingsType::ADS, "ads"},
+          {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"},
+          {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},
+      });
+
   const auto* it = kSettingsPathOverrides.find(type);
 
   return base::StrCat({kContentSettingsSubPage, "/",
