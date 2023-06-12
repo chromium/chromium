@@ -9,14 +9,14 @@ cr_cronet.py - cr - like helper tool for cronet developers
 
 import argparse
 import os
-import pipes
 import re
+import shlex
 import subprocess
 import sys
 
 
 def quoted_args(args):
-  return ' '.join([pipes.quote(arg) for arg in args])
+  return ' '.join([shlex.quote(arg) for arg in args])
 
 
 def run(command, **kwargs):
@@ -85,7 +85,7 @@ def debug(extra_options):
 
 def stack(out_dir):
   return run_shell(
-      'adb logcat -d | CHROMIUM_OUTPUT_DIR=' + pipes.quote(out_dir) +
+      'adb logcat -d | CHROMIUM_OUTPUT_DIR=' + shlex.quote(out_dir) +
       ' third_party/android_platform/development/scripts/stack')
 
 
