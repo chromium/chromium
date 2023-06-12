@@ -286,7 +286,16 @@ void SmartCardContext::OnListReadersDone(
   list_readers_request_ = nullptr;
 
   if (result->is_error()) {
-    auto* error = SmartCardError::Create(result->get_error());
+    auto mojom_error = result->get_error();
+    // If there are no readers available, PCSC API returns a kNoReadersAvailable
+    // error. In web API we want to return an empty list of readers instead.
+    if (mojom_error ==
+        device::mojom::blink::SmartCardError::kNoReadersAvailable) {
+      resolver->Resolve(Vector<String>());
+      return;
+    }
+
+    auto* error = SmartCardError::Create(mojom_error);
     resolver->Reject(error);
     return;
   }
