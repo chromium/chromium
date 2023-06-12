@@ -97,6 +97,10 @@ using bookmarks::BookmarkNode;
   _syncObserverBridge = nullptr;
 }
 
+- (void)dealloc {
+  DCHECK(!_profileDataSource);
+}
+
 - (const std::set<const BookmarkNode*>&)editedNodes {
   return _editedNodes;
 }
