@@ -27,7 +27,6 @@
 @protocol BrowserCoordinatorCommands;
 @class BubblePresenter;
 @protocol CRWResponderInputView;
-@class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -131,11 +130,6 @@ typedef struct {
 // The container used for infobar modal overlays.
 @property(nonatomic, strong)
     UIViewController* infobarModalOverlayContainerViewController;
-
-// Scheduler for the non-modal default browser promo.
-// TODO(crbug.com/1204120): The BVC should not need this model-level object.
-@property(nonatomic, weak)
-    NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler;
 
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>

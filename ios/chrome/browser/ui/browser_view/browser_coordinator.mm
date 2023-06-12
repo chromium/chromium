@@ -1281,15 +1281,11 @@ enum class ToolbarKind {
   browserViewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-
-  browserViewController.nonModalPromoScheduler =
-      [NonModalDefaultBrowserPromoSchedulerSceneAgent
-          agentFromScene:sceneState];
   browserViewController.nonModalPromoPresentationDelegate = self;
 
   if (browserState->IsOffTheRecord()) {
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:sceneState];
 

@@ -6,14 +6,13 @@
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COMMANDS_H_
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
 // Protocol for commands that will generally be handled by the "current tab",
 // which in practice is the BrowserViewController instance displaying the tab.
 @protocol BrowserCommands <NSObject>
 
-// Prepares the browser to display the overflow menu.
-- (void)prepareForOverflowMenuPresentation;
+// Dismisses the soft keyboard (if open).
+- (void)dismissSoftKeyboard;
 
 @end
 

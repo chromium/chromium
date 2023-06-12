@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
-#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -2544,20 +2543,9 @@ enum HeaderBehaviour {
 
 #pragma mark - BrowserCommands
 
-- (void)prepareForOverflowMenuPresentation {
+- (void)dismissSoftKeyboard {
   DCHECK(self.visible || self.dismissingModal);
-
-  // Dismiss the omnibox (if open).
-  [self.omniboxCommandsHandler cancelOmniboxEdit];
-  // Dismiss the soft keyboard (if open).
   [self.viewForCurrentWebState endEditing:NO];
-  // Dismiss Find in Page focus.
-  [self.findInPageCommandsHandler defocusFindInPage];
-
-  // Allow the non-modal promo scheduler to close the promo.
-  [self.nonModalPromoScheduler logPopupMenuEntered];
-
-  [_bubblePresenter toolsMenuDisplayed];
 }
 
 #pragma mark - TabConsumer (Public)

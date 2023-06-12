@@ -24,7 +24,10 @@
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -35,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -185,11 +189,29 @@ enum class IOSOverflowMenuActionType {
     [self dismissPopupMenuAnimated:YES];
   }
 
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
+  id<OmniboxCommands> omniboxCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  // Dismiss the omnibox (if open).
+  [omniboxCommandsHandler cancelOmniboxEdit];
+
   id<BrowserCommands> callableDispatcher =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
-  [callableDispatcher prepareForOverflowMenuPresentation];
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
+  [callableDispatcher dismissSoftKeyboard];
+
+  id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), FindInPageCommands);
+  // Dismiss Find in Page focus.
+  [findInPageCommandsHandler defocusFindInPage];
+
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler =
+      [NonModalDefaultBrowserPromoSchedulerSceneAgent
+          agentFromScene:sceneState];
+  // Allow the non-modal promo scheduler to close the promo.
+  [nonModalPromoScheduler logPopupMenuEntered];
+
+  [self.bubblePresenter toolsMenuDisplayed];
 
   self.requestStartTime = [NSDate timeIntervalSinceReferenceDate];
 
