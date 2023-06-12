@@ -340,9 +340,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordGeneration.SubmissionAvailableEvent"
-    enum="PasswordSubmissionEvent" expires_after="M117">
+    enum="PasswordSubmissionEvent" expires_after="M120">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Measures the frequency of submission events for passwords that could have
     been generated, but the user didn't choose to use the feature. This is to
@@ -3492,9 +3494,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SubmittedFormType" enum="PasswordFormType"
-    expires_after="M117">
+    expires_after="M120">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     The type (e.g. signup, login, change password) of all submitted password
     forms. This is logged on form submission, but doesn't require that the
