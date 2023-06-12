@@ -240,4 +240,6 @@
 # These tests are flaky.
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/0
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/1
+-All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
+-All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/1
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
