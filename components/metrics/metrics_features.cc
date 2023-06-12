@@ -14,12 +14,6 @@ BASE_FEATURE(kMetricsClearLogsOnClonedInstall,
              "MetricsClearLogsOnClonedInstall",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kReportingServiceFlushPrefsOnUploadInBackground,
-             "ReportingServiceFlushPrefsOnUploadInBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kStructuredMetrics,
              "EnableStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -270,9 +270,7 @@ void ReportingService::OnLogUploadComplete(
       // Chrome is in the foreground because of the assumption that
       // |local_state_| will be flushed when convenient, and we do not want to
       // do more work than necessary on the main thread while Chrome is visible.
-      if (base::FeatureList::IsEnabled(
-              features::kReportingServiceFlushPrefsOnUploadInBackground) &&
-          !is_in_foreground_) {
+      if (!is_in_foreground_) {
         local_state_->CommitPendingWrite();
       }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

@@ -21,12 +21,6 @@ BASE_DECLARE_FEATURE(kMetricsServiceAllowEarlyLogClose);
 // install is detected as cloned.
 BASE_DECLARE_FEATURE(kMetricsClearLogsOnClonedInstall);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// Determines whether we immediately flush Local State after uploading a log
-// while Chrome is in the background. Only applicable for mobile platforms.
-BASE_DECLARE_FEATURE(kReportingServiceFlushPrefsOnUploadInBackground);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
 
