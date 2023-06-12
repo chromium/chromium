@@ -852,6 +852,7 @@ experimental domain Audits
       string url
       # The failure message for the failed request.
       string failureMessage
+      optional Network.RequestId requestId
 
   type StyleSheetLoadingIssueReason extends string
     enum

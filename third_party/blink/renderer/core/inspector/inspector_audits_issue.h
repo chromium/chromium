@@ -188,6 +188,7 @@ class CORE_EXPORT AuditsIssue {
   static void ReportStylesheetLoadingRequestFailedIssue(
       Document* document,
       const KURL& url,
+      const absl::optional<String>& requestId,
       const KURL& initiator_url,
       WTF::OrdinalNumber initiator_line,
       WTF::OrdinalNumber initiator_column,

@@ -4,6 +4,7 @@
       'Report stylesheet loading failures');
 
   await dp.DOM.enable();
+  await dp.Network.enable();
   await dp.CSS.enable();
   await dp.Page.enable();
   await dp.Audits.enable();
@@ -23,7 +24,7 @@
   function issueComparator(i) {
     return `${i.styleSheetLoadingIssueReason}:${i.sourceCodeLocation.url}:${
         i.sourceCodeLocation.lineNumber}:${i.sourceCodeLocation.columnNumber}:${
-        i.failedRequestInfo?.url}:${i.failedRequestInfo?.failureMessage}`;
+        i.failedRequestInfo?.url}:${i.failedRequestInfo?.failureMessage}:${i.failedRequestInfo?.requestId}`;
   }
   issues.sort((a, b) => {
     const cmpA = issueComparator(a), cmpB = issueComparator(b);
@@ -38,8 +39,8 @@
     testRunner.log(`Reason: ${styleSheetLoadingIssueReason}`);
     testRunner.log(`Location: ${url} @ ${lineNumber+1}:${columnNumber+1}`);
     if (failedRequestInfo) {
-      const {url, failureMessage} = failedRequestInfo;
-      testRunner.log(`Request: ${failureMessage} ${url}`);
+      const {url, failureMessage, requestId} = failedRequestInfo;
+      testRunner.log(`Request: ${failureMessage} ${url} ${Boolean(requestId)}`);
     } else {
       testRunner.log(`Request: ${failedRequestInfo}`);
     }

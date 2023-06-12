@@ -706,6 +706,7 @@ void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
 void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
     Document* document,
     const KURL& url,
+    const absl::optional<String>& requestId,
     const KURL& initiator_url,
     WTF::OrdinalNumber initiator_line,
     WTF::OrdinalNumber initiator_column,
@@ -723,6 +724,10 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
                             .setUrl(url)
                             .setFailureMessage(failureMessage)
                             .build();
+
+  if (requestId) {
+    requestDetails->setRequestId(*requestId);
+  }
   auto details =
       protocol::Audits::StylesheetLoadingIssueDetails::create()
           .setSourceCodeLocation(std::move(sourceCodeLocation))

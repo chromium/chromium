@@ -86,7 +86,9 @@ void StyleRuleImport::NotifyFinished(Resource* resource) {
     parent_context = parent_style_sheet_->ParserContext();
     if (resource->LoadFailedOrCanceled() && document) {
       AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
-          document, resource->Url(), parent_style_sheet_->BaseURL(),
+          document, resource->Url(),
+          resource->LastResourceRequest().GetDevToolsId(),
+          parent_style_sheet_->BaseURL(),
           resource->Options().initiator_info.position.line_,
           resource->Options().initiator_info.position.column_,
           resource->GetResourceError().LocalizedDescription());

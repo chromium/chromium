@@ -62,7 +62,8 @@ void LinkStyle::NotifyFinished(Resource* resource) {
 
   if (resource->LoadFailedOrCanceled()) {
     AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
-        &GetDocument(), resource->Url(), GetDocument().Url(),
+        &GetDocument(), resource->Url(),
+        resource->LastResourceRequest().GetDevToolsId(), GetDocument().Url(),
         resource->Options().initiator_info.position.line_,
         resource->Options().initiator_info.position.column_,
         resource->GetResourceError().LocalizedDescription());
