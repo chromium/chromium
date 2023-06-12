@@ -21,6 +21,7 @@ import androidx.core.view.OnReceiveContentListener;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,12 +63,97 @@ public class TabDragSource {
         return mDragSourceTabsToolbarHashCode;
     }
 
+    private void setDragSourceTabsToolbarHashCode(int tabsToolbarHashCode) {
+        mDragSourceTabsToolbarHashCode = tabsToolbarHashCode;
+    }
+
     @VisibleForTesting
     class OnDragListenerImpl implements View.OnDragListener {
+        private int mLastAction;
+        private float mStartXPosition;
+        private float mStartYPosition;
+        private float mLastXPosition;
+        private float mLastYPosition;
+        private boolean mPointerInView;
+
         @Override
         public boolean onDrag(View view, DragEvent dragEvent) {
-            // Drag handling not implemented yet.
+            switch (dragEvent.getAction()) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    resetState();
+                    mStartXPosition = dragEvent.getX() * mPxToDp;
+                    mStartYPosition = dragEvent.getY() * mPxToDp;
+                    mLastXPosition = mStartXPosition;
+                    mLastYPosition = mStartYPosition;
+                    break;
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    float curXPos = dragEvent.getX() * mPxToDp;
+                    float curYPos = dragEvent.getY() * mPxToDp;
+                    // TODO(b/285590087) Enter Android drag mode until tab is torn vertically to
+                    // prevent forwarding drag events back into SripLayoutHelper #drag,
+                    // #onUpOrCancel, #onDownInternal, etc.
+                    if (mPointerInView) {
+                        mSourceStripLayoutHelper.drag(LayoutManagerImpl.time(), curXPos, curYPos,
+                                curXPos - mLastXPosition, curYPos - mLastYPosition,
+                                curXPos - mStartXPosition, curYPos - mStartYPosition);
+                    }
+                    mLastXPosition = curXPos;
+                    mLastYPosition = curYPos;
+                    break;
+                case DragEvent.ACTION_DROP:
+                    if (mPointerInView) {
+                        mSourceStripLayoutHelper.onUpOrCancel(LayoutManagerImpl.time());
+                        mPointerInView = false;
+                    }
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    // Check if anyone handled the dropped ClipData meaning that drop was beyond
+                    // acceptable drop area.
+                    if (mTabBeingDragged != null && mLastAction == DragEvent.ACTION_DRAG_EXITED) {
+                        // Hence move the tab to a new Chrome window.
+                        openTabInNewWindow();
+                    }
+
+                    // Clear the source view handle as DragNDrop is completed.
+                    setDragSourceTabsToolbarHashCode(0);
+                    mSourceStripLayoutHelper.clearActiveClickedTab();
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    mSourceStripLayoutHelper.onDownInternal(
+                            LayoutManagerImpl.time(), mLastXPosition, mLastYPosition, true, 0);
+                    mPointerInView = true;
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    mSourceStripLayoutHelper.onUpOrCancel(LayoutManagerImpl.time());
+                    mPointerInView = false;
+                    break;
+                default:
+                    break;
+            }
+
+            // Save the last drag situation to determine if the drop is outside toolbar view
+            mLastAction = dragEvent.getAction();
             return false;
+        }
+
+        @VisibleForTesting
+        void resetState() {
+            // All the defined @{link DragEvent}.ACTION_* events are greater than zero hence the
+            // initial setting for last action can be zero.
+            mLastAction = 0;
+            mStartXPosition = 0.0f;
+            mStartYPosition = 0.0f;
+            mLastXPosition = 0.0f;
+            mLastYPosition = 0.0f;
+        }
+    }
+
+    @VisibleForTesting
+    void openTabInNewWindow() {
+        if (mTabBeingDragged != null) {
+            // To be implemented.
+            // MultiInstanceManager api's will be used here.
+            mTabBeingDragged = null;
         }
     }
 

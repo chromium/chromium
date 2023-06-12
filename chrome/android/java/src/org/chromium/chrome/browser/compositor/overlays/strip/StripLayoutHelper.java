@@ -250,6 +250,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private int mActiveTabIndexOnStartup;
     private int mCurrentPlaceholderIndex;
 
+    // Tab Drag and Drop state to hold clicked tab being dragged.
+    private StripLayoutTab mActiveClickedTab;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      * @param context         The current Android {@link Context}.
@@ -1251,6 +1254,33 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param buttons   State of all buttons that are pressed.
      */
     public void onDown(long time, float x, float y, boolean fromMouse, int buttons) {
+        // Prepare for drag and drop beyond the StripLayout view, if needed.
+        // The first onDown is passed by the Chrome pipeline directly by GestureHandler. The
+        // subsequent ones may be simulated by the DragDrop handler if the pointer goes beyond the
+        // strip layout view.
+        mActiveClickedTab = null;
+        onDownInternal(time, x, y, fromMouse, buttons);
+    }
+
+    /**
+     * Called when the Android Drag and Drop framework is initiated and takes over receiving the
+     * pointer motion events. The tab being moved is already selected. A simulated down event is
+     * sent to the @{link StripLayoutHelper#onInternalDown} when the user reenters the tabs layout
+     * area so that it can continue with the local reordering of the tabs of the previously selected
+     * tab. When a user leaves the tab strip area a simulated up event is sent using @{link
+     * StripLayoutHelper#onUpOrCancel}.
+     *
+     * The @{link DragEvent} are also forwarded using @{link StripLayoutHelper#drag} to handle the
+     * local reordering of the tabs when the user hovers over the StripLayout area of the toolbar
+     * container.
+     *
+     * @param time      The time stamp in millisecond of the event.
+     * @param x         The x position of the event.
+     * @param y         The y position of the event.
+     * @param fromMouse Whether the event originates from a mouse.
+     * @param buttons   State of all buttons that are pressed.
+     */
+    protected void onDownInternal(long time, float x, float y, boolean fromMouse, int buttons) {
         resetResizeTimeout(false);
 
         if (mNewTabButton.onDown(x, y)) {
@@ -1258,7 +1288,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             return;
         }
 
-        final StripLayoutTab clickedTab = getTabAtPosition(x);
+        final StripLayoutTab clickedTab =
+                (mActiveClickedTab == null) ? getTabAtPosition(x) : mActiveClickedTab;
         final int index = clickedTab != null
                 ? TabModelUtils.getTabIndexById(mModel, clickedTab.getId())
                 : TabModel.INVALID_TAB_INDEX;
@@ -3079,5 +3110,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         View tabView = tab.getView();
         if (tabView == null) return;
         tabView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+    }
+
+    protected void clearActiveClickedTab() {
+        mActiveClickedTab = null;
     }
 }
