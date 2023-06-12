@@ -4,6 +4,7 @@
 
 #include "chrome/browser/flag_descriptions.h"
 
+#include "ash/constants/ash_features.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -6244,6 +6245,12 @@ const char kOsSettingsAppBadgingToggleName[] =
     "ChromeOS Settings App Badging Toggle";
 const char kOsSettingsAppBadgingToggleDescription[] =
     "Enables app badging toggle to be displayed in app notification page in"
+    "ChromeOS Settings.";
+
+const char kOsSettingsDeprecateSyncMetricsToggleName[] =
+    "ChromeOS Settings Deprecate Sync Metrics Toggle";
+const char kOsSettingsDeprecateSyncMetricsToggleDescription[] =
+    "If enabled, deprecate the metrics in sync settings page in "
     "ChromeOS Settings.";
 
 const char kOsSettingsRevampWayfindingName[] =

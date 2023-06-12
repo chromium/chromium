@@ -1734,7 +1734,7 @@ BASE_FEATURE(kOsSettingsAppBadgingToggle,
 // deprecated.
 BASE_FEATURE(kOsSettingsDeprecateSyncMetricsToggle,
              "OsSettingsDeprecateSyncMetricsToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the wayfinding improvements for the ChromeOS Settings revamp
 BASE_FEATURE(kOsSettingsRevampWayfinding,

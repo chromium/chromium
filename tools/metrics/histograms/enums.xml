@@ -60440,6 +60440,8 @@ from previous Chrome versions.
   <int value="-1317768255" label="PermissionStorageAccessAPI:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
   <int value="-1315360754" label="WindowLayoutMenu:disabled"/>
+  <int value="-1314823250"
+      label="OsSettingsDeprecateSyncMetricsToggle:disabled"/>
   <int value="-1314757884" label="TabGroupsSave:enabled"/>
   <int value="-1314603238" label="ChromeHomePullToRefreshIphAtTop:enabled"/>
   <int value="-1313810940" label="StrictOriginIsolation:disabled"/>
@@ -65819,6 +65821,7 @@ from previous Chrome versions.
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1517988103" label="FilesBannerFramework:disabled"/>
+  <int value="1518314853" label="OsSettingsDeprecateSyncMetricsToggle:enabled"/>
   <int value="1518436057" label="NtpChromeCartInHistoryClusterModule:enabled"/>
   <int value="1518752357" label="ContextualPageActionPriceTracking:enabled"/>
   <int value="1518833340" label="MediaAppDisplayExif:enabled"/>

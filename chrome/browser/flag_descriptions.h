@@ -1399,6 +1399,9 @@ extern const char kOsFeedbackJellyDescription[];
 extern const char kOsSettingsAppNotificationsPageName[];
 extern const char kOsSettingsAppNotificationsPageDescription[];
 
+extern const char kOsSettingsDeprecateSyncMetricsToggleName[];
+extern const char kOsSettingsDeprecateSyncMetricsToggleDescription[];
+
 extern const char kOverviewButtonName[];
 extern const char kOverviewButtonDescription[];
 
