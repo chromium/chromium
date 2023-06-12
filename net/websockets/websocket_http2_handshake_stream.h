@@ -104,6 +104,8 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // Upgrade() has been called and should be disposed of as soon as possible.
   std::unique_ptr<WebSocketStream> Upgrade() override;
 
+  bool CanReadFromStream() const override;
+
   base::WeakPtr<WebSocketHandshakeStreamBase> GetWeakPtr() override;
 
   // WebSocketSpdyStreamAdapter::Delegate methods.

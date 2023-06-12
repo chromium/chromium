@@ -143,6 +143,10 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
   // been called.
   virtual std::unique_ptr<WebSocketStream> Upgrade() = 0;
 
+  // Returns true if a read from the stream will succeed. This should be true
+  // even if the stream is at EOF.
+  virtual bool CanReadFromStream() const = 0;
+
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override {}
 
   static std::string MultipleHeaderValuesMessage(
