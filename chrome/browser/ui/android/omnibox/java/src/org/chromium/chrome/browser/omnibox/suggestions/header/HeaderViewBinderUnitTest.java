@@ -113,8 +113,8 @@ public class HeaderViewBinderUnitTest {
                 R.dimen.omnibox_suggestion_header_height_modern_phase2);
         int paddingStart = mResources.getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_padding_start_modern_smallest);
-        int paddingTop =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
+        int paddingTop = mResources.getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_header_padding_top_smallest);
         int paddingBottom = 0;
         verify(mHeaderView, times(1))
                 .setUpdateHeaderPadding(minHeight, paddingStart, paddingTop, paddingBottom);
@@ -130,8 +130,8 @@ public class HeaderViewBinderUnitTest {
                 R.dimen.omnibox_suggestion_header_height_modern_phase2);
         int paddingStart = mResources.getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_padding_start_modern_smaller);
-        int paddingTop =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
+        int paddingTop = mResources.getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_header_padding_top_smaller);
         int paddingBottom = 0;
         verify(mHeaderView, times(1))
                 .setUpdateHeaderPadding(minHeight, paddingStart, paddingTop, paddingBottom);

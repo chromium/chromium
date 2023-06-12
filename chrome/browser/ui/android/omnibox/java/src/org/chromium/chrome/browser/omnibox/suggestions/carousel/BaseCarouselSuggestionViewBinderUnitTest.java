@@ -208,7 +208,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         mModel.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, false);
         verify(mView, times(1))
-                .setPaddingRelative(eq(0), eq(SUGGESTION_SMALLEST_VERTICAL_PADDING), eq(0), eq(0));
+                .setPaddingRelative(eq(0), eq(SUGGESTION_SMALLEST_VERTICAL_PADDING), eq(0),
+                        eq(SUGGESTION_SMALL_BOTTOM_PADDING));
     }
 
     @Test
@@ -220,7 +221,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         mModel.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, false);
         verify(mView, times(1))
                 .setPaddingRelative(eq(0), eq(SUGGESTION_SMALLER_VERTICAL_PADDING), eq(0),
-                        eq(SUGGESTION_SMALL_BOTTOM_PADDING));
+                        eq(SUGGESTION_VERTICAL_PADDING));
     }
 
     /**
