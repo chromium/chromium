@@ -60,7 +60,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kSuccess1024Filenames));
 
 TEST_P(SimplePathBuilderDelegate1024SuccessTest, IsAcceptableSignatureAndKey) {
-  SignatureAlgorithm signature_algorithm;
+  SignatureAlgorithm signature_algorithm{};
   bssl::UniquePtr<EVP_PKEY> public_key;
   ASSERT_NO_FATAL_FAILURE(
       ReadTestCase(GetParam(), &signature_algorithm, &public_key));
@@ -87,7 +87,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kFail2048Filenames));
 
 TEST_P(SimplePathBuilderDelegate2048FailTest, RsaKeySmallerThan2048) {
-  SignatureAlgorithm signature_algorithm;
+  SignatureAlgorithm signature_algorithm{};
   bssl::UniquePtr<EVP_PKEY> public_key;
   ASSERT_NO_FATAL_FAILURE(
       ReadTestCase(GetParam(), &signature_algorithm, &public_key));
