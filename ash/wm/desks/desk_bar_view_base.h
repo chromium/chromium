@@ -20,6 +20,8 @@
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -58,14 +60,14 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   DeskBarViewBase(const DeskBarViewBase&) = delete;
   DeskBarViewBase& operator=(const DeskBarViewBase&) = delete;
 
-  // Returns the preferred height of the desk bar that exists on `root` with
+  // Return the preferred height of the desk bar that exists on `root` with
   // `state`.
   static int GetPreferredBarHeight(aura::Window* root, Type type, State state);
 
-  // Returns the preferred state for the desk bar given `type`.
+  // Return the preferred state for the desk bar given `type`.
   static State GetPerferredState(Type type);
 
-  // Creates and returns the widget that contains the desk bar view of `type`.
+  // Create and returns the widget that contains the desk bar view of `type`.
   // The returned widget has no contents view yet, and hasn't been shown yet.
   static std::unique_ptr<views::Widget>
   CreateDeskWidget(aura::Window* root, const gfx::Rect& bounds, Type type);
@@ -157,19 +159,19 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Initializes and creates mini_views for any pre-existing desks, before the
+  // Initialize and create mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
   // layout.
   void Init();
 
-  // Returns true if it is currently in zero state.
+  // Return true if it is currently in zero state.
   bool IsZeroState() const;
 
   // If a desk is in a drag & drop cycle.
   bool IsDraggingDesk() const;
 
-  // Returns true if a desk name is being modified using its mini view's
+  // Return true if a desk name is being modified using its mini view's
   // DeskNameView on this bar.
   bool IsDeskNameBeingModified() const;
 
@@ -178,7 +180,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // must be a child of `scroll_view_contents_`.
   void ScrollToShowViewIfNecessary(const views::View* view);
 
-  // Returns the mini_view associated with `desk` or nullptr if no mini_view
+  // Return the mini_view associated with `desk` or nullptr if no mini_view
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
 
@@ -202,22 +204,22 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsForSavedDeskGrid();
 
-  // Updates the visibility of the two buttons inside the zero state desk bar
+  // Update the visibility of the two buttons inside the zero state desk bar
   // and the `ExpandedDesksBarButton` on the desk bar's state.
   void UpdateDeskButtonsVisibility();
 
-  // Udates the visibility of the `default_desk_button_` on the desk bar's
+  // Udate the visibility of the `default_desk_button_` on the desk bar's
   // state.
   // TODO(conniekxu): Remove `UpdateDeskButtonsVisibility`, replace it with this
   // function, and rename this function by removing the prefix CrOSNext.
   void UpdateDeskButtonsVisibilityCrOSNext();
 
-  // Updates the visibility of the saved desk library button based on whether
+  // Update the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled, the user has any saved desks and the
   // state of the desk bar.
   void UpdateLibraryButtonVisibility();
 
-  // Updates the visibility of the saved desk library button based on whether
+  // Update the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled and the user has any saved desks.
   // TODO(conniekxu): Remove `UpdateLibraryButtonVisibility`, replace it with
   // this function, and rename this function by removing the prefix CrOSNext.
@@ -232,12 +234,12 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   void UpdateDeskIconButtonState(CrOSNextDeskIconButton* button,
                                  CrOSNextDeskIconButton::State target_state);
 
-  // Updates the visibility state of the close buttons on all the mini_views as
+  // Update the visibility state of the close buttons on all the mini_views as
   // a result of mouse and gesture events.
   void OnHoverStateMayHaveChanged();
   void OnGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
-  // Indicates if it should show the library UI in the bar. This will only query
+  // Indicate if it should show the library UI in the bar. This will only query
   // the desk model when needed.
   bool ShouldShowLibraryUi();
 
@@ -310,12 +312,12 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // logic to `SwitchToZeroState` and `SwitchToExpandedState`.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
-  // Animates the bar from the expanded state to the zero state. It refreshes
+  // Animate the bar from the expanded state to the zero state. It refreshes
   // the bounds of the desk bar widget, and also updates child UI components,
   // including desk mini views, the new desk button, and the library button.
   void SwitchToZeroState();
 
-  // Animates the bar from the zero state to the expanded state.
+  // Animate the bar from the zero state to the expanded state.
   void SwitchToExpandedState();
 
  protected:
@@ -325,7 +327,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   DeskBarViewBase(aura::Window* root, Type type);
   ~DeskBarViewBase() override;
 
-  // Returns the X offset of the first mini_view on the left (if there's one),
+  // Return the X offset of the first mini_view on the left (if there's one),
   // or the X offset of this view's center point when there are no mini_views.
   // This offset is used to calculate the amount by which the mini_views should
   // be moved when performing the mini_view creation or deletion animations.
@@ -335,7 +337,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // `location_in_screen`.
   int DetermineMoveIndex(int location_in_screen) const;
 
-  // Updates the visibility of `left_scroll_button_` and `right_scroll_button_`.
+  // Update the visibility of `left_scroll_button_` and `right_scroll_button_`.
   // Show `left_scroll_button_` if there are contents outside of the left edge
   // of the `scroll_view_`, the same for `right_scroll_button_` based on the
   // right side of the `scroll_view_`.
@@ -346,13 +348,13 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // the corresponding scroll button is visible.
   void UpdateGradientMask();
 
-  // Scrolls the desk bar to the previous or next page. The page size is the
+  // Scroll the desk bar to the previous or next page. The page size is the
   // width of the scroll view, the contents that are outside of the scroll view
   // will be clipped and can not be seen.
   void ScrollToPreviousPage();
   void ScrollToNextPage();
 
-  // Gets the adjusted scroll position based on `position` to make sure no desk
+  // Get the adjusted scroll position based on `position` to make sure no desk
   // preview is cropped at the start position of the scrollable bar.
   int GetAdjustedUncroppedScrollPosition(int position) const;
 
@@ -371,6 +373,12 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // scroll. Return true if the scroll is triggered. Return false if the scroll
   // is ended.
   bool MaybeScrollByDraggedDesk();
+
+  // Get full available bounds for the desk bar view and the scroll view.
+  // Information is retrieved from the widget as it comes with the full
+  // available bounds at initialization time and remains unchanged. Please refer
+  // to the charts at `DeskBarController::GetDeskBarWidgetBounds()`.
+  gfx::Rect GetAvailableBounds() const;
 
   const Type type_ = Type::kOverview;
 
@@ -406,7 +414,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;
 
-  // Puts the contents in a `ScrollView` to support scrollable desks.
+  // Put the contents in a `ScrollView` to support scrollable desks.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
   // Contents of `scroll_view_`, which includes `mini_views_`,
@@ -448,7 +456,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   raw_ptr<ScrollArrowButton, ExperimentalAsh> left_scroll_button_ = nullptr;
   raw_ptr<ScrollArrowButton, ExperimentalAsh> right_scroll_button_ = nullptr;
 
-  // Observes mouse events on the desk bar widget and updates the states of the
+  // Observe mouse events on the desk bar widget and updates the states of the
   // mini_views accordingly.
   std::unique_ptr<DeskBarHoverObserver> hover_observer_;
 

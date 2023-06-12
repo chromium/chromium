@@ -21,4 +21,11 @@ const char* LegacyDeskBarView::GetClassName() const {
   return "LegacyDeskBarView";
 }
 
+gfx::Size LegacyDeskBarView::CalculatePreferredSize() const {
+  // For overview bar, it always come with the fixed width (the full available
+  // width).
+  return {GetAvailableBounds().width(),
+          GetPreferredBarHeight(root_, type_, state_)};
+}
+
 }  // namespace ash

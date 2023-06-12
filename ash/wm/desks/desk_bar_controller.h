@@ -85,7 +85,55 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // Destroys all desk bars. This is where the real destruction happens.
   void DestroyAllDeskBars();
 
-  // Returns bounds for desk bar widget in `root`.
+  // Returns bounds for desk bar widget in `root`. Please note, this is the full
+  // available bounds and does not change after initialization. Therefore, the
+  // desk bar view can adjust its bounds as needed without manipulating the
+  // widget. This calculates bounds of `kDeskButton` bar for `kBottom`, `kLeft`,
+  // and `kRight` aligned shelf as following.
+  //
+  // Symbols:
+  //   - H: Home button
+  //   - D: Desk button
+  //   - S: Shelf
+  //   - B: Bar widget
+  //
+  // Charts:
+  //   1. `kBottom`
+  //     ┌────────────────────────────────┐
+  //     │                                │
+  //     │                                │
+  //     │                                │
+  //     │                                │
+  //     │                                │
+  //     ├────────────────────────────────│
+  //     │                B               │
+  //     ├───┬─────┬──────────────────────┤
+  //     │ H │  D  │           S          │
+  //     └───┴─────┴──────────────────────┘
+  //   2. `kLeft`
+  //     ┌───┬────────────────────────────┐
+  //     │ H │                            │
+  //     ├───┤ ┌──────────────────────────┤
+  //     │ D │ │             B            │
+  //     ├───┤ │                          │
+  //     │   │ └──────────────────────────┤
+  //     │   │                            │
+  //     │ S │                            │
+  //     │   │                            │
+  //     │   │                            │
+  //     └───┴────────────────────────────┘
+  //   3. `kRight`
+  //     ┌────────────────────────────┬───┐
+  //     │                            │ H │
+  //     ├──────────────────────────┐ ├───┤
+  //     │             B            │ │ D │
+  //     │                          │ ├───┤
+  //     ├──────────────────────────┘ │   │
+  //     │                            │   │
+  //     │                            │ S │
+  //     │                            │   │
+  //     │                            │   │
+  //     └────────────────────────────┴───┘
   gfx::Rect GetDeskBarWidgetBounds(aura::Window* root) const;
 
   // When pressing off the bar, it should either commit desk name change, or

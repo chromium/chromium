@@ -36,7 +36,12 @@ constexpr int kDeskBarDeskPreviewViewFocusRingThicknessAndPadding = 4;
 
 // The minimum horizontal padding of the scroll view. This is set to make sure
 // there is enough space for the scroll buttons.
-constexpr int kDeskBarScrollViewMinimumHorizontalPadding = 32;
+constexpr int kDeskBarScrollViewMinimumHorizontalPaddingOverview = 32;
+constexpr int kDeskBarScrollViewMinimumHorizontalPaddingDeskButton = 16;
+
+// The corner radius of the desk bar.
+constexpr float kDeskBarCornerRadiusOverview = 0.f;
+constexpr float kDeskBarCornerRadiusOverviewDeskButton = 16.f;
 
 constexpr int kDeskBarScrollButtonWidth = 36;
 

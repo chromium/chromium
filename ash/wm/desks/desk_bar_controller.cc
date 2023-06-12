@@ -174,7 +174,6 @@ void DeskBarController::DestroyAllDeskBars() {
 gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {
   gfx::Rect work_area =
       WorkAreaInsets::ForWindow(root)->user_work_area_bounds();
-  // TODO(yongshun): Calculate preferred bar widget width.
   gfx::Size bar_size(work_area.width(),
                      DeskBarViewBase::GetPreferredBarHeight(
                          root, DeskBarViewBase::Type::kDeskButton,

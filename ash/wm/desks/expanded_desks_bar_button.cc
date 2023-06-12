@@ -65,6 +65,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     focus_color_id_ = focus_color_id;
   }
 
+  // views::View:
   void OnThemeChanged() override {
     DeskButtonBase::OnThemeChanged();
     const SkColor enabled_icon_color =
@@ -78,6 +79,11 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
         gfx::CreateVectorIcon(*outer_button_->button_icon(),
                               ColorUtil::GetDisabledColor(enabled_icon_color)));
     SetButtonState(GetEnabled());
+  }
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    return DeskMiniView::GetDeskPreviewBounds(bar_view_->root()).size();
   }
 
   void SetButtonState(bool enabled) {
@@ -205,8 +211,7 @@ void ExpandedDesksBarButton::Layout() {
   // always not empty.
   if (bar_view_->mini_views().empty())
     return;
-  const gfx::Rect inner_button_bounds = DeskMiniView::GetDeskPreviewBounds(
-      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
+  const gfx::Rect inner_button_bounds = {{0, 0}, CalculatePreferredSize()};
   inner_button_->SetBoundsRect(inner_button_bounds);
   auto* desk_mini_view = bar_view_->mini_views()[0];
   auto* desk_name_view = desk_mini_view->desk_name_view();
@@ -235,6 +240,10 @@ void ExpandedDesksBarButton::OnThemeChanged() {
   label_->SetBackgroundColor(
       GetColorProvider()->GetColor(kColorAshShieldAndBase80));
   UpdateFocusColor();
+}
+
+gfx::Size ExpandedDesksBarButton::CalculatePreferredSize() const {
+  return inner_button_->GetPreferredSize();
 }
 
 absl::optional<ui::ColorId>

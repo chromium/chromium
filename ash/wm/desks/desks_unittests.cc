@@ -9255,8 +9255,11 @@ struct DeskBarTestBasicCase {
   // The expected bar widget bounds for desk button desk bar.
   gfx::Rect desk_button_bar_widget_bounds;
 
-  // The expected bar view bounds for desk button desk bar.
-  gfx::Rect desk_button_bar_view_bounds;
+  // The expected bar view bounds for desk button desk bar without jelly.
+  gfx::Rect desk_button_bar_view_bounds_no_jelly;
+
+  // The expected bar view bounds for desk button desk bar with jelly.
+  gfx::Rect desk_button_bar_view_bounds_with_jelly;
 
   // The expected bar widget bounds for overview desk bar.
   gfx::Rect overview_bar_widget_bounds;
@@ -9277,7 +9280,8 @@ TEST_P(DeskBarTest, Basic) {
        .shelf_alignment = ShelfAlignment::kBottom,
        .has_saved_desks = true,
        .desk_button_bar_widget_bounds = {0, 446, 800, 98},
-       .desk_button_bar_view_bounds = {0, 0, 800, 98},
+       .desk_button_bar_view_bounds_no_jelly = {269, 0, 262, 98},
+       .desk_button_bar_view_bounds_with_jelly = {299, 0, 202, 98},
        .overview_bar_widget_bounds = {0, 0, 800, 40},
        .overview_bar_view_bounds = {0, 0, 800, 40}},
       {.test_name = "single desk + bottom shelf",
@@ -9286,7 +9290,8 @@ TEST_P(DeskBarTest, Basic) {
        .shelf_alignment = ShelfAlignment::kBottom,
        .has_saved_desks = false,
        .desk_button_bar_widget_bounds = {0, 446, 800, 98},
-       .desk_button_bar_view_bounds = {0, 0, 800, 98},
+       .desk_button_bar_view_bounds_no_jelly = {308, 0, 184, 98},
+       .desk_button_bar_view_bounds_with_jelly = {323, 0, 154, 98},
        .overview_bar_widget_bounds = {0, 0, 800, 40},
        .overview_bar_view_bounds = {0, 0, 800, 40}},
       {.test_name = "single desk + left shelf + saved desks",
@@ -9295,7 +9300,8 @@ TEST_P(DeskBarTest, Basic) {
        .shelf_alignment = ShelfAlignment::kLeft,
        .has_saved_desks = true,
        .desk_button_bar_widget_bounds = {56, 254, 744, 98},
-       .desk_button_bar_view_bounds = {0, 0, 744, 98},
+       .desk_button_bar_view_bounds_no_jelly = {0, 0, 262, 98},
+       .desk_button_bar_view_bounds_with_jelly = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {48, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
       {.test_name = "single desk + right shelf + saved desks",
@@ -9304,7 +9310,8 @@ TEST_P(DeskBarTest, Basic) {
        .shelf_alignment = ShelfAlignment::kRight,
        .has_saved_desks = true,
        .desk_button_bar_widget_bounds = {0, 254, 744, 98},
-       .desk_button_bar_view_bounds = {0, 0, 744, 98},
+       .desk_button_bar_view_bounds_no_jelly = {482, 0, 262, 98},
+       .desk_button_bar_view_bounds_with_jelly = {542, 0, 202, 98},
        .overview_bar_widget_bounds = {0, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
       {.test_name = "multiple desks + bottom shelf + saved desks",
@@ -9313,7 +9320,8 @@ TEST_P(DeskBarTest, Basic) {
        .shelf_alignment = ShelfAlignment::kBottom,
        .has_saved_desks = true,
        .desk_button_bar_widget_bounds = {0, 446, 800, 98},
-       .desk_button_bar_view_bounds = {0, 0, 800, 98},
+       .desk_button_bar_view_bounds_no_jelly = {191, 0, 418, 98},
+       .desk_button_bar_view_bounds_with_jelly = {221, 0, 358, 98},
        .overview_bar_widget_bounds = {0, 0, 800, 98},
        .overview_bar_view_bounds = {0, 0, 800, 98}},
   };
@@ -9357,7 +9365,10 @@ TEST_P(DeskBarTest, Basic) {
     } else {
       EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
                   test.desk_button_bar_widget_bounds);
-      EXPECT_THAT(desk_bar_view->bounds(), test.desk_button_bar_view_bounds);
+      EXPECT_THAT(desk_bar_view->bounds(),
+                  enable_jellyroll_
+                      ? test.desk_button_bar_view_bounds_with_jelly
+                      : test.desk_button_bar_view_bounds_no_jelly);
       EXPECT_FALSE(desk_bar_view->IsZeroState());
     }
     if (enable_jellyroll_) {
@@ -9410,7 +9421,9 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
   } else {
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
                 gfx::Rect(800, 446, 800, 98));
-    EXPECT_THAT(desk_bar_view->bounds(), gfx::Rect(0, 0, 800, 98));
+    EXPECT_THAT(desk_bar_view->bounds(), enable_jellyroll_
+                                             ? gfx::Rect(284, 0, 232, 98)
+                                             : gfx::Rect(269, 0, 262, 98));
     EXPECT_FALSE(desk_bar_view->IsZeroState());
   }
 
@@ -9481,6 +9494,8 @@ TEST_P(DeskBarTest, NewDeskButton) {
 
   auto* desks_controller = DesksController::Get();
   auto* desk_bar_view = GetDeskBarView();
+  auto* zero_state_new_desk_button =
+      desk_bar_view->zero_state_new_desk_button();
   auto* new_desk_button = GetExpandedStateInnerNewDeskButton(desk_bar_view);
 
   auto verify_disabled_new_desk_button = [&]() {
@@ -9492,27 +9507,30 @@ TEST_P(DeskBarTest, NewDeskButton) {
     EXPECT_THAT(desk_bar_view->mini_views().size(),
                 desks_controller->GetNumberOfDesks());
   };
-  auto verify_enabled_new_desk_button = [&]() {
+  auto verify_enabled_new_desk_button = [&](bool zero_state_bar) {
     EXPECT_LE(desks_controller->GetNumberOfDesks(),
               (int)desks_util::GetMaxNumberOfDesks());
     EXPECT_TRUE(desks_controller->CanCreateDesks());
-    EXPECT_TRUE(new_desk_button->GetEnabled());
-    EXPECT_NE(new_desk_button->GetState(), views::Button::STATE_DISABLED);
+    EXPECT_THAT(desk_bar_view->IsZeroState(), zero_state_bar);
+    if (zero_state_bar && !enable_jellyroll_) {
+      EXPECT_TRUE(zero_state_new_desk_button->GetEnabled());
+      EXPECT_NE(zero_state_new_desk_button->GetState(),
+                views::Button::STATE_DISABLED);
+    } else {
+      EXPECT_TRUE(new_desk_button->GetEnabled());
+      EXPECT_NE(new_desk_button->GetState(), views::Button::STATE_DISABLED);
+    }
     EXPECT_THAT(desk_bar_view->mini_views().size(),
-                desk_bar_view->IsZeroState()
-                    ? 0
-                    : desks_controller->GetNumberOfDesks());
+                zero_state_bar ? 0 : desks_controller->GetNumberOfDesks());
   };
 
   // Create max number of desks.
   for (int i = 2; i <= (int)desks_util::GetMaxNumberOfDesks(); i++) {
-    verify_enabled_new_desk_button();
-    if (desk_bar_view->IsZeroState()) {
-      if (enable_jellyroll_) {
-        ClickOrPressOnView(desk_bar_view->new_desk_button());
-      } else {
-        ClickOrPressOnView(desk_bar_view->zero_state_new_desk_button());
-      }
+    const bool zero_state_bar =
+        bar_type_ == DeskBarViewBase::Type::kOverview && i == 2;
+    verify_enabled_new_desk_button(zero_state_bar);
+    if (zero_state_bar && !enable_jellyroll_) {
+      ClickOrPressOnView(zero_state_new_desk_button);
     } else {
       ClickOrPressOnView(new_desk_button);
     }

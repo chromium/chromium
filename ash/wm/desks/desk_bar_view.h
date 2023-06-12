@@ -24,6 +24,7 @@ class ASH_EXPORT DeskBarView : public DeskBarViewBase {
 
   // views::View:
   const char* GetClassName() const override;
+  gfx::Size CalculatePreferredSize() const override;
 };
 
 }  // namespace ash
