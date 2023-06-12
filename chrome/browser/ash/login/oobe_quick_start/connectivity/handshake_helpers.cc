@@ -6,7 +6,7 @@
 
 #include "base/containers/span.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/proto/aes_gcm_authentication_message.pb.h"
-#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
+#include "chromeos/ash/components/quick_start/logging.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
 

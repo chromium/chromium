@@ -12,7 +12,6 @@ source_set("connectivity") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
-    "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/components/quick_start",

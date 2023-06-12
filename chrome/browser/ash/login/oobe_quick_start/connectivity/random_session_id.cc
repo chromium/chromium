@@ -7,7 +7,7 @@
 #include "base/base64url.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
+#include "chromeos/ash/components/quick_start/logging.h"
 #include "crypto/random.h"
 
 namespace ash::quick_start {

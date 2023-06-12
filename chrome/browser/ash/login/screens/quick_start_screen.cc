@@ -10,12 +10,12 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chromeos/ash/components/quick_start/logging.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {

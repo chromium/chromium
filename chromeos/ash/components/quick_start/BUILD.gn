@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("quick_start") {
   sources = [
+    "logging.cc",
+    "logging.h",
     "quick_start_message.cc",
     "quick_start_message.h",
     "quick_start_message_type.h",
@@ -49,6 +51,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "logging_unittest.cc",
     "quick_start_message_unittest.cc",
     "quick_start_requests_unittest.cc",
   ]
