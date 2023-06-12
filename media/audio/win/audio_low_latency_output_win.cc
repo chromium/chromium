@@ -32,6 +32,7 @@
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 
@@ -387,6 +388,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   num_written_frames_ = endpoint_buffer_size_frames_;
   last_position_ = 0;
   last_qpc_position_ = 0;
+  last_timestamp_ = base::TimeTicks();
 
   // Recreate `peak_detector_` everytime we create a new `render_thread_`, to
   // avoid ThreadChecker DCHECKs.
@@ -601,6 +603,9 @@ void WASAPIAudioOutputStream::Run() {
 bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
   TRACE_EVENT0("audio", "RenderAudioFromSource");
 
+  const base::TimeDelta buffer_duration =
+      media::AudioTimestampHelper::FramesToTime(packet_size_frames_,
+                                                format_.Format.nSamplesPerSec);
   HRESULT hr = S_FALSE;
   UINT32 num_queued_frames = 0;
   uint8_t* audio_data = nullptr;
@@ -668,69 +673,117 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       return false;
     }
 
-    // Derive the audio delay which corresponds to the delay between
-    // a render event and the time when the first audio sample in a
-    // packet is played out through the speaker. This delay value
-    // can typically be utilized by an acoustic echo-control (AEC)
-    // unit at the render side.
-    UINT64 position = 0;
-    UINT64 qpc_position = 0;
-    base::TimeDelta delay;
-    base::TimeTicks delay_timestamp;
     // Stores glitch info to be passed on to OnMoreData().
     AudioGlitchInfo::Accumulator glitch_info_accumulator;
+    base::TimeDelta delay;
+    base::TimeTicks delay_timestamp;
+    UINT64 position = 0;
+    UINT64 qpc_position = 0;
+    // TODO(http://crbug.com/1453566): avoid using IAudioClock::GetPosition() on
+    // a RT thread.
     hr = audio_clock_->GetPosition(&position, &qpc_position);
     if (SUCCEEDED(hr)) {
-      // Number of frames already played out through the speaker.
-      const uint64_t played_out_frames =
-          format_.Format.nSamplesPerSec * position / device_frequency;
-
+      base::TimeTicks current_timestamp = base::TimeTicks::Now();
       // Check for glitches. Records a glitch whenever the stream's position has
       // moved forward significantly less than the performance counter has. The
       // threshold is set to half the buffer size, to limit false positives.
-      if (last_qpc_position_ != 0) {
-        const int64_t buffer_duration_us = packet_size_frames_ *
-                                           base::Time::kMicrosecondsPerSecond /
-                                           format_.Format.nSamplesPerSec;
+      // When a stream begins running, its device position might remain 0
+      // until the audio data has propagated from the endpoint buffer to the
+      // rendering device. The device position changes to a nonzero value when
+      // the data begins playing through the device.
+      if (last_position_ != 0) {
+        CHECK(last_qpc_position_);
+        CHECK_GT(last_timestamp_, base::TimeTicks());
 
-        const int64_t position_us =
-            position * base::Time::kMicrosecondsPerSecond / device_frequency;
-        const int64_t last_position_us = last_position_ *
-                                         base::Time::kMicrosecondsPerSecond /
-                                         device_frequency;
-        // The QPC values are in 100 ns units.
-        const int64_t qpc_position_us = qpc_position / 10;
-        const int64_t last_qpc_position_us = last_qpc_position_ / 10;
+        // The device position is the offset from the start of the stream to the
+        // current position in the stream. The units in which this offset is
+        // expressed are undefined, the value has meaning only in relation to
+        // the frequency reported by the IAudioClock::GetFrequency() method,
+        // passed  as |device_frequency| here. It's expected to monotonically
+        // non-decrease. It won't advance if we make the render client starve by
+        // not providing frames to render. Note: WASAPIAudioOutputStream::Run()
+        // assumes that the frequency is constant throughout the stream
+        // lifetime. CoreAudio documentation is not exactly clear on that: it
+        // only says that the device frequency reported by successive calls to
+        // GetFrequency never changes during the lifetime of a stream "in
+        // Windows Vista".
+        CHECK_GE(position, last_position_);
+        base::TimeDelta position_time_increase =
+            media::AudioTimestampHelper::FramesToTime(position - last_position_,
+                                                      device_frequency);
 
-        const int64_t position_diff_us = position_us - last_position_us;
-        const int64_t qpc_position_diff_us =
-            qpc_position_us - last_qpc_position_us;
+        // The QPC values are in 100 ns units, according to
+        // IAudioClock::GetPosition() documentation. Presumably monotonically
+        // increasing, but there are known cases when it can jump backward due
+        // to driver bugs, etc.
 
-        const int64_t gap_duration_us = qpc_position_diff_us - position_diff_us;
+        // TODO(olka): Exploratory check. Run it for a couple of days on
+        // Canary/Dev and remove.
+        CHECK_GE(qpc_position, last_qpc_position_);
+
+        base::TimeDelta qpc_position_time_increase =
+            qpc_position < last_qpc_position_
+                ? base::TimeDelta()
+                : base::Microseconds((qpc_position - last_qpc_position_) / 10);
+        base::TimeDelta timestamp_increase =
+            current_timestamp - last_timestamp_;
+
+        // We probably should not trust qpc_position being reported in 100 ns
+        // intervals in some cases, in a remote desktop situation, for example.
+        // Let's see how qpc-based time compares to base::TimeTicks. Even if we
+        // are using a low resolution timers (~15 ms precision), the difference
+        // between the two should be well under 40 ms. But let's be
+        // concervative.
+        // TODO(olka): Exploratory check. Run it for a couple of days on
+        // Canary/Dev and remove.
+        CHECK_LT((timestamp_increase - qpc_position_time_increase).magnitude(),
+                 base::Milliseconds(100));
+
+        // |gap_duration| can be positive or negative. Negative means a bigger
+        // chunk of the buffer was consumed. Too big (how big?) positive means
+        // no audio was played for a while, which potentially resulted in a
+        // glitch.
+        base::TimeDelta gap_duration =
+            qpc_position_time_increase - position_time_increase;
 
         // TODO(crbug.com/1417946): Investigate precisely what gap duration
         // should be counted as a glitch.
-        bool is_glitch = gap_duration_us > buffer_duration_us / 2;
-        glitch_reporter_.UpdateStats(is_glitch
-                                         ? base::Microseconds(gap_duration_us)
-                                         : base::TimeDelta());
+        bool is_glitch = gap_duration > buffer_duration / 2;
+        glitch_reporter_.UpdateStats(is_glitch ? gap_duration
+                                               : base::TimeDelta());
         if (is_glitch) {
-          glitch_info_accumulator.Add(
-              {.duration = base::Microseconds(gap_duration_us), .count = 1});
+          // TODO(olka): Exploratory check. Run it for a couple of days on
+          // Canary/Dev and remove.
+          CHECK_LE(gap_duration, base::Seconds(1));
+          glitch_info_accumulator.Add({.duration = gap_duration, .count = 1});
         }
       }
 
       last_position_ = position;
       last_qpc_position_ = qpc_position;
+      last_timestamp_ = current_timestamp;
+
+      // Number of frames already played out through the speaker (estimation).
+      const uint64_t played_out_frames =
+          format_.Format.nSamplesPerSec * position / device_frequency;
 
       // Number of frames that have been written to the buffer but not yet
-      // played out.
-      const uint64_t delay_frames = num_written_frames_ - played_out_frames;
+      // played out. Should theoretically be non-negative, but since
+      // |played_out_frames| is an approximation, we don't trust this fact
+      // entirely.
+      const uint64_t delay_frames =
+          num_written_frames_ > played_out_frames
+              ? num_written_frames_ - played_out_frames
+              : 0;
 
       // Convert the delay from frames to time.
-      delay =
-          base::Microseconds(delay_frames * base::Time::kMicrosecondsPerSecond /
-                             format_.Format.nSamplesPerSec);
+      delay = media::AudioTimestampHelper::FramesToTime(
+          delay_frames, format_.Format.nSamplesPerSec);
+
+      // TODO(olka): Exploratory check. Run it for a couple of days on
+      // Canary/Dev and remove.
+      CHECK_LE(delay, base::Seconds(10));
+
       // Note: the obtained |qpc_position| value is in 100ns intervals and from
       // the same time origin as QPC. We can simply convert it into us dividing
       // by 10.0 since 10x100ns = 1us.
