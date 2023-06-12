@@ -101178,7 +101178,7 @@ would be helpful to identify which type is being sent.
   <int value="100133" label="TextToSpeechVolume"/>
   <int value="100134" label="Use24HourClock"/>
   <int value="100135" label="UserPrintersAllowed"/>
-  <int value="100136" label="ProximityAuthIsChromeOSLoginEnabled"/>
+  <int value="100136" label="(obsolete) ProximityAuthIsChromeOSLoginEnabled"/>
   <int value="100137" label="UserImageInfo"/>
   <int value="100138" label="GdataDisabled"/>
   <int value="100139" label="GdataCellularDisabled"/>

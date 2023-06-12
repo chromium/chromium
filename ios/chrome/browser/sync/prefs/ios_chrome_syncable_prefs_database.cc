@@ -17,10 +17,10 @@ namespace {
 namespace syncable_prefs_ids {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When adding a new entry, append the
-// enumerator to the end. When removing an unused enumerator, comment it out,
-// making it clear the value was previously used.
-// Please also add new entries to `SyncablePref` enum in
-// tools/metrics/histograms/enums.xml.
+// enumerator to the end and add it to the `SyncablePref` enum in
+// tools/metrics/histograms/enums.xml. When removing an unused enumerator,
+// comment it out here, making it clear the value was previously used, and
+// add "(obsolete)" to the corresponding entry in enums.xml.
 enum {
   // Starts with 200000 to avoid clash with prefs listed in
   // common_syncable_prefs_database.cc and
