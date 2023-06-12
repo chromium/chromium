@@ -214,9 +214,10 @@ bool StructTraits<blink::mojom::IDBValueDataView,
                   std::unique_ptr<blink::IDBValue>>::
     Read(blink::mojom::IDBValueDataView data,
          std::unique_ptr<blink::IDBValue>* out) {
-  Vector<uint8_t> value_bits;
-  if (!data.ReadBits(&value_bits))
+  Vector<char> value_bits;
+  if (!data.ReadBits(reinterpret_cast<Vector<uint8_t>*>(&value_bits))) {
     return false;
+  }
 
   if (value_bits.empty()) {
     *out = std::make_unique<blink::IDBValue>(scoped_refptr<SharedBuffer>(),
@@ -224,8 +225,8 @@ bool StructTraits<blink::mojom::IDBValueDataView,
     return true;
   }
 
-  scoped_refptr<SharedBuffer> value_buffer = SharedBuffer::Create(
-      reinterpret_cast<const char*>(value_bits.data()), value_bits.size());
+  scoped_refptr<SharedBuffer> value_buffer =
+      SharedBuffer::AdoptVector(value_bits);
 
   Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   if (!data.ReadExternalObjects(&external_objects))
