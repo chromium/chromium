@@ -349,8 +349,6 @@ void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(
     return;
   }
 
-  // Update the local group's metadata to match the saved group's.
-  UpdateGroupVisualData(group_guid, saved_group->local_group_id().value());
   // Update the local group's contents to match the saved group's.
   listener_.UpdateLocalGroupFromSync(saved_group->local_group_id().value());
 }

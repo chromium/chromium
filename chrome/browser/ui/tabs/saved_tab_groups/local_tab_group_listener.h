@@ -7,6 +7,7 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
 
@@ -38,6 +39,9 @@ class LocalTabGroupListener {
   // in the same configuration it was in when PauseTracking was called (this is
   // CHECKed).
   void ResumeTracking();
+
+  void UpdateVisualDataFromLocal(
+      const TabGroupChange::VisualsChange* visuals_change);
 
   // Updates the saved group with the new tab and tracks it for further changes.
   void AddWebContentsFromLocal(content::WebContents* web_contents,

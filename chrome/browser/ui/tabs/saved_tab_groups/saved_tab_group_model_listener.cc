@@ -44,18 +44,15 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
 
 void SavedTabGroupModelListener::OnTabGroupChanged(
     const TabGroupChange& change) {
-  const TabStripModel* tab_strip_model = change.model;
-  if (!model_->Contains(change.group)) {
+  if (!local_tab_group_listeners_.contains(change.group)) {
     return;
   }
 
-  const TabGroup* group =
-      tab_strip_model->group_model()->GetTabGroup(change.group);
   switch (change.type) {
     // Called when a group's title or color changes.
     case TabGroupChange::kVisualsChanged: {
-      const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
-      model_->UpdateVisualData(change.group, visual_data);
+      local_tab_group_listeners_.at(change.group)
+          .UpdateVisualDataFromLocal(change.GetVisualsChange());
       return;
     }
 
