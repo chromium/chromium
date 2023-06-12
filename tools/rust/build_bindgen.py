@@ -228,7 +228,7 @@ def main():
         '--bin',
         'bindgen',
     ]
-    RunCommand([cargo_bin] + cargo_args, msvc_arch='x64', env=env)
+    RunCommand([cargo_bin] + cargo_args, setenv=True, env=env)
 
     install_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR)
     print(f'Installing bindgen to {install_dir} ...')

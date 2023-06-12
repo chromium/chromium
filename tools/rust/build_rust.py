@@ -521,7 +521,7 @@ class XPy:
         cmd = [sys.executable, 'x.py', sub]
         if self._verbose and self._verbose > 0:
             cmd.append('-' + self._verbose * 'v')
-        RunCommand(cmd + args, msvc_arch='x64', env=self._env)
+        RunCommand(cmd + args, setenv=True, env=self._env)
         os.chdir(CHROMIUM_DIR)
 
 
