@@ -321,29 +321,6 @@ GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt::
   }
 }
 
-GLES2DecoderPassthroughImpl::TexturePendingBinding::TexturePendingBinding(
-    GLenum target,
-    GLuint unit,
-    base::WeakPtr<TexturePassthrough> texture)
-    : target(target), unit(unit), texture(std::move(texture)) {}
-
-GLES2DecoderPassthroughImpl::TexturePendingBinding::TexturePendingBinding(
-    const TexturePendingBinding& other) = default;
-
-GLES2DecoderPassthroughImpl::TexturePendingBinding::TexturePendingBinding(
-    TexturePendingBinding&& other) = default;
-
-GLES2DecoderPassthroughImpl::TexturePendingBinding::~TexturePendingBinding() =
-    default;
-
-GLES2DecoderPassthroughImpl::TexturePendingBinding&
-GLES2DecoderPassthroughImpl::TexturePendingBinding::operator=(
-    const TexturePendingBinding& other) = default;
-
-GLES2DecoderPassthroughImpl::TexturePendingBinding&
-GLES2DecoderPassthroughImpl::TexturePendingBinding::operator=(
-    TexturePendingBinding&& other) = default;
-
 PassthroughResources::PassthroughResources() : texture_object_map(nullptr) {}
 PassthroughResources::~PassthroughResources() = default;
 
@@ -2018,75 +1995,6 @@ scoped_refptr<ShaderTranslatorInterface>
 GLES2DecoderPassthroughImpl::GetTranslator(GLenum type) {
   return nullptr;
 }
-
-#if BUILDFLAG(IS_APPLE)
-void GLES2DecoderPassthroughImpl::BindOnePendingImage(
-    GLenum target,
-    TexturePassthrough* texture) {
-  // It's possible that this texture was processed by some other decoder
-  // while it was also bound here, or that it has been destroyed.  In
-  // either case, do nothing.
-  if (!texture || !texture->is_bind_pending()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary",
-        false);
-    return;
-  }
-
-  // TODO(liberato): make this work for non-0 levels.
-  gl::GLImage* image = texture->GetLevelImage(target, 0);
-
-  // Note that we might not have an image anymore, if it was unbound from
-  // the texture by some other decoder while the texture was still bound
-  // here.  In that case, just ignore it.
-  //
-  // Similarly, we might not even get here if an image was bound to a
-  // texture that requires binding, but that texture was already bound
-  // to a sampler in this decoder.
-  if (!image) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary",
-        false);
-    return;
-  }
-
-  // Because the binding is deferred, this texture may not be currently bound
-  // any more. Bind it again.
-
-  UMA_HISTOGRAM_BOOLEAN(
-      "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary", true);
-
-  GLenum texture_type = TextureTargetToTextureType(target);
-  api()->glBindTextureFn(texture_type, texture->service_id());
-
-  // If bind fails, then we could keep the bind state the same.
-  // However, for now, we only try once.
-  texture->clear_bind_pending();
-
-  // Re-bind the previous texture
-  const BoundTexture& bound_texture =
-      bound_textures_[static_cast<size_t>(GLenumToTextureTarget(texture_type))]
-                     [active_texture_unit_];
-  GLuint prev_texture =
-      bound_texture.texture ? bound_texture.texture->service_id() : 0;
-  api()->glBindTextureFn(texture_type, prev_texture);
-
-  // Update any binding points that are currently bound for this texture.
-  RebindTexture(texture);
-
-  // No client ID available here, can this texture already be discardable?
-  UpdateTextureSizeFromTexturePassthrough(texture, 0);
-}
-
-void GLES2DecoderPassthroughImpl::BindPendingImagesForSamplers() {
-  for (TexturePendingBinding& pending : textures_pending_binding_)
-    BindOnePendingImage(pending.target, pending.texture.get());
-
-  // Note that we clear the texures even if they fail.  We could keep
-  // them around.
-  textures_pending_binding_.clear();
-}
-#endif
 
 void GLES2DecoderPassthroughImpl::OnDebugMessage(GLenum source,
                                                  GLenum type,

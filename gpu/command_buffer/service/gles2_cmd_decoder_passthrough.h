@@ -44,7 +44,6 @@
 
 namespace gl {
 class GLFence;
-class GLImage;
 class ProgressReporter;
 }
 
@@ -521,53 +520,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   error::Error CheckSwapBuffersResult(gfx::SwapResult result,
                                       const char* function_name);
 
-  // Textures can be marked as needing binding only on Apple, so all
-  // functionality related to binding textures is relevant only on those
-  // platforms.
-#if BUILDFLAG(IS_APPLE)
-  // Issue BindTexImage calls for |passthrough_texture|, if
-  // they're pending.
-  void BindOnePendingImage(GLenum target, TexturePassthrough* texture);
-
-  // Issue BindTexImage calls for any GLImages that
-  // requested it in BindImage, and are currently bound to textures that
-  // are bound to samplers (i.e., are in |textures_pending_binding_|).
-  void BindPendingImagesForSamplers();
-
-  // Fail-fast inline version of BindPendingImagesForSamplers.
-  inline void BindPendingImagesForSamplersIfNeeded() {
-    if (!textures_pending_binding_.empty())
-      BindPendingImagesForSamplers();
-  }
-
-  // Fail-fast version of BindPendingImages that operates on a single texture
-  // that's specified by |client_id|.
-  inline void BindPendingImageForClientIDIfNeeded(int client_id) {
-    scoped_refptr<TexturePassthrough> texture;
-
-    // We could keep track of the number of |is_bind_pending| textures in
-    // |resources_|, and elide all of this if it's zero.
-    if (!resources_->texture_object_map.GetServiceID(client_id, &texture))
-      return;
-
-    if (texture && texture->is_bind_pending())
-      BindOnePendingImage(texture->target(), texture.get());
-  }
-
-  inline void RemovePendingBindingTexture(GLenum target, GLuint unit) {
-    // Note that this code was found to be faster than running base::EraseIf.
-    size_t num_pending = textures_pending_binding_.size();
-    for (size_t index = 0; index < num_pending; ++index) {
-      TexturePendingBinding& pending = textures_pending_binding_[index];
-      if (pending.target == target && pending.unit == unit) {
-        textures_pending_binding_.erase(textures_pending_binding_.begin() +
-                                        index);
-        return;
-      }
-    }
-  }
-#endif
-
   bool OnlyHasPendingProgramCompletionQueries();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -706,27 +658,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
       static_cast<size_t>(TextureTarget::kCount);
   std::array<std::array<BoundTexture, kMaxTextureUnits>, kNumTextureTypes>
       bound_textures_;
-
-  // [target, texture unit, texture] where texture has a bound GLImage that
-  // requires binding before draw.
-  struct TexturePendingBinding {
-    TexturePendingBinding(GLenum target,
-                          GLuint unit,
-                          base::WeakPtr<TexturePassthrough> texture);
-    TexturePendingBinding(const TexturePendingBinding& other);
-    TexturePendingBinding(TexturePendingBinding&& other);
-    ~TexturePendingBinding();
-
-    TexturePendingBinding& operator=(const TexturePendingBinding& other);
-    TexturePendingBinding& operator=(TexturePendingBinding&& other);
-
-    GLenum target;
-    GLuint unit;
-    base::WeakPtr<TexturePassthrough> texture;
-  };
-#if BUILDFLAG(IS_APPLE)
-  std::vector<TexturePendingBinding> textures_pending_binding_;
-#endif
 
   // State tracking of currently bound buffers
   base::flat_map<GLenum, GLuint> bound_buffers_;

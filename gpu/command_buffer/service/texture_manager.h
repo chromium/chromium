@@ -80,7 +80,9 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   void MarkContextLost();
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_APPLE)
   void SetLevelImage(GLenum target, GLint level, gl::GLImage* image);
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   gl::GLImage* GetLevelImage(GLenum target, GLint level) const;
 #endif
@@ -139,7 +141,9 @@ class GPU_GLES2_EXPORT TexturePassthrough final
     GLenum format = 0;
     GLenum type = 0;
 
+#if !BUILDFLAG(IS_APPLE)
     scoped_refptr<gl::GLImage> image;
+#endif
   };
 
   LevelInfo* GetLevelInfo(GLenum target, GLint level);

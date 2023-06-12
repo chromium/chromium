@@ -565,21 +565,27 @@ void TexturePassthrough::MarkContextLost() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_APPLE)
 void TexturePassthrough::SetLevelImage(GLenum target,
                                        GLint level,
                                        gl::GLImage* image) {
   SetLevelImageInternal(target, level, image, owned_service_id_);
 }
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
                                                GLint level) const {
+#if BUILDFLAG(IS_APPLE)
+  return nullptr;
+#else
   size_t face_idx = 0;
   if (!LevelInfoExists(target, level, &face_idx)) {
     return nullptr;
   }
 
   return level_images_[face_idx][level].image.get();
+#endif
 }
 #endif
 #endif
@@ -632,7 +638,7 @@ bool TexturePassthrough::LevelInfoExists(GLenum target,
   return true;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 void TexturePassthrough::SetLevelImageInternal(
     GLenum target,
     GLint level,
