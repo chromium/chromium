@@ -235,6 +235,7 @@
     "linux-wpt-input-fyi-rel": "Ubuntu-22.04",
     "mac-angle-chromium-amd": "Ubuntu-22.04",
     "mac-angle-chromium-intel": "Ubuntu-22.04",
+    "mac12-arm64-updater-tester-rel": "Ubuntu-22.04",
     "win-annotator-rel": "Ubuntu-22.04",
     "win-cr23-rel": "Ubuntu-22.04",
     "win-network-sandbox-tester": "Ubuntu-22.04",
