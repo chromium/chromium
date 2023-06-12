@@ -33,6 +33,7 @@ import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
@@ -254,9 +255,16 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
 
     @CalledByNative
     public static void getLinkingInformation() {
-        ExternalAuthUtils externalAuthUtils = ExternalAuthUtils.getInstance();
-        if (!externalAuthUtils.canUseFirstPartyGooglePlayServices()) {
+        boolean ok = true;
+        if (!ExternalAuthUtils.getInstance().canUseFirstPartyGooglePlayServices()) {
             Log.i(TAG, "Cannot get linking information from Play Services without 1p access.");
+            ok = false;
+        } else if (PackageUtils.getPackageVersion("com.google.android.gms") < 232400000) {
+            Log.i(TAG, "GMS Core version is too old to get linking information.");
+            ok = false;
+        }
+
+        if (!ok) {
             CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(null);
             return;
         }
