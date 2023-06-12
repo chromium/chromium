@@ -33,7 +33,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -522,7 +521,6 @@ public class StartSurfaceOnTabletTest {
     @EnableFeatures(
             {ChromeFeatureList.FEED_MULTI_COLUMN, ChromeFeatureList.START_SURFACE_ON_TABLET})
     @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
-    @DisabledTest(message = "https://crbug.com/1446043")
     // clang-format off
     public void test2RowMvtMarginWithMultiColumnFeedsOnNtpHomePage() throws IOException {
         // clang-format on
