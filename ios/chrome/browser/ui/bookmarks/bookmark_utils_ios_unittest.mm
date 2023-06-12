@@ -64,14 +64,14 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
     AddBookmark(f2, u"f2a");
     const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
 
-    std::set<const BookmarkNode*> to_move;
-    to_move.insert(a);
-    to_move.insert(f2b);
-    to_move.insert(f2);
+    std::vector<const BookmarkNode*> to_move{a, f2b, f2};
+    EXPECT_TRUE(bookmark_utils_ios::MoveBookmarks(
+        to_move, local_or_syncable_bookmark_model_, account_bookmark_model_,
+        f1));
 
-    bookmark_utils_ios::MoveBookmarks(to_move,
-                                      local_or_syncable_bookmark_model_,
-                                      account_bookmark_model_, f1);
+    // Moving within one model shouldn't change pointers in `to_move`.
+    EXPECT_THAT(to_move, ::testing::ElementsAre(a, f2b, f2));
+
     EXPECT_THAT(GetBookmarkTitles(parent_folder->children()),
                 ::testing::UnorderedElementsAre(u"f1", u"b"));
     EXPECT_THAT(GetBookmarkTitles(f1->children()),
@@ -203,13 +203,13 @@ TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
       account_bookmark_model_->mobile_node();
   const BookmarkNode* c = AddBookmark(account_mobile_node, u"c");
   const BookmarkNode* f2 = AddFolder(account_mobile_node, u"f2");
-  AddBookmark(f2, u"f2a");
+  const BookmarkNode* f2a = AddBookmark(f2, u"f2a");
 
-  std::set<const BookmarkNode*> to_move;
-  to_move.insert(f1);   // Cross-storage move.
-  to_move.insert(f1a);  // Cross-storage move, the parent is also moved.
-  to_move.insert(b);    // Cross-storage move, the parent is not moved.
-  to_move.insert(c);    // Same-storage move.
+  std::vector<const BookmarkNode*> to_move;
+  to_move.push_back(f1);   // Cross-storage move.
+  to_move.push_back(f1a);  // Cross-storage move, the parent is also moved.
+  to_move.push_back(b);    // Cross-storage move, the parent is not moved.
+  to_move.push_back(c);    // Same-storage move.
 
   bookmark_utils_ios::MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
                                     account_bookmark_model_, f2);
@@ -218,16 +218,24 @@ TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
               ::testing::ElementsAre(u"a"));
   EXPECT_THAT(GetBookmarkTitles(account_mobile_node->children()),
               ::testing::ElementsAre(u"f2"));
-  EXPECT_THAT(
-      GetBookmarkTitles(f2->children()),
-      ::testing::UnorderedElementsAre(u"f2a", u"f1", u"f1a", u"b", u"c"));
-  auto it = base::ranges::find_if(
-      f2->children(), [](const auto& node) { return node->is_folder(); });
-  ASSERT_NE(it, f2->children().end());
-  const BookmarkNode* moved_f1 = it->get();
+
+  ASSERT_EQ(to_move.size(), 4u);
+  const BookmarkNode* moved_f1 = to_move[0];
   EXPECT_EQ(moved_f1->GetTitle(), u"f1");
   EXPECT_THAT(GetBookmarkTitles(moved_f1->children()),
               ::testing::ElementsAre(u"f1b"));
+  const BookmarkNode* moved_f1a = to_move[1];
+  EXPECT_EQ(moved_f1a->GetTitle(), u"f1a");
+  const BookmarkNode* moved_b = to_move[2];
+  EXPECT_EQ(moved_b->GetTitle(), u"b");
+  const BookmarkNode* moved_c = to_move[3];
+  EXPECT_EQ(moved_c->GetTitle(), u"c");
+
+  EXPECT_THAT(f2->children(),
+              ::testing::UnorderedElementsAre(
+                  ::testing::Pointer(f2a), ::testing::Pointer(moved_f1),
+                  ::testing::Pointer(moved_f1a), ::testing::Pointer(moved_b),
+                  ::testing::Pointer(moved_c)));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {

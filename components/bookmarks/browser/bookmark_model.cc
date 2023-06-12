@@ -252,7 +252,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
   metrics::RecordBookmarkRemoved(source);
 }
 
-void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
+const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
     const BookmarkNode* node,
     BookmarkModel* dest_model,
     const BookmarkNode* dest_parent) {
@@ -317,6 +317,7 @@ void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
                                          std::move(owned_node));
   // TODO(https://crbug.com/1416567): Record metrics.
+  return added_node;
 }
 
 std::unique_ptr<BookmarkNode>

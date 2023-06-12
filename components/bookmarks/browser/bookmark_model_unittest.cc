@@ -2186,11 +2186,12 @@ TEST_F(BookmarkDualModelTest, MoveToOtherModel) {
       .InSequence(account_sequence)
       .WillOnce(testing::SaveArg<1>(&captured_bar_parent));
 
-  local_or_syncable_model_->MoveToOtherModelWithNewNodeIdsAndUuids(
-      folder, account_model_.get(), dest_folder);
+  const BookmarkNode* moved_folder =
+      local_or_syncable_model_->MoveToOtherModelWithNewNodeIdsAndUuids(
+          folder, account_model_.get(), dest_folder);
 
-  ASSERT_EQ(dest_folder->children().size(), 1u);
-  const BookmarkNode* moved_folder = dest_folder->children()[0].get();
+  ASSERT_THAT(dest_folder->children(),
+              testing::ElementsAre(testing::Pointer(moved_folder)));
   EXPECT_EQ(moved_folder->GetTitle(), u"folder");
   ASSERT_EQ(moved_folder->children().size(), 2u);
   EXPECT_EQ(captured_foo_parent, moved_folder);
