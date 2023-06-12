@@ -3705,7 +3705,7 @@ crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html 
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]
-crbug.com/849694 [ Mac10.14 Release ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
+crbug.com/849694 [ Mac10.14 ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass Timeout ]
 crbug.com/849694 [ Mac12 ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
 
 # Tests currently failing on Windows when run on Swarming
