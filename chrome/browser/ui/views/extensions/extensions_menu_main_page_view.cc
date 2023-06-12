@@ -441,10 +441,16 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       chrome_layout_provider->GetDistanceMetric(
           DISTANCE_CONTROL_LIST_VERTICAL) /
       2;
+  const int icon_size = chrome_layout_provider->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
 
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   const gfx::Insets dialog_insets =
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
+
+  // Views that need configuration after construction (e.g access size after a
+  // separate view is constructed).
+  views::Label* subheader_title;
 
   views::Builder<ExtensionsMenuMainPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -472,6 +478,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                    stretch_specification)
                       .AddChildren(
                           views::Builder<views::Label>()
+                              .CopyAddressTo(&subheader_title)
                               .SetText(l10n_util::GetStringUTF16(
                                   IDS_EXTENSIONS_MENU_TITLE))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -493,7 +500,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           base::BindRepeating(
                               &chrome::ShowWebStore, browser_,
                               extension_urls::kExtensionsMenuUtmSource),
-                          vector_icons::kGoogleChromeWebstoreIcon))
+                          vector_icons::kGoogleChromeWebstoreIcon, icon_size))
                       .SetAccessibleName(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME))
                       .CustomConfigure(
@@ -510,7 +517,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                 chrome::ShowExtensions(browser);
                               },
                               browser_),
-                          vector_icons::kSettingsIcon))
+                          vector_icons::kSettingsIcon, icon_size))
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
@@ -588,6 +595,12 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   views::BoxLayout::Orientation::kVertical))))
 
       .BuildChildren();
+
+  // Align the site setting toggle vertically with the subheader title by
+  // getting the label height after construction.
+  site_settings_toggle_->SetPreferredSize(
+      gfx::Size(site_settings_toggle_->GetPreferredSize().width(),
+                subheader_title->GetLineHeight()));
 }
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
