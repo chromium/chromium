@@ -628,7 +628,7 @@ void EnterTestMode(const GURL& update_url,
                   .SetServerKeepAliveTime(base::Seconds(1))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(base::Seconds(11))
-                  .SetIdleCheckPeriod(base::Seconds(4))
+                  .SetIdleCheckPeriod(base::Seconds(10))
                   .Modify());
 }
 
