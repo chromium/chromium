@@ -344,10 +344,7 @@ void HistoryURLProviderTest::RunTest(
   matches_ = autocomplete_->matches();
   if (sort_matches_) {
     TemplateURLService* service = client_->GetTemplateURLService();
-    for (auto i = matches_.begin(); i != matches_.end(); ++i) {
-      i->ComputeStrippedDestinationURL(input, service);
-    }
-    AutocompleteResult::DeduplicateMatches(&matches_);
+    AutocompleteResult::DeduplicateMatches(&matches_, input, service);
     std::sort(matches_.begin(), matches_.end(),
               &AutocompleteMatch::MoreRelevant);
   }

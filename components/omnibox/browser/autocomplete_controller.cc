@@ -1047,18 +1047,10 @@ void AutocompleteController::UpdateResult(
         default_match_to_preserve = *result_.default_match();
       }
     } else {
-      // Ensure `stripped_destination_url` is computed for the eligible matches.
-      // If that is already the case, `ComputeStrippedDestinationURL()` does
-      // nothing. This step is not needed if `SortAndCull()` is called before
-      // the model is executed as it ensures `stripped_destination_url` is
-      // computed before deduping.
-      // TODO(crbug.com/1446725): Instead deduplicate the matches before running
-      //  the model
-      for (auto& match : result_) {
-        if (match.scoring_signals.has_value()) {
-          match.ComputeStrippedDestinationURL(input_, template_url_service_);
-        }
-      }
+      // Deduplicate matches according to `stripped_destination_url` prior to
+      // running ML scoring. This step is not needed if `SortAndCull()` is
+      // called before the model is executed.
+      result_.DeduplicateMatches(input_, template_url_service_);
     }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
