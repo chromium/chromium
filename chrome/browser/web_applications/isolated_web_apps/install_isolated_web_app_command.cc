@@ -25,6 +25,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
@@ -154,12 +155,29 @@ void InstallIsolatedWebAppCommand::StartWithLock(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
 
+  auto weak_ptr = weak_factory_.GetWeakPtr();
+  RunChainedCallbacks(
+      base::BindOnce(&InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
+                     weak_ptr),
+      base::BindOnce(&InstallIsolatedWebAppCommand::CreateStoragePartition,
+                     weak_ptr),
+      base::BindOnce(&InstallIsolatedWebAppCommand::LoadInstallUrl, weak_ptr),
+      base::BindOnce(
+          &InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest,
+          weak_ptr),
+      base::BindOnce(&InstallIsolatedWebAppCommand::DownloadIcons, weak_ptr),
+      base::BindOnce(&InstallIsolatedWebAppCommand::FinalizeInstall, weak_ptr));
+}
+
+void InstallIsolatedWebAppCommand::CheckTrustAndSignatures(
+    base::OnceClosure next_step_callback) {
   absl::visit(
       base::Overloaded{
           [&](const InstalledBundle& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            CheckTrustAndSignaturesOfBundle(location.path);
+            CheckTrustAndSignaturesOfBundle(location.path,
+                                            std::move(next_step_callback));
           },
           [&](const DevModeBundle& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
@@ -168,7 +186,8 @@ void InstallIsolatedWebAppCommand::StartWithLock(
               ReportFailure(kIwaDevModeNotEnabledMessage);
               return;
             }
-            CheckTrustAndSignaturesOfBundle(location.path);
+            CheckTrustAndSignaturesOfBundle(location.path,
+                                            std::move(next_step_callback));
           },
           [&](const DevModeProxy& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
@@ -179,13 +198,14 @@ void InstallIsolatedWebAppCommand::StartWithLock(
             }
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
-            OnTrustAndSignaturesChecked(base::ok());
+            std::move(next_step_callback).Run();
           }},
       location_);
 }
 
 void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    base::OnceClosure next_step_callback) {
   // To check whether the bundle is valid and trusted, we attempt to create a
   // `IsolatedWebAppResponseReader`. If a response reader is created
   // successfully, then this means that the Signed Web Bundle...
@@ -199,38 +219,32 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
       // During installation, we always want to verify signatures, regardless
       // of the OS.
       /*skip_signature_verification=*/false,
-      base::BindOnce(
-          [](base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                            UnusableSwbnFileError> reader)
-              -> base::expected<void, UnusableSwbnFileError> {
-            if (!reader.has_value()) {
-              return base::unexpected(std::move(reader.error()));
-            }
-            return base::ok();
-          })
-          .Then(base::BindOnce(
-              &InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked,
-              weak_factory_.GetWeakPtr())));
+      base::BindOnce(&InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(next_step_callback)));
 }
 
 void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
-    base::expected<void, UnusableSwbnFileError> status) {
+    base::OnceClosure next_step_callback,
+    base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
+                   UnusableSwbnFileError> status) {
   if (!status.has_value()) {
     ReportFailure(
         IsolatedWebAppResponseReaderFactory::ErrorToString(status.error()));
     return;
   }
-
-  CreateStoragePartition();
-  LoadUrl();
+  std::move(next_step_callback).Run();
 }
 
-void InstallIsolatedWebAppCommand::CreateStoragePartition() {
+void InstallIsolatedWebAppCommand::CreateStoragePartition(
+    base::OnceClosure next_step_callback) {
   profile().GetStoragePartition(url_info_.storage_partition_config(&profile()),
                                 /*can_create=*/true);
+  std::move(next_step_callback).Run();
 }
 
-void InstallIsolatedWebAppCommand::LoadUrl() {
+void InstallIsolatedWebAppCommand::LoadInstallUrl(
+    base::OnceClosure next_step_callback) {
   DCHECK(web_contents_ != nullptr);
 
   // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in
@@ -242,13 +256,17 @@ void InstallIsolatedWebAppCommand::LoadUrl() {
 
   GURL install_page_url =
       url_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
-  url_loader_->LoadUrl(install_page_url, web_contents_.get(),
-                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-                       base::BindOnce(&InstallIsolatedWebAppCommand::OnLoadUrl,
-                                      weak_factory_.GetWeakPtr()));
+  url_loader_->LoadUrl(
+      install_page_url, web_contents_.get(),
+      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      base::BindOnce(&InstallIsolatedWebAppCommand::OnLoadInstallUrl,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(next_step_callback)));
 }
 
-void InstallIsolatedWebAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
+void InstallIsolatedWebAppCommand::OnLoadInstallUrl(
+    base::OnceClosure next_step_callback,
+    WebAppUrlLoaderResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsUrlLoadingResultSuccess(result)) {
@@ -257,16 +275,18 @@ void InstallIsolatedWebAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
     return;
   }
 
-  CheckInstallabilityAndRetrieveManifest();
+  std::move(next_step_callback).Run();
 }
 
-void InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest() {
+void InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest(
+    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback) {
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents_.get(),
       /*bypass_service_worker_check=*/true,
       base::BindOnce(&InstallIsolatedWebAppCommand::
                          OnCheckInstallabilityAndRetrieveManifest,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(next_step_callback)));
 }
 
 base::expected<WebAppInstallInfo, std::string>
@@ -351,6 +371,7 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
 }
 
 void InstallIsolatedWebAppCommand::OnCheckInstallabilityAndRetrieveManifest(
+    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
@@ -388,14 +409,13 @@ void InstallIsolatedWebAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   if (base::expected<WebAppInstallInfo, std::string> install_info =
           CreateInstallInfoFromManifest(*opt_manifest, manifest_url);
       install_info.has_value()) {
-    DownloadIcons(*std::move(install_info));
+    std::move(next_step_callback).Run(std::move(*install_info));
   } else {
     ReportFailure(install_info.error());
   }
 }
 
-void InstallIsolatedWebAppCommand::FinalizeInstall(
-    const WebAppInstallInfo& info) {
+void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
   options.isolated_web_app_location = location_;
@@ -420,16 +440,19 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
 }
 
 void InstallIsolatedWebAppCommand::DownloadIcons(
+    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
     WebAppInstallInfo install_info) {
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(install_info);
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
       base::BindOnce(&InstallIsolatedWebAppCommand::OnGetIcons,
-                     weak_factory_.GetWeakPtr(), std::move(install_info)));
+                     weak_factory_.GetWeakPtr(), std::move(next_step_callback),
+                     std::move(install_info)));
 }
 
 void InstallIsolatedWebAppCommand::OnGetIcons(
+    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
     WebAppInstallInfo install_info,
     IconsDownloadedResult result,
     std::map<GURL, std::vector<SkBitmap>> icons_map,
@@ -443,7 +466,7 @@ void InstallIsolatedWebAppCommand::OnGetIcons(
   PopulateProductIcons(&install_info, &icons_map);
   PopulateOtherIcons(&install_info, icons_map);
 
-  FinalizeInstall(install_info);
+  std::move(next_step_callback).Run(std::move(install_info));
 }
 
 void InstallIsolatedWebAppCommand::OnShutdown() {

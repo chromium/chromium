@@ -130,23 +130,35 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   Profile& profile();
   const PrefService& prefs();
 
-  void DownloadIcons(WebAppInstallInfo install_info);
-  void OnGetIcons(WebAppInstallInfo install_info,
-                  IconsDownloadedResult result,
-                  std::map<GURL, std::vector<SkBitmap>> icons_map,
-                  std::map<GURL, int /*http_status_code*/> icons_http_results);
+  void DownloadIcons(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+      WebAppInstallInfo install_info);
+  void OnGetIcons(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+      WebAppInstallInfo install_info,
+      IconsDownloadedResult result,
+      std::map<GURL, std::vector<SkBitmap>> icons_map,
+      std::map<GURL, int /*http_status_code*/> icons_http_results);
 
-  void CheckTrustAndSignaturesOfBundle(const base::FilePath& path);
+  void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
+
+  void CheckTrustAndSignaturesOfBundle(const base::FilePath& path,
+                                       base::OnceClosure next_step_callback);
   void OnTrustAndSignaturesChecked(
-      base::expected<void, UnusableSwbnFileError> status);
+      base::OnceClosure next_step_callback,
+      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
+                     UnusableSwbnFileError> status);
 
-  void CreateStoragePartition();
+  void CreateStoragePartition(base::OnceClosure next_step_callback);
 
-  void LoadUrl();
-  void OnLoadUrl(WebAppUrlLoaderResult result);
+  void LoadInstallUrl(base::OnceClosure next_step_callback);
+  void OnLoadInstallUrl(base::OnceClosure next_step_callback,
+                        WebAppUrlLoaderResult result);
 
-  void CheckInstallabilityAndRetrieveManifest();
+  void CheckInstallabilityAndRetrieveManifest(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback);
   void OnCheckInstallabilityAndRetrieveManifest(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
@@ -154,7 +166,8 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   base::expected<WebAppInstallInfo, std::string> CreateInstallInfoFromManifest(
       const blink::mojom::Manifest& manifest,
       const GURL& manifest_url);
-  void FinalizeInstall(const WebAppInstallInfo& info);
+
+  void FinalizeInstall(WebAppInstallInfo info);
   void OnFinalizeInstall(const AppId& unused_app_id,
                          webapps::InstallResultCode install_result_code,
                          OsHooksErrors unused_os_hooks_errors);
