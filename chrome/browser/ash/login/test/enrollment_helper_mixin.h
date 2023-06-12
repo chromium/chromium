@@ -7,11 +7,10 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
+#include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy {
@@ -19,8 +18,6 @@ class EnrollmentStatus;
 }
 
 namespace ash {
-class MockEnrollmentLauncher;
-
 namespace test {
 
 // This test mixin covers mocking backend interaction during enterprise
@@ -39,10 +36,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   // Re-creates mock. Useful in tests that retry enrollment with different auth
   // mechanism, which causes original mock to be destroyed by EnrollmentScreen.
   void ResetMock();
-
-  // Verifies mock expectations and clears them. Useful in tests that retry
-  // enrollment with the same auth mechanism.
-  void VerifyAndClear();
 
   // Sets up expectation of no enrollment attempt.
   void ExpectNoEnrollment();
@@ -78,14 +71,9 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   void ExpectAttributePromptUpdate(const std::string& asset_id,
                                    const std::string& location);
 
-  // InProcessBrowserTestMixin:
-  void SetUpInProcessBrowserTestFixture() override;
-  void TearDownInProcessBrowserTestFixture() override;
-
  private:
-  // Unowned reference to last created mock.
-  raw_ptr<MockEnrollmentLauncher, ExperimentalAsh> mock_ = nullptr;
-  base::WeakPtrFactory<EnrollmentHelperMixin> weak_ptr_factory_{this};
+  ::testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
+  ScopedEnrollmentLauncherFactoryOverrideForTesting scoped_factory_override_;
 };
 
 }  // namespace test

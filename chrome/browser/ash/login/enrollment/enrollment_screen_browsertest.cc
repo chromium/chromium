@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_screen()->Show(&context);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
 
-  enrollment_helper_.VerifyAndClear();
+  enrollment_helper_.ResetMock();
   enrollment_ui_.RetryAfterError();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepWorking);
 }
