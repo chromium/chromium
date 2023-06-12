@@ -305,26 +305,6 @@ class WindowObserverHookChecker : public aura::WindowObserver {
   raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 };
 
-// Differently than the window observer class above, this one observers
-// the window instance being directly provided to its ctor.
-class WindowObserverHookChecker2 : public aura::WindowObserver {
- public:
-  explicit WindowObserverHookChecker2(aura::Window* surface_window)
-      : surface_window_(surface_window) {
-    surface_window_->AddObserver(this);
-  }
-  ~WindowObserverHookChecker2() override {
-    surface_window_->RemoveObserver(this);
-  }
-  MOCK_METHOD(void,
-              OnWindowPropertyChanged,
-              (aura::Window*, const void*, intptr_t),
-              (override));
-
- private:
-  raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
-};
-
 TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   // Create and Map the drag origin surface
   auto surface = std::make_unique<Surface>();
