@@ -153,21 +153,9 @@ void FakeCommandBufferHelper::SetCleared(GLuint service_id) {
   DCHECK(service_ids_.count(service_id));
 }
 
-#if BUILDFLAG(IS_APPLE)
-bool FakeCommandBufferHelper::BindDecoderManagedImage(GLuint service_id,
-                                                      gl::GLImage* image) {
-  return BindImageInternal(service_id, image);
-}
-#elif !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
 bool FakeCommandBufferHelper::BindClientManagedImage(GLuint service_id,
                                                      gl::GLImage* image) {
-  return BindImageInternal(service_id, image);
-}
-#endif
-
-#if !BUILDFLAG(IS_WIN)
-bool FakeCommandBufferHelper::BindImageInternal(GLuint service_id,
-                                                gl::GLImage* image) {
   DVLOG(2) << __func__ << "(" << service_id << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(service_ids_.count(service_id));

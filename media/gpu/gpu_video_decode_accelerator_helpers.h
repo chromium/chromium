@@ -41,14 +41,15 @@ using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
 // executing any GL calls. Return true on success, false otherwise.
 using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
 
-// Bind |image| to |client_texture_id| given |texture_target|. On Win/Mac,
-// marks the texture as needing binding by the decoder; on other platforms,
-// marks the texture as *not* needing binding by the decoder.
+#if BUILDFLAG(IS_CHROMEOS)
+// Bind |image| to |client_texture_id| given |texture_target|, marking the
+// texture as not needing binding by the decoder.
 // Return true on success, false otherwise.
 using BindGLImageCallback =
     base::RepeatingCallback<bool(uint32_t client_texture_id,
                                  uint32_t texture_target,
                                  const scoped_refptr<gl::GLImage>& image)>;
+#endif
 
 // Return a ContextGroup*, if one is available.
 using GetContextGroupCallback =
@@ -80,14 +81,15 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   // executing any GL calls. Return true on success, false otherwise.
   using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
 
-  // Bind |image| to |client_texture_id| given |texture_target|. On Win/Mac,
-  // marks the texture as needing binding by the decoder; on other platforms,
-  // marks the texture as *not* needing binding by the decoder.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Bind |image| to |client_texture_id| given |texture_target|, marking the
+  // texture as not needing binding by the decoder.
   // Return true on success, false otherwise.
   using BindGLImageCallback =
       base::RepeatingCallback<bool(uint32_t client_texture_id,
                                    uint32_t texture_target,
                                    const scoped_refptr<gl::GLImage>& image)>;
+#endif
 
   // Return a ContextGroup*, if one is available.
   using GetContextGroupCallback =
@@ -99,8 +101,10 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   // Callback for making the relevant context current for GL calls.
   MakeGLContextCurrentCallback make_context_current;
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Callback to bind a GLImage to a given texture id and target.
   BindGLImageCallback bind_image;
+#endif
 
   // Callback to return a ContextGroup*.
   GetContextGroupCallback get_context_group;

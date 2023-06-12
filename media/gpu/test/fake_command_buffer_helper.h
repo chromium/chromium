@@ -65,9 +65,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                        GLenum type) override;
   void DestroyTexture(GLuint service_id) override;
   void SetCleared(GLuint service_id) override;
-#if BUILDFLAG(IS_APPLE)
-  bool BindDecoderManagedImage(GLuint service_id, gl::GLImage* image) override;
-#elif !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
   bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override;
 #endif
   gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override;
@@ -79,17 +77,16 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
  private:
   ~FakeCommandBufferHelper() override;
 
-#if !BUILDFLAG(IS_WIN)
-  bool BindImageInternal(GLuint service_id, gl::GLImage* image);
-#endif
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool has_stub_ = true;
   bool is_context_lost_ = false;
   bool is_context_current_ = false;
 
+#if !BUILDFLAG(IS_ANDROID)
   GLuint next_service_id_ = 1;
+#endif
+
   std::set<GLuint> service_ids_;
   std::map<gpu::SyncToken, base::OnceClosure> waits_;
 

@@ -662,8 +662,6 @@ VTVideoDecodeAccelerator::VTVideoDecodeAccelerator(
           {base::TaskPriority::USER_VISIBLE})),
       decoder_weak_this_factory_(this),
       weak_this_factory_(this) {
-  DCHECK(gl_client_.bind_image);
-
   callback_.decompressionOutputCallback = OutputThunk;
   callback_.decompressionOutputRefCon = this;
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();

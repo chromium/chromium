@@ -128,13 +128,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Sets the cleared flag on level 0 of the texture.
   virtual void SetCleared(GLuint service_id) = 0;
 
-#if BUILDFLAG(IS_APPLE)
-  // Binds level 0 of the texture to an unbound image.
-  //
-  // BindTexImage() will be called when the texture is used.
-  virtual bool BindDecoderManagedImage(GLuint service_id,
-                                       gl::GLImage* image) = 0;
-#elif !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
   // Binds level 0 of the texture to an image for which the sampler binding
   // already exists.
   //

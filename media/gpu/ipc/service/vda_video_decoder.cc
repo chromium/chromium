@@ -58,16 +58,7 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
   return CommandBufferHelper::Create(stub);
 }
 
-#if BUILDFLAG(IS_APPLE)
-bool BindDecoderManagedImage(
-    scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    const scoped_refptr<gl::GLImage>& image) {
-  return command_buffer_helper->BindDecoderManagedImage(client_texture_id,
-                                                        image.get());
-}
-#else
+#if BUILDFLAG(IS_CHROMEOS)
 bool BindClientManagedImage(
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     uint32_t client_texture_id,
@@ -93,13 +84,7 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
         &CommandBufferHelper::GetGLContext, command_buffer_helper);
     gl_client.make_context_current = base::BindRepeating(
         &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-    // The semantics of |bind_image| vary per-platform: On Mac it must mark the
-    // image as needing binding by the decoder, while on other platforms it must
-    // mark the image as *not* needing binding by the decoder.
-#if BUILDFLAG(IS_APPLE)
-    gl_client.bind_image =
-        base::BindRepeating(&BindDecoderManagedImage, command_buffer_helper);
-#else
+#if BUILDFLAG(IS_CHROMEOS)
     gl_client.bind_image =
         base::BindRepeating(&BindClientManagedImage, command_buffer_helper);
 #endif
