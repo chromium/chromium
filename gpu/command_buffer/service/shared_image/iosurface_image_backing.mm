@@ -106,7 +106,7 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
   // On iOS we are using IOSurfaces which must use MTLStorageModeShared.
   [mtl_tex_desc setStorageMode:MTLStorageModeShared];
 #else
-  [mtl_tex_desc setStorageMode:MTLStorageModePrivate];
+  [mtl_tex_desc setStorageMode:MTLStorageModeManaged];
 #endif
   mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc
                                                iosurface:io_surface

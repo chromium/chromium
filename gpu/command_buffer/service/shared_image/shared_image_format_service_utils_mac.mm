@@ -92,7 +92,7 @@ skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
 #if BUILDFLAG(IS_IOS)
   mtl_texture_info.fStorageMode = MTLStorageModeShared;
 #else
-  mtl_texture_info.fStorageMode = MTLStorageModePrivate;
+  mtl_texture_info.fStorageMode = MTLStorageModeManaged;
 #endif
   mtl_texture_info.fMipmapped =
       mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
