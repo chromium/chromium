@@ -56,7 +56,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -82,11 +81,11 @@ public class TouchToFillRenderTest {
 
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final Credential ARON =
-            new Credential("אהרן", "S3cr3t", "אהרן", "", GetLoginMatchType.EXACT, 0);
+            new Credential("אהרן", "S3cr3t", "אהרן", "", "example.com", GetLoginMatchType.EXACT, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", "", GetLoginMatchType.EXACT, 0);
+            new Credential("Bob", "*****", "Bob", "", "example.com", GetLoginMatchType.EXACT, 0);
     private static final Credential MARIAM =
-            new Credential("مريم", "***", "مريم", "", GetLoginMatchType.EXACT, 0);
+            new Credential("مريم", "***", "مريم", "", "example.com", GetLoginMatchType.EXACT, 0);
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -397,9 +396,7 @@ public class TouchToFillRenderTest {
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, callback)
-                        .with(FORMATTED_ORIGIN,
-                                UrlFormatter.formatUrlForDisplayOmitScheme(
-                                        credential.getOriginUrl()))
+                        .with(FORMATTED_ORIGIN, credential.getDisplayName())
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }
@@ -422,9 +419,7 @@ public class TouchToFillRenderTest {
                         new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                                 .with(CREDENTIAL, ARON)
                                 .with(ON_CLICK_LISTENER, (Credential clickedCredential) -> {})
-                                .with(FORMATTED_ORIGIN,
-                                        UrlFormatter.formatUrlForDisplayOmitScheme(
-                                                credential.getOriginUrl()))
+                                .with(FORMATTED_ORIGIN, credential.getDisplayName())
                                 .with(SHOW_SUBMIT_BUTTON, true)
                                 .build()));
     }

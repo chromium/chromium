@@ -26,7 +26,6 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
-import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
 import android.content.Context;
 import android.text.method.PasswordTransformationMethod;
@@ -159,10 +158,7 @@ class TouchToFillViewBinder {
             pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
         } else if (propertyKey == CREDENTIAL) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
-            String formattedOrigin = stripScheme(credential.getOriginUrl());
-            formattedOrigin =
-                    formattedOrigin.replaceFirst("/$", ""); // Strip possibly trailing slash.
-            pslOriginText.setText(formattedOrigin);
+            pslOriginText.setText(credential.getDisplayName());
             pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
 
             TextView usernameText = view.findViewById(R.id.username);

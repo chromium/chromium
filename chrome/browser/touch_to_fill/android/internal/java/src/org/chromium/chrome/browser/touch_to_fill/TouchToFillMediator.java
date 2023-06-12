@@ -279,8 +279,7 @@ class TouchToFillMediator {
         return new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                 .with(CREDENTIAL, credential)
                 .with(ON_CLICK_LISTENER, this::onSelectedCredential)
-                .with(FORMATTED_ORIGIN,
-                        UrlFormatter.formatUrlForDisplayOmitScheme(credential.getOriginUrl()))
+                .with(FORMATTED_ORIGIN, credential.getDisplayName())
                 .with(SHOW_SUBMIT_BUTTON, triggerSubmission)
                 .build();
     }

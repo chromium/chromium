@@ -40,6 +40,9 @@ class UiCredential {
 
   const url::Origin& origin() const { return origin_; }
 
+  // Domain or App name displayed in the UI for affiliated or PSL matches.
+  const std::string& display_name() const { return display_name_; }
+
   password_manager_util::GetLoginMatchType match_type() const {
     return match_type_;
   }
@@ -50,6 +53,7 @@ class UiCredential {
   std::u16string username_;
   std::u16string password_;
   url::Origin origin_;
+  std::string display_name_;
   password_manager_util::GetLoginMatchType match_type_;
   base::Time last_used_;
 };

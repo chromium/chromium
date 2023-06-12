@@ -116,6 +116,7 @@ void TouchToFillViewImpl::Show(
         ConvertUTF16ToJavaString(env, credential.password()),
         ConvertUTF16ToJavaString(env, GetDisplayUsername(credential)),
         ConvertUTF8ToJavaString(env, credential.origin().Serialize()),
+        ConvertUTF8ToJavaString(env, credential.display_name()),
         static_cast<int>(credential.match_type()),
         credential.last_used().ToJavaTime());
   }

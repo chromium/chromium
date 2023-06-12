@@ -9,8 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -36,7 +39,19 @@ UiCredential::UiCredential(const PasswordForm& form,
       origin_(form.is_affiliation_based_match ? affiliated_origin
                                               : url::Origin::Create(form.url)),
       match_type_(password_manager_util::GetMatchType(form)),
-      last_used_(form.date_last_used) {}
+      last_used_(form.date_last_used) {
+  FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  if (facet_uri.IsValidAndroidFacetURI()) {
+    display_name_ = form.app_display_name.empty()
+                        ? SplitByDotAndReverse(facet_uri.android_package_name())
+                        : form.app_display_name;
+  } else {
+    display_name_ =
+        base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+            url::Origin::Create(form.url),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  }
+}
 
 UiCredential::UiCredential(UiCredential&&) = default;
 UiCredential::UiCredential(const UiCredential&) = default;

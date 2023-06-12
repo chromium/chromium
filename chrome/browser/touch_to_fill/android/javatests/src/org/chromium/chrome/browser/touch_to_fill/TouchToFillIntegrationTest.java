@@ -89,9 +89,10 @@ public class TouchToFillIntegrationTest {
     public void setUp() throws InterruptedException {
         sExampleUrl = new GURL("https://www.example.xyz");
         // TODO(https://crbug.com/783819): Migrate Credential to GURL.
-        sAna = new Credential(
-                "Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), GetLoginMatchType.EXACT, 0);
-        sBob = new Credential("Bob", "*****", "Bob", MOBILE_URL, GetLoginMatchType.PSL, 0);
+        sAna = new Credential("Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), "example.xyz",
+                GetLoginMatchType.EXACT, 0);
+        sBob = new Credential(
+                "Bob", "*****", "Bob", MOBILE_URL, "m.example.xyz", GetLoginMatchType.PSL, 0);
         sCam = new WebAuthnCredential(
                 "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");
 

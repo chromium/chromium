@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -92,12 +91,12 @@ import java.util.Collections;
 public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
-    private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", GetLoginMatchType.PSL, 0);
-    private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, GetLoginMatchType.PSL, 0);
-    private static final Credential CARL = new Credential(
-            "Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), GetLoginMatchType.EXACT, 0);
+    private static final Credential ANA = new Credential(
+            "Ana", "S3cr3t", "Ana", "https://m.a.xyz/", "m.a.xyz", GetLoginMatchType.PSL, 0);
+    private static final Credential BOB = new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL,
+            "subdomain.example.xyz", GetLoginMatchType.PSL, 0);
+    private static final Credential CARL = new Credential("Carl", "G3h3!m", "Carl",
+            TEST_URL.getSpec(), "example.xyz", GetLoginMatchType.EXACT, 0);
     private static final WebAuthnCredential DINO =
             new WebAuthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
@@ -129,8 +128,6 @@ public class TouchToFillControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatUrlForDisplayOmitScheme(anyString()))
-                .then(inv -> format(inv.getArgument(0)));
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
                      any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
@@ -171,12 +168,12 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
-        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(ANA.getDisplayName()));
 
         assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
         assertNotNull(itemList.get(2).model.get(ON_CLICK_LISTENER));
-        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(format(CARL.getOriginUrl())));
+        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(CARL.getDisplayName()));
         assertThat(itemList.get(0).model.get(IMAGE_DRAWABLE_ID),
                 is(R.drawable.touch_to_fill_header_image));
     }
@@ -202,7 +199,7 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
-        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(ANA.getDisplayName()));
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
         assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(false));
@@ -254,7 +251,7 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(2).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(2).model.get(ON_CLICK_LISTENER));
-        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(ANA.getDisplayName()));
     }
 
     @Test
@@ -339,10 +336,10 @@ public class TouchToFillControllerTest {
         assertThat(mModel.get(SHEET_ITEMS).size(), is(4)); // Header + 2 Credentials + Footer.
         assertThat(mModel.get(SHEET_ITEMS).get(1).type, is(ItemType.CREDENTIAL));
         assertThat(mModel.get(SHEET_ITEMS).get(1).model.get(FORMATTED_ORIGIN),
-                is(format(ANA.getOriginUrl())));
+                is(ANA.getDisplayName()));
         assertThat(mModel.get(SHEET_ITEMS).get(2).type, is(ItemType.CREDENTIAL));
         assertThat(mModel.get(SHEET_ITEMS).get(2).model.get(FORMATTED_ORIGIN),
-                is(format(BOB.getOriginUrl())));
+                is(BOB.getDisplayName()));
     }
 
     @Test
@@ -517,16 +514,6 @@ public class TouchToFillControllerTest {
                            TouchToFillMediator.UMA_TOUCH_TO_FILL_USER_ACTION,
                            UserAction.SELECT_HYBRID),
                 is(1));
-    }
-
-    /**
-     * Helper to verify formatted URLs. The real implementation calls {@link UrlFormatter}. It's not
-     * useful to actually reimplement the formatter, so just modify the string in a trivial way.
-     * @param originUrl A URL {@link String} to "format".
-     * @return A "formatted" URL {@link String}.
-     */
-    private static String format(String originUrl) {
-        return "formatted_" + originUrl + "_formatted";
     }
 
     /**
