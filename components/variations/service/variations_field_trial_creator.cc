@@ -319,6 +319,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   platform_field_trials->SetUpClientSideFieldTrials(
       used_seed, *entropy_providers, feature_list.get());
 
+  platform_field_trials->RegisterFeatureOverrides(feature_list.get());
+
   base::FeatureList::SetInstance(std::move(feature_list));
 
   // For testing Variations Safe Mode, maybe crash here.

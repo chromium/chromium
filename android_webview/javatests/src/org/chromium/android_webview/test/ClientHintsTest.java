@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -169,7 +168,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({AwSwitches.WEBVIEW_ENABLE_USER_AGENT_CLIENT_HINTS,
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsNoCustom() throws Throwable {
@@ -187,7 +186,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({AwSwitches.WEBVIEW_ENABLE_USER_AGENT_CLIENT_HINTS,
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsCustomOverride() throws Throwable {
@@ -204,7 +203,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({AwSwitches.WEBVIEW_ENABLE_USER_AGENT_CLIENT_HINTS,
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsModifyDefaultUserAgent() throws Throwable {
@@ -244,7 +243,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({AwSwitches.WEBVIEW_ENABLE_USER_AGENT_CLIENT_HINTS,
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsJavaScript() throws Throwable {
@@ -254,7 +253,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({AwSwitches.WEBVIEW_ENABLE_USER_AGENT_CLIENT_HINTS,
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsOverrideJavaScript() throws Throwable {

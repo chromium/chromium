@@ -215,6 +215,8 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
   }
 
   {
+    // TODO(crbug.com/1453407): Consider to migrate all the following overrides
+    // to the new mechanism in android_webview/browser/aw_field_trials.cc.
     base::ScopedAddFeatureFlags features(cl);
 
     if (base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -284,13 +286,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     features.DisableIfNotSet(::features::kPeriodicBackgroundSync);
 
-    // TODO(crbug.com/921655): Add support for User Agent Client hints on
-    // WebView.
-    if (cl->HasSwitch(switches::kWebViewEnableUserAgentClientHints)) {
-      features.EnableIfNotSet(blink::features::kUserAgentClientHint);
-    } else {
-      features.DisableIfNotSet(blink::features::kUserAgentClientHint);
-    }
     // Disable Reducing User Agent minor version on WebView.
     features.DisableIfNotSet(blink::features::kReduceUserAgentMinorVersion);
 

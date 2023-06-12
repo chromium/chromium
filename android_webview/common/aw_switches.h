@@ -25,7 +25,6 @@ extern const char kWebViewFencedFrames[];
 extern const char kWebViewDisableAppRecovery[];
 extern const char kWebViewEnableAppRecovery[];
 extern const char kWebViewEnableTrustTokensComponent[];
-extern const char kWebViewEnableUserAgentClientHints[];
 
 }  // namespace switches
 
