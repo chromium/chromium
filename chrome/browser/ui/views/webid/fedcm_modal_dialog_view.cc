@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 
+#include <algorithm>
+
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -27,15 +29,19 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(const GURL& url) {
   popup_window_ =
       source_window_->GetDelegate()->OpenURLFromTab(source_window_, params);
 
-  constexpr int kPopupWindowWidth = 512;
-  constexpr int kPopupWindowHeight = 450;
+  constexpr int kPopupWindowWidth = 500;
+  constexpr int kPopupWindowPreferredHeight = 600;
   gfx::Rect source_window_rect = source_window_->GetContainerBounds();
+  int popup_window_height =
+      std::min(kPopupWindowPreferredHeight,
+               static_cast<int>(source_window_rect.height() * 0.8));
   int x_coordinate = source_window_rect.x() +
                      ((source_window_rect.width() - kPopupWindowWidth) / 2);
-  int y_coordinate = source_window_rect.y();
+  int y_coordinate = source_window_rect.y() +
+                     ((source_window_rect.height() - popup_window_height) / 2);
   popup_window_->GetDelegate()->SetContentsBounds(
       popup_window_, gfx::Rect(x_coordinate, y_coordinate, kPopupWindowWidth,
-                               kPopupWindowHeight));
+                               popup_window_height));
 
   Observe(popup_window_);
 
