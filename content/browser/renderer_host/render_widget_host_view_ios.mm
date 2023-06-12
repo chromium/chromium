@@ -23,6 +23,7 @@
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
 // Used for settng the requested renderer size when testing.
@@ -269,6 +270,10 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
   display_tree_ =
       std::make_unique<ui::DisplayCALayerTree>([ui_view_->view_ layer]);
 
+  auto* screen = display::Screen::GetScreen();
+  screen_infos_ =
+      screen->GetScreenInfosNearestDisplay(screen->GetPrimaryDisplay().id());
+
   browser_compositor_ = std::make_unique<BrowserCompositorIOS>(
       ui_view_->view_.get(), this, host()->is_hidden(),
       host()->GetFrameSinkId());
@@ -306,6 +311,24 @@ void RenderWidgetHostViewIOS::Destroy() {
   NotifyObserversAboutShutdown();
   RenderWidgetHostViewBase::Destroy();
   delete this;
+}
+
+bool RenderWidgetHostViewIOS::IsSurfaceAvailableForCopy() {
+  return browser_compositor_->GetDelegatedFrameHost()
+      ->CanCopyFromCompositingSurface();
+}
+
+void RenderWidgetHostViewIOS::CopyFromSurface(
+    const gfx::Rect& src_rect,
+    const gfx::Size& dst_size,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  base::WeakPtr<RenderWidgetHostImpl> popup_host;
+  base::WeakPtr<DelegatedFrameHost> popup_frame_host;
+  RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
+      host()->GetWeakPtr(),
+      browser_compositor_->GetDelegatedFrameHost()->GetWeakPtr(), popup_host,
+      popup_frame_host, src_rect, dst_size, GetDeviceScaleFactor(),
+      std::move(callback));
 }
 
 void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {}
@@ -399,6 +422,18 @@ void RenderWidgetHostViewIOS::RenderProcessGone() {
 
 void RenderWidgetHostViewIOS::ShowWithVisibility(
     PageVisibilityState page_visibility) {
+  if (IsTesting() && !is_visible_) {
+    // There is some circularity in how UpdateScreenInfo works. The base class
+    // sets up some state needed by the browser compositor. The base class also
+    // depends on an update from the browser compositor. In practice this is a
+    // non issue because the function is called many times and values converge,
+    // but this is not necessarily the case in tests. This could be resolved
+    // by rewriting UpdateScreenInfo to interleave the work (see the mac
+    // implementation, eg), but for now we will simply may another call to the
+    // base class.
+    RenderWidgetHostViewBase::UpdateScreenInfo();
+    UpdateScreenInfo();
+  }
   is_visible_ = true;
   browser_compositor_->SetViewVisible(is_visible_);
   OnShowWithPageVisibility(page_visibility);
@@ -491,8 +526,7 @@ RenderWidgetHostViewIOS::CollectSurfaceIdsForEviction() {
 }
 
 void RenderWidgetHostViewIOS::UpdateScreenInfo() {
-  browser_compositor_->UpdateSurfaceFromUIView(
-      gfx::Rect([ui_view_->view_ bounds]).size());
+  browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
   RenderWidgetHostViewBase::UpdateScreenInfo();
 }
 

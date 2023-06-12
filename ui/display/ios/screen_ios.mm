@@ -71,7 +71,11 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
     UIScreen* mainScreen = [UIScreen mainScreen];
     CHECK(mainScreen);
     Display display(0, gfx::Rect(mainScreen.bounds));
-    display.set_device_scale_factor([mainScreen scale]);
+    CGFloat scale = [mainScreen scale];
+    if (Display::HasForceDeviceScaleFactor()) {
+      scale = Display::GetForcedDeviceScaleFactor();
+    }
+    display.set_device_scale_factor(scale);
     ProcessDisplayChanged(display, true /* is_primary */);
   }
 

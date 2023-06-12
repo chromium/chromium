@@ -951,10 +951,8 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 #if BUILDFLAG(IS_IOS)
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   if (display.device_scale_factor() > 2.0) {
-    DCHECK_EQ(3.0, display.device_scale_factor());
     supported_scale_factors.push_back(k300Percent);
   } else if (display.device_scale_factor() > 1.0) {
-    DCHECK_EQ(2.0, display.device_scale_factor());
     supported_scale_factors.push_back(k200Percent);
   } else {
     supported_scale_factors.push_back(k100Percent);
