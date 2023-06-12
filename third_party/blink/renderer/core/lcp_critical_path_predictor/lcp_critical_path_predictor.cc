@@ -6,13 +6,16 @@
 
 #include "base/logging.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 
 namespace blink {
 
 LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
-    : frame_(&frame) {
+    : frame_(&frame),
+      host_(frame.DomWindow()),
+      task_runner_(frame.GetTaskRunner(TaskType::kInternalLoading)) {
   CHECK(base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor));
 }
 
@@ -26,8 +29,18 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   // `LCPCriticalPathPredictorHost`.
 }
 
+mojom::blink::LCPCriticalPathPredictorHost&
+LCPCriticalPathPredictor::GetHost() {
+  if (!host_.is_bound()) {
+    GetFrame().GetBrowserInterfaceBroker().GetInterface(
+        host_.BindNewPipeAndPassReceiver(task_runner_));
+  }
+  return *host_.get();
+}
+
 void LCPCriticalPathPredictor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(host_);
 }
 
 }  // namespace blink
