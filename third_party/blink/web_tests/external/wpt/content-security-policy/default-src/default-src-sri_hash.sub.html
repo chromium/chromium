@@ -2,16 +2,16 @@
 <html>
 
 <head>
-    <title>External scripts with matching SRI hash should be allowed.</title>
+    <title>External scripts with matching SRI hash (in default-src) should be allowed.</title>
     <script src='/resources/testharness.js' nonce='dummy'></script>
     <script src='/resources/testharnessreport.js' nonce='dummy'></script>
 
-    <!-- CSP served: script-src {{domains[www]}}:* 'nonce-dummy' 'sha256-wIc3KtqOuTFEu6t17sIBuOswgkV406VJvhSk79Gw6U0=' 'ShA256-L7/UQ9VWpyG7C9RDEC4ctS5hI3Zcw+ta+haPGlByG9c=' 'sha512-rYCVMxWV5nq8IsMo+UZNObWtEiWGok/vDN8BMoEQi41s0znSes6E1Q2aag3Lw3u2J1w2rqH7uF2ws6FpQhfSOA==' -->
+    <!-- CSP served: default-src {{domains[www]}}:* 'nonce-dummy' 'sha256-wIc3KtqOuTFEu6t17sIBuOswgkV406VJvhSk79Gw6U0=' 'ShA256-L7/UQ9VWpyG7C9RDEC4ctS5hI3Zcw+ta+haPGlByG9c=' 'sha512-rYCVMxWV5nq8IsMo+UZNObWtEiWGok/vDN8BMoEQi41s0znSes6E1Q2aag3Lw3u2J1w2rqH7uF2ws6FpQhfSOA=='; style-src 'unsafe-inline' -->
     <!-- ShA256 is intentionally mixed case -->
 </head>
 
 <body>
-    <h1>External scripts with matching SRI hash should be allowed.</h1>
+    <h1>External scripts with matching SRI hash (in default-src) should be allowed.</h1>
     <div id='log'></div>
 
     <script nonce='dummy'>

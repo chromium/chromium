@@ -273264,16 +273264,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "0127871db02d55fd67e66b375302f9e3a106420e",
-     []
-    ],
-    "mtime.json": [
-     "64d1a93b1ae88f07cd7a2ba3bea08a5740d24336",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -277815,6 +277805,20 @@
       ]
      }
     },
+    "default-src": {
+     "default-src-sri_hash.sub.html.sub.headers": [
+      "6f2066063873ce43deefa16b7d021f0eba0f70cc",
+      []
+     ],
+     "externalScript.js": [
+      "2920b03c9bc98d16d4c7ebefaf8bcef268c3796c",
+      []
+     ],
+     "simpleSourcedScript.js": [
+      "deca86508fffd807ffd71dc2fc7554bbaba7e1e2",
+      []
+     ]
+    },
     "embedded-enforcement": {
      "META.yml": [
       "1cdc709f21e2e435b69af943ae2d2e9c0731540f",
@@ -279617,7 +279621,7 @@
       []
      ],
      "script-src-sri_hash.sub.html.sub.headers": [
-      "25cd6541acac853f97723ab329a8c060a8609365",
+      "971525ff762b3fec2ec8b27706e21237ac07af40",
       []
      ],
      "script-src-strict_dynamic_and_unsafe_eval_eval.html.headers": [
@@ -431926,6 +431930,13 @@
        {}
       ]
      ],
+     "default-src-sri_hash.sub.html": [
+      "87fce5961fd1854303377ee939b21b6275b312cf",
+      [
+       null,
+       {}
+      ]
+     ],
      "default-src-strict_dynamic_and_unsafe_inline.html": [
       "bf45820ade2d75e4405ddc1780780345dcf7c997",
       [
@@ -436494,7 +436505,7 @@
       ]
      ],
      "script-src-sri_hash.sub.html": [
-      "b59206824dc8b3849a3324d943af1867c536c3b2",
+      "9216e2b0d4971fc46d0010e8dfa7375845187a8d",
       [
        null,
        {}
