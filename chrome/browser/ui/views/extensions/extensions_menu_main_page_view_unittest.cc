@@ -304,7 +304,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //     site" text.
   ASSERT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  ASSERT_EQ(GetUserSiteAccess(*extension.get(), url),
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -322,7 +322,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site permissions button is visible, enabled, with icon and has "on
   //     click" text.
   ClickSiteAccessToggle(menu_item);
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -340,7 +340,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site permissions button is visible, enabled, with icon and has "on
   //     site" text.
   ClickSiteAccessToggle(menu_item);
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -374,7 +374,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //     all sites" text.
   ASSERT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  ASSERT_EQ(GetUserSiteAccess(*extension.get(), url),
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -393,7 +393,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site permissions button is visible, enabled, with icon and has "on
   //     click" text.
   ClickSiteAccessToggle(menu_item);
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -413,7 +413,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site permissions button is visible, enabled, with icon and has "on
   //     site" text.
   ClickSiteAccessToggle(menu_item);
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -447,7 +447,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //     sites" text.
   ASSERT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  ASSERT_EQ(GetUserSiteAccess(*extension.get(), url),
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -509,7 +509,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //     all sites".
   ASSERT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  ASSERT_EQ(GetUserSiteAccess(*extension.get(), url),
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
@@ -533,7 +533,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // modify the settings).
   UpdateUserSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
@@ -566,7 +566,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //     click" text.
   ASSERT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  ASSERT_EQ(GetUserSiteAccess(*extension.get(), url),
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -586,7 +586,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site permissions button is visible, enabled, with icon and has "on
   //     click" text.
   ClickSiteAccessToggle(menu_item, /*active_tab_only=*/true);
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -603,7 +603,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site access toggle is visible and off.
   //   - site permissions button is visible, enabled, with icon and has "on
   //     click" text.
-  EXPECT_EQ(GetUserSiteAccess(*extension.get(), url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
   ClickSiteAccessToggle(menu_item, /*active_tab_only=*/true);
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
