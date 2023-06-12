@@ -451,12 +451,30 @@ crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-o
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
+# Skipping several recent flakes as the UPF incorrectly removed the suppressions.
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-256-character-define.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-conditional-scoping-negative.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-function-scoped-struct.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-non-reserved-words-4-of-8.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-non-reserved-words-5-of-8.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Skip ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/* [ RetryOnFailure ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/reading/read-pixels-test.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/rendering/default-texture-draw-bug.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/rendering/gl-scissor-test.html [ Skip ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-active-bind.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-draw-with-2d-and-cube.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-npot-video.html [ Skip ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-default-values.html [ Failure ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/constant_expressions.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_scalar_to_scalar.html [ Skip ]
+crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/swizzles_bvec4.html [ Skip ]
 
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 
