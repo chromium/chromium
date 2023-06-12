@@ -28,6 +28,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -121,11 +121,12 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1376200")
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         mNavUtils.swipeFromLeftEdge();
-        ChromeApplicationTestUtils.waitUntilChromeInBackground();
+        CriteriaHelper.pollUiThread(
+                AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
     }
 
     @Test
