@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -22,8 +22,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
-
-namespace ash {
 
 namespace {
 constexpr char kScalableIphServiceName[] = "ScalableIphKeyedService";
@@ -92,7 +90,7 @@ content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
   }
 
   if (!user_manager::UserManager::Get()->IsOwnerUser(
-          BrowserContextHelper::Get()->GetUserByBrowserContext(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
               browser_context))) {
     return nullptr;
   }
@@ -126,7 +124,5 @@ ScalableIphFactory::CreateScalableIphDelegate(Profile* profile) const {
     return delegate_testing_factory_.Run();
   }
 
-  return std::make_unique<ScalableIphDelegateImpl>(profile);
+  return std::make_unique<ash::ScalableIphDelegateImpl>(profile);
 }
-
-}  // namespace ash

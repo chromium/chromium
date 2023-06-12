@@ -6,7 +6,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent) {
   EXPECT_CALL(*mock_tracker(), NotifyEvent("ScalableIphFiveMinTick"));
 
   scalable_iph::ScalableIph* scalable_iph =
-      ash::ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForProfile(browser()->profile());
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 }
 
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
           });
 
   scalable_iph::ScalableIph* scalable_iph =
-      ash::ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForProfile(browser()->profile());
   std::vector<const base::Feature*> features = {&kScalableIphTest};
   scalable_iph->OverrideFeatureListForTesting(features);
 
@@ -109,8 +109,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
                        ScalableIphNotAvailable) {
-  EXPECT_EQ(nullptr,
-            ash::ScalableIphFactory::GetForProfile(browser()->profile()));
+  EXPECT_EQ(nullptr, ScalableIphFactory::GetForProfile(browser()->profile()));
 }
 
 // TODO(b/284053005): Add a test case for invalid event name.

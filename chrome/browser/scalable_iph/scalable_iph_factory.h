@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
-#define CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
+#ifndef CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
+#define CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
@@ -13,8 +13,6 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
-
-namespace ash {
 
 class ScalableIphFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -49,6 +47,5 @@ class ScalableIphFactory : public BrowserContextKeyedServiceFactory {
 
   DelegateTestingFactory delegate_testing_factory_;
 };
-}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
+#endif  // CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
