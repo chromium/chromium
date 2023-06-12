@@ -16,10 +16,12 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h264_decoder.h"
+#include "media/gpu/media_gpu_export.h"
 
 namespace media {
 
-class VideoToolboxH264Accelerator : public H264Decoder::H264Accelerator {
+class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
+    : public H264Decoder::H264Accelerator {
  public:
   using DecodeCB =
       base::RepeatingCallback<void(base::ScopedCFTypeRef<CMSampleBufferRef>,
