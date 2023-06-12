@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -91,7 +90,6 @@ public class ThumbnailMediaParserTest {
     @LargeTest
     @Feature({"MediaParser"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "flaky on android-pie-arm64-rel, see crbug.com/1046382")
     /**
      * Verify metadata and thumbnail can be retrieved correctly from h264 video file.
      * @throws InterruptedException
