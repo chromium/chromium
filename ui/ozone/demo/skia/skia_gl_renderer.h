@@ -13,9 +13,9 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
-#include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/private/chromium/GrDeferredDisplayListRecorder.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/demo/renderer_base.h"
 
@@ -54,7 +54,7 @@ class SkiaGlRenderer : public RendererBase,
   void Draw(SkCanvas* canvas, float fraction);
   void StartDDLRenderThreadIfNecessary(SkSurface* sk_surface);
   void StopDDLRenderThread();
-  sk_sp<SkDeferredDisplayList> GetDDL();
+  sk_sp<GrDeferredDisplayList> GetDDL();
 
   std::unique_ptr<PlatformWindowSurface> window_surface_;
 
@@ -82,8 +82,8 @@ class SkiaGlRenderer : public RendererBase,
   // The condition variable for signalling change of |ddls_|.
   base::ConditionVariable condition_variable_;
 
-  SkSurfaceCharacterization surface_charaterization_;
-  base::queue<sk_sp<SkDeferredDisplayList>> ddls_;
+  GrSurfaceCharacterization surface_charaterization_;
+  base::queue<sk_sp<GrDeferredDisplayList>> ddls_;
 
   base::WeakPtrFactory<SkiaGlRenderer> weak_ptr_factory_{this};
 };

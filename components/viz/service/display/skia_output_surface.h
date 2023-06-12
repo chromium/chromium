@@ -64,7 +64,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   SkiaOutputSurface* AsSkiaOutputSurface() override;
 
   // Begin painting the current frame. This method will create a
-  // SkDeferredDisplayListRecorder and return a SkCanvas of it.
+  // GrDeferredDisplayListRecorder and return a SkCanvas of it.
   // The SkiaRenderer will use this SkCanvas to paint the current
   // frame.
   // And this SkCanvas may become invalid, when FinishPaintCurrentFrame is
@@ -101,7 +101,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
           output_surface_plane) = 0;
 
   // Begin painting a render pass. This method will create a
-  // SkDeferredDisplayListRecorder and return a SkCanvas of it. The SkiaRenderer
+  // GrDeferredDisplayListRecorder and return a SkCanvas of it. The SkiaRenderer
   // will use this SkCanvas to paint the render pass.
   // Note: BeginPaintRenderPass cannot be called without finishing the prior
   // paint render pass.

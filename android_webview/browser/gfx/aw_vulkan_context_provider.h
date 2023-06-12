@@ -12,7 +12,6 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 

@@ -66,7 +66,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
@@ -76,6 +75,7 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -432,13 +432,13 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const SkImageInfo& image_info,
 }
 
 void SkiaOutputSurfaceImplOnGpu::DrawOverdraw(
-    sk_sp<SkDeferredDisplayList> overdraw_ddl,
+    sk_sp<GrDeferredDisplayList> overdraw_ddl,
     SkCanvas& canvas) {
   DCHECK(overdraw_ddl);
 
   sk_sp<SkSurface> overdraw_surface = SkSurfaces::RenderTarget(
       gr_context(), overdraw_ddl->characterization(), skgpu::Budgeted::kNo);
-  overdraw_surface->draw(overdraw_ddl);
+  skgpu::ganesh::DrawDDL(overdraw_surface, overdraw_ddl);
   destroy_after_swap_.push_back(std::move(overdraw_ddl));
 
   SkPaint paint;
@@ -450,8 +450,8 @@ void SkiaOutputSurfaceImplOnGpu::DrawOverdraw(
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
-    sk_sp<SkDeferredDisplayList> ddl,
-    sk_sp<SkDeferredDisplayList> overdraw_ddl,
+    sk_sp<GrDeferredDisplayList> ddl,
+    sk_sp<GrDeferredDisplayList> overdraw_ddl,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
@@ -624,8 +624,8 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     const gpu::Mailbox& mailbox,
-    sk_sp<SkDeferredDisplayList> ddl,
-    sk_sp<SkDeferredDisplayList> overdraw_ddl,
+    sk_sp<GrDeferredDisplayList> ddl,
+    sk_sp<GrDeferredDisplayList> overdraw_ddl,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
@@ -735,7 +735,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
                       /*deleteSemaphoresAfterWait=*/false);
     DCHECK(result);
   }
-  surface->draw(ddl);
+  skgpu::ganesh::DrawDDL(surface, ddl);
   skia_representation->SetCleared();
   destroy_after_swap_.emplace_back(std::move(ddl));
 

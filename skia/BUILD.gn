@@ -47,6 +47,7 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
     "SK_DISABLE_LEGACY_SKSURFACE_FLUSH",
     "SK_DISABLE_LEGACY_SKSURFACE_AS_IMAGE",
+    "SK_DISABLE_LEGACY_SKSURFACE_DISPLAYLIST",
   ]
 
   include_dirs = [ "//third_party/skia" ]

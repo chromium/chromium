@@ -136,11 +136,11 @@ OutputSurface::Type GetOutputSurfaceType(SkiaOutputSurfaceDependency* deps) {
 }  // namespace
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
-    SkDeferredDisplayListRecorder* root_ddl_recorder)
+    GrDeferredDisplayListRecorder* root_ddl_recorder)
     : ddl_recorder_(root_ddl_recorder), canvas_(ddl_recorder_->getCanvas()) {}
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
-    const SkSurfaceCharacterization& characterization,
+    const GrSurfaceCharacterization& characterization,
     const gpu::Mailbox& mailbox)
     : mailbox_(mailbox) {
   ddl_recorder_storage_.emplace(characterization);
@@ -162,7 +162,7 @@ SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() {
   CHECK(!canvas_);
 }
 
-sk_sp<SkDeferredDisplayList> SkiaOutputSurfaceImpl::ScopedPaint::DetachDDL() {
+sk_sp<GrDeferredDisplayList> SkiaOutputSurfaceImpl::ScopedPaint::DetachDDL() {
   canvas_ = nullptr;
   return ddl_recorder_->detach();
 }
@@ -360,8 +360,8 @@ void SkiaOutputSurfaceImpl::RecreateRootDDLRecorder() {
   if (graphite_recorder_) {
     return;
   }
-  SkSurfaceCharacterization characterization =
-      CreateSkSurfaceCharacterizationCurrentFrame(
+  GrSurfaceCharacterization characterization =
+      CreateGrSurfaceCharacterizationCurrentFrame(
           size_, color_type_, alpha_type_, /*mipmap=*/false, sk_color_space_);
   CHECK(characterization.isValid());
   root_ddl_recorder_.emplace(characterization);
@@ -824,12 +824,12 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     current_paint_.emplace(graphite_recorder_, image_info, texture_info,
                            mailbox);
   } else {
-    SkSurfaceCharacterization characterization =
-      CreateSkSurfaceCharacterizationRenderPass(
-          surface_size, color_type, kPremul_SkAlphaType, mipmap,
-          std::move(color_space), is_overlay, scanout_dcomp_surface);
+    GrSurfaceCharacterization characterization =
+        CreateGrSurfaceCharacterizationRenderPass(
+            surface_size, color_type, kPremul_SkAlphaType, mipmap,
+            std::move(color_space), is_overlay, scanout_dcomp_surface);
     if (!characterization.isValid()) {
-      DLOG(ERROR) << "BeginPaintRenderPass: invalid SkSurfaceCharacterization";
+      DLOG(ERROR) << "BeginPaintRenderPass: invalid GrSurfaceCharacterization";
       return nullptr;
     }
     current_paint_.emplace(characterization, mailbox);
@@ -862,8 +862,8 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
   // 8-bit unorm alpha channel to work. RGBA8 is always supported, so we use it.
   SkColorType color_type_with_alpha = SkColorType::kRGBA_8888_SkColorType;
 
-  SkSurfaceCharacterization characterization =
-      CreateSkSurfaceCharacterizationRenderPass(
+  GrSurfaceCharacterization characterization =
+      CreateGrSurfaceCharacterizationRenderPass(
           size_, color_type_with_alpha, alpha_type_, /*mipmap=*/false,
           sk_color_space_, /*is_overlay=*/false,
           /*scanout_dcomp_surface=*/false);
@@ -884,8 +884,8 @@ void SkiaOutputSurfaceImpl::EndPaint(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(current_paint_);
 
-  sk_sp<SkDeferredDisplayList> ddl;
-  sk_sp<SkDeferredDisplayList> overdraw_ddl;
+  sk_sp<GrDeferredDisplayList> ddl;
+  sk_sp<GrDeferredDisplayList> overdraw_ddl;
   std::unique_ptr<skgpu::graphite::Recording> graphite_recording;
 
   if (graphite_recorder_) {
@@ -1134,8 +1134,8 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
   *result = true;
 }
 
-SkSurfaceCharacterization
-SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterizationRenderPass(
+GrSurfaceCharacterization
+SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
     const gfx::Size& surface_size,
     SkColorType color_type,
     SkAlphaType alpha_type,
@@ -1145,7 +1145,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterizationRenderPass(
     bool scanout_dcomp_surface) const {
   if (!gr_context_thread_safe_) {
     DLOG(ERROR) << "gr_context_thread_safe_ is null.";
-    return SkSurfaceCharacterization();
+    return GrSurfaceCharacterization();
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
@@ -1185,8 +1185,8 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterizationRenderPass(
   return characterization;
 }
 
-SkSurfaceCharacterization
-SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterizationCurrentFrame(
+GrSurfaceCharacterization
+SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
     const gfx::Size& surface_size,
     SkColorType color_type,
     SkAlphaType alpha_type,
@@ -1194,7 +1194,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterizationCurrentFrame(
     sk_sp<SkColorSpace> color_space) const {
   if (!gr_context_thread_safe_) {
     DLOG(ERROR) << "gr_context_thread_safe_ is null.";
-    return SkSurfaceCharacterization();
+    return GrSurfaceCharacterization();
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();

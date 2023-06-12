@@ -34,7 +34,7 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
       context_state_(context_state),
       gl_surface_(std::move(gl_surface)) {
   // Always set uses_default_gl_framebuffer to true, since
-  // SkSurfaceCharacterization created for  GL fbo0 is compatible with
+  // GrSurfaceCharacterization created for  GL fbo0 is compatible with
   // SkSurface wrappers non GL fbo0.
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gl_surface_->GetOrigin();

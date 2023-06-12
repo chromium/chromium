@@ -18,7 +18,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/skia/include/core/SkDeferredDisplayList.h"
+#include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -209,7 +209,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   RAW_PTR_EXCLUSION const AggregatedRenderPassDrawQuad* rpdq = nullptr;
   // The DDL for generating render pass overlay buffer with SkiaRenderer. This
   // is the recorded output of rendering the |rpdq|.
-  sk_sp<SkDeferredDisplayList> ddl;
+  sk_sp<GrDeferredDisplayList> ddl;
 
   // Quad |shared_quad_state| opacity is ubiquitous for quad types
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate

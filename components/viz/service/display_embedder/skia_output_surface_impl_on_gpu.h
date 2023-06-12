@@ -37,10 +37,10 @@
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
@@ -158,8 +158,8 @@ class SkiaOutputSurfaceImplOnGpu
                float device_scale_factor,
                gfx::OverlayTransform transform);
   void FinishPaintCurrentFrame(
-      sk_sp<SkDeferredDisplayList> ddl,
-      sk_sp<SkDeferredDisplayList> overdraw_ddl,
+      sk_sp<GrDeferredDisplayList> ddl,
+      sk_sp<GrDeferredDisplayList> overdraw_ddl,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
@@ -185,8 +185,8 @@ class SkiaOutputSurfaceImplOnGpu
   // open until PostSubmit().
   void FinishPaintRenderPass(
       const gpu::Mailbox& mailbox,
-      sk_sp<SkDeferredDisplayList> ddl,
-      sk_sp<SkDeferredDisplayList> overdraw_ddl,
+      sk_sp<GrDeferredDisplayList> ddl,
+      sk_sp<GrDeferredDisplayList> overdraw_ddl,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
@@ -459,7 +459,7 @@ class SkiaOutputSurfaceImplOnGpu
   gfx::GpuFenceHandle CreateReleaseFenceForGL();
 
   // Draws `overdraw_ddl` to the target `canvas`.
-  void DrawOverdraw(sk_sp<SkDeferredDisplayList> overdraw_ddl,
+  void DrawOverdraw(sk_sp<GrDeferredDisplayList> overdraw_ddl,
                     SkCanvas& canvas);
 
   // Gets the cached SkiaImageRepresentation for this mailbox if it exists, or
@@ -576,7 +576,7 @@ class SkiaOutputSurfaceImplOnGpu
   SkiaOutputSurface::OverlayList overlays_;
 
   // Micro-optimization to get to issuing GPU SwapBuffers as soon as possible.
-  std::vector<sk_sp<SkDeferredDisplayList>> destroy_after_swap_;
+  std::vector<sk_sp<GrDeferredDisplayList>> destroy_after_swap_;
 
   bool waiting_for_full_damage_ = false;
 

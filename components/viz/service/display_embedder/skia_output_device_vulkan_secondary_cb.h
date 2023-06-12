@@ -46,7 +46,7 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
             const GrBackendSemaphore wait_semaphores[],
             bool delete_semaphores_after_wait) override;
   bool Draw(SkSurface* sk_surface,
-            sk_sp<const SkDeferredDisplayList> ddl) override;
+            sk_sp<const GrDeferredDisplayList> ddl) override;
 
  private:
   const raw_ptr<VulkanContextProvider> context_provider_;
