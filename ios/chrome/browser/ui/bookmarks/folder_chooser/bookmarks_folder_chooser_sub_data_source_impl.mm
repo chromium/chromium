@@ -51,6 +51,10 @@ using bookmarks::BookmarkNode;
   _parentDataSource = nil;
 }
 
+- (void)dealloc {
+  DCHECK(!_bookmarkModel);
+}
+
 #pragma mark - BookmarksFolderChooserSubDataSource
 
 - (const BookmarkNode*)mobileFolderNode {
