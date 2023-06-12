@@ -26,7 +26,6 @@ public class TabModelSelectorProfileSupplier
     private final Callback<TabModelSelector> mSelectorSupplierCallback;
 
     private TabModelSelector mSelector;
-    private boolean mIsTabStateInitialized;
     private boolean mHasProfile;
 
     public TabModelSelectorProfileSupplier(ObservableSupplier<TabModelSelector> selectorSupplier) {
@@ -34,15 +33,18 @@ public class TabModelSelectorProfileSupplier
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 Profile newProfile = newModel.getProfile();
-                assert !mIsTabStateInitialized || newProfile != null;
-
                 // Postpone setting the profile until tab state is initialized.
                 if (newProfile == null) return;
                 set(newProfile);
             }
 
             @Override
-            public void onChange() {}
+            public void onChange() {
+                if (mSelector.getCurrentModel() == null) return;
+                Profile profile = mSelector.getCurrentModel().getProfile();
+                if (profile == null) return;
+                set(profile);
+            }
 
             @Override
             public void onNewTabCreated(Tab tab, int creationState) {}
@@ -52,7 +54,6 @@ public class TabModelSelectorProfileSupplier
 
             @Override
             public void onTabStateInitialized() {
-                mIsTabStateInitialized = true;
                 set(mSelector.getCurrentModel().getProfile());
             }
         };
@@ -73,7 +74,7 @@ public class TabModelSelectorProfileSupplier
         mSelector = selector;
         mSelector.addObserver(mSelectorObserver);
 
-        if (selector.isTabStateInitialized() && selector.getCurrentModel() != null) {
+        if (selector.getCurrentModel() != null) {
             mSelectorObserver.onTabModelSelected(selector.getCurrentModel(), null);
         }
     }
