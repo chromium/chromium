@@ -64,6 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // views::View:
   void AddedToWidget() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* parent_window) override;

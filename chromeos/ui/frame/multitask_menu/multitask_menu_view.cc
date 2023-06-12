@@ -353,6 +353,14 @@ bool MultitaskMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
+bool MultitaskMenuView::OnKeyPressed(const ui::KeyEvent& event) {
+  // Eat up and down key events so they don't trigger keyboard traversal.
+  if (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN) {
+    return true;
+  }
+  return views::View::OnKeyPressed(event);
+}
+
 void MultitaskMenuView::OnWindowDestroying(aura::Window* window) {
   CHECK(window_observation_.IsObservingSource(window));
 

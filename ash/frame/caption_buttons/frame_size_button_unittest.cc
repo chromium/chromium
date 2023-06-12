@@ -1106,4 +1106,45 @@ TEST_F(MultitaskMenuTest, PressOnSizeButtonReleaseOnMultitaskMenu) {
   }
 }
 
+// Tests that focus traversal with the tab and arrow keys works as expected.
+TEST_F(MultitaskMenuTest, TabAndArrowKeyTraversal) {
+  // First assert that all four buttons are visible with the display size and
+  // window we are given.
+  ShowMultitaskMenu();
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  ASSERT_EQ(4u, multitask_menu->multitask_menu_view()->children().size());
+
+  // Nothing is focused initially.
+  views::FocusManager* focus_manager =
+      multitask_menu->GetWidget()->GetFocusManager();
+  EXPECT_FALSE(focus_manager->GetFocusedView());
+
+  // Press tab. The left button of the half button is focused.
+  views::Button* left_half_button = multitask_menu->multitask_menu_view()
+                                        ->half_button_for_testing()
+                                        ->GetLeftTopButton();
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(left_half_button, focus_manager->GetFocusedView());
+
+  // Press shift+tab. The last button (float button) is focused.
+  views::Button* float_button =
+      multitask_menu->multitask_menu_view()->float_button_for_testing();
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(float_button, focus_manager->GetFocusedView());
+
+  // Press right and left arrow keys. They should work like tab and shift+tab,
+  // respectively.
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(left_half_button, focus_manager->GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_LEFT);
+  EXPECT_EQ(float_button, focus_manager->GetFocusedView());
+
+  // Pressing up/down keys do not affect focus.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(float_button, focus_manager->GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(float_button, focus_manager->GetFocusedView());
+}
+
 }  // namespace ash

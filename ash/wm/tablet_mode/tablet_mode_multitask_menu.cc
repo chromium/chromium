@@ -29,6 +29,7 @@
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -166,6 +167,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   widget_->Init(std::move(params));
   widget_->SetVisibilityChangedAnimationsEnabled(false);
+  widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
 
   // Clip the widget's root view so that the menu appears to be sliding out from
   // the top, even if the window above it is stacked below it, which is the case

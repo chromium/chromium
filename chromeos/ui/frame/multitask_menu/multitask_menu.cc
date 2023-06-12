@@ -41,6 +41,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   set_parent_window(parent_widget->GetNativeWindow());
   SetAnchorView(anchor);
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
+  SetEnableArrowKeyTraversal(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetUseDefaultFillLayout(true);
 
