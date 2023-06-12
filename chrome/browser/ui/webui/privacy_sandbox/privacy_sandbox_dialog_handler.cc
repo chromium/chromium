@@ -15,6 +15,10 @@ bool IsConsent(PrivacySandboxService::PromptType prompt_type) {
          prompt_type == PrivacySandboxService::PromptType::kM1Consent;
 }
 
+bool IsRestrictedNotice(PrivacySandboxService::PromptType prompt_type) {
+  return prompt_type == PrivacySandboxService::PromptType::kM1NoticeRestricted;
+}
+
 }  // namespace
 
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
@@ -73,6 +77,9 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
   if (IsConsent(prompt_type_)) {
     NotifyServiceAboutPromptAction(
         PrivacySandboxService::PromptAction::kConsentClosedNoDecision);
+  } else if (IsRestrictedNotice(prompt_type_)) {
+    NotifyServiceAboutPromptAction(PrivacySandboxService::PromptAction::
+                                       kRestrictedNoticeClosedNoInteraction);
   } else {
     NotifyServiceAboutPromptAction(
         PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction);

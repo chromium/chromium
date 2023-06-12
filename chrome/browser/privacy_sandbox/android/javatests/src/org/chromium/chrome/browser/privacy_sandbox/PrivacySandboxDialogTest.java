@@ -159,9 +159,12 @@ public final class PrivacySandboxDialogTest {
                     assertEquals("Last dialog action", PromptAction.CONSENT_MORE_BUTTON_CLICKED,
                             (int) mFakePrivacySandboxBridge.getLastPromptAction());
                 } else if (promptType == PromptType.M1_NOTICE_EEA
-                        || promptType == PromptType.M1_NOTICE_ROW
-                        || promptType == PromptType.M1_NOTICE_RESTRICTED) {
+                        || promptType == PromptType.M1_NOTICE_ROW) {
                     assertEquals("Last dialog action", PromptAction.NOTICE_MORE_BUTTON_CLICKED,
+                            (int) mFakePrivacySandboxBridge.getLastPromptAction());
+                } else if (promptType == PromptType.M1_NOTICE_RESTRICTED) {
+                    assertEquals("Last dialog action",
+                            PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED,
                             (int) mFakePrivacySandboxBridge.getLastPromptAction());
                 }
             } catch (PerformException e) {
@@ -530,7 +533,7 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that the restricted notice is shown
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
-        assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
+        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
