@@ -20,7 +20,7 @@
 #include "chrome/browser/signin/reauth_tab_helper.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -86,8 +86,9 @@ SigninReauthViewController::SigninReauthViewController(
           content::SiteInstance::Create(browser_->profile())));
 
   // To allow passing encryption keys during interactions with the page,
-  // instantiate SyncEncryptionKeysTabHelper.
-  SyncEncryptionKeysTabHelper::CreateForWebContents(reauth_web_contents_.get());
+  // instantiate TrustedVaultEncryptionKeysTabHelper.
+  TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
+      reauth_web_contents_.get());
 
   const GURL& reauth_url = GaiaUrls::GetInstance()->reauth_url();
   reauth_web_contents_->GetController().LoadURL(

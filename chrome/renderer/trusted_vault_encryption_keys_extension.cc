@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/sync_encryption_keys_extension.h"
+#include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 
 #include <utility>
 #include <vector>
@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
+#include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/renderer/google_accounts_private_api_util.h"
 #include "components/sync/base/features.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -64,21 +65,21 @@ void RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(bool valid_args) {
 }  // namespace
 
 // static
-void SyncEncryptionKeysExtension::Create(content::RenderFrame* frame) {
-  new SyncEncryptionKeysExtension(frame);
+void TrustedVaultEncryptionKeysExtension::Create(content::RenderFrame* frame) {
+  new TrustedVaultEncryptionKeysExtension(frame);
 }
 
-SyncEncryptionKeysExtension::SyncEncryptionKeysExtension(
+TrustedVaultEncryptionKeysExtension::TrustedVaultEncryptionKeysExtension(
     content::RenderFrame* frame)
     : content::RenderFrameObserver(frame) {}
 
-SyncEncryptionKeysExtension::~SyncEncryptionKeysExtension() {}
+TrustedVaultEncryptionKeysExtension::~TrustedVaultEncryptionKeysExtension() {}
 
-void SyncEncryptionKeysExtension::OnDestruct() {
+void TrustedVaultEncryptionKeysExtension::OnDestruct() {
   delete this;
 }
 
-void SyncEncryptionKeysExtension::DidCreateScriptContext(
+void TrustedVaultEncryptionKeysExtension::DidCreateScriptContext(
     v8::Local<v8::Context> v8_context,
     int32_t world_id) {
   if (!render_frame() || world_id != content::ISOLATED_WORLD_ID_GLOBAL) {
@@ -90,7 +91,7 @@ void SyncEncryptionKeysExtension::DidCreateScriptContext(
   }
 }
 
-void SyncEncryptionKeysExtension::Install() {
+void TrustedVaultEncryptionKeysExtension::Install() {
   DCHECK(render_frame());
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
@@ -113,14 +114,14 @@ void SyncEncryptionKeysExtension::Install() {
   // are handled outside the browser.
 #if !BUILDFLAG(IS_ANDROID)
   chrome
-      ->Set(
-          context, gin::StringToSymbol(isolate, "setSyncEncryptionKeys"),
-          gin::CreateFunctionTemplate(
-              isolate, base::BindRepeating(
-                           &SyncEncryptionKeysExtension::SetSyncEncryptionKeys,
-                           weak_ptr_factory_.GetWeakPtr()))
-              ->GetFunction(context)
-              .ToLocalChecked())
+      ->Set(context, gin::StringToSymbol(isolate, "setSyncEncryptionKeys"),
+            gin::CreateFunctionTemplate(
+                isolate,
+                base::BindRepeating(
+                    &TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys,
+                    weak_ptr_factory_.GetWeakPtr()))
+                ->GetFunction(context)
+                .ToLocalChecked())
       .Check();
 #endif
 
@@ -130,7 +131,7 @@ void SyncEncryptionKeysExtension::Install() {
                                 "addTrustedSyncEncryptionRecoveryMethod"),
             gin::CreateFunctionTemplate(
                 isolate,
-                base::BindRepeating(&SyncEncryptionKeysExtension::
+                base::BindRepeating(&TrustedVaultEncryptionKeysExtension::
                                         AddTrustedSyncEncryptionRecoveryMethod,
                                     weak_ptr_factory_.GetWeakPtr()))
                 ->GetFunction(context)
@@ -138,7 +139,8 @@ void SyncEncryptionKeysExtension::Install() {
       .Check();
 }
 
-void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
+void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
+    gin::Arguments* args) {
   DCHECK(render_frame());
 
   // This function as exposed to the web has the following signature:
@@ -209,13 +211,13 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
   RecordCallToSetSyncEncryptionKeysToUma(/*valid_args=*/true);
   remote_->SetEncryptionKeys(
       gaia_id, EncryptionKeysAsBytes(encryption_keys), last_key_version,
-      base::BindOnce(&SyncEncryptionKeysExtension::RunCompletionCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(global_callback)));
+      base::BindOnce(
+          &TrustedVaultEncryptionKeysExtension::RunCompletionCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(global_callback)));
 }
 
-void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
-    gin::Arguments* args) {
+void TrustedVaultEncryptionKeysExtension::
+    AddTrustedSyncEncryptionRecoveryMethod(gin::Arguments* args) {
   DCHECK(render_frame());
 
   // This function as exposed to the web has the following signature:
@@ -278,12 +280,12 @@ void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
   RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(/*valid_args=*/true);
   remote_->AddTrustedRecoveryMethod(
       gaia_id, ArrayBufferAsBytes(public_key), method_type_hint,
-      base::BindOnce(&SyncEncryptionKeysExtension::RunCompletionCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(global_callback)));
+      base::BindOnce(
+          &TrustedVaultEncryptionKeysExtension::RunCompletionCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(global_callback)));
 }
 
-void SyncEncryptionKeysExtension::RunCompletionCallback(
+void TrustedVaultEncryptionKeysExtension::RunCompletionCallback(
     std::unique_ptr<v8::Global<v8::Function>> callback) {
   if (!render_frame()) {
     return;

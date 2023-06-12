@@ -37,8 +37,10 @@ PrerenderCancelledInterface GetCancelledInterfaceType(
     return PrerenderCancelledInterface::kGamepadHapticsManager;
   else if (interface_name == "device.mojom.GamepadMonitor")
     return PrerenderCancelledInterface::kGamepadMonitor;
-  else if (interface_name == "chrome.mojom.SyncEncryptionKeysExtension")
-    return PrerenderCancelledInterface::kSyncEncryptionKeysExtension;
+  else if (interface_name ==
+           "chrome.mojom.TrustedVaultEncryptionKeysExtension") {
+    return PrerenderCancelledInterface::kTrustedVaultEncryptionKeys;
+  }
   return PrerenderCancelledInterface::kUnknown;
 }
 

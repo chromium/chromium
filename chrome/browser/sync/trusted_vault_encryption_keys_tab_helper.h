@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_SYNC_ENCRYPTION_KEYS_TAB_HELPER_H_
-#define CHROME_BROWSER_SYNC_SYNC_ENCRYPTION_KEYS_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_SYNC_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
+#define CHROME_BROWSER_SYNC_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/common/sync_encryption_keys_extension.mojom.h"
+#include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -20,24 +20,26 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-// SyncEncryptionKeysTabHelper is responsible for installing Mojo API in order
-// to receive sync encryption keys from the renderer process.
-class SyncEncryptionKeysTabHelper
-    : public content::WebContentsUserData<SyncEncryptionKeysTabHelper>,
+// TrustedVaultEncryptionKeysTabHelper is responsible for installing Mojo API in
+// order to receive client encryption keys for //components/trusted_vault from
+// the renderer process.
+class TrustedVaultEncryptionKeysTabHelper
+    : public content::WebContentsUserData<TrustedVaultEncryptionKeysTabHelper>,
       public content::WebContentsObserver {
  public:
   static void CreateForWebContents(content::WebContents* web_contents);
 
-  static void BindSyncEncryptionKeysExtension(
+  static void BindTrustedVaultEncryptionKeysExtension(
       mojo::PendingAssociatedReceiver<
-          chrome::mojom::SyncEncryptionKeysExtension> receiver,
+          chrome::mojom::TrustedVaultEncryptionKeysExtension> receiver,
       content::RenderFrameHost* rfh);
 
-  SyncEncryptionKeysTabHelper(const SyncEncryptionKeysTabHelper&) = delete;
-  SyncEncryptionKeysTabHelper& operator=(const SyncEncryptionKeysTabHelper&) =
-      delete;
+  TrustedVaultEncryptionKeysTabHelper(
+      const TrustedVaultEncryptionKeysTabHelper&) = delete;
+  TrustedVaultEncryptionKeysTabHelper& operator=(
+      const TrustedVaultEncryptionKeysTabHelper&) = delete;
 
-  ~SyncEncryptionKeysTabHelper() override;
+  ~TrustedVaultEncryptionKeysTabHelper() override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -49,11 +51,12 @@ class SyncEncryptionKeysTabHelper
       content::RenderFrameHost* render_frame_host);
 
  private:
-  friend class content::WebContentsUserData<SyncEncryptionKeysTabHelper>;
+  friend class content::WebContentsUserData<
+      TrustedVaultEncryptionKeysTabHelper>;
 
   // Null `sync_service` is interpreted as incognito (when it comes to metrics).
-  SyncEncryptionKeysTabHelper(content::WebContents* web_contents,
-                              syncer::SyncService* sync_service);
+  TrustedVaultEncryptionKeysTabHelper(content::WebContents* web_contents,
+                                      syncer::SyncService* sync_service);
 
   // Null `sync_service_` is interpreted as incognito (when it comes to
   // metrics).
@@ -62,4 +65,4 @@ class SyncEncryptionKeysTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_SYNC_SYNC_ENCRYPTION_KEYS_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_SYNC_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_

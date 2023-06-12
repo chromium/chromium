@@ -28,8 +28,8 @@ enum class PrerenderCancelledInterface {
   kGamepadHapticsManager = 1,
   kGamepadMonitor = 2,
   // kNotificationService = 3,   Deprecated.
-  kSyncEncryptionKeysExtension = 4,
-  kMaxValue = kSyncEncryptionKeysExtension
+  kTrustedVaultEncryptionKeys = 4,
+  kMaxValue = kTrustedVaultEncryptionKeys
 };
 
 // Used by PrerenderNavigationThrottle, to track the cross-origin cancellation

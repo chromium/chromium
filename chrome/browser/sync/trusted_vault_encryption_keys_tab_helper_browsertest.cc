@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 
 #include <string>
 #include <tuple>
@@ -127,12 +127,13 @@ std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class SyncEncryptionKeysTabHelperBrowserTest : public PlatformBrowserTest {
+class TrustedVaultEncryptionKeysTabHelperBrowserTest
+    : public PlatformBrowserTest {
  public:
-  SyncEncryptionKeysTabHelperBrowserTest()
+  TrustedVaultEncryptionKeysTabHelperBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         prerender_helper_(base::BindRepeating(
-            &SyncEncryptionKeysTabHelperBrowserTest::web_contents,
+            &TrustedVaultEncryptionKeysTabHelperBrowserTest::web_contents,
             base::Unretained(this))) {
 #if BUILDFLAG(IS_ANDROID)
     // Avoid the disabling of site isolation due to memory constraints, required
@@ -150,7 +151,7 @@ class SyncEncryptionKeysTabHelperBrowserTest : public PlatformBrowserTest {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  ~SyncEncryptionKeysTabHelperBrowserTest() override {
+  ~TrustedVaultEncryptionKeysTabHelperBrowserTest() override {
     // An explicit reset is required here to avoid CHECK failures due to
     // unexpected reset ordering.
     feature_list_.Reset();
@@ -173,7 +174,7 @@ class SyncEncryptionKeysTabHelperBrowserTest : public PlatformBrowserTest {
 
   bool HasEncryptionKeysApi(content::RenderFrameHost* rfh) {
     auto* tab_helper =
-        SyncEncryptionKeysTabHelper::FromWebContents(web_contents());
+        TrustedVaultEncryptionKeysTabHelper::FromWebContents(web_contents());
     return tab_helper->HasEncryptionKeysApiForTesting(rfh);
   }
 
@@ -214,7 +215,7 @@ class SyncEncryptionKeysTabHelperBrowserTest : public PlatformBrowserTest {
 // Android. On Android, this particular Javascript API isn't defined.
 #if BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldNotBindEncryptionKeysApiOnAndroid) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
@@ -235,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 
 #else
 
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldBindEncryptionKeysApiInMainFrame) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
@@ -275,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 }
 
 // Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldBindEncryptionKeysApiInFencedFrame) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   EXPECT_THAT(actual_keys, testing::ElementsAre(kEncryptionKey));
 }
 
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldIgnoreEncryptionsKeysInIncognito) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
@@ -355,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   EXPECT_THAT(actual_keys, testing::IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldIgnoreRecoveryMethodInIncognito) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
@@ -391,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 
 // Tests that chrome.addTrustedSyncEncryptionRecoveryMethod() works in the main
 // frame.
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldBindAddRecoveryMethodApiInMainFrame) {
   // Out desktop platforms using StandaloneTrustedVaultClient, a primary account
   // needs to be set for the Javascript operation to complete. Otherwise, the
@@ -443,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 // Tests that chrome.setSyncEncryptionKeys() doesn't work in prerendering.
 // If it is called in prerendering, it triggers canceling the prerendering
 // and EncryptionKeyApi is not bound.
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldNotBindEncryptionKeysApiInPrerendering) {
   // Out desktop platforms using StandaloneTrustedVaultClient, a primary account
   // needs to be set for the Javascript operation to complete. Otherwise, the
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
     EXPECT_EQ(0u, console_observer.messages().size());
     histogram_tester.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
-        4 /*PrerenderCancelledInterface::kSyncEncryptionKeysExtension*/, 1);
+        4 /*PrerenderCancelledInterface::kTrustedVaultEncryptionKeys*/, 1);
     EXPECT_TRUE(prerendered_frame_host.IsRenderFrameDeleted());
   }
 
@@ -518,15 +519,17 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 // Same as SyncEncryptionKeysTabHelperBrowserTest but switches::kGaiaUrl does
 // NOT point to the embedded test server, which means it gets treated as
 // disallowed origin.
-class SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest
-    : public SyncEncryptionKeysTabHelperBrowserTest {
+class TrustedVaultEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest
+    : public TrustedVaultEncryptionKeysTabHelperBrowserTest {
  public:
-  SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest() = default;
-  ~SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest() override =
+  TrustedVaultEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest() =
       default;
+  ~TrustedVaultEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest()
+      override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    SyncEncryptionKeysTabHelperBrowserTest::SetUpCommandLine(command_line);
+    TrustedVaultEncryptionKeysTabHelperBrowserTest::SetUpCommandLine(
+        command_line);
     // Override kGaiaUrl to the default so the embedded test server isn't
     // treated as an allowed origin.
     command_line->RemoveSwitch(::switches::kGaiaUrl);
@@ -535,7 +538,7 @@ class SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest
 
 // Tests that chrome.setSyncEncryptionKeys() doesn't work in disallowed origins.
 IN_PROC_BROWSER_TEST_F(
-    SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest,
+    TrustedVaultEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest,
     ShouldNotBindEncryptionKeys) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");

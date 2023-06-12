@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/sync_encryption_keys_extension.mojom.h"
+#include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/site_isolation/features.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -57,7 +57,7 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     content::SiteIsolationPolicy::ApplyGlobalIsolatedOrigins();
     ChromeRenderViewHostTestHarness::SetUp();
-    SyncEncryptionKeysTabHelper::CreateForWebContents(web_contents());
+    TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents());
   }
 
   void TearDown() override {
@@ -69,7 +69,7 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   bool HasEncryptionKeysApi(content::RenderFrameHost* rfh) {
     auto* tab_helper =
-        SyncEncryptionKeysTabHelper::FromWebContents(web_contents());
+        TrustedVaultEncryptionKeysTabHelper::FromWebContents(web_contents());
     return tab_helper->HasEncryptionKeysApiForTesting(rfh);
   }
 

@@ -60,7 +60,7 @@
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
-#include "chrome/renderer/sync_encryption_keys_extension.h"
+#include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 #include "chrome/renderer/v8_unwinder.h"
 #include "chrome/renderer/websocket_handshake_throttle_provider_impl.h"
@@ -621,7 +621,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   SandboxStatusExtension::Create(render_frame);
 #endif
 
-  SyncEncryptionKeysExtension::Create(render_frame);
+  TrustedVaultEncryptionKeysExtension::Create(render_frame);
   if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
     GoogleAccountsPrivateApiExtension::Create(render_frame);
   }

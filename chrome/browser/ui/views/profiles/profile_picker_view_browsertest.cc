@@ -46,9 +46,9 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -830,8 +830,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // It would be nicer to verify that HasEncryptionKeysApiForTesting()
   // returns true but this isn't possible because the sigin page returns an
   // error, without setting up a fake HTTP server.
-  EXPECT_NE(SyncEncryptionKeysTabHelper::FromWebContents(web_contents()),
-            nullptr);
+  EXPECT_NE(
+      TrustedVaultEncryptionKeysTabHelper::FromWebContents(web_contents()),
+      nullptr);
 }
 
 // Regression test for crbug.com/1196290. Makes no sense for lacros because you

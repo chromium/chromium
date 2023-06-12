@@ -740,7 +740,7 @@ mojom("mojo_bindings") {
     "open_search_description_document_handler.mojom",
     "plugin.mojom",
     "renderer_configuration.mojom",
-    "sync_encryption_keys_extension.mojom",
+    "trusted_vault_encryption_keys_extension.mojom",
   ]
 
   deps = [ "//components/lens:lens_mojo" ]

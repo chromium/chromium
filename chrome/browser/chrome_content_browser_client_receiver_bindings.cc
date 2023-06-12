@@ -23,7 +23,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/signin/google_accounts_private_api_host.h"
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -529,15 +529,16 @@ void ChromeContentBrowserClient::
           },
           &render_frame_host));
 #endif  // BUILDFLAG(ENABLE_PLUGINS) || BUILDFLAG(IS_ANDROID)
-  associated_registry.AddInterface<chrome::mojom::SyncEncryptionKeysExtension>(
-      base::BindRepeating(
-          [](content::RenderFrameHost* render_frame_host,
-             mojo::PendingAssociatedReceiver<
-                 chrome::mojom::SyncEncryptionKeysExtension> receiver) {
-            SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
-                std::move(receiver), render_frame_host);
-          },
-          &render_frame_host));
+  associated_registry.AddInterface<
+      chrome::mojom::TrustedVaultEncryptionKeysExtension>(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             chrome::mojom::TrustedVaultEncryptionKeysExtension> receiver) {
+        TrustedVaultEncryptionKeysTabHelper::
+            BindTrustedVaultEncryptionKeysExtension(std::move(receiver),
+                                                    render_frame_host);
+      },
+      &render_frame_host));
   if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
     associated_registry.AddInterface<
         chrome::mojom::GoogleAccountsPrivateApiExtension>(base::BindRepeating(

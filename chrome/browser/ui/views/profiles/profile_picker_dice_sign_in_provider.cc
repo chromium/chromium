@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -235,8 +235,8 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
       ->SetDelegate(this);
 
   // To allow passing encryption keys during interactions with the page,
-  // instantiate SyncEncryptionKeysTabHelper.
-  SyncEncryptionKeysTabHelper::CreateForWebContents(contents());
+  // instantiate TrustedVaultEncryptionKeysTabHelper.
+  TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(contents());
 
   // Listen for sign-in getting completed.
   identity_manager_observation_.Observe(

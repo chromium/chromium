@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
 
 #include <string>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/google_accounts_private_api_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/sync_encryption_keys_extension.mojom.h"
+#include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/document_user_data.h"
@@ -29,21 +29,23 @@
 namespace {
 
 // EncryptionKeyApi represents the actual exposure of the Mojo API (i.e.
-// chrome::mojom::SyncEncryptionKeysExtension) to the renderer. Instantiated
-// only for allowed origins.
-class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
-                         public content::DocumentUserData<EncryptionKeyApi> {
+// chrome::mojom::TrustedVaultEncryptionKeysExtension) to the renderer.
+// Instantiated only for allowed origins.
+class EncryptionKeyApi
+    : public chrome::mojom::TrustedVaultEncryptionKeysExtension,
+      public content::DocumentUserData<EncryptionKeyApi> {
  public:
   EncryptionKeyApi(const EncryptionKeyApi&) = delete;
   EncryptionKeyApi& operator=(const EncryptionKeyApi&) = delete;
 
-  void BindReceiver(mojo::PendingAssociatedReceiver<
-                        chrome::mojom::SyncEncryptionKeysExtension> receiver,
-                    content::RenderFrameHost* rfh) {
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<
+          chrome::mojom::TrustedVaultEncryptionKeysExtension> receiver,
+      content::RenderFrameHost* rfh) {
     receivers_.Bind(rfh, std::move(receiver));
   }
 
-  // chrome::mojom::SyncEncryptionKeysExtension:
+  // chrome::mojom::TrustedVaultEncryptionKeysExtension:
   void SetEncryptionKeys(
       const std::string& gaia_id,
       const std::vector<std::vector<uint8_t>>& encryption_keys,
@@ -109,7 +111,7 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
   const raw_ptr<syncer::SyncService> sync_service_;
 
   content::RenderFrameHostReceiverSet<
-      chrome::mojom::SyncEncryptionKeysExtension>
+      chrome::mojom::TrustedVaultEncryptionKeysExtension>
       receivers_;
 };
 
@@ -118,7 +120,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(EncryptionKeyApi);
 }  // namespace
 
 // static
-void SyncEncryptionKeysTabHelper::CreateForWebContents(
+void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
 
@@ -140,16 +142,17 @@ void SyncEncryptionKeysTabHelper::CreateForWebContents(
     }
   }
 
-  web_contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new SyncEncryptionKeysTabHelper(
-                                web_contents, sync_service)));
+  web_contents->SetUserData(
+      UserDataKey(), base::WrapUnique(new TrustedVaultEncryptionKeysTabHelper(
+                         web_contents, sync_service)));
 }
 
 // static
-void SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
-    mojo::PendingAssociatedReceiver<chrome::mojom::SyncEncryptionKeysExtension>
-        receiver,
-    content::RenderFrameHost* rfh) {
+void TrustedVaultEncryptionKeysTabHelper::
+    BindTrustedVaultEncryptionKeysExtension(
+        mojo::PendingAssociatedReceiver<
+            chrome::mojom::TrustedVaultEncryptionKeysExtension> receiver,
+        content::RenderFrameHost* rfh) {
   EncryptionKeyApi* encryption_key_api =
       EncryptionKeyApi::GetForCurrentDocument(rfh);
   if (!encryption_key_api) {
@@ -158,16 +161,18 @@ void SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
   encryption_key_api->BindReceiver(std::move(receiver), rfh);
 }
 
-SyncEncryptionKeysTabHelper::SyncEncryptionKeysTabHelper(
+TrustedVaultEncryptionKeysTabHelper::TrustedVaultEncryptionKeysTabHelper(
     content::WebContents* web_contents,
     syncer::SyncService* sync_service)
-    : content::WebContentsUserData<SyncEncryptionKeysTabHelper>(*web_contents),
+    : content::WebContentsUserData<TrustedVaultEncryptionKeysTabHelper>(
+          *web_contents),
       content::WebContentsObserver(web_contents),
       sync_service_(sync_service) {}
 
-SyncEncryptionKeysTabHelper::~SyncEncryptionKeysTabHelper() = default;
+TrustedVaultEncryptionKeysTabHelper::~TrustedVaultEncryptionKeysTabHelper() =
+    default;
 
-void SyncEncryptionKeysTabHelper::DidFinishNavigation(
+void TrustedVaultEncryptionKeysTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSameDocument()) {
     return;
@@ -191,7 +196,7 @@ void SyncEncryptionKeysTabHelper::DidFinishNavigation(
   }
 }
 
-bool SyncEncryptionKeysTabHelper::HasEncryptionKeysApiForTesting(
+bool TrustedVaultEncryptionKeysTabHelper::HasEncryptionKeysApiForTesting(
     content::RenderFrameHost* render_frame_host) {
   if (!render_frame_host) {
     return false;
@@ -199,4 +204,4 @@ bool SyncEncryptionKeysTabHelper::HasEncryptionKeysApiForTesting(
   return EncryptionKeyApi::GetForCurrentDocument(render_frame_host);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncEncryptionKeysTabHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TrustedVaultEncryptionKeysTabHelper);
