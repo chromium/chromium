@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL the <source> media attribute: no reaction to environment change assert_equals: afterLoadCalled expected "#b" but got "#a"
+Harness: the test ran to completion.
+
