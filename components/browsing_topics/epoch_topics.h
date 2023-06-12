@@ -69,6 +69,10 @@ class EpochTopics {
   // `hashed_context_domain`.
   void ClearContextDomain(const HashedDomain& hashed_context_domain);
 
+  bool HasValidVersions() const {
+    return taxonomy_version_ > 0 && model_version_ > 0;
+  }
+
   const std::vector<TopicAndDomains>& top_topics_and_observing_domains() const {
     return top_topics_and_observing_domains_;
   }

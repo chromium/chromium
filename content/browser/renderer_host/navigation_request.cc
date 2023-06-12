@@ -1077,7 +1077,11 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
     return absl::nullopt;
   }
 
-  return DeriveTopicsHeaderValue(topics);
+  int num_versions_in_epochs =
+      GetContentClient()->browser()->NumVersionsInTopicsEpochs(
+          rfh->GetMainFrame());
+
+  return DeriveTopicsHeaderValue(topics, num_versions_in_epochs);
 }
 
 // Support logging OriginAgentClusterEndResult with VLOG.

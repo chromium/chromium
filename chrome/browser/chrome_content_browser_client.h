@@ -744,6 +744,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool observe,
       std::vector<blink::mojom::EpochTopicPtr>& topics) override;
 
+  int NumVersionsInTopicsEpochs(
+      content::RenderFrameHost* main_frame) const override;
+
   bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
                                   const url::Origin& requesting_origin,
                                   const url::Origin& embedding_origin) override;

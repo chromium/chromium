@@ -1,3 +1,5 @@
+const EMPTY_TOPICS_HEADER = 't=(), p=P000000000000000000000000000';
+
 function test_topics_iframe_navigation_header(
     test, has_browsing_topics_attribute, is_same_origin, expect_topics_header_available_func) {
   const same_origin_src = '/browsing-topics/resources/check-topics-request-header-notify-parent.py';
@@ -32,5 +34,5 @@ function expect_topics_header_available(data) {
   // An empty result indicates that the request was eligible for topics.
   // Currently, the web-platform-tests framework does not support actually
   // handling the topics request.
-  assert_equals(data.topicsHeader, '');
+  assert_equals(data.topicsHeader, EMPTY_TOPICS_HEADER);
 }

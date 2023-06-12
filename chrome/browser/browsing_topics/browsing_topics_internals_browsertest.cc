@@ -53,6 +53,10 @@ class FixedBrowsingTopicsService
     return false;
   }
 
+  int NumVersionsInEpochs(const url::Origin& main_frame_origin) const override {
+    return 0;
+  }
+
   void GetBrowsingTopicsStateForWebUi(
       bool calculate_now,
       browsing_topics::mojom::PageHandler::GetBrowsingTopicsStateCallback

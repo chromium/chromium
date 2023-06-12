@@ -14,9 +14,11 @@ namespace content {
 
 extern const char kBrowsingTopicsRequestHeaderKey[];
 
-// Derive the header value for `Sec-Browsing-Topics` given `topics`.
+// Derive the header value for `Sec-Browsing-Topics` given `topics` and
+// `num_versions_in_epochs`.
 std::string CONTENT_EXPORT
-DeriveTopicsHeaderValue(const std::vector<blink::mojom::EpochTopicPtr>& topics);
+DeriveTopicsHeaderValue(const std::vector<blink::mojom::EpochTopicPtr>& topics,
+                        int num_versions_in_epochs);
 
 // Handle the response for topics eligible requests.
 void CONTENT_EXPORT HandleTopicsEligibleResponse(

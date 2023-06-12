@@ -64,6 +64,11 @@ class FixedTopicsContentBrowserClient
 
     return true;
   }
+
+  int NumVersionsInTopicsEpochs(
+      content::RenderFrameHost* main_frame) const override {
+    return 1;
+  }
 };
 }  // namespace
 
@@ -211,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
 
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
-  EXPECT_EQ(last_topics_header().value(), "1;v=\"chrome.1:1:2\"");
+  EXPECT_EQ(last_topics_header().value(),
+            "t=(1;v=chrome.1:1:2), p=P00000000000");
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
@@ -255,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
 
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
-  EXPECT_EQ(last_topics_header().value(), "1;v=\"chrome.1:1:2\"");
+  EXPECT_EQ(last_topics_header().value(),
+            "t=(1;v=chrome.1:1:2), p=P00000000000");
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
@@ -446,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsXHRDisabledBrowserTest,
 
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
-  EXPECT_EQ(last_topics_header().value(), "1;v=\"chrome.1:1:2\"");
+  EXPECT_EQ(last_topics_header().value(),
+            "t=(1;v=chrome.1:1:2), p=P00000000000");
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsXHRDisabledBrowserTest,

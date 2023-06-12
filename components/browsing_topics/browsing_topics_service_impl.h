@@ -50,6 +50,8 @@ class BrowsingTopicsServiceImpl
       bool observe,
       std::vector<blink::mojom::EpochTopicPtr>& topics) override;
 
+  int NumVersionsInEpochs(const url::Origin& main_frame_origin) const override;
+
   void GetBrowsingTopicsStateForWebUi(
       bool calculate_now,
       mojom::PageHandler::GetBrowsingTopicsStateCallback callback) override;

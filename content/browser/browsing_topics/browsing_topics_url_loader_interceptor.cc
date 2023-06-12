@@ -131,8 +131,11 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
       /*observe=*/false, topics);
 
   if (topics_eligible_) {
+    int num_versions_in_epochs =
+        GetContentClient()->browser()->NumVersionsInTopicsEpochs(
+            request_initiator_frame->GetMainFrame());
     headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
-                      DeriveTopicsHeaderValue(topics));
+                      DeriveTopicsHeaderValue(topics, num_versions_in_epochs));
   }
 }
 
