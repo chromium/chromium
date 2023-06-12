@@ -2979,7 +2979,6 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-Medi
 # `win-rel` fails but `win*-blink-rel` passes on this test.
 crbug.com/626703 [ Win ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure ]
 crbug.com/626703 external/wpt/svg/text/reftests/opacity.svg [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Crash Timeout ]
 crbug.com/1232504 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-fromelement/capture.html [ Crash ]
@@ -5180,7 +5179,6 @@ crbug.com/1249176 virtual/gpu-rasterization/images/12-55.html [ Crash Failure Pa
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/file/recover-file-input-in-unposted-form.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] fast/forms/file/recover-file-input-in-unposted-form.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-015.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-015.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-003.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Failure Pass ]
 crbug.com/1249176 virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Crash Failure Pass Timeout ]
@@ -5765,7 +5763,6 @@ crbug.com/1356118 [ Debug Linux ] virtual/async-script-scheduling-finished-parsi
 # Sheriff 2022-08-30
 
 # Disable step failure trigger flaky tests
-crbug.com/1351571 [ Mac12-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Pass Timeout ]
 crbug.com/1351571 [ Mac11-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Pass Timeout ]
 crbug.com/1358333 [ Mac ] external/wpt/webmessaging/event.origin.sub.htm [ Failure Pass ]
 
