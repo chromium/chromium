@@ -1455,96 +1455,105 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, AllTime) {
 TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
   EXPECT_TRUE(db_->FetchOrigins().empty());
 
-  const url::Origin kOrigin1 =
+  // Origin0 is created at time 0, and key0 is written at time 0, key1 at 1
+  // Origin1 is created at time 1, and key1 is written at time 1, key2 at 2
+  // Origin2 is created at time 2, and key2 is written at time 2, key3 at 3
+  // Origin00 is created at time 0, and key0 is written at time 0, key3 is
+  // written at time 3
+  const url::Origin kOrigin0 =
       url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value2"));
-  EXPECT_EQ(2L, db_->Length(kOrigin1));
-
-  clock_.Advance(base::Milliseconds(50));
-
-  // Time threshold that will be used as a starting point for deletion.
-  base::Time threshold1 = clock_.Now();
-
-  const url::Origin kOrigin2 =
+  const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value1"));
-  EXPECT_EQ(1L, db_->Length(kOrigin2));
-
-  const url::Origin kOrigin3 =
+  const url::Origin kOrigin2 =
       url::Origin::Create(GURL("http://www.example3.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin3, u"key1", u"value1"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin3, u"key2", u"value2"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin3, u"key3", u"value3"));
-  EXPECT_EQ(3L, db_->Length(kOrigin3));
-
-  const url::Origin kOrigin4 =
+  const url::Origin kOrigin00 =
       url::Origin::Create(GURL("http://www.example4.test"));
 
-  clock_.Advance(base::Milliseconds(50));
+  // Time = 0.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin0, u"key0", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin00, u"key0", u"value1"));
 
-  // Time threshold that will be used as a starting point for deletion.
-  base::Time threshold2 = clock_.Now();
+  clock_.Advance(base::Milliseconds(1));
 
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin4, u"key1", u"value1"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin4, u"key2", u"value2"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin4, u"key3", u"value3"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin4, u"key4", u"value4"));
-  EXPECT_EQ(4L, db_->Length(kOrigin4));
+  // Time = 1.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin0, u"key1", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  clock_.Advance(base::Milliseconds(1));
+
+  // Time = 2.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key2", u"value1"));
+  clock_.Advance(base::Milliseconds(1));
+
+  // Time = 3.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key3", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin00, u"key3", u"value1"));
+
+  // Read a key from origin0 at this time. That should not cause it to get
+  // purged when we purge at time 3 since only sets should cause the
+  // `last_used_time` to update.
+  EXPECT_EQ(db_->Get(kOrigin0, u"key0").data, u"value1");
 
   std::vector<url::Origin> origins;
-  for (const auto& info : db_->FetchOrigins())
+  for (const auto& info : db_->FetchOrigins()) {
     origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
+  }
+  EXPECT_THAT(origins, ElementsAre(kOrigin0, kOrigin1, kOrigin2, kOrigin00));
 
-  // Read from `kOrigin1`.
-  EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1");
+  // Nothing should be deleted if the start time is in the future.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->PurgeMatchingOrigins(
+                StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
+                    {kOrigin0, kOrigin00, kOrigin1, kOrigin2}),
+                clock_.Now() + base::Milliseconds(1), base::Time::Max(),
+                GetParam().perform_storage_cleanup));
+  EXPECT_EQ(2L, db_->Length(kOrigin0));
+  EXPECT_EQ(2L, db_->Length(kOrigin00));
+  EXPECT_EQ(2L, db_->Length(kOrigin1));
+  EXPECT_EQ(2L, db_->Length(kOrigin2));
 
+  // Origin00 and Origin2 should be deleted if we start at the current time
+  // since they both created a key then. Origin0 read a key then, but reads
+  // don't update the `last_used_time`.
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
           StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
-              {kOrigin2, kOrigin4}),
-          threshold2, base::Time::Max(), GetParam().perform_storage_cleanup));
-
-  // `kOrigin4` is cleared. The other origins are not.
+              {kOrigin0, kOrigin00, kOrigin1, kOrigin2}),
+          clock_.Now(), base::Time::Max(), GetParam().perform_storage_cleanup));
+  EXPECT_EQ(2L, db_->Length(kOrigin0));
+  EXPECT_EQ(0L, db_->Length(kOrigin00));
   EXPECT_EQ(2L, db_->Length(kOrigin1));
-  EXPECT_EQ(1L, db_->Length(kOrigin2));
-  EXPECT_EQ(3L, db_->Length(kOrigin3));
-  EXPECT_EQ(0L, db_->Length(kOrigin4));
+  EXPECT_EQ(0L, db_->Length(kOrigin2));
 
   origins.clear();
-  for (const auto& info : db_->FetchOrigins())
+  for (const auto& info : db_->FetchOrigins()) {
     origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3));
+  }
+  EXPECT_THAT(origins, ElementsAre(kOrigin0, kOrigin1));
 
-  EXPECT_EQ(
-      OperationResult::kSuccess,
-      db_->PurgeMatchingOrigins(
-          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
-              {kOrigin1, kOrigin3, kOrigin4}),
-          threshold1, base::Time::Max(), GetParam().perform_storage_cleanup));
-
-  // `kOrigin3` is cleared. The others weren't modified within the given time
-  // period.
-  EXPECT_EQ(2L, db_->Length(kOrigin1));
-  EXPECT_EQ(1L, db_->Length(kOrigin2));
-  EXPECT_EQ(0L, db_->Length(kOrigin3));
-  EXPECT_EQ(0L, db_->Length(kOrigin4));
-
-  origins.clear();
-  for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2));
-
-  // There is no error from trying to clear an origin that isn't in the
-  // database.
+  // Nothing should be deleted if the origins don't match.
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
           StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
               {"http://www.example5.test"}),
-          threshold2, base::Time::Max(), GetParam().perform_storage_cleanup));
+          base::Time(), base::Time::Max(), GetParam().perform_storage_cleanup));
+  EXPECT_EQ(2L, db_->Length(kOrigin0));
+  EXPECT_EQ(2L, db_->Length(kOrigin1));
+
+  // Delete from before any keys were written, and everything should be gone.
+  EXPECT_EQ(
+      OperationResult::kSuccess,
+      db_->PurgeMatchingOrigins(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
+              {kOrigin0, kOrigin00, kOrigin1, kOrigin2}),
+          base::Time(), base::Time::Max(), GetParam().perform_storage_cleanup));
+  origins.clear();
+  for (const auto& info : db_->FetchOrigins()) {
+    origins.push_back(info->storage_key.origin());
+  }
+  EXPECT_THAT(origins, ElementsAre());
 }
 
 TEST_P(SharedStorageDatabaseParamTest, PurgeStale) {

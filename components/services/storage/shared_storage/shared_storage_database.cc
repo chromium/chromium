@@ -704,17 +704,17 @@ SharedStorageDatabase::PurgeMatchingOrigins(
   }
 
   static constexpr char kSelectSql[] =
-      "SELECT context_origin FROM per_origin_mapping "
-      "WHERE creation_time BETWEEN ? AND ? "
-      "ORDER BY creation_time";
+      "SELECT distinct context_origin FROM values_mapping "
+      "WHERE last_used_time BETWEEN ? AND ? ";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindTime(0, begin);
   statement.BindTime(1, end);
 
   std::vector<std::string> origins;
 
-  while (statement.Step())
+  while (statement.Step()) {
     origins.push_back(statement.ColumnString(0));
+  }
 
   if (!statement.Succeeded())
     return OperationResult::kSqlError;
@@ -1139,39 +1139,6 @@ int64_t SharedStorageDatabase::GetTotalNumBudgetEntriesForTesting() {
     return statement.ColumnInt64(0);
 
   return -1;
-}
-
-bool SharedStorageDatabase::PopulateDatabaseForTesting(url::Origin origin1,
-                                                       url::Origin origin2,
-                                                       url::Origin origin3) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // We use `CHECK_EQ()` and `CHECK()` macros instead of early returns because
-  // the latter made the test coverage delta too low.
-  CHECK_EQ(OperationResult::kSet,
-           Set(origin1, u"key1", u"value1", SetBehavior::kDefault));
-
-  CHECK_EQ(OperationResult::kSet,
-           Set(origin1, u"key2", u"value1", SetBehavior::kDefault));
-
-  CHECK_EQ(OperationResult::kSet,
-           Set(origin2, u"key1", u"value2", SetBehavior::kDefault));
-
-  CHECK(OverrideCreationTimeForTesting(  // IN-TEST
-      origin2, clock_->Now() - base::Days(1)));
-
-  CHECK_EQ(OperationResult::kSet,
-           Set(origin3, u"key1", u"value1", SetBehavior::kDefault));
-
-  CHECK_EQ(OperationResult::kSet,
-           Set(origin3, u"key2", u"value2", SetBehavior::kDefault));
-
-  CHECK(OverrideCreationTimeForTesting(  // IN-TEST
-      origin3, clock_->Now() - base::Days(60)));
-
-  // We return a bool in order to facilitate use of `base::test::TestFuture`
-  // with this method.
-  return true;
 }
 
 SharedStorageDatabase::InitStatus SharedStorageDatabase::LazyInit(
