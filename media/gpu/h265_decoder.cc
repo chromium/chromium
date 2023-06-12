@@ -538,6 +538,9 @@ bool H265Decoder::ProcessPPS(int pps_id,
 
   if (new_color_space.IsSpecified() &&
       new_color_space != picture_color_space_) {
+    if (!Flush()) {
+      return false;
+    }
     DVLOG(1) << "Picture color space: " << new_color_space.ToString();
     picture_color_space_ = new_color_space;
     *color_space_changed = true;

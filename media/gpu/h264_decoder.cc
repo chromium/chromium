@@ -1224,6 +1224,9 @@ bool H264Decoder::ProcessSPS(int sps_id,
   // then trigger color space change.
   if (new_color_space.IsSpecified() &&
       new_color_space != picture_color_space_) {
+    if (!Flush()) {
+      return false;
+    }
     DVLOG(1) << "New color space: " << new_color_space.ToString();
     picture_color_space_ = new_color_space;
     *color_space_changed = true;
