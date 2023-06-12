@@ -67,7 +67,7 @@ class OpenscreenRpcDispatcherTest : public ::testing::Test {
             kSourceId,
             kReceiverId,
             [this](openscreen::Error error) { OnMessengerError(error); },
-            &task_environment_runner_),
+            task_environment_runner_),
         dispatcher_(messenger_) {}
 
   ~OpenscreenRpcDispatcherTest() override { task_environment_.RunUntilIdle(); }

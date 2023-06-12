@@ -60,7 +60,7 @@ struct OpenscreenTestSenders {
   OpenscreenTestSenders()
       : task_runner(base::SequencedTaskRunner::GetCurrentDefault()),
         environment(openscreen::Clock::now,
-                    &task_runner,
+                    task_runner,
                     openscreen::IPEndpoint::kAnyV4()),
         sender_packet_router(&environment, 20, std::chrono::milliseconds(10)),
         audio_sender(std::make_unique<openscreen::cast::Sender>(

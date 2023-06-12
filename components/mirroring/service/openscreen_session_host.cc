@@ -313,7 +313,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
   // The Open Screen environment should not be set up until after the network
   // context is set up.
   openscreen_environment_ = std::make_unique<openscreen::cast::Environment>(
-      openscreen::Clock::now, openscreen_task_runner_.get(),
+      openscreen::Clock::now, *openscreen_task_runner_,
       openscreen::IPEndpoint::kAnyV4());
 
   if (session_params->type != mojom::SessionType::AUDIO_ONLY &&
