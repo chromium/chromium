@@ -9204,6 +9204,65 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 4, 1);
 }
 
+// Tests that the forms with <selectmenu> field are recorded in UkmFieldInfo
+// metrics.
+TEST_F(AutofillMetricsFromLogEventsTest,
+       AutofillFieldInfoMetricsRecordOnSelectMenuField) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+
+  // Start with two input text fields.
+  FormFieldData field;
+  field.label = u"First Name";
+  field.name = u"firstname";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Last Name";
+  field.name = u"lastname";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  // Selectmenu.
+  field.label = u"Country";
+  field.name = u"country";
+  field.form_control_type = "selectmenu";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  std::vector<ServerFieldType> field_types = {NAME_FIRST, NAME_LAST,
+                                              ADDRESS_HOME_COUNTRY};
+  autofill_manager().AddSeenForm(form, field_types);
+  SeeForm(form);
+  base::TimeTicks parse_time = autofill_manager()
+                                   .form_structures()
+                                   .begin()
+                                   ->second->form_parsed_timestamp();
+  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  autofill_manager().Reset();
+
+  auto entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+  ASSERT_EQ(3u, entries.size());
+  test_ukm_recorder_->ExpectEntryMetric(
+      entries[0], UkmFieldInfoType::kFormControlTypeName,
+      base::to_underlying(FormControlType::kText));
+  test_ukm_recorder_->ExpectEntryMetric(
+      entries[1], UkmFieldInfoType::kFormControlTypeName,
+      base::to_underlying(FormControlType::kText));
+  test_ukm_recorder_->ExpectEntryMetric(
+      entries[2], UkmFieldInfoType::kFormControlTypeName,
+      base::to_underlying(FormControlType::kSelectmenu));
+}
+
 // TODO(crbug.com/1352826) Delete this after collecting the metrics.
 struct LaxLocalHeuristicsTestCase {
   test::FormDescription form;

@@ -7306,6 +7306,7 @@ others/histograms.xml -->
   <int value="4" label="Checkbox"/>
   <int value="5" label="Radio"/>
   <int value="6" label="Select one"/>
+  <int value="7" label="Selectmenu"/>
 </enum>
 
 <enum name="AutofillFormDynamicity">

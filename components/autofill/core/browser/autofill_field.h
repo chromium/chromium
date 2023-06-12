@@ -38,7 +38,8 @@ enum class FormControlType {
   kCheckbox = 4,
   kRadio = 5,
   kSelectOne = 6,
-  kMaxValue = kSelectOne,
+  kSelectmenu = 7,
+  kMaxValue = kSelectmenu,
 };
 
 class AutofillField : public FormFieldData {
