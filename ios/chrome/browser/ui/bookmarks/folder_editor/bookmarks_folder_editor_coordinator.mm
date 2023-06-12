@@ -154,6 +154,10 @@
   _viewController = nil;
 }
 
+- (void)dealloc {
+  DCHECK(!_viewController);
+}
+
 - (BOOL)canDismiss {
   DCHECK(_viewController);
   return [_viewController canDismiss];
