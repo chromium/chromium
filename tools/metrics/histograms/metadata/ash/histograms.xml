@@ -4322,7 +4322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationView.NotificationAdded.Type"
-    enum="NotificationViewType" expires_after="2023-06-18">
+    enum="NotificationViewType" expires_after="2024-06-18">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
