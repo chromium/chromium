@@ -61773,6 +61773,7 @@ from previous Chrome versions.
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
   <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>
+  <int value="-625531491" label="CrOSSuspendToDisk:disabled"/>
   <int value="-625520587" label="RequestDesktopSiteGlobal:enabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>
   <int value="-623611759" label="TabSelectionEditorV2:enabled"/>
@@ -63773,6 +63774,7 @@ from previous Chrome versions.
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
   <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
+  <int value="422061438" label="CrOSSuspendToDisk:enabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>

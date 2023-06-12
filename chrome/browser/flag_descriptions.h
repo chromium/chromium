@@ -3280,6 +3280,9 @@ extern const char kEnableTouchscreensInDiagnosticsAppDescription[];
 extern const char kEnableZramWriteback[];
 extern const char kEnableZramWritebackDescription[];
 
+extern const char kEnableSuspendToDisk[];
+extern const char kEnableSuspendToDiskDescription[];
+
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 

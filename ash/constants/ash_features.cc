@@ -2124,6 +2124,14 @@ BASE_FEATURE(kShowPlayInDemoMode,
              "ShowPlayInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow the system to suspend to disk via hibernate.
+BASE_FEATURE(kSuspendToDisk,
+             "CrOSSuspendToDisk",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kHibernateAfterTimeHours{
+    &kSuspendToDisk, "HibernateAfterTimeHours", 8};
+
 // Enables custom Demo Mode behavior on feature-aware devices, as controlled by
 // the feature management module.
 BASE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode,

@@ -12,6 +12,7 @@ component("hiberman") {
   defines = [ "IS_HIBERMAN_CLIENT_IMPL" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/dbus/common",
     "//dbus",

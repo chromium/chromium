@@ -37,6 +37,10 @@ bool FakeHibermanClient::IsAlive() const {
   return true;
 }
 
+bool FakeHibermanClient::IsEnabled() const {
+  return true;
+}
+
 void FakeHibermanClient::ResumeFromHibernate(
     const std::string& account_id,
     ResumeFromHibernateCallback callback) {
@@ -57,5 +61,7 @@ void FakeHibermanClient::WaitForServiceToBeAvailable(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
+
+void FakeHibermanClient::AbortResumeHibernate(const std::string& reason) {}
 
 }  // namespace ash

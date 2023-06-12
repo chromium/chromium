@@ -1001,6 +1001,20 @@ const FeatureEntry::Choice kUXStudy1Choices[] = {
     {memory::kUXStudy1D, memory::kUXStudy1Switch, memory::kUXStudy1D},
 };
 
+const FeatureEntry::FeatureParam kHibernate6 = {"HibernateAfterTimeHours", "6"};
+const FeatureEntry::FeatureParam kHibernate8 = {"HibernateAfterTimeHours", "8"};
+const FeatureEntry::FeatureParam kHibernate12 = {"HibernateAfterTimeHours",
+                                                 "12"};
+const FeatureEntry::FeatureParam kHibernate24 = {"HibernateAfterTimeHours",
+                                                 "24"};
+
+const FeatureEntry::FeatureVariation kHibernateFeatureVariations[] = {
+    {"Hibernate after 6 hours", &kHibernate6, 1, nullptr},
+    {"Hibernate after 8 hours", &kHibernate8, 1, nullptr},
+    {"Hibernate after 12 hours", &kHibernate12, 1, nullptr},
+    {"Hibernate after 24 hours", &kHibernate24, 1, nullptr},
+};
+
 const char kPreferDcheckInternalName[] = "prefer-dcheck";
 
 const char kLacrosAvailabilityIgnoreInternalName[] =
@@ -4121,6 +4135,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-zram-writeback", flag_descriptions::kEnableZramWriteback,
      flag_descriptions::kEnableZramWritebackDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::kCrOSEnableZramWriteback)},
+    {"enable-suspend-to-disk", flag_descriptions::kEnableSuspendToDisk,
+     flag_descriptions::kEnableSuspendToDiskDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSuspendToDisk,
+                                    kHibernateFeatureVariations,
+                                    "SuspendToDisk")},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},

@@ -3876,6 +3876,7 @@ source_set("ash") {
     "//chromeos/ash/components/device_activity",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/login/hibernate:hibernate_manager",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/multidevice:stub_multidevice_util",
     "//chromeos/ash/components/multidevice/logging",

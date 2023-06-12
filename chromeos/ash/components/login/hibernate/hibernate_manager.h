@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
   void PrepareHibernateAndMaybeResume(std::unique_ptr<UserContext> user_context,
                                       HibernateResumeCallback callback);
 
+  // Determines if hibernate is supported on this platform.
+  static void InitializePlatformSupport();
+
  private:
   void ResumeFromHibernateAuthOpCallback(
       AuthOperationCallback callback,

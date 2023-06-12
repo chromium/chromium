@@ -53,7 +53,7 @@ class HibernateManagerTest : public testing::Test {
   int successful_callbacks_ = 0;
   int failed_callbacks_ = 0;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::WeakPtrFactory<HibernateManagerTest> weak_factory_{this};
 };
 

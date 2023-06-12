@@ -8,10 +8,14 @@
 
 #include <google/protobuf/message_lite.h>
 
+#include "ash/constants/ash_features.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 #include "dbus/bus.h"
@@ -21,6 +25,7 @@
 #include "third_party/cros_system_api/dbus/hiberman/dbus-constants.h"
 
 namespace ash {
+
 namespace {
 
 // The default time for the resume from hibernate method call. This method
@@ -29,6 +34,9 @@ namespace {
 // 100MB/s takes about 80 seconds. 5 minutes would give us a fudge factor of
 // roughly 4x.
 constexpr int kHibermanResumeTimeoutMs = 5 * 60 * 1000;
+
+constexpr const char kHibernateAfterTimeFile[] =
+    "/run/chrome/hibernate_after_time_hrs";
 
 HibermanClient* g_instance = nullptr;
 
@@ -47,7 +55,6 @@ class HibermanClientImpl : public HibermanClient {
     proxy_ = bus->GetObjectProxy(
         ::hiberman::kHibernateServiceName,
         dbus::ObjectPath(::hiberman::kHibernateServicePath));
-
     WaitForServiceToBeAvailable(
         base::BindOnce(&HibermanClientImpl::WaitAvailableCallback,
                        weak_factory_.GetWeakPtr()));
@@ -55,6 +62,33 @@ class HibermanClientImpl : public HibermanClient {
 
   // HibermanClient override:
   bool IsAlive() const override { return alive_; }
+
+  bool IsEnabled() const override {
+    bool enabled = base::FeatureList::IsEnabled(features::kSuspendToDisk);
+    if (enabled) {
+      LOG(WARNING) << "SuspendToDisk is enabled with value "
+                   << features::kHibernateAfterTimeHours.Get() << " hours";
+      // Store the hibernate time so power manager can fetch it without using
+      // feature_library.
+      RunOnBlockingThread(base::BindOnce([]() -> void {
+        if (!base::WriteFile(
+                base::FilePath(kHibernateAfterTimeFile),
+                base::ToString(features::kHibernateAfterTimeHours.Get()))) {
+          PLOG(ERROR) << "Unable to write hibernate after time value";
+        }
+      }));
+    } else {
+      LOG(WARNING) << "SuspendToDisk is NOT enabled";
+
+      // Clear the hibernate time file in case it still exists to prevent
+      // power_manager from doing anything weird.
+      RunOnBlockingThread(base::BindOnce([]() -> void {
+        base::DeleteFile(base::FilePath(kHibernateAfterTimeFile));
+      }));
+    }
+
+    return enabled;
+  }
 
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override {
@@ -94,6 +128,26 @@ class HibermanClientImpl : public HibermanClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void AbortResumeHibernate(const std::string& reason) override {
+    VLOG(1) << "AbortResumeHibernate: reason=" << reason;
+    aborted_ = true;
+
+    if (!alive_) {
+      // When it becomes alive we will send the message.
+      abort_reason_ = reason;
+      VLOG(1) << "AbortResumeHibernate: service not yet available";
+      return;
+    }
+
+    dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
+                                 ::hiberman::kAbortResumeMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(reason);
+    proxy_->CallMethod(&method_call, DBUS_TIMEOUT_INFINITE,
+                       base::BindOnce(&HibermanClientImpl::HandleAbortResponse,
+                                      weak_factory_.GetWeakPtr()));
+  }
+
  private:
   void HandleResponse(chromeos::VoidDBusMethodCallback callback,
                       dbus::Response* response) {
@@ -101,13 +155,31 @@ class HibermanClientImpl : public HibermanClient {
     std::move(callback).Run(response != nullptr);
   }
 
-  void WaitAvailableCallback(bool service_is_available) {
-    alive_ = service_is_available;
+  void HandleAbortResponse(dbus::Response* response) {
+    LOG_IF(ERROR, response == nullptr)
+        << "AbortResumeHibernate received a null response";
   }
 
-  // We need to test if hiberman is responding on the dbus interface, we do this
-  // to make sure we don't block login unnecessarily.
+  void WaitAvailableCallback(bool service_is_available) {
+    alive_ = service_is_available;
+
+    if (aborted_) {
+      AbortResumeHibernate(abort_reason_);
+    }
+  }
+
+  static void RunOnBlockingThread(base::OnceClosure fn) {
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()}, std::move(fn));
+  }
+
+  // We need to test if hiberman is responding on the dbus interface, we do
+  // this to make sure we don't block login unnecessarily.
   bool alive_ = false;
+
+  // If we aborted before the service was alive make sure we send the abort
+  // message when the service finally becomes available.
+  bool aborted_ = false;
+  std::string abort_reason_;
 
   // D-Bus proxy for hiberman, not owned.
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
