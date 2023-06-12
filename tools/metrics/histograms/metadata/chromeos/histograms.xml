@@ -2346,6 +2346,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Secagentd.CacheFullness" units="%"
+    expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records what percent full the cache is for the CrOS secagentd daemon. Emits
+    a value 0-100 representing the percentage. It is recorded every 30 seconds.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.Policy" enum="SecagentdPolicy"
     expires_after="2023-12-04">
   <owner>rborzello@google.com</owner>
