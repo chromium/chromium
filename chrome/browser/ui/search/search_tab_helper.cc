@@ -37,6 +37,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -189,6 +190,8 @@ void SearchTabHelper::OnTabActivated() {
 
   if (search::IsInstantNTP(web_contents()) && instant_service_)
     instant_service_->OnNewTabPageOpened();
+
+  CloseNTPCustomizeChromeFeaturePromo();
 }
 
 void SearchTabHelper::OnTabDeactivated() {
@@ -218,6 +221,8 @@ void SearchTabHelper::DidStartNavigation(
           entry, l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
     }
   }
+
+  CloseNTPCustomizeChromeFeaturePromo();
 }
 
 void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
@@ -319,6 +324,21 @@ Profile* SearchTabHelper::profile() const {
 
 bool SearchTabHelper::IsInputInProgress() const {
   return search::IsOmniboxInputInProgress(web_contents());
+}
+
+void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
+  const base::Feature& customize_chrome_feature =
+      feature_engagement::kIPHDesktopCustomizeChromeFeature;
+  if (!base::FeatureList::IsEnabled(customize_chrome_feature) ||
+      web_contents()->GetController().GetVisibleEntry()->GetURL() ==
+          GURL(chrome::kChromeUINewTabPageURL)) {
+    return;
+  }
+  auto* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
+  if (browser_window) {
+    browser_window->CloseFeaturePromo(customize_chrome_feature);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);
