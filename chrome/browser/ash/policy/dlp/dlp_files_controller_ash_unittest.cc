@@ -174,9 +174,9 @@ using MockGetFilesSources =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void(
         ::dlp::GetFilesSourcesRequest,
         ::chromeos::DlpClient::GetFilesSourcesCallback)>>>;
-using MockAddFile =
-    testing::StrictMock<base::MockCallback<base::RepeatingCallback<
-        void(::dlp::AddFileRequest, ::chromeos::DlpClient::AddFileCallback)>>>;
+using MockAddFiles = testing::StrictMock<base::MockCallback<
+    base::RepeatingCallback<void(::dlp::AddFilesRequest,
+                                 ::chromeos::DlpClient::AddFilesCallback)>>>;
 using FileDaemonInfo = policy::DlpFilesControllerAsh::FileDaemonInfo;
 
 }  // namespace
@@ -297,21 +297,22 @@ class DlpFilesControllerAshTest : public testing::Test {
                            std::vector<FileSystemURL>& out_files_urls) {
     ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
 
-    base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
-    EXPECT_CALL(add_file_cb, Run(testing::_)).Times(files.size());
+    base::MockCallback<chromeos::DlpClient::AddFilesCallback> add_files_cb;
+    EXPECT_CALL(add_files_cb, Run(testing::_)).Times(1);
 
+    ::dlp::AddFilesRequest request;
     for (const auto& file : files) {
       ASSERT_TRUE(CreateDummyFile(file.path));
-      ::dlp::AddFileRequest add_file_req;
-      add_file_req.set_file_path(file.path.value());
-      add_file_req.set_source_url(file.source_url.spec());
-      chromeos::DlpClient::Get()->AddFile(add_file_req, add_file_cb.Get());
+      ::dlp::AddFileRequest* add_file_req = request.add_add_file_requests();
+      add_file_req->set_file_path(file.path.value());
+      add_file_req->set_source_url(file.source_url.spec());
 
       auto file_url = CreateFileSystemURL(file.path.value());
       ASSERT_TRUE(file_url.is_valid());
       out_files_urls.push_back(std::move(file_url));
     }
-    testing::Mock::VerifyAndClearExpectations(&add_file_cb);
+    chromeos::DlpClient::Get()->AddFiles(request, add_files_cb.Get());
+    testing::Mock::VerifyAndClearExpectations(&add_files_cb);
   }
 
   content::BrowserTaskEnvironment task_environment_;

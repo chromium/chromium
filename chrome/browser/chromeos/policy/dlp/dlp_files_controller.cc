@@ -55,21 +55,22 @@ void GotFilesSourcesOfCopy(
     return;
   }
 
-  ::dlp::AddFileRequest add_request;
-  add_request.set_file_path(destination.path().value());
-  add_request.set_source_url(response.files_metadata().Get(0).source_url());
+  ::dlp::AddFilesRequest request;
+  ::dlp::AddFileRequest* add_request = request.add_add_file_requests();
+  add_request->set_file_path(destination.path().value());
+  add_request->set_source_url(response.files_metadata().Get(0).source_url());
 
   // The callback will be invoked with the destruction of the
   // ScopedFileAccessCopy object
   base::OnceCallback<void()> delayed_add_file = base::BindPostTask(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindOnce(
-          [](::dlp::AddFileRequest&& add_request) {
+          [](::dlp::AddFilesRequest&& request) {
             // TODO(https://crbug.com/1368497): we might want to use the
             // callback for error handling.
-            chromeos::DlpClient::Get()->AddFile(add_request, base::DoNothing());
+            chromeos::DlpClient::Get()->AddFiles(request, base::DoNothing());
           },
-          std::move(add_request)));
+          std::move(request)));
 
   chromeos::DlpClient::RequestFileAccessCallback add_file_callback =
       base::BindOnce(

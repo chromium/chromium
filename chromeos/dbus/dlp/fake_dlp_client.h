@@ -27,8 +27,8 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   // DlpClient implementation:
   void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                          SetDlpFilesPolicyCallback callback) override;
-  void AddFile(const dlp::AddFileRequest request,
-               AddFileCallback callback) override;
+  void AddFiles(const dlp::AddFilesRequest request,
+                AddFilesCallback callback) override;
   void GetFilesSources(const dlp::GetFilesSourcesRequest request,
                        GetFilesSourcesCallback callback) override;
   void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
       dlp::CheckFilesTransferResponse response) override;
   void SetFileAccessAllowed(bool allowed) override;
   void SetIsAlive(bool is_alive) override;
-  void SetAddFileMock(AddFileCall mock) override;
+  void SetAddFilesMock(AddFilesCall mock) override;
   void SetGetFilesSourceMock(GetFilesSourceCall mock) override;
   dlp::CheckFilesTransferRequest GetLastCheckFilesTransferRequest()
       const override;
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   absl::optional<std::string> fake_source_;
   absl::optional<dlp::CheckFilesTransferResponse>
       check_files_transfer_response_;
-  absl::optional<AddFileCall> add_file_mock_;
+  absl::optional<AddFilesCall> add_files_mock_;
   absl::optional<GetFilesSourceCall> get_files_source_mock_;
   dlp::CheckFilesTransferRequest last_check_files_transfer_request_;
   absl::optional<RequestFileAccessCall> request_file_access_mock_;

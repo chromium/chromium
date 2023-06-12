@@ -34,8 +34,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
 
   using SetDlpFilesPolicyCallback =
       base::OnceCallback<void(const dlp::SetDlpFilesPolicyResponse response)>;
-  using AddFileCallback =
-      base::OnceCallback<void(const dlp::AddFileResponse response)>;
+  using AddFilesCallback =
+      base::OnceCallback<void(const dlp::AddFilesResponse response)>;
   using GetFilesSourcesCallback =
       base::OnceCallback<void(const dlp::GetFilesSourcesResponse response)>;
   using CheckFilesTransferCallback =
@@ -43,8 +43,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   using RequestFileAccessCallback =
       base::OnceCallback<void(const dlp::RequestFileAccessResponse response,
                               base::ScopedFD fd)>;
-  using AddFileCall =
-      base::RepeatingCallback<void(const dlp::AddFileRequest, AddFileCallback)>;
+  using AddFilesCall = base::RepeatingCallback<void(const dlp::AddFilesRequest,
+                                                    AddFilesCallback)>;
   using GetFilesSourceCall =
       base::RepeatingCallback<void(const dlp::GetFilesSourcesRequest,
                                    GetFilesSourcesCallback)>;
@@ -72,8 +72,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
     // Sets the response for IsAlive call.
     virtual void SetIsAlive(bool is_alive) = 0;
 
-    // Sets `mock` used in AddFile calls.
-    virtual void SetAddFileMock(AddFileCall mock) = 0;
+    // Sets `mock` used in AddFiles calls.
+    virtual void SetAddFilesMock(AddFilesCall mock) = 0;
 
     // Sets `mock` used in GetFilesSource calls.
     virtual void SetGetFilesSourceMock(GetFilesSourceCall mock) = 0;
@@ -110,8 +110,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   // methods and request/response messages.
   virtual void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                                  SetDlpFilesPolicyCallback callback) = 0;
-  virtual void AddFile(const dlp::AddFileRequest request,
-                       AddFileCallback callback) = 0;
+  virtual void AddFiles(const dlp::AddFilesRequest request,
+                        AddFilesCallback callback) = 0;
   virtual void GetFilesSources(const dlp::GetFilesSourcesRequest request,
                                GetFilesSourcesCallback callback) = 0;
   virtual void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,

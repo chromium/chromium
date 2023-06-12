@@ -18,8 +18,9 @@ namespace {
 
 ino_t GetInodeValue(const base::FilePath& path) {
   struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0)
+  if (stat(path.value().c_str(), &file_stats) != 0) {
     return 0;
+  }
   return file_stats.st_ino;
 }
 
@@ -38,17 +39,20 @@ void FakeDlpClient::SetDlpFilesPolicy(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
-void FakeDlpClient::AddFile(const dlp::AddFileRequest request,
-                            AddFileCallback callback) {
-  if (add_file_mock_.has_value()) {
-    add_file_mock_->Run(request, std::move(callback));
+void FakeDlpClient::AddFiles(const dlp::AddFilesRequest request,
+                             AddFilesCallback callback) {
+  if (add_files_mock_.has_value()) {
+    add_files_mock_->Run(request, std::move(callback));
     return;
   }
-  if (request.has_file_path() && request.has_source_url()) {
-    files_database_[GetInodeValue(base::FilePath(request.file_path()))] =
-        request.source_url();
+  for (const dlp::AddFileRequest& file_request : request.add_file_requests()) {
+    if (file_request.has_file_path() && file_request.has_source_url()) {
+      files_database_[GetInodeValue(base::FilePath(file_request.file_path()))] =
+          file_request.source_url();
+    }
   }
-  dlp::AddFileResponse response;
+
+  dlp::AddFilesResponse response;
   std::move(callback).Run(response);
 }
 
@@ -61,8 +65,9 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
   dlp::GetFilesSourcesResponse response;
   for (const auto& file_inode : request.files_inodes()) {
     auto file_itr = files_database_.find(file_inode);
-    if (file_itr == files_database_.end() && !fake_source_.has_value())
+    if (file_itr == files_database_.end() && !fake_source_.has_value()) {
       continue;
+    }
 
     dlp::FileMetadata* file_metadata = response.add_files_metadata();
     file_metadata->set_inode(file_inode);
@@ -76,8 +81,9 @@ void FakeDlpClient::CheckFilesTransfer(
     CheckFilesTransferCallback callback) {
   last_check_files_transfer_request_ = request;
   dlp::CheckFilesTransferResponse response;
-  if (check_files_transfer_response_.has_value())
+  if (check_files_transfer_response_.has_value()) {
     response = check_files_transfer_response_.value();
+  }
   std::move(callback).Run(response);
 }
 
@@ -134,8 +140,8 @@ void FakeDlpClient::SetIsAlive(bool is_alive) {
   is_alive_ = is_alive;
 }
 
-void FakeDlpClient::SetAddFileMock(AddFileCall mock) {
-  add_file_mock_ = mock;
+void FakeDlpClient::SetAddFilesMock(AddFilesCall mock) {
+  add_files_mock_ = mock;
 }
 
 void FakeDlpClient::SetGetFilesSourceMock(GetFilesSourceCall mock) {

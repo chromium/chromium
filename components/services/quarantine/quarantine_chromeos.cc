@@ -15,7 +15,7 @@
 namespace quarantine {
 
 void OnFileAdded(mojom::Quarantine::QuarantineFileCallback callback,
-                 const dlp::AddFileResponse response) {
+                 const dlp::AddFilesResponse response) {
   if (response.has_error_message()) {
     DVLOG(1) << "Failed to quarantine: " << response.error_message();
     std::move(callback).Run(QuarantineFileResult::ANNOTATION_FAILED);
@@ -33,11 +33,13 @@ void QuarantineFile(const base::FilePath& file,
     std::move(callback).Run(QuarantineFileResult::OK);
     return;
   }
-  dlp::AddFileRequest request;
-  request.set_file_path(file.value());
-  request.set_source_url(source_url_unsafe.spec());
-  request.set_referrer_url(referrer_url_unsafe.spec());
-  chromeos::DlpClient::Get()->AddFile(
+
+  ::dlp::AddFilesRequest request;
+  ::dlp::AddFileRequest* add_request = request.add_add_file_requests();
+  add_request->set_file_path(file.value());
+  add_request->set_source_url(source_url_unsafe.spec());
+  add_request->set_referrer_url(referrer_url_unsafe.spec());
+  chromeos::DlpClient::Get()->AddFiles(
       request, base::BindOnce(&OnFileAdded, std::move(callback)));
 }
 

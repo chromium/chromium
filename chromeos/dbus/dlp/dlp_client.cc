@@ -81,15 +81,15 @@ class DlpClientImpl : public DlpClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void AddFile(const dlp::AddFileRequest request,
-               AddFileCallback callback) override {
-    dbus::MethodCall method_call(dlp::kDlpInterface, dlp::kAddFileMethod);
+  void AddFiles(const dlp::AddFilesRequest request,
+                AddFilesCallback callback) override {
+    dbus::MethodCall method_call(dlp::kDlpInterface, dlp::kAddFilesMethod);
     dbus::MessageWriter writer(&method_call);
 
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      dlp::AddFileResponse response;
+      dlp::AddFilesResponse response;
       response.set_error_message(base::StrCat(
-          {"Failure to call d-bus method: ", dlp::kAddFileMethod}));
+          {"Failure to call d-bus method: ", dlp::kAddFilesMethod}));
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
@@ -97,7 +97,7 @@ class DlpClientImpl : public DlpClient {
 
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DlpClientImpl::HandleAddFileResponse,
+        base::BindOnce(&DlpClientImpl::HandleAddFilesResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -195,9 +195,9 @@ class DlpClientImpl : public DlpClient {
     std::move(callback).Run(response_proto);
   }
 
-  void HandleAddFileResponse(AddFileCallback callback,
-                             dbus::Response* response) {
-    dlp::AddFileResponse response_proto;
+  void HandleAddFilesResponse(AddFilesCallback callback,
+                              dbus::Response* response) {
+    dlp::AddFilesResponse response_proto;
     const char* error_message = DeserializeProto(response, &response_proto);
     if (error_message) {
       response_proto.set_error_message(error_message);
