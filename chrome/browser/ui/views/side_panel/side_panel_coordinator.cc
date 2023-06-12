@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -35,7 +34,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -202,17 +200,10 @@ class SidePanelContentSwappingContainer : public views::View {
   PopulateSidePanelCallback loaded_callback_;
 };
 
-// Get the list of distillable URLs defined by the Finch experiment parameter.
-std::vector<std::string> GetDistillableURLs() {
-  return base::SplitString(base::GetFieldTrialParamValueByFeature(
-                               features::kReadAnything, "distillable_urls"),
-                           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-}
-
 }  // namespace
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
-    : browser_view_(browser_view), distillable_urls_(GetDistillableURLs()) {
+    : browser_view_(browser_view) {
   combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
 
   auto global_registry = std::make_unique<SidePanelRegistry>();
@@ -222,7 +213,6 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
                                        std::move(global_registry));
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
-  Observe(GetActiveWebContents());
 
   SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
                                        global_registry_);
@@ -231,7 +221,6 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
 SidePanelCoordinator::~SidePanelCoordinator() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
   view_state_observers_.Clear();
-  Observe(nullptr);
 }
 
 // static
@@ -627,7 +616,8 @@ absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
 }
 
 SidePanelRegistry* SidePanelCoordinator::GetActiveContextualRegistry() const {
-  if (auto* web_contents = GetActiveWebContents()) {
+  if (auto* web_contents =
+          browser_view_->browser()->tab_strip_model()->GetActiveWebContents()) {
     return SidePanelRegistry::Get(web_contents);
   }
   return nullptr;
@@ -954,9 +944,6 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     Show(new_contextual_registry->active_entry().value(),
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
   }
-
-  Observe(GetActiveWebContents());
-  MaybeShowReadingModeSidePanelIPH();
 }
 
 void SidePanelCoordinator::UpdateNewTabButtonState() {
@@ -995,32 +982,4 @@ void SidePanelCoordinator::UpdateToolbarButtonHighlight(
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    views::View* starting_from) {
   UpdateToolbarButtonHighlight(observed_view->GetVisible());
-}
-
-void SidePanelCoordinator::DidStopLoading() {
-  MaybeShowReadingModeSidePanelIPH();
-}
-
-content::WebContents* SidePanelCoordinator::GetActiveWebContents() const {
-  return browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
-}
-
-void SidePanelCoordinator::MaybeShowReadingModeSidePanelIPH() {
-  if (!features::IsReadAnythingEnabled()) {
-    return;
-  }
-  auto* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-  auto url = web_contents->GetLastCommittedURL();
-  for (auto distillable : distillable_urls_) {
-    // If the url's domain is found in distillable urls AND the url has a
-    // filename (i.e. it is not a home page or sub-home page), show the promo.
-    if (url.DomainIs(distillable) && !url.ExtractFileName().empty()) {
-      browser_view_->browser()->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHReadingModeSidePanelFeature);
-      return;
-    }
-  }
 }

@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
 
 #include <memory>
+#include <string>
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/browser_user_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class Browser;
 class ReadAnythingController;
@@ -33,7 +36,9 @@ class View;
 //  This class has the same lifetime as the browser.
 //
 class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
-                                public SidePanelEntryObserver {
+                                public SidePanelEntryObserver,
+                                public TabStripModelObserver,
+                                public content::WebContentsObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -70,8 +75,24 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   // container view and all its child views and returns it.
   std::unique_ptr<views::View> CreateContainerView();
 
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // content::WebContentsObserver:
+  void DidStopLoading() override;
+
+  content::WebContents* GetActiveWebContents() const;
+
+  // Attempts to show in product help for reading mode.
+  void MaybeShowReadingModeSidePanelIPH();
+
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
+
+  const base::flat_set<std::string> distillable_urls_;
 
   base::ObserverList<Observer> observers_;
   BROWSER_USER_DATA_KEY_DECL();
