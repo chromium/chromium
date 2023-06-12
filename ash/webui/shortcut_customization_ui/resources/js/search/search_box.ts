@@ -32,8 +32,6 @@ import {getShortcutSearchHandler} from './shortcut_search_handler.js';
  * results.
  */
 
-// TODO(longbowei): This value is temporary. Update it once more information is
-// provided.
 const MAX_NUM_RESULTS = 5;
 // This number was chosen arbitrarily to be a reasonable limit. Most
 // searches will not be anywhere close to this.
@@ -388,8 +386,15 @@ export class SearchBoxElement extends SearchBoxElementBase implements
 
     this.spinnerActive = true;
 
+    // In some cases, the backend will return search results that are later
+    // filtered out by `this.filterSearchResults`. When that happens, the UI
+    // should still show MAX_NUM_RESULTS results if there are other matching
+    // results. To achieve this, we request more results than we need, and then
+    // cap the number of search results to MAX_NUM_RESULTS.
+    const maxNumberOfSearchResults = MAX_NUM_RESULTS * 3;
+
     this.shortcutSearchHandler
-        .search(stringToMojoString16(query), MAX_NUM_RESULTS)
+        .search(stringToMojoString16(query), maxNumberOfSearchResults)
         .then((response) => {
           this.onSearchResultsReceived(query, response.results);
           this.dispatchEvent(new CustomEvent(
@@ -406,6 +411,10 @@ export class SearchBoxElement extends SearchBoxElementBase implements
 
     this.spinnerActive = false;
     this.searchResults = this.filterSearchResults(results);
+
+    // In `this.fetchSearchResults`, we queried for a multiple of
+    // MAX_NUM_RESULTS, so cap the size of the results here after filtering.
+    this.searchResults = this.searchResults.slice(0, MAX_NUM_RESULTS);
 
     // This invalidates whatever SearchResultRow element was previously focused,
     // since it's likely that the element has been removed after the search.

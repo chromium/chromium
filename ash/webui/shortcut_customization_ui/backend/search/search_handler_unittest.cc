@@ -247,7 +247,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
 
   // The descriptions for the fake shortcuts are "Open launcher", "Open new
   // tab", "Open the Foo app", and "Select all text content".
-  // The query "Open" should match the first three Concepts.
+  // The query "Open" matches the first three shortcuts because they contain the
+  // word "open".
   shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
       .Search(u"Open",
               /*max_num_results=*/5u, &search_results);
@@ -262,8 +263,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   // Checking again that the observer was not called after the previous search.
   EXPECT_EQ(1u, results_availability_observer_.num_calls());
 
-  // The query "open" should also match the first three Concepts (query case
-  // doesn't matter).
+  // The query "open" should also match the same concepts (query case doesn't
+  // matter).
   shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
       .Search(u"open",
               /*max_num_results=*/5u, &search_results);
@@ -275,8 +276,7 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   VerifySearchResultIsPresent(/*description=*/u"Open the Foo app",
                               /*search_results=*/search_results);
 
-  // For completeness, the query "OpEn" should also match the first three
-  // Concepts.
+  // For completeness, the query "OpEn" should also match the same concepts.
   shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
       .Search(u"OpEn",
               /*max_num_results=*/5u, &search_results);
@@ -288,29 +288,33 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   VerifySearchResultIsPresent(/*description=*/u"Open the Foo app",
                               /*search_results=*/search_results);
 
-  // Searching for a specific shortcut should only include those results.
+  // Searching for a specific shortcut matches only that concept.
   shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
       .Search(u"Open new tab",
               /*max_num_results=*/5u, &search_results);
   EXPECT_EQ(search_results.size(), 1u);
-  EXPECT_EQ(search_results.at(0)->accelerator_layout_info->description,
-            u"Open new tab");
+  VerifySearchResultIsPresent(/*description=*/u"Open new tab",
+                              /*search_results=*/search_results);
 
   // Searching for a specific shortcut should work even if the query is a
   // "fuzzy" match.
   shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
       .Search(u"Open tab",
               /*max_num_results=*/5u, &search_results);
-  // In this case, the search service also returns the result for "Open the Foo
-  // app", but with a lower relevance_score.
-  EXPECT_EQ(search_results.size(), 2u);
+  // In this case, the search service also returns the other results, but with
+  // lower relevance scores.
+  EXPECT_EQ(search_results.size(), 3u);
   EXPECT_EQ(search_results.at(0)->accelerator_layout_info->description,
             u"Open new tab");
   EXPECT_EQ(search_results.at(1)->accelerator_layout_info->description,
             u"Open the Foo app");
+  EXPECT_EQ(search_results.at(2)->accelerator_layout_info->description,
+            u"Open launcher");
   // Expect that earlier search results have a higher relevance score.
   EXPECT_GT(search_results.at(0)->relevance_score,
             search_results.at(1)->relevance_score);
+  EXPECT_GT(search_results.at(1)->relevance_score,
+            search_results.at(2)->relevance_score);
 
   // Clear the index and verify that searches return no results, and that the
   // observer was called an additional time.
@@ -335,22 +339,71 @@ TEST_F(SearchHandlerTest, SearchResultsEdgeCases) {
       .Search(u"this search matches nothing!",
               /*max_num_results=*/5u, &search_results);
   EXPECT_EQ(search_results.size(), 0u);
+}
 
-  // Testing some edge cases: searching with spaces on either side and in the
-  // middle.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"       Open     new    tab       ",
-              /*max_num_results=*/5u, &search_results);
-  // Turns out the search service doesn't match any shortcuts with a malformed
-  // query like this.
-  EXPECT_EQ(search_results.size(), 0u);
+TEST_F(SearchHandlerTest, SearchResultsSingleCharacter) {
+  search_concept_registry_.SetSearchConcepts(GetTestSearchConcepts());
+  handler_remote_.FlushForTesting();
+  task_environment_.RunUntilIdle();
+  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results;
 
-  // Searching with spaces on either side, but not in the middle.
+  // Searching for "o" returns all results since they each contain an "o".
   shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"       Open new tab       ",
+      .Search(u"o",
               /*max_num_results=*/5u, &search_results);
-  // Turns out the search service doesn't match any shortcuts with a malformed
-  // query like this.
+  EXPECT_EQ(search_results.size(), 4u);
+  VerifySearchResultIsPresent(/*description=*/u"Open launcher",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Open new tab",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Open the Foo app",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Select all text content",
+                              /*search_results=*/search_results);
+
+  // Searching for "O" returns all results since they each contain an "o",
+  // regardless of capitalization.
+  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"O",
+              /*max_num_results=*/5u, &search_results);
+  EXPECT_EQ(search_results.size(), 4u);
+  VerifySearchResultIsPresent(/*description=*/u"Open launcher",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Open new tab",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Open the Foo app",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Select all text content",
+                              /*search_results=*/search_results);
+
+  // Searching for "p" returns all results that contain the letter "p".
+  // In this case, "Select all text content" is included because its text
+  // accelerator is "Press Ctrl+A".
+  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"p",
+              /*max_num_results=*/5u, &search_results);
+  EXPECT_EQ(search_results.size(), 4u);
+  VerifySearchResultIsPresent(/*description=*/u"Open launcher",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Open new tab",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Open the Foo app",
+                              /*search_results=*/search_results);
+  VerifySearchResultIsPresent(/*description=*/u"Select all text content",
+                              /*search_results=*/search_results);
+
+  // Searching for "l" returns all results that contain the letter "l".
+  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"l",
+              /*max_num_results=*/5u, &search_results);
+  EXPECT_EQ(search_results.size(), 1u);
+  VerifySearchResultIsPresent(/*description=*/u"Open launcher",
+                              /*search_results=*/search_results);
+
+  // Searching for "z" should return no results.
+  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"z",
+              /*max_num_results=*/5u, &search_results);
   EXPECT_EQ(search_results.size(), 0u);
 }
 
