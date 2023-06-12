@@ -273,7 +273,7 @@ void AuthHubVectorLifecycle::OnPolicyChanged(AshAuthFactor factor) {
 void AuthHubVectorLifecycle::OnLockoutChanged(AshAuthFactor factor) {
   // Ignored
 }
-void AuthHubVectorLifecycle::OnOrientationRestrictionsChanged(
+void AuthHubVectorLifecycle::OnFactorSpecificRestrictionsChanged(
     AshAuthFactor factor) {
   // Ignored
 }

@@ -18,6 +18,7 @@ namespace ash {
 class AuthFactorEngineFactory;
 class AuthHub;
 class AuthSessionStorage;
+class AuthFactorPresenceCache;
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
     : public AuthParts {
@@ -41,12 +42,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
 
  private:
   friend class AuthParts;
-  void CreateDefaultComponents();
+  void CreateDefaultComponents(PrefService* local_state);
 
-  std::unique_ptr<AuthHub> auth_hub_;
+  std::unique_ptr<AuthFactorPresenceCache> factors_cache_;
   std::unique_ptr<AuthSessionStorage> session_storage_;
-
   std::vector<std::unique_ptr<AuthFactorEngineFactory>> engine_factories_;
+  std::unique_ptr<AuthHub> auth_hub_;
 };
 
 }  // namespace ash

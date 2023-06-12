@@ -10,6 +10,8 @@
 
 #include "base/component_export.h"
 
+class PrefService;
+
 namespace ash {
 
 class AuthHub;
@@ -25,7 +27,7 @@ class AuthFactorEngineFactory;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
  public:
   // Creates a global instance. Must be called before any calls to Get().
-  static std::unique_ptr<AuthParts> Create();
+  static std::unique_ptr<AuthParts> Create(PrefService* local_state);
 
   // Gets the global instance. Object should be created before that.
   // Value obtained from this call should not be stored.

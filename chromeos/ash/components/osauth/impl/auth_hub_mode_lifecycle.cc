@@ -248,10 +248,11 @@ void AuthHubModeLifecycle::CheckShutdownStatus() {
 
   if (all_stopped) {
     watchdog_.Stop();
-    engines_.clear();
+    // Let owner release references to engines.
     if (mode_ != AuthHubMode::kNone) {
       owner_->OnExitedMode(mode_);
     }
+    engines_.clear();
     mode_ = AuthHubMode::kNone;
     stage_ = Stage::kUninitialized;
     if (target_mode_ != AuthHubMode::kNone) {

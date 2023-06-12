@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
   void OnFactorAttemptResult(AshAuthFactor factor, bool success) override;
   void OnPolicyChanged(AshAuthFactor factor) override;
   void OnLockoutChanged(AshAuthFactor factor) override;
-  void OnOrientationRestrictionsChanged(AshAuthFactor factor) override;
+  void OnFactorSpecificRestrictionsChanged(AshAuthFactor factor) override;
   void OnCriticalError(AshAuthFactor factor) override;
   void OnFactorCustomSignal(AshAuthFactor factor) override;
 

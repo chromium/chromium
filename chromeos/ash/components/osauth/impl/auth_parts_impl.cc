@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -30,9 +31,9 @@ std::unique_ptr<AuthPartsImpl> AuthPartsImpl::CreateTestInstance() {
 }
 
 // static
-std::unique_ptr<AuthParts> AuthParts::Create() {
+std::unique_ptr<AuthParts> AuthParts::Create(PrefService* local_state) {
   std::unique_ptr<AuthPartsImpl> result = std::make_unique<AuthPartsImpl>();
-  result->CreateDefaultComponents();
+  result->CreateDefaultComponents(local_state);
   return result;
 }
 
@@ -52,10 +53,11 @@ AuthPartsImpl::~AuthPartsImpl() {
   g_instance = nullptr;
 }
 
-void AuthPartsImpl::CreateDefaultComponents() {
+void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
   session_storage_ =
       std::make_unique<AuthSessionStorageImpl>(UserDataAuthClient::Get());
-  auth_hub_ = std::make_unique<AuthHubImpl>();
+  factors_cache_ = std::make_unique<AuthFactorPresenceCache>(local_state);
+  auth_hub_ = std::make_unique<AuthHubImpl>(factors_cache_.get());
 }
 
 AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {

@@ -29,7 +29,7 @@ class MockAuthFactorEngine : public AuthFactorEngine {
   MOCK_METHOD(void, SetUsageAllowed, (UsageAllowed), (override));
   MOCK_METHOD(bool, IsDisabledByPolicy, (), (override));
   MOCK_METHOD(bool, IsLockedOut, (), (override));
-  MOCK_METHOD(bool, IsOrientationRestricted, (), (override));
+  MOCK_METHOD(bool, IsFactorSpecificRestricted, (), (override));
   MOCK_METHOD(void, InitializationTimedOut, (), (override));
   MOCK_METHOD(void, ShutdownTimedOut, (), (override));
   MOCK_METHOD(void, StartFlowTimedOut, (), (override));
@@ -52,7 +52,7 @@ class MockAuthFactorEngineObserver
   MOCK_METHOD(void, OnPolicyChanged, (AshAuthFactor), (override));
   MOCK_METHOD(void, OnLockoutChanged, (AshAuthFactor), (override));
   MOCK_METHOD(void,
-              OnOrientationRestrictionsChanged,
+              OnFactorSpecificRestrictionsChanged,
               (AshAuthFactor),
               (override));
   MOCK_METHOD(void, OnCriticalError, (AshAuthFactor), (override));

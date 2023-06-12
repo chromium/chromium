@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
 
     virtual void OnPolicyChanged(AshAuthFactor factor) = 0;
     virtual void OnLockoutChanged(AshAuthFactor factor) = 0;
-    virtual void OnOrientationRestrictionsChanged(AshAuthFactor factor) = 0;
+    virtual void OnFactorSpecificRestrictionsChanged(AshAuthFactor factor) = 0;
 
     // Notify AuthHub about some critical error. AuthHub would treat
     // this factor as disabled.
@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   virtual bool IsLockedOut() = 0;
   // Relevant for factors like fingerprint, where in some
   // device orientations FP sensor can be used unintentionally.
-  virtual bool IsOrientationRestricted() = 0;
+  virtual bool IsFactorSpecificRestricted() = 0;
 
   // Engines might override these methods to gracefully handle
   // timeout during relevant lifecycle operations.

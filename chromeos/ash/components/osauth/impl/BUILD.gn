@@ -17,8 +17,14 @@ component("impl") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/prefs:prefs",
+    "//components/user_manager",
   ]
   sources = [
+    "auth_factor_presence_cache.cc",
+    "auth_factor_presence_cache.h",
+    "auth_hub_attempt_handler.cc",
+    "auth_hub_attempt_handler.h",
     "auth_hub_common.h",
     "auth_hub_impl.cc",
     "auth_hub_impl.h",
@@ -43,11 +49,14 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/osauth/test_support",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
   sources = [
+    "auth_hub_attempt_handler_unittest.cc",
     "auth_hub_impl_test.cc",
     "auth_hub_mode_lifecycle_unittest.cc",
     "auth_hub_vector_lifecycle_unittest.cc",

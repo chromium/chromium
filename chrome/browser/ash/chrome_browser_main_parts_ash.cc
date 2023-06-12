@@ -854,7 +854,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   auth_events_recorder_ =
       base::WrapUnique<AuthEventsRecorder>(new AuthEventsRecorder());
 
-  auth_parts_ = AuthParts::Create();
+  auth_parts_ = AuthParts::Create(g_browser_process->local_state());
 
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
@@ -1498,6 +1498,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   if (pre_profile_init_called_) {
     KioskModeIdleAppNameNotification::Shutdown();
   }
+
+  auth_parts_.reset();
 
   // Tell DeviceSettingsService to stop talking to session_manager. Do not
   // shutdown DeviceSettingsService yet, it might still be accessed by
