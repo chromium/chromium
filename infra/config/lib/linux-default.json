@@ -29,6 +29,7 @@
     "ChromeOS FYI Release (kevin)": "Ubuntu-22.04",
     "ChromeOS FYI Release Skylab (kevin)": "Ubuntu-22.04",
     "ChromiumOS ASAN Release": "Ubuntu-22.04",
+    "Comparison Android (reclient)": "Ubuntu-22.04",
     "Comparison Linux (reclient)": "Ubuntu-22.04",
     "Comparison Simple Chrome (reclient)": "Ubuntu-22.04",
     "Dawn Android arm DEPS Release (Pixel 4)": "Ubuntu-22.04",
