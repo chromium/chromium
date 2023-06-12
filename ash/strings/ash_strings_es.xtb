@@ -141,6 +141,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1550406609415860283">Dispositivos disponibles</translation>
 <translation id="1550523713251050646">Haz clic aquí para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1576511610858879060">Tu Chromebook o dispositivo Bluetooth usan una versión antigua de Bluetooth. Usa otra fuente de entrada para mejorar la calidad del audio.</translation>
 <translation id="1576623706766186887">Reducir cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir a un escritorio del 1 al 8</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
@@ -356,6 +357,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="256712445991462162">la lupa fijada</translation>
 <translation id="2573588302192866788">No se ha podido conectar (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Se ha inhabilitado el inicio de sesión múltiple</translation>
+<translation id="2579264398927991698">Actualizaciones de firmware</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
 <translation id="2586561057878260610">Pulsa Ctrl + W para combinarlo con <ph name="DESK_NAME" />. Pulsa Ctrl + Shift + W para cerrar el escritorio y las ventanas.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
@@ -688,6 +690,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4028481283645788203">Introduce la contraseña como medida de seguridad adicional</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estás compartiendo tu pantalla</translation>
+<translation id="404437169852192935">Actualizaciones finalizadas</translation>
 <translation id="4049230407053723315">Ajustes rápidos</translation>
 <translation id="4057003836560082631">Pestaña del navegador <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No para 1 app}other{No para # apps}}</translation>
@@ -1018,11 +1021,13 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> o <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Hay actualizaciones de firmware disponibles</translation>
 <translation id="5503884284981862082">Abrir/Cerrar Asistente de Google</translation>
+<translation id="550391772491508736">Reanudar envío</translation>
 <translation id="5506975627792768506">Activar o desactivar lupa</translation>
 <translation id="5512042095225963688">Eliminar la palabra anterior</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Tu administrador ha eliminado todos los perfiles de eSIM. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> se está conectando.</translation>
+<translation id="5529587891732734495">Pausar envío</translation>
 <translation id="5532994612895037630">Toca en cualquier sitio para grabar la pantalla completa</translation>
 <translation id="5536723544185013515">Aplicaciones recientes, desplázate con las teclas de flecha hacia la izquierda o hacia la derecha para acceder a todas las aplicaciones recientes</translation>
 <translation id="553675580533261935">Saliendo de la sesión</translation>
@@ -1154,6 +1159,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>
 <translation id="6062360702481658777">Tu sesión se cerrará automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">He terminado de usar el archivo</translation>
+<translation id="6068258534237496331">Controles de videollamada</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
 <translation id="6093867385179428431">Inhabilitado por el administrador</translation>
@@ -1389,6 +1395,7 @@ Nueva instalación</translation>
 <translation id="7165278925115064263">Alt + Mayús + K</translation>
 <translation id="7168224885072002358">Restableciendo la resolución anterior en <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="7185362672357349361">¿Activar aviso de micrófono silenciado? Se te avisará si hablas y el micrófono está silenciado. El audio no saldrá de tu dispositivo.</translation>
 <translation id="7187711731540696127">Tu punto de acceso <ph name="DEVICE_NAME" /> está activado, pero no hay dispositivos conectados</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">¿A qué distancia está Venus?</translation>

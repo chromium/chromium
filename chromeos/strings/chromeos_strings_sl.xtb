@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno za posodobitev vdelane programske opreme za zunanje naprave je odprto. Na voljo je toliko posodobitev: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Poiščite članke s pomočjo in odgovore na pogosta vprašanja o Chromebookih.</translation>
+<translation id="1164939766849482256">Ohranjevalnik zaslona od zore do mraka</translation>
 <translation id="1167755866710282443">Odprite meni za prilagajanje tipk. Povlecite meni, če ga želite premakniti.</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Povprečna (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">Premikanje po brskalniku</translation>
 <translation id="2874939134665556319">Prejšnja skladba</translation>
 <translation id="2878387241690264070">Izpraznjeno: <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
+<translation id="2880569433548999039">Ohranjevalnik zaslona premika oblakov</translation>
 <translation id="2926057806159140518">Vnesite uporabniško ime in geslo ali optično preberite kodo QR.</translation>
 <translation id="2940811910881150316">Naprave ni mogoče preizkusiti. Če želite preizkusiti, znova odprite pokrov.</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>
 <translation id="3160172848211257835">Pošlji <ph name="BEGIN_LINK1" />podatke o sistemu in aplikacijah<ph name="END_LINK1" /> ter <ph name="BEGIN_LINK2" />meritve<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Postavite dokument na optični bralnik.</translation>
+<translation id="3174321110679064523">Zaslonsko ozadje od zore do mraka</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="319101249942218879">Slika avatarja je spremenjena</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
+<translation id="3373141842870501561">Zaslonsko ozadje premika Zemlje</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">zgoraj</translation>
 <translation id="3651050199673793219">Izbira enote temperature</translation>
 <translation id="3663574643422533538">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">Zaslonsko ozadje premika oblakov</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">Kontrolniki za RGB</translation>
 <translation id="38114475217616659">Izbriši celotno zgodovino</translation>
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
+<translation id="382043424867370667">Ozadje s sončnim zahodom</translation>
 <translation id="3824259034819781947">Priloži datoteke</translation>
 <translation id="3838338534323494292">Novo geslo</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />, če želite zapreti pogovorno okno.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">Staro geslo</translation>
 <translation id="4453205916657964690">Maska podomrežja</translation>
 <translation id="4454245904991689773">Skeniraj v</translation>
+<translation id="4469288414739283461">Ohranjevalnik zaslona premika Zemlje</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
 <translation id="4500966230243561393">Barva vmesnika</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">Znova zaženi rutine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">barva osvetlitve ozadja</translation>
+<translation id="5292579816060236070">Ozadje s sončnim vzhodom</translation>
 <translation id="5294769550414936029">različica <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premik okna na namizje</translation>
+<translation id="5303837385540978511">Ekskluzivno zaslonsko ozadje za <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteta</translation>
 <translation id="5317780077021120954">Shrani</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite znova optično prebrati stran?}=1{Želite znova optično prebrati {PAGE_NUMBER}. stran?}one{Želite znova optično prebrati {PAGE_NUMBER}. stran?}two{Želite znova optično prebrati {PAGE_NUMBER}. stran?}few{Želite znova optično prebrati {PAGE_NUMBER}. stran?}other{Želite znova optično prebrati {PAGE_NUMBER}. stran?}}</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
+<translation id="6488559935020624631">Ekskluzivni ohranjevalnik zaslona za <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
 <translation id="6494974875566443634">Prilagajanje</translation>
 <translation id="6500818810472529210">Ogled rezultatov v Iskanju Google</translation>
@@ -967,6 +977,7 @@
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
+<translation id="8851859208664803097">Ustavljeno – tiskalnik ni dosegljiv</translation>
 <translation id="8855781559874488009">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTP prek požarnega zidu.</translation>
 <translation id="885701979325669005">Shramba</translation>
 <translation id="885704831271383379">temnejša osvetlitev tipkovnice</translation>

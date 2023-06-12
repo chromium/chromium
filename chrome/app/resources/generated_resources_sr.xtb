@@ -527,6 +527,7 @@
 <translation id="1448779317883494811">Алатка за четкице</translation>
 <translation id="1449191289887455076">Поново притисните <ph name="CURRENTKEY" /> да бисте потврдили доделу и <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Веб-страница, једна датотека</translation>
+<translation id="145280054552001290">Додавање и уклањање језика за титл</translation>
 <translation id="1453561711872398978">Шаљи <ph name="BEGIN_LINK" />евиденције о отклањању грешака<ph name="END_LINK" /> (препоручено)</translation>
 <translation id="1454223536435069390">С&amp;ними екран</translation>
 <translation id="145432137617179457">Језици за проверу правописа</translation>
@@ -2513,6 +2514,7 @@
 <translation id="3088325635286126843">&amp;Преименуј...</translation>
 <translation id="3089137131053189723">Претрага је обрисана</translation>
 <translation id="3089941350495701096">Листа за читање</translation>
+<translation id="3089948625237571254">Копирај кадар видео снимка</translation>
 <translation id="3090227230165225418">Најави обавештења о преузимањима</translation>
 <translation id="3090589793601454425">Не премештај</translation>
 <translation id="3090819949319990166">Није успело копирање спољне crx датотеке у датотеку <ph name="TEMP_CRX_FILE" />.</translation>
@@ -3014,6 +3016,7 @@
 <translation id="3559262020195162408">Инсталирање смерница на уређају није успело.</translation>
 <translation id="3559533181353831840">Још око <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Провера правописа</translation>
+<translation id="3561201631376780358">Отворите бочну таблу да бисте видели све обележиваче</translation>
 <translation id="3562423906127931518">Ово може да потраје пар минута. Подешава се Linux контејнер.</translation>
 <translation id="3562655211539199254">Прегледајте недавне Chrome картице са телефона</translation>
 <translation id="3563432852173030730">Није могуће преузети киоск апликацију.</translation>
@@ -3600,6 +3603,7 @@
 <translation id="4044612648082411741">Унесите лозинку за сертификат</translation>
 <translation id="4044708573046946214">Лозинка за закључавање екрана</translation>
 <translation id="404493185430269859">Подразумевани претраживач</translation>
+<translation id="4045196801416070837">Звуци уређаја</translation>
 <translation id="4046013316139505482">Ови додаци не морају да виде и мењају информације на овом сајту.</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -4859,6 +4863,7 @@
 <translation id="5173668317844998239">Додајте и бришите отиске прстију сачуване на безбедносном кључу</translation>
 <translation id="5174169235862638850">Лозинка је копирана у привремену меморију</translation>
 <translation id="5175379009094579629">Назив уређаја није важећи. Унесите важећи назив уређаја да бисте пробали поново.</translation>
+<translation id="5176787661653201403">Копирај кадар видео снимка</translation>
 <translation id="5177479852722101802">Настави да блокираш приступ камери и микрофону</translation>
 <translation id="5177549709747445269">Користите податке на мрежи оператера</translation>
 <translation id="5178667623289523808">Пронађи претходно</translation>
@@ -5201,6 +5206,7 @@
 <translation id="5481941284378890518">Додај оближње штампаче</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> данас. <ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}one{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}few{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}other{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Додај апликацију</translation>
+<translation id="5485435764083510385">Жељени језик титла</translation>
 <translation id="5485754497697573575">Врати све картице</translation>
 <translation id="5486261815000869482">Потврдите лозинку</translation>
 <translation id="5486561344817861625">Симулирај поновно покретање прегледача</translation>
@@ -5305,6 +5311,7 @@
 <translation id="5571066253365925590">Bluetooth је омогућен</translation>
 <translation id="5571092938913434726">Глобалне контроле за медије</translation>
 <translation id="5571832155627049070">Прилагодите профил</translation>
+<translation id="5572166921642484567">Изаберите режим комбинације боја</translation>
 <translation id="5572252023412311448">Прегледајте детаље сајта за <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Добијаћете побољшане предлоге на траци за адресу</translation>
 <translation id="557506220935336383">Погледајте дозволе за додатке за друге сајтове</translation>
@@ -7389,6 +7396,7 @@
 <translation id="7400839060291901923">Подесите везу на телефону <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Одбаци ову поруку</translation>
 <translation id="7402198013420237102">Желите да преместите сачуване лозинке на Google налог?</translation>
+<translation id="740333000181878130">Звук при покретању уређаја</translation>
 <translation id="7403642243184989645">Преузимање ресурса</translation>
 <translation id="7404065585741198296">Телефон са USB каблом</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Безбедносна провера је покренута пре 1 сат}one{Безбедносна провера је покренута пре {NUM_HOURS} сат}few{Безбедносна провера је покренута пре {NUM_HOURS} сата}other{Безбедносна провера је покренута пре {NUM_HOURS} сати}}</translation>

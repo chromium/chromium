@@ -141,6 +141,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1550406609415860283">Dispositivi disponibili</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
 <translation id="1555130319947370107">Blu</translation>
+<translation id="1576511610858879060">Il tuo Chromebook o dispositivo Bluetooth sta utilizzando una versione precedente di Bluetooth. Utilizza un'altra sorgente di ingresso per migliorare la qualità audio.</translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
@@ -356,6 +357,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
 <translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'accesso simultaneo è stato disattivato</translation>
+<translation id="2579264398927991698">Aggiornamenti del firmware</translation>
 <translation id="2582112259361606227">Riavvia per aggiornare</translation>
 <translation id="2586561057878260610">Premi Ctrl + W per eseguire una combinazione con <ph name="DESK_NAME" />. Premi Ctrl + Maiusc + W per chiudere scrivania e finestre.</translation>
 <translation id="2595239820337756193">5 km in miglia</translation>
@@ -684,6 +686,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4028481283645788203">Password obbligatoria per maggiore sicurezza</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
+<translation id="404437169852192935">Aggiornamenti terminati</translation>
 <translation id="4049230407053723315">Impostazioni rapide</translation>
 <translation id="4057003836560082631">Scheda del browser <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}other{Off per # app}}</translation>
@@ -1014,11 +1017,13 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> oppure <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Aggiornamenti firmware disponibili</translation>
 <translation id="5503884284981862082">Apri/chiudi l'Assistente Google</translation>
+<translation id="550391772491508736">Riprendi la trasmissione</translation>
 <translation id="5506975627792768506">Attiva o disattiva la lente d'ingrandimento</translation>
 <translation id="5512042095225963688">Elimina parola precedente</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
+<translation id="5529587891732734495">Metti in pausa la trasmissione</translation>
 <translation id="5532994612895037630">Tocca un punto qualsiasi per registrare l'intera schermata</translation>
 <translation id="5536723544185013515">App recenti: usa i tasti Freccia destra o Freccia sinistra per accedere a tutte le app recenti</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
@@ -1386,6 +1391,7 @@ Nuova installazione</translation>
 <translation id="7165278925115064263">ALT + MAIUSC + K</translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Aggiorna</translation>
+<translation id="7185362672357349361">Vuoi attivare la notifica di disattivazione audio? Se parli mentre l'audio è disattivato, riceverai una notifica. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="7187711731540696127">Il tuo hotspot <ph name="DEVICE_NAME" /> è attivo, nessun dispositivo collegato</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>

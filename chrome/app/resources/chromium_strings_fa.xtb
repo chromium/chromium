@@ -12,8 +12,10 @@
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
 <translation id="1261119230216066228">‏«بهینه‌سازی حافظه» سرعت Chromium را بیشتر کرده است</translation>
+<translation id="1262876892872089030">‏وقتی این برگه غیرفعال بود، مقداری از حافظه آزاد شد تا سرعت Chromium حفظ شود. می‌توانید انتخاب کنید این سایت همیشه از غیرفعال شدن مستثنی شود.</translation>
 <translation id="1315551408014407711">‏راه‌اندازی نمایه Chromium جدید</translation>
 <translation id="1414495520565016063">‏شما وارد سیستم Chromium شدید!</translation>
+<translation id="1478370723027452770">‏دریافت راهنمایی درباره Chrome for Testing</translation>
 <translation id="1524282610922162960">‏هم‌رسانی برگه Chromium</translation>
 <translation id="1553461853655228091">‏Chromium برای ایجاد نقشه سه‌بعدی محیط شما باید اجازه دسترسی به دوربین داشته باشد</translation>
 <translation id="1555506416658437797">ویرایش روش‌های پرداخت.</translation>
@@ -71,6 +73,7 @@
 <translation id="2711502716910134313">‏برگه Chromium</translation>
 <translation id="2718390899429598676">‏برای امنیت بیشتر، Chromium داده‌های شما را رمزگذاری می‌کند.</translation>
 <translation id="2770231113462710648">تغییر مرورگر پیش‌فرض به:</translation>
+<translation id="2785438272836277133">‏این افزونه حاوی بدافزار است و ناامن است. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2837693172913560447">‏با این کار، نمایه Chromium جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
@@ -129,9 +132,11 @@
 <translation id="388648406173476553">‏Chromium را سفارشی و کنترل کنید. چیزی نیاز به رسیدگی دارد، برای اطلاعات بیشتر کلیک کنید.</translation>
 <translation id="3889543394854987837">‏برای باز کردن Chromium و شروع به مرور، روی نامتان کلیک کنید.</translation>
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chromium وارد شده است. برای جدا نگه داشتن مرور، Chromium می‌تواند نمایه مختص خودتان را برایتان ایجاد کند.</translation>
+<translation id="3909353120217047026">‏این افزونه خط‌مشی «نت‌بازار Chrome» را نقض می‌کند و ممکن است ناامن باشد. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="391789666908693569">‏<ph name="MANAGER_NAME" /> حساب شما را مدیریت می‌کند. سرپرستتان می‌تواند این نمایه مرورگر Chromium و داده‌های آن را (مثل نشانک‌ها، سابقه، و گذرواژه‌ها) ببیند و ویرایش کند.</translation>
 <translation id="3945058413678539331">‏Chromium می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="3962623956404948996">‏Chromium توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد</translation>
+<translation id="3975724895399328945">‏درباره Google Chrome for Testing</translation>
 <translation id="3997429360543082038">‏درباره ChromiumOS</translation>
 <translation id="4019629340646866719">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="4036079820698952681">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chromium کمک کنید</translation>
@@ -153,6 +158,7 @@
 <translation id="4415566066719264597">‏اجازه به Chromium برای اجرا در پس‌زمینه</translation>
 <translation id="4423735387467980091">‏سفارشی کردن و کنترل Chromium</translation>
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
+<translation id="4447409407328223819">‏درباره Chrome for Testing</translation>
 <translation id="452711251841752011">‏به Chromium خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
 <translation id="4544142686420020088">‏Chromium به‌روزرسانی نشد؛ مشکلی پیش آمد. <ph name="BEGIN_LINK" />مشکلات به‌روزرسانی Chromium و به‌روزرسانی‌های ناموفق را برطرف کنید.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏در نمایه جدید Chromium ادامه می‌دهید؟</translation>
@@ -347,6 +353,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8357820681460164151">‏برای دسترسی به چیزهایتان در مرورگر Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید</translation>
 <translation id="8360718212975266891">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8 استفاده می‌کند.</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
+<translation id="8401454788024434101">‏این افزونه توسط توسعه‌دهنده آن لغو انتشار شده است و ممکن است ناامن باشد. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏Chromium را ظرف یک روز راه‌اندازی مجدد کنید}one{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}other{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}}</translation>
 <translation id="8453117565092476964">‏بایگانی نصب‌کننده خراب یا نامعتبر است. لطفاً Chromium را دوباره را بارگیری کنید.</translation>
 <translation id="8458614432758743027">‏Chromium به Windows 10 یا بالاتر نیاز دارد.</translation>
@@ -359,6 +366,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8608079656141766906">‏<ph name="BEGIN_BOLD" />نحوه استفاده ما از این داده‌ها:<ph name="END_BOLD" /> سایت‌ها می‌توانند بااستفاده از Chromium اطلاعاتی درباره علایقتان ذخیره کنند. برای مثال، اگر برای خرید کفش مخصوص ماراتون از سایتی بازدید کنید، ممکن است آن سایت علاقه شما را به‌صورت دونده ماراتون مشخص کند. بعداً، اگر برای ثبت‌نام در مسابقه‌ای به سایتی دیگر مراجعه کردید، آن سایت می‌تواند براساس علایقتان آگهی‌ای برای کفش مخصوص دویدن به شما نشان دهد.</translation>
 <translation id="8619360774459241877">‏درحال راه‌اندازی Chromium…</translation>
 <translation id="8621669128220841554">‏به دلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
+<translation id="8648201657708811153">‏نمی‌توان Google Chrome for Testing را به‌عنوان مرورگر پیش‌فرض تنظیم کرد.</translation>
 <translation id="867492205098279939">{NUM_DEVICES,plural, =0{‏یک افزونه Chromium به «دستگاه‌های میانای انسانی» دسترسی داشت}=1{‏یک افزونه Chromium به یک «دستگاه میانای انسانی» دسترسی دارد}one{‏یک افزونه Chromium به # «دستگاه میانای انسانی» دسترسی دارد}other{‏یک افزونه Chromium به # «دستگاه میانای انسانی» دسترسی دارد}}</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>

@@ -526,6 +526,7 @@
 <translation id="1448779317883494811">ब्रश टूल</translation>
 <translation id="1449191289887455076">“<ph name="CURRENTKEY" />” को स्विच के तौर पर असाइन करने की पुष्टि करने के लिए, इसे फिर से दबाएं और <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फ़ाइल</translation>
+<translation id="145280054552001290">कैप्शन की भाषाएं जोड़ें और हटाएं</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     डीबग लॉग<ph name="END_LINK" /> भेजें (सुझाया गया)</translation>
 <translation id="1454223536435069390">स्क्रीन&amp;शॉट लें</translation>
@@ -3602,6 +3603,7 @@
 <translation id="4044612648082411741">अपना प्रमाणपत्र पासवर्ड डालें</translation>
 <translation id="4044708573046946214">स्क्रीन लॉक का पासवर्ड</translation>
 <translation id="404493185430269859">डिफ़ॉल्ट सर्च इंजन</translation>
+<translation id="4045196801416070837">डिवाइस की आवाज़</translation>
 <translation id="4046013316139505482">इन एक्सटेंशन को साइट की जानकारी देखने या बदलने की ज़रूरत नहीं होती है.</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
 <translation id="4047345532928475040">उपलब्‍ध नहीं</translation>
@@ -5199,6 +5201,7 @@
 <translation id="5481941284378890518">आस-पास के प्रिंटर जोड़ें</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को आज ही लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}one{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}other{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ऐप्लिकेशन जोड़ें</translation>
+<translation id="5485435764083510385">कैप्शन की पसंदीदा भाषा</translation>
 <translation id="5485754497697573575">सभी टैब पुनर्स्थापित करें</translation>
 <translation id="5486261815000869482">पासवर्ड की पुष्टि करें</translation>
 <translation id="5486561344817861625">ब्राउज़र पुनर्प्रारंभ को सिम्युलेट करें</translation>
@@ -7375,6 +7378,7 @@
 <translation id="7400839060291901923">अपने <ph name="PHONE_NAME" /> पर कनेक्शन सेट अप करें</translation>
 <translation id="7401778920660465883">यह मैसेज खारिज करें</translation>
 <translation id="7402198013420237102">डिवाइस में सेव किए गए पासवर्ड को Google खाते में सेव करना है?</translation>
+<translation id="740333000181878130">डिवाइस के चालू होने की आवाज़</translation>
 <translation id="7403642243184989645">संसाधन डाउनलोड हाे रहे हैं</translation>
 <translation id="7404065585741198296">आपका फ़ोन और यूएसबी केबल</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{सुरक्षा जांच 1 घंटे पहले हुई है}one{सुरक्षा जांच {NUM_HOURS} घंटे पहले हुई है}other{सुरक्षा जांच {NUM_HOURS} घंटे पहले हुई है}}</translation>
@@ -8551,7 +8555,7 @@
 <translation id="8386091599636877289">नीति नहीं मिली.</translation>
 <translation id="8387361103813440603">आपकी जगह की जानकारी देखने की अनुमति नहीं है</translation>
 <translation id="8388770971141403598">सेकंडरी प्रोफ़ाइल से वीएम सॉफ़्टवेयर इस्तेमाल नहीं किया जा सकता</translation>
-<translation id="8389492867173948260">इस एक्सटेंशन को आपकी देखी जाने वाली इन वेबसाइटों पर मौजूद अपना सभी डेटा पढ़ने और बदलने दें:</translation>
+<translation id="8389492867173948260">इस एक्सटेंशन को आपकी विज़िट की जाने वाली वेबसाइटों पर मौजूद आपका डेटा पढ़ने और बदलने की अनुमति दें</translation>
 <translation id="8390449457866780408">सर्वर अनुपलब्‍ध है.</translation>
 <translation id="8391218455464584335">विनाइल</translation>
 <translation id="8392726714909453725">'चुनें और सुनें' सेटिंग</translation>

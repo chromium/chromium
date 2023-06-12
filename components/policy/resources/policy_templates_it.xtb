@@ -416,6 +416,7 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
           Se questo criterio non viene configurato, l'utente può installare qualsiasi estensione in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Stampanti aziendali associate ai dispositivi attive</translation>
 <translation id="1395505489889158859">Viene attivato l'invio di nome utente e nome file alle stampanti native</translation>
+<translation id="1395988776118675626">Attiva la funzionalità "Memorizza la password" per Kerberos</translation>
 <translation id="1396119629372155901">Funzionalità ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes disattivata</translation>
 <translation id="1397855852561539316">URL di suggerimento del provider di ricerca predefinito</translation>
 <translation id="1402227992519954892">Attiva i report sulle informazioni relative alle app del dispositivo</translation>
@@ -684,6 +685,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, tutte le funzionalità di <ph name="PRODUCT_OS_NAME" /> vengono attivate per impostazione predefinita e l'utente le può utilizzare.
 
       Nota: al momento la funzionalità di scansione è disattivata per impostazione predefinita tramite un flag funzionalità. Se l'utente attiva la funzionalità tramite il flag funzionalità, questa può comunque essere disattivata dal criterio.</translation>
+<translation id="1643642938972654829">Consenti l'accesso alla pagina di test dei criteri</translation>
 <translation id="1645793986494086629">Schema:</translation>
 <translation id="1647558381546345298">La configurazione del criterio consente di impostare le dimensioni della cache utilizzate da <ph name="PRODUCT_NAME" /> per archiviare sul disco i file multimediali memorizzati nella cache, a prescindere dal fatto che gli utenti abbiano specificato o meno il flag --media-cache-size. Il valore specificato in questo criterio non è un limite rigido, ma un suggerimento per il sistema di memorizzazione nella cache. Tutti i valori inferiori ad alcuni megabyte vengono arrotondati.
 
@@ -1182,6 +1184,11 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="2096932573113293941">Chiedi all'utente l'autorizzazione a eseguire plug-in che la richiedono</translation>
 <translation id="2098658257603918882">Attiva rapporti sull'utilizzo e sui dati relativi agli arresti anomali</translation>
 <translation id="2099380339157427935">Non mostrare il pulsante di uscita nella barra delle applicazioni</translation>
+<translation id="2100630160869631650">Aggiunge account Kerberos compilati automaticamente. Se le credenziali di Kerberos corrispondono a quelle di accesso, un account può essere configurato in modo da riutilizzare le credenziali di accesso specificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" rispettivamente per l'account principale e la password, in modo che il ticket Kerberos possa essere recuperato automaticamente, a meno che non sia configurata l'autenticazione a due fattori. Gli utenti non possono modificare gli account aggiunti tramite questo criterio.
+
+          Se questo criterio viene attivato, l'elenco degli account definiti dal criterio viene aggiunto alle impostazioni dell'account Kerberos.
+
+          Se questo criterio viene disattivato o non è configurato, nessun account viene aggiunto alle impostazioni dell'account Kerberos e tutti gli account aggiunti in precedenza con questo criterio vengono rimossi. Gli utenti possono comunque aggiungere manualmente gli account se il criterio "Gli utenti possono aggiungere account Kerberos" viene attivato.</translation>
 <translation id="2104418465060359056">Segnala i dati delle estensioni e dei plug-in</translation>
 <translation id="2106627642643925514">Consente di sostituire la modalità di stampa PIN predefinita. Se la modalità non è disponibile, questa norma viene ignorata.</translation>
 <translation id="2107563874993284076">Se il criterio viene impostato su Attivato, gli utenti possono utilizzare la funzione Condivisione file di rete per <ph name="PRODUCT_NAME" />. Se viene impostato su Disattivato, gli utenti non possono utilizzare questa funzionalità.</translation>
@@ -2882,6 +2889,7 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
       Se il valore è impostato su true, viene visualizzata la schermata di impostazione delle dimensioni del display.</translation>
 <translation id="3622463490728773174">Consenti nuova implementazione</translation>
 <translation id="3623332696371971798">Impedisci l'accesso a Google Foto dall'app di personalizzazione</translation>
+<translation id="3625900437628963632">Se memorizzare il valore della password Kerberos impostato in questo elemento del criterio. Se non viene configurato o se viene impostato su true, la password viene memorizzata. Se viene impostato su false, la password non viene memorizzata. Viene ignorato se il campo della password non è specificato per questo account. Questo campo è supportato a partire dalla versione 116 di ChromeOS.</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
 <translation id="3634117682099473917">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questo criterio è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e lo sostituirà se verrà specificato. Al contrario di quel criterio, supporta la specifica di informazioni sull'identità.
@@ -4799,6 +4807,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="5460797984317417682">Attiva avviso schermo intero</translation>
 <translation id="5464816904705580310">Configurazione delle impostazioni per gli utenti gestiti.</translation>
 <translation id="5466596281866046569">Segnala informazioni sulle applicazioni</translation>
+<translation id="5467175549232776406">La pagina di test dei criteri è accessibile</translation>
 <translation id="546726650689747237">Ritardo oscuramento schermo in caso di utilizzo di CA</translation>
 <translation id="546830339470589966">Completa automaticamente il dominio per i nuovi ticket Kerberos</translation>
 <translation id="5469143988693423708">L'utente è abilitato a eseguire Crostini</translation>
@@ -7306,6 +7315,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se un sito corrisponde a un pattern URL in questo criterio, i seguenti criteri non saranno presi in considerazione: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
+<translation id="77675082813227181">La pagina di test dei criteri è bloccata</translation>
 <translation id="7771298620150437359">Configura i contenuti e l'ordine delle lingue preferite</translation>
 <translation id="7773790010815041731">Le app di Chrome sono state ritirate su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />.
       Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> continuerà a consentire l'esecuzione delle app di Chrome su queste piattaforme fino alla data ultima del ritiro del supporto di queste app su tutte le piattaforme, vale a dire giugno 2022.
@@ -7794,6 +7804,12 @@ Se è configurato uno dei seguenti criteri, è necessario impostare questo crite
 <ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
 <ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
 <ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
+<translation id="826163650738550159">Questo criterio consentirà di accedere alla pagina di test dei criteri.
+Mentre i criteri vengono testati in questa pagina, tutti gli altri criteri verranno ignorati.
+La funzionalità sarà disponibile soltanto sul canale Canary.
+
+Se il criterio viene attivato o se non viene configurato, la pagina sarà accessibile.
+Se il criterio viene disattivato, la pagina verrà bloccata.</translation>
 <translation id="8266778278542911985">Se il criterio viene impostato su 3, i siti web possono chiedere l'accesso alle porte seriali. Se il criterio viene impostato su 2, l'accesso alle porte seriali viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>

@@ -315,6 +315,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1252987234827889034">A apărut o eroare privind profilul</translation>
 <translation id="1253664522045778676">Dă clic pe un rezultat și pagina se va deschide în fila actuală</translation>
 <translation id="1254593899333212300">Conexiune directă la internet</translation>
+<translation id="1256588359404100567">Setarea este sincronizată de pe dispozitivul anterior.</translation>
 <translation id="1257336506558170607">Exportă certificatul selectat</translation>
 <translation id="1258491128795710625">Noutăți</translation>
 <translation id="1259152067760398571">Verificarea de siguranță a rulat ieri</translation>
@@ -995,6 +996,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="18260074040409954">Poți folosi parolele salvate pe orice dispozitiv. Ele se salvează pe <ph name="GOOGLE_PASSWORD_MANAGER" /> pentru <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sincronizează marcajele, parolele, istoricul și altele din browserul Chrome</translation>
 <translation id="1826516787628120939">Se verifică</translation>
+<translation id="1826657447823925402">Derularea inversă este dezactivată</translation>
 <translation id="1827504459960247692">Nume hotspot</translation>
 <translation id="1828378091493947763">Acest plugin nu este acceptat pe dispozitiv</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Deschide-le pe toate}=1{&amp;Deschide marcajul}few{&amp;Deschide-le pe toate ({COUNT})}other{&amp;Deschide-le pe toate ({COUNT})}}</translation>
@@ -1282,6 +1284,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2081816110395725788">Inactivitate în timpul funcționării pe baterie</translation>
 <translation id="2082187087049518845">Adaugă fila la un grup</translation>
 <translation id="2082510809738716738">Alege o culoare pentru temă</translation>
+<translation id="2084891381052978619">Poți găsi aceste opțiuni și în Setări, după ce finalizezi configurarea Chromebookului</translation>
 <translation id="208586643495776849">Încearcă din nou</translation>
 <translation id="208634871997892083">VPN activat permanent</translation>
 <translation id="2087822576218954668">Printați: <ph name="PRINT_NAME" /></translation>
@@ -1351,6 +1354,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="212862741129535676">Procentaj de ocupare în starea activă</translation>
 <translation id="212876957201860463">Se pregătește configurarea dispozitivului celular...</translation>
 <translation id="2131077480075264">„<ph name="APP_NAME" />” nu poate fi instalată, deoarece „<ph name="IMPORT_NAME" />” nu permite acest lucru</translation>
+<translation id="2133775869826239001">Alege mai multe funcții pentru configurare</translation>
 <translation id="2133857665503360653">Reîncearcă <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Autorități de certificare (CA) de sistem</translation>
 <translation id="21354425047973905">Ascunde codurile PIN</translation>
@@ -2931,6 +2935,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="347785443197175480">Permiteți în continuare accesul <ph name="HOST" /> la camera și microfonul dvs.</translation>
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3479685872808224578">Nu s-a putut detecta serverul de printare. Verifică adresa și încearcă din nou.</translation>
+<translation id="3479753605053415848">Dă clic pentru a personaliza Chrome</translation>
 <translation id="3480612136143976912">Personalizează dimensiunea și stilul Subtitrărilor live. Unele aplicații și site-uri vor folosi această setare.</translation>
 <translation id="3480827850068960424">S-au găsit <ph name="NUM" /> file</translation>
 <translation id="3481268647794498892">Se deschide în <ph name="ALTERNATIVE_BROWSER_NAME" /> în <ph name="COUNTDOWN_SECONDS" /> secunde</translation>
@@ -3224,6 +3229,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3738632186060045350">Datele de pe <ph name="DEVICE_TYPE" /> vor fi șterse în termen de 24 de ore</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Deschizi <ph name="APPLICATION" />?</translation>
+<translation id="3740945083753997630">Micșorează dimensiunea afișării și a textului</translation>
 <translation id="3741056951918180319">Poți da clic pe extensie ca să o folosești pe orice site</translation>
 <translation id="3742235229730461951">Aspect tastatură coreeană</translation>
 <translation id="3742666961763734085">Nu s-a găsit nicio unitate organizațională cu acest nume. Încearcă din nou.</translation>
@@ -4051,6 +4057,7 @@ Dacă alegi să nu trimiți semnale, acest profil va fi închis.</translation>
 <translation id="4444512841222467874">Dacă nu se eliberează spațiu, este posibil ca utilizatorii și datele să fie eliminate automat.</translation>
 <translation id="4445446646109808714">Acord de licență pentru utilizatorul final: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Oglindit</translation>
+<translation id="4448560527907365660">Salvează și vezi mai multe</translation>
 <translation id="4448914100439890108">Ascunde parola pentru <ph name="USERNAME" /> pe <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Gestionează permisiunile</translation>
 <translation id="4449948729197510913">Numele tău de utilizator aparține contului de companie al organizației. Pentru a înregistra dispozitive în cont, mai întâi confirmă calitatea de proprietar al domeniului din Consola de administrare. Pentru confirmare, vei avea nevoie de privilegii administrative în cont.</translation>
@@ -5205,6 +5212,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi azi acest <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}few{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> în {NUM_DAYS} zile. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}other{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> în {NUM_DAYS} de zile. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Adaugă o aplicație</translation>
 <translation id="5485754497697573575">Restabilește toate filele</translation>
+<translation id="5486071940327595306"><ph name="WEBSITE" /> poate necesita un tip de dispozitiv mai nou sau diferit</translation>
 <translation id="5486261815000869482">Confirmați parola</translation>
 <translation id="5486561344817861625">Simulați repornirea browserului</translation>
 <translation id="5487460042548760727">Redenumește profilul în <ph name="PROFILE_NAME" /></translation>
@@ -5559,6 +5567,7 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="5799508265798272974">Mașină virtuală Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Fișierul de destinație a fost trunchiat sau eliminat de la ultima descărcare.</translation>
 <translation id="5800351251499368110">Închide căutarea în panoul lateral. Căutarea este deschisă în panoul lateral.</translation>
+<translation id="5800703268655655701">Selectează tema luminoasă sau pe cea întunecată</translation>
 <translation id="5801051031414037185">Configurează telefonul</translation>
 <translation id="5801568494490449797">Preferințe</translation>
 <translation id="5803689677801500549">Parolele salvate se vor afișa aici. Ca să imporți parole în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />selectează un fișier CSV.<ph name="END_LINK" /></translation>
@@ -6947,6 +6956,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6993050154661569036">Se actualizează browserul Chrome</translation>
 <translation id="6995899638241819463">Avertizează-mă dacă parolele au fost expuse în urma încălcării securității datelor</translation>
 <translation id="6995984090981858039">Citește informațiile de pe dispozitivul ChromeOS și datele dispozitivului</translation>
+<translation id="6996438701394974959">Mărește dimensiunea afișării și a textului</translation>
 <translation id="6997553674029032185">Accesează site-ul</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Jurnalul de activități</translation>
 <translation id="6997707937646349884">Pe dispozitivele tale:</translation>
@@ -7873,6 +7883,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">Fundalul paginii de pornire a fost modificat la <ph name="CATEGORY" />.</translation>
+<translation id="7791436592012979144">Derularea inversă este activată</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="7792012425874949788">A apărut o eroare la conectare</translation>
 <translation id="7792388396321542707">Opriți accesul la ecran</translation>
@@ -8039,6 +8050,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7935451262452051102">S-a finalizat <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Opțiuni avansate</translation>
 <translation id="7939073735115504773">Dă clic pe pictograma extensiei pentru a permite citirea și modificările la <ph name="HOST" /></translation>
+<translation id="793923212791838">Dispozitivul nu poate fi folosit cu acest site</translation>
 <translation id="7939328347457537652">Gestionează certificatele dispozitivelor</translation>
 <translation id="7939412583708276221">Păstrați oricum</translation>
 <translation id="7940265372707990269">Sortează după <ph name="SORT_TYPE" /></translation>

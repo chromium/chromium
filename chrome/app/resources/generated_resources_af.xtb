@@ -525,6 +525,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1448779317883494811">Kwasnutsding</translation>
 <translation id="1449191289887455076">Druk “<ph name="CURRENTKEY" />” weer om toewysing te bevestig en <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Webbladsy, enkellêer</translation>
+<translation id="145280054552001290">Voeg tale by vir onderskrifte en verwyder hulle</translation>
 <translation id="1453561711872398978">Stuur
     <ph name="BEGIN_LINK" />ontfoutloglêers<ph name="END_LINK" /> (aanbeveel)</translation>
 <translation id="1454223536435069390">Neem skermkiekie</translation>
@@ -3602,6 +3603,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4044612648082411741">Voer jou sertifikaatwagwoord in</translation>
 <translation id="4044708573046946214">Skermslotwagwoord</translation>
 <translation id="404493185430269859">Versteksoekenjin</translation>
+<translation id="4045196801416070837">Toestelklanke</translation>
 <translation id="4046013316139505482">Hierdie uitbreidings hoef nie inligting op hierdie werf te sien en te verander nie.</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
 <translation id="4047345532928475040">NVT</translation>
@@ -5198,6 +5200,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5481941284378890518">Voeg nabygeleë drukkers by</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> vandag terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> binne {NUM_DAYS} dae terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Voeg program by</translation>
+<translation id="5485435764083510385">Voorkeuronderskriftaal</translation>
 <translation id="5485754497697573575">Stel alle oortjies terug</translation>
 <translation id="5486261815000869482">Bevestig wagwoord</translation>
 <translation id="5486561344817861625">Simuleer blaaierherbegin</translation>
@@ -7373,6 +7376,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7400839060291901923">Stel verbinding op jou <ph name="PHONE_NAME" /> op</translation>
 <translation id="7401778920660465883">Maak hierdie boodskap toe</translation>
 <translation id="7402198013420237102">Skuif gestoorde wagwoorde na jou Google-rekening?</translation>
+<translation id="740333000181878130">Toestelbeginklank</translation>
 <translation id="7403642243184989645">Laai tans hulpbronne af</translation>
 <translation id="7404065585741198296">Jou foon met 'n USB-kabel</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Veiligheidsbevestiging het 1 uur gelede plaasgevind}other{Veiligheidsbevestiginghet {NUM_HOURS} uur gelede plaasgevind}}</translation>

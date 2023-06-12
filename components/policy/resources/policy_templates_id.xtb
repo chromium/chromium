@@ -417,6 +417,7 @@ Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
           Jika kebijakan ini tidak disetel, pengguna dapat menginstal ekstensi apa pun di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Mengaktifkan printer perangkat perusahaan</translation>
 <translation id="1395505489889158859">Aktifkan pengiriman nama pengguna dan nama file ke printer native</translation>
+<translation id="1395988776118675626">Mengaktifkan fitur 'Ingat sandi' untuk Kerberos</translation>
 <translation id="1396119629372155901">Fitur ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes dinonaktifkan</translation>
 <translation id="1397855852561539316">URL saran penyedia penelusuran default</translation>
 <translation id="1402227992519954892">Aktifkan pelaporan info aplikasi perangkat</translation>
@@ -689,6 +690,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
        Jika kebijakan tidak disetel, semua fitur <ph name="PRODUCT_OS_NAME" /> akan diaktifkan secara default dan pengguna dapat menggunakan semua fitur tersebut.
 
       Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkannya melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
+<translation id="1643642938972654829">Mengizinkan akses ke halaman pengujian kebijakan</translation>
 <translation id="1645793986494086629">Skema:</translation>
 <translation id="1647558381546345298">Jika kebijakan disetel, ukuran cache yang digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan file media yang di-cache pada disk akan dikonfigurasi, terlepas apakah pengguna menentukan tanda --media-cache-size. Nilai yang ditentukan dalam kebijakan ini bukanlah batas mutlak, melainkan saran untuk sistem penyimpanan dalam cache. Setiap nilai yang kurang dari beberapa megabyte akan dibulatkan ke atas.
 
@@ -1187,6 +1189,11 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="2096932573113293941">Minta izin pengguna untuk menjalankan plugin yang memerlukan otorisasi</translation>
 <translation id="2098658257603918882">Aktifkan laporan data penggunaan dan yang terkait error</translation>
 <translation id="2099380339157427935">Jangan tampilkan tombol logout di baki</translation>
+<translation id="2100630160869631650">Menambahkan akun Kerberos yang telah diisi. Jika kredensial Kerberos cocok dengan kredensial login, akun dapat dikonfigurasi untuk menggunakan kembali kredensial login dengan menentukan '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' dan <ph name="PASSWORD_PLACEHOLDER" />', masing-masing untuk akun utama dan sandi, sehingga tiket Kerberos dapat diambil secara otomatis, kecuali autentikasi 2 langkah dikonfigurasi. Pengguna tidak dapat memodifikasi akun yang ditambahkan melalui kebijakan ini.
+
+          Jika kebijakan ini diaktifkan, daftar akun yang ditentukan oleh kebijakan akan ditambahkan ke setelan Akun Kerberos.
+
+          Jika kebijakan ini dinonaktifkan atau tidak ditetapkan, tidak ada akun yang akan ditambahkan ke setelan Akun Kerberos dan semua akun yang sebelumnya ditambahkan dengan kebijakan ini akan dihapus. Pengguna masih dapat menambahkan akun secara manual jika kebijakan 'Pengguna dapat menambahkan akun Kerberos' diaktifkan.</translation>
 <translation id="2104418465060359056">Melaporkan informasi Ekstensi dan Plugin</translation>
 <translation id="2106627642643925514">Mengganti mode pencetakan PIN default. Jika mode ini tidak tersedia, kebijakan ini akan diabaikan.</translation>
 <translation id="2107563874993284076">Jika kebijakan disetel ke Aktif, pengguna dapat menggunakan Berbagi File Jaringan untuk <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menggunakan fitur ini.</translation>
@@ -2918,6 +2925,7 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
       Jika disetel ke benar (true), layar setelan ukuran tampilan akan ditampilkan.</translation>
 <translation id="3622463490728773174">Izinkan implementasi baru</translation>
 <translation id="3623332696371971798">Cegah akses Google Foto dari aplikasi personalisasi</translation>
+<translation id="3625900437628963632">Apakah ingin mengingat nilai sandi Kerberos yang ditetapkan di item kebijakan ini. Jika tidak disetel atau disetel ke benar (true), sandi akan diingat. Jika disetel ke salah (false), sandi tidak akan diingat. Diabaikan jika kolom sandi tidak ditentukan untuk akun ini. Kolom ini didukung mulai ChromeOS versi 116.</translation>
 <translation id="3627678165642179114">Mengaktifkan atau menonaktifkan layanan web memeriksa ejaan</translation>
 <translation id="3628480121685794414">Aktifkan pencetakan simpleks</translation>
 <translation id="3634117682099473917">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi. Kebijakan ini sangat mirip dengan <ph name="DOH_TEMPLATES_POLICY_NAME" /> yang akan diganti jika ditentukan. Berbeda dengan kebijakan sebelumnya, kebijakan ini mendukung penentuan informasi identitas.
@@ -4883,6 +4891,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
 <translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna terkelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
+<translation id="5467175549232776406">Halaman pengujian kebijakan dapat diakses</translation>
 <translation id="546726650689747237">Penundaan peredupan layar saat menggunakan daya AC</translation>
 <translation id="546830339470589966">Pelengkapan otomatis domain untuk tiket Kerberos baru</translation>
 <translation id="5469143988693423708">Pengguna diaktifkan untuk menjalankan Crostini</translation>
@@ -7483,6 +7492,7 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
       Jika situs cocok dengan pola URL di kebijakan ini, kebijakan berikut akan diabaikan: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
+<translation id="77675082813227181">Halaman pengujian kebijakan diblokir</translation>
 <translation id="7771298620150437359">Mengonfigurasi konten dan urutan bahasa pilihan</translation>
 <translation id="7773790010815041731">Aplikasi Chrome tidak digunakan lagi di <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="LINUX_OS_NAME" />.
       Jika kebijakan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan terus mengizinkan Aplikasi Chrome dijalankan di platform berikut hingga tanggal akhir saat dukungan Aplikasi Chrome dihapus di semua platform, yakni Juni 2022.
@@ -7984,6 +7994,12 @@ Kebijakan ini harus disetel ke Nonaktif jika salah satu kebijakan berikut disete
 <ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
 <ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
 <ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
+<translation id="826163650738550159">Kebijakan ini akan memberikan akses ke halaman pengujian kebijakan.
+Saat kebijakan diuji di halaman ini, semua kebijakan lainnya akan diabaikan.
+Fitur ini hanya akan tersedia di saluran Canary.
+
+Jika kebijakan disetel ke Aktif atau tidak disetel, halaman akan dapat diakses.
+Jika kebijakan disetel ke Nonaktif, halaman akan diblokir.</translation>
 <translation id="8266778278542911985">Jika kebijakan disetel ke 3, situs akan dapat meminta akses ke port serial. Jika kebijakan disetel ke 2, akses ke port serial akan ditolak.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>

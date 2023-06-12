@@ -265,6 +265,7 @@
 
           &lt;p&gt;Corectează data și ora din secțiunea &lt;strong&gt;General&lt;/strong&gt; a aplicației &lt;strong&gt;Setări&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratorul îți va reporni dispozitivul la ora <ph name="TIME" />, pe <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Niciun text nu a fost convertit din imagini</translation>
 <translation id="156703335097561114">Informații despre rețea cum ar fi adresele, configurația interfeței și calitatea conexiunii</translation>
 <translation id="1567040042588613346">Politica funcționează corespunzător, dar în altă sursă a fost setată aceeași valoare, care este înlocuită prin această politică.</translation>
 <translation id="1567405528131216114">Adaugă <ph name="TOPIC" /></translation>
@@ -1200,6 +1201,7 @@
 <translation id="3890664840433101773">Adaugă o adresă de e-mail</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3901925938762663762">Cardul este expirat</translation>
+<translation id="3906095212874392000">Finalul textului convertit</translation>
 <translation id="3906954721959377182">Tabletă</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Poți să te răzgândești oricând în setările Chrome</translation>
@@ -1400,6 +1402,7 @@
 <translation id="4331519897422864041">Receptorul de hârtie 5</translation>
 <translation id="4331708818696583467">Nesecurizat</translation>
 <translation id="4333561522337981382">Gestionează ferestre de pe toate ecranele</translation>
+<translation id="4338709847516294988">Apasă pe tastele căutare, + și M și convertește imaginea în text din meniul contextual</translation>
 <translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
 <translation id="4340982228985273705">Acest computer nu este detectat ca fiind gestionat de companie, deci politica poate instala automat doar extensiile găzduite în Magazinul web Chrome. Adresa URL pentru actualizare din Magazinul web Chrome este „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4348834659292907206">Conexiunea la <ph name="SITE" /> nu este securizată</translation>
@@ -1415,6 +1418,7 @@
 <translation id="4359160567981085931">Ai introdus parola pe un site înșelător. Chrome te poate ajuta. Ca să schimbi parola și să anunți Google că respectivul cont poate fi în pericol, dă clic pe Protejează contul.</translation>
 <translation id="4363222835916186793">Alertele pentru acest produs au fost dezactivate</translation>
 <translation id="437040971055499437">Are loc un eveniment de securitate</translation>
+<translation id="4371307856413138486">Începutul textului convertit</translation>
 <translation id="4371591986692297148">Inactiv</translation>
 <translation id="4372948949327679948">Se aștepta valoarea <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Adaugă din nou un articol dorit în grupul de subiecte dintre care poate alege Chrome atunci când estimează lucrurile care te interesează</translation>
@@ -2089,6 +2093,7 @@
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6041777658117377052">Temperatura camerei</translation>
 <translation id="6042308850641462728">Mai multe</translation>
+<translation id="6042688167654081154">Imagine convertită în text</translation>
 <translation id="6044573915096792553">Mărimea 12</translation>
 <translation id="6045164183059402045">Șablon de impunere</translation>
 <translation id="6047233362582046994">Dacă îți asumi riscurile de securitate, poți să <ph name="BEGIN_LINK" />accesezi acest site<ph name="END_LINK" /> înainte ca aplicațiile dăunătoare să fie eliminate.</translation>
@@ -2150,6 +2155,7 @@
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">Imaginea se analizează</translation>
 <translation id="6203231073485539293">Verificați conexiunea la internet</translation>
 <translation id="6205314730813004066">Confidențialitatea anunțurilor</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

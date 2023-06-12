@@ -1081,6 +1081,11 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2006530844219044261">Energiebeheer</translation>
 <translation id="2006954055163088863">Gebruiker als inactief beschouwen tijdens afspelen van video's</translation>
 <translation id="2008514891623783266">Het IP-gebruiksbeleid van WebRTC</translation>
+<translation id="201153120366509312">Als je dit beleid instelt op toegestaan of niet instelt, is de verzameling van URL-sleutelstatistieken toegestaan.
+Als dit is toegestaan en de verzameling van URL-sleutelstatistieken is aangezet door de gebruiker, worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsefunctionaliteit te verbeteren, samen met gebruiksstatistieken per pagina.
+URL-sleutelstatistieken omvatten ook de ID's en gebruiksstatistieken van andere browsercomponenten die content kunnen aanpassen of leveren, zoals extensies.
+
+Als je dit beleid instelt op niet toegestaan, kunnen gebruikers de verzameling van URL-sleutelstatistieken niet aanzetten.</translation>
 <translation id="2012296492055302633">Het privacyscherm altijd aanzetten</translation>
 <translation id="2014757022750736514">Beheert het gedrag van het inlogscherm, waar gebruikers inloggen op hun accounts. Instellingen zijn onder andere wie kan inloggen, welke typen accounts zijn toegestaan, welke verificatiemethoden moeten worden gebruikt, en algemene instellingen voor toegankelijkheid, invoermethoden en taal.</translation>
 <translation id="201557587962247231">De frequentie van uploads van rapporten over de apparaatstatus</translation>
@@ -1322,6 +1327,15 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="2223393221350938149">Niet toestaan dat sites JavaScript JIT uitvoeren</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>
 <translation id="222673035924187991">ClientHallo met TLS-versleuteling aanzetten</translation>
+<translation id="222944823539535006">Dit beleid is beëindigd en wordt verwijderd in de mijlpaal 130. Gebruik in plaats daarvan <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
+
+Als je het beleid toepast, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsefunctionaliteit te verbeteren.
+
+Als je het beleid niet toepast, wordt de geanonimiseerde gegevensverzameling met URL-sleutel niet aangezet.
+
+Als je dit beleid niet instelt, kunnen gebruikers deze instelling handmatig wijzigen.
+
+In de <ph name="PRODUCT_OS_NAME" />-kiosk biedt dit beleid niet de optie Gebruiker laten bepalen. Als dit beleid niet is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief.</translation>
 <translation id="2231817271680715693">Browsegeschiedenis importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="2231962946025538735">Dit beleid is beëindigd. Gebruik het beleid <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> om de beschikbaarheid van de Flash-plug-in te beheren en het beleid <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> om aan te geven of de geïntegreerde pdf-viewer moet worden gebruikt om pdf-bestanden te openen.
 
@@ -4291,6 +4305,7 @@ Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-
 <translation id="5025239932007658691">Als je het beleid toepast of niet instelt, stuurt <ph name="PRODUCT_NAME" /> af en toe query's naar een Google-server om een nauwkeurig tijdstempel op te halen.
 
       Als je het beleid niet toepast, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
+<translation id="5030415914668947893">Verzameling van URL-sleutelstatistieken toestaan</translation>
 <translation id="5033070732967197381">WebAuthn API-verzoeken toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="5034504101537897433">Rapportage voor informatie over crashrapporten van apparaat aanzetten</translation>
 <translation id="5036013147560568855">Versie van het certificaatregistratieprotocol. De standaardinstelling is 1. 1 is het 'statische' protocol. 2 is het 'dynamische' protocol.</translation>
@@ -5296,6 +5311,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 <translation id="603768430528561926">Als je het beleid toepast of niet instelt, kunnen gebruikers van zakelijke apparaten aanbiedingen inwisselen via <ph name="PRODUCT_OS_NAME" />-registratie.
 
       Als je het beleid niet toepast, kunnen gebruikers deze aanbiedingen niet inwisselen.</translation>
+<translation id="6042629184389251062">Verzameling van URL-sleutelstatistieken is niet toegestaan</translation>
 <translation id="6046615715547751255">Opties voor gedetailleerde rapportage niet toestaan</translation>
 <translation id="6048199181629830227">Stroombeheer voor piekuren aanzetten</translation>
 <translation id="6048690591359317353">De gebruiker niet toestaan een VPN handmatig te ontkoppelen of aan te passen</translation>
@@ -5797,6 +5813,7 @@ Zie ook het beleid <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6462604655173570082">Als je dit beleid toepast of niet instelt, kunnen gebruikers de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop zien en gebruiken in het zoekvak op de pagina Nieuw tabblad. Als je dit beleid niet toepast, zien gebruikers de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop niet in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="6464074037294098618">Automatisch invullen voor adressen aanzetten</translation>
 <translation id="6467613372414922590">Hosts voor native berichten op gebruikersniveau toestaan (geïnstalleerd zonder beheerdersrechten)</translation>
+<translation id="6471018476824827813">Verzameling van URL-sleutelstatistieken is toegestaan</translation>
 <translation id="6473623140202114570">Configureer de lijst met domeinen waar Safe Browsing geen waarschuwingen activeert.</translation>
 <translation id="6474194795370862403">Het oude offsetParent-gedrag wordt gebruikt.</translation>
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> aanzetten en instellen als primaire browser</translation>

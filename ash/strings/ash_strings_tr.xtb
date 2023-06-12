@@ -141,6 +141,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1550406609415860283">Kullanılabilir cihazlar var</translation>
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
 <translation id="1555130319947370107">Mavi</translation>
+<translation id="1576511610858879060">Chromebook veya Bluetooth cihazınızda Bluetooth'un eski bir sürümü kullanılıyor. Daha iyi ses kalitesi için başka bir giriş kaynağı kullanın.</translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
 <translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
@@ -356,6 +357,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="256712445991462162">yerleştirilmiş büyüteç</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> bağlanamadı</translation>
 <translation id="2575685495496069081">Çoklu oturum açma devre dışı bırakıldı</translation>
+<translation id="2579264398927991698">Donanım Yazılımı Güncellemeleri</translation>
 <translation id="2582112259361606227">Güncellemek için yeniden başlat</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> ile birleştirmek için Ctrl + W tuşlarına basın. Masayı ve pencereleri kapatmak için Ctrl + Üst Karakter + W tuşlarına basın.</translation>
 <translation id="2595239820337756193">5 km kaç mildir</translation>
@@ -687,6 +689,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4028481283645788203">Daha fazla güvenlik için şifre gerekiyor</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekranınızı paylaşıyorsunuz</translation>
+<translation id="404437169852192935">Güncellemeler sona erdi</translation>
 <translation id="4049230407053723315">Hızlı Ayarlar</translation>
 <translation id="4057003836560082631">Tarayıcı sekmesi <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Kapalı, 1 uygulama}other{Kapalı, # uygulama}}</translation>
@@ -1017,11 +1020,13 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> veya <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Donanım yazılımı güncellemeleri mevcut</translation>
 <translation id="5503884284981862082">Google Asistan'ı açın/kapatın</translation>
+<translation id="550391772491508736">Yayını devam ettir</translation>
 <translation id="5506975627792768506">Büyüteci açın veya kapatın</translation>
 <translation id="5512042095225963688">Önceki kelimeyi sil</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Yöneticiniz tüm eSIM profillerini kaldırdı. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> bağlanıyor.</translation>
+<translation id="5529587891732734495">Yayını duraklat</translation>
 <translation id="5532994612895037630">Tam ekran görüntüsü kaydetmek için herhangi bir yere dokunun</translation>
 <translation id="5536723544185013515">Son Uygulamalar: Son uygulamaların tamamına erişmek için sol veya sağ ok tuşlarıyla gezinin</translation>
 <translation id="553675580533261935">Oturum kapatılıyor</translation>
@@ -1153,6 +1158,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6059276912018042191">Son Chrome sekmeleri</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> içinde otomatik olarak çıkış yapacaksınız.</translation>
 <translation id="6064463340679478396">Dosyayla işim bitti</translation>
+<translation id="6068258534237496331">Görüntülü Görüşme Denetimleri</translation>
 <translation id="6073451960410192870">Kaydı durdur</translation>
 <translation id="6074087755403037157">Beta Kanalı</translation>
 <translation id="6093867385179428431">Yönetici devre dışı bıraktı</translation>
@@ -1388,6 +1394,7 @@ Yeni yüklenmiş</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
 <translation id="7180611975245234373">Yenile</translation>
+<translation id="7185362672357349361">Mikrofon kapalıyken uyaran otomatik hatırlatma açılsın mı? Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
 <translation id="7187711731540696127"><ph name="DEVICE_NAME" /> hotspot'unuz açık, hiçbir cihaz bağlı değil</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>

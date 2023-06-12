@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Välisseadmete püsivara värskendamise aken on lahti. Saadaval on <ph name="NUM_UPDATES" /> värskendust.</translation>
 <translation id="1145516343487477149">Leidke Chromebookiga seotud levinud küsimustele vastuseid ja abiartikleid</translation>
+<translation id="1164939766849482256">Päikesetõusust päikeseloojanguni ekraanisäästja</translation>
 <translation id="1167755866710282443">Klahvide kohandamiseks avage menüü. Teisaldamiseks lohistage menüüd.</translation>
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Keskmine (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">Brauseris navigeerimine</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
+<translation id="2880569433548999039">Pilvevoolu ekraanisäästja</translation>
 <translation id="2926057806159140518">Sisestage kasutajanimi ja parool või skannige QR-kood</translation>
 <translation id="2940811910881150316">Seadet ei saa testida. Testimiseks avage uuesti kaas.</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>
 <translation id="3160172848211257835">Saada <ph name="BEGIN_LINK1" />süsteemi ja rakenduste teave<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />mõõdikud<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Asetage dokument skannerisse</translation>
+<translation id="3174321110679064523">Päikesetõusust päikeseloojanguni taustapilt</translation>
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="319101249942218879">Avatari pilti muudeti</translation>
 <translation id="3192947282887913208">Helifailid</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
+<translation id="3373141842870501561">Maa pöörlemise ekraanisäästja</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">ülemisele</translation>
 <translation id="3651050199673793219">Valige temperatuuriühik</translation>
 <translation id="3663574643422533538">Valige <ph name="PRODUCT_NAME" /> eksklusiivne kujundus</translation>
+<translation id="3668449597372804501">Pilvevoolu taustapilt</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">RGB juhtelemendid</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
+<translation id="382043424867370667">Päikeseloojangu taustapilt</translation>
 <translation id="3824259034819781947">Failide manustamine</translation>
 <translation id="3838338534323494292">Uus parool</translation>
 <translation id="3845880861638660475">Dialoogi sulgemiseks vajutage korraga klahve <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">Vana parool</translation>
 <translation id="4453205916657964690">Alamvõrgu mask</translation>
 <translation id="4454245904991689773">Skanni asukohta</translation>
+<translation id="4469288414739283461">Maa pöörlemise ekraanisäästja</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="4500966230243561393">Liidese värv</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">Taaskäita rutiinid</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">taustavalguse värv</translation>
+<translation id="5292579816060236070">Päikesetõusu taustapilt</translation>
 <translation id="5294769550414936029">versioon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Teisalda aken töölauale</translation>
+<translation id="5303837385540978511">Eksklusiivne ekraanisäästja – <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteet</translation>
 <translation id="5317780077021120954">Salvesta</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Kas skannida leht uuesti?}=1{Kas skannida {PAGE_NUMBER}. leht uuesti?}other{Kas skannida {PAGE_NUMBER}. leht uuesti?}}</translation>
 <translation id="6472207088655375767">Ühekordne parool</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">Eksklusiivne ekraanisäästja – <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
 <translation id="6494974875566443634">Kohandamine</translation>
 <translation id="6500818810472529210">Kuva Google'i otsingu tulemused</translation>

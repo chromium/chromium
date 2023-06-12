@@ -276,6 +276,7 @@
 <translation id="2567545343356994513">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다.</translation>
 <translation id="2569733278091928697">미디어 제어, 시크릿 세션, 다운로드 등을 간편하게 관리할 수 있습니다.</translation>
 <translation id="2571711316400087311">다른 언어로 된 페이지를 Google 번역으로 전송하는 옵션 제공</translation>
+<translation id="2571834852878229351">직접 만들기</translation>
 <translation id="2573452357057307036">Chrome을 기본 브라우저로 설정하는 방법을 알아보세요.</translation>
 <translation id="257470231920177468">이 설정을 사용하면 내 관심분야를 추측하는 내가 방문한 사이트 목록이 여기에 표시됩니다.</translation>
 <translation id="2580436639406015883">스팸 및 사기 감소 기능은 비공개 상태 토큰을 사용해 사이트에서 사기에 대응하고 사람과 봇을 구별하도록 돕습니다.
@@ -567,6 +568,7 @@
 <translation id="4108314971463891922">팔로우</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="4116038641877404294">페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
+<translation id="4121654769234887259">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 <ph name="USERNAME" />님의 Google 비밀번호 관리자에 저장됩니다</translation>
 <translation id="4124152339699379357">알림 권한 흐름이 전체 높이로 열림</translation>
 <translation id="4135200667068010335">탭을 공유할 기기 목록이 닫혔습니다.</translation>
 <translation id="4137746084635924146">기기의 현재 언어</translation>
@@ -779,6 +781,7 @@
 <translation id="5171045022955879922">검색 또는 URL 입력</translation>
 <translation id="5174700554036517242">탭이 초기 높이로 복구됨</translation>
 <translation id="5184329579814168207">Chrome에서 열기</translation>
+<translation id="5186634140793586141">관심 있는 주제 및 검색어 관리</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
@@ -1362,6 +1365,7 @@
 <translation id="8127542551745560481">홈페이지 수정</translation>
 <translation id="8130309322784422030">저장된 로그인 정보가 오래되었을 수 있습니다</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
+<translation id="8137562778192957619">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 Google 비밀번호 관리자에 저장됩니다</translation>
 <translation id="8156139159503939589">어떤 언어로 읽을 수 있으신가요?</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8189750580333936930">개인 정보 보호 샌드박스</translation>

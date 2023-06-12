@@ -141,6 +141,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1550406609415860283">Tilgængelige enheder</translation>
 <translation id="1550523713251050646">Klik for at se flere muligheder</translation>
 <translation id="1555130319947370107">Blå</translation>
+<translation id="1576511610858879060">Din Chromebook eller Bluetooth-enhed anvender en ældre version af Bluetooth. Brug en anden inputkilde for at få bedre lydkvalitet.</translation>
 <translation id="1576623706766186887">Zoom ud, når luppen er aktiveret</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
@@ -356,6 +357,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="256712445991462162">den fastgjorte lup</translation>
 <translation id="2573588302192866788">Forbindelsen til <ph name="NAME" /> kunne ikke oprettes</translation>
 <translation id="2575685495496069081">Samlet login fra flere konti er deaktiveret</translation>
+<translation id="2579264398927991698">Firmwareopdateringer</translation>
 <translation id="2582112259361606227">Genstart for at opdatere</translation>
 <translation id="2586561057878260610">Tryk på Ctrl+W for at kombinere med <ph name="DESK_NAME" />. Tryk på Ctrl+Shift+W for at lukke skrivebordet og vinduerne.</translation>
 <translation id="2595239820337756193">5 kilometer i miles</translation>
@@ -687,6 +689,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4028481283645788203">Der kræves en adgangskode som ekstra sikkerhed</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Du deler din skærm</translation>
+<translation id="404437169852192935">Du modtager ikke længere opdateringer</translation>
 <translation id="4049230407053723315">Kvikmenu</translation>
 <translation id="4057003836560082631">Browserfane <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Fra for én app}one{Fra for # app}other{Fra for # apps}}</translation>
@@ -1017,11 +1020,13 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> eller <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Der er nye firmwareopdateringer</translation>
 <translation id="5503884284981862082">Åbn/luk Google Assistent</translation>
+<translation id="550391772491508736">Genoptag casting</translation>
 <translation id="5506975627792768506">Aktivér eller deaktiver luppen</translation>
 <translation id="5512042095225963688">Slet forrige ord</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Din administrator har fjernet alle eSIM-profiler. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> opretter forbindelse.</translation>
+<translation id="5529587891732734495">Sæt casting på pause</translation>
 <translation id="5532994612895037630">Tryk et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="5536723544185013515">Seneste apps, naviger med venstre eller højre piletast for at få adgang til alle seneste apps</translation>
 <translation id="553675580533261935">Afslutter session</translation>
@@ -1153,6 +1158,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Jeg er færdig med at bruge filen</translation>
+<translation id="6068258534237496331">Indstillinger for videoopkald</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6093867385179428431">Deaktiveret af administratoren</translation>
@@ -1388,6 +1394,7 @@ Installeret for nylig</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Fortryder og vender tilbage til den gamle opløsning om <ph name="TIMEOUT_SECONDS" /> sekunder.</translation>
 <translation id="7180611975245234373">Opdater</translation>
+<translation id="7185362672357349361">Vil du aktivere påmindelse om at slå mikrofonen fra? Du får besked, hvis du taler, mens mikrofonen er slået fra. Lyden forlader aldrig din enhed.</translation>
 <translation id="7187711731540696127">Dit hotspot for <ph name="DEVICE_NAME" /> er aktiveret. Der er ingen forbundne enheder</translation>
 <translation id="7188494361780961876">Menuen blev flyttet til øverste venstre hjørne af skærmen.</translation>
 <translation id="7189412385142492784">Hvor langt væk er Venus?</translation>

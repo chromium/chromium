@@ -141,6 +141,7 @@
 <translation id="1550406609415860283">ഉപകരണങ്ങൾ ലഭ്യമാണ്</translation>
 <translation id="1550523713251050646">കൂടുതൽ ഓപ്‌ഷനുകൾക്ക് ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="1555130319947370107">നീല</translation>
+<translation id="1576511610858879060">Bluetooth-ന്റെ പഴയ പതിപ്പാണ് നിങ്ങളുടെ Chromebook അല്ലെങ്കിൽ Bluetooth ഉപകരണം ഉപയോഗിക്കുന്നത്. മികച്ച ഓഡിയോ നിലവാരത്തിനായി മറ്റൊരു ഇൻപുട്ട് ഉറവിടം ഉപയോഗിക്കൂ.</translation>
 <translation id="1576623706766186887">മാഗ്നിഫയർ ഓണായിരിക്കുമ്പോൾ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="1586324912145647027">1 മുതൽ 8 വരെയുള്ള ഡെസ്ക്കുകളിലേക്ക് പോകുക</translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
@@ -356,6 +357,7 @@
 <translation id="256712445991462162">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> കണക്റ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="2575685495496069081">ഒന്നിലധികം സൈൻ ഇൻ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
+<translation id="2579264398927991698">ഫേംവെയർ അപ്ഡേറ്റുകൾ</translation>
 <translation id="2582112259361606227">അപ്‌ഡേറ്റ് ചെയ്യാൻ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> എന്നതുമായി സംയോജിപ്പിക്കാൻ Ctrl + W അമർത്തുക. ഡെസ്ക്കും വിൻഡോകളും അടയ്ക്കാൻ Ctrl + Shift + W അമർത്തുക.</translation>
 <translation id="2595239820337756193">5K എത്ര മൈലാണ്</translation>
@@ -687,6 +689,7 @@
 <translation id="4028481283645788203">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">നിങ്ങൾ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
+<translation id="404437169852192935">അപ്‌ഡേറ്റുകൾ അവസാനിച്ചു</translation>
 <translation id="4049230407053723315">ദ്രുത ക്രമീകരണം</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> ബ്രൗസർ ടാബുകളിൽ <ph name="INDEX" />-ാമത്തേത്. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ആപ്പിൽ അറിയിപ്പ് ഓഫ്}other{# ആപ്പിൽ അറിയിപ്പ് ഓഫ്}}</translation>
@@ -1017,11 +1020,13 @@
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> അല്ലെങ്കിൽ <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">ഫേംവെയർ അപ്‌ഡേറ്റുകൾ ലഭ്യമാണ്</translation>
 <translation id="5503884284981862082">Google Assistant തുറക്കുകയോ അടയ്ക്കുകയോ ചെയ്യുക</translation>
+<translation id="550391772491508736">കാസ്റ്റ് ചെയ്യൽ പുനരാരംഭിക്കുക</translation>
 <translation id="5506975627792768506">മാഗ്നിഫയർ ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
 <translation id="5512042095225963688">മുമ്പത്തെ വാക്ക് ഇല്ലാതാക്കുക</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">നിങ്ങളുടെ അഡ്‌മിൻ എല്ലാ eSIM പ്രൊഫൈലുകളും നീക്കം ചെയ്തു. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> കണക്റ്റ് ചെയ്യുന്നു.</translation>
+<translation id="5529587891732734495">കാസ്റ്റ് ചെയ്യൽ താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="5532994612895037630">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ എവിടെയെങ്കിലും ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5536723544185013515">അടുത്തിടെയുള്ള ആപ്പുകൾ, അടുത്തിടെയുള്ള എല്ലാ ആപ്പുകളും ആക്സസ് ചെയ്യാൻ ഇടത്തേക്കോ വലത്തേക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിച്ച് നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="553675580533261935">സെഷനിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-ൽ പഴയ റെസല്യൂഷനിലേക്ക് മാറ്റുന്നു</translation>
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
+<translation id="7185362672357349361">മ്യൂട്ട് നഡ്‌ജ് ഓണാക്കണോ? മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും. ഓഡിയോ നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഒരിക്കലും പുറത്തുപോകില്ല.</translation>
 <translation id="7187711731540696127">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ട് ഓണാണ്, ഉപകരണങ്ങളൊന്നും കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="7188494361780961876">സ്‌ക്രീനിന്റെ മുകളിൽ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="7189412385142492784">ശുക്രനിലേക്ക് എത്ര ദൂരമുണ്ട്</translation>

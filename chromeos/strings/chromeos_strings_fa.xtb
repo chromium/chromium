@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">پنجره به‌روزرسانی سفت‌افزار برای دستگاه‌های خارجی باز است. <ph name="NUM_UPDATES" /> به‌روزرسانی دردسترس است</translation>
 <translation id="1145516343487477149">‏برای سؤالات متداول Chromebook، مقاله راهنما و پاسخ پیدا کنید</translation>
+<translation id="1164939766849482256">محافظ صفحه بامداد تا شامگاه</translation>
 <translation id="1167755866710282443">منو را برای سفارشی کردن کلیدها باز کنید. برای جابه‌جایی، منو را بکشید.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1175951029573070619">متوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">پیمایش در مرورگر</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
+<translation id="2880569433548999039">محافظ صفحه جریان ابر</translation>
 <translation id="2926057806159140518">نام کاربری و گذرواژه‌تان را وارد کنید یا رمزینه پاسخ‌سریع را اسکن کنید</translation>
 <translation id="2940811910881150316">نمی‌توان دستگاه را آزمایش کرد. برای آزمایش کردن، در دستگاه را دوباره باز کنید.</translation>
 <translation id="3008341117444806826">بازآوری</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>
 <translation id="3160172848211257835">ارسال <ph name="BEGIN_LINK1" />اطلاعات<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />سنجه‌های سیستم و برنامه<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">سند را روی اسکنر قرار دهید</translation>
+<translation id="3174321110679064523">کاغذدیواری بامداد تا شامگاه</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="319101249942218879">تصویر چهره‌نما تغییر کرد</translation>
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
+<translation id="3373141842870501561">کاغذدیواری گردش زمین</translation>
 <translation id="3404249063913988450">فعال کردن محافظ صفحه</translation>
 <translation id="3413935475507503304">برای به‌روزرسانی، روی «بعدی» کلیک کنید.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">بالا</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
 <translation id="3663574643422533538">انتخاب کارهای هنری انحصاری برای <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">کاغذدیواری جریان ابر</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">‏کنترل‌های RGB</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
+<translation id="382043424867370667">کاغذدیواری غروب آفتاب</translation>
 <translation id="3824259034819781947">پیوست فایل</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="3845880861638660475">برای بستن کادر گفتگو، کلیدهای <ph name="ALT_SHORTCUT_START" />دگرساز<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />گریز<ph name="ESC_SHORTCUT_END" /> را فشار دهید.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">گذرواژه قدیمی</translation>
 <translation id="4453205916657964690">پوشش زیرشبکه</translation>
 <translation id="4454245904991689773">ذخیره فایل‌های اسکن‌شده در</translation>
+<translation id="4469288414739283461">محافظ صفحه گردش زمین</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">اجرای دوباره روال‌ها</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">رنگ نور پس‌زمینه</translation>
+<translation id="5292579816060236070">کاغذدیواری طلوع آفتاب</translation>
 <translation id="5294769550414936029">نسخه <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">انتقال پنجره به میزکار</translation>
+<translation id="5303837385540978511">کاغذدیواری انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">هویت</translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{صفحه مجدداً اسکن شود؟}=1{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}one{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}other{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">محافظ صفحه انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6494974875566443634">سفارشی کردن</translation>
 <translation id="6500818810472529210">‏دیدن نتیجه در «جستجوی Google»</translation>
