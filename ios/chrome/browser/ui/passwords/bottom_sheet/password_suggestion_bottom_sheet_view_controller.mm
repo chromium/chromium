@@ -371,6 +371,9 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
         stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
                                   withString:@""];
   }
+  if (!username || [username length] == 0) {
+    return kPasswordFormSuggestionSuffix;
+  }
   return username;
 }
 
