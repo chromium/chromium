@@ -45,6 +45,11 @@ GoogleGroupsUpdaterServiceFactory::BuildServiceInstanceFor(
       *browser_state->GetPrefs());
 }
 
+bool GoogleGroupsUpdaterServiceFactory::ServiceIsCreatedWithBrowserState()
+    const {
+  return true;
+}
+
 void GoogleGroupsUpdaterServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   GoogleGroupsUpdaterService::RegisterProfilePrefs(registry);

@@ -35,6 +35,8 @@ class GoogleGroupsUpdaterServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
 
+  bool ServiceIsCreatedWithBrowserState() const override;
+
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
