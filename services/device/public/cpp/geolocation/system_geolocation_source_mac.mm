@@ -134,6 +134,10 @@ void SystemGeolocationSourceMac::AppAttemptsToUseGeolocation() {
 
 - (void)locationManager:(CLLocationManager*)manager
     didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+  if (status == kCLAuthorizationStatusNotDetermined) {
+    _permissionInitialized = NO;
+    return;
+  }
   _permissionInitialized = YES;
   if (status == kCLAuthorizationStatusAuthorizedAlways) {
     _hasPermission = YES;
