@@ -275,4 +275,32 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   }
 }
 
+// Tests that rotating the device will not dismiss the navigation bar.
+- (void)testShowPageInfoTitleRotation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Check that the navigation bar is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Rotate to landscape mode and check the navigation bar is still visible.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
+                                error:nil];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Rotate back to portrait mode and check the navigation bar is still visible.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

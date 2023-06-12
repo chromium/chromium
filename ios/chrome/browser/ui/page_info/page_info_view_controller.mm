@@ -95,6 +95,8 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
+  self.navigationController.navigationBar.accessibilityIdentifier =
+      kPageInfoViewNavigationBarAccessibilityIdentifier;
 
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone

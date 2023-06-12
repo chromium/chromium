@@ -60,6 +60,19 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
                                          0)];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  // Make sure the large title appears after rotating back to portrait
+  // mode.
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self.navigationController.navigationBar sizeToFit];
+      }
+                      completion:nil];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (NSIndexPath*)tableView:(UITableView*)tableView
