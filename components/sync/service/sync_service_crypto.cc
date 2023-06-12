@@ -31,55 +31,6 @@ enum class TrustedVaultFetchKeysAttemptForUMA {
   kMaxValue = kSecondAttempt
 };
 
-// Used for the case where a null client is passed to SyncServiceCrypto.
-class EmptyTrustedVaultClient : public trusted_vault::TrustedVaultClient {
- public:
-  EmptyTrustedVaultClient() = default;
-  ~EmptyTrustedVaultClient() override = default;
-
-  // TrustedVaultClient implementation.
-  void AddObserver(Observer* observer) override {}
-
-  void RemoveObserver(Observer* observer) override {}
-
-  void FetchKeys(
-      const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
-      override {
-    std::move(cb).Run({});
-  }
-
-  void StoreKeys(const std::string& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) override {
-    // Never invoked by SyncServiceCrypto.
-    NOTREACHED();
-  }
-
-  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
-                            base::OnceCallback<void(bool)> cb) override {
-    std::move(cb).Run(false);
-  }
-
-  void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
-                                   base::OnceCallback<void(bool)> cb) override {
-    std::move(cb).Run(false);
-  }
-
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
-                                const std::vector<uint8_t>& public_key,
-                                int method_type_hint,
-                                base::OnceClosure cb) override {
-    // Never invoked by SyncServiceCrypto.
-    NOTREACHED();
-  }
-
-  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override {
-    // Never invoked by SyncServiceCrypto.
-    NOTREACHED();
-  }
-};
-
 // A SyncEncryptionHandler::Observer implementation that simply posts all calls
 // to another task runner.
 class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
@@ -154,16 +105,6 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-trusted_vault::TrustedVaultClient* ResoveNullClient(
-    trusted_vault::TrustedVaultClient* client) {
-  if (client) {
-    return client;
-  }
-
-  static base::NoDestructor<EmptyTrustedVaultClient> empty_client;
-  return empty_client.get();
-}
-
 // Checks if |nigori| can be used to decrypt the given pending keys. Returns
 // true if decryption was successful. Returns false otherwise. Must be called
 // with non-empty pending keys cache.
@@ -237,8 +178,7 @@ SyncServiceCrypto::State::~State() = default;
 SyncServiceCrypto::SyncServiceCrypto(
     Delegate* delegate,
     trusted_vault::TrustedVaultClient* trusted_vault_client)
-    : delegate_(delegate),
-      trusted_vault_client_(ResoveNullClient(trusted_vault_client)) {
+    : delegate_(delegate), trusted_vault_client_(trusted_vault_client) {
   DCHECK(delegate_);
   DCHECK(trusted_vault_client_);
 

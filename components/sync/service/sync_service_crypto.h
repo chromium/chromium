@@ -41,9 +41,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual std::string GetEncryptionBootstrapToken() = 0;
   };
 
-  // |delegate| must not be null and must outlive this object.
-  // |trusted_vault_client| may be null, but if non-null, the pointee must
-  // outlive this object.
+  // |delegate| and |trusted_vault_client| must not be null and must outlive
+  // this object.
   SyncServiceCrypto(Delegate* delegate,
                     trusted_vault::TrustedVaultClient* trusted_vault_client);
 
