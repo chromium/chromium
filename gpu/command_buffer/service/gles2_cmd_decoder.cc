@@ -2158,18 +2158,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
       const char* function_name, GLuint max_vertex_accessed, bool* simulated);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
 
-#if BUILDFLAG(IS_MAC)
-  // If the texture has an image but that image is not bound to the texture,
-  // this will attempt to bind it. texture_unit is the texture unit it should
-  // be bound to, or 0 if it doesn't matter - setting it to 0 will cause the
-  // previous binding to be restored after the operation. This returns true if
-  // a bind happened and the caller needs to restore the previous texture
-  // binding.
-  bool DoBindTexImageIfNeeded(Texture* texture,
-                              GLenum textarget,
-                              GLuint texture_unit);
-#endif
-
   void DoWindowRectanglesEXT(GLenum mode, GLsizei n, const volatile GLint* box);
 
   void DoSetReadbackBufferShadowAllocationINTERNAL(GLuint buffer_id,
@@ -8082,11 +8070,6 @@ void GLES2DecoderImpl::DoFramebufferTexture2DCommon(
     return;
   }
 
-#if BUILDFLAG(IS_MAC)
-  if (texture_ref)
-    DoBindTexImageIfNeeded(texture_ref->texture(), textarget, 0);
-#endif
-
   std::vector<GLenum> attachments;
   if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
     attachments.push_back(GL_DEPTH_ATTACHMENT);
@@ -10009,43 +9992,6 @@ void GLES2DecoderImpl::PerformanceWarning(
                      std::string("PERFORMANCE WARNING: ") + msg);
 }
 
-#if BUILDFLAG(IS_MAC)
-bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
-                                              GLenum textarget,
-                                              GLuint texture_unit) {
-  // Image is already in use if texture is attached to a framebuffer.
-  if (texture && !texture->IsAttachedToFramebuffer()) {
-    if (texture->HasUnboundLevelImage(textarget, 0)) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", true);
-
-      ScopedGLErrorSuppressor suppressor(
-          "GLES2DecoderImpl::DoBindTexImageIfNeeded", error_state_.get());
-      if (texture_unit)
-        api()->glActiveTextureFn(texture_unit);
-      api()->glBindTextureFn(textarget, texture->service_id());
-      texture->MarkLevelImageBound(textarget, 0);
-      if (!texture_unit) {
-        RestoreCurrentTextureBindings(&state_, textarget,
-                                      state_.active_texture_unit);
-        return false;
-      }
-      return true;
-    } else {
-      // If present, the image was already bound.
-      UMA_HISTOGRAM_BOOLEAN(
-          "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", false);
-    }
-  } else {
-    // If present, the image was already in use by the texture (i.e., bound).
-    UMA_HISTOGRAM_BOOLEAN(
-        "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", false);
-  }
-
-  return false;
-}
-#endif
-
 void GLES2DecoderImpl::DoCopyBufferSubData(GLenum readtarget,
                                            GLenum writetarget,
                                            GLintptr readoffset,
@@ -10145,17 +10091,6 @@ bool GLES2DecoderImpl::PrepareTexturesForRender(bool* textures_set,
             }
           }
         }
-
-#if BUILDFLAG(IS_MAC)
-        if (textarget != GL_TEXTURE_CUBE_MAP) {
-          Texture* texture = texture_ref->texture();
-          if (DoBindTexImageIfNeeded(texture, textarget,
-                                     GL_TEXTURE0 + texture_unit_index)) {
-            *textures_set = true;
-            continue;
-          }
-        }
-#endif
       }
       // else: should this be an error?
     }
@@ -17274,10 +17209,6 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
                                        dest_level, true);
   }
 
-#if BUILDFLAG(IS_MAC)
-  DoBindTexImageIfNeeded(source_texture, source_target, 0);
-#endif
-
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
       GetFeatureInfo(), source_target, source_level, source_internal_format,
       source_type, dest_binding_target, dest_level, internal_format,
@@ -17439,10 +17370,6 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
     texture_manager()->SetLevelCleared(dest_texture_ref, dest_target,
                                        dest_level, true);
   }
-
-#if BUILDFLAG(IS_MAC)
-  DoBindTexImageIfNeeded(source_texture, source_target, 0);
-#endif
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
       GetFeatureInfo(), source_target, source_level, source_internal_format,

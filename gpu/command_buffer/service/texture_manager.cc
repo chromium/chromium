@@ -1907,20 +1907,6 @@ void Texture::BindToServiceId(GLuint service_id) {
 }
 #endif
 
-#if BUILDFLAG(IS_MAC)
-void Texture::MarkLevelImageBound(GLenum target, GLint level) {
-  DCHECK_GE(level, 0);
-  size_t face_index = GLES2Util::GLTargetToFaceIndex(target);
-  DCHECK_LT(face_index, face_infos_.size());
-  DCHECK_LT(static_cast<size_t>(level),
-            face_infos_[face_index].level_infos.size());
-  Texture::LevelInfo& info = face_infos_[face_index].level_infos[level];
-  DCHECK_EQ(info.target, target);
-  DCHECK_EQ(info.level, level);
-  info.image_state = ImageState::BOUND;
-}
-#endif
-
 const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
                                                 GLint level) const {
   if (target != GL_TEXTURE_2D && target != GL_TEXTURE_EXTERNAL_OES &&
@@ -1945,23 +1931,6 @@ gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
     return nullptr;
 
   return info->image.get();
-}
-#endif
-
-#if BUILDFLAG(IS_MAC)
-bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {
-  const LevelInfo* info = GetLevelInfo(target, level);
-  if (!info) {
-    return false;
-  }
-
-  if (!info->image.get()) {
-    DCHECK(info->image_state == ImageState::NOIMAGE);
-    return false;
-  }
-
-  DCHECK(info->image_state != ImageState::NOIMAGE);
-  return info->image_state == ImageState::UNBOUND;
 }
 #endif
 
