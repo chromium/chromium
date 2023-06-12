@@ -68124,7 +68124,7 @@ Called by update_use_counter_css.py.-->
   <int value="225" label="alias-webkit-column-span"/>
   <int value="226" label="alias-webkit-column-width"/>
   <int value="227" label="alias-webkit-columns"/>
-  <int value="228" label="webkit-box-decoration-break"/>
+  <int value="228" label="webkit-box-decoration-break (obsolete)"/>
   <int value="229" label="webkit-filter"/>
   <int value="230" label="align-content"/>
   <int value="231" label="align-items"/>
@@ -68249,7 +68249,7 @@ Called by update_use_counter_css.py.-->
   <int value="350" label="webkit-wrap-flow"/>
   <int value="351" label="webkit-wrap-through"/>
   <int value="352" label="webkit-wrap"/>
-  <int value="353" label="webkit-tap-highlight-color"/>
+  <int value="353" label="webkit-tap-highlight-color (obsolete)"/>
   <int value="354" label="webkit-app-region"/>
   <int value="355" label="clip-path"/>
   <int value="356" label="clip-rule"/>
@@ -68293,7 +68293,7 @@ Called by update_use_counter_css.py.-->
   <int value="394" label="writing-mode"/>
   <int value="395" label="webkit-svg-shadow"/>
   <int value="396" label="webkit-cursor-visibility"/>
-  <int value="397" label="image-orientation"/>
+  <int value="397" label="image-orientation (obsolete)"/>
   <int value="398" label="image-resolution"/>
   <int value="399" label="webkit-blend-mode"/>
   <int value="400" label="webkit-background-blend-mode"/>
@@ -68310,8 +68310,8 @@ Called by update_use_counter_css.py.-->
   <int value="411" label="webkit-overflow-scrolling"/>
   <int value="412" label="alias-webkit-app-region"/>
   <int value="413" label="alias-webkit-filter"/>
-  <int value="414" label="webkit-box-decoration-break-0"/>
-  <int value="415" label="webkit-tap-highlight-color-0"/>
+  <int value="414" label="webkit-box-decoration-break"/>
+  <int value="415" label="webkit-tap-highlight-color"/>
   <int value="416" label="buffered-rendering"/>
   <int value="417" label="grid-auto-rows"/>
   <int value="418" label="grid-auto-columns"/>
@@ -68403,7 +68403,7 @@ Called by update_use_counter_css.py.-->
   <int value="504" label="translate"/>
   <int value="505" label="rotate"/>
   <int value="506" label="scale"/>
-  <int value="507" label="image-orientation-0"/>
+  <int value="507" label="image-orientation"/>
   <int value="508" label="backdrop-filter"/>
   <int value="509" label="text-combine-upright"/>
   <int value="510" label="text-orientation"/>
@@ -68660,6 +68660,7 @@ Called by update_use_counter_css.py.-->
   <int value="761" label="scroll-start-target"/>
   <int value="762" label="timeline-scope"/>
   <int value="763" label="scrollbar-color"/>
+  <int value="764" label="word-boundary-detection"/>
 </enum>
 
 <enum name="MappedEditingCommands">
