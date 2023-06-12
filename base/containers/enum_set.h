@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/cxx20_is_constant_evaluated.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -23,16 +24,16 @@ template <typename E, E MinEnumValue, E MaxEnumValue>
 class EnumSet;
 
 template <typename E, E Min, E Max>
-EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
-                           EnumSet<E, Min, Max> set2);
+constexpr EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
+                                     EnumSet<E, Min, Max> set2);
 
 template <typename E, E Min, E Max>
-EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
-                                  EnumSet<E, Min, Max> set2);
+constexpr EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
+                                            EnumSet<E, Min, Max> set2);
 
 template <typename E, E Min, E Max>
-EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
-                                EnumSet<E, Min, Max> set2);
+constexpr EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
+                                          EnumSet<E, Min, Max> set2);
 
 // An EnumSet is a set that can hold enum values between a min and a
 // max value (inclusive of both).  It's essentially a wrapper around
@@ -159,20 +160,37 @@ class EnumSet {
 
   ~EnumSet() = default;
 
-  constexpr EnumSet(std::initializer_list<E> values)
-      : EnumSet(EnumBitSet(bitstring(values))) {}
+  constexpr EnumSet(std::initializer_list<E> values) {
+    if (base::is_constant_evaluated()) {
+      enums_ = bitstring(values);
+    } else {
+      for (E value : values) {
+        Put(value);
+      }
+    }
+  }
 
   // Returns an EnumSet with all possible values.
   static constexpr EnumSet All() {
-    if (kValueCount == 0) {
-      return EnumSet();
+    if (base::is_constant_evaluated()) {
+      if (kValueCount == 0) {
+        return EnumSet();
+      }
+      // Since `1 << kValueCount` may trigger shift-count-overflow warning if
+      // the `kValueCount` is 64, instead of returning `(1 << kValueCount) - 1`,
+      // the bitmask will be constructed from two parts: the most significant
+      // bits and the remaining.
+      uint64_t mask = 1ULL << (kValueCount - 1);
+      return EnumSet(EnumBitSet(mask - 1 + mask));
+    } else {
+      // When `kValueCount` is greater than 64, we can't use the constexpr path,
+      // and we will build an `EnumSet` value by value.
+      EnumSet enum_set;
+      for (size_t value = 0; value < kValueCount; ++value) {
+        enum_set.Put(FromIndex(value));
+      }
+      return enum_set;
     }
-    // Since `1 << kValueCount` may trigger shift-count-overflow warning if
-    // the `kValueCount` is 64, instead of returning `(1 << kValueCount) - 1`,
-    // the bitmask will be constructed from two parts: the most significant bits
-    // and the remaining.
-    uint64_t mask = 1ULL << (kValueCount - 1);
-    return EnumSet(EnumBitSet(mask - 1 + mask));
   }
 
   // Returns an EnumSet with all the values from start to end, inclusive.
@@ -292,12 +310,14 @@ class EnumSet {
   bool operator!=(const EnumSet& other) const { return enums_ != other.enums_; }
 
  private:
-  friend EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
-                                                      EnumSet set2);
-  friend EnumSet Intersection<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
-                                                             EnumSet set2);
-  friend EnumSet Difference<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
-                                                           EnumSet set2);
+  friend constexpr EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
+                                                                EnumSet set2);
+  friend constexpr EnumSet Intersection<E, MinEnumValue, MaxEnumValue>(
+      EnumSet set1,
+      EnumSet set2);
+  friend constexpr EnumSet Difference<E, MinEnumValue, MaxEnumValue>(
+      EnumSet set1,
+      EnumSet set2);
 
   static constexpr uint64_t bitstring(const std::initializer_list<E>& values) {
     uint64_t result = 0;
@@ -319,8 +339,10 @@ class EnumSet {
   // can safely remove the constepxr qualifiers from this file, at the cost of
   // some minor optimizations.
   explicit constexpr EnumSet(EnumBitSet enums) : enums_(enums) {
-    static_assert(kValueCount <= 64,
-                  "Max number of enum values is 64 for constexpr constructor");
+    if (base::is_constant_evaluated()) {
+      CHECK(kValueCount <= 64)
+          << "Max number of enum values is 64 for constexpr constructor";
+    }
   }
 
   // Converts a value to/from an index into |enums_|.
@@ -350,20 +372,20 @@ const size_t EnumSet<E, MinEnumValue, MaxEnumValue>::kValueCount;
 // The usual set operations.
 
 template <typename E, E Min, E Max>
-EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
-                           EnumSet<E, Min, Max> set2) {
+constexpr EnumSet<E, Min, Max> Union(EnumSet<E, Min, Max> set1,
+                                     EnumSet<E, Min, Max> set2) {
   return EnumSet<E, Min, Max>(set1.enums_ | set2.enums_);
 }
 
 template <typename E, E Min, E Max>
-EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
-                                  EnumSet<E, Min, Max> set2) {
+constexpr EnumSet<E, Min, Max> Intersection(EnumSet<E, Min, Max> set1,
+                                            EnumSet<E, Min, Max> set2) {
   return EnumSet<E, Min, Max>(set1.enums_ & set2.enums_);
 }
 
 template <typename E, E Min, E Max>
-EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
-                                EnumSet<E, Min, Max> set2) {
+constexpr EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
+                                          EnumSet<E, Min, Max> set2) {
   return EnumSet<E, Min, Max>(set1.enums_ & ~set2.enums_);
 }
 
