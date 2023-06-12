@@ -10,6 +10,10 @@
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace color_utils {
+struct ColorProfile;
+}  // namespace color_utils
+
 namespace ash {
 
 // Captures the calculated prominent colors and k mean color of a wallpaper. The
@@ -33,6 +37,8 @@ struct ASH_EXPORT WallpaperCalculatedColors {
   bool operator!=(const WallpaperCalculatedColors& other) const;
 
   ~WallpaperCalculatedColors();
+
+  SkColor GetProminentColor(color_utils::ColorProfile color_profile) const;
 
   std::vector<SkColor> prominent_colors;
   SkColor k_mean_color = SK_ColorTRANSPARENT;

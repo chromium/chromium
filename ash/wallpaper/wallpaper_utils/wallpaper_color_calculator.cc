@@ -25,12 +25,13 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-using LumaRange = color_utils::LumaRange;
-using SaturationRange = color_utils::SaturationRange;
-
 namespace ash {
 
 namespace {
+
+using ColorProfile = color_utils::ColorProfile;
+using LumaRange = color_utils::LumaRange;
+using SaturationRange = color_utils::SaturationRange;
 
 // The largest image size, in pixels, to synchronously calculate the prominent
 // color. This is a simple heuristic optimization because extraction on images
@@ -41,6 +42,16 @@ const int kMaxPixelsForSynchronousCalculation = 100;
 // Specifies the size of the resized image used to calculate the wallpaper
 // colors.
 constexpr int kWallpaperSizeForColorCalculation = 256;
+
+// Gets the color profiles for extracting wallpaper prominent colors.
+std::vector<ColorProfile> GetProminentColorProfiles() {
+  return {ColorProfile(LumaRange::DARK, SaturationRange::VIBRANT),
+          ColorProfile(LumaRange::NORMAL, SaturationRange::VIBRANT),
+          ColorProfile(LumaRange::LIGHT, SaturationRange::VIBRANT),
+          ColorProfile(LumaRange::DARK, SaturationRange::MUTED),
+          ColorProfile(LumaRange::NORMAL, SaturationRange::MUTED),
+          ColorProfile(LumaRange::LIGHT, SaturationRange::MUTED)};
+}
 
 const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
   if (std::max(image.width(), image.height()) <
@@ -149,10 +160,8 @@ bool ShouldCalculateSync(const gfx::ImageSkia& image) {
 
 }  // namespace
 
-WallpaperColorCalculator::WallpaperColorCalculator(
-    const gfx::ImageSkia& image,
-    const std::vector<color_utils::ColorProfile>& color_profiles)
-    : image_(image), color_profiles_(color_profiles) {
+WallpaperColorCalculator::WallpaperColorCalculator(const gfx::ImageSkia& image)
+    : image_(image), color_profiles_(GetProminentColorProfiles()) {
   // The task runner is used to compute the wallpaper colors on a thread
   // that doesn't block the UI. The user may or may not be waiting for it.
   // If we need to shutdown, we can just re-compute the value next time.
@@ -190,6 +199,11 @@ bool WallpaperColorCalculator::StartCalculation(
 void WallpaperColorCalculator::SetTaskRunnerForTest(
     scoped_refptr<base::TaskRunner> task_runner) {
   task_runner_ = task_runner;
+}
+
+void WallpaperColorCalculator::SetColorProfiles(
+    const std::vector<ColorProfile>& color_profiles) {
+  color_profiles_ = color_profiles;
 }
 
 void WallpaperColorCalculator::OnAsyncCalculationComplete(

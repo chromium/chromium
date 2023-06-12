@@ -827,9 +827,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Empty state is used to denote when colors have not yet been calculated.
   absl::optional<WallpaperCalculatedColors> calculated_colors_;
 
-  // Caches the color profiles that need to do wallpaper color extracting.
-  const std::vector<color_utils::ColorProfile> color_profiles_;
-
   // Account id of the current user.
   AccountId current_user_;
 
