@@ -90,7 +90,7 @@ public class TopView extends RelativeLayout
         super.onFinishInflate();
 
         mCheckboxContainer = findViewById(R.id.content);
-        if (ContactsPickerFeatureList.isEnabled(
+        if (ContactsPickerFeatureMap.isEnabled(
                     ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mCheckboxContainer.setVisibility(View.VISIBLE);
         }
@@ -259,7 +259,7 @@ public class TopView extends RelativeLayout
      * Toggles the Select All checkbox.
      */
     public void toggle() {
-        if (ContactsPickerFeatureList.isEnabled(
+        if (ContactsPickerFeatureMap.isEnabled(
                     ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mSelectAllBox.setChecked(!mSelectAllBox.isChecked());
         }
