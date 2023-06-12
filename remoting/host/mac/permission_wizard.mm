@@ -4,24 +4,27 @@
 
 #include "remoting/host/mac/permission_wizard.h"
 
-#include "base/memory/raw_ptr.h"
-#import "base/task/single_thread_task_runner.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using remoting::mac::PermissionWizard;
 using Delegate = PermissionWizard::Delegate;
@@ -55,8 +58,7 @@ enum class WizardPage {
 
 @end
 
-namespace remoting {
-namespace mac {
+namespace remoting::mac {
 
 // C++ implementation of the PermissionWizard.
 class PermissionWizard::Impl {
@@ -84,7 +86,7 @@ class PermissionWizard::Impl {
 
   void OnPermissionCheckResult(bool result);
 
-  PermissionWizardController* window_controller_ = nil;
+  PermissionWizardController* __strong window_controller_ = nil;
   std::unique_ptr<Delegate> checker_;
   base::OneShotTimer timer_;
 
@@ -100,7 +102,7 @@ PermissionWizard::Impl::Impl(
 
 PermissionWizard::Impl::~Impl() {
   [window_controller_ hide];
-  [window_controller_ release];
+  window_controller_ = nil;
 }
 
 void PermissionWizard::Impl::SetCompletionCallback(ResultCallback callback) {
@@ -109,10 +111,11 @@ void PermissionWizard::Impl::SetCompletionCallback(ResultCallback callback) {
 
 void PermissionWizard::Impl::Start() {
   NSWindow* window =
-      [[[NSWindow alloc] initWithContentRect:ui::kWindowSizeDeterminedLater
-                                   styleMask:NSWindowStyleMaskTitled
-                                     backing:NSBackingStoreBuffered
-                                       defer:NO] autorelease];
+      [[NSWindow alloc] initWithContentRect:ui::kWindowSizeDeterminedLater
+                                  styleMask:NSWindowStyleMaskTitled
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
+  window.releasedWhenClosed = NO;
   window_controller_ = [[PermissionWizardController alloc] initWithWindow:window
                                                                      impl:this];
   [window_controller_ start];
@@ -153,16 +156,15 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   [window_controller_ onPermissionCheckResult:result];
 }
 
-}  // namespace mac
-}  // namespace remoting
+}  // namespace remoting::mac
 
 @implementation PermissionWizardController {
-  NSTextField* _instructionText;
-  NSButton* _cancelButton;
-  NSButton* _launchA11yButton;
-  NSButton* _launchScreenRecordingButton;
-  NSButton* _nextButton;
-  NSButton* _okButton;
+  NSTextField* __strong _instructionText;
+  NSButton* __strong _cancelButton;
+  NSButton* __strong _launchA11yButton;
+  NSButton* __strong _launchScreenRecordingButton;
+  NSButton* __strong _nextButton;
+  NSButton* __strong _okButton;
 
   // This class modifies the NSApplicationActivationPolicy in order to show a
   // Dock icon when presenting the dialog window. This is needed because the
@@ -225,21 +227,21 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
       l10n_util::GetNSStringF(IDS_MAC_PERMISSION_WIZARD_TITLE,
                               l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 
-  _instructionText = [[[NSTextField alloc] init] autorelease];
+  _instructionText = [[NSTextField alloc] init];
   _instructionText.translatesAutoresizingMaskIntoConstraints = NO;
   _instructionText.drawsBackground = NO;
   _instructionText.bezeled = NO;
   _instructionText.editable = NO;
   _instructionText.preferredMaxLayoutWidth = 400;
 
-  NSString* appPath = [[NSBundle mainBundle] bundlePath];
-  NSImage* iconImage = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
+  NSString* appPath = NSBundle.mainBundle.bundlePath;
+  NSImage* iconImage = [NSWorkspace.sharedWorkspace iconForFile:appPath];
   [iconImage setSize:NSMakeSize(64, 64)];
-  NSImageView* icon = [[[NSImageView alloc] init] autorelease];
+  NSImageView* icon = [[NSImageView alloc] init];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   icon.image = iconImage;
 
-  _cancelButton = [[[NSButton alloc] init] autorelease];
+  _cancelButton = [[NSButton alloc] init];
   _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
   _cancelButton.buttonType = NSButtonTypeMomentaryPushIn;
   _cancelButton.bezelStyle = NSBezelStyleRegularSquare;
@@ -249,7 +251,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _cancelButton.action = @selector(onCancel:);
   _cancelButton.target = self;
 
-  _launchA11yButton = [[[NSButton alloc] init] autorelease];
+  _launchA11yButton = [[NSButton alloc] init];
   _launchA11yButton.translatesAutoresizingMaskIntoConstraints = NO;
   _launchA11yButton.buttonType = NSButtonTypeMomentaryPushIn;
   _launchA11yButton.bezelStyle = NSBezelStyleRegularSquare;
@@ -258,7 +260,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _launchA11yButton.action = @selector(onLaunchA11y:);
   _launchA11yButton.target = self;
 
-  _launchScreenRecordingButton = [[[NSButton alloc] init] autorelease];
+  _launchScreenRecordingButton = [[NSButton alloc] init];
   _launchScreenRecordingButton.translatesAutoresizingMaskIntoConstraints = NO;
   _launchScreenRecordingButton.buttonType = NSButtonTypeMomentaryPushIn;
   _launchScreenRecordingButton.bezelStyle = NSBezelStyleRegularSquare;
@@ -267,7 +269,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _launchScreenRecordingButton.action = @selector(onLaunchScreenRecording:);
   _launchScreenRecordingButton.target = self;
 
-  _nextButton = [[[NSButton alloc] init] autorelease];
+  _nextButton = [[NSButton alloc] init];
   _nextButton.translatesAutoresizingMaskIntoConstraints = NO;
   _nextButton.buttonType = NSButtonTypeMomentaryPushIn;
   _nextButton.bezelStyle = NSBezelStyleRegularSquare;
@@ -277,7 +279,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _nextButton.action = @selector(onNext:);
   _nextButton.target = self;
 
-  _okButton = [[[NSButton alloc] init] autorelease];
+  _okButton = [[NSButton alloc] init];
   _okButton.translatesAutoresizingMaskIntoConstraints = NO;
   _okButton.buttonType = NSButtonTypeMomentaryPushIn;
   _okButton.bezelStyle = NSBezelStyleRegularSquare;
@@ -286,7 +288,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _okButton.action = @selector(onOk:);
   _okButton.target = self;
 
-  NSStackView* iconAndTextStack = [[[NSStackView alloc] init] autorelease];
+  NSStackView* iconAndTextStack = [[NSStackView alloc] init];
   iconAndTextStack.translatesAutoresizingMaskIntoConstraints = NO;
   iconAndTextStack.orientation = NSUserInterfaceLayoutOrientationHorizontal;
   iconAndTextStack.alignment = NSLayoutAttributeTop;
@@ -294,7 +296,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   [iconAndTextStack addView:_instructionText
                   inGravity:NSStackViewGravityCenter];
 
-  NSStackView* buttonsStack = [[[NSStackView alloc] init] autorelease];
+  NSStackView* buttonsStack = [[NSStackView alloc] init];
   buttonsStack.translatesAutoresizingMaskIntoConstraints = NO;
   buttonsStack.orientation = NSUserInterfaceLayoutOrientationHorizontal;
   [buttonsStack addView:_cancelButton inGravity:NSStackViewGravityTrailing];
@@ -311,7 +313,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   [buttonsStack setHuggingPriority:NSLayoutPriorityDefaultHigh
                     forOrientation:NSLayoutConstraintOrientationVertical];
 
-  NSStackView* mainStack = [[[NSStackView alloc] init] autorelease];
+  NSStackView* mainStack = [[NSStackView alloc] init];
   mainStack.translatesAutoresizingMaskIntoConstraints = NO;
   mainStack.orientation = NSUserInterfaceLayoutOrientationVertical;
   mainStack.spacing = 12;
@@ -563,8 +565,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 
 @end
 
-namespace remoting {
-namespace mac {
+namespace remoting::mac {
 
 PermissionWizard::PermissionWizard(std::unique_ptr<Delegate> checker)
     : impl_(std::make_unique<PermissionWizard::Impl>(std::move(checker))) {}
@@ -584,5 +585,4 @@ void PermissionWizard::Start(
       FROM_HERE, base::BindOnce(&Impl::Start, base::Unretained(impl_.get())));
 }
 
-}  // namespace mac
-}  // namespace remoting
+}  // namespace remoting::mac

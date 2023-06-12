@@ -10,15 +10,10 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/strings/utf_string_conversions.h"
 
 // Controller for the disconnect window which allows the host user to
 // quickly disconnect a session.
-@interface DisconnectWindowController : NSWindowController {
- @private
-  base::OnceClosure _disconnect_callback;
-  std::u16string _username;
-}
+@interface DisconnectWindowController : NSWindowController
 
 - (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
                         username:(const std::string&)username

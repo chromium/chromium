@@ -20,6 +20,10 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Clipboard polling interval in milliseconds.
@@ -47,12 +51,12 @@ class ClipboardMac : public Clipboard {
 
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
   std::unique_ptr<base::RepeatingTimer> clipboard_polling_timer_;
-  NSInteger current_change_count_;
+  NSInteger current_change_count_ = 0;
 };
 
-ClipboardMac::ClipboardMac() : current_change_count_(0) {}
+ClipboardMac::ClipboardMac() = default;
 
-ClipboardMac::~ClipboardMac() {}
+ClipboardMac::~ClipboardMac() = default;
 
 void ClipboardMac::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
@@ -60,9 +64,9 @@ void ClipboardMac::Start(
 
   // Synchronize local change-count with the pasteboard's. The change-count is
   // used to detect clipboard changes.
-  current_change_count_ = [[NSPasteboard generalPasteboard] changeCount];
+  current_change_count_ = NSPasteboard.generalPasteboard.changeCount;
 
-  // OS X doesn't provide a clipboard-changed notification. The only way to
+  // macOS doesn't provide a clipboard-changed notification. The only way to
   // detect clipboard changes is by polling.
   clipboard_polling_timer_ = std::make_unique<base::RepeatingTimer>();
   clipboard_polling_timer_->Start(
@@ -82,32 +86,32 @@ void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
 
   // Write text to clipboard.
   NSString* text = base::SysUTF8ToNSString(event.data());
-  NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+  NSPasteboard* pasteboard = NSPasteboard.generalPasteboard;
   [pasteboard clearContents];
   [pasteboard writeObjects:@[ text ]];
 
   // Update local change-count to prevent this change from being picked up by
   // CheckClipboardForChanges.
-  current_change_count_ = [[NSPasteboard generalPasteboard] changeCount];
+  current_change_count_ = NSPasteboard.generalPasteboard.changeCount;
 }
 
 void ClipboardMac::CheckClipboardForChanges() {
-  NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
-  NSInteger change_count = [pasteboard changeCount];
+  NSPasteboard* pasteboard = NSPasteboard.generalPasteboard;
+  NSInteger change_count = pasteboard.changeCount;
   if (change_count == current_change_count_) {
     return;
   }
   current_change_count_ = change_count;
 
   NSArray* objects = [pasteboard readObjectsForClasses:@[ [NSString class] ]
-                                               options:0];
+                                               options:nil];
   if (![objects count]) {
     return;
   }
 
   protocol::ClipboardEvent event;
   event.set_mime_type(kMimeTypeTextUtf8);
-  event.set_data(base::SysNSStringToUTF8([objects lastObject]));
+  event.set_data(base::SysNSStringToUTF8(objects.lastObject));
   client_clipboard_->InjectClipboardEvent(event);
 }
 

@@ -21,6 +21,7 @@ source_set("file_transfer") {
       "ensure_user_mac.cc",
       "file_chooser_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//ui/base" ]
     frameworks = [ "AppKit.framework" ]
   }

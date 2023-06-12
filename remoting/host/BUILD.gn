@@ -193,6 +193,7 @@ source_set("clipboard") {
 
   if (is_mac) {
     sources += [ "clipboard_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -670,6 +671,8 @@ static_library("common") {
       "Carbon.framework",
       "CoreAudio.framework",
     ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     deps += [
       ":remoting_version",

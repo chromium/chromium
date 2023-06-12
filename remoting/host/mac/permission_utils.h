@@ -12,8 +12,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace remoting {
-namespace mac {
+namespace remoting::mac {
 
 // Return true if the current process has been granted permission to inject
 // input. This will add an entry to the System Preference's Accessibility
@@ -51,7 +50,6 @@ bool CanCaptureAudio();
 // ONLY call this function when CanCaptureAudio() returns false.
 void RequestAudioCapturePermission(base::OnceCallback<void(bool)> callback);
 
-}  // namespace mac
-}  // namespace remoting
+}  // namespace remoting::mac
 
 #endif  // REMOTING_HOST_MAC_PERMISSION_UTILS_H_

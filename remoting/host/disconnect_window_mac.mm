@@ -14,16 +14,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface DisconnectWindowController ()
 - (BOOL)isRToL;
-- (void)Hide;
-@property(nonatomic, retain) NSTextField* connectedToField;
-@property(nonatomic, retain) NSButton* disconnectButton;
+- (void)hide;
+@property(nonatomic, strong) NSTextField* connectedToField;
+@property(nonatomic, strong) NSButton* disconnectButton;
 @end
 
 const int kMaximumConnectedNameWidthInPixels = 600;
@@ -33,7 +38,7 @@ namespace {
 bool IsDarkMode() {
   if (@available(macOS 10.14, *)) {
     NSAppearanceName appearance =
-        [[NSApp effectiveAppearance] bestMatchFromAppearancesWithNames:@[
+        [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[
           NSAppearanceNameAqua, NSAppearanceNameDarkAqua
         ]];
     return [appearance isEqual:NSAppearanceNameDarkAqua];
@@ -59,17 +64,14 @@ class DisconnectWindowMac : public HostWindow {
       override;
 
  private:
-  DisconnectWindowController* window_controller_ = nil;
+  DisconnectWindowController* __strong window_controller_;
 };
 
 DisconnectWindowMac::DisconnectWindowMac() = default;
 
 DisconnectWindowMac::~DisconnectWindowMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // DisconnectWindowController is responsible for releasing itself in its
-  // windowWillClose: method.
-  [window_controller_ Hide];
+  [window_controller_ hide];
   window_controller_ = nil;
 }
 
@@ -88,10 +90,11 @@ void DisconnectWindowMac::Start(
 
   NSRect frame = NSMakeRect(0, 0, 466, 40);
   DisconnectWindow* window =
-      [[[DisconnectWindow alloc] initWithContentRect:frame
-                                           styleMask:NSWindowStyleMaskBorderless
-                                             backing:NSBackingStoreBuffered
-                                               defer:NO] autorelease];
+      [[DisconnectWindow alloc] initWithContentRect:frame
+                                          styleMask:NSWindowStyleMaskBorderless
+                                            backing:NSBackingStoreBuffered
+                                              defer:NO];
+  window.releasedWhenClosed = NO;
   window_controller_ = [[DisconnectWindowController alloc]
       initWithCallback:std::move(disconnect_callback)
               username:username
@@ -107,25 +110,23 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
 }  // namespace remoting
 
-@implementation DisconnectWindowController
+@implementation DisconnectWindowController {
+  base::OnceClosure _disconnect_callback;
+  std::u16string _username;
+}
+
 @synthesize connectedToField = _connectedToField;
 @synthesize disconnectButton = _disconnectButton;
 
 - (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
                         username:(const std::string&)username
                           window:(NSWindow*)window {
-  self = [super initWithWindow:(NSWindow*)window];
+  self = [super initWithWindow:window];
   if (self) {
     _disconnect_callback = std::move(disconnect_callback);
     _username = base::UTF8ToUTF16(username);
   }
   return self;
-}
-
-- (void)dealloc {
-  [_connectedToField release];
-  [_disconnectButton release];
-  [super dealloc];
 }
 
 - (IBAction)stopSharing:(id)sender {
@@ -138,25 +139,25 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   return base::i18n::IsRTL();
 }
 
-- (void)Hide {
+- (void)hide {
   _disconnect_callback.Reset();
   [self close];
 }
 
 - (void)initializeWindow {
-  self.window.contentView = [[[DisconnectView alloc]
-      initWithFrame:self.window.contentView.frame] autorelease];
+  self.window.contentView =
+      [[DisconnectView alloc] initWithFrame:self.window.contentView.frame];
 
-  self.connectedToField = [[[NSTextField alloc]
-      initWithFrame:NSMakeRect(26, 13, 240, 14)] autorelease];
+  self.connectedToField =
+      [[NSTextField alloc] initWithFrame:NSMakeRect(26, 13, 240, 14)];
   self.connectedToField.drawsBackground = NO;
   self.connectedToField.bezeled = NO;
   self.connectedToField.editable = NO;
   self.connectedToField.font = [NSFont systemFontOfSize:11];
   [self.window.contentView addSubview:self.connectedToField];
 
-  self.disconnectButton = [[[NSButton alloc]
-      initWithFrame:NSMakeRect(271, 9, 182, 22)] autorelease];
+  self.disconnectButton =
+      [[NSButton alloc] initWithFrame:NSMakeRect(271, 9, 182, 22)];
   self.disconnectButton.buttonType = NSButtonTypeMomentaryPushIn;
   self.disconnectButton.bezelStyle = NSBezelStyleRegularSquare;
   self.disconnectButton.font = [NSFont systemFontOfSize:11];
@@ -219,7 +220,6 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
 - (void)windowWillClose:(NSNotification*)notification {
   [self stopSharing:self];
-  [self autorelease];
 }
 
 @end
@@ -242,9 +242,9 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
   if (self) {
     // Set window to be clear and non-opaque so we can see through it.
-    [self setBackgroundColor:[NSColor clearColor]];
-    [self setOpaque:NO];
-    [self setMovableByWindowBackground:YES];
+    self.backgroundColor = NSColor.clearColor;
+    self.opaque = NO;
+    self.movableByWindowBackground = YES;
 
     // Pull the window up to Status Level so that it always displays.
     [self setLevel:NSStatusWindowLevel];
@@ -253,8 +253,8 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 }
 
 - (BOOL)isRToL {
-  DCHECK([[self windowController] respondsToSelector:@selector(isRToL)]);
-  return [[self windowController] isRToL];
+  DCHECK([self.windowController respondsToSelector:@selector(isRToL)]);
+  return [self.windowController isRToL];
 }
 
 @end
@@ -266,13 +266,13 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 @implementation DisconnectView
 
 - (BOOL)isRToL {
-  DCHECK([[self window] isKindOfClass:[DisconnectWindow class]]);
-  return [static_cast<DisconnectWindow*>([self window]) isRToL];
+  DCHECK([self.window isKindOfClass:[DisconnectWindow class]]);
+  return [static_cast<DisconnectWindow*>(self.window) isRToL];
 }
 
 - (void)drawRect:(NSRect)rect {
   // All magic numbers taken from screen shots provided by UX.
-  NSRect bounds = NSInsetRect([self bounds], 1, 1);
+  NSRect bounds = NSInsetRect(self.bounds, 1, 1);
 
   NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:bounds
                                                        xRadius:5
@@ -307,9 +307,9 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   const CGFloat kDragHandleWidth = 5.0;
 
   // Turn off aliasing so it's nice and crisp.
-  NSGraphicsContext* context = [NSGraphicsContext currentContext];
-  BOOL alias = [context shouldAntialias];
-  [context setShouldAntialias:NO];
+  NSGraphicsContext* context = NSGraphicsContext.currentContext;
+  BOOL alias = context.shouldAntialias;
+  context.shouldAntialias = NO;
 
   // Handle bidirectional locales properly.
   CGFloat inset = [self isRToL] ? NSMaxX(bounds) - kBaseInset - kDragHandleWidth
@@ -348,7 +348,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   [lineShadowColor setStroke];
   [path stroke];
 
-  [context setShouldAntialias:alias];
+  context.shouldAntialias = alias;
 }
 
 @end

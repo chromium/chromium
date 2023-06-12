@@ -42,6 +42,8 @@ source_set("permission_checking") {
 
   public_deps = [ "//base" ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   deps = [
     ":constants",
     "//remoting/host:remoting_version",
