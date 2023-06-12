@@ -428,6 +428,7 @@ textTransform
 textUnderlineOffset
 textUnderlinePosition
 textWrap
+timelineScope
 top
 touchAction
 transform

@@ -3511,9 +3511,9 @@
     {
       // Support for the timeline-scope property.
       //
-      // https://github.com/w3c/csswg-drafts/issues/7759
+      // https://drafts.csswg.org/scroll-animations-1/#timeline-scope
       name: "TimelineScope",
-      status: "experimental",
+      status: "stable",
       depends_on: ["ScrollTimeline"]
     },
     {
