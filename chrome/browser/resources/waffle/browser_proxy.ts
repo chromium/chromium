@@ -9,6 +9,10 @@
 
 import {PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './waffle.mojom-webui.js';
 
+export interface WaffleChoice {
+  name: string;
+}
+
 export class WaffleBrowserProxy {
   handler: PageHandlerInterface;
 

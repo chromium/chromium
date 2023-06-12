@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_writer.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/waffle/waffle_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -14,12 +16,39 @@
 #include "chrome/grit/signin_resources.h"
 #include "chrome/grit/waffle_resources.h"
 #include "chrome/grit/waffle_resources_map.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+
+namespace {
+std::string GetChoiceListJSON(Profile* profile) {
+  if (!profile) {
+    return "";
+  }
+
+  base::Value::List choice_value_list;
+  auto* pref_service = profile->GetPrefs();
+  const std::vector<std::unique_ptr<TemplateURLData>> choices =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          pref_service, /*default_search_provider_index=*/nullptr);
+
+  for (const auto& choice : choices) {
+    base::Value::Dict choice_value;
+    choice_value.Set("name", choice->short_name());
+    choice_value_list.Append(std::move(choice_value));
+  }
+
+  std::string json_choice_list;
+  base::JSONWriter::Write(choice_value_list, &json_choice_list);
+  return json_choice_list;
+}
+}  // namespace
 
 WaffleUI::WaffleUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
   CHECK(base::FeatureList::IsEnabled(kWaffle));
+  auto* profile = Profile::FromWebUI(web_ui);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -38,6 +67,8 @@ WaffleUI::WaffleUI(content::WebUI* web_ui)
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+
+  source->AddString("choiceList", GetChoiceListJSON(profile));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kWaffleResources, kWaffleResourcesSize),

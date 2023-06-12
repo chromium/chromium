@@ -44,12 +44,13 @@
     display: flex;
     flex-direction: column;
     margin: auto;
-    max-width: 400px;
+    max-width: 472px;
     text-align: center;
   }
 
   .title {
     font-weight: 400;
+    margin-top: 68px;
   }
 
   .subtitle {
@@ -64,10 +65,46 @@
     width: 250px;
   }
 
-  .waffle-placeholder {
-    background-color: red;
-    height: 500px;
-    width: 400px;
+  .choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .choice {
+    align-items: center;
+    background-color: var(--google-grey-200);
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 24px;
+    padding: 16px 24px;
+    width: 424px;
+  }
+
+  .choice:first-child {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+  }
+
+  div.choice:last-of-type {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+
+  .choice-icon {
+    background-color: green;
+    height: 24px;
+    width: 24px;
+  }
+
+  .choice-text {
+    font-size: 0.88rem;
+    line-height: 20px;
+  }
+
+  cr-checkbox {
+    margin-inline-start: auto;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -87,7 +124,15 @@
   <h1 class="title">$i18n{title}</h1>
   <div class="image-placeholder"></div>
   <p class="subtitle">$i18n{subtitle}</p>
-  <div class="waffle-placeholder"></div>
+  <div class="choice-list">
+    <template is="dom-repeat" items="[[choiceList_]]">
+      <div class="choice">
+        <div class="choice-icon"></div>
+        <div class="choice-text">[[item.name]]</div>
+        <cr-checkbox></cr-checkbox>
+      </div>
+    </template>
+  </div>
 </div>
 <div class="button-container">
   <cr-button class="first-button">$i18n{firstButton}</cr-button>
