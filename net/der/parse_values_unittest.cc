@@ -220,8 +220,9 @@ TEST(ParseValuesTest, ParseUint64) {
     uint64_t result;
     EXPECT_EQ(test_case.should_pass,
               ParseUint64(Input(test_case.input, test_case.length), &result));
-    if (test_case.should_pass)
+    if (test_case.should_pass) {
       EXPECT_EQ(test_case.expected_value, result);
+    }
   }
 }
 
@@ -256,8 +257,9 @@ TEST(ParseValuesTest, ParseUint8) {
     uint8_t result;
     EXPECT_EQ(test_case.should_pass,
               ParseUint8(Input(test_case.input, test_case.length), &result));
-    if (test_case.should_pass)
+    if (test_case.should_pass) {
       EXPECT_EQ(test_case.expected_value, result);
+    }
   }
 }
 
@@ -302,8 +304,9 @@ TEST(ParseValuesTest, IsValidInteger) {
     EXPECT_EQ(
         test_case.should_pass,
         IsValidInteger(Input(test_case.input, test_case.length), &negative));
-    if (test_case.should_pass)
+    if (test_case.should_pass) {
       EXPECT_EQ(test_case.negative, negative);
+    }
   }
 }
 

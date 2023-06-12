@@ -52,8 +52,9 @@ std::shared_ptr<const ParsedCertificate> ParseCertificateFromFile(
     VerifyCertErrors(expected_errors, errors, test_file_path);
 
   // Every parse failure being tested should emit error information.
-  if (!cert)
+  if (!cert) {
     EXPECT_FALSE(errors.ToDebugString().empty());
+  }
 
   return cert;
 }
