@@ -218,6 +218,15 @@ bool ContentSettingPatternSource::IsExpired() const {
          metadata.expiration < base::Time::Now();
 }
 
+bool ContentSettingPatternSource::operator==(
+    const ContentSettingPatternSource& other) const {
+  return std::tie(primary_pattern, secondary_pattern, setting_value, metadata,
+                  source, incognito) ==
+         std::tie(other.primary_pattern, other.secondary_pattern,
+                  other.setting_value, other.metadata, other.source,
+                  other.incognito);
+}
+
 // static
 bool RendererContentSettingRules::IsRendererContentSetting(
     ContentSettingsType content_type) {
@@ -252,3 +261,12 @@ RendererContentSettingRules& RendererContentSettingRules::operator=(
 
 RendererContentSettingRules& RendererContentSettingRules::operator=(
     RendererContentSettingRules&& rules) = default;
+
+bool RendererContentSettingRules::operator==(
+    const RendererContentSettingRules& other) const {
+  return std::tie(image_rules, script_rules, popup_redirect_rules,
+                  mixed_content_rules, auto_dark_content_rules) ==
+         std::tie(other.image_rules, other.script_rules,
+                  other.popup_redirect_rules, other.mixed_content_rules,
+                  other.auto_dark_content_rules);
+}

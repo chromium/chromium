@@ -13,3 +13,9 @@ include_rules = [
   "+url",
   "+components/privacy_sandbox/privacy_sandbox_features.h",
 ]
+
+specific_include_rules = {
+  "content_settings_mojom_traits_unittest\.cc": [
+    "+mojo/public/cpp/test_support/test_utils.h",
+  ],
+}

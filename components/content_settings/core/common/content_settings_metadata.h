@@ -23,6 +23,12 @@ struct RuleMetaData {
   base::Time expiration;
   // SessionModel as defined through a ContentSettingsConstraint.
   SessionModel session_model = SessionModel::Durable;
+
+  bool operator==(const RuleMetaData& other) const {
+    return std::tie(last_modified, last_visited, expiration, session_model) ==
+           std::tie(other.last_modified, other.last_visited, other.expiration,
+                    other.session_model);
+  }
 };
 
 }  // namespace content_settings

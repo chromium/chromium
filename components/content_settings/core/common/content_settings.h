@@ -61,6 +61,8 @@ struct ContentSettingPatternSource {
   ContentSetting GetContentSetting() const;
   bool IsExpired() const;
 
+  bool operator==(const ContentSettingPatternSource& other) const;
+
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   base::Value setting_value;
@@ -89,6 +91,8 @@ struct RendererContentSettingRules {
   RendererContentSettingRules& operator=(
       const RendererContentSettingRules& rules);
   RendererContentSettingRules& operator=(RendererContentSettingRules&& rules);
+
+  bool operator==(const RendererContentSettingRules& other) const;
 
   ContentSettingsForOneType image_rules;
   ContentSettingsForOneType script_rules;

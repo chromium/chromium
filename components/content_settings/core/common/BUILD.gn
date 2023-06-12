@@ -53,6 +53,7 @@ static_library("common") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_settings_mojom_traits_unittest.cc",
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",
     "content_settings_utils_unittest.cc",
@@ -61,8 +62,10 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
+    ":mojo_bindings",
     "//base",
     "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
@@ -102,6 +105,14 @@ mojom("mojo_bindings") {
         {
           mojom = "content_settings.mojom.RendererContentSettingRules"
           cpp = "::RendererContentSettingRules"
+        },
+        {
+          mojom = "content_settings.mojom.SessionModel"
+          cpp = "::content_settings::SessionModel"
+        },
+        {
+          mojom = "content_settings.mojom.RuleMetaData"
+          cpp = "::content_settings::RuleMetaData"
         },
       ]
       traits_headers = [ "content_settings_mojom_traits.h" ]

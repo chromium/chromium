@@ -160,7 +160,7 @@ class ContentSettingsPattern::Builder
 
 ContentSettingsPattern::Builder::Builder() : is_valid_(true) {}
 
-ContentSettingsPattern::Builder::~Builder() {}
+ContentSettingsPattern::Builder::~Builder() = default;
 
 BuilderInterface* ContentSettingsPattern::Builder::WithPort(
     const std::string& port) {
@@ -354,13 +354,22 @@ ContentSettingsPattern::PatternParts::PatternParts(const PatternParts& other) =
 ContentSettingsPattern::PatternParts::PatternParts(PatternParts&& other) =
     default;
 
-ContentSettingsPattern::PatternParts::~PatternParts() {}
+ContentSettingsPattern::PatternParts::~PatternParts() = default;
 
 ContentSettingsPattern::PatternParts&
 ContentSettingsPattern::PatternParts::operator=(const PatternParts& other) =
     default;
 ContentSettingsPattern::PatternParts&
 ContentSettingsPattern::PatternParts::operator=(PatternParts&& other) = default;
+
+bool ContentSettingsPattern::PatternParts::operator==(
+    const ContentSettingsPattern::PatternParts& other) const {
+  return std::tie(scheme, is_scheme_wildcard, host, has_domain_wildcard, port,
+                  is_port_wildcard, path, is_path_wildcard) ==
+         std::tie(other.scheme, other.is_scheme_wildcard, other.host,
+                  other.has_domain_wildcard, other.port, other.is_port_wildcard,
+                  other.path, other.is_path_wildcard);
+}
 
 // ////////////////////////////////////////////////////////////////////////////
 // ContentSettingsPattern

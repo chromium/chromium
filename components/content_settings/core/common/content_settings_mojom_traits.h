@@ -10,6 +10,8 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings.mojom-shared.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -86,6 +88,42 @@ struct EnumTraits<content_settings::mojom::ContentSetting, ContentSetting> {
 };
 
 template <>
+struct EnumTraits<content_settings::mojom::SessionModel,
+                  content_settings::SessionModel> {
+  static content_settings::mojom::SessionModel ToMojom(
+      content_settings::SessionModel model);
+
+  static bool FromMojom(content_settings::mojom::SessionModel model,
+                        content_settings::SessionModel* out);
+};
+
+template <>
+struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
+                    content_settings::RuleMetaData> {
+  static const base::Time& last_modified(
+      const content_settings::RuleMetaData& r) {
+    return r.last_modified;
+  }
+
+  static const base::Time& last_visited(
+      const content_settings::RuleMetaData& r) {
+    return r.last_visited;
+  }
+
+  static const base::Time& expiration(const content_settings::RuleMetaData& r) {
+    return r.expiration;
+  }
+
+  static const content_settings::SessionModel& session_model(
+      const content_settings::RuleMetaData& r) {
+    return r.session_model;
+  }
+
+  static bool Read(content_settings::mojom::RuleMetaDataDataView data,
+                   content_settings::RuleMetaData* out);
+};
+
+template <>
 struct StructTraits<
     content_settings::mojom::ContentSettingPatternSourceDataView,
     ContentSettingPatternSource> {
@@ -104,8 +142,9 @@ struct StructTraits<
     return r.setting_value;
   }
 
-  static const base::Time& expiration(const ContentSettingPatternSource& r) {
-    return r.metadata.expiration;
+  static const content_settings::RuleMetaData metadata(
+      const ContentSettingPatternSource& r) {
+    return r.metadata;
   }
 
   static const std::string& source(const ContentSettingPatternSource& r) {
