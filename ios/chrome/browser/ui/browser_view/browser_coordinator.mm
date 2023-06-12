@@ -523,6 +523,10 @@ enum class ToolbarKind {
   [self destroyViewControllerDependencies];
 }
 
+- (void)dealloc {
+  DCHECK(!_bookmarksCoordinator);
+}
+
 #pragma mark - Public
 
 - (BOOL)isPlayingTTS {
