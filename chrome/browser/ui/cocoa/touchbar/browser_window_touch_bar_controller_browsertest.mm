@@ -187,8 +187,8 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
 
 // Test if the touch bar gets invalidated when the active tab is changed.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, TabChanges) {
-  base::scoped_nsobject<TouchBarInvalidationWatcher> invalidationWatcher(
-      [TouchBarInvalidationWatcher newWatcher]);
+  [[maybe_unused]] TouchBarInvalidationWatcher* invalidationWatcher =
+      [TouchBarInvalidationWatcher newWatcher];
 
   EXPECT_FALSE(browser_touch_bar_controller());
   MakeTouchBar();
@@ -221,8 +221,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, TabChanges) {
 // Test if the touch bar receives a notification that the current tab is
 // loading.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, PageReload) {
-  base::scoped_nsobject<PageReloadWatcher> pageReloadWatcher(
-      [PageReloadWatcher newWatcher]);
+  [[maybe_unused]] PageReloadWatcher* pageReloadWatcher =
+      [PageReloadWatcher newWatcher];
 
   EXPECT_FALSE(browser_touch_bar_controller());
   MakeTouchBar();
@@ -270,8 +270,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
 // has changed.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
                        SearchEngineChanges) {
-  base::scoped_nsobject<TouchBarInvalidationWatcher> invalidationWatcher(
-      [TouchBarInvalidationWatcher newWatcher]);
+  [[maybe_unused]] TouchBarInvalidationWatcher* invalidationWatcher =
+      [TouchBarInvalidationWatcher newWatcher];
 
   PrefService* prefs = browser()->profile()->GetPrefs();
   DCHECK(prefs);

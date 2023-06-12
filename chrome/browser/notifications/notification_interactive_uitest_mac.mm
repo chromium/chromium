@@ -29,19 +29,19 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPopupShouldActivateApp) {
       browser()->window()->GetNativeWindow()));
 
   {
-    base::scoped_nsobject<WindowedNSNotificationObserver> observer(
+    WindowedNSNotificationObserver* observer =
         [[WindowedNSNotificationObserver alloc]
             initForNotification:NSApplicationDidHideNotification
-                         object:NSApp]);
+                         object:NSApp];
     [NSApp hide:nil];
     [observer wait];
   }
   EXPECT_TRUE([NSApp isHidden]);
 
-  base::scoped_nsobject<WindowedNSNotificationObserver> observer(
+  WindowedNSNotificationObserver* observer =
       [[WindowedNSNotificationObserver alloc]
           initForNotification:NSApplicationDidUnhideNotification
-                       object:NSApp]);
+                       object:NSApp];
 
   std::string result = CreateNotification(
       browser(), true, "", "", "", "",

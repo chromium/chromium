@@ -929,10 +929,9 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
     g_metrics_delegate->OnStartNetRequest(_task);
   }
 
-  // The closure passed to PostTask must to retain the _protocolProxy
-  // scoped_nsobject. A call to ensureProtocolHandlerProxyCreated before passing
-  // _protocolProxy ensure that _protocolProxy is instanciated before passing
-  // it.
+  // The closure passed to PostTask must retain the _protocolProxy. A call to
+  // ensureProtocolHandlerProxyCreated before passing _protocolProxy ensure that
+  // _protocolProxy is instantiated before passing it.
   [self ensureProtocolHandlerProxyCreated];
   DCHECK(_protocolProxy);
   g_protocol_handler_delegate->GetDefaultURLRequestContext()

@@ -1555,9 +1555,7 @@ const CGFloat kSymbolSize = 18;
   CGFloat virtualMaxX = 0;
   CGFloat offset = self.useTabStacking ? [_tabStripView contentOffset].x : 0;
 
-  // Keeps track of which tabs need to be animated.  Using an autoreleased array
-  // instead of scoped_nsobject because scoped_nsobject doesn't seem to work
-  // well with blocks.
+  // Keeps track of which tabs need to be animated.
   NSMutableArray* tabsNeedingAnimation =
       [NSMutableArray arrayWithCapacity:tabCount];
 
