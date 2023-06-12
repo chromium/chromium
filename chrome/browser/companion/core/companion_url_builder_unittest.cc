@@ -7,9 +7,9 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/mock_signin_delegate.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/browser/companion/core/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -26,16 +26,6 @@ namespace {
 constexpr char kValidUrl[] = "https://foo.com/";
 constexpr char kTextQuery[] = "Apples";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
-
-class MockSigninDelegate : public SigninDelegate {
- public:
-  MOCK_METHOD0(AllowedSignin, bool());
-  MOCK_METHOD0(IsSignedIn, bool());
-  MOCK_METHOD0(StartSigninFlow, void());
-  MOCK_METHOD1(EnableMsbb, void(bool));
-  MOCK_METHOD1(LoadUrlInNewTab, void(const GURL&));
-  MOCK_METHOD0(ShouldShowRegionSearchIPH, bool());
-};
 
 }  // namespace
 

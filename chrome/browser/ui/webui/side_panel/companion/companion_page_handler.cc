@@ -200,8 +200,7 @@ void CompanionPageHandler::OnImageQuery(
 
 void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
-    side_panel::mojom::PromoAction promo_action,
-    const absl::optional<GURL>& exps_promo_url) {
+    side_panel::mojom::PromoAction promo_action) {
   if (promo_type == side_panel::mojom::PromoType::kRegionSearchIPH) {
     if (promo_action == side_panel::mojom::PromoAction::kRejected) {
       auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -212,7 +211,7 @@ void CompanionPageHandler::OnPromoAction(
     return;
   }
 
-  promo_handler_->OnPromoAction(promo_type, promo_action, exps_promo_url);
+  promo_handler_->OnPromoAction(promo_type, promo_action);
   metrics_logger_->OnPromoAction(promo_type, promo_action);
 }
 
@@ -271,11 +270,7 @@ void CompanionPageHandler::OnCqCandidatesAvailable(
 }
 
 void CompanionPageHandler::OnPhFeedback(
-    side_panel::mojom::PhFeedback ph_feedback,
-    const absl::optional<GURL>& reporting_url) {
-  if (reporting_url.has_value()) {
-    signin_delegate_->LoadUrlInNewTab(reporting_url.value());
-  }
+    side_panel::mojom::PhFeedback ph_feedback) {
   metrics_logger_->OnPhFeedback(ph_feedback);
 }
 
@@ -285,6 +280,16 @@ void CompanionPageHandler::OnCqJumptagClicked(
       web_contents()->GetPrimaryPage());
   text_highlighter_manager->CreateTextHighlighterAndRemoveExistingInstance(
       text_directive);
+}
+
+void CompanionPageHandler::OpenUrlInBrowser(
+    const absl::optional<GURL>& url_to_open,
+    bool use_new_tab) {
+  if (!url_to_open.has_value() || !url_to_open.value().is_valid()) {
+    return;
+  }
+
+  signin_delegate_->OpenUrlInBrowser(url_to_open.value(), use_new_tab);
 }
 
 Browser* CompanionPageHandler::GetBrowser() {

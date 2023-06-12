@@ -76,10 +76,11 @@ void SigninDelegateImpl::EnableMsbb(bool enable_msbb) {
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(enable_msbb);
 }
 
-void SigninDelegateImpl::LoadUrlInNewTab(const GURL& url) {
-  CHECK(url.is_valid());
+void SigninDelegateImpl::OpenUrlInBrowser(const GURL& url, bool use_new_tab) {
   content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                use_new_tab
+                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                                    : WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                 /*is_renderer_initiated*/ false);
   auto* browser = companion::GetBrowserForWebContents(webui_contents_);
