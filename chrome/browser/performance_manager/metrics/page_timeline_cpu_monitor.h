@@ -113,8 +113,8 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
     // workers in the process.
     void MeasureAndDistributeCPUUsage(
         const ProcessNode* process_node,
-        base::LiveTicks measurement_interval_start,
-        base::LiveTicks measurement_interval_end,
+        base::TimeTicks measurement_interval_start,
+        base::TimeTicks measurement_interval_end,
         CPUUsageMap& cpu_usage_map);
 
    private:
@@ -134,7 +134,7 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
 
   // Last time CPU measurements were taken (for calculating the total length of
   // a measurement interval).
-  base::LiveTicks last_measurement_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeTicks last_measurement_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback that will be invoked to create CPUMeasurementDelegate objects for
   // each ProcessNode being measured.

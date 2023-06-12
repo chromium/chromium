@@ -71,8 +71,8 @@ class SimulatedCPUMeasurementDelegate final
     : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
  public:
   struct CPUUsagePeriod {
-    base::LiveTicks start_time;
-    base::LiveTicks end_time;
+    base::TimeTicks start_time;
+    base::TimeTicks end_time;
     double cpu_usage;
   };
 
@@ -107,8 +107,8 @@ base::TimeDelta SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
   for (const auto& usage_period : cpu_usage_periods) {
     CHECK(!usage_period.start_time.is_null());
     // The last interval in the list will have no end time.
-    const base::LiveTicks end_time = usage_period.end_time.is_null()
-                                         ? base::LiveTicks::Now()
+    const base::TimeTicks end_time = usage_period.end_time.is_null()
+                                         ? base::TimeTicks::Now()
                                          : usage_period.end_time;
     CHECK(end_time >= usage_period.start_time);
     cumulative_usage +=
@@ -221,7 +221,7 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness {
 
   void SetProcessCPUUsage(const ProcessNodeImpl* process_node, double usage) {
     SimulatedCPUMeasurementDelegate::CPUUsagePeriod usage_period{
-        .start_time = base::LiveTicks::Now(),
+        .start_time = base::TimeTicks::Now(),
         .cpu_usage = usage,
     };
     auto& delegate = GetOrCreateCPUMeasurementDelegate(process_node);

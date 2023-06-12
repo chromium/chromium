@@ -96,7 +96,7 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
   graph->AddProcessNodeObserver(this);
 
   CHECK(last_measurement_time_.is_null());
-  last_measurement_time_ = base::LiveTicks::Now();
+  last_measurement_time_ = base::TimeTicks::Now();
 
   // Start monitoring CPU usage for all existing processes. Can't read their CPU
   // usage until they have a pid assigned.
@@ -112,7 +112,7 @@ void PageTimelineCPUMonitor::StopMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_measurement_map_.clear();
   CHECK(!last_measurement_time_.is_null());
-  last_measurement_time_ = base::LiveTicks();
+  last_measurement_time_ = base::TimeTicks();
   graph->RemoveProcessNodeObserver(this);
 }
 
@@ -123,7 +123,7 @@ PageTimelineCPUMonitor::UpdateCPUMeasurements() {
   // frames and workers.
   CHECK(!last_measurement_time_.is_null());
   CPUUsageMap cpu_usage_map;
-  const base::LiveTicks now = base::LiveTicks::Now();
+  const base::TimeTicks now = base::TimeTicks::Now();
   for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
     cpu_measurement.MeasureAndDistributeCPUUsage(
         process_node, last_measurement_time_, now, cpu_usage_map);
@@ -220,8 +220,8 @@ PageTimelineCPUMonitor::CPUMeasurement::operator=(
 
 void PageTimelineCPUMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
-    base::LiveTicks measurement_interval_start,
-    base::LiveTicks measurement_interval_end,
+    base::TimeTicks measurement_interval_start,
+    base::TimeTicks measurement_interval_end,
     CPUUsageMap& cpu_usage_map) {
   // TODO(crbug.com/1410503): There isn't a good way to get the process CPU
   // usage after it exits here:
