@@ -17,6 +17,7 @@ enum class IdpSigninStatus;
 
 namespace content {
 class BrowserContext;
+enum class FedCmIdpSigninStatusMode;
 class FedCmMetrics;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
@@ -43,6 +44,7 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
 // Returns whether FedCM should fail/skip the accounts endpoint request because
 // the user is not signed-in to the IdP.
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
+    RenderFrameHost& host,
     const GURL& identity_provider_config_url,
     FederatedIdentityPermissionContextDelegate* permission_delegate);
 
@@ -53,6 +55,7 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 // endpoint request would have been failed/skipped had the IdP signin-status
 // been FedCmIdpSigninStatusMode::ENABLED.
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
+    RenderFrameHost& host,
     const GURL& identity_provider_config_url,
     IdpNetworkRequestManager::FetchStatus account_endpoint_fetch_status,
     bool does_idp_have_failing_idp_signin_status,
@@ -63,6 +66,8 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
 // FederatedAuthRequestResult.
 CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
     blink::mojom::FederatedAuthRequestResult result);
+
+FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host);
 
 }  // namespace webid
 

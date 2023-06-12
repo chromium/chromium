@@ -677,10 +677,12 @@ void FederatedAuthRequestImpl::RequestToken(
       // IDP use case.
       bool has_failing_idp_signin_status =
           webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-              idp_ptr->get_federated()->config_url, permission_delegate_);
+              render_frame_host(), idp_ptr->get_federated()->config_url,
+              permission_delegate_);
 
       if (has_failing_idp_signin_status &&
-          GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
+          webid::GetIdpSigninStatusMode(render_frame_host()) ==
+              FedCmIdpSigninStatusMode::ENABLED) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kNotSignedInWithIdp,
                                  /*should_delay_callback=*/true);
@@ -969,9 +971,11 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
     // false during the API call. e.g. by the login/logout HEADER.
     idp_info->has_failing_idp_signin_status =
         webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-            identity_provider_config_url, permission_delegate_);
+            render_frame_host(), identity_provider_config_url,
+            permission_delegate_);
     if (idp_info->has_failing_idp_signin_status &&
-        GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
+        webid::GetIdpSigninStatusMode(render_frame_host()) ==
+            FedCmIdpSigninStatusMode::ENABLED) {
       // Do not send metrics for IDP where the user is not signed-in in order
       // to prevent IDP from using the user IP to make a probabilistic model
       // of which websites a user visits.
@@ -1259,7 +1263,9 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     absl::optional<bool> old_idp_signin_status,
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status) {
-  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED) {
+  FedCmIdpSigninStatusMode signin_status_mode =
+      webid::GetIdpSigninStatusMode(render_frame_host());
+  if (signin_status_mode == FedCmIdpSigninStatusMode::DISABLED) {
     OnFetchDataForIdpFailed(std::move(idp_info), result, token_status,
                             /*should_delay_callback=*/true);
     return;
@@ -1268,7 +1274,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   url::Origin idp_origin = url::Origin::Create(idp_info->provider->config_url);
 
   if (!old_idp_signin_status.has_value() ||
-      GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::METRICS_ONLY) {
+      signin_status_mode == FedCmIdpSigninStatusMode::METRICS_ONLY) {
     OnFetchDataForIdpFailed(std::move(idp_info), result, token_status,
                             /*should_delay_callback=*/true);
     return;
@@ -1348,8 +1354,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       permission_delegate_->GetIdpSigninStatus(
           url::Origin::Create(idp_config_url));
   webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
-      idp_config_url, status, idp_info->has_failing_idp_signin_status,
-      permission_delegate_, fedcm_metrics_.get());
+      render_frame_host(), idp_config_url, status,
+      idp_info->has_failing_idp_signin_status, permission_delegate_,
+      fedcm_metrics_.get());
 
   constexpr char kAccountsUrl[] = "accounts endpoint";
   switch (status.parse_status) {

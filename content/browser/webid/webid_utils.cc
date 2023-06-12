@@ -5,6 +5,7 @@
 #include "content/browser/webid/webid_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_context.h"
@@ -59,9 +60,11 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
 }
 
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
+    RenderFrameHost& host,
     const GURL& identity_provider_config_url,
     FederatedIdentityPermissionContextDelegate* permission_delegate) {
-  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED) {
+  if (webid::GetIdpSigninStatusMode(host) ==
+      FedCmIdpSigninStatusMode::DISABLED) {
     return false;
   }
 
@@ -73,12 +76,14 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 }
 
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
+    RenderFrameHost& host,
     const GURL& identity_provider_config_url,
     IdpNetworkRequestManager::FetchStatus fetch_status,
     bool does_idp_have_failing_signin_status,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     FedCmMetrics* metrics) {
-  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED) {
+  if (webid::GetIdpSigninStatusMode(host) ==
+      FedCmIdpSigninStatusMode::DISABLED) {
     return;
   }
 
@@ -236,6 +241,22 @@ std::string GetConsoleErrorMessageFromResult(
       return "";
     }
   }
+}
+
+FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host) {
+  RuntimeFeatureStateDocumentData* rfs_document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(&host);
+  // Should not be null as this gets initialized when the host gets created.
+  DCHECK(rfs_document_data);
+  // This includes origin trials.
+  bool runtime_enabled = rfs_document_data->runtime_feature_state_read_context()
+                             .IsFedCmIdpSigninStatusEnabled();
+
+  FedCmIdpSigninStatusMode flag_mode = GetFedCmIdpSigninStatusFlag();
+  if (flag_mode == FedCmIdpSigninStatusMode::METRICS_ONLY && runtime_enabled) {
+    return FedCmIdpSigninStatusMode::ENABLED;
+  }
+  return flag_mode;
 }
 
 }  // namespace content::webid

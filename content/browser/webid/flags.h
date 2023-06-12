@@ -25,7 +25,9 @@ bool IsFedCmIdpSignoutEnabled();
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
 // Returns the IdpSigninStatus API mode.
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode();
+// Most callers should use webid::GetIdpSigninStatusMode() in webid_utils.h
+// instead, as that version takes origin trial status into account.
+FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag();
 
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();

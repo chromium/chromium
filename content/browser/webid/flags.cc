@@ -29,7 +29,7 @@ bool IsFedCmMultipleIdentityProvidersEnabled() {
       features::kFedCmMultipleIdentityProviders);
 }
 
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode() {
+FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag() {
   if (GetFieldTrialParamByFeatureAsBool(
           features::kFedCm, features::kFedCmIdpSigninStatusFieldTrialParamName,
           false)) {

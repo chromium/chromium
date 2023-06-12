@@ -145,8 +145,9 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
   }
 
   if (webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          idp_config_url_, permission_delegate_) &&
-      GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
+          *render_frame_host_, idp_config_url_, permission_delegate_) &&
+      webid::GetIdpSigninStatusMode(*render_frame_host_) ==
+          FedCmIdpSigninStatusMode::ENABLED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
@@ -195,9 +196,10 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
   // false during the API call. e.g. by the login/logout HEADER.
   does_idp_have_failing_signin_status_ =
       webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          idp_config_url_, permission_delegate_);
+          *render_frame_host_, idp_config_url_, permission_delegate_);
   if (does_idp_have_failing_signin_status_ &&
-      GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
+      webid::GetIdpSigninStatusMode(*render_frame_host_) ==
+          FedCmIdpSigninStatusMode::ENABLED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
@@ -212,8 +214,8 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     IdpNetworkRequestManager::FetchStatus fetch_status,
     IdpNetworkRequestManager::AccountList accounts) {
   webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
-      idp_config_url_, fetch_status, does_idp_have_failing_signin_status_,
-      permission_delegate_, metrics_);
+      *render_frame_host_, idp_config_url_, fetch_status,
+      does_idp_have_failing_signin_status_, permission_delegate_, metrics_);
 
   if (fetch_status.parse_status !=
       IdpNetworkRequestManager::ParseStatus::kSuccess) {

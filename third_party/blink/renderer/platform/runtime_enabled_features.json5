@@ -1605,6 +1605,9 @@
       name: "FedCmIdentityProviderInterface",
       implied_by: ["FedCmIdpSigninStatus", "FedCmUserInfo", "FedCmIdPRegistration", "FedCmAuthz"],
       base_feature: "none",
+      origin_trial_feature_name: "FedCmIdpSigninStatus",
+      origin_trial_allows_third_party: true,
+      origin_trial_os: ["Win", "ChromeOS", "Mac", "Linux"]
     },
     {
       name: "FedCmIdPRegistration",
@@ -1619,6 +1622,10 @@
       public: true,
       status: "test",
       base_feature: "none",
+      origin_trial_feature_name: "FedCmIdpSigninStatus",
+      origin_trial_allows_third_party: true,
+      origin_trial_os: ["Win", "ChromeOS", "Mac", "Linux"],
+      browser_process_read_access: true,
     },
     {
       name: "FedCmIdpSignout",
