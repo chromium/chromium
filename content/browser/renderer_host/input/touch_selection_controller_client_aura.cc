@@ -172,8 +172,13 @@ bool TouchSelectionControllerClientAura::HandleContextMenu(
 
   if (::features::IsTouchTextEditingRedesignEnabled() &&
       params.source_type == ui::MENU_SOURCE_TOUCH && params.is_editable &&
-      params.selection_text.empty() && IsQuickMenuAvailable()) {
-    quick_menu_requested_ = !quick_menu_requested_;
+      params.selection_text.empty()) {
+    if (IsQuickMenuAvailable()) {
+      quick_menu_requested_ = !quick_menu_requested_;
+    } else {
+      rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+      quick_menu_requested_ = false;
+    }
     UpdateQuickMenu();
     return true;
   }
@@ -489,10 +494,20 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-    case ui::TouchEditable::kSelectAll:
+    case ui::TouchEditable::kSelectAll: {
+      gfx::Range text_range;
+      if (rwhva_->GetTextRange(&text_range)) {
+        return text_range.length() > rwhva_->GetSelectedText().length();
+      }
       return true;
-    case ui::TouchEditable::kSelectWord:
-      return editable && !has_selection;
+    }
+    case ui::TouchEditable::kSelectWord: {
+      gfx::Range text_range;
+      if (rwhva_->GetTextRange(&text_range)) {
+        return readable && !has_selection && !text_range.is_empty();
+      }
+      return readable && !has_selection;
+    }
     default:
       return false;
   }

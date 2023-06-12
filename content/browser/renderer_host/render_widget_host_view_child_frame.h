@@ -220,6 +220,10 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   ui::TextInputType GetTextInputType() const;
 
+  // Retrieves the UTF-16 code unit range containing accessible text in the
+  // view. Returns false if the information cannot be retrieved right now.
+  bool GetTextRange(gfx::Range* range) const;
+
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() const;
 
  protected:

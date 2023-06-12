@@ -128,10 +128,11 @@ class TestTouchSelectionMenuRunner : public ui::TouchSelectionMenuRunner {
 class TestTouchSelectionControllerClientAura
     : public TouchSelectionControllerClientAura {
  public:
-  explicit TestTouchSelectionControllerClientAura(
-      RenderWidgetHostViewAura* rwhva)
+  TestTouchSelectionControllerClientAura(RenderWidgetHostViewAura* rwhva,
+                                         bool enable_all_menu_commands)
       : TouchSelectionControllerClientAura(rwhva),
-        expected_event_(ui::SELECTION_HANDLES_SHOWN) {
+        expected_event_(ui::SELECTION_HANDLES_SHOWN),
+        enable_all_menu_commands_(enable_all_menu_commands) {
     show_quick_menu_immediately_for_test_ = true;
   }
 
@@ -183,13 +184,21 @@ class TestTouchSelectionControllerClientAura
   }
 
   bool IsCommandIdEnabled(int command_id) const override {
-    // Return true so that quick menu has something to show.
-    return true;
+    if (enable_all_menu_commands_) {
+      return true;
+    }
+    return TouchSelectionControllerClientAura::IsCommandIdEnabled(command_id);
   }
 
   bool waiting_for_handle_context_menu_ = false;
   ui::SelectionEventType expected_event_;
   std::unique_ptr<base::RunLoop> run_loop_;
+
+  // When set to true, the TouchSelectionControllerClientAura criteria for
+  // enabling menu commands is overridden and we instead enable all menu
+  // commands. This is so that we can test behaviour related to showing/hiding
+  // the menu without worrying about whether commands will be shown or not.
+  bool enable_all_menu_commands_ = false;
 };
 
 class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
@@ -232,6 +241,14 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     return point;
   }
 
+  gfx::PointF GetPointInsideEmptyTextfield() {
+    gfx::PointF point;
+    JSONToPoint(
+        EvalJs(shell(), "get_point_inside_empty_textfield()").ExtractString(),
+        &point);
+    return point;
+  }
+
   RenderWidgetHostViewAura* GetRenderWidgetHostViewAura() {
     return static_cast<RenderWidgetHostViewAura*>(
         shell()->web_contents()->GetRenderWidgetHostView());
@@ -241,10 +258,10 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     return selection_controller_client_;
   }
 
-  void InitSelectionController() {
+  void InitSelectionController(bool enable_all_menu_commands) {
     RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
-    selection_controller_client_ =
-        new TestTouchSelectionControllerClientAura(rwhva);
+    selection_controller_client_ = new TestTouchSelectionControllerClientAura(
+        rwhva, enable_all_menu_commands);
     rwhva->SetSelectionControllerClientForTest(
         base::WrapUnique(selection_controller_client_.get()));
     // Simulate the start of a motion event sequence, since the tests assume it.
@@ -296,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        BasicSelection) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
@@ -481,7 +498,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       static_cast<RenderWidgetHostViewAura*>(
           root->current_frame_host()->GetRenderWidgetHost()->GetView());
   TestTouchSelectionControllerClientAura* parent_selection_controller_client =
-      new TestTouchSelectionControllerClientAura(parent_view);
+      new TestTouchSelectionControllerClientAura(parent_view, true);
   parent_view->SetSelectionControllerClientForTest(
       base::WrapUnique(parent_selection_controller_client));
 
@@ -593,7 +610,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
           root->current_frame_host()->GetRenderWidgetHost()->GetView());
 
   TestTouchSelectionControllerClientAura* parent_selection_controller_client =
-      new TestTouchSelectionControllerClientAura(parent_view);
+      new TestTouchSelectionControllerClientAura(parent_view, true);
   parent_view->SetSelectionControllerClientForTest(
       base::WrapUnique(parent_selection_controller_client));
 
@@ -768,7 +785,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        BasicInsertionFollowedByTapsOnHandle) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
@@ -815,7 +832,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        TapOnCaret) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   const gfx::NativeView native_view = rwhva->GetNativeView();
@@ -850,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        DISABLED_QuickMenuHiddenOnTouch) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
@@ -913,7 +930,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        HiddenOnScroll) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
@@ -999,7 +1016,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        SwipeToMoveCursorMagnifier) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   gfx::NativeView native_view = rwhva->GetNativeView();
@@ -1042,7 +1059,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        SelectAllCommand) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(false);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
@@ -1065,14 +1082,20 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->Wait();
   EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
             rwhva->selection_controller()->active_status());
+  EXPECT_TRUE(
+      selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
+          ui::TouchEditable::kSelectAll));
 
-  // Execute select all command. All text in textfield should be selected and
-  // touch handles and quick menu should be shown.
+  // Execute select all command.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
   selection_controller_client()->GetActiveMenuClient()->ExecuteCommand(
       ui::TouchEditable::kSelectAll, 0);
   selection_controller_client()->Wait();
+
+  // All text in the textfield should be selected. Touch handles and quick menu
+  // should be shown and the select all command should now be disabled since all
+  // text is already selected.
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
             rwhva->selection_controller()->active_status());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
@@ -1081,6 +1104,9 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   EXPECT_EQ(
       selection_controller_client()->GetActiveMenuClient()->GetSelectedText(),
       u"Text in a textfield");
+  EXPECT_FALSE(
+      selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
+          ui::TouchEditable::kSelectAll));
 }
 
 // Tests that the select word command in the quick menu works correctly and that
@@ -1089,7 +1115,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        SelectWordCommand) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(false);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
@@ -1112,14 +1138,20 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->Wait();
   EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
             rwhva->selection_controller()->active_status());
+  EXPECT_TRUE(
+      selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
+          ui::TouchEditable::kSelectWord));
 
-  // Execute select word command. The word around the current caret position
-  // should be selected and touch handles and quick menu should be shown.
+  // Execute select word command.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
   selection_controller_client()->GetActiveMenuClient()->ExecuteCommand(
       ui::TouchEditable::kSelectWord, 0);
   selection_controller_client()->Wait();
+
+  // The closest word should be selected. Touch handles and quick menu should be
+  // shown and the select word command should now be disabled since there is a
+  // non-empty selection.
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
             rwhva->selection_controller()->active_status());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
@@ -1128,6 +1160,38 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   EXPECT_EQ(
       selection_controller_client()->GetActiveMenuClient()->GetSelectedText(),
       u"Text");
+  EXPECT_FALSE(
+      selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
+          ui::TouchEditable::kSelectWord));
+}
+
+// Tests that the select all and select word commands in the quick menu are
+// disabled for empty textfields.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       SelectCommandsEmptyTextfield) {
+  // Set the test page up.
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController(false);
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+
+  // Long-press on an empty textfield and wait for insertion handle to appear.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
+  gfx::PointF point = GetPointInsideEmptyTextfield();
+  ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
+  long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
+                              long_press_details);
+  rwhva->OnGestureEvent(&long_press);
+  selection_controller_client()->Wait();
+
+  // Select all and select word commands should be disabled.
+  EXPECT_FALSE(
+      selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
+          ui::TouchEditable::kSelectAll));
+  EXPECT_FALSE(
+      selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
+          ui::TouchEditable::kSelectWord));
 }
 
 class TouchSelectionControllerClientAuraScaleFactorTest
@@ -1160,7 +1224,7 @@ IN_PROC_BROWSER_TEST_P(
     SelectionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
 
@@ -1271,7 +1335,7 @@ IN_PROC_BROWSER_TEST_P(
     InsertionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
-  InitSelectionController();
+  InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
 

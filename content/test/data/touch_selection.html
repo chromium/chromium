@@ -1,16 +1,19 @@
 <html>
 <style>
-/* Add space between div and textfield so that touch selects the text in div. */
-#textDiv {
+/* Add space to separate the touch selection targets. */
+.padded {
   margin-bottom: 30px;
 }
 </style>
 <body>
-<div id='dummy'>Dummy Padding Text</div>
-<div id='textDiv'>Some text we can select</div>
-<div id='dummy'>Dummy Padding Text</div>
+<div>Dummy Padding Text</div>
+<div id='textDiv' class='padded'>Some text we can select</div>
 
-<input id='textfield' type="text" value="Text in a textfield">
+<div>Dummy Padding Text</div>
+<input id='textfield' class='padded' type="text" value="Text in a textfield">
+
+<div>Dummy Padding Text</div>
+<input id='emptyTextfield' class='padded' type="text" value="">
 </body>
 <script>
 
@@ -35,6 +38,10 @@ function get_point_inside_text() {
 
 function get_point_inside_textfield() {
   return get_point_inside(document.getElementById('textfield'));
+}
+
+function get_point_inside_empty_textfield() {
+  return get_point_inside(document.getElementById('emptyTextfield'));
 }
 
 </script>

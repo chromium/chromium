@@ -1005,6 +1005,22 @@ ui::TextInputType RenderWidgetHostViewChildFrame::GetTextInputType() const {
   return ui::TEXT_INPUT_TYPE_NONE;
 }
 
+bool RenderWidgetHostViewChildFrame::GetTextRange(gfx::Range* range) const {
+  if (!text_input_manager_ || !GetFocusedWidget()) {
+    return false;
+  }
+
+  const ui::mojom::TextInputState* state =
+      text_input_manager_->GetTextInputState();
+  if (!state) {
+    return false;
+  }
+
+  range->set_start(0);
+  range->set_end(state->value ? state->value->length() : 0);
+  return true;
+}
+
 RenderWidgetHostViewBase*
 RenderWidgetHostViewChildFrame::GetRootRenderWidgetHostView() const {
   return frame_connector_ ? frame_connector_->GetRootRenderWidgetHostView()
