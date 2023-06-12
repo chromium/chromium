@@ -1150,6 +1150,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMainThreadHighPriorityImageLoading);
 // hopping through the IO thread first.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);
 
+// Allows running DevTools main thread debugger even when a renderer process
+// hosts multiple main frames.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
+
 }  // namespace features
 }  // namespace blink
 
