@@ -76,8 +76,7 @@ public class AddressEditor {
      */
     public AddressEditor(EditorDialog editorDialog, Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
-        mMediator = new AddressEditorMediator();
-        mMediator.initialize(
+        mMediator = new AddressEditorMediator(
                 editorDialog.getContext(), delegate, profile, addressToEdit, userFlow, saveToDisk);
         mEditorDialog = editorDialog;
     }

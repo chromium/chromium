@@ -91,30 +91,28 @@ import java.util.UUID;
  * events like address country selection.
  */
 class AddressEditorMediator {
-    private Handler mHandler = new Handler();
-    private Set<String> mPhoneNumbers = new HashSet<>();
+    private final Handler mHandler = new Handler();
+    private final Set<String> mPhoneNumbers = new HashSet<>();
+    private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter =
+            new PhoneNumberUtil.CountryAwareFormatTextWatcher();
+    private final CountryAwarePhoneNumberValidator mPhoneValidator =
+            new CountryAwarePhoneNumberValidator(true);
+    private final AutofillProfileBridge mAutofillProfileBridge = new AutofillProfileBridge();
+    private final Context mContext;
+    private final AddressEditor.Delegate mDelegate;
+    private final Profile mProfile;
+    private final AutofillProfile mProfileToEdit;
+    private final AutofillAddress mAddressToEdit;
+    private final @UserFlow int mUserFlow;
+    private final boolean mSaveToDisk;
+    private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
+    private final PropertyModel mCountryField;
+    private final @Nullable PropertyModel mHonorificField;
+    private final PropertyModel mPhoneField;
+    private final PropertyModel mEmailField;
+    private final @Nullable PropertyModel mNicknameField;
 
-    private PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
-    private CountryAwarePhoneNumberValidator mPhoneValidator;
-    private AutofillProfileBridge mAutofillProfileBridge;
-
-    private Context mContext;
-    private AddressEditor.Delegate mDelegate;
-    private Profile mProfile;
-    private AutofillProfile mProfileToEdit;
-    private AutofillAddress mAddressToEdit;
-    private @UserFlow int mUserFlow;
-
-    private boolean mSaveToDisk;
-
-    private Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private List<AddressUiComponent> mVisibleEditorFields;
-    private PropertyModel mCountryField;
-    private PropertyModel mHonorificField;
-    private PropertyModel mPhoneField;
-    private PropertyModel mEmailField;
-    private PropertyModel mNicknameField;
-
     @Nullable
     private String mCustomDoneButtonText;
 
@@ -185,13 +183,7 @@ class AddressEditorMediator {
         return supportedCountries;
     }
 
-    AddressEditorMediator() {
-        mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
-        mPhoneValidator = new CountryAwarePhoneNumberValidator(true);
-        mAutofillProfileBridge = new AutofillProfileBridge();
-    }
-
-    void initialize(Context context, AddressEditor.Delegate delegate, Profile profile,
+    AddressEditorMediator(Context context, AddressEditor.Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
         mContext = context;
         mDelegate = delegate;
@@ -199,13 +191,8 @@ class AddressEditorMediator {
         mProfileToEdit = addressToEdit.getProfile();
         mAddressToEdit = addressToEdit;
         mUserFlow = userFlow;
-
         mSaveToDisk = saveToDisk;
 
-        initializeEditorFields();
-    }
-
-    private void initializeEditorFields() {
         // The country dropdown is always present on the editor.
         mCountryField =
                 new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
@@ -217,17 +204,16 @@ class AddressEditorMediator {
                         .build();
 
         // Honorific prefix is present only for autofill settings.
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES)) {
-            mHonorificField =
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
-                            .with(LABEL,
-                                    mContext.getString(
-                                            R.string.autofill_profile_editor_honorific_prefix))
-                            .with(IS_FULL_LINE, true)
-                            .build();
-        }
+        mHonorificField = ChromeFeatureList.isEnabled(
+                                  ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES)
+                ? new PropertyModel.Builder(TEXT_ALL_KEYS)
+                          .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                          .with(LABEL,
+                                  mContext.getString(
+                                          R.string.autofill_profile_editor_honorific_prefix))
+                          .with(IS_FULL_LINE, true)
+                          .build()
+                : null;
 
         // There's a finite number of fields for address editing. Changing the country will re-order
         // and relabel the fields. The meaning of each field remains the same.
@@ -264,15 +250,16 @@ class AddressEditorMediator {
                         .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
                         .build();
 
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)) {
-            // TODO(crbug.com/1445020): Use localized string.
-            mNicknameField = new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                     .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
-                                     .with(LABEL, "Label")
-                                     .with(IS_FULL_LINE, true)
-                                     .build();
-        }
+        // TODO(crbug.com/1445020): Use localized string.
+        mNicknameField =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)
+                ? new PropertyModel.Builder(TEXT_ALL_KEYS)
+                          .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                          .with(LABEL, "Label")
+                          .with(IS_FULL_LINE, true)
+                          .build()
+                : null;
 
         // This should be called when all required fields are put in mAddressField.
         setAddressFieldValues();
