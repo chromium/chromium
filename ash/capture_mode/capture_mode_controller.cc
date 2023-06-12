@@ -1333,18 +1333,21 @@ void CaptureModeController::TerminateRecordingUiElements() {
 }
 
 void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
-                                         const base::FilePath& path) {
+                                         const base::FilePath& path,
+                                         const CaptureModeBehavior* behavior) {
   // Note that |type_| may not necessarily be |kImage| here, since this may be
   // called to take an instant fullscreen screenshot for the keyboard shortcut,
   // which doesn't go through the capture mode UI, and doesn't change |type_|.
-  DCHECK(delegate_->IsCaptureAllowedByPolicy());
+  CHECK(delegate_->IsCaptureAllowedByPolicy());
 
   // Stop the capture session now, so as not to take a screenshot of the capture
   // bar.
-  if (IsActive())
+  if (IsActive()) {
+    CHECK_EQ(capture_mode_session_->active_behavior(), behavior);
     Stop();
+  }
 
-  DCHECK(!capture_params.bounds.IsEmpty());
+  CHECK(!capture_params.bounds.IsEmpty());
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
   bool was_cursor_originally_blocked = cursor_manager->IsCursorLocked();
@@ -1357,7 +1360,7 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
                      weak_ptr_factory_.GetWeakPtr(), path,
-                     was_cursor_originally_blocked));
+                     was_cursor_originally_blocked, behavior));
 
   ++num_screenshots_taken_in_last_day_;
   ++num_screenshots_taken_in_last_week_;
@@ -1392,6 +1395,7 @@ void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
 void CaptureModeController::OnImageCaptured(
     const base::FilePath& path,
     bool was_cursor_originally_blocked,
+    const CaptureModeBehavior* behavior,
     scoped_refptr<base::RefCountedMemory> png_bytes) {
   if (!was_cursor_originally_blocked) {
     auto* shell = Shell::Get();
@@ -1411,25 +1415,24 @@ void CaptureModeController::OnImageCaptured(
       base::BindOnce(&SaveFile, png_bytes, path,
                      GetFallbackFilePathFromFile(path)),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
-                     weak_ptr_factory_.GetWeakPtr(), png_bytes));
+                     weak_ptr_factory_.GetWeakPtr(), png_bytes, behavior));
 }
 
 void CaptureModeController::OnImageFileSaved(
     scoped_refptr<base::RefCountedMemory> png_bytes,
+    const CaptureModeBehavior* behavior,
     const base::FilePath& file_saved_path) {
   if (file_saved_path.empty()) {
     ShowFailureNotification();
     return;
   }
-  if (on_file_saved_callback_for_test_)
+  if (on_file_saved_callback_for_test_) {
     std::move(on_file_saved_callback_for_test_).Run(file_saved_path);
+  }
 
   DCHECK(png_bytes && png_bytes->size());
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
-  // TODO(michelefan): Do not hard-code `BehaviorType::kDefault`. Screenshot
-  // notification should be separated among different behaviors.
-  CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kDefault);
   ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage,
                           behavior);
   if (Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
@@ -1794,7 +1797,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   const absl::optional<CaptureParams> capture_params = GetCaptureParams();
-  DCHECK(capture_params);
+  CHECK(capture_params);
 
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
@@ -1803,7 +1806,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   if (type_ == CaptureModeType::kImage) {
-    CaptureImage(*capture_params, BuildImagePath());
+    CaptureImage(*capture_params, BuildImagePath(),
+                 capture_mode_session_->active_behavior());
   } else {
     // HDCP affects only video recording.
     if (ShouldBlockRecordingForContentProtection(capture_params->window)) {
@@ -2061,9 +2065,11 @@ void CaptureModeController::PerformScreenshotsOfAllDisplays() {
     // whether we should localize the display name.
     const CaptureParams capture_params{controller->GetRootWindow(),
                                        controller->GetRootWindow()->bounds()};
-    CaptureImage(capture_params, controllers.size() == 1
-                                     ? BuildImagePath()
-                                     : BuildImagePathForDisplay(display_index));
+    CaptureImage(capture_params,
+                 controllers.size() == 1
+                     ? BuildImagePath()
+                     : BuildImagePathForDisplay(display_index),
+                 GetBehavior(BehaviorType::kDefault));
     ++display_index;
   }
 }
@@ -2072,7 +2078,10 @@ void CaptureModeController::PerformScreenshotOfGivenWindow(
     aura::Window* given_window) {
   const CaptureParams capture_params{given_window,
                                      gfx::Rect(given_window->bounds().size())};
-  CaptureImage(capture_params, BuildImagePath());
+  // TODO(michelefan): Add behavior type as an input parameter, if this API is
+  // used for other entry types in future.
+  CaptureImage(capture_params, BuildImagePath(),
+               GetBehavior(BehaviorType::kGameDashboard));
 }
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(

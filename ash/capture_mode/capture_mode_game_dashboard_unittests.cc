@@ -690,6 +690,26 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
       /*expected_count=*/1);
 }
 
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       CaptureScreenshotOfGivenWindowMetric) {
+  constexpr char kHistogramNameBase[] = "SaveLocation";
+  const base::FilePath custom_folder =
+      CreateCustomFolderInUserDownloadsPath("test");
+  const auto histogram_name = BuildHistogramName(
+      kHistogramNameBase,
+      CaptureModeTestApi().GetBehavior(BehaviorType::kGameDashboard),
+      /*append_ui_mode_suffix=*/true);
+
+  histogram_tester_.ExpectBucketCount(
+      histogram_name, CaptureModeSaveToLocation::kCustomizedFolder, 0);
+  CaptureModeController* controller = CaptureModeController::Get();
+  controller->SetCustomCaptureFolder(custom_folder);
+  controller->CaptureScreenshotOfGivenWindow(game_window());
+  const auto file_saved_path = WaitForCaptureFileToBeSaved();
+  histogram_tester_.ExpectBucketCount(
+      histogram_name, CaptureModeSaveToLocation::kCustomizedFolder, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          GameDashboardCaptureModeHistogramTest,
                          ::testing::Bool());

@@ -210,12 +210,12 @@ class ASH_EXPORT CaptureModeController
   // individual file. Note: this won't start a capture mode session.
   void CaptureScreenshotsOfAllDisplays();
 
-  // Performs the instantscreen capture for the `given_window` which bypasses
+  // Performs the instant screen capture for the `given_window` which bypasses
   // the capture mode session.
   void CaptureScreenshotOfGivenWindow(aura::Window* given_window);
 
   // Called only while a capture session is in progress to perform the actual
-  // capture depending on the current selected |source_| and |type_|, and ends
+  // capture depending on the current selected `source_` and `type_`, and ends
   // the capture session.
   void PerformCapture();
 
@@ -391,16 +391,17 @@ class ASH_EXPORT CaptureModeController
   // capture parameters they need. They will end the sessions themselves.
   // They should never be called if IsCaptureAllowed() returns false.
   void CaptureImage(const CaptureParams& capture_params,
-                    const base::FilePath& path);
+                    const base::FilePath& path,
+                    const CaptureModeBehavior* behavior);
   void CaptureVideo(const CaptureParams& capture_params);
 
   // Called back when an image has been captured to trigger an attempt to save
-  // the image as a file. |timestamp| is the time at which the capture was
-  // triggered. |was_cursor_originally_blocked| is whether the cursor was
-  // blocked at the time the screenshot capture request was made. |png_bytes| is
-  // the buffer containing the captured image in a PNG format.
+  // the image as a file. `was_cursor_originally_blocked` is whether the cursor
+  // was blocked at the time the screenshot capture request was made.
+  // `png_bytes` is the buffer containing the captured image in a PNG format.
   void OnImageCaptured(const base::FilePath& path,
                        bool was_cursor_originally_blocked,
+                       const CaptureModeBehavior* behavior,
                        scoped_refptr<base::RefCountedMemory> png_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
@@ -411,6 +412,7 @@ class ASH_EXPORT CaptureModeController
   // clipboard. If saving was successful, then the image was saved in
   // `file_saved_path`.
   void OnImageFileSaved(scoped_refptr<base::RefCountedMemory> png_bytes,
+                        const CaptureModeBehavior* behavior,
                         const base::FilePath& file_saved_path);
 
   // Called back when the check for custom folder's availability is done in

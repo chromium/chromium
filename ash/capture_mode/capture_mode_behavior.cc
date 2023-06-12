@@ -252,10 +252,9 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 
   std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
       bool for_video) const override {
-    CHECK(for_video);
-
     return {message_center::ButtonInfo{l10n_util::GetStringUTF16(
-                IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE)},
+                for_video ? IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE
+                          : IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT)},
             message_center::ButtonInfo{l10n_util::GetStringUTF16(
                 IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE)}};
   }
@@ -420,13 +419,12 @@ CaptureModeBehavior::GetNotificationButtonsInfo(bool for_video) const {
 
   if (!for_video &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    message_center::ButtonInfo edit_button(
+    buttons_info.emplace_back(
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-    buttons_info.push_back(edit_button);
   }
-  message_center::ButtonInfo delete_button(
+
+  buttons_info.emplace_back(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
-  buttons_info.push_back(delete_button);
 
   return buttons_info;
 }
