@@ -324,12 +324,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.StateKeyGenerationStatus"
-    enum="LoginStateKeyGenerationStatus" expires_after="2023-11-01">
+    enum="LoginStateKeyGenerationStatus" expires_after="2024-06-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@chromium.org</owner>
   <summary>
-    Result of a state key generation operation. Warning: this histogram was
-    expired from 2019-10-22 (M78) to 2023-02-07 (M110); data may be missing.
+    Result of a state key generation operation.
+
+    Warning: this histogram was expired from 2019-10-29 (M78) to 2023-02-09
+    (M110); data may be missing.
+
+    Starting in 2023-08-22 (M116), the value MISSING_IDENTIFIERS is no longer
+    reported. Instead we report MISSING_MACHINE_SERIAL_NUMBER or
+    MISSING_DISK_SERIAL_NUMBER when only one of the identifiers is missing, or
+    MISSING_ALL_IDENTIFIERS when all are missing.
   </summary>
 </histogram>
 

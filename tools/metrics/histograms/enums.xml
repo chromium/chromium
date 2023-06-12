@@ -67237,13 +67237,22 @@ from previous Chrome versions.
     Successfully generated state keys from stable device secret.
   </int>
   <int value="2" label="MISSING_IDENTIFIERS">
-    Failed due to missing machine IDs.
+    Failed due to missing machine IDs. Deprecated in M116.
   </int>
   <int value="3" label="BAD_DEVICE_SECRET">
     Failed due to invalid device secret input.
   </int>
   <int value="4" label="HMAC_INIT_FAILURE">HMAC initialization failed.</int>
   <int value="5" label="HMAC_SIGN_FAILURE">HMAC computation failed.</int>
+  <int value="6" label="MISSING_MACHINE_SERIAL_NUMBER">
+    Failed due to missing machine serial number.
+  </int>
+  <int value="7" label="MISSING_DISK_SERIAL_NUMBER">
+    Failed due to missing disk serial number.
+  </int>
+  <int value="8" label="MISSING_ALL_IDENTIFIERS">
+    Failed due to missing all machine IDs.
+  </int>
 </enum>
 
 <enum name="LoginSuccessReason">
