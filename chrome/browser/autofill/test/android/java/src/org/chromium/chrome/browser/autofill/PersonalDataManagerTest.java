@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -528,6 +529,7 @@ public class PersonalDataManagerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1454222")
     @Feature({"Autofill"})
     public void testProfilesFrecency() throws TimeoutException {
         // Create 3 profiles.
