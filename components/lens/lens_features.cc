@@ -60,6 +60,30 @@ constexpr base::FeatureParam<std::string> kHomepageURLForLens{
 constexpr base::FeatureParam<bool> kEnableLensHtmlRedirectFix{
     &kLensStandalone, "lens-html-redirect-fix", true};
 
+constexpr base::FeatureParam<bool>
+    kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame{
+        &kLensStandalone,
+        "dismiss-loading-state-on-document-on-load-completed-in-primary-main-"
+        "frame",
+        true};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnDomContentLoaded{
+    &kLensStandalone, "dismiss-loading-state-on-dom-content-loaded", false};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishNavigation{
+    &kLensStandalone, "dismiss-loading-state-on-did-finish-navigation", false};
+
+constexpr base::FeatureParam<bool>
+    kDismissLoadingStateOnNavigationEntryCommitted{
+        &kLensStandalone, "dismiss-loading-state-on-navigation-entry-committed",
+        false};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
+    &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged{
+    &kLensStandalone, "dismiss-loading-state-on-primary-page-changed", false};
+
 constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
     &kLensImageCompression, "region-search-dimensions-max-pixels", 1000};
 
@@ -120,6 +144,30 @@ std::string GetHomepageURLForLens() {
 
 bool GetEnableLensHtmlRedirectFix() {
   return kEnableLensHtmlRedirectFix.Get();
+}
+
+bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame() {
+  return kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame.Get();
+}
+
+bool GetDismissLoadingStateOnDomContentLoaded() {
+  return kDismissLoadingStateOnDomContentLoaded.Get();
+}
+
+bool GetDismissLoadingStateOnDidFinishNavigation() {
+  return kDismissLoadingStateOnDidFinishNavigation.Get();
+}
+
+bool GetDismissLoadingStateOnNavigationEntryCommitted() {
+  return kDismissLoadingStateOnNavigationEntryCommitted.Get();
+}
+
+bool GetDismissLoadingStateOnDidFinishLoad() {
+  return kDismissLoadingStateOnDidFinishLoad.Get();
+}
+
+bool GetDismissLoadingStateOnPrimaryPageChanged() {
+  return kDismissLoadingStateOnPrimaryPageChanged.Get();
 }
 
 bool GetEnableImageSearchUnifiedSidePanelFor3PDse() {
