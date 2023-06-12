@@ -110,4 +110,46 @@ suite('NetworkIpConfigTest', function() {
 
     assertTrue(!!getAutoConfig());
   });
+
+  test('Do not apply observed changes for static config type', function() {
+    const ipAddress = '127.0.0.1';
+    ipConfig.managedProperties = {
+      ipAddressConfigType: {
+        activeValue: 'Static',
+        policySource: PolicySource.kNone,
+      },
+      staticIpConfig: {
+        ipAddress: {
+          activeValue: ipAddress,
+        },
+      },
+      connectionState: ConnectionStateType.kNotConnected,
+      type: NetworkType.kWiFi,
+    };
+    flush();
+
+    const getIpAddress = () =>
+        ipConfig.shadowRoot.querySelector('network-property-list-mojo')
+            .shadowRoot.querySelector('cr-input')
+            .value;
+    assertEquals(ipAddress, getIpAddress());
+
+    ipConfig.managedProperties = {
+      ipAddressConfigType: {
+        activeValue: 'Static',
+        policySource: PolicySource.kNone,
+      },
+      staticIpConfig: {
+        ipAddress: {
+          activeValue: '127.0.0.2',
+        },
+      },
+      connectionState: ConnectionStateType.kNotConnected,
+      type: NetworkType.kWiFi,
+    };
+    flush();
+
+    // Observed changes should not be applied if the config type is static.
+    assertEquals(ipAddress, getIpAddress());
+  });
 });
