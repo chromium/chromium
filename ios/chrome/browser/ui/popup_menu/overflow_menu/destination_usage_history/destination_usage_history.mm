@@ -186,22 +186,9 @@ DestinationRanking SortByUsage(
 
 - (DestinationRanking)
     sortedDestinationsFromCurrentRanking:(DestinationRanking)currentRanking
-                    carouselDestinations:(NSArray<OverflowMenuDestination*>*)
-                                             carouselDestinations {
-  [self seedUsageHistoryForNewDestinations:carouselDestinations];
-
-  // Exit early if there's no `currentRanking`, which only happens if the device
-  // hasn't used Smart Sorting before.
-  if (currentRanking.empty()) {
-    // Given there's no existing `currentRanking`, the current carousel sort
-    // order will be used as the default ranking.
-    for (OverflowMenuDestination* destination in carouselDestinations) {
-      currentRanking.push_back(
-          static_cast<overflow_menu::Destination>(destination.destination));
-    }
-
-    return currentRanking;
-  }
+                   availableDestinations:
+                       (DestinationRanking)availableDestinations {
+  [self seedUsageHistoryForNewDestinations:availableDestinations];
 
   DestinationRanking sortedRanking =
       [self calculateNewRankingFromCurrentRanking:currentRanking];
@@ -295,16 +282,12 @@ DestinationRanking SortByUsage(
 // clicks. This method skips seeding history for any `destinations` that
 // already exist in `_usageHistory`.
 - (void)seedUsageHistoryForNewDestinations:
-    (NSArray<OverflowMenuDestination*>*)destinations {
+    (DestinationRanking)availableDestinations {
   DCHECK_GT(kDampening, 1.0);
   DCHECK_GT(kInitialUsageThreshold, 1);
 
-  std::set<overflow_menu::Destination> newDestinations;
-
-  for (OverflowMenuDestination* destination in destinations) {
-    newDestinations.insert(
-        static_cast<overflow_menu::Destination>(destination.destination));
-  }
+  std::set<overflow_menu::Destination> newDestinations(
+      availableDestinations.begin(), availableDestinations.end());
 
   std::set<overflow_menu::Destination> existingDestinations;
 

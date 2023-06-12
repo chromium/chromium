@@ -13,8 +13,6 @@
 
 class PrefService;
 
-using DestinationRanking = std::vector<overflow_menu::Destination>;
-
 // Tracks destination usage from the new overflow menu and implements a
 // frecency-based sorting algorithm (i.e. an algorithm that uses the data
 // frequency and data recency when determining sort order) to order destinations
@@ -73,8 +71,8 @@ using DestinationRanking = std::vector<overflow_menu::Destination>;
 // current ranking and a list of all available destinations.
 - (DestinationRanking)
     sortedDestinationsFromCurrentRanking:(DestinationRanking)currentRanking
-                    carouselDestinations:(NSArray<OverflowMenuDestination*>*)
-                                             carouselDestinations;
+                   availableDestinations:
+                       (DestinationRanking)availableDestinations;
 
 // Stops the Destination Usage History.
 - (void)stop;

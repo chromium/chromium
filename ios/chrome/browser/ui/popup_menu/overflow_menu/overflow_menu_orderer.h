@@ -7,11 +7,25 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
+
 namespace overflow_menu {
 enum class Destination;
 }
 @class OverflowMenuDestination;
 class PrefService;
+
+@protocol OverflowMenuDestinationProvider <NSObject>
+
+- (DestinationRanking)baseDestinations;
+
+// Returns the correct `OverflowMenuDestination` for the corresponding
+// `overflow_menu::Destination` on the current page. Returns nil if the current
+// page does not support the given `destinationType`.
+- (OverflowMenuDestination*)destinationForDestinationType:
+    (overflow_menu::Destination)destinationType;
+
+@end
 
 // Controls the order of all the items in the overflow menu.
 @interface OverflowMenuOrderer : NSObject
@@ -27,6 +41,9 @@ class PrefService;
 // new overflow menu (i.e. the number of "above-the-fold" destinations).
 @property(nonatomic, assign) int visibleDestinationsCount;
 
+@property(nonatomic, weak) id<OverflowMenuDestinationProvider>
+    destinationProvider;
+
 // Release any C++ objects that can't be reference counted.
 - (void)disconnect;
 
@@ -34,9 +51,7 @@ class PrefService;
 - (void)recordClickForDestination:(overflow_menu::Destination)destination;
 
 // Returns a new, sorted list of destinations given the initial list.
-- (NSArray<OverflowMenuDestination*>*)
-    sortedDestinationsFromCarouselDestinations:
-        (NSArray<OverflowMenuDestination*>*)carouselDestinations;
+- (NSArray<OverflowMenuDestination*>*)sortedDestinations;
 
 @end
 

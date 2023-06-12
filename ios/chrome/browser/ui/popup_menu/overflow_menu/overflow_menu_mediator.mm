@@ -156,6 +156,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     CRWWebStateObserver,
                                     FollowMenuUpdater,
                                     IOSLanguageDetectionTabHelperObserving,
+                                    OverflowMenuDestinationProvider,
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
                                     WebStateListObserving> {
@@ -314,6 +315,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (!self.menuOrderer) {
     self.menuOrderer =
         [[OverflowMenuOrderer alloc] initWithIsIncognito:self.isIncognito];
+    self.menuOrderer.destinationProvider = self;
   }
   [self updateModel];
 }
@@ -824,46 +826,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 }
 
-// Adds SpotlightDebugger to the OverflowMenuDestination to be displayed in the
-// destinations carousel.
-- (NSArray<OverflowMenuDestination*>*)insertSpotlightDebuggerToDestinations:
-    (NSArray<OverflowMenuDestination*>*)destinations {
-  DCHECK(IsSpotlightDebuggingEnabled());
+- (DestinationRanking)baseDestinations {
+  std::vector<overflow_menu::Destination> destinations = {
+      overflow_menu::Destination::Bookmarks,
+      overflow_menu::Destination::History,
+      overflow_menu::Destination::ReadingList,
+      overflow_menu::Destination::Passwords,
+      overflow_menu::Destination::Downloads,
+      overflow_menu::Destination::RecentTabs,
+      overflow_menu::Destination::SiteInfo,
+      overflow_menu::Destination::Settings,
+  };
 
-  NSMutableArray<OverflowMenuDestination*>* newDestinations =
-      [[NSMutableArray alloc] init];
-
-  // Place the debugger at the top of the overflow menu carousel.
-  [newDestinations addObject:self.spotlightDebuggerDestination];
-  [newDestinations addObjectsFromArray:destinations];
-
-  return newDestinations;
-}
-
-// Creates an NSArray containing the destinations contained in the overflow menu
-// carousel.
-- (NSArray<OverflowMenuDestination*>*)baseDestinations {
-  NSMutableArray* baseDestinations = [[NSMutableArray alloc] initWithArray:@[
-    self.bookmarksDestination,
-    self.historyDestination,
-    self.readingListDestination,
-    self.passwordsDestination,
-    self.downloadsDestination,
-    self.recentTabsDestination,
-    self.siteInfoDestination,
-    self.settingsDestination,
-  ]];
-
-  if (self.webState &&
-      IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
-          self.webState->GetBrowserState())) &&
+  if (IsPriceNotificationsEnabled() &&
       IsSmartSortingPriceTrackingDestinationEnabled()) {
-    [baseDestinations addObject:self.priceNotificationsDestination];
+    destinations.push_back(overflow_menu::Destination::PriceNotifications);
   }
 
-  [baseDestinations addObject:self.whatsNewDestination];
+  destinations.push_back(overflow_menu::Destination::WhatsNew);
 
-  return baseDestinations;
+  return destinations;
 }
 
 // Returns YES if the Overflow Menu should indicate an identity error.
@@ -882,48 +864,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     return;
   }
 
-  if ([self shouldIndicateIdentityError]) {
-    self.settingsDestination.badge = BadgeTypeError;
-  } else {
-    [self maybeHighlightSettingsWithPromoBadge];
-  }
-
-  if (!WasWhatsNewUsed()) {
-    // Highlight What's New with a badge if it was never used before.
-    self.whatsNewDestination.badge = BadgeTypeNew;
-  }
-
-  // Set badges if necessary.
-  if (self.engagementTracker &&
-      self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedReadingListFeature)) {
-    self.readingListDestination.badge = BadgeTypePromo;
-  }
-
-  NSArray<OverflowMenuDestination*>* baseDestinations = [self baseDestinations];
-
-  baseDestinations = [self.menuOrderer
-      sortedDestinationsFromCarouselDestinations:baseDestinations];
-
-  if (IsSpotlightDebuggingEnabled()) {
-    baseDestinations =
-        [self insertSpotlightDebuggerToDestinations:baseDestinations];
-  }
-
-  self.overflowMenuModel.destinations = [baseDestinations
-      filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
-                                                   id object,
-                                                   NSDictionary* bindings) {
-        if (object == self.siteInfoDestination) {
-          return [self currentWebPageSupportsSiteInfo];
-        }
-        // All other destinations are displayed in regular mode.
-        if (!self.isIncognito) {
-          return true;
-        }
-        return object != self.historyDestination &&
-               object != self.recentTabsDestination;
-      }]];
+  self.overflowMenuModel.destinations = [self.menuOrderer sortedDestinations];
 
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
@@ -1364,6 +1305,57 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)overlayPresenter:(OverlayPresenter*)presenter
     didHideOverlayForRequest:(OverlayRequest*)request {
   self.webContentAreaShowingOverlay = NO;
+}
+
+#pragma mark - OverflowMenuDestinationProvider
+
+- (OverflowMenuDestination*)destinationForDestinationType:
+    (overflow_menu::Destination)destinationType {
+  switch (destinationType) {
+    case overflow_menu::Destination::Bookmarks:
+      return self.bookmarksDestination;
+    case overflow_menu::Destination::History:
+      return (self.isIncognito) ? nil : self.historyDestination;
+    case overflow_menu::Destination::ReadingList:
+      // Set badges if necessary.
+      if (self.engagementTracker &&
+          self.engagementTracker->ShouldTriggerHelpUI(
+              feature_engagement::kIPHBadgedReadingListFeature)) {
+        self.readingListDestination.badge = BadgeTypePromo;
+      }
+      return self.readingListDestination;
+    case overflow_menu::Destination::Passwords:
+      return self.passwordsDestination;
+    case overflow_menu::Destination::Downloads:
+      return self.downloadsDestination;
+    case overflow_menu::Destination::RecentTabs:
+      return self.isIncognito ? nil : self.recentTabsDestination;
+    case overflow_menu::Destination::SiteInfo:
+      return ([self currentWebPageSupportsSiteInfo]) ? self.siteInfoDestination
+                                                     : nil;
+    case overflow_menu::Destination::Settings:
+      if ([self shouldIndicateIdentityError]) {
+        self.settingsDestination.badge = BadgeTypeError;
+      } else {
+        [self maybeHighlightSettingsWithPromoBadge];
+      }
+      return self.settingsDestination;
+    case overflow_menu::Destination::WhatsNew:
+      if (!WasWhatsNewUsed()) {
+        // Highlight What's New with a badge if it was never used before.
+        self.whatsNewDestination.badge = BadgeTypeNew;
+      }
+      return self.whatsNewDestination;
+    case overflow_menu::Destination::SpotlightDebugger:
+      return self.spotlightDebuggerDestination;
+    case overflow_menu::Destination::PriceNotifications:
+      BOOL priceNotificationsActive =
+          self.webState &&
+          IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
+              self.webState->GetBrowserState()));
+      return (priceNotificationsActive) ? self.priceNotificationsDestination
+                                        : nil;
+  }
 }
 
 #pragma mark - Action handlers

@@ -6,10 +6,14 @@
 
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -127,39 +131,46 @@ using DestinationLookup =
   [self.destinationUsageHistory recordClickForDestination:destination];
 }
 
-- (NSArray<OverflowMenuDestination*>*)
-    sortedDestinationsFromCarouselDestinations:
-        (NSArray<OverflowMenuDestination*>*)carouselDestinations {
+- (NSArray<OverflowMenuDestination*>*)sortedDestinations {
+  DestinationRanking availableDestinations =
+      [self.destinationProvider baseDestinations];
   // If there's no `_ranking`, which only happens if the device
   // hasn't used Smart Sorting before, use the default carousel order as the
   // initial ranking.
   if (_ranking.empty()) {
-    for (OverflowMenuDestination* destination in carouselDestinations) {
-      _ranking.push_back(
-          static_cast<overflow_menu::Destination>(destination.destination));
-    }
+    _ranking = availableDestinations;
   }
-
-  DestinationLookup destinationLookup =
-      [self destinationLookupMapFromDestinations:carouselDestinations];
 
   if (self.destinationUsageHistory) {
     _ranking = [self.destinationUsageHistory
         sortedDestinationsFromCurrentRanking:_ranking
-                        carouselDestinations:carouselDestinations];
+                       availableDestinations:availableDestinations];
 
     [self flushToPrefs];
   }
 
-  [self applyBadgeOrderingToRankingWithCarouselDestinations:carouselDestinations
-                                          destinationLookup:destinationLookup];
+  [self applyBadgeOrderingToRankingWithAvailableDestinations:
+            availableDestinations];
 
-  // Convert back to Objective-C array for returning.
+  // Convert back to Objective-C array for returning. This step also filters out
+  // any destinations that are not supported on the current page.
   NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
       [[NSMutableArray alloc] init];
+
+  // Manually inject spotlight destination if it's supported.
+  if (experimental_flags::IsSpotlightDebuggingEnabled()) {
+    if (OverflowMenuDestination* spotlightDestination =
+            [self.destinationProvider
+                destinationForDestinationType:overflow_menu::Destination::
+                                                  SpotlightDebugger]) {
+      [sortedDestinations addObject:spotlightDestination];
+    }
+  }
   for (overflow_menu::Destination destination : _ranking) {
-    if (destinationLookup.contains(destination)) {
-      [sortedDestinations addObject:destinationLookup[destination]];
+    if (OverflowMenuDestination* overflowMenuDestination =
+            [self.destinationProvider
+                destinationForDestinationType:destination]) {
+      [sortedDestinations addObject:overflowMenuDestination];
     }
   }
 
@@ -244,23 +255,14 @@ using DestinationLookup =
 
 // Modifies `_ranking` to re-order it based on the current badge status of the
 // various destinations
-- (void)applyBadgeOrderingToRankingWithCarouselDestinations:
-            (NSArray<OverflowMenuDestination*>*)carouselDestinations
-                                          destinationLookup:
-                                              (DestinationLookup&)
-                                                  destinationLookup {
+- (void)applyBadgeOrderingToRankingWithAvailableDestinations:
+    (DestinationRanking)availableDestinations {
   // Detect new destinations added to the carousel by feature teams. New
   // destinations (`newDestinations`) are those now found in the carousel
-  // (`currentDestinations`), but not found in the ranking
+  // (`availableDestinations`), but not found in the ranking
   // (`existingDestinations`).
-  std::set<overflow_menu::Destination> currentDestinations;
-
-  for (OverflowMenuDestination* carouselDestination in carouselDestinations) {
-    overflow_menu::Destination destination =
-        static_cast<overflow_menu::Destination>(
-            carouselDestination.destination);
-    currentDestinations.insert(destination);
-  }
+  std::set<overflow_menu::Destination> currentDestinations(
+      availableDestinations.begin(), availableDestinations.end());
 
   std::set<overflow_menu::Destination> existingDestinations(_ranking.begin(),
                                                             _ranking.end());
@@ -291,10 +293,12 @@ using DestinationLookup =
   // position of kNewDestinationsInsertionIndex or worst.
   for (overflow_menu::Destination rankedDestination : _ranking) {
     if (remainingDestinations.contains(rankedDestination) &&
-        destinationLookup.contains(rankedDestination) &&
         !_untappedDestinations.contains(rankedDestination)) {
+      OverflowMenuDestination* overflowMenuDestination =
+          [self.destinationProvider
+              destinationForDestinationType:rankedDestination];
       const bool dontSort =
-          destinationLookup[rankedDestination].badge == BadgeTypeNone ||
+          overflowMenuDestination.badge == BadgeTypeNone ||
           sortedDestinations.size() < kNewDestinationsInsertionIndex;
 
       if (dontSort) {
@@ -315,10 +319,14 @@ using DestinationLookup =
   if (!_untappedDestinations.empty()) {
     for (overflow_menu::Destination untappedDestination :
          _untappedDestinations) {
-      if (remainingDestinations.contains(untappedDestination) &&
-          destinationLookup.contains(untappedDestination) &&
-          destinationLookup[untappedDestination].badge == BadgeTypeNone) {
-        destinationLookup[untappedDestination].badge = BadgeTypeNew;
+      if (remainingDestinations.contains(untappedDestination)) {
+        OverflowMenuDestination* overflowMenuDestination =
+            [self.destinationProvider
+                destinationForDestinationType:untappedDestination];
+        if (overflowMenuDestination.badge != BadgeTypeNone) {
+          continue;
+        }
+        overflowMenuDestination.badge = BadgeTypeNew;
 
         InsertDestination(untappedDestination, remainingDestinations,
                           sortedDestinations);
@@ -336,9 +344,12 @@ using DestinationLookup =
   // Insert the destinations with a badge that is not for an error at
   // kNewDestinationsInsertionIndex before the untapped destinations.
   for (overflow_menu::Destination destination : allDestinations) {
-    if (remainingDestinations.contains(destination) &&
-        destinationLookup.contains(destination) &&
-        destinationLookup[destination].badge != BadgeTypeError) {
+    if (remainingDestinations.contains(destination)) {
+      OverflowMenuDestination* overflowMenuDestination =
+          [self.destinationProvider destinationForDestinationType:destination];
+      if (overflowMenuDestination.badge == BadgeTypeError) {
+        continue;
+      }
       InsertDestination(destination, remainingDestinations, sortedDestinations);
     }
   }
@@ -347,7 +358,7 @@ using DestinationLookup =
   // other types of badges.
   for (overflow_menu::Destination destination : allDestinations) {
     if (remainingDestinations.contains(destination) &&
-        destinationLookup.contains(destination)) {
+        [self.destinationProvider destinationForDestinationType:destination]) {
       InsertDestination(destination, remainingDestinations, sortedDestinations);
     }
   }

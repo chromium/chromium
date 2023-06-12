@@ -55,7 +55,7 @@ class DestinationUsageHistoryTest : public PlatformTest {
   // Initializes `destination_usage_history_` with empty pref data and returns
   // the initial ranking.
   DestinationRanking InitializeDestinationUsageHistory(
-      NSArray<OverflowMenuDestination*>* default_destinations) {
+      DestinationRanking default_destinations) {
     CreatePrefs();
 
     destination_usage_history_ =
@@ -68,7 +68,7 @@ class DestinationUsageHistoryTest : public PlatformTest {
 
     DestinationRanking initial_ranking = [destination_usage_history_
         sortedDestinationsFromCurrentRanking:{}
-                        carouselDestinations:default_destinations];
+                       availableDestinations:default_destinations];
 
     return initial_ranking;
   }
@@ -78,7 +78,7 @@ class DestinationUsageHistoryTest : public PlatformTest {
   DestinationRanking InitializeDestinationUsageHistoryWithData(
       DestinationRanking& ranking,
       base::Value::Dict& history,
-      NSArray<OverflowMenuDestination*>* default_destinations) {
+      DestinationRanking default_destinations) {
     base::Value::List previous_ranking;
 
     for (overflow_menu::Destination destination : ranking) {
@@ -98,7 +98,7 @@ class DestinationUsageHistoryTest : public PlatformTest {
 
     DestinationRanking initial_ranking = [destination_usage_history_
         sortedDestinationsFromCurrentRanking:ranking
-                        carouselDestinations:default_destinations];
+                       availableDestinations:default_destinations];
 
     return initial_ranking;
   }
@@ -145,55 +145,17 @@ class DestinationUsageHistoryTest : public PlatformTest {
     return DottedPath(base::NumberToString(day), destination);
   }
 
-  OverflowMenuDestination* CreateOverflowMenuDestination(
-      overflow_menu::Destination destination) {
-    OverflowMenuDestination* result =
-        [[OverflowMenuDestination alloc] initWithName:@"Foobar"
-                                           symbolName:kSettingsSymbol
-                                         systemSymbol:YES
-                                     monochromeSymbol:NO
-                              accessibilityIdentifier:@"Foobar"
-                                   enterpriseDisabled:NO
-                                  displayNewLabelIcon:NO
-                                              handler:^{
-                                                  // Do nothing
-                                              }];
-
-    result.destination = static_cast<NSInteger>(destination);
-
-    return result;
-  }
-
-  NSArray<OverflowMenuDestination*>* SampleDestinations() {
-    OverflowMenuDestination* bookmarksDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::Bookmarks);
-    OverflowMenuDestination* historyDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::History);
-    OverflowMenuDestination* readingListDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::ReadingList);
-    OverflowMenuDestination* passwordsDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::Passwords);
-    OverflowMenuDestination* downloadsDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::Downloads);
-    OverflowMenuDestination* recentTabsDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::RecentTabs);
-    OverflowMenuDestination* siteInfoDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::SiteInfo);
-    OverflowMenuDestination* settingsDestination =
-        CreateOverflowMenuDestination(overflow_menu::Destination::Settings);
-
-    NSArray<OverflowMenuDestination*>* destinations = @[
-      bookmarksDestination,
-      historyDestination,
-      readingListDestination,
-      passwordsDestination,
-      downloadsDestination,
-      recentTabsDestination,
-      siteInfoDestination,
-      settingsDestination,
-    ];
-
-    return destinations;
+  DestinationRanking SampleDestinations() {
+    return {
+        overflow_menu::Destination::Bookmarks,
+        overflow_menu::Destination::History,
+        overflow_menu::Destination::ReadingList,
+        overflow_menu::Destination::Passwords,
+        overflow_menu::Destination::Downloads,
+        overflow_menu::Destination::RecentTabs,
+        overflow_menu::Destination::SiteInfo,
+        overflow_menu::Destination::Settings,
+    };
   }
 
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
@@ -275,17 +237,16 @@ TEST_F(DestinationUsageHistoryTest, HandlesNewDestinationClick) {
 // number of clicks.
 TEST_F(DestinationUsageHistoryTest,
        InjectsDefaultClickCountForAllDestinations) {
-  NSArray<OverflowMenuDestination*>* sample_destinations = SampleDestinations();
+  DestinationRanking sample_destinations = SampleDestinations();
 
   InitializeDestinationUsageHistory(sample_destinations);
 
   ScopedDictPrefUpdate update(prefs_.get(),
                               prefs::kOverflowMenuDestinationUsageHistory);
 
-  for (OverflowMenuDestination* destination in sample_destinations) {
-    const std::string dotted_path = DottedPath(
-        TodaysDay().InDays(),
-        static_cast<overflow_menu::Destination>(destination.destination));
+  for (overflow_menu::Destination destination : sample_destinations) {
+    const std::string dotted_path =
+        DottedPath(TodaysDay().InDays(), destination);
 
     absl::optional<int> expected = update->FindIntByDottedPath(dotted_path);
 
@@ -344,9 +305,9 @@ TEST_F(DestinationUsageHistoryTest,
 }
 
 TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoShownDestinations) {
-  NSArray<OverflowMenuDestination*>* sample_destinations = SampleDestinations();
+  DestinationRanking sample_destinations = SampleDestinations();
 
-  std::vector<overflow_menu::Destination> ranking = {
+  DestinationRanking ranking = {
       overflow_menu::Destination::Bookmarks,
       overflow_menu::Destination::History,
       overflow_menu::Destination::ReadingList,
@@ -376,15 +337,15 @@ TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoShownDestinations) {
 
   DestinationRanking sorted_ranking = [destination_usage_history_
       sortedDestinationsFromCurrentRanking:initial_ranking
-                      carouselDestinations:sample_destinations];
+                     availableDestinations:sample_destinations];
 
   EXPECT_EQ(initial_ranking, sorted_ranking);
 }
 
 TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoUnshownDestinations) {
-  NSArray<OverflowMenuDestination*>* sample_destinations = SampleDestinations();
+  DestinationRanking sample_destinations = SampleDestinations();
 
-  std::vector<overflow_menu::Destination> ranking = {
+  DestinationRanking ranking = {
       overflow_menu::Destination::Bookmarks,
       overflow_menu::Destination::History,
       overflow_menu::Destination::ReadingList,
@@ -442,15 +403,15 @@ TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoUnshownDestinations) {
 
   DestinationRanking sorted_ranking = [destination_usage_history_
       sortedDestinationsFromCurrentRanking:initial_ranking
-                      carouselDestinations:sample_destinations];
+                     availableDestinations:sample_destinations];
 
   EXPECT_EQ(initial_ranking, sorted_ranking);
 }
 
 TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
-  NSArray<OverflowMenuDestination*>* sample_destinations = SampleDestinations();
+  DestinationRanking sample_destinations = SampleDestinations();
 
-  std::vector<overflow_menu::Destination> ranking = {
+  DestinationRanking ranking = {
       overflow_menu::Destination::Bookmarks,
       overflow_menu::Destination::History,
       overflow_menu::Destination::ReadingList,
@@ -486,7 +447,7 @@ TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
 
   [destination_usage_history_
       sortedDestinationsFromCurrentRanking:ranking
-                      carouselDestinations:sample_destinations];
+                     availableDestinations:sample_destinations];
 
   ScopedDictPrefUpdate update(prefs_.get(),
                               prefs::kOverflowMenuDestinationUsageHistory);

@@ -35,4 +35,6 @@ std::string StringNameForDestination(Destination destination);
 void RecordUmaActionForDestination(Destination destination);
 }  // namespace overflow_menu
 
+using DestinationRanking = std::vector<overflow_menu::Destination>;
+
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_

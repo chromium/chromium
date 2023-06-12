@@ -8,6 +8,7 @@ import SwiftUI
 @objcMembers public class OverflowMenuDestination: OverflowMenuItem {
 
   @objc public enum BadgeType: Int {
+    case none
     // Whether the destination should show an error badge.
     case error
     // Whether the destination should show a promo badge.
@@ -15,7 +16,6 @@ import SwiftUI
     // Whether the destination should show a "New" badge
     // indicating a new destination.
     case new
-    case none
   }
 
   public var badge: BadgeType = .none
