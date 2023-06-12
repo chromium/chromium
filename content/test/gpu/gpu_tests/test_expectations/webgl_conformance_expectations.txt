@@ -564,8 +564,9 @@ crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough q
 
 # Overlay scheduling issue can leave destroyed overlays around for tests that follow these. Creating confusing flakes.
 # Seen on Pixel-6 and Samsung, skipping generically for now.
-crbug.com/1445548 [ android no-passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/1445548 [ android no-passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
+# Occurring with both passthrough and validating command decoders.
+crbug.com/1445548 [ android ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+crbug.com/1445548 [ android ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
 
 ## Nexus 5X ##
 
