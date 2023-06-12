@@ -311,7 +311,6 @@
   X("blink,rail")                                                             \
   X("blink.animations,devtools.timeline,benchmark,rail")                      \
   X("blink.user_timing,rail")                                                 \
-  X("blink_gc,devtools.timeline")                                             \
   X("browser,content,navigation")                                             \
   X("browser,navigation")                                                     \
   X("browser,navigation,benchmark")                                           \
