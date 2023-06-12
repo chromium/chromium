@@ -21512,8 +21512,7 @@
     "os": [
       "win",
       "linux",
-      "mac",
-      "chromeos_ash"
+      "mac"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -21540,8 +21539,13 @@
           }
         }
       }
+    ]
+  },
+  "UnmanagedDeviceSignalsConsentFlowEnabled.CrOS": {
+    "os": [
+      "chromeos_ash"
     ],
-    "reason_for_missing_test": "Policy does not cover Lacros"
+    "reason_for_missing_test": "not supported on CrOS yet"
   },
   "PersistentQuotaEnabled": {
     "reason_for_missing_test": "Policy was removed"
