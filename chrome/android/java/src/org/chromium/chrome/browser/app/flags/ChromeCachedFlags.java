@@ -102,6 +102,8 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
+                StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR,
+                StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE,
                 TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
                 TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION,
                 TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE,
