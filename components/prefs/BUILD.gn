@@ -4,15 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-source_set("prefs_features") {
-  sources = [
-    "prefs_features.cc",
-    "prefs_features.h",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 component("prefs") {
   sources = [
     "command_line_pref_store.cc",
@@ -64,10 +55,7 @@ component("prefs") {
 
   defines = [ "COMPONENTS_PREFS_IMPLEMENTATION" ]
 
-  deps = [
-    ":prefs_features",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//build:chromeos_buildflags" ]
 
   public_deps = [ "//base" ]
 
@@ -124,7 +112,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":prefs_features",
     ":test_support",
     "//base",
     "//base/test:test_support",
