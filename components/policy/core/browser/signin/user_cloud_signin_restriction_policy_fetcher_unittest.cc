@@ -40,6 +40,10 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
                 nullptr,
                 nullptr)) {}
 
+  network::TestURLLoaderFactory* url_loader_factory() {
+    return &url_loader_factory_;
+  }
+
   UserCloudSigninRestrictionPolicyFetcher* policy_fetcher() {
     return policy_fetcher_.get();
   }
@@ -54,6 +58,7 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_env_;
+  network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<UserCloudSigninRestrictionPolicyFetcher> policy_fetcher_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
@@ -63,13 +68,12 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, NoUseAfterFreeCrash) {
   feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   feature_list_->InitAndDisableFeature(
       policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
-  network::TestURLLoaderFactory url_loader_factory;
   base::Value::Dict expected_response;
   expected_response.Set("policyValue", "primary_account");
   std::string response;
   JSONStringValueSerializer serializer(&response);
   ASSERT_TRUE(serializer.Serialize(expected_response));
-  url_loader_factory.AddResponse(
+  url_loader_factory()->AddResponse(
       kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
       std::move(response));
 
@@ -77,7 +81,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, NoUseAfterFreeCrash) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
 
-  policy_fetcher()->SetURLLoaderFactoryForTesting(&url_loader_factory);
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting([](const std::string&) { NOTREACHED(); }));
@@ -86,13 +90,12 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, NoUseAfterFreeCrash) {
 }
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
-  network::TestURLLoaderFactory url_loader_factory;
   base::Value::Dict expected_response;
   expected_response.Set("policyValue", "primary_account");
   std::string response;
   JSONStringValueSerializer serializer(&response);
   ASSERT_TRUE(serializer.Serialize(expected_response));
-  url_loader_factory.AddResponse(
+  url_loader_factory()->AddResponse(
       kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
       std::move(response));
 
@@ -101,7 +104,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
       identity_test_env()->MakeAccountAvailable("alice@example.com");
 
   std::string result;
-  policy_fetcher()->SetURLLoaderFactoryForTesting(&url_loader_factory);
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
@@ -114,10 +117,9 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsEmptyValueIfNetworkError) {
-  network::TestURLLoaderFactory url_loader_factory;
   auto head = network::mojom::URLResponseHead::New();
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-  url_loader_factory.AddResponse(
+  url_loader_factory()->AddResponse(
       GURL(kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl),
       /*head=*/std::move(head), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED),
@@ -130,7 +132,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
       identity_test_env()->MakeAccountAvailable("alice@example.com");
 
   std::string result;
-  policy_fetcher()->SetURLLoaderFactoryForTesting(&url_loader_factory);
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
@@ -143,8 +145,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsEmptyValueIfHTTPError) {
-  network::TestURLLoaderFactory url_loader_factory;
-  url_loader_factory.AddResponse(
+  url_loader_factory()->AddResponse(
       kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl, std::string(),
       net::HTTP_BAD_GATEWAY);
 
@@ -153,7 +154,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
       identity_test_env()->MakeAccountAvailable("alice@example.com");
 
   std::string result;
-  policy_fetcher()->SetURLLoaderFactoryForTesting(&url_loader_factory);
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
@@ -166,8 +167,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsEmptyValueInResponseNotParsable) {
-  network::TestURLLoaderFactory url_loader_factory;
-  url_loader_factory.AddResponse(
+  url_loader_factory()->AddResponse(
       kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl, "bad");
 
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
@@ -175,7 +175,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
       identity_test_env()->MakeAccountAvailable("alice@example.com");
 
   std::string result;
-  policy_fetcher()->SetURLLoaderFactoryForTesting(&url_loader_factory);
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
