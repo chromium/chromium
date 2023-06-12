@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import androidx.annotation.OptIn;
 import androidx.core.os.BuildCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -270,6 +271,11 @@ import java.util.function.Consumer;
         Rect rect = ApiHelperForR.getMaximumWindowMetricsBounds(windowManager);
         size.set(rect.width(), rect.height());
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            mDisplay.getRealMetrics(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
+        }
         updateCommon(size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi,
                 ApiHelperForR.getDisplay(mWindowContext));
     }
@@ -300,6 +306,10 @@ import java.util.function.Consumer;
         } else {
             display.getSize(size);
             display.getMetrics(displayMetrics);
+        }
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
         }
         updateCommon(
                 size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);

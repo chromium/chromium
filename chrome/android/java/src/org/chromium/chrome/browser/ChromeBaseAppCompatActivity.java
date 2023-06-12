@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -63,8 +64,6 @@ import java.util.LinkedHashSet;
  */
 public class ChromeBaseAppCompatActivity extends AppCompatActivity
         implements NightModeStateProvider.Observer, ModalDialogManagerHolder {
-    protected static final float UI_SCALING_FACTOR_FOR_AUTO = 1.34f;
-
     /**
      * Chrome in automotive needs a persistent back button toolbar above all activities because
      * AAOS/cars do not have a built in back button. This is implemented differently in each
@@ -269,7 +268,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @VisibleForTesting
     static void applyOverridesForAutomotive(Context baseContext, Configuration overrideConfig) {
         if (BuildInfo.getInstance().isAutomotive) {
-            scaleUpUI(baseContext, overrideConfig, UI_SCALING_FACTOR_FOR_AUTO);
+            scaleUpUI(baseContext, overrideConfig, DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO);
         }
     }
 
@@ -285,11 +284,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         config.screenHeightDp =
                 (int) (displayMetrics.heightPixels / (displayMetrics.density * scaleUpFactor));
         config.smallestScreenWidthDp = Math.min(config.screenWidthDp, config.screenHeightDp);
-    }
-
-    @VisibleForTesting
-    static float getDensityOverrideFactorForAutomotiveDevices() {
-        return UI_SCALING_FACTOR_FOR_AUTO;
     }
 
     /**
