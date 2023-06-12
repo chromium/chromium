@@ -133,10 +133,14 @@ def RunCommand(cmd, **kwargs):
     raise CommandError(e.cmd, e.returncode, e.output) from None
 
 
-def BuildTestTargetsWithNinja(out_dir, targets, dry_run):
+def BuildTestTargets(out_dir, targets, dry_run, use_siso):
   """Builds the specified targets with ninja"""
   # Use autoninja from PATH to match version used for manual builds.
-  ninja_path = 'autoninja'
+  if use_siso:
+    ninja_path = 'autosiso'
+  else:
+    ninja_path = 'autoninja'
+
   if sys.platform.startswith('win32'):
     ninja_path += '.bat'
   cmd = [ninja_path, '-C', out_dir] + targets
@@ -453,6 +457,10 @@ def main():
   parser.add_argument('--no-fast-local-dev',
                       action='store_true',
                       help='Do not add --fast-local-dev for Android tests.')
+  parser.add_argument('--siso',
+                      '-s',
+                      action='store_true',
+                      help='Use siso to build instead of ninja.')
   parser.add_argument('files',
                       metavar='FILE_NAME',
                       nargs="+",
@@ -483,7 +491,7 @@ def main():
     ExitWithMessage('Failed to derive a gtest filter')
 
   assert targets
-  build_ok = BuildTestTargetsWithNinja(out_dir, targets, args.dry_run)
+  build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.siso)
 
   # If we used the target cache, it's possible we chose the wrong target because
   # a gn file was changed. The build step above will check for gn modifications
@@ -497,7 +505,7 @@ def main():
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      build_ok = BuildTestTargetsWithNinja(out_dir, targets, args.dry_run)
+      build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.siso)
 
   if not build_ok: sys.exit(1)
 
