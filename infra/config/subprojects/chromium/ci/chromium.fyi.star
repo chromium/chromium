@@ -1365,6 +1365,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "android",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1401,6 +1402,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "android",
                 "checkout_siso",
+                "siso_latest",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1436,6 +1439,8 @@ This builder measures build performance for Android developer builds, by simulat
             apply_configs = [
                 "android",
                 "checkout_siso",
+                "siso_latest",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1472,6 +1477,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1501,6 +1507,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "checkout_siso",
+                "siso_latest",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1529,6 +1537,8 @@ This builder measures build performance for Linux developer builds, by simulatin
             config = "chromium",
             apply_configs = [
                 "checkout_siso",
+                "siso_latest",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1559,6 +1569,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1588,6 +1599,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "checkout_siso",
+                "siso_latest",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1616,6 +1629,8 @@ This builder measures build performance for Windows developer builds, by simulat
             config = "chromium",
             apply_configs = [
                 "checkout_siso",
+                "siso_latest",
+                # TODO(crbug.com/1441379): remove after the permission issue gets fixed.
                 "chromium_no_telemetry_dependencies",
             ],
         ),
