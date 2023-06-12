@@ -24,7 +24,7 @@ PASS canonicalize('http:// lookout.net/') is 'http://%E1%9A%80lookout.net/'
 PASS canonicalize('http://lookout.net/') is 'http://%1Flookout.net/'
 PASS canonicalize('http://look۝out.net/') is 'http://look%DB%9Dout.net/'
 PASS canonicalize('http://look᠎out.net/') is 'http://look%E1%A0%8Eout.net/'
-FAIL canonicalize('http://look🿾out.net/') should be http://look%F0%9F%BF%BEout.net/. Was http://look%EF%BF%BDout.net/.
+PASS canonicalize('http://look🿾out.net/') is 'http://look%F0%9F%BF%BEout.net/'
 PASS canonicalize('http://look￺out.net/') is 'http://look%EF%BF%BAout.net/'
 PASS canonicalize('http://look⿰out.net/') is 'http://look%E2%BF%B0out.net/'
 PASS canonicalize('http://look‮out.net/') is 'http://look%E2%80%AEout.net/'

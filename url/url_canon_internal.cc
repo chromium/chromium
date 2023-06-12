@@ -81,10 +81,11 @@ void DoAppendStringOfType(const CHAR* source,
   }
   for (; i < length; i++) {
     if (static_cast<UCHAR>(source[i]) >= 0x80) {
-      // ReadChar will fill the code point with kUnicodeReplacementCharacter
-      // when the input is invalid, which is what we want.
+      // ReadUTFCharLossy will fill the code point with
+      // kUnicodeReplacementCharacter when the input is invalid, which is what
+      // we want.
       base_icu::UChar32 code_point;
-      ReadUTFChar(source, &i, length, &code_point);
+      ReadUTFCharLossy(source, &i, length, &code_point);
       AppendUTF8EscapedValue(code_point, output);
     } else {
       // Just append the 7-bit character, possibly escaping it.
@@ -312,24 +313,22 @@ void AppendStringOfType(const char16_t* source,
   DoAppendStringOfType<char16_t, char16_t>(source, length, type, output);
 }
 
-bool ReadUTFChar(const char* str,
-                 size_t* begin,
-                 size_t length,
-                 base_icu::UChar32* code_point_out) {
-  if (!base::ReadUnicodeCharacter(str, length, begin, code_point_out) ||
-      !base::IsValidCharacter(*code_point_out)) {
+bool ReadUTFCharLossy(const char* str,
+                      size_t* begin,
+                      size_t length,
+                      base_icu::UChar32* code_point_out) {
+  if (!base::ReadUnicodeCharacter(str, length, begin, code_point_out)) {
     *code_point_out = kUnicodeReplacementCharacter;
     return false;
   }
   return true;
 }
 
-bool ReadUTFChar(const char16_t* str,
-                 size_t* begin,
-                 size_t length,
-                 base_icu::UChar32* code_point_out) {
-  if (!base::ReadUnicodeCharacter(str, length, begin, code_point_out) ||
-      !base::IsValidCharacter(*code_point_out)) {
+bool ReadUTFCharLossy(const char16_t* str,
+                      size_t* begin,
+                      size_t length,
+                      base_icu::UChar32* code_point_out) {
+  if (!base::ReadUnicodeCharacter(str, length, begin, code_point_out)) {
     *code_point_out = kUnicodeReplacementCharacter;
     return false;
   }
@@ -356,7 +355,7 @@ bool ConvertUTF16ToUTF8(const char16_t* input,
   bool success = true;
   for (size_t i = 0; i < input_len; i++) {
     base_icu::UChar32 code_point;
-    success &= ReadUTFChar(input, &i, input_len, &code_point);
+    success &= ReadUTFCharLossy(input, &i, input_len, &code_point);
     AppendUTF8Value(code_point, output);
   }
   return success;
@@ -368,7 +367,7 @@ bool ConvertUTF8ToUTF16(const char* input,
   bool success = true;
   for (size_t i = 0; i < input_len; i++) {
     base_icu::UChar32 code_point;
-    success &= ReadUTFChar(input, &i, input_len, &code_point);
+    success &= ReadUTFCharLossy(input, &i, input_len, &code_point);
     AppendUTF16Value(code_point, output);
   }
   return success;

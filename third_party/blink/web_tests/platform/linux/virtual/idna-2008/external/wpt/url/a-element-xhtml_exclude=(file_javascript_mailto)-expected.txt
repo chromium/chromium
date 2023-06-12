@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 673 tests; 356 PASS, 317 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 673 tests; 364 PASS, 309 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -235,8 +235,8 @@ FAIL Parsing: <http://GOO 　goo.com> against <http://other.com/> assert_unreac
 PASS Parsing: <http://GOO​⁠﻿goo.com> against <http://other.com/>
 PASS Parsing: <\0 http://example.com/ \r > against <about:blank>
 PASS Parsing: <http://www.foo。bar.com> against <http://other.com/>
-FAIL Parsing: <http://﷐zyx.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://﷐zyx.com" but got "http://%EF%BF%BDzyx.com/"
-FAIL Parsing: <http://%ef%b7%90zyx.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://%ef%b7%90zyx.com" but got "http://%EF%BF%BDzyx.com/"
+FAIL Parsing: <http://﷐zyx.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://﷐zyx.com" but got "http://%EF%B7%90zyx.com/"
+FAIL Parsing: <http://%ef%b7%90zyx.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://%ef%b7%90zyx.com" but got "http://%EF%B7%90zyx.com/"
 FAIL Parsing: <https://�> against <about:blank> assert_equals: failure should set href to input expected "https://\ufffd" but got "https://%EF%BF%BD/"
 FAIL Parsing: <https://%EF%BF%BD> against <about:blank> assert_equals: failure should set href to input expected "https://%EF%BF%BD" but got "https://%EF%BF%BD/"
 PASS Parsing: <https://x/�?�#�> against <about:blank>
@@ -329,8 +329,8 @@ PASS Parsing: <sc:\../> against <about:blank>
 PASS Parsing: <sc::a@example.net> against <about:blank>
 PASS Parsing: <wow:%NBD> against <about:blank>
 PASS Parsing: <wow:%1G> against <about:blank>
-FAIL Parsing: <wow:￿> against <about:blank> assert_equals: href expected "wow:%EF%BF%BF" but got "wow:%EF%BF%BD"
-FAIL Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%BF%BD%EF%B7%8F%EF%BF%BD%EF%B7%B0%EF%BF%BD%EF%BF%BD?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%BF%BD%EF%B7%8F%EF%BF%BD%EF%B7%B0%EF%BF%BD%EF%BF%BD"
+PASS Parsing: <wow:￿> against <about:blank>
+FAIL Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: protocol expected "http:" but got ":"
 FAIL Parsing: <sc://a\0b/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <sc://a b/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <sc://a<b> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -634,18 +634,18 @@ FAIL Parsing: <https://\0y> against <about:blank> assert_equals: failure should 
 FAIL Parsing: <https://x/\0y> against <about:blank> assert_equals: protocol expected "https:" but got ":"
 PASS Parsing: <https://x/?\0y> against <about:blank>
 PASS Parsing: <https://x/?#\0y> against <about:blank>
-FAIL Parsing: <https://￿y> against <about:blank> assert_equals: failure should set href to input expected "https://\uffffy" but got "https://%EF%BF%BDy/"
-FAIL Parsing: <https://x/￿y> against <about:blank> assert_equals: href expected "https://x/%EF%BF%BFy" but got "https://x/%EF%BF%BDy"
-FAIL Parsing: <https://x/?￿y> against <about:blank> assert_equals: href expected "https://x/?%EF%BF%BFy" but got "https://x/?%EF%BF%BDy"
-FAIL Parsing: <https://x/?#￿y> against <about:blank> assert_equals: href expected "https://x/?#%EF%BF%BFy" but got "https://x/?#%EF%BF%BDy"
+FAIL Parsing: <https://￿y> against <about:blank> assert_equals: failure should set href to input expected "https://\uffffy" but got "https://%EF%BF%BFy/"
+PASS Parsing: <https://x/￿y> against <about:blank>
+PASS Parsing: <https://x/?￿y> against <about:blank>
+PASS Parsing: <https://x/?#￿y> against <about:blank>
 PASS Parsing: <non-special:\0y> against <about:blank>
 PASS Parsing: <non-special:x/\0y> against <about:blank>
 PASS Parsing: <non-special:x/?\0y> against <about:blank>
 PASS Parsing: <non-special:x/?#\0y> against <about:blank>
-FAIL Parsing: <non-special:￿y> against <about:blank> assert_equals: href expected "non-special:%EF%BF%BFy" but got "non-special:%EF%BF%BDy"
-FAIL Parsing: <non-special:x/￿y> against <about:blank> assert_equals: href expected "non-special:x/%EF%BF%BFy" but got "non-special:x/%EF%BF%BDy"
-FAIL Parsing: <non-special:x/?￿y> against <about:blank> assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/?%EF%BF%BDy"
-FAIL Parsing: <non-special:x/?#￿y> against <about:blank> assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
+PASS Parsing: <non-special:￿y> against <about:blank>
+PASS Parsing: <non-special:x/￿y> against <about:blank>
+PASS Parsing: <non-special:x/?￿y> against <about:blank>
+PASS Parsing: <non-special:x/?#￿y> against <about:blank>
 PASS Parsing: <> against <about:blank>
 PASS Parsing: <https://example.com/"quoted"> against <about:blank>
 PASS Parsing: <https://a%C2%ADb/> against <about:blank>

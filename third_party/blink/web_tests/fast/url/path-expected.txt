@@ -36,7 +36,7 @@ PASS canonicalize('http://example.com\\foo\\bar') is 'http://example.com/foo/bar
 PASS canonicalize('http://example.com/%7Ffp3%3Eju%3Dduvgw%3Dd') is 'http://example.com/%7Ffp3%3Eju%3Dduvgw%3Dd'
 PASS canonicalize('http://example.com/@asdf%40') is 'http://example.com/@asdf%40'
 PASS canonicalize('http://example.com/你好你好') is 'http://example.com/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD'
-PASS canonicalize('http://example.com/﷐zyx') is 'http://example.com/%EF%BF%BDzyx'
+PASS canonicalize('http://example.com/﷐zyx') is 'http://example.com/%EF%B7%90zyx'
 PASS canonicalize('http://example.com/‥/foo') is 'http://example.com/%E2%80%A5/foo'
 PASS canonicalize('http://example.com/﻿/foo') is 'http://example.com/%EF%BB%BF/foo'
 PASS canonicalize('http://example.com/‮/foo/‭/bar') is 'http://example.com/%E2%80%AE/foo/%E2%80%AD/bar'

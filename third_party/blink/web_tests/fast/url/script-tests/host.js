@@ -13,13 +13,10 @@ cases = [
   // Ideographic full stop (full-width period for Chinese, etc.) should be
   // treated as a dot.
   ["www.foo\u3002" + "bar.com", "www.foo.bar.com"],
-  // Invalid unicode characters should fail...
-  // ...In wide input, ICU will barf and we'll end up with the input as
-  //    escaped UTF-8 (the invalid character should be replaced with the
-  //    replacement character).
-  ["\ufdd0zyx.com", "%EF%BF%BDzyx.com"],
+  // Unicode Noncharacter.
+  ["\ufdd0zyx.com", "%EF%B7%90zyx.com"],
   // ...This is the same as previous but with with escaped.
-  ["%ef%b7%90zyx.com", "%EF%BF%BDzyx.com"],
+  ["%ef%b7%90zyx.com", "%EF%B7%90zyx.com"],
   // Test name prepping, fullwidth input should be converted to ASCII and NOT
   // IDN-ized. This is "Go" in fullwidth UTF-8/UTF-16.
   ["\uff27\uff4f.com", "go.com"],

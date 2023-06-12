@@ -247,6 +247,13 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
       {"%70%71%72%73%74%75%76%77%78%79%7a%7B%7C%7D%7e%7f/",
        "pqrstuvwxyz{|}~\x7f/"},
       {"%e4%bd%a0%e5%a5%bd", "\xe4\xbd\xa0\xe5\xa5\xbd"},
+      // U+FFFF (Noncharacter) should not be replaced with U+FFFD (Replacement
+      // Character) (http://crbug.com/1416021)
+      {"%ef%bf%bf", "\xef\xbf\xbf"},
+      // U+FDD0 (Noncharacter)
+      {"%ef%b7%90", "\xef\xb7\x90"},
+      // U+FFFD (Replacement Character)
+      {"%ef%bf%bd", "\xef\xbf\xbd"},
   };
 
   for (size_t i = 0; i < std::size(decode_cases); i++) {

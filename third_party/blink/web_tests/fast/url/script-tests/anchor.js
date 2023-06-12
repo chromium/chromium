@@ -6,7 +6,7 @@ cases = [
   ["\ud800\udf00ss", "%F0%90%8C%80ss"],
   ["%41%a", "%41%a"],
   ["\\ud800\\u597d", "%EF%BF%BD%E5%A5%BD"],
-  ["a\\uFDD0", "a%EF%BF%BD"],
+  ["a\\uFDD0", "a%EF%B7%90"],
   ["asdf#qwer", "asdf#qwer"],
   ["#asdf", "#asdf"],
   ["a\\nb\\rc\\td", "abcd"],

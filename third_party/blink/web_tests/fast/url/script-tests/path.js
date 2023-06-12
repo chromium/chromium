@@ -68,9 +68,8 @@ cases = [
   // ----- encoding tests -----
   // Basic conversions
   ["/\u4f60\u597d\u4f60\u597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD"],
-  // Invalid unicode characters should fail. We only do validation on
-  // UTF-16 input, so this doesn't happen on 8-bit.
-  ["/\ufdd0zyx", "/%EF%BF%BDzyx"],
+  // Unicode Noncharacter.
+  ["/\ufdd0zyx", "/%EF%B7%90zyx"],
   // U+2025 TWO DOT LEADER should not be normalized to .. in the path
   ["/\u2025/foo", "/%E2%80%A5/foo"],
   // A half-surrogate is an error by itself U+DEAD

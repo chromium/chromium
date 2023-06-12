@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 674 tests; 492 PASS, 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 674 tests; 501 PASS, 173 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -377,8 +377,8 @@ PASS Parsing: <sc:\../> without base
 PASS Parsing: <sc::a@example.net> without base
 PASS Parsing: <wow:%NBD> without base
 PASS Parsing: <wow:%1G> without base
-FAIL Parsing: <wow:￿> without base assert_equals: href expected "wow:%EF%BF%BF" but got "wow:%EF%BF%BD"
-FAIL Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> without base Failed to construct 'URL': Invalid URL
+PASS Parsing: <wow:￿> without base
+PASS Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> without base
 FAIL Parsing: <sc://a\0b/> without base assert_throws_js: function "function() {
           new URL(expected.input, base);
         }" did not throw
@@ -728,17 +728,17 @@ FAIL Parsing: <https://x/\0y> without base Failed to construct 'URL': Invalid UR
 PASS Parsing: <https://x/?\0y> without base
 PASS Parsing: <https://x/?#\0y> without base
 PASS Parsing: <https://￿y> without base
-FAIL Parsing: <https://x/￿y> without base Failed to construct 'URL': Invalid URL
-FAIL Parsing: <https://x/?￿y> without base assert_equals: href expected "https://x/?%EF%BF%BFy" but got "https://x/?%EF%BF%BDy"
-FAIL Parsing: <https://x/?#￿y> without base assert_equals: href expected "https://x/?#%EF%BF%BFy" but got "https://x/?#%EF%BF%BDy"
+PASS Parsing: <https://x/￿y> without base
+PASS Parsing: <https://x/?￿y> without base
+PASS Parsing: <https://x/?#￿y> without base
 PASS Parsing: <non-special:\0y> without base
 PASS Parsing: <non-special:x/\0y> without base
 PASS Parsing: <non-special:x/?\0y> without base
 PASS Parsing: <non-special:x/?#\0y> without base
-FAIL Parsing: <non-special:￿y> without base assert_equals: href expected "non-special:%EF%BF%BFy" but got "non-special:%EF%BF%BDy"
-FAIL Parsing: <non-special:x/￿y> without base assert_equals: href expected "non-special:x/%EF%BF%BFy" but got "non-special:x/%EF%BF%BDy"
-FAIL Parsing: <non-special:x/?￿y> without base assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/?%EF%BF%BDy"
-FAIL Parsing: <non-special:x/?#￿y> without base assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
+PASS Parsing: <non-special:￿y> without base
+PASS Parsing: <non-special:x/￿y> without base
+PASS Parsing: <non-special:x/?￿y> without base
+PASS Parsing: <non-special:x/?#￿y> without base
 PASS Parsing: <> without base
 PASS Parsing: <https://example.com/"quoted"> without base
 PASS Parsing: <https://a%C2%ADb/> without base
