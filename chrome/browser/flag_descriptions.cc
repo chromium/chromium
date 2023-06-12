@@ -1786,13 +1786,6 @@ const char kHiddenNetworkMigrationDescription[] =
     "Enables a privacy improvement that removes wrongly configured hidden"
     "networks and mitigates the creation of these networks.";
 
-const char kHideNonDisplayableAccountEmailName[] =
-    "Hide non-displayable account email";
-
-const char kHideNonDisplayableAccountEmailDescription[] =
-    "Hide the Google account email that should not be displayed on various UI "
-    "surfaces";
-
 extern const char kHotspotName[] = "Hotspot";
 extern const char kHotspotDescription[] =
     "Enables the Chromebook to share its cellular internet connection to other "

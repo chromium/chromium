@@ -13,7 +13,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -172,9 +171,7 @@ public class SignInPreference
 
     private void setupSignedIn(String accountName) {
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
-        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress()
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL);
+        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
         setSummary(canShowEmailAddress ? accountName : "");
         setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                 profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));

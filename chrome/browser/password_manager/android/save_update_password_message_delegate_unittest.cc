@@ -472,10 +472,6 @@ void SaveUpdatePasswordMessageDelegateWithFeaturesTest::InitFeatureList() {
         password_manager::features::kExploratorySaveUpdatePasswordStrings);
   }
 
-  // This feature only concerns AccountInfo with configured AccountCapabilities.
-  enabled_features.push_back(
-      {chrome::android::kHideNonDisplayableAccountEmail, {}});
-
   scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                      disabled_features);
 }

@@ -4454,11 +4454,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "hide-non-displayable-account-email",
-    "owners": [ "ddac", "chrome-kids-eng@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "hidpi-capture",
     "owners": [ "//content/browser/media/capture/OWNERS" ],
     "expiry_milestone": 118

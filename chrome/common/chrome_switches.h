@@ -211,7 +211,6 @@ extern const char kForceShowUpdateMenuItemCustomSummary[];
 extern const char kForceEnableSigninFRE[];
 extern const char kForceDisableSigninFRE[];
 extern const char kForceUpdateMenuType[];
-extern const char kForceHideNonDisplayableAccountEmailFRE[];
 extern const char kMarketUrlForTesting[];
 extern const char kRequestDesktopSites[];
 #endif  // BUILDFLAG(IS_ANDROID)

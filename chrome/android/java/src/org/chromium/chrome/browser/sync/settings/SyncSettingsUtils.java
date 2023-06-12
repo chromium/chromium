@@ -30,7 +30,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -503,9 +502,7 @@ public class SyncSettingsUtils {
         final String accountEmail = profileData.getAccountEmail();
         final String defaultString = context.getString(R.string.default_google_account_username);
         final boolean canShowFullName = !TextUtils.isEmpty(fullName);
-        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress()
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL);
+        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
         // Both strings are not displayable, use generic string.
         if (!canShowFullName && !canShowEmailAddress) {
             return defaultString;

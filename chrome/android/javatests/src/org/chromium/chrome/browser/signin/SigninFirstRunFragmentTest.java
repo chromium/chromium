@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -469,7 +468,6 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWithChildAccountWithNonDisplayableAccountEmail() {
-        ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         mSigninTestRule.addAccount(CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null,
                 /* avatar= */ null, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -483,7 +481,6 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
-        ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         mSigninTestRule.addAccount(CHILD_ACCOUNT_EMAIL, /* fullName= */ null, /* givenName= */ null,
                 /* avatar= */ null, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -731,7 +728,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL_FRE})
     public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -748,7 +744,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL_FRE})
     public void
     testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);

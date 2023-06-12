@@ -1009,9 +1009,6 @@ extern const char kStorageBucketsDescription[];
 extern const char kHiddenNetworkMigrationName[];
 extern const char kHiddenNetworkMigrationDescription[];
 
-extern const char kHideNonDisplayableAccountEmailName[];
-extern const char kHideNonDisplayableAccountEmailDescription[];
-
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 

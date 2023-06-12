@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -94,7 +93,6 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testDevicePickerBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         AccountInfo account =
                 createFakeAccount(SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         setUpAccountData(account);
@@ -144,7 +142,6 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @MediumTest
     public void testNoTargetDeviceBottomSheetWithPromoFeatureEnabledWithNonDisplayableAccountEmail()
             throws Throwable {
-        ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         AccountInfo account =
                 createFakeAccount(SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         setUpAccountData(account);

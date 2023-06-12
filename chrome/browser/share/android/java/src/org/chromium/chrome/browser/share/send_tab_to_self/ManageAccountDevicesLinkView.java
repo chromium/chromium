@@ -22,7 +22,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
@@ -92,8 +91,7 @@ public class ManageAccountDevicesLinkView extends LinearLayout {
         TextView linkView = findViewById(R.id.manage_devices_link);
         // If the feature is disabled, the email address is displayable by default.
         final boolean canHaveEmailAddressDisplayed =
-                account.getAccountCapabilities().canHaveEmailAddressDisplayed() != Tribool.FALSE
-                || !ChromeFeatureList.sHideNonDisplayableAccountEmail.isEnabled();
+                account.getAccountCapabilities().canHaveEmailAddressDisplayed() != Tribool.FALSE;
         final String accountFullNameOrEmail =
                 canHaveEmailAddressDisplayed ? account.getEmail() : account.getFullName();
         if (mShowLink) {

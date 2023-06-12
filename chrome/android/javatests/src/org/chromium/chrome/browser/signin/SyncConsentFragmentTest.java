@@ -369,7 +369,6 @@ public class SyncConsentFragmentTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
     public void testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmail()
             throws IOException {
         CoreAccountInfo accountInfo = mSigninTestRule.addAccount(
@@ -389,7 +388,6 @@ public class SyncConsentFragmentTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
     public void
     testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
             throws IOException {

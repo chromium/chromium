@@ -176,13 +176,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
   }
 
   if (account_info.has_value()) {
-    if (!account_info->CanHaveEmailAddressDisplayed() &&
-        base::FeatureList::IsEnabled(
-            chrome::android::kHideNonDisplayableAccountEmail)) {
-      account_email_ = account_info.value().full_name;
-    } else {
-      account_email_ = account_info.value().email;
-    }
+    account_email_ = account_info->CanHaveEmailAddressDisplayed()
+                         ? account_info.value().email
+                         : account_info.value().full_name;
   } else {
     account_email_ = std::string();
   }

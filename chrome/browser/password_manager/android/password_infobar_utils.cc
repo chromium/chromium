@@ -4,11 +4,9 @@
 
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -37,10 +35,6 @@ std::string GetDisplayableAccountName(content::WebContents* web_contents) {
       password_manager::GetAccountInfoForPasswordMessages(profile);
   if (!account_info.has_value()) {
     return "";
-  }
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kHideNonDisplayableAccountEmail)) {
-    return account_info.value().email;
   }
   return account_info->CanHaveEmailAddressDisplayed()
              ? account_info.value().email
