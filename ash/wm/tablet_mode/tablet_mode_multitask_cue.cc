@@ -166,6 +166,17 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
     return;
   }
 
+  // Do not show the cue if the window losing activation is a popup for example,
+  // and is on the same transient tree as the window gaining activation. For
+  // example, when activation goes from the browsers extension bubble to the
+  // browser, the cue will not appear.
+  if (lost_active &&
+      lost_active->GetType() != aura::client::WINDOW_TYPE_NORMAL &&
+      wm::GetTransientRoot(lost_active) ==
+          wm::GetTransientRoot(gained_active)) {
+    return;
+  }
+
   auto* window_manager =
       Shell::Get()->tablet_mode_controller()->tablet_mode_window_manager();
   DCHECK(window_manager);
@@ -173,9 +184,6 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
   auto* multitask_menu_controller =
       window_manager->tablet_mode_multitask_menu_controller();
   DCHECK(multitask_menu_controller);
-
-  // TODO(b/263519133): Stop the cue from reappearing after using non-app
-  // windows like popups.
 
   // The cue should not reappear when tapping off of the menu onto `window_`
   // or selecting a new layout. In the case where the menu is open, the cue is
