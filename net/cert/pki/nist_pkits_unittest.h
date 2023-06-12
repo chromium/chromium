@@ -89,13 +89,15 @@ class PkitsTest : public ::testing::Test {
                const char* const (&crl_names)[num_crls],
                const PkitsTestInfo& info) {
     std::vector<std::string> cert_ders;
-    for (const std::string& s : cert_names)
+    for (const std::string s : cert_names) {
       cert_ders.push_back(net::ReadTestFileToString(
           "net/third_party/nist-pkits/certs/" + s + ".crt"));
+    }
     std::vector<std::string> crl_ders;
-    for (const std::string& s : crl_names)
+    for (const std::string s : crl_names) {
       crl_ders.push_back(net::ReadTestFileToString(
           "net/third_party/nist-pkits/crls/" + s + ".crl"));
+    }
 
     std::string_view test_number = info.test_number;
 
