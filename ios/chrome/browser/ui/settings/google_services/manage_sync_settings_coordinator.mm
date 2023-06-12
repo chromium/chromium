@@ -149,6 +149,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)stop {
   [super stop];
+  [self.mediator disconnect];
+  self.mediator = nil;
+  self.viewController = nil;
   // This coordinator displays the main view and it is in charge to enable sync
   // or not when being closed.
   SyncSetupService* syncSetupService =

@@ -56,6 +56,9 @@ class SyncService;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects the mediator to all observers and services.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_MEDIATOR_H_

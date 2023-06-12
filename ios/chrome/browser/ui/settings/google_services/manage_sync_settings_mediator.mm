@@ -77,22 +77,9 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
 }  // namespace
 
-@interface ManageSyncSettingsMediator () <
-    BooleanObserver,
-    IdentityManagerObserverBridgeDelegate> {
-  // Sync observer.
-  std::unique_ptr<SyncObserverBridge> _syncObserver;
-  // Whether Sync State changes should be currently ignored.
-  BOOL _ignoreSyncStateChanges;
-}
+@interface ManageSyncSettingsMediator () <BooleanObserver,
+                                          IdentityManagerObserverBridgeDelegate>
 
-// Preference value for kAutofillWalletImportEnabled.
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* autocompleteWalletPreference;
-// Sync service.
-@property(nonatomic, assign) syncer::SyncService* syncService;
-// Pref service.
-@property(nonatomic, assign) PrefService* userPrefService;
 // Model item for sync everything.
 @property(nonatomic, strong) TableViewItem* syncEverythingItem;
 // Model item for each data types.
@@ -114,7 +101,16 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
 @end
 
-@implementation ManageSyncSettingsMediator
+@implementation ManageSyncSettingsMediator {
+  // Sync observer.
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
+  // Whether Sync State changes should be currently ignored.
+  BOOL _ignoreSyncStateChanges;
+  // Preference value for kAutofillWalletImportEnabled.
+  PrefBackedBoolean* _autocompleteWalletPreference;
+  // Sync service.
+  syncer::SyncService* _syncService;
+}
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
@@ -123,8 +119,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   self = [super init];
   if (self) {
     DCHECK(syncService);
-    self.syncService = syncService;
-    self.userPrefService = userPrefService;
+    _syncService = syncService;
     _syncObserver.reset(new SyncObserverBridge(self, syncService));
     _autocompleteWalletPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
@@ -133,6 +128,14 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     _initialAccountState = initialAccountState;
   }
   return self;
+}
+
+- (void)disconnect {
+  _syncObserver.reset();
+  _syncService = nullptr;
+  _autocompleteWalletPreference.observer = nil;
+  [_autocompleteWalletPreference stop];
+  _autocompleteWalletPreference = nil;
 }
 
 #pragma mark - Loads sync data type section
@@ -299,7 +302,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       syncer::UserSelectableType::kAutofill);
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
-  BOOL autocompleteWalletOn = self.autocompleteWalletPreference.value;
+  BOOL autocompleteWalletOn = _autocompleteWalletPreference.value;
   BOOL needsUpdate = (syncSwitchItem.enabled != autocompleteWalletEnabled) ||
                      (syncSwitchItem.on != autocompleteWalletOn);
   syncSwitchItem.enabled = autocompleteWalletEnabled;
@@ -330,7 +333,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   // be shown since the reauth dialog for the trusted vault is presented from
   // the bottom, and is not part of navigation controller.
   const syncer::SyncService::UserActionableError error =
-      self.syncService->GetUserActionableError();
+      _syncService->GetUserActionableError();
   BOOL hasDisclosureIndicator =
       error != syncer::SyncService::UserActionableError::
                    kNeedsTrustedVaultKeyForPasswords &&
@@ -559,7 +562,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 #pragma mark - Properties
 
 - (BOOL)disabledBecauseOfSyncError {
-  switch (self.syncService->GetUserActionableError()) {
+  switch (_syncService->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       return YES;
@@ -596,10 +599,10 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // to not need a trusted vault key.
 - (BOOL)shouldEncryptionItemBeEnabled {
   return !self.disabledBecauseOfSyncError &&
-         self.syncService->GetUserActionableError() !=
+         _syncService->GetUserActionableError() !=
              syncer::SyncService::UserActionableError::
                  kNeedsTrustedVaultKeyForPasswords &&
-         self.syncService->GetUserActionableError() !=
+         _syncService->GetUserActionableError() !=
              syncer::SyncService::UserActionableError::
                  kNeedsTrustedVaultKeyForEverything;
 }
@@ -619,7 +622,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   // As the manage sync settings mediator is running, the sync account state
   // does not change except only when the user signs out of their account.
 
-  if (self.syncService->GetAccountInfo().IsEmpty()) {
+  if (_syncService->GetAccountInfo().IsEmpty()) {
     return SyncSettingsAccountState::kSignedOut;
   }
   return _initialAccountState;
@@ -693,7 +696,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
           // When sync everything is turned on, the autocomplete wallet
           // should be turned on. This code can be removed once
           // crbug.com/937234 is fixed.
-          self.autocompleteWalletPreference.value = true;
+          _autocompleteWalletPreference.value = true;
         }
         break;
       case AutofillDataTypeItemType:
@@ -712,8 +715,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
         switch (self.syncAccountState) {
           case SyncSettingsAccountState::kSignedIn:
-            self.syncService->GetUserSettings()->SetSelectedType(dataType,
-                                                                 value);
+            _syncService->GetUserSettings()->SetSelectedType(dataType, value);
             break;
           case SyncSettingsAccountState::kSyncing:
           case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
@@ -729,7 +731,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
           // when auto fill data type disabled. This behaviour not be
           // implemented in the UI code. This code can be removed once
           // crbug.com/937234 is fixed.
-          self.autocompleteWalletPreference.value = value;
+          _autocompleteWalletPreference.value = value;
         }
         break;
       }
@@ -738,7 +740,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
                                                     kAutofill]) {
           break;
         }
-        self.autocompleteWalletPreference.value = value;
+        _autocompleteWalletPreference.value = value;
         break;
       case SignOutItemType:
       case EncryptionItemType:
@@ -764,7 +766,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   switch (itemType) {
     case EncryptionItemType: {
       const syncer::SyncService::UserActionableError error =
-          self.syncService->GetUserActionableError();
+          _syncService->GetUserActionableError();
       if (error == syncer::SyncService::UserActionableError::
                        kNeedsTrustedVaultKeyForPasswords ||
           error == syncer::SyncService::UserActionableError::
@@ -830,7 +832,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   syncErrorItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   syncErrorItem.text = GetNSString(IDS_IOS_SYNC_ERROR_TITLE);
   syncErrorItem.detailText =
-      GetSyncErrorDescriptionForSyncService(self.syncService);
+      GetSyncErrorDescriptionForSyncService(_syncService);
   syncErrorItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   switch (itemType) {
     case ShowPassphraseDialogErrorItemType:
@@ -941,7 +943,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
         return absl::make_optional<SyncSettingsItemType>(
             SyncDisabledByAdministratorErrorItemType);
       }
-      switch (self.syncService->GetUserActionableError()) {
+      switch (_syncService->GetUserActionableError()) {
         case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
           return absl::make_optional<SyncSettingsItemType>(
               ReauthDialogAsSyncIsInAuthErrorItemType);
@@ -996,13 +998,13 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
 - (BOOL)isManagedSyncSettingsDataType:(syncer::UserSelectableType)type {
-  return IsManagedSyncDataType(self.syncService, type);
+  return IsManagedSyncDataType(_syncService, type);
 }
 
 #pragma mark - Properties
 
 - (BOOL)isSyncDisabledByAdministrator {
-  return self.syncService->HasDisableReason(
+  return _syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
