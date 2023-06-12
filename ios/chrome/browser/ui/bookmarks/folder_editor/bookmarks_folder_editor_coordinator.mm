@@ -131,6 +131,7 @@
   DCHECK(_viewController);
   if (_navigationController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+    _navigationController.presentationController.delegate = nil;
     _navigationController = nil;
   } else if (_baseNavigationController &&
              _baseNavigationController.presentingViewController) {
@@ -248,6 +249,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   DCHECK(_navigationController);
+  _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }

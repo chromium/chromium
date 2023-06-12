@@ -233,6 +233,7 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.tableViewController = nil;
+  self.navigationController.presentationController.delegate = nil;
   self.navigationController = nil;
 
   [self.mediator disconnect];
