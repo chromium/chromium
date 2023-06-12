@@ -576,6 +576,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     compositor_ = compositor;
   }
 
+  void set_no_mutation(bool no_mutation) { no_mutation_ = no_mutation; }
+
  private:
   // TODO(https://crbug.com/1242749): temporary while tracking down crash.
   friend class Compositor;
@@ -834,6 +836,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // TODO(https://crbug.com/1242749): temporary while tracking down crash.
   bool in_send_damaged_rects_ = false;
   bool sending_damaged_rects_for_descendants_ = false;
+  bool no_mutation_ = false;  // CHECK on Add/SetMakeLayer if true.
 
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 };

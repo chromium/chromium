@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -51,6 +52,10 @@
 
 namespace ui {
 namespace {
+
+// TODO(https://crbug.com/1242749): temporary while tracking down crash.
+// Minimum interval between no mutation debug dumps.
+constexpr base::TimeDelta kMinNoMutationDumpInterval = base::Days(1);
 
 const Layer* GetRoot(const Layer* layer) {
   // Parent walk cannot be done on a layer that is being used as a mask. Get the
@@ -391,6 +396,11 @@ void Layer::RemoveObserver(LayerObserver* observer) {
 }
 
 void Layer::Add(Layer* child) {
+  // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+  if (no_mutation_) {
+    base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
+  }
+
   DCHECK(!child->compositor_);
   if (child->parent_)
     child->parent_->Remove(child);
@@ -666,6 +676,9 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
     // TODO(https://crbug.com/1242749): temporary while tracking down crash.
     // A `layer_mask` of this would lead to recursion.
     CHECK(layer_mask != this);
+    if (no_mutation_) {
+      base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
+    }
     layer_mask->layer_mask_back_link_ = this;
     layer_mask->OnDeviceScaleFactorChanged(device_scale_factor_);
   }
