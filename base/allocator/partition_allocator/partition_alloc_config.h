@@ -254,14 +254,12 @@ constexpr bool kUseLazyCommit = false;
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)))
 
 // Use available space in the reference count to store the initially requested
-// size from the application. This is used for debugging.
-#if !PA_CONFIG(REF_COUNT_CHECK_COOKIE) && \
+// size from the application. This is used for debugging. On mac, it is used to
+// workaround a bug. (crbug.com/1378822)
+#if BUILDFLAG(IS_MAC) && !PA_CONFIG(REF_COUNT_CHECK_COOKIE) && \
     !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-// Set to 1 when needed.
-#define PA_CONFIG_REF_COUNT_STORE_REQUESTED_SIZE() 0
+#define PA_CONFIG_REF_COUNT_STORE_REQUESTED_SIZE() 1
 #else
-// You probably want it at 0, outside of local testing, or else
-// PartitionRefCount will grow past 8B.
 #define PA_CONFIG_REF_COUNT_STORE_REQUESTED_SIZE() 0
 #endif
 
