@@ -94,7 +94,7 @@ public class ContentUiEventHandlerTest {
     private void verifySendMouseEvent(MotionEvent event) {
         verify(mContentUiEventHandlerJniMock)
                 .sendMouseEvent(NATIVE_CONTENT_UI_EVENT_HANDLER, mContentUiEventHandler,
-                        MotionEventUtils.getEventTimeNano(event), event.getActionMasked(),
+                        MotionEventUtils.getEventTimeNanos(event), event.getActionMasked(),
                         event.getX(), event.getY(), event.getPointerId(0), event.getPressure(0),
                         event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         EventForwarder.getMouseEventActionButton(event), event.getButtonState(),

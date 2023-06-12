@@ -204,8 +204,8 @@ public class EventForwarder {
             // We can't get nanosecond for historical event time, so we get milliseconds and cast
             // them to nanosecond.
             final long oldestEventTime = event.getHistorySize() > 0
-                    ? MotionEventUtils.getHistoricalEventTimeNano(event, 0)
-                    : MotionEventUtils.getEventTimeNano(event);
+                    ? MotionEventUtils.getHistoricalEventTimeNanos(event, 0)
+                    : MotionEventUtils.getEventTimeNanos(event);
 
             int eventAction = event.getActionMasked();
 
@@ -343,7 +343,7 @@ public class EventForwarder {
             if (eventAction == MotionEvent.ACTION_HOVER_ENTER) {
                 if (mLastMouseButtonState == MotionEvent.BUTTON_PRIMARY) {
                     EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                            MotionEventUtils.getEventTimeNano(event),
+                            MotionEventUtils.getEventTimeNanos(event),
                             MotionEvent.ACTION_BUTTON_RELEASE, event.getX(), event.getY(),
                             event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                             event.getAxisValue(MotionEvent.AXIS_TILT, 0),
@@ -407,7 +407,7 @@ public class EventForwarder {
         boolean shouldConvertToMouseEvent = isTrackpadToMouseEventConversionEnabled()
                 && isTrackpadClickOrClickAndDragEvent(event);
         EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                MotionEventUtils.getEventTimeNano(event), eventAction, event.getX(), event.getY(),
+                MotionEventUtils.getEventTimeNanos(event), eventAction, event.getX(), event.getY(),
                 event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                 event.getAxisValue(MotionEvent.AXIS_TILT, 0), getMouseEventActionButton(event),
                 event.getButtonState(), event.getMetaState(),
@@ -550,7 +550,7 @@ public class EventForwarder {
         }
 
         return EventForwarderJni.get().onGenericMotionEvent(mNativeEventForwarder,
-                EventForwarder.this, event, MotionEventUtils.getEventTimeNano(event));
+                EventForwarder.this, event, MotionEventUtils.getEventTimeNanos(event));
     }
 
     /**

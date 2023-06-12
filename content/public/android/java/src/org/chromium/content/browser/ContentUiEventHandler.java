@@ -94,7 +94,7 @@ public class ContentUiEventHandler implements UserData {
     private void onMouseWheelEvent(MotionEvent event) {
         assert mNativeContentUiEventHandler != 0;
         ContentUiEventHandlerJni.get().sendMouseWheelEvent(mNativeContentUiEventHandler,
-                ContentUiEventHandler.this, MotionEventUtils.getEventTimeNano(event), event.getX(),
+                ContentUiEventHandler.this, MotionEventUtils.getEventTimeNanos(event), event.getX(),
                 event.getY(), event.getAxisValue(MotionEvent.AXIS_HSCROLL),
                 event.getAxisValue(MotionEvent.AXIS_VSCROLL));
     }
@@ -109,7 +109,7 @@ public class ContentUiEventHandler implements UserData {
             event = newEvent;
         }
         ContentUiEventHandlerJni.get().sendMouseEvent(mNativeContentUiEventHandler,
-                ContentUiEventHandler.this, MotionEventUtils.getEventTimeNano(event),
+                ContentUiEventHandler.this, MotionEventUtils.getEventTimeNanos(event),
                 event.getActionMasked(), event.getX(), event.getY(), event.getPointerId(0),
                 event.getPressure(0), event.getOrientation(0),
                 event.getAxisValue(MotionEvent.AXIS_TILT, 0),

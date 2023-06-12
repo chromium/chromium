@@ -122,7 +122,7 @@ public class EventForwarderTest {
             EventForwarder eventForwarder, int times) {
         verify(mNativeMock, times(times))
                 .onMouseEvent(nativeEventForwarder, eventForwarder,
-                        MotionEventUtils.getEventTimeNano(event), event.getActionMasked(),
+                        MotionEventUtils.getEventTimeNanos(event), event.getActionMasked(),
                         event.getX(), event.getY(), event.getPointerId(0), event.getPressure(0),
                         event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         EventForwarder.getMouseEventActionButton(event), event.getButtonState(),
