@@ -41,6 +41,7 @@
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"
@@ -318,6 +319,24 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
     // achieved and isn't needed.
     return false;
   }
+};
+
+class SingleClientNigoriKeyPairSyncTest : public SingleClientNigoriSyncTest {
+ public:
+  SingleClientNigoriKeyPairSyncTest() {
+    override_features_.InitAndEnableFeature(
+        syncer::kSharingOfferKeyPairBootstrap);
+  }
+
+  SingleClientNigoriKeyPairSyncTest(const SingleClientNigoriKeyPairSyncTest&) =
+      delete;
+  SingleClientNigoriKeyPairSyncTest& operator=(
+      const SingleClientNigoriKeyPairSyncTest&) = delete;
+
+  ~SingleClientNigoriKeyPairSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
@@ -684,6 +703,117 @@ IN_PROC_BROWSER_TEST_F(
                   {password_form1, password_form2}, kKeystoreKeyParams.password,
                   kKeystoreKeyParams.derivation_params)
                   .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
+                       ShouldBootstrapKeyPairWhenReceivedDefault) {
+  ASSERT_TRUE(SetupSync());
+  sync_pb::NigoriSpecifics specifics;
+
+  // Commit of specifics with key pair happens during SetupSync().
+  ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
+
+  EXPECT_TRUE(specifics.has_public_key());
+  EXPECT_TRUE(specifics.public_key().has_x25519_public_key());
+  EXPECT_TRUE(specifics.public_key().has_version());
+  EXPECT_EQ(specifics.public_key().version(), 0);
+  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+              SizeIs(X25519_PUBLIC_VALUE_LEN));
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  EXPECT_THAT(
+      specifics.encryption_keybag(),
+      IsDataEncryptedWith(KeystoreKeyParamsForTesting(keystore_keys.back())));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kKeystoreKeyParams.password, kKeystoreKeyParams.derivation_params);
+
+  std::string decrypted_keys_str;
+  EXPECT_TRUE(cryptographer->DecryptToString(specifics.encryption_keybag(),
+                                             &decrypted_keys_str));
+  sync_pb::NigoriKeyBag decrypted_keys;
+
+  EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
+  ASSERT_THAT(decrypted_keys.private_key(), SizeIs(1));
+  auto private_key_proto =
+      decrypted_keys.private_key().at(0).x25519_private_key();
+  EXPECT_THAT(private_key_proto, SizeIs(X25519_PRIVATE_KEY_LEN));
+  EXPECT_EQ(decrypted_keys.private_key().at(0).version(), 0);
+  std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
+                                       private_key_proto.end());
+  absl::optional<syncer::PublicPrivateKeyPair> private_key =
+      syncer::PublicPrivateKeyPair::CreateByImport(raw_private_key);
+  EXPECT_TRUE(private_key.has_value());
+  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+              testing::ElementsAreArray(private_key->GetRawPublicKey()));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
+                       PRE_ShouldSyncPublicPrivateKeyPair) {
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  const KeyParamsForTesting kDefaultKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  SetNigoriInFakeServer(
+      BuildKeystoreNigoriSpecifics(
+          /*keybag_keys_params=*/{kDefaultKeyParams, kKeystoreKeyParams},
+          /*keystore_decryptor_params*/ {kDefaultKeyParams},
+          /*keystore_key_params=*/kKeystoreKeyParams),
+      GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
+                       ShouldSyncPublicPrivateKeyPair) {
+  ASSERT_TRUE(SetupSync());
+  sync_pb::NigoriSpecifics specifics;
+
+  // Commit of specifics with key pair happens during SetupSync().
+  ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
+
+  EXPECT_TRUE(specifics.has_public_key());
+  EXPECT_TRUE(specifics.public_key().has_x25519_public_key());
+  EXPECT_TRUE(specifics.public_key().has_version());
+  EXPECT_EQ(specifics.public_key().version(), 0);
+  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+              SizeIs(X25519_PUBLIC_VALUE_LEN));
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  EXPECT_THAT(
+      specifics.encryption_keybag(),
+      IsDataEncryptedWith(KeystoreKeyParamsForTesting(keystore_keys.back())));
+
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kKeystoreKeyParams.password, kKeystoreKeyParams.derivation_params);
+
+  std::string decrypted_keys_str;
+  EXPECT_TRUE(cryptographer->DecryptToString(specifics.encryption_keybag(),
+                                             &decrypted_keys_str));
+  sync_pb::NigoriKeyBag decrypted_keys;
+  EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
+  ASSERT_THAT(decrypted_keys.private_key(), SizeIs(1));
+  auto private_key_proto =
+      decrypted_keys.private_key().at(0).x25519_private_key();
+  EXPECT_THAT(private_key_proto, SizeIs(X25519_PRIVATE_KEY_LEN));
+  EXPECT_EQ(decrypted_keys.private_key().at(0).version(), 0);
+  std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
+                                       private_key_proto.end());
+  absl::optional<syncer::PublicPrivateKeyPair> private_key =
+      syncer::PublicPrivateKeyPair::CreateByImport(raw_private_key);
+  EXPECT_TRUE(private_key.has_value());
+  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+              testing::ElementsAreArray(private_key->GetRawPublicKey()));
 }
 
 // Performs initial sync for Nigori, but doesn't allow initialized Nigori to be
