@@ -184,6 +184,9 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   if (!entry->IsInitialEntry()) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
       info = std::make_unique<WebAppInstallInfo>(*web_page_metadata);
+      if (info->manifest_id.is_empty()) {
+        info->manifest_id = std::move(fallback_install_info_->manifest_id);
+      }
       if (info->start_url.is_empty()) {
         info->start_url = std::move(fallback_install_info_->start_url);
       }
