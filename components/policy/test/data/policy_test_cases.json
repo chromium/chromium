@@ -18780,7 +18780,7 @@
           "BrowsingDataLifetime": [
             {
               "data_types": [
-                "browsing_history"
+                "autofill"
               ],
               "time_to_live_in_hours": 2
             }
@@ -18789,7 +18789,17 @@
         },
         "prefs": {
           "browser.clear_data.browsing_data_lifetime": {
-            "default_value": []
+            "value": [
+              {
+                "data_types": [
+                  "autofill"
+                ],
+                "time_to_live_in_hours": 2
+              }
+            ]
+          },
+          "sync.autofill": {
+            "value": false
           }
         }
       }
@@ -18839,13 +18849,16 @@
         "note": "Simple value when SyncDisabled is false.",
         "policies": {
           "ClearBrowsingDataOnExitList": [
-            "browsing_history"
+            "autofill"
           ],
           "SyncDisabled": false
         },
         "prefs": {
           "browser.clear_data.clear_on_exit": {
-            "default_value": []
+            "value": ["autofill"]
+          },
+          "sync.autofill": {
+            "value": false
           }
         }
       }

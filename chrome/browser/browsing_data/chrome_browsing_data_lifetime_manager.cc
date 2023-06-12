@@ -329,7 +329,8 @@ void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
   const base::Value::List& data_types = profile_->GetPrefs()->GetList(
       browsing_data::prefs::kClearBrowsingDataOnExitList);
 
-  if (IsConditionSatisfiedForBrowsingDataRemoval(GetSyncTypesForPolicyPref(
+  if (!data_types.empty() &&
+      IsConditionSatisfiedForBrowsingDataRemoval(GetSyncTypesForPolicyPref(
           profile_, browsing_data::prefs::kClearBrowsingDataOnExitList))) {
     profile_->GetPrefs()->SetBoolean(
         browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending, true);

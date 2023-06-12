@@ -3989,6 +3989,26 @@
             ]
         }
     ],
+    "DataRetentionPoliciesDisableSyncTypesNeeded": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DataRetentionPoliciesDisableSyncTypesNeeded"
+                    ]
+                }
+            ]
+        }
+    ],
     "DecreaseProcessingAudioFifoSize": [
         {
             "platforms": [
