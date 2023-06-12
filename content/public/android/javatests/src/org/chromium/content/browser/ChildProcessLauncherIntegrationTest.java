@@ -23,6 +23,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
@@ -141,7 +142,7 @@ public class ChildProcessLauncherIntegrationTest {
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(new Runnable() {
             @Override
             public void run() {
-                if (ContentFeatureList.isEnabled(
+                if (ContentFeatureMap.isEnabled(
                             ContentFeatureList.PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES)) {
                     // If this feature is turned on all the URLs will use the same process.
                     // Verify that the process has not lost its importance now that the
@@ -186,7 +187,7 @@ public class ChildProcessLauncherIntegrationTest {
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(new Runnable() {
             @Override
             public void run() {
-                if (ContentFeatureList.isEnabled(
+                if (ContentFeatureMap.isEnabled(
                             ContentFeatureList.PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES)) {
                     // If this feature is turned on all the URLs will use the same process
                     // and this test will not observe any kills.

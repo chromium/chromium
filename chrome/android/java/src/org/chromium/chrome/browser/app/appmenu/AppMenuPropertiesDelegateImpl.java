@@ -91,6 +91,7 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -1111,7 +1112,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // REQUEST_DESKTOP_SITE_EXCEPTIONS is enabled, hide the entry for all native pages.
         boolean itemVisible = currentTab != null && canShowRequestDesktopSite
                 && (!isChromeScheme
-                        || (!ContentFeatureList.isEnabled(
+                        || (!ContentFeatureMap.isEnabled(
                                     ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
                                 && currentTab.isNativePage()))
                 && !shouldShowReaderModePrefs(currentTab) && currentTab.getWebContents() != null;

@@ -52,6 +52,7 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -228,7 +229,7 @@ public class RequestDesktopUtils {
      */
     public static void maybeDowngradeSiteSettings(TabModelSelector tabModelSelector) {
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
-        if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
             // Remove the SharedPreferences keys if they exist when desktop site exceptions are
             // re-enabled.
             SharedPreferencesManager.getInstance().removeKey(
@@ -324,7 +325,7 @@ public class RequestDesktopUtils {
      */
     public static void maybeUpgradeTabLevelDesktopSiteSetting(
             Tab tab, Profile profile, @TabUserAgent int tabUserAgent, @Nullable GURL url) {
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
                 || url == null) {
             return;
         }
@@ -971,7 +972,7 @@ public class RequestDesktopUtils {
     }
 
     private static boolean isDesktopSiteExceptionsDowngradeEnabledForTab(int tabId) {
-        if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
                 || !SiteSettingsFeatureList.isEnabled(
                         SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
             return false;

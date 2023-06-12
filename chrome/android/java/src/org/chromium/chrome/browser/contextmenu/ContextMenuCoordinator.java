@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -109,7 +109,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mOnMenuClosed = onMenuClosed;
         Activity activity = window.getActivity().get();
         final boolean isDragDropEnabled =
-                ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+                ContentFeatureMap.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
                 && ContextMenuUtils.usePopupContextMenuForContext(activity);
         final boolean isPopup = isDragDropEnabled
                 || params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE

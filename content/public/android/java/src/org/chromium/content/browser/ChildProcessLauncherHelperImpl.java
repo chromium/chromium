@@ -43,6 +43,7 @@ import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -396,7 +397,7 @@ public final class ChildProcessLauncherHelperImpl {
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {
                 sandboxed = false;
-                reducePriorityOnBackground = ContentFeatureList.isEnabled(
+                reducePriorityOnBackground = ContentFeatureMap.isEnabled(
                         ContentFeatures.REDUCE_GPU_PRIORITY_ON_BACKGROUND);
             } else {
                 // We only support sandboxed utility processes now.
@@ -719,7 +720,7 @@ public final class ChildProcessLauncherHelperImpl {
             boostForPendingViews = false;
         }
 
-        boolean mediaRendererHasModerate = ContentFeatureList.isEnabled(
+        boolean mediaRendererHasModerate = ContentFeatureMap.isEnabled(
                 ContentFeatureList.BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING);
 
         @ChildProcessImportance

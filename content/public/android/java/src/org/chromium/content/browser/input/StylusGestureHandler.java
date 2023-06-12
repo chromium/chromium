@@ -21,7 +21,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink.mojom.StylusWritingGestureGranularity;
-import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.mojo_base.mojom.String16;
 
@@ -91,7 +91,7 @@ public class StylusGestureHandler implements InvocationHandler {
     public static @Nullable InputConnection maybeProxyInputConnection(
             @Nullable InputConnection inputConnection, Callback<OngoingGesture> onGestureCallback) {
         if (inputConnection == null || !BuildCompat.isAtLeastU()
-                || !ContentFeatureList.isEnabled(
+                || !ContentFeatureMap.isEnabled(
                         org.chromium.blink_public.common.BlinkFeatures.STYLUS_RICH_GESTURES)) {
             return inputConnection;
         }

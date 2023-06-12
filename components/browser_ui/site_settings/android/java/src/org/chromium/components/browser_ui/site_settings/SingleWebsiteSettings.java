@@ -41,6 +41,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -1104,7 +1105,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     private void setUpDesktopSitePreference(Preference preference) {
         // Skip adding the desktop site preference if RDS exceptions support is removed.
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
                 && SiteSettingsFeatureList.isEnabled(
                         SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
             return;

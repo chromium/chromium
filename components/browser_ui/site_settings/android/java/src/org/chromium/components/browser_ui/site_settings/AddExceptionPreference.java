@@ -31,6 +31,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -133,7 +134,7 @@ public class AddExceptionPreference
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // Default to domain level setting for Request Desktop Site.
             checkBox.setChecked(true);
-            if (ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
+            if (ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
                         ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
                         PARAM_SUBDOMAIN_SETTINGS, true)) {
                 checkBox.setVisibility(View.VISIBLE);

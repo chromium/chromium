@@ -40,6 +40,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.GURL;
@@ -118,15 +119,15 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
             case SiteSettingsCategory.Type.BLUETOOTH:
-                return ContentFeatureList.isEnabled(
+                return ContentFeatureMap.isEnabled(
                         ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
             case SiteSettingsCategory.Type.BLUETOOTH_SCANNING:
                 return CommandLine.getInstance().hasSwitch(
                         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
-                return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
+                return ContentFeatureMap.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
-                return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
+                return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
             default:
                 return true;
         }

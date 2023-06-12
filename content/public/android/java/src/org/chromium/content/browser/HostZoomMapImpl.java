@@ -12,6 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 
@@ -75,7 +76,7 @@ public class HostZoomMapImpl {
         float systemFontScale = SYSTEM_FONT_SCALE;
         // The OS |fontScale| will not be factored in zoom estimation if Page Zoom is disabled; a
         // systemFontScale = 1 will be used in this case.
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
             systemFontScale = 1;
         }
         return HostZoomMap.adjustZoomLevel(

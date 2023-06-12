@@ -98,6 +98,7 @@ import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -315,8 +316,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             @Override
             public void onDisabled() {
                 assert mNativeObj != 0 : "Native code is not initialized, but disable was called.";
-                assert ContentFeatureList.isEnabled(
-                        ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)
+                assert ContentFeatureMap.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)
                     : "Disable was called, but Auto-disable accessibility is not enabled.";
                 TraceEvent.begin(
                         "WebContentsAccessibilityImpl.AutoDisableAccessibilityHandler.onDisabled");
@@ -443,7 +443,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
 
         // Define a set of relevant AccessibilityEvents if the OnDemand feature is enabled.
-        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             Runnable serviceMaskRunnable = () -> {
                 int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
                 mEventDispatcher.updateRelevantEventTypes(
@@ -633,7 +633,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     mIsImageDescriptionsCandidate && AccessibilityState.isScreenReaderEnabled());
 
             // Update the list of events we dispatch to enabled services.
-            if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+            if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
                 int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
                 mEventDispatcher.updateRelevantEventTypes(
                         convertMaskToEventTypes(serviceEventMask));
@@ -643,7 +643,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // and tear down objects when no accessibility services are running. If we have
             // disabled then re-enabled the renderer multiple times for this instance, then we
             // will return early and keep accessibility enabled to prevent further churn.
-            if (ContentFeatureList.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)) {
+            if (ContentFeatureMap.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)) {
                 if (mAutoDisableUsageCounter >= AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT) {
                     mAutoDisableAccessibilityHandler.cancelDisableTimer();
                     return;

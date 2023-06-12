@@ -74,6 +74,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -899,7 +900,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         !WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, type);
                 break;
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                allowSpecifyingExceptions = ContentFeatureList.isEnabled(
+                allowSpecifyingExceptions = ContentFeatureMap.isEnabled(
                         ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS);
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
@@ -1221,8 +1222,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         // Configure/hide the desktop site secondary controls, as needed.
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                && ContentFeatureList.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
+                && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             mDesktopSitePeripheralPref.setOnPreferenceChangeListener(this);
             mDesktopSiteDisplayPref.setOnPreferenceChangeListener(this);
             updateDesktopSiteSecondaryControls();
@@ -1390,7 +1390,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     // TODO(crbug.com/1343640): Looking at a different class setup for SingleCategorySettings that
     // allows category specific logic to live in separate files.
     private void updateDesktopSiteSecondaryControls() {
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             return;
         }
 
@@ -1515,7 +1515,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             return false;
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                && !ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+                && !ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
                 && SiteSettingsFeatureList.isEnabled(
                         SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
             return false;

@@ -4,53 +4,11 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.content.browser.ContentFeatureMap;
-
 /**
  * Convenience static methods to access {@link ContentFeatureMap}.
  */
 public class ContentFeatureList {
     private ContentFeatureList() {}
-
-    /**
-     * Returns whether the specified feature is enabled or not.
-     *
-     * @param featureName The name of the feature to query.
-     * @return Whether the feature is enabled or not.
-     */
-    public static boolean isEnabled(String featureName) {
-        return ContentFeatureMap.isEnabled(featureName);
-    }
-
-    /**
-     * Returns a field trial param as an int for the specified feature.
-     *
-     * @param featureName The name of the feature to retrieve a param for.
-     * @param paramName The name of the param for which to get as an integer.
-     * @param defaultValue The integer value to use if the param is not available.
-     * @return The parameter value as an int. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value does not represent an int.
-     */
-    public static int getFieldTrialParamByFeatureAsInt(
-            String featureName, String paramName, int defaultValue) {
-        return ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
-                featureName, paramName, defaultValue);
-    }
-
-    /**
-     * Returns a field trial param as a boolean for the specified feature.
-     *
-     * @param featureName The name of the feature to retrieve a param for.
-     * @param paramName The name of the param for which to get as a boolean.
-     * @param defaultValue The boolean value to use if the param is not available.
-     * @return The parameter value as a boolean. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value is neither "true" nor "false".
-     */
-    public static boolean getFieldTrialParamByFeatureAsBoolean(
-            String featureName, String paramName, boolean defaultValue) {
-        return ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                featureName, paramName, defaultValue);
-    }
 
     // TODO(crbug.com/1447098): Use generated constants in ContentFeatures and other generated
     // Features files, then remove the constants below.

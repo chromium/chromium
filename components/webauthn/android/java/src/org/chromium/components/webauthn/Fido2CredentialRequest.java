@@ -46,7 +46,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
-import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
@@ -287,7 +287,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
 
         if (options.isConditional
-                || (ContentFeatureList.isEnabled(
+                || (ContentFeatureMap.isEnabled(
                             ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION)
                         && !hasAllowCredentials)) {
             // For use in the lambda expression.

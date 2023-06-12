@@ -17,6 +17,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.ArrayList;
@@ -291,7 +292,7 @@ public class WebsitePermissionsFetcher {
 
             // Remove this check after the flag is removed.
             if (contentSettingsType == ContentSettingsType.NFC
-                    && !ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC)) {
+                    && !ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC)) {
                 return;
             }
 
@@ -303,7 +304,7 @@ public class WebsitePermissionsFetcher {
             // list of permitted Bluetooth devices that each site can connect to.
             // Remove this check after the flag is removed.
             if (contentSettingsType == ContentSettingsType.BLUETOOTH_GUARD
-                    && !ContentFeatureList.isEnabled(
+                    && !ContentFeatureMap.isEnabled(
                             ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
                 return;
             }

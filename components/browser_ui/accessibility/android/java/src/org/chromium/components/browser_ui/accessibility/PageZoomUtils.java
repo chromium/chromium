@@ -12,6 +12,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowSettingsUI() {
-        return ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM);
+        return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM);
     }
 
     /**

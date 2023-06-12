@@ -65,6 +65,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -1738,8 +1739,7 @@ public class TabImpl implements Tab {
                 TabUtils.readRequestDesktopSiteContentSettings(profile, url)
                 || alwaysRequestDesktopSite;
         if (!shouldRequestDesktopSite
-                && ContentFeatureList.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
+                && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             // TODO(shuyng): Make additional setting compatible with site level setting.
             PrefService prefService = UserPrefs.get(profile);
             boolean peripheralPref =

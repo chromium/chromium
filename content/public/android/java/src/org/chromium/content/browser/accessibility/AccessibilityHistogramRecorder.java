@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
@@ -113,7 +114,7 @@ public class AccessibilityHistogramRecorder {
      */
     public void recordHistograms() {
         // If the OnDemand feature is enabled, log UMA metrics and reset counters.
-        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             recordEventsHistograms();
         }
 
@@ -127,8 +128,8 @@ public class AccessibilityHistogramRecorder {
     public void recordEventsHistograms() {
         // To investigate whether adding more AXModes could be beneficial, track separate
         // stats when both the AccessibilityPerformanceFiltering and OnDemand features are enabled.
-        boolean isAccessibilityPerformanceFilteringEnabled = ContentFeatureList.isEnabled(
-                ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING);
+        boolean isAccessibilityPerformanceFilteringEnabled =
+                ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING);
 
         // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
         boolean isAXModeComplete = AccessibilityState.isScreenReaderEnabled();
