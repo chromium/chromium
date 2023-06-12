@@ -28,9 +28,10 @@ class Label;
 }  // namespace views
 
 // View used to display the cookie controls ui.
-class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
-                                 public views::TooltipIcon::Observer,
-                                 public content_settings::CookieControlsView {
+class CookieControlsBubbleView
+    : public LocationBarBubbleDelegateView,
+      public views::TooltipIcon::Observer,
+      public content_settings::OldCookieControlsObserver {
  public:
   enum DialogViewID {
     VIEW_ID_NONE = 0,
@@ -48,7 +49,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
 
   static CookieControlsBubbleView* GetCookieBubble();
 
-  // content_settings::CookieControlsView:
+  // content_settings::OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        int allowed_cookies,
@@ -105,7 +106,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
   raw_ptr<views::View> show_cookies_link_ = nullptr;
 
   base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::CookieControlsView>
+                          content_settings::OldCookieControlsObserver>
       controller_observation_{this};
   base::ScopedObservation<views::TooltipIcon, views::TooltipIcon::Observer>
       tooltip_observation_{this};

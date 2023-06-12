@@ -15,8 +15,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.
-class CookieControlsIconView : public PageActionIconView,
-                               public content_settings::CookieControlsView {
+class CookieControlsIconView
+    : public PageActionIconView,
+      public content_settings::OldCookieControlsObserver {
  public:
   METADATA_HEADER(CookieControlsIconView);
   CookieControlsIconView(
@@ -26,7 +27,7 @@ class CookieControlsIconView : public PageActionIconView,
   CookieControlsIconView& operator=(const CookieControlsIconView&) = delete;
   ~CookieControlsIconView() override;
 
-  // CookieControlsUI:
+  // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        int allowed_cookies,
@@ -51,7 +52,7 @@ class CookieControlsIconView : public PageActionIconView,
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::CookieControlsView>
+                          content_settings::OldCookieControlsObserver>
       observation_{this};
 };
 

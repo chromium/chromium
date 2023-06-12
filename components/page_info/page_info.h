@@ -47,7 +47,7 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : private content_settings::CookieControlsView {
+class PageInfo : private content_settings::OldCookieControlsObserver {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -344,7 +344,7 @@ class PageInfo : private content_settings::CookieControlsView {
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsEmptyByDefault);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsDontShowAsk);
 
-  // CookieControlsView:
+  // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        int allowed_cookies,
@@ -524,7 +524,7 @@ class PageInfo : private content_settings::CookieControlsView {
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::CookieControlsView>
+                          content_settings::OldCookieControlsObserver>
       observation_{this};
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;

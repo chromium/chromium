@@ -25,7 +25,8 @@ namespace {
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
-class MockCookieControlsView : public content_settings::CookieControlsView {
+class MockCookieControlsObserver
+    : public content_settings::OldCookieControlsObserver {
  public:
   MOCK_METHOD(void,
               OnStatusChanged,
@@ -100,7 +101,7 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
     return cookie_settings_.get();
   }
 
-  MockCookieControlsView* mock() { return &mock_; }
+  MockCookieControlsObserver* mock() { return &mock_; }
 
   content_settings::PageSpecificContentSettings*
   page_specific_content_settings() {
@@ -109,7 +110,7 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  MockCookieControlsView mock_;
+  MockCookieControlsObserver mock_;
   std::unique_ptr<content_settings::CookieControlsController> cookie_controls_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
@@ -264,7 +265,7 @@ TEST_F(CookieControlsTest, Incognito) {
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
           incognito_web_contents.get()));
   auto* tester = content::WebContentsTester::For(incognito_web_contents.get());
-  MockCookieControlsView incognito_mock_;
+  MockCookieControlsObserver incognito_mock_;
   content_settings::CookieControlsController incognito_cookie_controls(
       CookieSettingsFactory::GetForProfile(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),

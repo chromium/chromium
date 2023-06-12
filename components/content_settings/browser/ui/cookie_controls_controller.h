@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -23,7 +24,8 @@ class WebContents;
 namespace content_settings {
 
 class CookieSettings;
-class CookieControlsView;
+class CookieControlsObserver;
+class OldCookieControlsObserver;
 
 // Handles the tab specific state for cookie controls.
 class CookieControlsController
@@ -41,7 +43,7 @@ class CookieControlsController
   // Called when the web_contents has changed.
   void Update(content::WebContents* web_contents);
 
-  // Called when CookieControlsView is closing.
+  // Called when the UI is closing.
   void OnUiClosing();
 
   // Called when the user clicks on the button to enable/disable cookie
@@ -51,10 +53,19 @@ class CookieControlsController
   // Returns whether first-party cookies are blocked.
   bool FirstPartyCookiesBlocked();
 
-  void AddObserver(CookieControlsView* obs);
-  void RemoveObserver(CookieControlsView* obs);
+  void AddObserver(OldCookieControlsObserver* obs);
+  void RemoveObserver(OldCookieControlsObserver* obs);
+
+  void AddObserver(CookieControlsObserver* obs);
+  void RemoveObserver(CookieControlsObserver* obs);
 
  private:
+  struct Status {
+    CookieControlsStatus status;
+    CookieControlsEnforcement enforcement;
+    absl::optional<base::Time> expiration;
+  };
+
   // The observed WebContents changes during the lifetime of the
   // CookieControlsController. SiteDataObserver can't change the observed
   // object, so we need an inner class that can be recreated when necessary.
@@ -82,20 +93,25 @@ class CookieControlsController
   void OnCookieSettingChanged() override;
 
   // Determine the CookieControlsStatus based on |web_contents|.
-  std::pair<CookieControlsStatus, CookieControlsEnforcement> GetStatus(
-      content::WebContents* web_contents);
+  Status GetStatus(content::WebContents* web_contents);
 
   // Updates the blocked cookie count of |icon_|.
   void PresentBlockedCookieCounter();
 
   // Returns the number of allowed cookies.
-  int GetAllowedCookieCount();
+  int GetAllowedCookieCount() const;
 
   // Returns the number of blocked cookies.
-  int GetBlockedCookieCount();
+  int GetBlockedCookieCount() const;
 
   // Returns the number of stateful bounces leading to this page.
-  int GetStatefulBounceCount();
+  int GetStatefulBounceCount() const;
+
+  // Returns the number of allowed sites.
+  int GetAllowedSitesCount() const;
+
+  // Returns the number of blocked sites.
+  int GetBlockedSitesCount() const;
 
   content::WebContents* GetWebContents();
 
@@ -113,7 +129,8 @@ class CookieControlsController
 
   bool should_reload_ = false;
 
-  base::ObserverList<CookieControlsView> observers_;
+  base::ObserverList<OldCookieControlsObserver> old_observers_;
+  base::ObserverList<CookieControlsObserver> observers_;
 };
 
 }  // namespace content_settings

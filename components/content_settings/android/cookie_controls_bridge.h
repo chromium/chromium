@@ -16,7 +16,7 @@ namespace content_settings {
 
 // Communicates between CookieControlsController (C++ backend) and PageInfoView
 // (Java UI).
-class CookieControlsBridge : public CookieControlsView {
+class CookieControlsBridge : public OldCookieControlsObserver {
  public:
   // Creates a CookeControlsBridge for interaction with a
   // CookieControlsController.
@@ -40,7 +40,7 @@ class CookieControlsBridge : public CookieControlsView {
 
   void OnUiClosing(JNIEnv* env);
 
-  // CookieControlsView:
+  // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        int allowed_cookies,
@@ -56,7 +56,7 @@ class CookieControlsBridge : public CookieControlsView {
   absl::optional<int> blocked_cookies_;
   absl::optional<int> allowed_cookies_;
   std::unique_ptr<CookieControlsController> controller_;
-  base::ScopedObservation<CookieControlsController, CookieControlsView>
+  base::ScopedObservation<CookieControlsController, OldCookieControlsObserver>
       observation_{this};
 };
 
