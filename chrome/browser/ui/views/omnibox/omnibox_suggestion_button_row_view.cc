@@ -210,7 +210,11 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
                           OmniboxPopupSelection::KEYWORD_MODE),
-      std::u16string(), vector_icons::kSearchIcon, popup_contents_view_,
+      std::u16string(),
+      OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
+          ? vector_icons::kSearchChromeRefreshIcon
+          : vector_icons::kSearchIcon,
+      popup_contents_view_,
       OmniboxPopupSelection(model_index_,
                             OmniboxPopupSelection::KEYWORD_MODE)));
 

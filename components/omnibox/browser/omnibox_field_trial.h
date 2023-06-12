@@ -373,13 +373,15 @@ extern const base::FeatureParam<int> kSuggestionRowHeight;
 // suggestions.
 extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
 
-// Omnibox GM3 - icons.
-// Returns true if the feature to enable GM3 icons is enabled.
+// Omnibox CR23 - icons.
+// Returns true if the feature to enable CR23 icons is enabled.
 bool IsChromeRefreshIconsEnabled();
-
 // Omnibox CR23 - suggestion icons.
 // Returns true if the feature to enable CR23 suggestion icons is enabled.
 bool IsChromeRefreshSuggestIconsEnabled();
+// Omnibox CR23 - action chip icons.
+// Returns true if the feature to enable CR23 action chip icons is enabled.
+bool IsChromeRefreshActionChipIconsEnabled();
 
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.

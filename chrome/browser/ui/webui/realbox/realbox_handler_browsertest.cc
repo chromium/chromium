@@ -85,9 +85,6 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
     if (vector_icon.is_empty()) {
       // An empty resource name is effectively a blank icon.
       EXPECT_TRUE(svg_name.empty());
-    } else if (vector_icon.name == omnibox::kPedalIcon.name) {
-      // Pedals are not supported in the NTP Realbox.
-      EXPECT_TRUE(svg_name.empty());
     } else if (is_bookmark) {
       EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
     } else {

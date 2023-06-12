@@ -703,6 +703,12 @@ bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
          base::FeatureList::IsEnabled(omnibox::kExpandedStateSuggestIcons);
 }
 
+bool OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled() {
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips);
+}
+
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
 }

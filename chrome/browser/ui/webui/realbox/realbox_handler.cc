@@ -650,8 +650,6 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else if (icon.name == omnibox::kPageIcon.name ||
              icon.name == omnibox::kPageChromeRefreshIcon.name) {
     return kPageIconResourceName;
-  } else if (icon.name == omnibox::kPedalIcon.name) {
-    return kPedalsIconResourceName;
   } else if (icon.name == omnibox::kProductIcon.name ||
              icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kChromeProductIconResourceName;
@@ -674,12 +672,17 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
 }
 
 // static
+//
+// TODO(jdonnelly): Rename this to ActionVectorIconToResourceName, since this
+// logic is not limited to Pedals but also includes tab switch and Journeys.
 std::string RealboxHandler::PedalVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
-  if (icon.name == omnibox::kSwitchIcon.name) {
+  if (icon.name == omnibox::kSwitchIcon.name ||
+      icon.name == omnibox::kSwitchCr2023Icon.name) {
     return kTabIconResourceName;
   }
-  if (icon.name == omnibox::kDinoIcon.name) {
+  if (icon.name == omnibox::kDinoIcon.name ||
+      icon.name == omnibox::kDinoCr2023Icon.name) {
     return kDinoIconResourceName;
   }
   if (icon.name == omnibox::kDriveFormsIcon.name) {
@@ -715,7 +718,8 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
       icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
   }
-  if (icon.name == omnibox::kPedalIcon.name) {
+  if (icon.name == omnibox::kPedalIcon.name ||
+      icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kPedalsIconResourceName;
   }
 #if BUILDFLAG(IS_MAC)

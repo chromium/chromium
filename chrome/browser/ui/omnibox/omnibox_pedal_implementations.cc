@@ -1328,7 +1328,9 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kDinoIcon;
+    return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
+               ? omnibox::kDinoCr2023Icon
+               : omnibox::kDinoIcon;
   }
 #endif
 
@@ -1947,19 +1949,23 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
 
 const gfx::VectorIcon& GetSharingHubVectorIcon() {
 #if BUILDFLAG(IS_MAC)
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
+                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
              ? omnibox::kShareMacChromeRefreshIcon
              : omnibox::kShareMacIcon;
 #elif BUILDFLAG(IS_WIN)
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
+                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
              ? omnibox::kShareWinChromeRefreshIcon
              : omnibox::kShareWinIcon;
 #elif BUILDFLAG(IS_LINUX)
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
+                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
              ? omnibox::kShareLinuxChromeRefreshIcon
              : omnibox::kShareIcon;
 #else
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
+                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
              ? omnibox::kShareChromeRefreshIcon
              : omnibox::kShareIcon;
 #endif
