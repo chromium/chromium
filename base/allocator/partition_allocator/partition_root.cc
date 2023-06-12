@@ -29,7 +29,7 @@
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if BUILDFLAG(IS_MAC)
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
 #endif
 
@@ -942,6 +942,13 @@ void PartitionRoot::Init(PartitionOptions opts) {
       if (!ref_count_size) {
         ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       }
+#if BUILDFLAG(IS_MAC)
+      // On macOS 13, fake PartitionRefCount to be a multiple of 8B to work
+      // around crbug.com/1378822.
+      if (internal::base::mac::IsOS13()) {
+        ref_count_size = internal::base::bits::AlignUp(ref_count_size, 8);
+      }
+#endif  // BUILDFLAG(IS_MAC)
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       if (IsMemoryTaggingEnabled()) {
         ref_count_size = internal::base::bits::AlignUp(
