@@ -272,7 +272,7 @@
   {
     "name": "arc-game-mode",
     "owners": [ "matvore", "niwa" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 118
   },
   {
     "name": "arc-idle-manager",
