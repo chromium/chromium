@@ -6704,3 +6704,13 @@ crbug.com/1072022 [ Mac13-arm64 ] http/tests/security/frameNavigation/xss-ALLOWE
 # Sherrif 2023-06-12
 crbug.com/1452003 [ Mac12-arm64 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]
 crbug.com/1452003 [ Mac13-arm64 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]
+crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/bufferSubData.html [ Failure Pass ]
+crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/bufferSubData.html [ Failure Pass ]
+crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/compressedTexImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/compressedTexImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/compressedTexSubImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/compressedTexSubImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/texImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/texImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/texSubImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/texSubImage2D.html [ Failure Pass ]
