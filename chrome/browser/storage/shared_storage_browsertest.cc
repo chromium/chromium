@@ -1218,8 +1218,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                                       2);
 }
 
+// TODO(crbug.com/1453981): fix and re-enable on Android.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       WorkletKeysEntries_PartiallyIterated) {
+#if BUILDFLAG(IS_ANDROID)
+                       DISABLED_WorkletKeysEntries_PartiallyIterated
+#else
+                       WorkletKeysEntries_PartiallyIterated
+#endif  // BUILDFLAG(IS_ANDROID)
+) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
