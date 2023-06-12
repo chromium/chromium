@@ -6714,3 +6714,5 @@ crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/texImage2D.html [ Failure P
 crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/texImage2D.html [ Failure Pass ]
 crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/texSubImage2D.html [ Failure Pass ]
 crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/texSubImage2D.html [ Failure Pass ]
+crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/uniformMatrixNfv.html [ Failure Pass ]
+crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/uniformMatrixNfv.html [ Failure Pass ]
