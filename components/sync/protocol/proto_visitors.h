@@ -761,7 +761,7 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriLocalData& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::PublicKey& proto) {
   VISIT(version);
-  VISIT(x25519_public_key);
+  VISIT_BYTES(x25519_public_key);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PrivateKey& proto) {
