@@ -33332,6 +33332,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_TwoScreens_SwipeDismiss">
+  <owner>scottyoder@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user swipes to dismiss the signin or sync screen during
+    the &quot;TwoScreensSignin&quot; UI flow. Recorded for iOS only.
+  </description>
+</action>
+
 <action name="Signin_Undo_Signin">
   <owner>gogerald@chromium.org</owner>
   <description>

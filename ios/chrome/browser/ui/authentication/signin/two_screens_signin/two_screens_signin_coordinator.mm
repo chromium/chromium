@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -25,6 +26,13 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
+
+@interface TwoScreensSigninCoordinator () <
+    UIAdaptivePresentationControllerDelegate>
+@end
 
 @implementation TwoScreensSigninCoordinator {
   // The accessPoint and promoAction used for signin merics.
@@ -67,6 +75,7 @@
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.presentationController.delegate = self;
 
   [self presentScreen:[_screenProvider nextScreenType]];
 
@@ -165,6 +174,7 @@
     [_childCoordinator stop];
     _childCoordinator = nil;
   }
+  _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   _screenProvider = nil;
   SigninCompletionInfo* completionInfo =
@@ -240,6 +250,16 @@
                    finishCompletion();
                  }
                }];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  RecordAction(UserMetricsAction("Signin_TwoScreens_SwipeDismiss"));
+  [self interruptWithAction:
+            SigninCoordinatorInterruptActionDismissWithoutAnimation
+                 completion:nil];
 }
 
 #pragma mark - NSObject

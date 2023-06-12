@@ -81,7 +81,6 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   [super start];
   _viewController = [[TangibleSyncViewController alloc] init];
   _viewController.delegate = self;
-  _viewController.modalInPresentation = YES;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
@@ -104,6 +103,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   if (_firstRun) {
+    _viewController.modalInPresentation = YES;
     base::UmaHistogramEnumeration("FirstRun.Stage",
                                   first_run::kTangibleSyncScreenStart);
   }

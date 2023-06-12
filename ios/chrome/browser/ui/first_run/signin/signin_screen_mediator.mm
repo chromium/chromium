@@ -30,7 +30,6 @@
 @interface SigninScreenMediator () {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
-  BOOL _firstRun;
 }
 
 // Account manager service to retrieve Chrome identities.
@@ -88,7 +87,7 @@
     _hadIdentitiesAtStartup = self.accountManagerService->HasIdentities();
     _firstRun =
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-    if (_firstRun) {
+    if (self.firstRun) {
       _logger = [[FirstRunSigninLogger alloc]
             initWithAccessPoint:accessPoint
                     promoAction:promoAction
@@ -198,7 +197,7 @@
   if (self.UMALinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
   }
-  if (_firstRun) {
+  if (self.firstRun) {
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
@@ -246,7 +245,7 @@
       break;
   }
   self.consumer.isManaged = IsApplicationManagedByPlatform();
-  if (!_firstRun) {
+  if (!self.firstRun) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
   } else {
     BOOL metricReportingDisabled =

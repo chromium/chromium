@@ -449,6 +449,44 @@ void TapMoreButtonIfVisible() {
                  @"SetUpList item SignIn not completed.");
 }
 
+// Tests that the signin and sync screens can be dismissed by a swipe.
+- (void)testSetUpListSigninSwipeToDismiss {
+  [self prepareToTestSetUpList];
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Tap the signin item.
+  TapView(set_up_list::kSignInItemID);
+  // Verify the signin screen appears.
+  id<GREYMatcher> signinView = grey_accessibilityID(
+      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:signinView]
+      assertWithMatcher:grey_notNil()];
+  // Swipe to dismiss the signin screen.
+  [[EarlGrey selectElementWithMatcher:signinView]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Verify that the signin screen is gone.
+  [[EarlGrey selectElementWithMatcher:signinView] assertWithMatcher:grey_nil()];
+
+  [self prepareToTestSetUpList];
+  // Tap the signin item.
+  TapView(set_up_list::kSignInItemID);
+  // Verify the signin screen appears.
+  [[EarlGrey selectElementWithMatcher:signinView]
+      assertWithMatcher:grey_notNil()];
+  // Tap "Continue as ...".
+  TapPromoStylePrimaryActionButton();
+  // Verify the tangible sync screen appears.
+  id<GREYMatcher> syncView =
+      grey_accessibilityID(kTangibleSyncViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:syncView]
+      assertWithMatcher:grey_notNil()];
+  // Swipe to dismiss the sync screen.
+  [[EarlGrey selectElementWithMatcher:syncView]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Verify that the sync screen is gone.
+  [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
+}
+
 #pragma mark - Test utils
 
 // Sets up the test case to test SetUpList.

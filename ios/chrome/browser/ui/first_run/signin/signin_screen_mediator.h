@@ -42,6 +42,8 @@ class SyncService;
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
+// YES if this is part of a first run signin.
+@property(nonatomic, readonly) BOOL firstRun;
 
 // The designated initializer.
 // `accountManagerService` account manager service.
