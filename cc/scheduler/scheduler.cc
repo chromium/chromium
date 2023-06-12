@@ -211,7 +211,6 @@ void Scheduler::NotifyReadyToCommit(
     state_machine_.NotifyReadyToCommit();
     next_commit_origin_frame_args_ = last_dispatched_begin_main_frame_args_;
   }
-  trace_actions_ = true;
   ProcessScheduledActions();
 }
 
@@ -869,10 +868,6 @@ void Scheduler::ProcessScheduledActions() {
   SchedulerStateMachine::Action action;
   do {
     action = state_machine_.NextAction();
-
-    if (trace_actions_ && action != SchedulerStateMachine::Action::NONE &&
-        commit_debug_action_sequence_.size() < 40)
-      commit_debug_action_sequence_.push_back(action);
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"),
                 "SchedulerStateMachine", [this](perfetto::EventContext ctx) {
                   this->AsProtozeroInto(ctx,
@@ -906,8 +901,6 @@ void Scheduler::ProcessScheduledActions() {
         state_machine_.WillCommit(/*commit_had_no_updates=*/false);
         compositor_timing_history_->WillCommit();
         compositor_frame_reporting_controller_->WillCommit();
-        commit_debug_action_sequence_.clear();
-        trace_actions_ = false;
         client_->ScheduledActionCommit();
         compositor_timing_history_->DidCommit();
         compositor_frame_reporting_controller_->DidCommit();
@@ -1056,49 +1049,6 @@ void Scheduler::UpdatePowerModeVote() {
   } else {
     power_mode_voter_->VoteFor(vote);
   }
-}
-
-std::string Scheduler::GetHungCommitDebugInfo() const {
-  // Convert the stored actions into a debug string.
-  std::string sequence;
-  // We convert each action to a char 'a' plus the enum value. So we only need
-  // the number of actions we're outputting.
-  sequence.reserve(commit_debug_action_sequence_.size());
-  for (auto action : commit_debug_action_sequence_) {
-    sequence.push_back('a' + static_cast<int>(action));
-  }
-  return base::StringPrintf(
-      "a[a%s] bmfs%d hpt%d atnfd%d pw%d aw%d rfa%d", sequence.c_str(),
-      static_cast<int>(state_machine_.begin_main_frame_state()),
-      static_cast<int>(state_machine_.has_pending_tree()),
-      static_cast<int>(state_machine_.active_tree_needs_first_draw()),
-      static_cast<int>(
-          state_machine_.processing_paint_worklets_for_pending_tree()),
-      static_cast<int>(
-          state_machine_.processing_animation_worklets_for_pending_tree()),
-      static_cast<int>(state_machine_.pending_tree_is_ready_for_activation()));
-}
-
-void Scheduler::TraceHungCommitDebugInfo() const {
-  // First output a series of events which have the old actions.
-  for (auto action : commit_debug_action_sequence_) {
-    TRACE_EVENT_INSTANT(
-        "cc", "ProxyImpl::OnHungCommit OldAction",
-        [action](perfetto::EventContext ctx) {
-          ctx.event()
-              ->set_cc_scheduler_state()
-              ->set_state_machine()
-              ->set_major_state()
-              ->set_next_action(
-                  SchedulerStateMachine::ActionToProtozeroEnum(action));
-        });
-  }
-  // Finally dump the complete state of the scheduler.
-  TRACE_EVENT_INSTANT("cc", "ProxyImpl::OnHungCommit CurrentState",
-                      [this](perfetto::EventContext ctx) {
-                        this->AsProtozeroInto(
-                            ctx, ctx.event()->set_cc_scheduler_state());
-                      });
 }
 
 }  // namespace cc

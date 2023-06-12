@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -48,9 +47,6 @@ namespace {
 // Measured in seconds.
 constexpr auto kSmoothnessTakesPriorityExpirationDelay =
     base::Milliseconds(250);
-
-// Make this less than kHungRendererDelay (15 sec).
-constexpr base::TimeDelta kHungCommitTimeout = base::Seconds(14);
 
 }  // namespace
 
@@ -379,9 +375,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
           completion_event, start_time, MainThreadTaskRunner(),
           proxy_main_weak_ptr_),
       std::move(commit_state), unsafe_state, commit_timestamps);
-  hung_commit_timer_.Start(
-      FROM_HERE, kHungCommitTimeout,
-      base::BindOnce(&ProxyImpl::OnHungCommit, base::Unretained(this)));
 
   // Extract metrics data from the layer tree host and send them to the
   // scheduler to pass them to the compositor_timing_history object.
@@ -391,17 +384,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // frame to sync them.
   if (!scroll_and_viewport_changes_synced)
     scheduler_->SetNeedsBeginMainFrame();
-}
-
-void ProxyImpl::OnHungCommit() {
-  UMA_HISTOGRAM_BOOLEAN("Compositing.Renderer.CommitHung", true);
-  static auto* hung_commit_data = base::debug::AllocateCrashKeyString(
-      "hung_commit", base::debug::CrashKeySize::Size1024);
-  std::string debug_info = host_impl_->GetHungCommitDebugInfo() +
-                           scheduler_->GetHungCommitDebugInfo();
-  LOG(ERROR) << "commit hung: " << debug_info;
-  base::debug::SetCrashKeyString(hung_commit_data, debug_info);
-  scheduler_->TraceHungCommitDebugInfo();
 }
 
 void ProxyImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -817,7 +799,6 @@ void ProxyImpl::ScheduledActionCommit() {
   }
 
   data_for_commit_.reset();
-  hung_commit_timer_.Stop();
 }
 
 void ProxyImpl::ScheduledActionPostCommit() {

@@ -1881,12 +1881,6 @@ bool TileManager::ShouldRasterOccludedTiles() const {
           global_state_.memory_limit_policy != ALLOW_ABSOLUTE_MINIMUM);
 }
 
-std::string TileManager::GetHungCommitDebugInfo() const {
-  base::trace_event::TracedValueJSON value;
-  ActivationStateAsValueInto(&value);
-  return value.ToJSON();
-}
-
 TileManager::MemoryUsage::MemoryUsage()
     : memory_bytes_(0), resource_count_(0) {}
 

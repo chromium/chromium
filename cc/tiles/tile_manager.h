@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -324,8 +323,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   }
 
   void set_active_url(const GURL& url) { active_url_ = url; }
-
-  std::string GetHungCommitDebugInfo() const;
 
  protected:
   friend class Tile;

@@ -914,8 +914,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     downsample_metrics_ = value;
   }
 
-  std::string GetHungCommitDebugInfo() const;
-
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,

@@ -166,8 +166,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   base::SingleThreadTaskRunner* MainThreadTaskRunner();
   bool ShouldDeferBeginMainFrame() const;
 
-  void OnHungCommit();
-
   const int layer_tree_host_id_;
 
   std::unique_ptr<Scheduler> scheduler_;
@@ -223,9 +221,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // Either thread can request deferring BeginMainFrame; keep track of both.
   bool main_wants_defer_begin_main_frame_ = false;
   bool impl_wants_defer_begin_main_frame_ = false;
-
-  // Temporary for production debugging of renderer hang (crbug.com/1159366).
-  base::OneShotTimer hung_commit_timer_;
 };
 
 }  // namespace cc
