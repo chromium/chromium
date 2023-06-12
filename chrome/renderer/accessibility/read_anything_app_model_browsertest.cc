@@ -169,13 +169,17 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->ComputeDisplayNodeIdsForDistilledTree();
   }
 
-  void ProcessSelection() { model_->PostProcessSelection(); }
+  bool ProcessSelection() { return model_->PostProcessSelection(); }
 
   bool RequiresPostProcessSelection() {
     return model_->requires_post_process_selection();
   }
   void SetRequiresPostProcessSelection(bool requires_post_process_selection) {
-    model_->set_requires_distillation(requires_post_process_selection);
+    model_->set_requires_post_process_selection(
+        requires_post_process_selection);
+  }
+  void SetSelectionFromAction(bool selection_from_action) {
+    model_->set_selection_from_action(selection_from_action);
   }
 
   ui::AXTreeID tree_id_;
@@ -756,6 +760,22 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelection_SelectionStateCorrect) {
 
   ASSERT_EQ(StartNodeId(), 2);
   ASSERT_EQ(EndNodeId(), 3);
+}
+
+TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
+  // Initial state.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({2, 3});
+  SetSelectionFromAction(true);
+
+  ASSERT_FALSE(ProcessSelection());
 }
 
 TEST_F(ReadAnythingAppModelTest,

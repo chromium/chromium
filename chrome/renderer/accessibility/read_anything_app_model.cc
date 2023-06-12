@@ -41,6 +41,7 @@ void ReadAnythingAppModel::Reset(
   display_node_ids_.clear();
   distillation_in_progress_ = false;
   requires_post_process_selection_ = false;
+  selection_from_action_ = false;
   ResetSelection();
 }
 
@@ -60,6 +61,9 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   bool was_empty = is_empty();
   requires_post_process_selection_ = false;
 
+  // If the new selection came from the side panel, we don't need to draw
+  // anything in the side panel, since whatever was being selected had to have
+  // been drawn already.
   // If the previous selection was inside the distilled content, that means we
   // are currently displaying the distilled content in Read Anything. We may not
   // need to redraw the distilled content if the user's new selection is inside
@@ -68,7 +72,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // redraw either a) the new selected content or b) the original distilled
   // content if the new selection is inside that or if the selection was
   // cleared.
-  bool need_to_draw = !SelectionInsideDisplayNodes();
+  bool need_to_draw = !selection_from_action_ && !SelectionInsideDisplayNodes();
 
   // Save the current selection
   UpdateSelection();
@@ -582,6 +586,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
             event.event_params.event_from == ax::mojom::EventFrom::kAction) {
           requires_post_process_selection_ = true;
+          selection_from_action_ =
+              event.event_params.event_from == ax::mojom::EventFrom::kAction;
         }
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:

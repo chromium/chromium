@@ -516,7 +516,12 @@ void ReadAnythingAppController::PostProcessSelection() {
   if (model_.PostProcessSelection()) {
     Draw();
   }
-  DrawSelection();
+  // Skip drawing the selection in the side panel if the selection originally
+  // came from there.
+  if (!model_.selection_from_action()) {
+    DrawSelection();
+  }
+  model_.set_selection_from_action(false);
 }
 
 void ReadAnythingAppController::Draw() {

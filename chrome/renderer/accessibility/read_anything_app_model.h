@@ -35,6 +35,8 @@ class ReadAnythingAppModel {
   void set_requires_post_process_selection(bool value) {
     requires_post_process_selection_ = value;
   }
+  bool selection_from_action() { return selection_from_action_; }
+  void set_selection_from_action(bool value) { selection_from_action_ = value; }
 
   // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
@@ -215,6 +217,7 @@ class ReadAnythingAppModel {
   int32_t end_offset_ = -1;
   bool requires_distillation_ = false;
   bool requires_post_process_selection_ = false;
+  bool selection_from_action_ = false;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
