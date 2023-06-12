@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.signin.AccountEmailDomainDisplayability;
+import org.chromium.components.signin.Tribool;
 
 /**
  * Stores all the information known about an account.
@@ -33,6 +35,23 @@ public class AccountInfo extends CoreAccountInfo {
         mGivenName = givenName;
         mAccountImage = accountImage;
         mAccountCapabilities = accountCapabilities;
+    }
+
+    /**
+     * @return Whether the account email can be used in display fields.
+     * If `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available
+     * (Tribool.UNKNOWN), uses fallback.
+     */
+    public boolean canHaveEmailAddressDisplayed() {
+        switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
+            case Tribool.FALSE: {
+                return false;
+            }
+            case Tribool.TRUE: {
+                return true;
+            }
+        }
+        return AccountEmailDomainDisplayability.checkIfDisplayableEmailAddress(getEmail());
     }
 
     /**

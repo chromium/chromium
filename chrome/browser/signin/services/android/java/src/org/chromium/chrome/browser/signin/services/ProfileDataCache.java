@@ -32,7 +32,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountEmailDomainDisplayability;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -243,23 +242,6 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     /**
-     * Converts canHaveEmailAddressDisplayed() capability Tribool value to boolean.
-     * If the capability is not available (Tribool.UNKNOWN), uses fallback.
-     */
-    private boolean hasDisplayableEmailAddress(@NonNull AccountInfo accountInfo) {
-        switch (accountInfo.getAccountCapabilities().canHaveEmailAddressDisplayed()) {
-            case Tribool.FALSE: {
-                return false;
-            }
-            case Tribool.TRUE: {
-                return true;
-            }
-        }
-        return AccountEmailDomainDisplayability.checkIfDisplayableEmailAddress(
-                accountInfo.getEmail());
-    }
-
-    /**
      * Implements {@link AccountInfoService.Observer}.
      */
     @Override
@@ -271,7 +253,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
                         || getBadgeConfigForAccount(accountInfo.getEmail()) != null)) {
             updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
                     accountInfo.getFullName(), accountInfo.getGivenName(),
-                    hasDisplayableEmailAddress(accountInfo));
+                    accountInfo.canHaveEmailAddressDisplayed());
         }
     }
 
