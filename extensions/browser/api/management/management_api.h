@@ -139,7 +139,10 @@ class ManagementUninstallFunctionBase : public ExtensionFunction {
                                         const std::u16string& error);
 
  protected:
+  // ExtensionFunction:
   ~ManagementUninstallFunctionBase() override;
+  bool ShouldKeepWorkerAliveIndefinitely() override;
+
   ResponseAction Uninstall(const std::string& extension_id,
                            bool show_confirm_dialog);
 

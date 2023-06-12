@@ -612,6 +612,12 @@ ManagementUninstallFunctionBase::ManagementUninstallFunctionBase() = default;
 
 ManagementUninstallFunctionBase::~ManagementUninstallFunctionBase() = default;
 
+bool ManagementUninstallFunctionBase::ShouldKeepWorkerAliveIndefinitely() {
+  // `management.uninstall()` can display and block on an uninstall dialog while
+  // waiting for user confirmation.
+  return true;
+}
+
 ExtensionFunction::ResponseAction ManagementUninstallFunctionBase::Uninstall(
     const std::string& target_extension_id,
     bool show_confirm_dialog) {

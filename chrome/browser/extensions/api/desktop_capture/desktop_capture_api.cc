@@ -122,6 +122,14 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
                  target_render_frame_host, origin, target_name);
 }
 
+bool DesktopCaptureChooseDesktopMediaFunction::
+    ShouldKeepWorkerAliveIndefinitely() {
+  // `desktopCapture.chooseDesktopMedia()` displays a chooser dialog for the
+  // user to select the media to share with the extension; thus, we keep the
+  // worker alive for an extended period.
+  return true;
+}
+
 std::string DesktopCaptureChooseDesktopMediaFunction::GetExtensionTargetName()
     const {
   return GetCallerDisplayName();

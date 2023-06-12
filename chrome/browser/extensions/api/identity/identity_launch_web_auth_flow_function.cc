@@ -131,6 +131,12 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   return RespondLater();
 }
 
+bool IdentityLaunchWebAuthFlowFunction::ShouldKeepWorkerAliveIndefinitely() {
+  // `identity.launchWebAuthFlow()` can trigger an interactive signin flow for
+  // the user, and should thus keep the extension alive indefinitely.
+  return true;
+}
+
 void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLPrefixForTest(
     const std::string& extension_id) {
   InitFinalRedirectURLPrefix(extension_id);

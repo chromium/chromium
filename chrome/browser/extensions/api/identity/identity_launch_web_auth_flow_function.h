@@ -48,8 +48,10 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   WebAuthFlow* GetWebAuthFlowForTesting();
 
  private:
+  // ExtensionFunction:
   ~IdentityLaunchWebAuthFlowFunction() override;
   ResponseAction Run() override;
+  bool ShouldKeepWorkerAliveIndefinitely() override;
 
   // WebAuthFlow::Delegate implementation.
   void OnAuthFlowFailure(WebAuthFlow::Failure failure) override;
