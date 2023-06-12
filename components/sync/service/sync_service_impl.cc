@@ -259,6 +259,17 @@ void SyncServiceImpl::Initialize() {
     }
   }
 
+  if (!IsLocalSyncEnabled()) {
+    const bool account_info_fully_loaded =
+        auth_manager_->IsActiveAccountInfoFullyLoaded();
+    base::UmaHistogramBoolean("Sync.Startup.AccountInfoFullyLoaded",
+                              account_info_fully_loaded);
+    if (!account_info_fully_loaded) {
+      base::UmaHistogramBoolean("Sync.Startup.SignedInWithoutAccountInfo",
+                                IsSignedIn());
+    }
+  }
+
   // If sync is disabled permanently, clean up old data that may be around (e.g.
   // crash during signout).
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY) ||
@@ -290,9 +301,9 @@ void SyncServiceImpl::Initialize() {
 
   if (base::FeatureList::IsEnabled(
           kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
-      // Selected types may soon start depending on the signin state. This check
-      // should help avoid accidentally clearing stuff.
-      // For localsync, it can be assumed that all info is fully loaded.
+      // The selected types depend on the signin state. Checking that the
+      // account info is fully loaded avoids accidentally clearing stuff.
+      // For local sync, no account info is needed.
       (IsLocalSyncEnabled() ||
        auth_manager_->IsActiveAccountInfoFullyLoaded())) {
     // Call Stop() on controllers for non-preferred types to clear metadata.

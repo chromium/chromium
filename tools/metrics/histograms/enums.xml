@@ -13006,6 +13006,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Is Shared"/>
 </enum>
 
+<enum name="BooleanIsSignedIn">
+  <int value="0" label="Not signed in"/>
+  <int value="1" label="Signed in"/>
+</enum>
+
 <enum name="BooleanIsSystemLevelInstall">
   <int value="0" label="User Level Install"/>
   <int value="1" label="System Level Install"/>
