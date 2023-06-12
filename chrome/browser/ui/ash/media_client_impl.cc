@@ -549,7 +549,7 @@ void MediaClientImpl::OnCapabilityAccessUpdate(
 
 void MediaClientImpl::OnAppCapabilityAccessCacheWillBeDestroyed(
     apps::AppCapabilityAccessCache* cache) {
-  Observe(nullptr);
+  capability_cache_observation_.Reset();
 }
 
 void MediaClientImpl::OnActiveUserSessionChanged(const AccountId& account_id) {
@@ -561,7 +561,8 @@ void MediaClientImpl::OnActiveUserSessionChanged(const AccountId& account_id) {
   if (!capability_cache)
     return;
 
-  Observe(capability_cache);
+  capability_cache_observation_.Reset();
+  capability_cache_observation_.Observe(capability_cache);
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(

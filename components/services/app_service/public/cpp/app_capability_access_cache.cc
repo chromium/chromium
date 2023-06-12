@@ -9,31 +9,8 @@
 
 namespace apps {
 
-AppCapabilityAccessCache::Observer::Observer(AppCapabilityAccessCache* cache) {
-  Observe(cache);
-}
-
-AppCapabilityAccessCache::Observer::Observer() = default;
-
 AppCapabilityAccessCache::Observer::~Observer() {
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-}
-
-void AppCapabilityAccessCache::Observer::Observe(
-    AppCapabilityAccessCache* cache) {
-  if (cache == cache_) {
-    // Early exit to avoid infinite loops if we're in the middle of a callback.
-    return;
-  }
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-  cache_ = cache;
-  if (cache_) {
-    cache_->AddObserver(this);
-  }
+  CHECK(!IsInObserverList());
 }
 
 AppCapabilityAccessCache::AppCapabilityAccessCache()

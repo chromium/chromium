@@ -44,29 +44,12 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
     // Called when the AppCapabilityAccessCache object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,
     // should call "cache->RemoveObserver(this)", whether directly or indirectly
-    // (e.g. via base::ScopedObservation::Remove or via Observe(nullptr)).
+    // (e.g. via base::ScopedObservation::Reset).
     virtual void OnAppCapabilityAccessCacheWillBeDestroyed(
         AppCapabilityAccessCache* cache) = 0;
 
    protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // AppCapabilityAccessCache for its entire lifetime, or until the observee
-    // (the AppCapabilityAccessCache) is destroyed, whichever comes first.
-    explicit Observer(AppCapabilityAccessCache* cache);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // AppCapabilityAccessCache for part of its lifetime. It can then call
-    // Observe() to start and stop observing.
-    Observer();
-
     ~Observer() override;
-
-    // Start observing a different AppCapabilityAccessCache. |cache| may be
-    // nullptr, meaning to stop observing.
-    void Observe(AppCapabilityAccessCache* cache);
-
-   private:
-    raw_ptr<AppCapabilityAccessCache> cache_ = nullptr;
   };
 
   AppCapabilityAccessCache();

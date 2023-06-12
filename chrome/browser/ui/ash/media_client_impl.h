@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -216,6 +217,10 @@ class MediaClientImpl : public ash::MediaClient,
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   ash::PrivacyHubNotification notification_;
+
+  base::ScopedObservation<apps::AppCapabilityAccessCache,
+                          apps::AppCapabilityAccessCache::Observer>
+      capability_cache_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
