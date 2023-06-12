@@ -131,6 +131,7 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
         case kMismatch:
           return kTrustedAndKeyIdMismatch;
       }
+      break;
     case CertificateTrustType::UNSPECIFIED:
     case CertificateTrustType::TRUSTED_LEAF:
       switch (key_id_match) {
@@ -141,6 +142,7 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
         case kMismatch:
           return kKeyIdMismatch;
       }
+      break;
     case CertificateTrustType::DISTRUSTED:
       switch (key_id_match) {
         case kMatch:
@@ -150,6 +152,7 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
         case kMismatch:
           return kDistrustedAndKeyIdMismatch;
       }
+      break;
   }
 }
 
