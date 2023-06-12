@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "net/cert/pki/string_util.h"
 #include "net/der/input.h"
 

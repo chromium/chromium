@@ -4,6 +4,7 @@ include_rules = [
   # TODO(crbug.com/1322914): Remove exceptions.
   "-base",
   "+base/base_paths.h",
+  "+base/check.h",
   "+base/files/file_util.h",
   "+base/numerics/clamped_math.h",
   "+base/path_service.h",
