@@ -26,6 +26,7 @@ luci.bucket(
 
 defaults.bucket.set("goma")
 defaults.build_numbers.set(True)
+defaults.cores.set(8)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(3 * time.hour)
@@ -96,6 +97,7 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    cores = None,
     os = os.MAC_DEFAULT,
     goma_jobs = goma.jobs.J80,
 )
@@ -256,6 +258,7 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    cores = None,
     os = os.MAC_DEFAULT,
     goma_jobs = goma.jobs.J80,
 )
@@ -413,11 +416,13 @@ goma_builder(
 def goma_mac_builder(
         *,
         name,
+        cores = None,
         os = os.MAC_DEFAULT,
         **kwargs):
     return goma_builder(
         name = name,
         goma_jobs = goma.jobs.J80,
+        cores = cores,
         os = os,
         **kwargs
     )

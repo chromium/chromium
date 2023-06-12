@@ -9,6 +9,7 @@ load("//lib/consoles.star", "consoles")
 ci.defaults.set(
     bucket = "flakiness",
     pool = "luci.chromium.ci",
+    cores = 8,
     os = os.LINUX_DEFAULT,
     free_space = builders.free_space.standard,
     build_numbers = True,

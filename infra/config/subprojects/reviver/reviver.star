@@ -38,6 +38,7 @@ consoles.list_view(
 defaults.set(
     bucket = "reviver",
     pool = ci.DEFAULT_POOL,
+    cores = 8,
     os = os.LINUX_DEFAULT,
     list_view = "reviver",
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",

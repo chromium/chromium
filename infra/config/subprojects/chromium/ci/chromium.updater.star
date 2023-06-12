@@ -56,7 +56,6 @@ ci.builder(
         ),
     ),
     builderless = True,
-    cores = None,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "debug|linux",
@@ -81,7 +80,6 @@ ci.builder(
         ),
     ),
     builderless = True,
-    cores = None,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "release|linux",
