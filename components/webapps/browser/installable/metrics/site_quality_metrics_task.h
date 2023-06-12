@@ -85,11 +85,8 @@ class SiteQualityMetricsTask {
                          ResultCallback on_complete);
 
   void Start();
-
-  void OnQuotaRetrieved(blink::mojom::QuotaStatusCode,
-                        int64_t usage,
-                        int64_t quota,
-                        blink::mojom::UsageBreakdownPtr usage_breakdown);
+  void OnQuotaUsageRetrieved(int64_t usage,
+                             blink::mojom::UsageBreakdownPtr usage_breakdown);
 
   void OnDidCheckHasServiceWorker(content::ServiceWorkerCapability capability);
 

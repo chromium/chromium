@@ -7,7 +7,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/ui/browser.h"
@@ -124,8 +123,6 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
  public:
   MLPromotionBrowsertest() {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    scoped_feature_list_.InitAndEnableFeature(
-        webapps::features::kWebAppsMlUkmCollection);
   }
   ~MLPromotionBrowsertest() override = default;
 
@@ -232,7 +229,6 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Manifest Data Fetching tests.

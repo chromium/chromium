@@ -63,10 +63,6 @@ void MLInstallabilityPromoter::SetTaskRunnerForTesting(
 }
 
 void MLInstallabilityPromoter::StartGatheringMetricsForSiteUrl() {
-  if (!base::FeatureList::IsEnabled(features::kWebAppsMlUkmCollection)) {
-    return;
-  }
-
   CHECK(web_contents());
   const GURL& site_url = web_contents()->GetLastCommittedURL();
 
@@ -241,8 +237,18 @@ void MLInstallabilityPromoter::EmitUKMs() {
   manifest_builder.Record(ukm_recorder->Get());
 
   state_ = MLPipelineState::kUKMCollectionComplete;
+  TriggerMLModel();
+}
+
+void MLInstallabilityPromoter::TriggerMLModel() {
   // TODO(b/283998203): Trigger the ML Model to start generating
   // insights based on the UKMs.
+  CHECK_EQ(state_, MLPipelineState::kUKMCollectionComplete);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kWebAppsEnableMLModelForPromotion)) {
+    return;
+  }
 }
 
 void MLInstallabilityPromoter::DidFinishNavigation(

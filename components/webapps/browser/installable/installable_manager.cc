@@ -233,7 +233,8 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),
       worker_(std::make_unique<ServiceWorkerProperty>()),
-      service_worker_context_(nullptr) {
+      service_worker_context_(nullptr),
+      sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   // This is null in unit tests.
   if (web_contents) {
     content::StoragePartition* storage_partition =
@@ -329,6 +330,11 @@ void InstallableManager::GetPrimaryIcon(
   params.valid_primary_icon = true;
   GetData(params,
           base::BindOnce(OnDidCompleteGetPrimaryIcon, std::move(callback)));
+}
+
+void InstallableManager::SetSequencedTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  sequenced_task_runner_ = task_runner;
 }
 
 InstallableManager::ManifestProperty::ManifestProperty() = default;
@@ -570,7 +576,7 @@ void InstallableManager::WorkOnTask() {
   if ((!check_passed && !params.is_debug_mode) || IsComplete(params)) {
     // Yield the UI thread before processing the next task. If this object is
     // deleted in the meantime, the next task naturally won't run.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&InstallableManager::CleanupAndStartNextTask,
                                   weak_factory_.GetWeakPtr()));
 

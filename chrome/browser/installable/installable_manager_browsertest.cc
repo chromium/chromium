@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -16,9 +18,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -144,8 +146,10 @@ class ResetDataInstallableManager : public InstallableManager {
 
 class CallbackTester {
  public:
-  explicit CallbackTester(base::RepeatingClosure quit_closure)
-      : quit_closure_(quit_closure) {}
+  CallbackTester(base::RepeatingClosure quit_closure,
+                 scoped_refptr<base::SequencedTaskRunner> test_task_runner =
+                     base::SequencedTaskRunner::GetCurrentDefault())
+      : quit_closure_(quit_closure), test_task_runner_(test_task_runner) {}
 
   void OnDidFinishInstallableCheck(const InstallableData& data) {
     errors_ = data.errors;
@@ -162,8 +166,7 @@ class CallbackTester {
     valid_manifest_ = data.valid_manifest;
     worker_check_passed_ = data.worker_check_passed;
     screenshots_ = *data.screenshots;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                             quit_closure_);
+    test_task_runner_->PostTask(FROM_HERE, quit_closure_);
   }
 
   const std::vector<InstallableStatusCode>& errors() const { return errors_; }
@@ -183,7 +186,6 @@ class CallbackTester {
   bool worker_check_passed() const { return worker_check_passed_; }
 
  private:
-  base::RepeatingClosure quit_closure_;
   std::vector<InstallableStatusCode> errors_;
   GURL manifest_url_;
   blink::mojom::ManifestPtr manifest_ = blink::mojom::Manifest::New();
@@ -196,6 +198,8 @@ class CallbackTester {
   bool has_maskable_splash_icon_;
   bool valid_manifest_;
   bool worker_check_passed_;
+  base::RepeatingClosure quit_closure_;
+  scoped_refptr<base::SequencedTaskRunner> test_task_runner_;
 };
 
 class NestedCallbackTester {
@@ -2051,18 +2055,28 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
                        ManifestLinkChangeReportsError) {
   InstallableManager* manager = GetManager(browser());
+  scoped_refptr<base::TestSimpleTaskRunner> test_task_runner =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  manager->SetSequencedTaskRunnerForTesting(test_task_runner);
 
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(run_loop.QuitClosure()));
+      new CallbackTester(run_loop.QuitClosure(), test_task_runner));
 
   NavigateAndRunInstallableManager(browser(), tester.get(), GetManifestParams(),
                                    "/banners/manifest_test_page.html");
+
   // Simulate a manifest URL update by just calling the observer function.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   static_cast<content::WebContentsObserver*>(manager)->DidUpdateWebManifestURL(
       web_contents->GetPrimaryMainFrame(), GURL());
+
+  // This will run all tasks currently pending on the task runner. This includes
+  // any changes that could have been caused by calling DidUpdateWebManifestURL,
+  // which should synchronously modify the data to be passed to the tester
+  // callback.
+  test_task_runner->RunPendingTasks();
   run_loop.Run();
 
   ASSERT_EQ(tester->errors().size(), 1u);

@@ -212,12 +212,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
-  void GetUsageAndQuotaWithBreakdown(
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      UsageAndQuotaWithBreakdownCallback callback);
-
   void GetBucketUsageAndQuota(
       BucketId bucket,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -237,6 +231,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(bool)> callback);
+
+  void GetStorageKeyUsageWithBreakdown(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageWithBreakdownCallback callback);
 
   // DevTools Quota Override methods:
   std::unique_ptr<QuotaOverrideHandle> GetQuotaOverrideHandle();

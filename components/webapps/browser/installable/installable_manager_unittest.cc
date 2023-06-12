@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,6 +57,7 @@ class InstallableManagerUnitTest : public testing::Test {
   }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<InstallableManager> manager_;
 };
 

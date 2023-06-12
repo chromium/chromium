@@ -51,7 +51,7 @@ extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey;
 extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey;
 extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey;
 
-BASE_DECLARE_FEATURE(kWebAppsMlUkmCollection);
+BASE_DECLARE_FEATURE(kWebAppsEnableMLModelForPromotion);
 
 }  // namespace features
 }  // namespace webapps

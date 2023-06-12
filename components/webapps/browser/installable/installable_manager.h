@@ -13,7 +13,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -86,6 +88,9 @@ class InstallableManager
 
   void GetPrimaryIcon(
       base::OnceCallback<void(const SkBitmap* primaryIcon)> callback);
+
+  void SetSequencedTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  protected:
   // For mocking in tests.
@@ -294,6 +299,7 @@ class InstallableManager
   // Owned by the storage partition attached to the content::WebContents which
   // this object is scoped to.
   raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   base::WeakPtrFactory<InstallableManager> weak_factory_{this};
 

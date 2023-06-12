@@ -87,6 +87,7 @@ class MLInstallabilityPromoter
   // contents changes to be properly measured.
   void MaybeCompleteMetricsCollection();
   void EmitUKMs();
+  void TriggerMLModel();
 
   // contents::WebContentsObserver overrides
   void DidFinishNavigation(content::NavigationHandle* handle) override;
