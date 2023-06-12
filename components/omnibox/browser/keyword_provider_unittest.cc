@@ -74,8 +74,6 @@ class KeywordProviderTest : public testing::Test {
   // related internal variables here.
   void SetUpClientAndKeywordProvider();
 
-  void TearDown() override;
-
   template<class ResultType>
   void RunTest(TestData<ResultType>* keyword_cases,
                int num_cases,
@@ -85,8 +83,8 @@ class KeywordProviderTest : public testing::Test {
   static const TemplateURLService::Initializer kTestData[];
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<KeywordProvider> kw_provider_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
+  scoped_refptr<KeywordProvider> kw_provider_;
 };
 
 // static
@@ -131,11 +129,6 @@ void KeywordProviderTest::SetUpClientAndKeywordProvider() {
   client_->set_template_url_service(
       std::make_unique<TemplateURLService>(kTestData, std::size(kTestData)));
   kw_provider_ = new KeywordProvider(client_.get(), nullptr);
-}
-
-void KeywordProviderTest::TearDown() {
-  client_.reset();
-  kw_provider_ = nullptr;
 }
 
 template<class ResultType>
