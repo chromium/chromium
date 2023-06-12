@@ -28,6 +28,12 @@
       border: 5px solid red;
     }
   </style>
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+      document.fonts.ready.then(() => testRunner.notifyDone());
+    }
+  </script>
 </head>
 <body>
   <input type="file">
