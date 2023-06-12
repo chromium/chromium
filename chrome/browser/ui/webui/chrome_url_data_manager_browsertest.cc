@@ -395,9 +395,6 @@ static constexpr const char* const kChromeUrls[] = {
 
     "chrome://account-manager-error",
     "chrome://account-migration-welcome",
-    // TODO(crbug.com/1102129): DCHECK failure in
-    // ArcGraphicsTracingHandler::ArcGraphicsTracingHandler.
-    // "chrome://arc-graphics-tracing",
     "chrome://add-supervision/",
     "chrome://app-disabled",
     "chrome://certificate-manager/",

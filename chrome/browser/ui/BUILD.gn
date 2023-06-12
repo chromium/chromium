@@ -2800,7 +2800,6 @@ static_library("ui") {
       "webui/ash/add_supervision/add_supervision_ui.h",
       "webui/ash/add_supervision/confirm_signout_dialog.cc",
       "webui/ash/add_supervision/confirm_signout_dialog.h",
-      "webui/ash/arc_graphics_tracing/arc_graphics_tracing.h",
       "webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.cc",
       "webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h",
       "webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.cc",

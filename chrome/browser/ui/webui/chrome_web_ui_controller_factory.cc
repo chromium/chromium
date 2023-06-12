@@ -1134,7 +1134,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIAccountMigrationWelcomeURL),
     GURL(chrome::kChromeUIAddSupervisionURL),
     GURL(chrome::kChromeUIAppDisabledURL),
-    GURL(chrome::kChromeUIArcGraphicsTracingURL),
     GURL(chrome::kChromeUIArcOverviewTracingURL),
     GURL(chrome::kChromeUIArcPowerControlURL),
     GURL(chrome::kChromeUIAssistantOptInURL),

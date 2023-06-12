@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing.h"
 #include "components/exo/surface_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/aura/window_observer.h"
@@ -49,7 +48,7 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   static base::FilePath GetModelPathFromTitle(Profile* profile,
                                               const std::string& title);
 
-  explicit ArcGraphicsTracingHandler(ArcGraphicsTracingMode mode);
+  ArcGraphicsTracingHandler();
 
   ArcGraphicsTracingHandler(const ArcGraphicsTracingHandler&) = delete;
   ArcGraphicsTracingHandler& operator=(const ArcGraphicsTracingHandler&) =
@@ -94,8 +93,6 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnGraphicsModelReady(std::pair<base::Value, std::string> result);
 
   // Handlers for calls from JS.
-  void HandleReady(const base::Value::List& args);
-  void HandleSetStopOnJank(const base::Value::List& args);
   void HandleSetMaxTime(const base::Value::List& args);
   void HandleLoadFromText(const base::Value::List& args);
 
@@ -105,28 +102,18 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // Stops tracking ARC window for janks.
   void DiscardActiveArcWindow();
 
-  // Called in case jank is detected in active ARC window.
-  void OnJankDetected(const base::Time& timestamp);
-
   // Returns max sampling interval to display.
   base::TimeDelta GetMaxInterval() const;
 
   // Indicates that tracing was initiated by this handler.
   bool tracing_active_ = false;
 
-  // Determines if tracing should stop in case jank is detected runtime.
-  // Works only in |ArcGraphicsTracingMode::kFull| mode.
-  bool stop_on_jank_ = true;
-
   // Determines the maximum tracing time.
-  // Works only in |ArcGraphicsTracingMode::kOverview| mode.
   base::TimeDelta max_tracing_time_ = base::Seconds(5);
 
   base::OneShotTimer stop_tracing_timer_;
 
   const raw_ptr<exo::WMHelper, ExperimentalAsh> wm_helper_;
-
-  const ArcGraphicsTracingMode mode_;
 
   raw_ptr<aura::Window, ExperimentalAsh> arc_active_window_ = nullptr;
 
