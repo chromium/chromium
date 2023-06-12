@@ -495,8 +495,8 @@ export namespace BrowsingContext {
   //   ?width: (float .ge 0.0) .default 21.59,
   // }
   const PrintPageParametersSchema = zod.object({
-    height: zod.number().nonnegative().default(27.94).optional(),
-    width: zod.number().nonnegative().default(21.59).optional(),
+    height: zod.number().nonnegative().optional(),
+    width: zod.number().nonnegative().optional(),
   });
 
   // All units are in cm.
@@ -507,10 +507,10 @@ export namespace BrowsingContext {
   //   ?top: (float .ge 0.0) .default 1.0,
   // }
   const PrintMarginParametersSchema = zod.object({
-    bottom: zod.number().nonnegative().default(1.0).optional(),
-    left: zod.number().nonnegative().default(1.0).optional(),
-    right: zod.number().nonnegative().default(1.0).optional(),
-    top: zod.number().nonnegative().default(1.0).optional(),
+    bottom: zod.number().nonnegative().optional(),
+    left: zod.number().nonnegative().optional(),
+    right: zod.number().nonnegative().optional(),
+    top: zod.number().nonnegative().optional(),
   });
 
   /** @see https://w3c.github.io/webdriver/#dfn-parse-a-page-range */
@@ -545,16 +545,13 @@ export namespace BrowsingContext {
   // }
   const PrintParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
-    background: zod.boolean().default(false).optional(),
+    background: zod.boolean().optional(),
     margin: PrintMarginParametersSchema.optional(),
-    orientation: zod
-      .enum(['portrait', 'landscape'])
-      .default('portrait')
-      .optional(),
+    orientation: zod.enum(['portrait', 'landscape']).optional(),
     page: PrintPageParametersSchema.optional(),
-    pageRanges: PrintPageRangesSchema.default([]).optional(),
-    scale: zod.number().min(0.1).max(2.0).default(1.0).optional(),
-    shrinkToFit: zod.boolean().default(true).optional(),
+    pageRanges: PrintPageRangesSchema.optional(),
+    scale: zod.number().min(0.1).max(2.0).optional(),
+    shrinkToFit: zod.boolean().optional(),
   });
 
   export function parsePrintParams(

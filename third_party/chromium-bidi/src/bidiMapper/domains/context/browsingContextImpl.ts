@@ -626,36 +626,45 @@ export class BrowsingContextImpl {
   async print(
     params: BrowsingContext.PrintParameters
   ): Promise<BrowsingContext.PrintResult> {
-    const printToPdfCdpParams: Protocol.Page.PrintToPDFRequest = {
-      printBackground: params.background,
-      landscape: params.orientation === 'landscape',
-      pageRanges: params.pageRanges?.join(',') ?? '',
-      scale: params.scale,
-      preferCSSPageSize: !params.shrinkToFit,
-    };
+    const cdpParams: Protocol.Page.PrintToPDFRequest = {};
 
-    if (params.margin?.bottom) {
-      printToPdfCdpParams.marginBottom = inchesFromCm(params.margin.bottom);
+    if (params.background !== undefined) {
+      cdpParams.printBackground = params.background;
     }
-    if (params.margin?.left) {
-      printToPdfCdpParams.marginLeft = inchesFromCm(params.margin.left);
+    if (params.margin?.bottom !== undefined) {
+      cdpParams.marginBottom = inchesFromCm(params.margin.bottom);
     }
-    if (params.margin?.right) {
-      printToPdfCdpParams.marginRight = inchesFromCm(params.margin.right);
+    if (params.margin?.left !== undefined) {
+      cdpParams.marginLeft = inchesFromCm(params.margin.left);
     }
-    if (params.margin?.top) {
-      printToPdfCdpParams.marginTop = inchesFromCm(params.margin.top);
+    if (params.margin?.right !== undefined) {
+      cdpParams.marginRight = inchesFromCm(params.margin.right);
     }
-    if (params.page?.height) {
-      printToPdfCdpParams.paperHeight = inchesFromCm(params.page.height);
+    if (params.margin?.top !== undefined) {
+      cdpParams.marginTop = inchesFromCm(params.margin.top);
     }
-    if (params.page?.width) {
-      printToPdfCdpParams.paperWidth = inchesFromCm(params.page.width);
+    if (params.orientation !== undefined) {
+      cdpParams.landscape = params.orientation === 'landscape';
+    }
+    if (params.page?.height !== undefined) {
+      cdpParams.paperHeight = inchesFromCm(params.page.height);
+    }
+    if (params.page?.width !== undefined) {
+      cdpParams.paperWidth = inchesFromCm(params.page.width);
+    }
+    if (params.pageRanges !== undefined) {
+      cdpParams.pageRanges = params.pageRanges.join(',');
+    }
+    if (params.scale !== undefined) {
+      cdpParams.scale = params.scale;
+    }
+    if (params.shrinkToFit !== undefined) {
+      cdpParams.preferCSSPageSize = !params.shrinkToFit;
     }
 
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.printToPDF',
-      printToPdfCdpParams
+      cdpParams
     );
 
     return {
