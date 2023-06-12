@@ -522,7 +522,9 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     // A |CodecImage| must have TextureOwner() for SurfaceControl overlays.
     // Legacy overlays are handled by LegacyOverlayImageRepresentation.
-    DCHECK(stream_image()->HasTextureOwner());
+    // Unfortunately it's possible that underlying CodecImage has released its
+    // resources due to MediaCodec shutdown, so we don't DCHECK here.
+
     scoped_hardware_buffer_ = stream_image()->GetAHardwareBuffer();
 
     // |scoped_hardware_buffer_| could be null for cases when a buffer is
