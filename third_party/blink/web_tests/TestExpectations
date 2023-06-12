@@ -6717,3 +6717,4 @@ crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/texSubImage2D.html [ Failur
 crbug.com/1453965 [ Mac12-arm64 ] external/wpt/webgl/uniformMatrixNfv.html [ Failure Pass ]
 crbug.com/1453965 [ Mac13-arm64 ] external/wpt/webgl/uniformMatrixNfv.html [ Failure Pass ]
 crbug.com/1453977 [ Linux ] fast/events/touch/gesture/gesture-tap-paragraph-end.html [ Failure Pass ]
+crbug.com/1453982 [ Mac ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html [ Failure Pass ]
