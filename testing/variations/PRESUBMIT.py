@@ -325,7 +325,7 @@ def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
   ]
 
 
-def CheckUndeclaredFeatures(input_api, json_data, changed_lines, message_type):
+def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
   """Checks that feature names are all valid declared features.
 
   There have been more than one instance of developers accidentally mistyping
@@ -337,9 +337,9 @@ def CheckUndeclaredFeatures(input_api, json_data, changed_lines, message_type):
 
   Args:
     input_api: Presubmit InputApi
+    output_api: Presubmit OutputApi
     json_data: The parsed fieldtrial_testing_config.json
     changed_lines: The AffectedFile.ChangedContents() of the json file
-    message_type: Validation message constructor
 
   Returns:
     List of validation messages - empty if there are no errors.
@@ -384,8 +384,27 @@ def CheckUndeclaredFeatures(input_api, json_data, changed_lines, message_type):
 
       if probably_affected and not declared_features.issuperset(features):
         missing_features = features - declared_features
-        messages.append(message_type("Study %s contains undeclared features %s"
-                                         % (study_name, missing_features)))
+        # CrOS has external feature declarations starting with this prefix
+        # (checked by build tools in base/BUILD.gn).
+        # Warn, but don't break, if they are present in the CL
+        cros_late_boot_features = {s for s in missing_features if
+                                          s.startswith("CrOSLateBoot")}
+        missing_features = missing_features - cros_late_boot_features
+        if cros_late_boot_features:
+          msg = ("CrOSLateBoot features added to "
+                 "study %s are not checked by presubmit."
+                 "\nPlease manually check that they exist in the code base."
+                ) % study_name
+          messages.append(output_api.PresubmitResult(msg,
+                                                     cros_late_boot_features))
+
+        if missing_features:
+          msg =("Study %s contains undeclared features."
+              " Please check the spelling of added features."
+              "\nIf the spelling is correct, please update "
+              "presubmit/find_features.py to include the file where the "
+              "feature(s) are defined.") % study_name
+          messages.append(output_api.PresubmitError(msg, missing_features))
 
   return messages
 
@@ -421,9 +440,8 @@ def CommonChecks(input_api, output_api):
           output_api.PresubmitError)
       if result:
         return result
-      result = CheckUndeclaredFeatures(input_api, json_data,
-                                       f.ChangedContents(),
-                                       output_api.PresubmitError)
+      result = CheckUndeclaredFeatures(input_api, output_api, json_data,
+                                       f.ChangedContents())
       if result:
         return result
     except ValueError:
