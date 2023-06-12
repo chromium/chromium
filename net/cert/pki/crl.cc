@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <iterator>
 
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/crl.h"
