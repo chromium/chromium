@@ -41,7 +41,6 @@ component("android") {
     "resources/resource_manager_impl.h",
     "resources/ui_resource_provider.h",
     "screen_android.h",
-    "toast_manager.cc",
     "ui_android_export.h",
     "ui_android_feature_map.cc",
     "ui_android_features.cc",
@@ -119,7 +118,6 @@ generate_jni("ui_android_jni_headers") {
     "java/src/org/chromium/ui/resources/HandleViewResources.java",
     "java/src/org/chromium/ui/resources/ResourceFactory.java",
     "java/src/org/chromium/ui/resources/ResourceManager.java",
-    "java/src/org/chromium/ui/widget/ToastManager.java",
   ]
 }
 

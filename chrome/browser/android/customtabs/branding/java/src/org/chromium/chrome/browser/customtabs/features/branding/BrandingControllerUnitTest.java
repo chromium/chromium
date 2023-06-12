@@ -41,6 +41,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.widget.ToastManager;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +95,7 @@ public class BrandingControllerUnitTest {
         ShadowPostTask.reset();
         ShadowSystemClock.reset();
         ShadowToast.reset();
+        ToastManager.resetForTesting();
     }
 
     @Test
@@ -319,6 +321,7 @@ public class BrandingControllerUnitTest {
         public BrandingCheckTester assertShownToastBranding(boolean shown) {
             assertEquals("Toast shown count does not match.", shown ? 1 : 0,
                     ShadowToast.shownToastCount());
+            ToastManager.resetForTesting();
             return this;
         }
 

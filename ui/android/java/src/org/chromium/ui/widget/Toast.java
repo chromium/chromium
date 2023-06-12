@@ -84,19 +84,11 @@ public class Toast {
     }
 
     public void show() {
-        if (ToastManager.isEnabled()) {
-            ToastManager.getInstance().requestShow(this);
-        } else {
-            mToast.show();
-        }
+        ToastManager.getInstance().requestShow(this);
     }
 
     public void cancel() {
-        if (ToastManager.isEnabled()) {
-            ToastManager.getInstance().cancel(this);
-        } else {
-            mToast.cancel();
-        }
+        ToastManager.getInstance().cancel(this);
     }
 
     public void setView(View view) {

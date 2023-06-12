@@ -12,8 +12,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.library_loader.LibraryLoader;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -33,7 +31,6 @@ public class ToastManager {
     private static final int DURATION_SHORT_MS = 2000;
     private static final int DURATION_LONG_MS = 3500;
 
-    private static Boolean sIsEnabled;
     private static ToastManager sInstance;
 
     // A queue for toasts waiting to be shown.
@@ -51,18 +48,7 @@ public class ToastManager {
     // Toast currently showing. {@code null} if none is showing.
     private Toast mToast;
 
-    static boolean isEnabled() {
-        if (Boolean.FALSE.equals(sIsEnabled) || !LibraryLoader.getInstance().isLoaded()) {
-            return false;
-        }
-        if (sIsEnabled == null) {
-            sIsEnabled = ToastManagerJni.get().isEnabled();
-        }
-        return sIsEnabled;
-    }
-
     static ToastManager getInstance() {
-        assert sIsEnabled : "ToastManager should be enabled first.";
         if (sInstance == null) sInstance = new ToastManager();
         return sInstance;
     }
@@ -195,25 +181,20 @@ public class ToastManager {
         }
     }
 
+    /**
+     * Resets ToastManager state to initial state. Cancels the current toast if present,
+     * and clears the queue. This prevernts a test running a toast from interfering another one.
+     */
     public static void resetForTesting() {
-        if (isEnabled()) getInstance().resetInternalForTesting(); // IN-TEST
+        getInstance().resetInternalForTesting(); // IN-TEST
     }
 
     private void resetInternalForTesting() {
         mToastQueue.clear();
-        mToast = null;
+        if (mToast != null) cancel(mToast);
     }
 
     boolean isShowingForTesting() {
         return mToast != null;
-    }
-
-    public static void setEnabledForTesting(Boolean enabled) {
-        sIsEnabled = enabled;
-    }
-
-    @NativeMethods
-    public interface Natives {
-        boolean isEnabled();
     }
 }

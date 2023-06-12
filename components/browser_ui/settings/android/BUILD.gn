@@ -45,6 +45,7 @@ android_library("java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.settings"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -151,6 +152,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   resources_package = "org.chromium.components.browser_ui.settings.test"

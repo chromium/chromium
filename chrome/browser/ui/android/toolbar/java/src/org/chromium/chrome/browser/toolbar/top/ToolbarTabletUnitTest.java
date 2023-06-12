@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +32,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
@@ -46,7 +46,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.widget.ToastManager;
-import org.chromium.ui.widget.ToastManagerJni;
 
 import java.util.ArrayList;
 
@@ -58,10 +57,6 @@ import java.util.ArrayList;
 public final class ToolbarTabletUnitTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private ToastManager.Natives mToastManagerJni;
     @Mock
     private LocationBarCoordinator mLocationBar;
     @Mock
@@ -99,7 +94,11 @@ public final class ToolbarTabletUnitTest {
         mBackButton = mToolbarTablet.findViewById(R.id.back_button);
         mForwardButton = mToolbarTablet.findViewById(R.id.forward_button);
         mReloadingButton = mToolbarTablet.findViewById(R.id.refresh_button);
-        mJniMocker.mock(ToastManagerJni.TEST_HOOKS, mToastManagerJni);
+    }
+
+    @After
+    public void tearDown() {
+        ToastManager.resetForTesting();
     }
 
     @Test
@@ -356,5 +355,6 @@ public final class ToolbarTabletUnitTest {
         assertTrue("Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(stringId), R.id.toast_text));
+        ToastManager.resetForTesting();
     }
 }

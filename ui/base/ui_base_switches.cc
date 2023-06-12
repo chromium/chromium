@@ -14,9 +14,6 @@ const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
 
 // Disable the pull-to-refresh effect when vertically overscrolling content.
 const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
-
-// Use Toat manager for managing/queuing Android toast UIs.
-const char kUseToastManager[] = "use-toast-manager";
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -56,7 +56,6 @@ public class ClipboardTest {
 
     @Before
     public void setup() {
-        ToastManager.setEnabledForTesting(false);
         ShadowPostTask.setTestImpl(new TestImpl() {
             @Override
             public void postDelayedTask(int taskTraits, Runnable task, long delay) {
@@ -69,7 +68,7 @@ public class ClipboardTest {
 
     @After
     public void tearDown() {
-        ToastManager.setEnabledForTesting(null);
+        ToastManager.resetForTesting();
         ShadowToast.reset();
         ClipboardImpl.setSkipImageMimeTypeCheckForTesting(null);
         Clipboard.resetForTesting();
