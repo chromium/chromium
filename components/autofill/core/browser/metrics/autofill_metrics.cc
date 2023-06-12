@@ -2614,6 +2614,9 @@ void AutofillMetrics::FormInteractionsUkmLogger::
                   OptionalBooleanToBool(user_typed_into_field));
   SetStatusVector(AutofillStatus::kWasFocused,
                   OptionalBooleanToBool(was_focused));
+  SetStatusVector(AutofillStatus::kIsInSubFrame,
+                  form.ToFormData().host_frame != field.host_frame);
+
   if (was_focused == OptionalBoolean::kTrue) {
     SetStatusVector(AutofillStatus::kSuggestionWasAvailable,
                     OptionalBooleanToBool(suggestion_was_available));

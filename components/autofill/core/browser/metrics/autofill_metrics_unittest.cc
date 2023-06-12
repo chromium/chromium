@@ -8431,9 +8431,27 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
 
   // Create a profile.
   RecreateProfile(/*is_server=*/false);
-  FormData form = CreateForm({CreateField("State", "state", "", "text"),
-                              CreateField("Street", "", "", "text"),
-                              CreateField("Number", "", "", "text")});
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+
+  FormFieldData field;
+  field.label = u"State";
+  field.name = u"state";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Street";
+  field.name = u"";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Number";
+  field.name = u"";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
 
   std::vector<ServerFieldType> field_types = {ADDRESS_HOME_STATE,
                                               NO_SERVER_DATA, NO_SERVER_DATA};
@@ -8502,9 +8520,27 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 
   // Create a profile.
   RecreateProfile(/*is_server=*/false);
-  FormData form = CreateForm({CreateField("State", "state", "", "text"),
-                              CreateField("Street", "street", "", "text"),
-                              CreateField("Number", "", "", "text")});
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+
+  FormFieldData field;
+  field.label = u"State";
+  field.name = u"state";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Street";
+  field.name = u"";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Number";
+  field.name = u"";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
 
   std::vector<ServerFieldType> field_types = {
       ADDRESS_HOME_STATE, ADDRESS_HOME_STREET_ADDRESS, NO_SERVER_DATA};
@@ -8643,16 +8679,53 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  FormData form = CreateForm(
-      {// Heuristic value will match with Autocomplete attribute.
-       CreateField("Last Name", "lastname", "", "text", "family-name"),
-       // Heuristic value will NOT match with Autocomplete attribute.
-       CreateField("First Name", "firstname", "", "text", "additional-name"),
-       // No autocomplete attribute.
-       CreateField("Address", "address", "", "text", "off"),
-       // Heuristic value will be unknown.
-       CreateField("Garbage label", "garbage", "", "text", "postal-code"),
-       CreateField("Email", "email", "", "text", "garbage")});
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+
+  // Heuristic value will match with Autocomplete attribute.
+  FormFieldData field;
+  field.label = u"Last Name";
+  field.name = u"lastname";
+  field.form_control_type = "text";
+  field.autocomplete_attribute = "family-name";
+  field.parsed_autocomplete = ParseAutocompleteAttribute("family-name");
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  // Heuristic value will NOT match with Autocomplete attribute.
+  field.label = u"First Name";
+  field.name = u"firstname";
+  field.form_control_type = "text";
+  field.autocomplete_attribute = "additional-name";
+  field.parsed_autocomplete = ParseAutocompleteAttribute("additional-name");
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  // No autocomplete attribute.
+  field.label = u"Address";
+  field.name = u"address";
+  field.form_control_type = "text";
+  field.autocomplete_attribute = "off";
+  field.parsed_autocomplete = ParseAutocompleteAttribute("off");
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  // Heuristic value will be unknown.
+  field.label = u"Garbage label";
+  field.name = u"garbage";
+  field.form_control_type = "text";
+  field.autocomplete_attribute = "postal-code";
+  field.parsed_autocomplete = ParseAutocompleteAttribute("postal-code");
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Email";
+  field.name = u"email";
+  field.form_control_type = "text";
+  field.autocomplete_attribute = "garbage";
+  field.parsed_autocomplete = ParseAutocompleteAttribute("garbage");
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
@@ -8984,7 +9057,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 }
 
 // Tests that the forms with only <input type="checkbox"> fields are not
-// recorded in UkmFieldInfo metrics. We do this to reduce bandwidth.
+// recorded in FieldInfo metrics. We do this to reduce bandwidth.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsNotRecordOnAllCheckBox) {
   FormData form;
@@ -9074,7 +9147,7 @@ TEST_F(
 }
 
 // Tests that the forms with <input type="checkbox"> fields and two text field
-// which have predicted types are recorded in UkmFieldInfo metrics.
+// which have predicted types are recorded in FieldInfo metrics.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnCheckBoxWithTextField) {
   base::TimeTicks now = AutofillTickClock::NowTicks();
@@ -9261,6 +9334,154 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   test_ukm_recorder_->ExpectEntryMetric(
       entries[2], UkmFieldInfoType::kFormControlTypeName,
       base::to_underlying(FormControlType::kSelectmenu));
+}
+
+// Tests that the field which is in a different frame than its form is recorded
+// as AutofillStatus::kIsInSubFrame.
+TEST_F(AutofillMetricsFromLogEventsTest,
+       AutofillFieldInfoMetricsRecordOnDifferentFrames) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
+  FormData form;
+  form.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  form.url = GURL("http://www.foo.com/");
+
+  // The form has three input text fields, the second field is in a sub frame.
+  FormFieldData field;
+  field.label = u"First Name";
+  field.name = u"firstname";
+  field.form_control_type = "text";
+  field.host_frame = form.host_frame;
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Last Name";
+  field.name = u"lastname";
+  field.form_control_type = "text";
+  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Email";
+  field.name = u"email";
+  field.form_control_type = "text";
+  field.host_frame = form.host_frame;
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  std::vector<ServerFieldType> field_types = {NAME_FIRST, NAME_LAST,
+                                              EMAIL_ADDRESS};
+  autofill_manager().AddSeenForm(form, field_types);
+  SeeForm(form);
+  base::TimeTicks parse_time = autofill_manager()
+                                   .form_structures()
+                                   .begin()
+                                   ->second->form_parsed_timestamp();
+  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  autofill_manager().Reset();
+
+  // Verify FieldInfo UKM event for each field.
+  auto entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+  ASSERT_EQ(3u, entries.size());
+  std::vector<FormControlType> form_control_types = {
+      FormControlType::kText, FormControlType::kText, FormControlType::kText};
+  for (size_t i = 0; i < entries.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << i);
+
+    DenseSet<AutofillStatus> autofill_status_vector;
+    if (i == 1) {
+      autofill_status_vector = {AutofillStatus::kIsFocusable,
+                                AutofillStatus::kIsInSubFrame};
+    } else {
+      autofill_status_vector = {AutofillStatus::kIsFocusable};
+    }
+    using UFIT = UkmFieldInfoType;
+    const auto* const entry = entries[i];
+    std::map<std::string, int64_t> expected = {
+      {UFIT::kFormSessionIdentifierName,
+       AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+      {UFIT::kFieldSessionIdentifierName,
+       AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
+      {UFIT::kFieldSignatureName,
+       Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+      {UFIT::kOverallTypeName, field_types[i]},
+      {UFIT::kSectionIdName, 1},
+      {UFIT::kTypeChangedByRationalizationName, false},
+      {UFIT::kFormControlTypeName, base::to_underlying(form_control_types[i])},
+      {UFIT::kAutocompleteStateName,
+       base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+      {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+      {UFIT::kHeuristicTypeName, field_types[i]},
+      {UFIT::kHeuristicTypeLegacyName, field_types[i]},
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+      {UFIT::kHeuristicTypeDefaultName, field_types[i]},
+      {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
+      {UFIT::kHeuristicTypeNextGenName, field_types[i]},
+#else
+      {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
+      {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
+      {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+#endif
+      {UFIT::kRankInFieldSignatureGroupName, 1},
+    };
+
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+    }
+  }
+
+  // Verify FormSummary UKM event for the form.
+  auto form_entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
+  ASSERT_EQ(1u, form_entries.size());
+  using UFST = UkmFormSummaryType;
+  const auto* const form_entry = form_entries[0];
+  AutofillMetrics::FormEventSet form_events = {FORM_EVENT_DID_PARSE_FORM};
+  std::map<std::string, int64_t> expected = {
+      {UFST::kFormSessionIdentifierName,
+       AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+      {UFST::kFormSignatureName,
+       Collapse(CalculateFormSignature(form)).value()},
+      {UFST::kAutofillFormEventsName, form_events.data()[0]},
+      {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
+      {UFST::kIsInMainframeName, true},
+      {UFST::kSampleRateName, 1},
+      {UFST::kWasSubmittedName, true},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+  };
+  EXPECT_EQ(expected.size(), form_entry->metrics.size());
+  for (const auto& [metric, value] : expected) {
+    test_ukm_recorder_->ExpectEntryMetric(form_entry, metric, value);
+  }
+
+  // Verify LogEvent count UMA events of each type.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.AskForValuesToFillEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 0,
+                                     1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.FillEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.TypingEvent", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.AutocompleteAttributeEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
+                                     0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
+                                     3, 1);
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 15, 1);
+#else
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 6, 1);
+#endif
 }
 
 // TODO(crbug.com/1352826) Delete this after collecting the metrics.

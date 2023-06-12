@@ -649,7 +649,8 @@ class AutofillMetrics {
     kFilledValueWasModified = 9,
     kHadValueBeforeFilling = 10,
     kHadTypedOrFilledValueAtSubmission = 11,
-    kMaxValue = kHadTypedOrFilledValueAtSubmission
+    kIsInSubFrame = 12,
+    kMaxValue = kIsInSubFrame
   };
 
   using FormEventSet =
