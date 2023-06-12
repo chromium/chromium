@@ -14,6 +14,9 @@ enum PrefPath {
   kMetricsReportingEnabled = 1,
   // M89: ash::prefs::kAccessibilitySpokenFeedbackEnabled (profile).
   // Note this writes to a different prefstore than the extension version below.
+  // Note that turning this pref on will install a helper component
+  // extension in Lacros as well as turning on the accessibility feature
+  // in Ash.
   kAccessibilitySpokenFeedbackEnabled = 2,
   // M90: ash::prefs::kDeviceSystemWideTracingEnabled (local state).
   [MinVersion=1] kDeviceSystemWideTracingEnabled = 3,
@@ -52,6 +55,9 @@ enum PrefPath {
   [MinVersion=3]
   kAccessibilityScreenMagnifierEnabled = 15,
   // M98: prefs::kAccessibilitySelectToSpeakEnabled (extension).
+  // Note that turning this pref on will install a helper component
+  // extension in Lacros as well as turning on the accessibility feature
+  // in Ash.
   [MinVersion=3]
   kAccessibilitySelectToSpeakEnabled = 16,
   // M98: prefs::kAccessibilitySpokenFeedbackEnabled (extension).
@@ -62,6 +68,9 @@ enum PrefPath {
   [MinVersion=3]
   kAccessibilityStickyKeysEnabled = 18,
   // M98: prefs::kAccessibilitySwitchAccessEnabled (extension).
+  // Note that turning this pref on will install a helper component
+  // extension in Lacros as well as turning on the accessibility feature
+  // in Ash.
   [MinVersion=3]
   kAccessibilitySwitchAccessEnabled = 19,
   // M98: prefs::kAccessibilityVirtualKeyboardEnabled (extension).
