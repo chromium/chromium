@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors
+/// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -508,6 +508,9 @@ class ValidPolicyGraph {
     // parent. However, we must limit to those which are reachable from the
     // end-entity certificate because we defer some pruning steps.
     for (auto& [policy, node] : levels_.back()) {
+      // GCC before 8.1 tracks individual unused bindings and does not support
+      // marking them [[maybe_unused]].
+      (void)policy;
       node.reachable = true;
     }
     std::set<der::Input> policy_set;
@@ -610,6 +613,9 @@ class ValidPolicyGraph {
     assert(policy != der::Input(kAnyPolicyOid));
     auto [iter, inserted] = levels_.back().insert(
         std::pair{policy, Node{std::move(parent_policies)}});
+    // GCC before 8.1 tracks individual unused bindings and does not support
+    // marking them [[maybe_unused]].
+    (void)inserted;
     assert(inserted);
     return iter;
   }
