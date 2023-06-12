@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
+#include <cstddef>
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -59,5 +60,9 @@ KAnonymityServiceFactory::~KAnonymityServiceFactory() = default;
 // BrowserContextKeyedServiceFactory:
 KeyedService* KAnonymityServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile || profile->IsChild()) {
+    return nullptr;
+  }
   return new KAnonymityServiceClient(Profile::FromBrowserContext(context));
 }
