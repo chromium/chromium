@@ -41,7 +41,7 @@ namespace {
 constexpr int kFullCaptureBarWidth = 376;
 
 // Width of the game capture bar.
-constexpr int kGameCaptureBarWidth = 260;
+constexpr int kGameCaptureBarWidth = 250;
 
 // Returns the current configs before been overwritten by the client-initiated
 // capture mode session
@@ -283,6 +283,10 @@ class GameDashboardBehavior : public CaptureModeBehavior,
     return pre_selected_window_->GetBoundsInScreen();
   }
 
+  int GetCaptureBarBottomPadding() const override {
+    return capture_mode::kGameCaptureBarBottomPadding;
+  }
+
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
 
  private:
@@ -436,7 +440,7 @@ CaptureModeBehavior::CreateCaptureModeBarView() {
 
 gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
   auto bounds = GetBarAnchorBoundsInScreen(root);
-  const int bar_y = bounds.bottom() - capture_mode::kCaptureBarBottomPadding -
+  const int bar_y = bounds.bottom() - GetCaptureBarBottomPadding() -
                     capture_mode::kCaptureBarHeight;
   bounds.ClampToCenteredSize(
       gfx::Size(GetCaptureBarWidth(), capture_mode::kCaptureBarHeight));
@@ -464,6 +468,10 @@ gfx::Rect CaptureModeBehavior::GetBarAnchorBoundsInScreen(
   }
   bounds.set_height(new_bottom - bounds.y());
   return bounds;
+}
+
+int CaptureModeBehavior::GetCaptureBarBottomPadding() const {
+  return capture_mode::kCaptureBarBottomPadding;
 }
 
 int CaptureModeBehavior::GetCaptureBarWidth() const {

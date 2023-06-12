@@ -130,8 +130,9 @@ class CaptureModeBehavior {
   // window when necessary.
   virtual gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const;
 
-  // Called by `GetCaptureBarBounds` to adjust the width of the bar on the
-  // actual type of the behavior.
+  // Called by `GetCaptureBarBounds` to adjust the bottom padding and the width
+  // of the bar on the actual type of the behavior.
+  virtual int GetCaptureBarBottomPadding() const;
   virtual int GetCaptureBarWidth() const;
 
   // Capture mode session configs to be used for the current capture mode

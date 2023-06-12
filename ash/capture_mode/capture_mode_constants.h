@@ -126,6 +126,7 @@ constexpr float kOuterHightlightBorderThickness =
 // bounds of the bar. See `GetBarAnchorBoundsInScreen` for more details of the
 // bar's anchor bounds.
 constexpr int kCaptureBarBottomPadding = 16;
+constexpr int kGameCaptureBarBottomPadding = 24;
 
 // Height of the capture bar.
 constexpr int kCaptureBarHeight = 64;

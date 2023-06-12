@@ -86,7 +86,7 @@ class GameDashboardCaptureModeTest : public AshTestBase {
     const gfx::Rect bar_bounds = bar_widget->GetWindowBoundsInScreen();
     EXPECT_TRUE(window_bounds.Contains(bar_bounds));
     EXPECT_EQ(bar_bounds.CenterPoint().x(), window_bounds.CenterPoint().x());
-    EXPECT_EQ(bar_bounds.bottom() + capture_mode::kCaptureBarBottomPadding,
+    EXPECT_EQ(bar_bounds.bottom() + capture_mode::kGameCaptureBarBottomPadding,
               window_bounds.bottom());
   }
 
