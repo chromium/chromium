@@ -14,10 +14,6 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Requests for the visits to be serialized to JSON. Will invoke
-  // callback when JSON string is ready.
-  GetVisitsJson() => (string visits_json);
-
   // Requests for the context clusters to be serialized to JSON.
   // Will invoke callback when JSON string is ready.
   GetContextClustersJson() => (string context_clusters_json);

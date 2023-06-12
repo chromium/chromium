@@ -43,56 +43,6 @@ HistoryClustersInternalsPageHandlerImpl::
     history_clusters_service_->RemoveObserver(this);
 }
 
-void HistoryClustersInternalsPageHandlerImpl::GetVisitsJson(
-    GetVisitsJsonCallback callback) {
-  if (!history_service_) {
-    std::move(callback).Run("");
-    return;
-  }
-  GetAnnotatedVisits(history_clusters::QueryClustersContinuationParams(),
-                     /*previously_retrieved_visits=*/{}, std::move(callback));
-}
-
-void HistoryClustersInternalsPageHandlerImpl::GetAnnotatedVisits(
-    history_clusters::QueryClustersContinuationParams continuation_params,
-    std::vector<history::AnnotatedVisit> previously_retrieved_visits,
-    GetVisitsJsonCallback callback) {
-  // There are two forms of cancellation here because `ScheduleDBTask` does
-  // not take in a callback.
-  history_service_->ScheduleDBTask(
-      FROM_HERE,
-      std::make_unique<history_clusters::GetAnnotatedVisitsToCluster>(
-          history_clusters::IncompleteVisitMap(), /*begin_time=*/base::Time(),
-          continuation_params,
-          /*recent_first=*/true,
-          /*days_of_clustered_visits=*/0, /*recluster=*/true,
-          base::BindOnce(
-              &HistoryClustersInternalsPageHandlerImpl::OnGotAnnotatedVisits,
-              weak_ptr_factory_.GetWeakPtr(),
-              std::move(previously_retrieved_visits), std::move(callback))),
-      &task_tracker_);
-}
-
-void HistoryClustersInternalsPageHandlerImpl::OnGotAnnotatedVisits(
-    std::vector<history::AnnotatedVisit> previously_retrieved_visits,
-    GetVisitsJsonCallback callback,
-    std::vector<int64_t> old_clusters,
-    std::vector<history::AnnotatedVisit> annotated_visits,
-    history_clusters::QueryClustersContinuationParams continuation_params) {
-  previously_retrieved_visits.insert(previously_retrieved_visits.end(),
-                                     annotated_visits.begin(),
-                                     annotated_visits.end());
-  if (continuation_params.exhausted_all_visits) {
-    std::move(callback).Run(
-        history_clusters::GetDebugJSONForVisits(previously_retrieved_visits));
-    return;
-  }
-
-  GetAnnotatedVisits(continuation_params,
-                     std::move(previously_retrieved_visits),
-                     std::move(callback));
-}
-
 void HistoryClustersInternalsPageHandlerImpl::GetContextClustersJson(
     GetContextClustersJsonCallback callback) {
   if (history_clusters_service_ &&
