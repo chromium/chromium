@@ -48,7 +48,6 @@ using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
 using metrics_util::GaiaPasswordHashChange;
 
 class PasswordStoreConsumer;
-class GetLoginsWithAffiliationsRequestHandler;
 
 // Used to notify that unsynced credentials are about to be deleted.
 class UnsyncedCredentialsDeletionNotifier {
@@ -187,13 +186,6 @@ class PasswordStore : public PasswordStoreInterface {
   // data.
   void UnblocklistInternal(base::OnceClosure completion,
                            std::vector<std::unique_ptr<PasswordForm>> forms);
-
-  // Retrieves logins for `form` as well as for the affiliated realms if
-  // such realms/logins exist. `request_handler` is responsible for combining
-  // the responses from the two requests and passing them on.
-  void GetLoginsForFormAndForAffiliatedRealms(
-      const PasswordFormDigest& form,
-      scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler);
 
   // If |forms_or_error| contains forms, it retrieves and fills in affiliation
   // and branding information for Android credentials in the forms and invokes
