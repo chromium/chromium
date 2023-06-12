@@ -102,96 +102,13 @@
         <div jsselect="supportedFeatures"
             jsvalues="id:internal_name; class: is_default ? 'hidden' : 'experiment'"
             jsdisplay="!is_default">
-          <div class="experiment-default"
-              jsvalues="class: is_default ? 'experiment-default flex-container'
-                  : 'experiment-switched flex-container'">
-            <div class="flex">
-              <h2 class="experiment-name" jscontent="name"
-                  jsvalues="title: is_default ? '' : '$i18n{experiment-enabled}';
-                      id:internal_name + '_name'"></h2>
-              <p>
-                <span jsvalues=".textContent:description"></span> –
-                <span class="platforms" jscontent="supported_platforms.join(', ')"></span>
-              </p>
-              <div jsdisplay="origin_list_value!==null">
-                <textarea class="experiment-origin-list-value"
-                    jsvalues=".internal_name:internal_name; .value:origin_list_value;
-                        aria-labelledby:internal_name + '_name'"
-                    tabindex="7"></textarea>
-              </div>
-              <a class="permalink" jsvalues="href: '#' + internal_name"
-                  jscontent="'#' + internal_name" tabindex="7"></a>
-            </div>
-            <div class="flex experiment-actions">
-              <div jsdisplay="options && options.length > 0">
-                <select class="experiment-select" tabindex="7"
-                    jsvalues=".internal_name:internal_name;.disabled:!enabled;
-                        aria-labelledby:internal_name + '_name'">
-                  <option jsvalues=".selected:selected;"
-                      jsselect="options"
-                      jscontent="description">
-                  </option>
-                </select>
-              </div>
-              <select class="experiment-enable-disable" tabindex="7"
-                  jsdisplay="enabled !== undefined"
-                  jsvalues=".internal_name:internal_name;
-                      aria-labelledby:internal_name + '_name'">
-                <option jsvalues=".selected:!enabled; data-default: enabled ? 1 : 0"
-                    value="disabled">$i18n{disabled}</option>
-                <option jsvalues=".selected:enabled; data-default: !enabled ? 1 : 0"
-                    value="enabled">$i18n{enabled}</option>
-              </select>
-            </div>
-          </div>
+          <flags-experiment jsvalues=".data:$this"></flags-experiment>
         </div>
         <!-- Experiments with default settings. -->
         <div class="experiment" jsselect="supportedFeatures"
             jsvalues="id:internal_name; class: is_default ? 'experiment' : 'hidden'"
             jsdisplay="is_default">
-          <div class="experiment-default"
-              jsvalues="class: is_default ? 'experiment-default flex-container'
-                  : 'experiment-switched flex-container'">
-            <div class="flex">
-              <h2 class="experiment-name" jscontent="name"
-                  jsvalues="title: is_default ? '' : '$i18n{experiment-enabled}';
-                      id:internal_name + '_name'"></h2>
-              <p>
-                <span jsvalues=".textContent:description"></span> –
-                <span class="platforms" jscontent="supported_platforms.join(', ')"></span>
-              </p>
-              <div jsdisplay="origin_list_value!==null">
-                <textarea class="experiment-origin-list-value"
-                    jsvalues=".internal_name:internal_name; .value:origin_list_value;
-                        aria-labelledby:internal_name + '_name'"
-                    tabindex="7"></textarea>
-              </div>
-              <a class="permalink" jsvalues="href: '#' + internal_name"
-                  jscontent="'#' + internal_name" tabindex="7"></a>
-            </div>
-            <div class="flex experiment-actions">
-              <div jsdisplay="options && options.length > 0">
-                <select class="experiment-select" tabindex="7"
-                    jsvalues=".internal_name:internal_name;.disabled:!enabled;
-                        aria-labelledby:internal_name + '_name'">
-                  <option jsvalues=".selected:selected;"
-                      jsselect="options"
-                      jscontent="description">
-                  </option>
-                </select>
-              </div>
-              <!-- Represent enabled / disabled options in a drop down -->
-              <select class="experiment-enable-disable" tabindex="7"
-                  jsdisplay="enabled !== undefined"
-                  jsvalues=".internal_name:internal_name;
-                      aria-labelledby:internal_name + '_name'">
-                <option jsvalues=".selected:!enabled; data-default:!enabled ? 1 : 0"
-                    value="disabled">$i18n{disabled}</option>
-                <option jsvalues=".selected:enabled; data-default: enabled ? 1 : 0"
-                    value="enabled">$i18n{enabled}</option>
-              </select>
-            </div>
-          </div>
+          <flags-experiment jsvalues=".data:$this"></flags-experiment>
         </div>
         <div class="no-match hidden" role="alert">$i18n{no-results}</div>
       </div>
@@ -201,22 +118,7 @@
         <div class="experiment"
             jsselect="unsupportedFeatures"
             jsvalues="id:internal_name">
-          <div class="experiment-default flex-container"
-              jsvalues="class: is_default ? 'experiment-default flex-container'
-                  : 'experiment-switched flex-container'">
-            <div class="flex">
-              <h2 class="experiment-name"
-                  jscontent="name"></h2>
-              <p>
-                <span jsvalues=".textContent:description"></span>
-                <span class="platforms" jscontent="supported_platforms.join(', ')"></span>
-              </p>
-              <a class="permalink"
-                  jsvalues="href: '#' + internal_name"
-                  jscontent="'#' + internal_name" tabindex="9"></a>
-            </div>
-            <div class="flex experiment-actions">$i18n{not-available-platform}</div>
-          </div>
+          <flags-experiment jsvalues=".data:$this" unsupported></flags-experiment>
         </div>
         <div class="no-match hidden" role="alert">
           $i18n{no-results}
