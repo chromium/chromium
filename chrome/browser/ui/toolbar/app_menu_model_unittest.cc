@@ -198,6 +198,17 @@ class TestAppMenuModel : public AppMenuModel {
   mutable int enable_count_;
 };
 
+class TestLogMetricsAppMenuModel : public AppMenuModel {
+ public:
+  TestLogMetricsAppMenuModel(ui::AcceleratorProvider* provider,
+                             Browser* browser)
+      : AppMenuModel(provider, browser), log_metrics_count_(0) {}
+
+  void LogMenuAction(AppMenuAction action_id) override { log_metrics_count_++; }
+
+  int log_metrics_count_;
+};
+
 TEST_F(AppMenuModelTest, Basics) {
   // Simulate that an update is available to ensure that the menu includes the
   // upgrade item for platforms that support it.
@@ -385,6 +396,15 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
   };
 
   check_for_icons(u"<Root Menu>", &model);
+}
+
+TEST_F(TestAppMenuModelCR2023, LogProfileMenuMetrics) {
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  model.ExecuteCommand(IDC_MANAGE_GOOGLE_ACCOUNT, 0);
+  model.ExecuteCommand(IDC_CLOSE_PROFILE, 0);
+  model.ExecuteCommand(IDC_CUSTOMIZE_CHROME, 0);
+  EXPECT_EQ(3, model.log_metrics_count_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

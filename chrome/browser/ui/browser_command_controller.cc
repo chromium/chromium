@@ -26,21 +26,25 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/profile_view_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -72,6 +76,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -1021,7 +1026,31 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
           SidePanelEntryId::kReadingList, SidePanelOpenTrigger::kAppMenu);
       break;
-
+    // Profile submenu commands.
+    case IDC_CUSTOMIZE_CHROME:
+      chrome::ShowSettingsSubPage(browser_, chrome::kManageProfileSubPage);
+      break;
+    case IDC_CLOSE_PROFILE: {
+      if (browser_->profile()->IsIncognitoProfile()) {
+        BrowserList::CloseAllBrowsersWithIncognitoProfile(
+            browser_->profile(), base::DoNothing(), base::DoNothing(), true);
+      } else {
+        profiles::CloseProfileWindows(browser_->profile());
+      }
+      break;
+    }
+    case IDC_MANAGE_GOOGLE_ACCOUNT: {
+      Profile* profile = browser_->profile();
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      DCHECK(
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+      NavigateToGoogleAccountPage(
+          profile,
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email);
+      break;
+    }
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1218,6 +1247,11 @@ void BrowserCommandController::InitCommandState() {
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
        !profile()->IsIncognitoProfile()));
+  command_updater_.UpdateCommandEnabled(IDC_CUSTOMIZE_CHROME, true);
+  command_updater_.UpdateCommandEnabled(IDC_CLOSE_PROFILE, true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_MANAGE_GOOGLE_ACCOUNT,
+      HasUnconstentedProfile(profile()) && !IsSyncPaused(profile()));
 
   if (profile()->IsIncognitoProfile()) {
     command_updater_.UpdateCommandEnabled(IDC_CLEAR_BROWSING_DATA, true);

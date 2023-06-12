@@ -163,6 +163,11 @@
 // Save/Share sub menu
 #define IDC_SAVE_AND_SHARE_MENU         37300
 
+// Profile sub menu
+#define IDC_CUSTOMIZE_CHROME            37350
+#define IDC_CLOSE_PROFILE               35351
+#define IDC_MANAGE_GOOGLE_ACCOUNT       35352
+
 // Zoom
 #define IDC_ZOOM_MENU                   38000
 #define IDC_ZOOM_PLUS                   38001

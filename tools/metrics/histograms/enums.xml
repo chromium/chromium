@@ -115003,6 +115003,9 @@ Called by update_scheduler_enums.py.-->
   <int value="62" label="Open in PWA window"/>
   <int value="63" label="Send to your devices"/>
   <int value="64" label="Create QR Code"/>
+  <int value="65" label="Customize your Chrome"/>
+  <int value="66" label="Close this profile"/>
+  <int value="67" label="Manage your Google account"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

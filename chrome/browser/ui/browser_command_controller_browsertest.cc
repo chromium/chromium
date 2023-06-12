@@ -15,6 +15,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -28,8 +29,11 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -56,6 +60,18 @@ class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
         ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
   }
+};
+
+// Test case for menus that only appear after Chrome Refresh.
+class BrowserCommandControllerBrowserTestRefreshOnly
+    : public BrowserCommandControllerBrowserTest {
+ public:
+  BrowserCommandControllerBrowserTestRefreshOnly() {
+    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that showing a constrained window disables find.
@@ -265,4 +281,30 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteProfileMenuCustomizeChrome) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CUSTOMIZE_CHROME));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(),
+            "chrome://settings/manageProfile");
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteProfileMenuManageGoogleAccount) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountInfo account_info = signin::SetPrimaryAccount(
+      identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+  chrome::UpdateCommandEnabled(browser(), IDC_MANAGE_GOOGLE_ACCOUNT, true);
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_MANAGE_GOOGLE_ACCOUNT));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteProfileMenuCloseProfile) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CLOSE_PROFILE));
+}
+#endif
 }  // namespace chrome
