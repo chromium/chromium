@@ -187,7 +187,6 @@ if (enable_vr) {
         "openxr/openxr_extension_handle.h",
         "openxr/openxr_extension_helper.cc",
         "openxr/openxr_extension_helper.h",
-        "openxr/openxr_graphics_binding.cc",
         "openxr/openxr_graphics_binding.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",

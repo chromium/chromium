@@ -12,7 +12,6 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace gl {
 class GLContext;
@@ -35,15 +34,13 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   const void* GetSessionCreateInfo() const override;
   int64_t GetSwapchainFormat(XrSession session) const override;
   XrResult EnumerateSwapchainImages(
-      const XrSwapchain& color_swapchain) override;
-  void ClearSwapChainInfo() override;
-  base::span<SwapChainInfo> GetSwapChainInfo() override;
+      const XrSwapchain& color_swapchain,
+      std::vector<SwapChainInfo>& color_swapchain_images) const override;
 
  private:
   bool initialized_ = false;
   XrGraphicsBindingOpenGLESAndroidKHR binding_{
       XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR, nullptr};
-  std::vector<SwapChainInfo> color_swapchain_images_;
 
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;

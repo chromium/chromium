@@ -85,9 +85,10 @@ int64_t OpenXrGraphicsBindingD3D11::GetSwapchainFormat(
 }
 
 XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
-    const XrSwapchain& color_swapchain) {
+    const XrSwapchain& color_swapchain,
+    std::vector<SwapChainInfo>& color_swapchain_images) const {
   CHECK(color_swapchain != XR_NULL_HANDLE);
-  CHECK(color_swapchain_images_.empty());
+  CHECK(color_swapchain_images.empty());
 
   uint32_t chain_length;
   RETURN_IF_XR_FAILED(
@@ -100,20 +101,12 @@ XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
       reinterpret_cast<XrSwapchainImageBaseHeader*>(
           xr_color_swapchain_images.data())));
 
-  color_swapchain_images_.reserve(xr_color_swapchain_images.size());
+  color_swapchain_images.reserve(xr_color_swapchain_images.size());
   for (const auto& swapchain_image : xr_color_swapchain_images) {
-    color_swapchain_images_.emplace_back(swapchain_image.texture);
+    color_swapchain_images.emplace_back(swapchain_image.texture);
   }
 
   return XR_SUCCESS;
-}
-
-void OpenXrGraphicsBindingD3D11::ClearSwapChainInfo() {
-  color_swapchain_images_.clear();
-}
-
-base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainInfo() {
-  return color_swapchain_images_;
 }
 
 }  // namespace device

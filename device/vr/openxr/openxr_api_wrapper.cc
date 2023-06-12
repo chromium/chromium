@@ -161,6 +161,29 @@ std::vector<XrEnvironmentBlendMode> OpenXrApiWrapper::GetSupportedBlendModes(
   return environment_blend_modes;
 }
 
+#if BUILDFLAG(IS_WIN)
+SwapChainInfo::SwapChainInfo(ID3D11Texture2D* d3d11_texture)
+    : d3d11_texture(d3d11_texture) {}
+#else
+SwapChainInfo::SwapChainInfo() = default;
+#endif
+
+SwapChainInfo::~SwapChainInfo() {
+  // If shared images are being used, the mailbox holder should have been
+  // cleared before destruction, either due to the context provider being lost
+  // or from normal session ending. If shared images are not being used, these
+  // should not have been initialized in the first place.
+  DCHECK(mailbox_holder.mailbox.IsZero());
+  DCHECK(!mailbox_holder.sync_token.HasData());
+}
+SwapChainInfo::SwapChainInfo(SwapChainInfo&&) = default;
+SwapChainInfo& SwapChainInfo::operator=(SwapChainInfo&&) = default;
+
+void SwapChainInfo::Clear() {
+  mailbox_holder.mailbox.SetZero();
+  mailbox_holder.sync_token.Clear();
+}
+
 OpenXrApiWrapper::OpenXrApiWrapper() = default;
 
 OpenXrApiWrapper::~OpenXrApiWrapper() {
@@ -278,7 +301,7 @@ bool OpenXrApiWrapper::HasSession() const {
 
 bool OpenXrApiWrapper::HasColorSwapChain() const {
   return color_swapchain_ != XR_NULL_HANDLE &&
-         graphics_binding_->GetSwapChainInfo().size() > 0;
+         color_swapchain_images_.size() > 0;
 }
 
 bool OpenXrApiWrapper::HasSpace(XrReferenceSpaceType type) const {
@@ -528,7 +551,7 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
   DCHECK(IsInitialized());
   DCHECK(HasSession());
   DCHECK(!HasColorSwapChain());
-  DCHECK(graphics_binding_->GetSwapChainInfo().empty());
+  DCHECK(color_swapchain_images_.empty());
 
   XrSwapchainCreateInfo swapchain_create_info = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
   swapchain_create_info.arraySize = 1;
@@ -548,8 +571,8 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
 
   color_swapchain_ = color_swapchain;
 
-  RETURN_IF_XR_FAILED(
-      graphics_binding_->EnumerateSwapchainImages(color_swapchain_));
+  RETURN_IF_XR_FAILED(graphics_binding_->EnumerateSwapchainImages(
+      color_swapchain_, color_swapchain_images_));
 
   CreateSharedMailboxes();
 
@@ -667,7 +690,7 @@ void OpenXrApiWrapper::OnContextProviderLost() {
   if (context_provider_) {
     // Mark the shared mailboxes as invalid since the underlying GPU process
     // associated with them has gone down.
-    for (SwapChainInfo& info : graphics_binding_->GetSwapChainInfo()) {
+    for (SwapChainInfo& info : color_swapchain_images_) {
       info.Clear();
     }
     context_provider_ = nullptr;
@@ -678,7 +701,7 @@ void OpenXrApiWrapper::ReleaseColorSwapchainImages() {
   if (context_provider_) {
     gpu::SharedImageInterface* shared_image_interface =
         context_provider_->SharedImageInterface();
-    for (SwapChainInfo& info : graphics_binding_->GetSwapChainInfo()) {
+    for (SwapChainInfo& info : color_swapchain_images_) {
       if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
           info.mailbox_holder.sync_token.HasData()) {
         shared_image_interface->DestroySharedImage(
@@ -688,9 +711,7 @@ void OpenXrApiWrapper::ReleaseColorSwapchainImages() {
     }
   }
 
-  if (graphics_binding_) {
-    graphics_binding_->ClearSwapChainInfo();
-  }
+  color_swapchain_images_.clear();
 }
 
 void OpenXrApiWrapper::CreateSharedMailboxes() {
@@ -704,7 +725,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
       context_provider_->SharedImageInterface();
 
   // Create the MailboxHolders for each texture in the swap chain
-  for (SwapChainInfo& swap_chain_info : graphics_binding_->GetSwapChainInfo()) {
+  for (SwapChainInfo& swap_chain_info : color_swapchain_images_) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     HRESULT hr = swap_chain_info.d3d11_texture->QueryInterface(
         IID_PPV_ARGS(&dxgi_resource));
@@ -769,9 +790,8 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
 }
 
 bool OpenXrApiWrapper::IsUsingSharedImages() const {
-  const auto swapchain_info = graphics_binding_->GetSwapChainInfo();
-  return ((swapchain_info.size() > 1) &&
-          !swapchain_info[0].mailbox_holder.mailbox.IsZero());
+  return ((color_swapchain_images_.size() > 1) &&
+          !color_swapchain_images_[0].mailbox_holder.mailbox.IsZero());
 }
 
 // TODO(https://crbug.com/1441073): Refactor OpenXR Rendering.
@@ -779,11 +799,10 @@ bool OpenXrApiWrapper::IsUsingSharedImages() const {
 void OpenXrApiWrapper::StoreFence(
     Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
     int16_t frame_index) {
-  const size_t swapchain_images_size =
-      graphics_binding_->GetSwapChainInfo().size();
+  const size_t swapchain_images_size = color_swapchain_images_.size();
   if (swapchain_images_size > 0) {
-    graphics_binding_->GetSwapChainInfo()[frame_index % swapchain_images_size]
-        .d3d11_fence = std::move(d3d11_fence);
+    color_swapchain_images_[frame_index % swapchain_images_size].d3d11_fence =
+        std::move(d3d11_fence);
   }
 }
 #endif
@@ -885,8 +904,7 @@ XrResult OpenXrApiWrapper::BeginFrame(SwapChainInfo** swap_chain_info) {
 
   RETURN_IF_XR_FAILED(UpdateViewConfigurations());
 
-  *swap_chain_info =
-      &graphics_binding_->GetSwapChainInfo()[color_swapchain_image_index];
+  *swap_chain_info = &color_swapchain_images_[color_swapchain_image_index];
 
   return XR_SUCCESS;
 }

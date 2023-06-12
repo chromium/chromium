@@ -8,46 +8,11 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <d3d11_4.h>
-#include <wrl.h>
-#endif
 
 namespace device {
 
-// TODO(https://crbug.com/1441072): Refactor this class.
-struct SwapChainInfo {
- public:
-#if BUILDFLAG(IS_WIN)
-  explicit SwapChainInfo(ID3D11Texture2D*);
-#elif BUILDFLAG(IS_ANDROID)
-  explicit SwapChainInfo(uint32_t texture);
-#endif
-  SwapChainInfo();
-  virtual ~SwapChainInfo();
-  SwapChainInfo(SwapChainInfo&&);
-  SwapChainInfo& operator=(SwapChainInfo&&);
-
-  void Clear();
-
-  gpu::MailboxHolder mailbox_holder;
-
-#if BUILDFLAG(IS_WIN)
-  // When shared images are being used, there is a corresponding MailboxHolder
-  // and D3D11Fence for each D3D11 texture in the vector.
-  raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
-  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-#elif BUILDFLAG(IS_ANDROID)
-  // Ideally this would be a gluint, but there are conflicting headers for GL
-  // depending on *how* you want to use it; so we can't use it at the moment.
-  uint32_t texture;
-#endif
-};
+struct SwapChainInfo;
 
 // This class exists to provide an abstraction for the different rendering
 // paths that can be taken by OpenXR (e.g. DirectX vs. GLES). Any OpenXr methods
@@ -70,13 +35,11 @@ class OpenXrGraphicsBinding {
   // Gets the format that we expect from the platform swapchain.
   virtual int64_t GetSwapchainFormat(XrSession session) const = 0;
 
-  // Calls xrEnumerateSwapChain and updates the stored SwapChainInfo available
-  // via `GetSwapChainInfo`.
+  // Calls xrEnumerateSwapChain and stores all relevant data in the passed in
+  // array of `SwapChainInfo`s.
   virtual XrResult EnumerateSwapchainImages(
-      const XrSwapchain& color_swapchain) = 0;
-  virtual void ClearSwapChainInfo() = 0;
-
-  virtual base::span<SwapChainInfo> GetSwapChainInfo() = 0;
+      const XrSwapchain& color_swapchain,
+      std::vector<SwapChainInfo>& color_swapchain_images) const = 0;
 };
 
 }  // namespace device
