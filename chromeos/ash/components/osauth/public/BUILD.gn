@@ -15,6 +15,7 @@ source_set("public") {
   ]
   sources = [
     "auth_attempt_consumer.h",
+    "auth_engine_api.h",
     "auth_factor_engine.h",
     "auth_factor_engine_factory.h",
     "auth_factor_status_consumer.h",
@@ -22,6 +23,7 @@ source_set("public") {
     "auth_parts.h",
     "auth_session_storage.h",
     "common_types.h",
+    "cryptohome_core.h",
     "string_utils.cc",
     "string_utils.h",
   ]

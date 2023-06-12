@@ -33,7 +33,8 @@ namespace ash {
 // user authentication attempt.
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
-    : public AuthFactorEngine::FactorEngineObserver {
+    : public AuthFactorEngine::FactorEngineObserver,
+      public AuthHubConnector {
  public:
   // Interface to interact with owning AuthHub:
   class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) Owner {
@@ -81,6 +82,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
   void OnFactorSpecificRestrictionsChanged(AshAuthFactor factor) override;
   void OnCriticalError(AshAuthFactor factor) override;
   void OnFactorCustomSignal(AshAuthFactor factor) override;
+  // AuthHubConnector:
+  AuthFactorEngine* GetEngine(AshAuthFactor factor) override;
 
  private:
   // See also a comment for `AuthFactorState`.
@@ -117,8 +120,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
   AuthAttemptVector attempt_;
   AuthEnginesMap engines_;
   AuthFactorsSet initial_factors_;
-
-  AuthHubConnector* connector_ = nullptr;
 
   AuthFactorsSet available_factors_;
   base::raw_ptr<AuthFactorStatusConsumer> status_consumer_;

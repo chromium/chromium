@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
 
   virtual ~AuthFactorEngine() = default;
 
-  virtual AshAuthFactor GetFactor() = 0;
+  virtual AshAuthFactor GetFactor() const = 0;
 
   // Factor initialization stage that is not dependent on particular user.
   // E.g. awaiting the required DBus service to start.
@@ -134,6 +134,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   // `StartAttempt`, and release any resources allocated as a result of
   // starting attempt.
   virtual void StopAuthFlow(ShutdownCallback callback) = 0;
+
+  // Client should call this method only when `OnFactorAttemptResult`
+  // returned `true`.
+  // This method should store all data related to authentication
+  // to the `AuthSessionStorage` and return resulting AuthProofToken.
+  virtual AuthProofToken StoreAuthenticationContext() = 0;
 
   // Used by AuthHub to control if authentication attempts can be performed
   // by the engine. Most relevant for factors like fingerprint that can not

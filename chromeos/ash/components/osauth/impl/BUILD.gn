@@ -14,6 +14,7 @@ component("impl") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
@@ -21,6 +22,7 @@ component("impl") {
     "//components/user_manager",
   ]
   sources = [
+    "auth_engine_api_impl.cc",
     "auth_factor_presence_cache.cc",
     "auth_factor_presence_cache.h",
     "auth_hub_attempt_handler.cc",
@@ -36,6 +38,12 @@ component("impl") {
     "auth_parts_impl.h",
     "auth_session_storage_impl.cc",
     "auth_session_storage_impl.h",
+    "cryptohome_core_impl.cc",
+    "cryptohome_core_impl.h",
+    "engines/cryptohome_based_engine.cc",
+    "engines/cryptohome_based_engine.h",
+    "engines/cryptohome_password_engine.cc",
+    "engines/cryptohome_password_engine.h",
   ]
 }
 

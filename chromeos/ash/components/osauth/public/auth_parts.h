@@ -17,6 +17,7 @@ namespace ash {
 class AuthHub;
 class AuthSessionStorage;
 class AuthFactorEngineFactory;
+class CryptohomeCore;
 
 // Central repository for accessing various OS authentication-related
 // objects.
@@ -37,6 +38,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
 
   virtual AuthSessionStorage* GetAuthSessionStorage() = 0;
   virtual AuthHub* GetAuthHub() = 0;
+  virtual CryptohomeCore* GetCryptohomeCore() = 0;
 
   virtual void RegisterEngineFactory(
       std::unique_ptr<AuthFactorEngineFactory> factory) = 0;

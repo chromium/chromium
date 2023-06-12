@@ -27,13 +27,13 @@ AuthHubAttemptHandler::~AuthHubAttemptHandler() = default;
 AuthHubAttemptHandler::Owner::~Owner() = default;
 
 AuthHubConnector* AuthHubAttemptHandler::GetConnector() {
-  return connector_;
+  return this;
 }
 
 void AuthHubAttemptHandler::SetConsumer(
     base::raw_ptr<AuthFactorStatusConsumer> consumer) {
   status_consumer_ = std::move(consumer);
-  status_consumer_->InitializeUi(initial_factors_, connector_);
+  status_consumer_->InitializeUi(initial_factors_, this);
 }
 
 bool AuthHubAttemptHandler::HasOngoingAttempt() const {
@@ -290,6 +290,11 @@ void AuthHubAttemptHandler::CalculateFactorState(AshAuthFactor factor,
   }
   state.internal_state = AuthFactorState::kFactorReady;
   state.intended_usage = AuthFactorEngine::UsageAllowed::kEnabled;
+}
+
+AuthFactorEngine* AuthHubAttemptHandler::GetEngine(AshAuthFactor factor) {
+  CHECK(engines_.contains(factor));
+  return engines_[factor];
 }
 
 }  // namespace ash

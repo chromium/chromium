@@ -262,8 +262,8 @@ void AuthHubImpl::OnFactorAttemptFailed(const AuthAttemptVector& attempt,
 void AuthHubImpl::OnAuthenticationSuccess(const AuthAttemptVector& attempt,
                                           AshAuthFactor factor) {
   CHECK(attempt == *current_attempt_);
-  AuthProofToken token;
-  // TODO (addressed in next CL): fill out data from engine, notify consumer.
+  CHECK(engines_.contains(factor));
+  AuthProofToken token = engines_[factor]->StoreAuthenticationContext();
   attempt_consumer_->OnUserAuthSuccess(factor, token);
 }
 

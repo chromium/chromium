@@ -9,6 +9,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/unguessable_token.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -66,7 +67,13 @@ enum AuthHubMode {
   kLoginScreen,  // Login screen, no profile data available.
   kInSession     // In-session mode (including lock screen), user is fixed,
                  // but purposes might change,
+};
 
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthAttemptVector {
+  AccountId account;
+  AuthPurpose purpose;
+
+  bool operator==(const AuthAttemptVector&) const = default;
 };
 
 }  // namespace ash
