@@ -1,7 +1,7 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE language:fr-FR
 ++ROLE_SYSTEM_LIST READONLY
 ++ROLE_SYSTEM_LIST READONLY language:fr-FR
-++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR language:fr-FR
+++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR
 ++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 ' language:fr-FR
 ++++++ROLE_SYSTEM_STATICTEXT name='Placeholder listitem' language:fr-FR
 ++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR language:en

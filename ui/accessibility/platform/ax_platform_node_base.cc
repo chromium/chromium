@@ -2335,12 +2335,16 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
 ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   ui::TextAttributeList attributes;
 
-  // We include list markers for now, but there might be other objects that are
-  // auto generated.
-  // TODO(nektar): Compute what objects are auto-generated in Blink and
-  // TODO(1278249): add OCRed text from Screen AI Service too.
-  if (GetRole() == ax::mojom::Role::kListMarker)
+  // From the IA2 Spec:
+  //
+  // Occasionally, word processors will automatically generate characters which
+  // appear on a line along with editable text. The characters are not
+  // themselves editable, but are part of the document. The most common examples
+  // of automatically inserted characters are in bulleted and numbered lists.
+  if (IsTextField() &&
+      HasBoolAttribute(ax::mojom::BoolAttribute::kNotUserSelectableStyle)) {
     attributes.emplace_back("auto-generated", "true");
+  }
 
   int color;
   if ((color = delegate_->GetBackgroundColor())) {
