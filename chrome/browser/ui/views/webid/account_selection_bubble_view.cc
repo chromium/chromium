@@ -572,8 +572,6 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const absl::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  constexpr int kLineHeight = 5;
-
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
                                   idp_for_display, rp_context_);
   UpdateHeader(idp_metadata, title, subtitle_,
@@ -584,14 +582,13 @@ void AccountSelectionBubbleView::ShowFailureDialog(
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+      gfx::Insets::VH(0, kLeftRightPadding)));
 
   // Add column for text.
   views::View* const text_column =
       row->AddChildView(std::make_unique<views::View>());
   text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(kTopBottomPadding, 0)));
+      views::BoxLayout::Orientation::kVertical));
 
   // Add body for mismatch dialog.
   views::Label* const body =
@@ -600,10 +597,11 @@ void AccountSelectionBubbleView::ShowFailureDialog(
                                      idp_for_display, top_frame_for_display),
           views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
   body->SetMultiLine(true);
-  body->SetFontList(
-      gfx::FontList().Derive(5, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  body->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(kVerticalSpacing, 0)));
   body->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  body->SetLineHeight(kLineHeight);
+  constexpr int kBodyLineHeight = 22;
+  body->SetLineHeight(kBodyLineHeight);
 
   // Add description for signing in.
   views::Label* const description =
@@ -614,8 +612,13 @@ void AccountSelectionBubbleView::ShowFailureDialog(
           views::style::STYLE_SECONDARY));
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  description->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(10, 0)));
-  description->SetLineHeight(kLineHeight);
+  constexpr int kDescriptionLineHeight = 20;
+  description->SetLineHeight(kDescriptionLineHeight);
+
+  // The space between the description and the continue button.
+  constexpr int kBottomSpacing = 16;
+  description->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBottomSpacing, 0)));
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
