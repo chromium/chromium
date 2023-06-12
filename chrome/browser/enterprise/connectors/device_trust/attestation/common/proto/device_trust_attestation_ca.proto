@@ -72,21 +72,25 @@ message ChallengeResponse {
 
 // The data type of the message decrypted from
 // ChallengeResponse.encrypted_key_info.encrypted_data field. This message holds
-// information required by enterprise server to complete the verification.
+// information required by the Verified Access server API (VA) to complete the
+// verification.
 message KeyInfo {
-  // Indicates whether the key is an EMK or EUK.
-  optional KeyProfile key_type = 1;
-  // Domain information about the device or user associated with the key. For an
-  // EMK, this value is the enrolled domain. For an EUK, this value is the
-  // user's email address.
+  // Determines the verification flow on VA and the content of the VA response.
+  optional VerifiedAccessFlow flow_type = 1;
+  // Domain information about the device or user associated with the VA flow
+  // type. For `flow_type` ENTERPRISE_MACHINE, this value is the enrolled
+  // domain. For `flow_type` ENTERPRISE_USER, this value is the user's email
+  // address.
   optional string domain = 2;
   // The virtual device ID associated with the device or user.
   optional bytes device_id = 3;
-  // If the key is an EUK, this value is the PCA-issued certificate for the key.
+  // If the `flow_type` is ENTERPRISE_MACHINE, this value is the PCA-issued
+  // certificate for the key.
   optional bytes certificate = 4;
-  // If the key is an EUK, this value may hold a SignedPublicKeyAndChallenge
-  // with a random challenge.  The SignedPublicKeyAndChallenge specification is
-  // here: https://developer.mozilla.org/en-US/docs/HTML/Element/keygen.
+  // If the `flow_type` is ENTERPRISE_USER, this value may hold a
+  // SignedPublicKeyAndChallenge with a random challenge.  The
+  // SignedPublicKeyAndChallenge specification is here:
+  // https://developer.mozilla.org/en-US/docs/HTML/Element/keygen.
   optional bytes signed_public_key_and_challenge = 5;
   // The identifier of the customer, as defined by the Google Admin SDK at
   // https://developers.google.com/admin-sdk/directory/v1/guides/manage-customers
@@ -95,15 +99,17 @@ message KeyInfo {
   // browser if key type is CBCM
   optional bytes browser_instance_public_key = 7;
   // A new field which indicated the signing scheme used for the outer
-  // SignedData message. We should populate this for any key type. For EUK/EMK
-  // (Chrome OS use case), this will currently say "SHA256withRSA" at all times,
-  // but we should start supporting ECDSA signing in the near future as per 2020
-  // OKRs. For CBCM, this will be one of the permitted_schemes from
+  // SignedData message. We should populate this for any `flow_type`. For
+  // `flow_type` ENTERPRISE_USER/ENTERPRISE_MACHINE (ChromeOS use case), this
+  // will currently say "SHA256withRSA" at all times, but we should start
+  // supporting ECDSA signing in the near future as per 2020 OKRs. For
+  // `flow_type` CBCM, this will be one of the permitted_schemes from
   // DeviceIdentity policy.
   optional string signing_scheme = 8;
   // Device Trust Signals
-  // Deprecated due to signals collection change to store signals in a dictionary
-  // and converting them to a JSON string. Use `device_trust_signals_json` instead.
+  // Deprecated due to signals collection change to store signals in a
+  // dictionary and converting them to a JSON string. Use
+  // `device_trust_signals_json` instead.
   optional DeviceTrustSignals device_trust_signals = 9 [deprecated = true];
   // Device Trust Signals
   optional string device_trust_signals_json = 10;
@@ -183,11 +189,30 @@ message DeviceTrustSignals {
   optional string windows_domain = 28;
 }
 
-enum KeyProfile {
-  // Enterprise machine key.
-  EMK = 0;
-  // Enterprise user key.
-  EUK = 1;
-  // CBCM key.
+// Possible VA flows supported by the Verified Access server API and chromium.
+// The values will be used to distinguish between different prerequisites,
+// verification methods and contents of VA challenge response.
+enum VerifiedAccessFlow {
+  // The flow of creating a challenge response for enterprise machine
+  // verification. The VA challenge will be signed with the EMK. ChromeOS only.
+  // Uses CertificateProfile: ENTERPRISE_MACHINE_CERTIFICATE
+  // Uses AttestationKeyType: KEY_DEVICE
+  ENTERPRISE_MACHINE = 0;
+  // The flow of creating a challenge response for enterprise user verification.
+  // The VA challenge will be signed with the EUK. ChromeOS only.
+  // Uses CertificateProfile: ENTERPRISE_USER_CERTIFICATE
+  // Uses AttestationKeyType: KEY_USER
+  ENTERPRISE_USER = 1;
+  // The flow of creating a challenge response for verifying a managed Chrome
+  // Browser. It does not use remote attestation and instead relies on a key
+  // exchange to sign the VA challenge. Chrome Browser only.
+  // Uses CertificateProfile: n.a.
+  // Uses AttestationKeyType: n.a.
   CBCM = 2;
+  // The flow of creating a challenge response for verification during the
+  // Device Trust Connector handshake. The VA challenge will be signed with a
+  // device key. ChromeOS only.
+  // Uses CertificateProfile: DEVICE_TRUST_USER_CERTIFICATE
+  // Uses AttestationKeyType: KEY_DEVICE
+  DEVICE_TRUST_CONNECTOR = 3;
 }

@@ -148,7 +148,7 @@ void BrowserAttestationService::OnChallengeValidated(
 
   // Fill `key_info` out for Chrome Browser.
   KeyInfo key_info;
-  key_info.set_key_type(CBCM);
+  key_info.set_flow_type(CBCM);
   // VA should accept signals JSON string.
   std::string signals_json;
   if (!base::JSONWriter::Write(signals, &signals_json)) {
