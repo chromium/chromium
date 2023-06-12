@@ -5,7 +5,7 @@
 Chrome exposes a different set of configurations to administrators. These
 configurations are called policy and they give administrators more advanced
 controls than the normal users. With different device management tools,
-an administrator can deliver these polices to many users. Here is the
+an administrator can deliver these policies to many users. Here is the
 [help center article](https://support.google.com/chrome/a/answer/9037717?hl=en)
 that talks about Chrome policy and its deployment.
 
