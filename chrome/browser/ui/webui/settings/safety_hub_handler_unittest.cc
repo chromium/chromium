@@ -141,8 +141,8 @@ class SafetyHubHandlerTest : public testing::Test {
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
   // Add GEOLOCATION setting for url but do not add to revoked list.
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
   hcsm()->SetContentSettingDefaultScope(
       GURL(kUsedTestSite), GURL(kUsedTestSite),
       ContentSettingsType::GEOLOCATION, ContentSetting::CONTENT_SETTING_ALLOW,

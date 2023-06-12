@@ -198,10 +198,12 @@ void ClientHints::PersistClientHints(
 
   // TODO(tbansal): crbug.com/735518. Disable updates to client hints settings
   // when cookies are disabled for |primary_origin|.
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_expiration(base::Time());
+  constraints.set_session_model(content_settings::SessionModel::Durable);
   settings_map_->SetWebsiteSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value(std::move(client_hints_dictionary)),
-      {base::Time(), content_settings::SessionModel::Durable});
+      base::Value(std::move(client_hints_dictionary)), constraints);
   network::LogClientHintsPersistenceMetrics(persistence_started,
                                             client_hints.size());
 }

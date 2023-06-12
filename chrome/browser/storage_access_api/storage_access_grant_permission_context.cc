@@ -81,13 +81,20 @@ void RecordOutcomeSample(RequestOutcome outcome) {
 
 content_settings::ContentSettingConstraints ComputeConstraints(
     RequestOutcome outcome) {
+  content_settings::ContentSettingConstraints constraints;
   switch (outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
-      return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-              content_settings::SessionModel::NonRestorableUserSession};
+      constraints.set_expiration(
+          content_settings::GetConstraintExpiration(kImplicitGrantDuration));
+      constraints.set_session_model(
+          content_settings::SessionModel::NonRestorableUserSession);
+      return constraints;
     case RequestOutcome::kGrantedByAllowance:
-      return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-              content_settings::SessionModel::UserSession};
+      constraints.set_expiration(
+          content_settings::GetConstraintExpiration(kImplicitGrantDuration));
+      constraints.set_session_model(
+          content_settings::SessionModel::UserSession);
+      return constraints;
     case RequestOutcome::kDismissedByUser:
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByPrerequisites:
@@ -95,8 +102,10 @@ content_settings::ContentSettingConstraints ComputeConstraints(
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
-      return {content_settings::GetConstraintExpiration(kExplicitGrantDuration),
-              content_settings::SessionModel::Durable};
+      constraints.set_expiration(
+          content_settings::GetConstraintExpiration(kExplicitGrantDuration));
+      constraints.set_session_model(content_settings::SessionModel::Durable);
+      return constraints;
   }
 }
 

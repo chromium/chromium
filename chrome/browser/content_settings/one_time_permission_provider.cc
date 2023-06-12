@@ -52,7 +52,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   // This block handles transitions from Allow Once to Ask/Block by clearing
   // the one time grant and letting the pref provider handle the permission as
   // usual.
-  if (constraints.session_model != content_settings::SessionModel::OneTime) {
+  if (constraints.session_model() != content_settings::SessionModel::OneTime) {
     value_map_.DeleteValue(primary_pattern, secondary_pattern,
                            content_settings_type);
 

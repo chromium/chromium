@@ -104,8 +104,8 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   const GURL url2("https://example2.com");
   const ContentSettingsType type1 = ContentSettingsType::GEOLOCATION;
   const ContentSettingsType type2 = ContentSettingsType::MEDIASTREAM_CAMERA;
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   const base::Time now = clock()->Now();
   const base::TimeDelta precision =
@@ -173,8 +173,8 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
   const GURL url2("https://[*.]example2.com");
   const GURL url3("file:///foo/bar.txt");
   const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   // Add one setting for all urls.
   hcsm()->SetContentSettingDefaultScope(
@@ -203,8 +203,8 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackUnusedButDontRevoke) {
       content_settings::features::kSafetyCheckUnusedSitePermissions);
 
   const GURL url("https://example1.com");
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   // Grant GEOLOCATION permission for the url.
   hcsm()->SetContentSettingDefaultScope(
@@ -233,8 +233,8 @@ TEST_F(UnusedSitePermissionsServiceTest, SecondaryPatternAlwaysWildcard) {
   const ContentSettingsType types[] = {
       ContentSettingsType::GEOLOCATION,
       ContentSettingsType::AUTOMATIC_DOWNLOADS};
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   // Test combinations of a single origin |primary_pattern| and different
   // |secondary_pattern|s: equal to primary pattern, different single origin
@@ -274,8 +274,8 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
       content_settings::features::kSafetyCheckUnusedSitePermissions);
 
   const GURL url("https://example1.com");
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   // Grant GEOLOCATION permission for the url.
   hcsm()->SetContentSettingDefaultScope(
@@ -321,8 +321,8 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsListAfter30d) {
       content_settings::features::kSafetyCheckUnusedSitePermissions);
 
   const GURL url("https://example1.com");
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   hcsm()->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
@@ -411,8 +411,8 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPreventsAutorevoke) {
       content_settings::features::kSafetyCheckUnusedSitePermissions);
 
   const GURL url1 = GURL("https://example1.com:443");
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   hcsm()->SetContentSettingDefaultScope(
       url1, url1, ContentSettingsType::GEOLOCATION,
@@ -441,8 +441,8 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
 
   const GURL url1 = GURL("https://example1.com:443");
   const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   hcsm()->SetContentSettingDefaultScope(
       url1, url1, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
@@ -456,8 +456,8 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
       GetRevokedUnusedPermissions(hcsm())[0];
 
   // Permission remains revoked after regrant and undo.
-  content_settings::ContentSettingConstraints expiration_constraint = {
-      .expiration = revoked_permission.metadata.expiration};
+  content_settings::ContentSettingConstraints expiration_constraint;
+  expiration_constraint.set_expiration(revoked_permission.metadata.expiration);
   service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
   service()->UndoRegrantPermissionsForOrigin({type}, expiration_constraint,
                                              url::Origin::Create(url1));
@@ -482,8 +482,8 @@ TEST_F(UnusedSitePermissionsServiceTest, NotRevokeNotificationPermission) {
       content_settings::features::kSafetyCheckUnusedSitePermissions);
 
   const GURL url("https://example1.com");
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   // Grant GEOLOCATION and NOTIFICATION permission for the url.
   hcsm()->SetContentSettingDefaultScope(
@@ -561,8 +561,8 @@ TEST_F(UnusedSitePermissionsServiceTest, GetDaysSinceRevocation) {
 
   const GURL url = GURL("https://example1.com:443");
   const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
-  const content_settings::ContentSettingConstraints constraint{
-      .track_last_visit_for_autoexpiration = true};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_track_last_visit_for_autoexpiration(true);
 
   absl::optional<uint32_t> days_since_revocation;
 
@@ -613,8 +613,8 @@ TEST_F(UnusedSitePermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
   auto cleanUpThreshold =
       content_settings::features::
           kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
-  const content_settings::ContentSettingConstraints constraint{
-      .expiration = clock()->Now() + cleanUpThreshold};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_expiration(clock()->Now() + cleanUpThreshold);
 
   // Add `url` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(

@@ -96,7 +96,9 @@ void CookieSettings::SetCookieSettingForUserBypass(
       content_settings::features::kUserBypassUIExceptionExpiration.Get();
   base::Time expiry_time =
       expiration.is_zero() ? base::Time() : GetConstraintExpiration(expiration);
-  ContentSettingConstraints constraints = {expiry_time, SessionModel::Durable};
+  ContentSettingConstraints constraints;
+  constraints.set_expiration(expiry_time);
+  constraints.set_session_model(SessionModel::Durable);
 
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),

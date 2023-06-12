@@ -1018,12 +1018,15 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
 
+  ContentSettingConstraints constraints;
+  constraints.set_expiration(
+      content_settings::GetConstraintExpiration(base::Seconds(100)));
+  constraints.set_session_model(SessionModel::UserSession);
+
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      {content_settings::GetConstraintExpiration(base::Seconds(100)),
-       SessionModel::UserSession});
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW, constraints);
 
   // When requesting our setting for the url/top-level combination our grant is
   // for access should be allowed iff SAA is enabled. For any other domain pairs

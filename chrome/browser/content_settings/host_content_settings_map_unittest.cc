@@ -1934,9 +1934,11 @@ TEST_F(HostContentSettingsMapTest, MixedScopeSettings) {
                                      persistent_type, CONTENT_SETTING_BLOCK);
   // Set a Session only permission for our second url and we expect it should
   // co-exist with the other permission just fine.
-  map->SetContentSettingDefaultScope(
-      example_url2, example_url2, persistent_type, CONTENT_SETTING_ALLOW,
-      {base::Time(), content_settings::SessionModel::UserSession});
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(content_settings::SessionModel::UserSession);
+  map->SetContentSettingDefaultScope(example_url2, example_url2,
+                                     persistent_type, CONTENT_SETTING_ALLOW,
+                                     constraints);
 
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
@@ -1987,12 +1989,15 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithSessionModel) {
       map->GetContentSetting(example_url2, example_url2, persistent_type));
 
   // Set permissions in two different scopes.
-  map->SetContentSettingDefaultScope(
-      example_url1, example_url1, persistent_type, CONTENT_SETTING_BLOCK,
-      {base::Time(), content_settings::SessionModel::Durable});
-  map->SetContentSettingDefaultScope(
-      example_url2, example_url2, persistent_type, CONTENT_SETTING_ALLOW,
-      {base::Time(), content_settings::SessionModel::UserSession});
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(content_settings::SessionModel::Durable);
+  map->SetContentSettingDefaultScope(example_url1, example_url1,
+                                     persistent_type, CONTENT_SETTING_BLOCK,
+                                     constraints);
+  constraints.set_session_model(content_settings::SessionModel::UserSession);
+  map->SetContentSettingDefaultScope(example_url2, example_url2,
+                                     persistent_type, CONTENT_SETTING_ALLOW,
+                                     constraints);
 
   // Validate that if we retrieve all our settings we should see both settings
   // and the default values returned.
@@ -2059,17 +2064,22 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
 
   // Set permissions with our first two urls with different expiry times and our
   // third with no expiration.
-  map->SetContentSettingDefaultScope(
-      example_url1, example_url1, persistent_type, CONTENT_SETTING_BLOCK,
-      {content_settings::GetConstraintExpiration(base::Seconds(100)),
-       content_settings::SessionModel::UserSession});
-  map->SetContentSettingDefaultScope(
-      example_url2, example_url2, persistent_type, CONTENT_SETTING_ALLOW,
-      {content_settings::GetConstraintExpiration(base::Seconds(200)),
-       content_settings::SessionModel::UserSession});
-  map->SetContentSettingDefaultScope(
-      example_url3, example_url3, persistent_type, CONTENT_SETTING_ALLOW,
-      {base::Time(), content_settings::SessionModel::UserSession});
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_expiration(
+      content_settings::GetConstraintExpiration(base::Seconds(100)));
+  constraints.set_session_model(content_settings::SessionModel::UserSession);
+  map->SetContentSettingDefaultScope(example_url1, example_url1,
+                                     persistent_type, CONTENT_SETTING_BLOCK,
+                                     constraints);
+  constraints.set_expiration(
+      content_settings::GetConstraintExpiration(base::Seconds(200)));
+  map->SetContentSettingDefaultScope(example_url2, example_url2,
+                                     persistent_type, CONTENT_SETTING_ALLOW,
+                                     constraints);
+  constraints.set_expiration(base::Time());
+  map->SetContentSettingDefaultScope(example_url3, example_url3,
+                                     persistent_type, CONTENT_SETTING_ALLOW,
+                                     constraints);
 
   // Validate that we can retrieve all our settings and none of them are
   // expired.

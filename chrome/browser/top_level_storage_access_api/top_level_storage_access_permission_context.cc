@@ -238,19 +238,21 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           ->WithPortWildcard()
           ->Build();
 
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_expiration(
+      content_settings::GetConstraintExpiration(kGrantDuration));
+  constraints.set_session_model(
+      content_settings::SessionModel::NonRestorableUserSession);
+
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
       secondary_site_pattern, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_setting,
-      {content_settings::GetConstraintExpiration(kGrantDuration),
-       content_settings::SessionModel::NonRestorableUserSession});
+      content_setting, constraints);
 
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
       secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
-      content_setting,
-      {content_settings::GetConstraintExpiration(kGrantDuration),
-       content_settings::SessionModel::NonRestorableUserSession});
+      content_setting, constraints);
 
   ContentSettingsForOneType top_level_grants;
   settings_map->GetSettingsForOneType(

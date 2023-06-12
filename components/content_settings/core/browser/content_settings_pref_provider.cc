@@ -208,20 +208,20 @@ bool PrefProvider::SetWebsiteSetting(
 
   // Last visit timestamps should only be tracked for ContentSettings that are
   // "ASK" by default.
-  DCHECK(!constraints.track_last_visit_for_autoexpiration ||
+  DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
          content_settings::CanTrackLastVisit(content_type));
   // Last visit timestamps can only be tracked for host-specific pattern.
-  DCHECK(!constraints.track_last_visit_for_autoexpiration ||
+  DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
          !primary_pattern.GetHost().empty());
 
-  base::Time last_visited = constraints.track_last_visit_for_autoexpiration
+  base::Time last_visited = constraints.track_last_visit_for_autoexpiration()
                                 ? GetCoarseVisitedTime(clock_->Now())
                                 : base::Time();
 
   // If SessionModel is OneTime, we know for sure that a one time permission
   // has been set by the One Time Provider, therefore we reset a potentially
   // existing Allow Always setting.
-  if (constraints.session_model == SessionModel::OneTime) {
+  if (constraints.session_model() == SessionModel::OneTime) {
     DCHECK(content_type == ContentSettingsType::GEOLOCATION ||
            content_type == ContentSettingsType::MEDIASTREAM_MIC ||
            content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
@@ -233,8 +233,8 @@ bool PrefProvider::SetWebsiteSetting(
                           std::move(in_value),
                           {.last_modified = modified_time,
                            .last_visited = last_visited,
-                           .expiration = constraints.expiration,
-                           .session_model = constraints.session_model});
+                           .expiration = constraints.expiration(),
+                           .session_model = constraints.session_model()});
   return true;
 }
 

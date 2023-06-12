@@ -175,7 +175,8 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
   }
 
-  content_settings::ContentSettingConstraints constraints = {expiry_time};
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_expiration(expiry_time);
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::ADS_DATA,
       dict ? base::Value(std::move(*dict)) : base::Value(), constraints);

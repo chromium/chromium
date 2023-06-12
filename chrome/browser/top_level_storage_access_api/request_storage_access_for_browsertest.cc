@@ -276,14 +276,17 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
   base::Time expiration_time = base::Time::Now() - base::Minutes(5);
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_expiration(expiration_time);
+  constraints.set_session_model(content_settings::SessionModel::UserSession);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostB), GetURL(kHostA),
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      {expiration_time, content_settings::SessionModel::UserSession});
+      constraints);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostC), GetURL(kHostA),
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      {expiration_time, content_settings::SessionModel::UserSession});
+      constraints);
 
   // Manually send our expired setting. This needs to be done manually because
   // normally this expired value would be filtered out before sending and time

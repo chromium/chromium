@@ -65,9 +65,10 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.SetNow(past);
   map->SetClockForTesting(&clock);
   service->SetClockForTesting(&clock);
-  map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW,
-      {.track_last_visit_for_autoexpiration = true});
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_track_last_visit_for_autoexpiration(true);
+  map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
+                                     CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
   service->UpdateUnusedPermissionsForTesting();
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
@@ -117,9 +118,10 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.SetNow(past);
   map->SetClockForTesting(&clock);
   service->SetClockForTesting(&clock);
-  map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW,
-      {.track_last_visit_for_autoexpiration = true});
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_track_last_visit_for_autoexpiration(true);
+  map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
+                                     CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
 
   // Check if the content setting is still ALLOW, before auto-revocation.

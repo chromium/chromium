@@ -172,7 +172,7 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
 // as they are only bounded by time and can persist through multiple browser
 // sessions.
 bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
-  return constraints.session_model == SessionModel::Durable;
+  return constraints.session_model() == SessionModel::Durable;
 }
 
 // Convenience helper to calculate the expiration time of a constraint given a

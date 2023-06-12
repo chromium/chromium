@@ -461,11 +461,11 @@ TEST_F(PermissionUmaUtilTest, RecordPermissionRegrantForUnusedSites) {
   // Set expiration to five days before the clean-up threshold to mimic that the
   // permission was revoked five days ago.
   base::Time past(now - base::Days(5));
-  const content_settings::ContentSettingConstraints constraint{
-      .expiration =
-          past + content_settings::features::
-                     kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                         .Get()};
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_expiration(
+      past +
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get());
   hcsm->SetWebsiteSettingDefaultScope(
       origin, origin, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       base::Value(dict.Clone()), constraint);

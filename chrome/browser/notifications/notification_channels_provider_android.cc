@@ -316,9 +316,10 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   }
 
   // These constraints are not supported for notifications on Android.
-  DCHECK_EQ(constraints.expiration, base::Time());
-  DCHECK_EQ(constraints.session_model, content_settings::SessionModel::Durable);
-  DCHECK_EQ(constraints.track_last_visit_for_autoexpiration, false);
+  DCHECK_EQ(constraints.expiration(), base::Time());
+  DCHECK_EQ(constraints.session_model(),
+            content_settings::SessionModel::Durable);
+  DCHECK_EQ(constraints.track_last_visit_for_autoexpiration(), false);
 
   InitCachedChannels();
 

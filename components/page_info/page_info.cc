@@ -630,11 +630,12 @@ void PageInfo::OnSitePermissionChanged(
         site_url_, type);
   }
   using Constraints = content_settings::ContentSettingConstraints;
-  map->SetNarrowestContentSetting(
-      primary_url, site_url_, type, setting,
-      is_one_time
-          ? Constraints{base::Time(), content_settings::SessionModel::OneTime}
-          : Constraints{});
+  Constraints constraints;
+  if (is_one_time) {
+    constraints.set_session_model(content_settings::SessionModel::OneTime);
+  }
+  map->SetNarrowestContentSetting(primary_url, site_url_, type, setting,
+                                  constraints);
 
   bool is_subscribed_to_permission_change_event = false;
 

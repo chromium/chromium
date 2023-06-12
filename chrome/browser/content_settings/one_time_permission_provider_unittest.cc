@@ -47,8 +47,9 @@ class OneTimePermissionProviderTest : public testing::Test {
 
  protected:
   content_settings::ContentSettingConstraints one_time_constraints() {
-    return content_settings::ContentSettingConstraints{
-        .session_model = content_settings::SessionModel::OneTime};
+    content_settings::ContentSettingConstraints constraints;
+    constraints.set_session_model(content_settings::SessionModel::OneTime);
+    return constraints;
   }
 
   GURL primary_url = GURL("http://example.com/");

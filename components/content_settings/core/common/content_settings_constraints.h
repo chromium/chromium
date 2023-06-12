@@ -32,18 +32,45 @@ enum class SessionModel {
 };
 
 // Constraints to be applied when setting a content setting.
-struct ContentSettingConstraints {
+class ContentSettingConstraints {
+ public:
+  // Creates a default set of constraints. The constraints do not expire, use
+  // the Durable session model, and do not track the last visit for
+  // autoexpiration.
+  ContentSettingConstraints();
+
+  ContentSettingConstraints(ContentSettingConstraints&& other);
+  ContentSettingConstraints(const ContentSettingConstraints& other);
+  ContentSettingConstraints& operator=(ContentSettingConstraints&& other);
+  ContentSettingConstraints& operator=(const ContentSettingConstraints& other);
+
+  ~ContentSettingConstraints();
+
+  base::Time expiration() const { return expiration_; }
+  void set_expiration(base::Time exp) { expiration_ = exp; }
+
+  SessionModel session_model() const { return session_model_; }
+  void set_session_model(SessionModel model) { session_model_ = model; }
+
+  bool track_last_visit_for_autoexpiration() const {
+    return track_last_visit_for_autoexpiration_;
+  }
+  void set_track_last_visit_for_autoexpiration(bool track) {
+    track_last_visit_for_autoexpiration_ = track;
+  }
+
+ private:
   // Specification of an |expiration| provides an upper bound on the time a
   // setting will remain valid. If 0 is specified for |expiration| no time limit
   // will apply.
-  base::Time expiration;
+  base::Time expiration_;
   // Used to specify the lifetime model that should be used.
-  SessionModel session_model = SessionModel::Durable;
+  SessionModel session_model_ = SessionModel::Durable;
   // Set to true to keep track of the last visit to the origin of this
   // permission.
   // This is used for the Safety check permission module and unrelated to the
   // "expiration" keyword above.
-  bool track_last_visit_for_autoexpiration = false;
+  bool track_last_visit_for_autoexpiration_ = false;
 };
 
 }  // namespace content_settings
