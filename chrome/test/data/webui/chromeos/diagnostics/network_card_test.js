@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://diagnostics/network_card.js';
+// Strings needs to be imported before network_card to ensure assert is not
+// triggered during test.
 import 'chrome://diagnostics/strings.m.js';
+import 'chrome://diagnostics/network_card.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeCellularDisabledNetwork, fakeCellularDisconnectedNetwork, fakeCellularNetwork, fakeCellularWithIpConfigNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
@@ -76,7 +78,7 @@ suite('networkCardTestSuite', function() {
     networkCardElement.guid = guid;
     if (timeout || timeout === 0) {
       /** @suppress {visibility} */
-      networkCardElement.timeoutInMs_ = timeout;
+      networkCardElement.timeoutInMs = timeout;
     }
     document.body.appendChild(networkCardElement);
 
@@ -168,7 +170,7 @@ suite('networkCardTestSuite', function() {
    * @return {number}
    */
   function getTimerId() {
-    return networkCardElement.timerId_;
+    return networkCardElement.timerId;
   }
 
   /** @return {string} */
@@ -187,7 +189,7 @@ suite('networkCardTestSuite', function() {
    * @return {boolean}
    */
   function getUnableToObtainIpAddress() {
-    return networkCardElement.unableToObtainIpAddress_;
+    return networkCardElement.unableToObtainIpAddress;
   }
 
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
@@ -320,15 +322,17 @@ suite('networkCardTestSuite', function() {
   test('TimerResetsOnNetworkChange', () => {
     return initializeNetworkCard('wifiGuidNoIpAddress')
         .then(() => {
+          assertEquals('wifiGuidNoIpAddress', networkCardElement.guid);
           // Timer should be in progress since this network is missing an
           // IP Address.
           assertTrue(getTimerId() !== -1);
         })
         .then(() => changeGuid('ethernetGuid'))
         .then(() => {
+          assertEquals('ethernetGuid', networkCardElement.guid);
           // After a network change event, the timer should have been cleared
           // and reset.
-          assertTrue(getTimerId() === -1);
+          assertEquals(-1, getTimerId());
         });
   });
 
