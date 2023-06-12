@@ -55,8 +55,6 @@ const char kConfigRuleTypeMonitorHistogram[] =
 namespace content {
 
 BackgroundTracingRule::BackgroundTracingRule() = default;
-BackgroundTracingRule::BackgroundTracingRule(base::TimeDelta trigger_delay)
-    : trigger_delay_(trigger_delay) {}
 
 BackgroundTracingRule::~BackgroundTracingRule() {
   DCHECK(!installed());
@@ -74,11 +72,12 @@ void BackgroundTracingRule::Uninstall() {
     return;
   }
   installed_ = false;
+  timer_.Stop();
   trigger_callback_.Reset();
   DoUninstall();
 }
 
-bool BackgroundTracingRule::OnRuleTriggered() const {
+bool BackgroundTracingRule::OnRuleTriggered() {
   if (!installed()) {
     return false;
   }
@@ -86,7 +85,14 @@ bool BackgroundTracingRule::OnRuleTriggered() const {
   if (trigger_chance_ < 1.0 && base::RandDouble() > trigger_chance_) {
     return false;
   }
-  return trigger_callback_.Run(this);
+  if (!delay_.is_zero()) {
+    timer_.Start(FROM_HERE, delay_,
+                 base::BindOnce(base::IgnoreResult(trigger_callback_),
+                                base::Unretained(this)));
+    return true;
+  } else {
+    return trigger_callback_.Run(this);
+  }
 }
 
 base::TimeDelta BackgroundTracingRule::GetTraceDelay() const {
@@ -119,6 +125,22 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
   return dict;
 }
 
+perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
+    const {
+  perfetto::protos::gen::TriggerRule config;
+  if (trigger_chance_ < 1.0) {
+    config.set_trigger_chance(trigger_chance_);
+  }
+
+  if (!delay_.is_zero()) {
+    config.set_delay_ms(delay_.InMilliseconds());
+  }
+
+  config.set_name(rule_id_);
+
+  return config;
+}
+
 void BackgroundTracingRule::GenerateMetadataProto(
     BackgroundTracingRule::MetadataProto* out) const {
   uint32_t name_hash = variations::HashName(rule_id());
@@ -142,6 +164,21 @@ void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
   }
 }
 
+void BackgroundTracingRule::Setup(
+    const perfetto::protos::gen::TriggerRule& config) {
+  if (config.has_trigger_chance()) {
+    trigger_chance_ = config.trigger_chance();
+  }
+  if (config.has_delay_ms()) {
+    delay_ = base::Milliseconds(config.delay_ms());
+  }
+  if (config.has_name()) {
+    rule_id_ = config.name();
+  } else {
+    rule_id_ = GetDefaultRuleId();
+  }
+}
+
 namespace {
 
 class NamedTriggerRule : public BackgroundTracingRule {
@@ -156,6 +193,15 @@ class NamedTriggerRule : public BackgroundTracingRule {
             dict.FindString(kConfigRuleTriggerNameKey)) {
       return base::WrapUnique<BackgroundTracingRule>(
           new NamedTriggerRule(*trigger_name));
+    }
+    return nullptr;
+  }
+
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    if (config.has_manual_trigger_name()) {
+      return base::WrapUnique<BackgroundTracingRule>(
+          new NamedTriggerRule(config.manual_trigger_name()));
     }
     return nullptr;
   }
@@ -176,6 +222,13 @@ class NamedTriggerRule : public BackgroundTracingRule {
     dict.Set(kConfigRuleKey, kConfigRuleTypeMonitorNamed);
     dict.Set(kConfigRuleTriggerNameKey, named_event_.c_str());
     return dict;
+  }
+
+  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+    perfetto::protos::gen::TriggerRule config =
+        BackgroundTracingRule::ToProtoForTesting();
+    config.set_manual_trigger_name(named_event_);
+    return config;
   }
 
   void GenerateMetadataProto(
@@ -248,6 +301,27 @@ class HistogramRule : public BackgroundTracingRule,
 
     return rule;
   }
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    DCHECK(config.has_histogram());
+
+    if (!config.histogram().has_histogram_name() ||
+        !config.histogram().has_min_value()) {
+      return nullptr;
+    }
+    int histogram_lower_value = config.histogram().min_value();
+    int histogram_upper_value = std::numeric_limits<int>::max();
+    if (config.histogram().has_max_value()) {
+      histogram_upper_value = config.histogram().max_value();
+    }
+    if (histogram_lower_value > histogram_upper_value) {
+      return nullptr;
+    }
+
+    return base::WrapUnique(
+        new HistogramRule(config.histogram().histogram_name(),
+                          histogram_lower_value, histogram_upper_value));
+  }
 
   ~HistogramRule() override = default;
 
@@ -278,6 +352,16 @@ class HistogramRule : public BackgroundTracingRule,
     dict.Set(kConfigRuleHistogramValue1Key, histogram_lower_value_);
     dict.Set(kConfigRuleHistogramValue2Key, histogram_upper_value_);
     return dict;
+  }
+
+  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+    perfetto::protos::gen::TriggerRule config =
+        BackgroundTracingRule::ToProtoForTesting();
+    auto* histogram = config.mutable_histogram();
+    histogram->set_histogram_name(histogram_name_);
+    histogram->set_min_value(histogram_lower_value_);
+    histogram->set_max_value(histogram_upper_value_);
+    return config;
   }
 
   void GenerateMetadataProto(
@@ -361,6 +445,20 @@ BackgroundTracingRule::CreateRuleFromDict(const base::Value::Dict& dict) {
   if (tracing_rule)
     tracing_rule->Setup(dict);
 
+  return tracing_rule;
+}
+
+std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
+    const perfetto::protos::gen::TriggerRule& config) {
+  std::unique_ptr<BackgroundTracingRule> tracing_rule;
+  if (config.has_manual_trigger_name()) {
+    tracing_rule = NamedTriggerRule::Create(config);
+  } else if (config.has_histogram()) {
+    tracing_rule = HistogramRule::Create(config);
+  }
+  if (tracing_rule) {
+    tracing_rule->Setup(config);
+  }
   return tracing_rule;
 }
 

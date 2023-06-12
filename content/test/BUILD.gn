@@ -21,6 +21,7 @@ import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
@@ -801,6 +802,34 @@ static_library("test_support") {
   if (is_fuchsia) {
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp" ]
   }
+}
+
+component("proto_test_support") {
+  testonly = true
+
+  sources = [
+    "../public/test/test_proto_loader.cc",
+    "../public/test/test_proto_loader.h",
+  ]
+
+  defines = [ "PROTO_TEST_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_full",
+  ]
+}
+
+proto_library("test_proto") {
+  sources = [ "test.proto" ]
+  cc_generator_options = "lite"
+}
+
+proto_library("test_proto_descriptor") {
+  sources = [ "test.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "test_proto.descriptor"
 }
 
 # Fuchsia performance tests on smart displays use web_engine and a browser
@@ -2723,6 +2752,7 @@ test("content_unittests") {
     "navigation_simulator_unittest.cc",
     "test_aggregation_service_impl_unittest.cc",
     "test_page_unittest.cc",
+    "test_proto_loader_unittest.cc",
     "test_render_frame_host_unittest.cc",
   ]
 
@@ -2820,8 +2850,10 @@ test("content_unittests") {
 
   deps = [
     ":content_test_mojo_bindings",
+    ":proto_test_support",
     ":run_all_unittests",
     ":test_interfaces",
+    ":test_proto",
     ":test_support",
     "web_ui:test_webui_js_bridge2_webui_js_bridge_impl",
     "web_ui:test_webui_js_bridge_webui_js_bridge_impl",
@@ -2972,8 +3004,15 @@ test("content_unittests") {
   ]
 
   data_deps = [
+    ":test_proto_descriptor",
     "//testing/buildbot/filters:content_unittests_filters",
     "//third_party/mesa_headers",
+    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+  ]
+
+  data += [
+    "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
+    "$root_gen_dir/content/test/test_proto.descriptor",
   ]
 
   # Platforms where sqlite_dev_shell is defined.

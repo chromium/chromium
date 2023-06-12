@@ -38,13 +38,14 @@ include_rules = [
   "+services/service_manager",
   "+services/tracing/public/cpp",
   "+testing/android/native_test/native_browser_test_support.h",
+  "+third_party/protobuf/src/google/protobuf",
   "+tools/v8_context_snapshot/buildflags.h",
   "+ui/base/resource/resource_bundle.h",
   "+ui/base/resource/resource_bundle_android.h",
   "+ui/ozone/public",
+  "+ui/platform_window/common/platform_window_defaults.h",
   "+ui/views",
   "+v8/include/v8.h",
-  "+ui/platform_window/common/platform_window_defaults.h",
 ]
 
 specific_include_rules = {

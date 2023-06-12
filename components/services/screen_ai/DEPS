@@ -1,6 +1,7 @@
 include_rules = [
   "+google/protobuf",
   "+components/ukm",
+  "+content/public/test",
   "+content/public/browser",
   "+sandbox/policy",
   "+services/metrics/public/cpp",
