@@ -220,7 +220,6 @@ BASE_DECLARE_FEATURE(kEnableKioskEnrollmentInOobe);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableKioskLoginScreen);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableOobeNetworkScreenSkip);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableOobeThemeSelection);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableSamlNotificationOnPasswordChangeSuccess);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableAllSystemWebApps);
@@ -898,7 +897,6 @@ bool IsDeprecateOldKeyboardShortcutsAcceleratorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeNetworkScreenSkipEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeQuickStartEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeRemoveShutdownButtonEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeThemeSelectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeTouchpadScrollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeDisplaySizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsAppBadgingToggleEnabled();
