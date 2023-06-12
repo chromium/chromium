@@ -1,4 +1,4 @@
-// Copyright 2021 TF.Text Authors.
+// Copyright 2023 TF.Text Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,21 +24,17 @@
 namespace tensorflow {
 namespace text {
 
-void RegexSplit(absl::string_view input,
-                const RE2& re2,
-                bool include_delimiter,
+void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
                 const RE2& include_delim_regex,
                 std::vector<absl::string_view>* tokens,
                 std::vector<long>* begin_offsets,  // NOLINT
                 std::vector<long>* end_offsets);   // NOLINT
 
-void RegexSplit(absl::string_view input,
-                const RE2& re2,
-                bool include_delimiter,
+void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
                 const RE2& include_delim_regex,
                 std::vector<absl::string_view>* tokens,
                 std::vector<long long>* begin_offsets,  // NOLINT
-                std::vector<long long>* end_offsets);   // NOLINT
+                std::vector<long long>* end_offsets);  // NOLINT
 
 }  // namespace text
 }  // namespace tensorflow

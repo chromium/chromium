@@ -1,4 +1,4 @@
-// Copyright 2021 TF.Text Authors.
+// Copyright 2023 TF.Text Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 #define TENSORFLOW_TEXT_CORE_KERNELS_WORDPIECE_TOKENIZER_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
@@ -25,7 +26,7 @@ namespace text {
 
 struct LookupStatus {
   LookupStatus() : error_msg(""), success(true) {}
-  LookupStatus(const std::string& msg) : error_msg(msg), success(false) {}
+  LookupStatus(std::string msg) : error_msg(std::move(msg)), success(false) {}
   std::string error_msg;
   bool success;
 
@@ -39,31 +40,22 @@ class WordpieceVocab {
                                 bool* value) const = 0;
 };
 
-LookupStatus WordpieceTokenize(const absl::string_view& token,
-                               const int max_bytes_per_token,
-                               const int max_chars_per_subtoken,
-                               const std::string& suffix_indicator,
-                               bool use_unknown_token,
-                               const std::string& unknown_token,
-                               bool split_unknown_characters,
-                               const WordpieceVocab* vocab_map,
-                               std::vector<std::string>* subwords,
-                               std::vector<int>* begin_offset,
-                               std::vector<int>* end_offset,
-                               int* num_word_pieces);
+LookupStatus WordpieceTokenize(
+    const absl::string_view& token, const int max_bytes_per_token,
+    const int max_chars_per_subtoken, const std::string& suffix_indicator,
+    bool use_unknown_token, const std::string& unknown_token,
+    bool split_unknown_characters, const WordpieceVocab* vocab_map,
+    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+    std::vector<int>* end_offset, int* num_word_pieces);
 
 // As above but with `max_bytes_per_subtoken` unknown,
 // and split_unknown_characters=false. (For backwards compatability.)
-LookupStatus WordpieceTokenize(const absl::string_view& token,
-                               const int max_bytes_per_token,
-                               const std::string& suffix_indicator,
-                               bool use_unknown_token,
-                               const std::string& unknown_token,
-                               const WordpieceVocab* vocab_map,
-                               std::vector<std::string>* subwords,
-                               std::vector<int>* begin_offset,
-                               std::vector<int>* end_offset,
-                               int* num_word_pieces);
+LookupStatus WordpieceTokenize(
+    const absl::string_view& token, const int max_bytes_per_token,
+    const std::string& suffix_indicator, bool use_unknown_token,
+    const std::string& unknown_token, const WordpieceVocab* vocab_map,
+    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+    std::vector<int>* end_offset, int* num_word_pieces);
 
 }  // namespace text
 }  // namespace tensorflow
