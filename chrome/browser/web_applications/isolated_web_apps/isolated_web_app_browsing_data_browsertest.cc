@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -17,8 +20,15 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using ::testing::Eq;
@@ -133,6 +143,95 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   AddUsageIfMissing(web_contents->GetInnerWebContents()[1]);
   AddUsageIfMissing(web_contents->GetInnerWebContents()[2]);
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(3000));
+}
+
+class IsolatedWebAppBrowsingDataClearingTest
+    : public IsolatedWebAppBrowsingDataTest {
+ protected:
+  int64_t GetCacheSize(const IsolatedWebAppUrlInfo& url_info) {
+    base::test::TestFuture<bool, int64_t> future;
+
+    content::StoragePartition* storage_partition =
+        profile()->GetStoragePartition(
+            url_info.storage_partition_config(profile()));
+
+    storage_partition->GetNetworkContext()->ComputeHttpCacheSize(
+        base::Time::Min(), base::Time::Max(),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            future.GetCallback(),
+            /* is_upper_limit = */ false,
+            /* result_or_error = */ -1));
+
+    std::tuple<bool, int64_t> result = future.Get();
+
+    int64_t cache_size_or_error = std::get<1>(result);
+    CHECK(cache_size_or_error >= 0);
+    return cache_size_or_error;
+  }
+
+  bool SetCookie(
+      const IsolatedWebAppUrlInfo& url_info,
+      const GURL& url,
+      const std::string& cookie_line,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+    content::StoragePartition* storage_partition =
+        profile()->GetStoragePartition(
+            url_info.storage_partition_config(profile()));
+
+    mojo::Remote<network::mojom::CookieManager> cookie_manager;
+    storage_partition->GetNetworkContext()->GetCookieManager(
+        cookie_manager.BindNewPipeAndPassReceiver());
+
+    auto cookie_obj = net::CanonicalCookie::Create(
+        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        cookie_partition_key);
+
+    base::test::TestFuture<net::CookieAccessResult> future;
+    cookie_manager->SetCanonicalCookie(*cookie_obj, url,
+                                       net::CookieOptions::MakeAllInclusive(),
+                                       future.GetCallback());
+    return future.Take().status.IsInclude();
+  }
+
+  net::CookieList GetAllCookies(const IsolatedWebAppUrlInfo& url_info) {
+    content::StoragePartition* storage_partition =
+        profile()->GetStoragePartition(
+            url_info.storage_partition_config(profile()));
+
+    mojo::Remote<network::mojom::CookieManager> cookie_manager;
+    storage_partition->GetNetworkContext()->GetCookieManager(
+        cookie_manager.BindNewPipeAndPassReceiver());
+    base::test::TestFuture<const net::CookieList&> future;
+    cookie_manager->GetAllCookies(future.GetCallback());
+    return future.Take();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+
+  // IWA installation creates cache data.
+  EXPECT_GT(GetCacheSize(url_info), 0);
+
+  // TODO(crbug.com/1453520): Clear cache data.
+  // EXPECT_EQ(GetCacheSize(url_info), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+
+  // Unpartitioned Cookie
+  ASSERT_TRUE(SetCookie(url_info, GURL("http://a.com"), "A=0", absl::nullopt));
+
+  // Partitioned Cookie
+  ASSERT_TRUE(SetCookie(
+      url_info, GURL("https://c.com"), "A=0; secure; partitioned",
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
+
+  EXPECT_EQ(GetAllCookies(url_info).size(), 2UL);
+
+  // TODO(crbug.com/1453520): Clear cookies.
+  // EXPECT_GT(GetAllCookies(url_info).size(), 0UL);
 }
 
 }  // namespace web_app
