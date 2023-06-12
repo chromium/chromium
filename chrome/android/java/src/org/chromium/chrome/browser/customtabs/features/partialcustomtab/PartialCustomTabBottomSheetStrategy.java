@@ -849,6 +849,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void onExitFullscreen(Tab tab) {
+        // Ignore the notification coming before toolbar/post-inflation initialization, which
+        // can happen when devices gets rotated while fullscreen video is playing.
+        if (mHandleStrategy == null) return;
+
         // System UI (navigation/status bar) dimensions still remain zero at this point.
         // For the restoring job that needs these values, we wait till they get reported
         // correctly by posting the task instead of executing them right away.

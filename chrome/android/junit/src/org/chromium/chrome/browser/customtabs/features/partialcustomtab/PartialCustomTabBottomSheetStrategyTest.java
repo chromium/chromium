@@ -945,6 +945,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void enterAndExitHtmlFullscreen() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
+        strategy.createHandleStrategyForTesting();
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
@@ -1007,6 +1008,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     @Test
     public void rotateAcrossFullscreenMode() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
+        strategy.createHandleStrategyForTesting();
         int height = getWindowAttributes().height;
 
         mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
