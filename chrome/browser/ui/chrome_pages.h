@@ -232,18 +232,6 @@ void ShowFirmwareUpdatesApp(Profile* profile);
 void ShowShortcutCustomizationApp(Profile* profile);
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Initiates signin in a new browser tab.
-void ShowBrowserSignin(Browser* browser,
-                       signin_metrics::AccessPoint access_point,
-                       signin::ConsentLevel consent_level);
-
-// If the user is already signed in, shows the "Signin" portion of Settings,
-// otherwise initiates signin in a new browser tab.
-void ShowBrowserSigninOrSettings(Browser* browser,
-                                 signin_metrics::AccessPoint access_point);
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 // Show chrome://app-settings/<app-id> page.

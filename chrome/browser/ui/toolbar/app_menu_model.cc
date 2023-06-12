@@ -969,13 +969,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
           "Download.OpenDownloadsFromMenu.PerProfileType",
           profile_metrics::GetBrowserProfileType(browser_->profile()));
       break;
-    case IDC_SHOW_SIGNIN:
-      if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSyncSetup",
-                                   delta);
-      }
-      LogMenuAction(MENU_ACTION_SHOW_SYNC_SETUP);
-      break;
     case IDC_OPTIONS:
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Settings", delta);
