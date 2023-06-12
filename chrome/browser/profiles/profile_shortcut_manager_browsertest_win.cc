@@ -84,6 +84,11 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   // This is for triggering a profile icon update on the next run. 1 is just a
   // small enough number for kCurrentProfileIconVersion.
   browser()->profile()->GetPrefs()->SetInteger(prefs::kProfileIconVersion, 1);
+
+  // Ensure that any tasks started by profile creation are finished before we
+  // advance to the main test. In particular, we want to finish all tasks that
+  // might update the profile icon before the main test runs.
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
