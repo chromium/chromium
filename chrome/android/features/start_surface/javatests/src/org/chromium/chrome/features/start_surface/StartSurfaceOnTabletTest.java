@@ -448,7 +448,6 @@ public class StartSurfaceOnTabletTest {
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.FEED_MULTI_COLUMN, ChromeFeatureList.START_SURFACE_ON_TABLET})
-    @DisabledTest(message = "https://crbug.com/1446043")
     // clang-format off
     public void test1RowMvtMarginWithMultiColumnFeedsOnNtpHomePage() throws IOException{
         // clang-format on
