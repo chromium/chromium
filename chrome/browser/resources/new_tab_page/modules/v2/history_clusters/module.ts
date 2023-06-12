@@ -10,11 +10,11 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
-import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {HistoryClustersProxyImpl} from '../history_clusters/history_clusters_proxy.js';
-import {InfoDialogElement} from '../info_dialog';
-import {ModuleDescriptor} from '../module_descriptor.js';
+import {Cluster, URLVisit} from '../../../history_cluster_types.mojom-webui.js';
+import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {HistoryClustersProxyImpl} from '../../history_clusters/history_clusters_proxy.js';
+import {InfoDialogElement} from '../../info_dialog';
+import {ModuleDescriptor} from '../../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 

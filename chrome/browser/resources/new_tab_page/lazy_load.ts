@@ -30,11 +30,6 @@ export {DiscountConsentDialog} from './modules/cart/discount_consent_dialog.js';
 export {chromeCartDescriptor, ChromeCartModuleElement} from './modules/cart/module.js';
 export {DriveProxy} from './modules/drive/drive_module_proxy.js';
 export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
-export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2ModuleElement} from './modules/drive_v2/module.js';
-// <if expr="not is_official_build">
-export {FooProxy} from './modules/dummy_v2/foo_proxy.js';
-export {DummyModuleElement, dummyV2Descriptor} from './modules/dummy_v2/module.js';
-// </if>
 export {FeedProxy} from './modules/feed/feed_module_proxy.js';
 export {feedDescriptor, FeedModuleElement} from './modules/feed/module.js';
 export {CartTileModuleElement} from './modules/history_clusters/cart/cart_tile.js';
@@ -42,7 +37,6 @@ export {HistoryClustersProxy, HistoryClustersProxyImpl} from './modules/history_
 export {HistoryClusterElementType, HistoryClusterImageDisplayState, historyClustersDescriptor, HistoryClustersModuleElement, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS} from './modules/history_clusters/module.js';
 export {SuggestTileModuleElement} from './modules/history_clusters/suggest_tile.js';
 export {TileModuleElement} from './modules/history_clusters/tile.js';
-export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/history_clusters_v2/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
@@ -54,4 +48,11 @@ export {photosDescriptor, PhotosModuleElement} from './modules/photos/module.js'
 export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
 export {RecipesModuleElement, recipeTasksDescriptor} from './modules/recipes/module.js';
 export {RecipesHandlerProxy} from './modules/recipes/recipes_handler_proxy.js';
+export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2ModuleElement} from './modules/v2/drive/module.js';
+// <if expr="not is_official_build">
+export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
+export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.js';
+// </if>
+export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
+export {ModulesV2Element} from './modules/v2/modules.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

@@ -3,4 +3,4 @@
 # found in the LICENSE file.
 
 history_clusters_v2_test_files =
-    [ "modules/history_clusters_v2/module_test.ts" ]
+    [ "modules/v2/history_clusters/module_test.ts" ]

@@ -857,7 +857,7 @@ export class AppElement extends AppElementBase {
         case $$(this, 'ntp-middle-slot-promo'):
           recordClick(NtpElement.MIDDLE_SLOT_PROMO);
           return;
-        case $$(this, 'ntp-modules'):
+        case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
           return;
         case $$(this, '#customizeButton'):

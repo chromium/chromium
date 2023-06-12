@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_components/history_clusters/history_clusters_shared_style.css.js';
-import '../history_clusters/page_favicon.js';
+import '../../history_clusters/page_favicon.js';
 
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {ClientId as PageImageServiceClientId} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
@@ -12,8 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Annotation, URLVisit} from '../../history_cluster_types.mojom-webui.js';
-import {I18nMixin} from '../../i18n_setup.js';
+import {Annotation, URLVisit} from '../../../history_cluster_types.mojom-webui.js';
+import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './visit_tile.html.js';
 

@@ -653,6 +653,7 @@ suite('NewTabPageAppTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
+        modulesRedesignedEnabled: false,
         wideModulesEnabled: false,
       });
     });
@@ -722,6 +723,30 @@ suite('NewTabPageAppTest', () => {
       assertNotStyle(modules, 'display', 'none');
       assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime'));
       assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime', 123));
+    });
+  });
+
+  suite('v2 modules', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesEnabled: true,
+        modulesRedesignedEnabled: true,
+      });
+    });
+
+    test('container is hidden', async () => {
+      const modules = $$(app, 'ntp-modules-v2')!;
+      assertTrue(!!modules);
+      assertStyle(modules, 'display', 'none');
+    });
+
+    test(`clicking records click`, () => {
+      // Act.
+      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
+
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Click'));
+      assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
     });
   });
 

@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../../test_support.js';
+import {installMock} from '../../../test_support.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
   let handler: TestMock<FooHandlerRemote>;

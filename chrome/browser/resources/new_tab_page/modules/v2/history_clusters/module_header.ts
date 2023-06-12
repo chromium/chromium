@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin} from '../../i18n_setup.js';
+import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './module_header.html.js';
 

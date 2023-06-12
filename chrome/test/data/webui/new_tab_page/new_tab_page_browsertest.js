@@ -57,6 +57,10 @@ TEST_F('NewTabPageAppTest', 'Modules', function() {
   runMochaSuite('NewTabPageAppTest modules');
 });
 
+TEST_F('NewTabPageAppTest', 'V2Modules', function() {
+  runMochaSuite('NewTabPageAppTest v2 modules');
+});
+
 TEST_F('NewTabPageAppTest', 'CounterfactualModules', function() {
   runMochaSuite('NewTabPageAppTest counterfactual modules');
 });
@@ -300,7 +304,7 @@ GEN('#if !defined(OFFICIAL_BUILD)');
 var NewTabPageModulesDummyModuleTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/dummy_v2/module_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/v2/dummy/module_test.js';
   }
 };
 
@@ -335,7 +339,7 @@ TEST_F('NewTabPageModulesDriveModuleTest', 'All', function() {
 var NewTabPageModulesDriveV2ModuleTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/drive_v2/module_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/v2/drive/module_test.js';
   }
 };
 
@@ -482,7 +486,7 @@ var NewTabPageModulesHistoryClustersV2ModuleTest =
     class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/history_clusters_v2/module_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/v2/history_clusters/module_test.js';
   }
 
   /** @override */

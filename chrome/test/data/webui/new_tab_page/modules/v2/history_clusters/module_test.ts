@@ -13,8 +13,8 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-import {installMock} from '../../test_support.js';
-import {assertModuleHeaderTitle, createRelatedSearches, createSampleVisits} from '../history_clusters/test_support.js';
+import {installMock} from '../../../test_support.js';
+import {assertModuleHeaderTitle, createRelatedSearches, createSampleVisits} from '../../history_clusters/test_support.js';
 
 function createSampleClusters(count: number): Cluster[] {
   return new Array(count).fill(0).map(

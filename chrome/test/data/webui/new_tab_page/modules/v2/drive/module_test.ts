@@ -11,7 +11,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../../test_support.js';
+import {installMock} from '../../../test_support.js';
 
 suite('NewTabPageModulesDriveModuleTest', () => {
   let handler: TestMock<DriveHandlerRemote>;

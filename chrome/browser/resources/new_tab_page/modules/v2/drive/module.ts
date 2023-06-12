@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../module_header.js';
+import '../../module_header.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {File} from '../../drive.mojom-webui.js';
-import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {DriveProxy} from '../drive/drive_module_proxy.js';
-import {InfoDialogElement} from '../info_dialog.js';
-import {ModuleDescriptor} from '../module_descriptor.js';
+import {File} from '../../../drive.mojom-webui.js';
+import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {DriveProxy} from '../../drive/drive_module_proxy.js';
+import {InfoDialogElement} from '../../info_dialog.js';
+import {ModuleDescriptor} from '../../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 

@@ -11,18 +11,18 @@ import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {chromeCartDescriptor} from './cart/module.js';
 import {driveDescriptor} from './drive/module.js';
-import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 // <if expr="not is_official_build">
-import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './dummy_v2/module.js';
+import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './v2/dummy/module.js';
 // </if>
 import {feedDescriptor} from './feed/module.js';
 import {HistoryClustersProxyImpl} from './history_clusters/history_clusters_proxy.js';
 import {historyClustersDescriptor} from './history_clusters/module.js';
-import {historyClustersDescriptor as historyClustersV2Descriptor} from './history_clusters_v2/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';
+import {driveDescriptor as driveV2Descriptor} from './v2/drive/module.js';
+import {historyClustersDescriptor as historyClustersV2Descriptor} from './v2/history_clusters/module.js';
 
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');

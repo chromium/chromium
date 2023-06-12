@@ -135,8 +135,8 @@
   }
 
   /* ~ because the dom-if results in a template between the middle-slot-promo
-     and ntp-modules. */
-  ntp-middle-slot-promo:not([hidden]) ~ ntp-modules {
+     and ntp-modules / ntp-modules-lanchpad. */
+  ntp-middle-slot-promo:not([hidden]) ~ #modules {
     margin-top: 16px;
   }
 
@@ -396,13 +396,22 @@
         </ntp-middle-slot-promo>
       </template>
       <template is="dom-if" if="[[modulesEnabled_]]">
-        <ntp-modules id="modules"
-            modules-fre-shown="{{modulesFreShown}}"
-            modules-shown-to-user="{{modulesShownToUser}}"
-            on-customize-module="onCustomizeModule_"
-            on-modules-loaded="onModulesLoaded_"
-            hidden="[[!promoAndModulesLoaded_]]">
-        </ntp-modules>
+        <template is="dom-if" if="[[!modulesRedesignedEnabled_]]">
+          <ntp-modules id="modules"
+              modules-fre-shown="{{modulesFreShown}}"
+              modules-shown-to-user="{{modulesShownToUser}}"
+              on-customize-module="onCustomizeModule_"
+              on-modules-loaded="onModulesLoaded_"
+              hidden="[[!promoAndModulesLoaded_]]">
+          </ntp-modules>
+        </template>
+        <template is="dom-if" if="[[modulesRedesignedEnabled_]]">
+          <ntp-modules-v2 id="modules"
+              on-customize-module="onCustomizeModule_"
+              on-modules-loaded="onModulesLoaded_"
+              hidden="[[!promoAndModulesLoaded_]]">
+          </ntp-modules-v2>
+        </template>
       </template>
       <a id="backgroundImageAttribution"
           href="[[backgroundImageAttributionUrl_]]"

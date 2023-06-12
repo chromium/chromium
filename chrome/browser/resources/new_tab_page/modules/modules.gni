@@ -4,15 +4,15 @@
 
 import("./cart/cart.gni")
 import("./drive/drive.gni")
-import("./drive_v2/drive_v2.gni")
 import("./feed/feed.gni")
 import("./history_clusters/history_clusters.gni")
-import("./history_clusters_v2/history_clusters_v2.gni")
 import("./photos/photos.gni")
 import("./recipes/recipes.gni")
+import("./v2/drive/drive.gni")
+import("./v2/history_clusters/history_clusters.gni")
 
 if (!is_official_build) {
-  import("./dummy_v2/dummy_v2.gni")
+  import("./v2/dummy/dummy.gni")
 }
 
 # List of files that don't need to be passed to html_to_wrapper().
@@ -36,6 +36,7 @@ modules_web_component_files =
       "modules/module_header.ts",
       "modules/modules.ts",
       "modules/module_wrapper.ts",
+      "modules/v2/modules.ts",
     ] + cart_web_component_files + drive_web_component_files +
     drive_v2_web_component_files + feed_web_component_files +
     photos_web_component_files + recipes_web_component_files +
