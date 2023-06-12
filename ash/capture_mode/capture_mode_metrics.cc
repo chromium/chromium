@@ -18,7 +18,8 @@ constexpr char kCaptureModeMetricCommonPrefix[] = "Ash.CaptureModeController.";
 
 constexpr char kEndRecordingReasonHistogramRootWord[] = "EndRecordingReason";
 constexpr char kBarButtonHistogramRootWord[] = "BarButtons";
-constexpr char kCaptureAudioOnHistogramRootWord[] = "CaptureAudioOnMetric";
+constexpr char kCaptureAudioRecordingModeHistogramRootWord[] =
+    "AudioRecordingMode";
 constexpr char kCaptureConfigurationHistogramRootWord[] =
     "CaptureConfiguration";
 constexpr char kCaptureRegionAdjustmentHistogramRootWord[] =
@@ -83,7 +84,7 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type) {
 void RecordCaptureModeConfiguration(CaptureModeType type,
                                     CaptureModeSource source,
                                     RecordingType recording_type,
-                                    bool audio_on,
+                                    AudioRecordingMode audio_mode,
                                     const CaptureModeBehavior* behavior) {
   std::string configuration_histogram_name =
       BuildHistogramName(kCaptureConfigurationHistogramRootWord, behavior,
@@ -92,11 +93,11 @@ void RecordCaptureModeConfiguration(CaptureModeType type,
                                 GetConfiguration(type, source, recording_type));
   if (type == CaptureModeType::kVideo &&
       recording_type != RecordingType::kGif) {
-    base::UmaHistogramBoolean(
-        BuildHistogramName(kCaptureAudioOnHistogramRootWord,
-                           /*behavior=*/nullptr,
+    base::UmaHistogramEnumeration(
+        BuildHistogramName(kCaptureAudioRecordingModeHistogramRootWord,
+                           behavior,
                            /*append_ui_mode_suffix=*/true),
-        audio_on);
+        audio_mode);
   }
 }
 

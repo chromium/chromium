@@ -1617,6 +1617,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.AudioRecordingMode.{TabletOrClamshell}"
+    enum="AudioRecordingMode" expires_after="2024-06-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded at the end of a capture mode session in {TabletOrClamshell} to
+    report the user's audio recording mode setting, only if video recording was
+    selected, and the recording type supports audio recording.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
     enum="CaptureModeBarButtonType" expires_after="2023-08-15">
   <owner>afakhry@chromium.org</owner>
@@ -1656,6 +1669,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.CaptureAudioOnMetric.{TabletOrClamshell}"
     enum="BooleanEnabled" expires_after="2023-08-01">
+  <obsolete>
+    This metric was used when we were limited to recording the microphone only.
+    It has been replaced by Ash.CaptureModeController.AudioRecordingMode in
+    M-116.
+  </obsolete>
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2078,6 +2096,25 @@ chromium-metrics-reviews@google.com.
     leads to the switching.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.{Client}.AudioRecordingMode.{TabletOrClamshell}"
+    enum="AudioRecordingMode" expires_after="2024-06-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded at the end of a client-initiated capture mode session in
+    {TabletOrClamshell} to report the user's audio recording mode setting, only
+    if video recording was selected, and the recording type supports audio
+    recording.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="Client">
+    <variant name="GameDashboard"
+        summary="The session started from Game Dashboard"/>
+    <variant name="Projector" summary="The session started from Projector"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"

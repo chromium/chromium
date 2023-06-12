@@ -7158,19 +7158,31 @@ TEST_P(CaptureModeHistogramTest, ScreenshotConfigurationHistogram) {
 }
 
 TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {
-  constexpr char kHistogramNameBase[] = "CaptureAudioOnMetric";
+  constexpr char kHistogramNameBase[] = "AudioRecordingMode";
   const std::string histogram_name = BuildHistogramName(
       kHistogramNameBase, /*behavior=*/nullptr, /*append_ui_mode_suffix=*/true);
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(histogram_name, false, 0);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 0);
+  histogram_tester.ExpectBucketCount(histogram_name, AudioRecordingMode::kOff,
+                                     0);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kMicrophone, 0);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kSystem, 0);
+  histogram_tester.ExpectBucketCount(
+      histogram_name, AudioRecordingMode::kSystemAndMicrophone, 0);
 
-  // Perform a video recording with audio off. A false should be recorded.
+  // Perform a video recording with audio off. `kOff` should be recorded.
   StartSessionForVideo();
   CaptureModeTestApi().SetAudioRecordingMode(AudioRecordingMode::kOff);
   StartRecording();
-  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 0);
+  histogram_tester.ExpectBucketCount(histogram_name, AudioRecordingMode::kOff,
+                                     1);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kMicrophone, 0);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kSystem, 0);
+  histogram_tester.ExpectBucketCount(
+      histogram_name, AudioRecordingMode::kSystemAndMicrophone, 0);
   WaitForSeconds(1);
   StopRecording();
   WaitForCaptureFileToBeSaved();
@@ -7183,13 +7195,19 @@ TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {
                          /*append_ui_mode_suffix=*/true),
       /*expected_count=*/1);
 
-  // Perform a video recording with microphone audio recording on. A true should
-  // be recorded.
+  // Perform a video recording with microphone audio recording on. `kMicrophone`
+  // should be recorded.
   StartSessionForVideo();
   CaptureModeTestApi().SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
   StartRecording();
-  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 1);
+  histogram_tester.ExpectBucketCount(histogram_name, AudioRecordingMode::kOff,
+                                     1);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kMicrophone, 1);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kSystem, 0);
+  histogram_tester.ExpectBucketCount(
+      histogram_name, AudioRecordingMode::kSystemAndMicrophone, 0);
   StopRecording();
 }
 

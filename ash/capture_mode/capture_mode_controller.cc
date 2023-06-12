@@ -2049,8 +2049,10 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
   RecordCaptureModeEntryType(entry_type);
   RecordCaptureModeConfiguration(
       CaptureModeType::kImage, source,
-      recording_type_,  // This parameter will be ignored.
-      /*audio_on=*/false, GetBehavior(BehaviorType::kDefault));
+      // The values of `recording_type_` and `GetEffectiveAudioRecordingMode()`
+      // will be ignored, since the type is `kImage`.
+      recording_type_, GetEffectiveAudioRecordingMode(),
+      GetBehavior(BehaviorType::kDefault));
 }
 
 void CaptureModeController::PerformScreenshotsOfAllDisplays() {

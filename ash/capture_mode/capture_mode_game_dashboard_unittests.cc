@@ -649,6 +649,24 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   }
 }
 
+TEST_P(GameDashboardCaptureModeHistogramTest, GameAudioRecordingModeHistogram) {
+  constexpr char kHistogramNameBase[] = "AudioRecordingMode";
+  CaptureModeTestApi test_api;
+  for (const auto audio_mode :
+       {AudioRecordingMode::kOff, AudioRecordingMode::kMicrophone,
+        AudioRecordingMode::kSystem,
+        AudioRecordingMode::kSystemAndMicrophone}) {
+    const auto histogram_name = BuildHistogramName(
+        kHistogramNameBase, test_api.GetBehavior(BehaviorType::kGameDashboard),
+        /*append_ui_mode_suffix=*/true);
+    histogram_tester_.ExpectBucketCount(histogram_name, audio_mode, 0);
+    auto* controller = StartGameCaptureModeSession();
+    controller->SetAudioRecordingMode(audio_mode);
+    controller->Stop();
+    histogram_tester_.ExpectBucketCount(histogram_name, audio_mode, 1);
+  }
+}
+
 TEST_P(GameDashboardCaptureModeHistogramTest,
        GameDashboardEndRecordingReasonHistogram) {
   constexpr char kHistogramNameBase[] = "EndRecordingReason";

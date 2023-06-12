@@ -5935,6 +5935,13 @@ others/histograms.xml -->
   <int value="2" label="Denied and can't ask again"/>
 </enum>
 
+<enum name="AudioRecordingMode">
+  <int value="0" label="No audio recording"/>
+  <int value="1" label="Recording the system audio"/>
+  <int value="2" label="Recording the microphone"/>
+  <int value="3" label="Recording the microphone and system audio together"/>
+</enum>
+
 <enum name="AudioRenderDeviceError">
   <int value="0" label="No error"/>
   <int value="1" label="Error during stream creation"/>
