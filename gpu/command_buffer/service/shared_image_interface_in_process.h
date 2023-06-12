@@ -106,6 +106,10 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             base::StringPiece debug_label,
                             gfx::GpuMemoryBufferHandle buffer_handle) override;
 
+  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
+  // single planar eg. RGB BufferFormats. Please use the equivalent method above
+  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
+  //
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with. Format and size are derived from the
   // GpuMemoryBuffer. |gpu_memory_buffer_manager| is the manager that created

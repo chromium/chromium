@@ -69,6 +69,9 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                             uint32_t usage,
                             base::StringPiece debug_label,
                             gfx::GpuMemoryBufferHandle buffer_handle) override;
+  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
+  // single planar eg. RGB BufferFormats. Please use the equivalent method above
+  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
   Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                             GpuMemoryBufferManager* gpu_memory_buffer_manager,
                             gfx::BufferPlane plane,

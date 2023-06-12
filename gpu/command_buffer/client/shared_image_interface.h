@@ -100,6 +100,10 @@ class GPU_EXPORT SharedImageInterface {
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
+  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
+  // single planar eg. RGB BufferFormats. Please use the equivalent method above
+  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
+  //
   // Creates a shared image out of a GpuMemoryBuffer, using |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with. Format and size are derived from the
@@ -127,6 +131,10 @@ class GPU_EXPORT SharedImageInterface {
       uint32_t usage,
       base::StringPiece debug_label) = 0;
 
+  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
+  // single planar eg. RGB BufferFormats. Please use the equivalent method above
+  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
+  //
   // Same as the above, but specifies gfx::BufferPlane::DEFAULT for |plane|.
   Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                             GpuMemoryBufferManager* gpu_memory_buffer_manager,

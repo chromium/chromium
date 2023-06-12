@@ -49,6 +49,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SharedImageDestructionCallback GetSharedImageDestructionCallback(
       const Mailbox& mailbox);
 
+  // NOTE: The below method is DEPRECATED for single planar formats eg. RGB
+  // BufferFormats. Please use the equivalent method below it taking in single
+  // planar SharedImageFormat with GpuMemoryBufferHandle.
   bool CreateSharedImage(const Mailbox& mailbox,
                          gfx::GpuMemoryBufferHandle handle,
                          gfx::BufferFormat format,
