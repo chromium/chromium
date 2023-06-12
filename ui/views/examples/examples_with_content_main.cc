@@ -16,7 +16,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
-#include "ui/display/screen.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -68,9 +67,6 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 int main(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
 
-#if BUILDFLAG(IS_MAC)
-  display::ScopedNativeScreen desktop_screen;
-#endif
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&views::examples::AddExamplesColorMixers));
 
