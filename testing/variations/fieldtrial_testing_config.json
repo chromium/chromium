@@ -7190,6 +7190,21 @@
             ]
         }
     ],
+    "IOSLogApplicationStorageSizeMetrics": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LogApplicationStorageSizeMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSMagicStack": [
         {
             "platforms": [
