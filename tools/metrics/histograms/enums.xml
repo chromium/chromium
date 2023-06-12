@@ -26614,6 +26614,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="77" label="Remove Folder for Overrides"/>
   <int value="78" label="Filesystem source selected"/>
   <int value="79" label="Overrides source selected"/>
+  <int value="80" label="Stylesheet request initiator link clicked"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
