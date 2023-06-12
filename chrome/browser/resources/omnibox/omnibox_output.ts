@@ -7,6 +7,10 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {ACMatchClassification, AutocompleteAdditionalInfo, AutocompleteMatch, OmniboxResponse} from './omnibox.mojom-webui.js';
 import {OmniboxElement} from './omnibox_element.js';
 import {DisplayInputs, OmniboxInput} from './omnibox_input.js';
+// @ts-ignore:next-line
+import outputColumnWidthSheet from './omnibox_output_column_widths.css' assert {type : 'css'};
+// @ts-ignore:next-line
+import outputResultsGroupSheet from './output_results_group.css' assert {type : 'css'};
 
 interface ResultsDetails {
   cursorPosition: number;
@@ -178,6 +182,8 @@ class OutputResultsGroup extends OmniboxElement {
 
   constructor() {
     super('output-results-group-template');
+    this.shadowRoot!.adoptedStyleSheets =
+        [outputColumnWidthSheet, outputResultsGroupSheet];
   }
 
   setResultsGroup(resultsGroup: OmniboxResponse) {
