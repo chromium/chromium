@@ -236,7 +236,12 @@ void Connection::GenerateFidoAssertionInfo(
       mojom::GetAssertionResponse::GetAssertionStatus::kSuccess;
 
   if (response->status != success) {
-    std::move(callback).Run(absl::nullopt);
+    // TODO (b/286877412): Update this logic once we've aligned on an unknown
+    // message strategy.
+    QS_LOG(INFO) << "Ignoring message and re-reading";
+    nearby_connection_->Read(
+        base::BindOnce(&Connection::OnRequestAccountTransferAssertionResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
