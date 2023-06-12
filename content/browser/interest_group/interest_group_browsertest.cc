@@ -6998,6 +6998,60 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
+// This test reproduces the crash reported in crbug.com/1451572.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("a.test", "/echo?render_cars");
+
+  const std::string repro_script = JsReplace(
+      R"(
+(async function() {
+// The crash occurs only if the second bid is filtered out before the first bid
+// completes -- since the order this happens is arbitrary, the scenario is run
+// several times to increase the chances of reproing the crash scenario.
+//
+// Two interest groups *are* required to repro the crash, and it's also required
+// that only one of them has prioritization enabled and trusted signals set.
+
+  const ig_1= {
+    owner: $1,
+    name: "name_1",
+    biddingLogicUrl: $3,
+    ads: [{renderUrl: $1}],
+  };
+
+  const ig_2 = {
+    owner: $1,
+    name: "name_2",
+    // Intentionally use invalid bidding logic URL -- this results in the bid
+    // being filtered.
+    biddingLogicUrl: $1,
+    ads: [{renderUrl: $1}],
+    enableBiddingSignalsPrioritization: true,
+    trustedBiddingSignalsUrl: $1
+  };
+
+  const config = {
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1]
+  };
+
+  for(let i = 0; i < 20; i++) {
+    await navigator.joinAdInterestGroup(ig_1, 200);
+    await navigator.joinAdInterestGroup(ig_2, 200);
+    await navigator.runAdAuction(config);
+  }
+})())",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"));
+
+  EXPECT_EQ(nullptr, EvalJs(shell(), repro_script));
+}
+
 // Test that the FLEDGE properly handles detached documents.
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        DetachedDocumentDoesNotCrash) {

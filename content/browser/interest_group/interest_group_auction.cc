@@ -1293,6 +1293,7 @@ class InterestGroupAuction::BuyerHelper
         // to work.
         std::swap(bid_states_[i], bid_states_.back());
         bid_states_.pop_back();
+        size_limit_ = std::min(size_limit_, bid_states_.size());
         continue;
       }
       DCHECK(bid_states_[i]->resume_generate_bid_callback);
