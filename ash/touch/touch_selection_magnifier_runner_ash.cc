@@ -63,36 +63,61 @@ const gfx::Size kBorderLayerSize =
 // Duration of the animation when updating magnifier bounds.
 constexpr base::TimeDelta kMagnifierTransitionDuration = base::Milliseconds(50);
 
-// Gets the bounds of the magnifier layer given an anchor point. The magnifier
-// layer bounds should be horizontally centered above the anchor point (except
-// possibly at the edges of the parent container) and include the magnifier
-// border and shadows. `magnifier_anchor_point` and returned bounds are in
-// coordinates of the magnifier's parent container.
-gfx::Rect GetMagnifierLayerBounds(const gfx::Size& parent_container_size,
-                                  const gfx::Point& magnifier_anchor_point) {
-  const gfx::Point origin(
-      magnifier_anchor_point.x() - kMagnifierSize.width() / 2,
-      magnifier_anchor_point.y() - kMagnifierSize.height() +
-          kMagnifierVerticalBoundsOffset);
-  gfx::Rect magnifier_layer_bounds(origin, kMagnifierSize);
-  magnifier_layer_bounds.Outset(kMagnifierShadowOutsets);
-  // Adjust the magnifier layer to be completely within the parent container
-  // while keeping the magnifier size fixed.
-  magnifier_layer_bounds.AdjustToFit(gfx::Rect(parent_container_size));
-  return magnifier_layer_bounds;
+// Gets the bounds of the content that will be magnified, relative to the parent
+// (`parent_bounds` should be the parent's bounds in its own coordinate space,
+// e.g. {0,0,w,h}). The magnified bounds will be in the same coordinate space as
+// `parent_bounds` and are adjusted to be contained within them.
+gfx::Rect GetMagnifiedBounds(const gfx::Rect& parent_bounds,
+                             const gfx::Point& focus_center) {
+  gfx::SizeF magnified_size(kMagnifierSize.width() / kMagnifierScale,
+                            kMagnifierSize.height() / kMagnifierScale);
+  gfx::PointF origin(focus_center.x() - magnified_size.width() / 2,
+                     focus_center.y() - magnified_size.height() / 2);
+
+  gfx::RectF magnified_bounds(origin, magnified_size);
+  magnified_bounds.AdjustToFit(gfx::RectF(parent_bounds));
+
+  // Transform the adjusted magnified_bounds to the layer's scale. It's okay if
+  // these bounds go outside the container, since they will be offset and then
+  // fit to the parent.
+  magnified_size = {kMagnifierScale * magnified_bounds.width(),
+                    kMagnifierScale * magnified_bounds.height()};
+  origin = {magnified_bounds.CenterPoint().x() - magnified_size.width() / 2,
+            magnified_bounds.CenterPoint().y() - magnified_size.height() / 2};
+  return gfx::ToEnclosingRect(gfx::RectF(origin, magnified_size));
 }
 
-// Gets the zoom layer background offset needed to center `focus_center` in the
-// magnified area. `magnifier_layer_bounds` and `focus_center` are in
-// coordinates of the magnifier's parent container.
-// TODO(b/275014115): Currently the magnifier doesn't show the very edge of the
-// screen. Figure out correct background offset to fix this while keeping the
-// magnified area completely inside the parent container.
-gfx::Point GetZoomLayerBackgroundOffset(const gfx::Rect& magnifier_layer_bounds,
-                                        const gfx::Point& focus_center) {
-  return gfx::Point(0, magnifier_layer_bounds.y() +
-                           kZoomLayerBounds.CenterPoint().y() -
-                           focus_center.y());
+std::pair<gfx::Rect, gfx::Point> GetMagnifierLayerBoundsAndOffset(
+    const gfx::Size& parent_size,
+    const gfx::Rect& focus_rect) {
+  // The parent-relative bounding box of the parent container, which is the
+  // coordinate space that the magnifier layer's bounds need to be in.
+  const gfx::Rect parent_bounds(gfx::Point(0, 0), parent_size);
+  // `magnified_bounds` holds the bounds of the content that will be magnified,
+  // but that contains the `focus_center`, making it so the user's finger blocks
+  // it if the final magnified content were shown in place.
+  gfx::Rect magnified_bounds =
+      GetMagnifiedBounds(parent_bounds, focus_rect.CenterPoint());
+  // To avoid being blocked, offset the bounds (and the background so it
+  // remains visually consistent) along the Y axis. This must be clamped to
+  // `parent_bounds` so that it's not drawn off the top edge of the screen.
+  gfx::Rect layer_bounds = magnified_bounds;
+  layer_bounds.Offset(0, kMagnifierVerticalBoundsOffset -
+                             magnified_bounds.height() / 2 -
+                             focus_rect.height() / 2);
+
+  layer_bounds.Outset(kMagnifierShadowOutsets);
+  layer_bounds.AdjustToFit(parent_bounds);
+
+  // `zoom_layer_center` is the center of the zoom layer relative to the
+  // magnifier layer's parent. Since the magnifier layer has non-uniform outsets
+  // for the shadows, its center (layer_bounds.CenterPoint()) is not exactly
+  // the same as the center of the zoom layer.
+  gfx::Point zoom_layer_center =
+      kZoomLayerBounds.CenterPoint() + layer_bounds.OffsetFromOrigin();
+  gfx::Point offset = gfx::PointAtOffsetFromOrigin(
+      zoom_layer_center - magnified_bounds.CenterPoint());
+  return {layer_bounds, offset};
 }
 
 // Gets the color to use for the border based on the default native theme.
@@ -198,11 +223,13 @@ void TouchSelectionMagnifierRunnerAsh::ShowMagnifier(
       gfx::BoundingRect(focus_bound.edge_start(), focus_bound.edge_end()));
   aura::Window* parent_container = GetParentContainer();
   aura::Window::ConvertRectToTarget(context, parent_container, &focus_rect);
-  const gfx::Rect magnifier_layer_bounds = GetMagnifierLayerBounds(
-      parent_container->bounds().size(), focus_rect.top_center());
+
+  auto [magnifier_layer_bounds, background_offset] =
+      GetMagnifierLayerBoundsAndOffset(parent_container->bounds().size(),
+                                       focus_rect);
+
+  zoom_layer_->SetBackgroundOffset(background_offset);
   magnifier_layer_->SetBounds(magnifier_layer_bounds);
-  zoom_layer_->SetBackgroundOffset(GetZoomLayerBackgroundOffset(
-      magnifier_layer_bounds, focus_rect.CenterPoint()));
 
   // Add magnifier layer to parent container if needed.
   if (created_new_magnifier_layer) {

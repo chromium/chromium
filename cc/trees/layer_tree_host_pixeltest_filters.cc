@@ -755,6 +755,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
 #define MAYBE_ZoomFilter ZoomFilter
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ZoomFilter) {
+  // ZOOM_FILTER is unsupported by software_renderer (crbug.com/1451898)
+  if (use_software_renderer()) {
+    return;
+  }
   scoped_refptr<SolidColorLayer> root =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 

@@ -303,6 +303,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Zoom the background by a factor of |zoom|. The effect is blended along the
   // edge across |inset| pixels.
+  // NOTE: Background zoom does not currently work with software compositing,
+  // see crbug.com/1451898. Usage should be limited to ash/ which does not
+  // rely on software compositing.
   void SetBackgroundZoom(float zoom, int inset);
 
   // Applies an offset when drawing pixels for the layer background filter.

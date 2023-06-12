@@ -2929,13 +2929,10 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   local_matrix.setTranslate(quad->filters_origin.x(), quad->filters_origin.y());
   local_matrix.postScale(quad->filters_scale.x(), quad->filters_scale.y());
 
-  gfx::SizeF filter_size(quad->rect.width(), quad->rect.height());
-
   // Convert CC image filters into a SkImageFilter root node
   if (filters) {
     DCHECK(!filters->IsEmpty());
-    auto paint_filter =
-        cc::RenderSurfaceFilters::BuildImageFilter(*filters, filter_size);
+    auto paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(*filters);
     auto sk_filter = paint_filter ? paint_filter->cached_sk_filter_ : nullptr;
 
     if (sk_filter) {
@@ -2991,25 +2988,26 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   if (backdrop_filters) {
     DCHECK(!backdrop_filters->IsEmpty());
 
-    // Must account for clipping that occurs for backdrop filters, since their
-    // input content has already been clipped to the output rect.
-    gfx::Rect device_rect = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
-        params->content_device_transform, gfx::RectF(quad->rect)));
-    gfx::Rect out_rect = MoveFromDrawToWindowSpace(
-        current_frame()->current_render_pass->output_rect);
-    out_rect.Intersect(device_rect);
-    gfx::Vector2dF offset =
-        (device_rect.top_right() - out_rect.top_right()) +
-        (device_rect.bottom_left() - out_rect.bottom_left());
+    // quad->rect represents the layer's bounds *after* any display scale has
+    // been applied to it. The ZOOM FilterOperation uses the layer's bounds as
+    // its "lens" bounds. All image filters operate with a local matrix to
+    // match the display scale. We must undo the local matrix's effect on
+    // quad->rect to get the input bounds for ZOOM. Otherwise its lens would be
+    // doubly-scaled while none of the other filter operations would align.
+    SkMatrix inv_local_matrix;
+    if (local_matrix.invert(&inv_local_matrix)) {
+      SkIRect filter_rect =
+          inv_local_matrix.mapRect(gfx::RectToSkRect(quad->rect)).roundOut();
+      auto bg_paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(
+          *backdrop_filters, gfx::SkIRectToRect(filter_rect));
 
-    auto bg_paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(
-        *backdrop_filters, gfx::SizeF(out_rect.size()), offset);
-    auto sk_bg_filter =
-        bg_paint_filter ? bg_paint_filter->cached_sk_filter_ : nullptr;
+      auto sk_bg_filter =
+          bg_paint_filter ? bg_paint_filter->cached_sk_filter_ : nullptr;
 
-    if (sk_bg_filter) {
-      rpdq_params.backdrop_filter =
-          sk_bg_filter->makeWithLocalMatrix(local_matrix);
+      if (sk_bg_filter) {
+        rpdq_params.backdrop_filter =
+            sk_bg_filter->makeWithLocalMatrix(local_matrix);
+      }
     }
   }
 

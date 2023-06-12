@@ -748,8 +748,6 @@ void Layer::SetLayerFilters() {
 
 void Layer::SetLayerBackgroundFilters() {
   cc::FilterOperations filters;
-  if (zoom_ != 1)
-    filters.Append(cc::FilterOperation::CreateZoomFilter(zoom_, zoom_inset_));
 
   if (background_blur_sigma_) {
     filters.Append(cc::FilterOperation::CreateBlurFilter(background_blur_sigma_,
@@ -759,6 +757,15 @@ void Layer::SetLayerBackgroundFilters() {
   if (!background_offset_.IsOrigin()) {
     filters.Append(cc::FilterOperation::CreateOffsetFilter(background_offset_));
   }
+
+  // The background zoom is applied after the background offset to support
+  // positioning of the background *before* magnifying it. Offsetting after
+  // magnifying is almost equivalent except it can lead to surprising clipping
+  // at the layer bounds.
+  if (zoom_ != 1) {
+    filters.Append(cc::FilterOperation::CreateZoomFilter(zoom_, zoom_inset_));
+  }
+
   cc_layer_->SetBackdropFilters(filters);
 }
 

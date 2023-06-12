@@ -348,23 +348,35 @@ bool DropShadowPaintFilter::EqualsForTesting(
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 
-MagnifierPaintFilter::MagnifierPaintFilter(const SkRect& src_rect,
+MagnifierPaintFilter::MagnifierPaintFilter(const SkRect& lens_bounds,
+                                           SkScalar zoom_amount,
                                            SkScalar inset,
                                            sk_sp<PaintFilter> input,
                                            const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
-      src_rect_(src_rect),
+      lens_bounds_(lens_bounds),
+      zoom_amount_(zoom_amount),
       inset_(inset),
       input_(std::move(input)) {
-  cached_sk_filter_ = SkImageFilters::Magnifier(
-      src_rect_, inset_, GetSkFilter(input_.get()), crop_rect);
+  // Historically the Skia Magnifier filter always used nearest-neighbor
+  // sampling internally, when it was only used for the accessibility
+  // magnifier widgets (where NN was preferred and always had an integer zoom
+  // amount). However, when the zoom amount is not an integer NN severely
+  // degrades visual quality. If more refined control is required, the
+  // sampling mode can be exposed and plumbed up to FilterOperation.
+  SkFilterMode filter_mode = SkScalarIsInt(zoom_amount) ? SkFilterMode::kNearest
+                                                        : SkFilterMode::kLinear;
+  cached_sk_filter_ =
+      SkImageFilters::Magnifier(lens_bounds_, zoom_amount_, inset_, filter_mode,
+                                GetSkFilter(input_.get()), crop_rect);
 }
 
 MagnifierPaintFilter::~MagnifierPaintFilter() = default;
 
 size_t MagnifierPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + PaintOpWriter::SerializedSize(src_rect_) +
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(lens_bounds_) +
+      PaintOpWriter::SerializedSize(zoom_amount_) +
       PaintOpWriter::SerializedSize(inset_);
   total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
@@ -372,13 +384,15 @@ size_t MagnifierPaintFilter::SerializedSize() const {
 
 sk_sp<PaintFilter> MagnifierPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  return sk_make_sp<MagnifierPaintFilter>(
-      src_rect_, inset_, Snapshot(input_, image_provider), GetCropRect());
+  return sk_make_sp<MagnifierPaintFilter>(lens_bounds_, zoom_amount_, inset_,
+                                          Snapshot(input_, image_provider),
+                                          GetCropRect());
 }
 
 bool MagnifierPaintFilter::EqualsForTesting(
     const MagnifierPaintFilter& other) const {
-  return src_rect_ == other.src_rect_ && inset_ == other.inset_ &&
+  return lens_bounds_ == other.lens_bounds_ &&
+         zoom_amount_ == other.zoom_amount_ && inset_ == other.inset_ &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 

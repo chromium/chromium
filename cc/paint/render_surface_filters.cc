@@ -14,7 +14,7 @@
 #include "cc/paint/paint_filter.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -149,8 +149,7 @@ sk_sp<PaintFilter> CreateMatrixImageFilter(const float matrix[20],
 
 sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
     const FilterOperations& filters,
-    const gfx::SizeF& size,
-    const gfx::Vector2dF& offset) {
+    const gfx::Rect& layer_bounds) {
   sk_sp<PaintFilter> image_filter;
   float matrix[20];
   for (size_t i = 0; i < filters.size(); ++i) {
@@ -208,31 +207,9 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
       case FilterOperation::ZOOM: {
         DCHECK_GE(op.amount(), 1.0);
 
-        // Compute the zoom center, from which we apply a scale transformation
-        // to get the zoom filter source rectangle. Usually the zoom center is
-        // the center of the unclipped rectangle, but this can sometimes be
-        // clipped when the magnifier is past the edge of the screen. When that
-        // happens, take the closest point inside the clipped rectangle instead.
-        gfx::PointF unclipped_rect_center = gfx::PointF(
-            (size.width() + offset.x()) / 2, (size.height() + offset.y()) / 2);
-        const gfx::PointF zoom_center =
-            gfx::RectF(size).ClosestPoint(unclipped_rect_center);
-
-        sk_sp<PaintFilter> zoom_filter = sk_make_sp<MagnifierPaintFilter>(
-            SkRect::MakeXYWH(zoom_center.x() - zoom_center.x() / op.amount(),
-                             zoom_center.y() - zoom_center.y() / op.amount(),
-                             size.width() / op.amount(),
-                             size.height() / op.amount()),
-            op.zoom_inset(), nullptr);
-        if (image_filter) {
-          // TODO(ajuma): When there's a 1-input version of
-          // SkMagnifierImageFilter, use that to handle the input filter
-          // instead of using an SkComposeImageFilter.
-          image_filter = sk_make_sp<ComposePaintFilter>(
-              std::move(zoom_filter), std::move(image_filter));
-        } else {
-          image_filter = std::move(zoom_filter);
-        }
+        image_filter = sk_make_sp<MagnifierPaintFilter>(
+            gfx::RectToSkRect(layer_bounds), op.amount(), op.zoom_inset(),
+            std::move(image_filter));
         break;
       }
       case FilterOperation::SATURATING_BRIGHTNESS:

@@ -249,13 +249,15 @@ class CC_PAINT_EXPORT DropShadowPaintFilter final : public PaintFilter {
 class CC_PAINT_EXPORT MagnifierPaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kMagnifier;
-  MagnifierPaintFilter(const SkRect& src_rect,
+  MagnifierPaintFilter(const SkRect& lens_bounds,
+                       SkScalar zoom_amount,
                        SkScalar inset,
                        sk_sp<PaintFilter> input,
                        const CropRect* crop_rect = nullptr);
   ~MagnifierPaintFilter() override;
 
-  const SkRect& src_rect() const { return src_rect_; }
+  const SkRect& lens_bounds() const { return lens_bounds_; }
+  SkScalar zoom_amount() const { return zoom_amount_; }
   SkScalar inset() const { return inset_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
@@ -267,7 +269,8 @@ class CC_PAINT_EXPORT MagnifierPaintFilter final : public PaintFilter {
       ImageProvider* image_provider) const override;
 
  private:
-  SkRect src_rect_;
+  SkRect lens_bounds_;
+  SkScalar zoom_amount_;
   SkScalar inset_;
   sk_sp<PaintFilter> input_;
 };

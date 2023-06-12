@@ -63,7 +63,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
           DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, image_filter,
           &crop_rect);
     case PaintFilter::Type::kMagnifier:
-      return sk_make_sp<MagnifierPaintFilter>(SkRect::MakeWH(100.f, 100.f),
+      return sk_make_sp<MagnifierPaintFilter>(SkRect::MakeWH(100.f, 100.f), 2.f,
                                               0.1f, record_filter, &crop_rect);
     case PaintFilter::Type::kCompose:
       return sk_make_sp<ComposePaintFilter>(image_filter, record_filter);

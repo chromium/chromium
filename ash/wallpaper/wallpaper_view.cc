@@ -225,8 +225,8 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
   cc::FilterOperations operations;
   operations.Append(
       cc::FilterOperation::CreateBlurFilter(blur, SkTileMode::kClamp));
-  sk_sp<cc::PaintFilter> filter = cc::RenderSurfaceFilters::BuildImageFilter(
-      operations, gfx::SizeF(dst.size()), gfx::Vector2dF());
+  sk_sp<cc::PaintFilter> filter =
+      cc::RenderSurfaceFilters::BuildImageFilter(operations);
 
   // If the wallpaper can't fill the desktop, paint it directly to the
   // canvas so that it can blend the image with the rest of background

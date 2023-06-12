@@ -3206,7 +3206,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
           5.f, 10.f, 0.1f, 0.3f, SkColors::kBlue,
           DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr)},
       sk_sp<PaintFilter>{new MagnifierPaintFilter(SkRect::MakeXYWH(5, 6, 7, 8),
-                                                  10.5f, nullptr)},
+                                                  2.f, 10.5f, nullptr)},
       sk_sp<PaintFilter>{new AlphaThresholdPaintFilter(
           SkRegion(SkIRect::MakeXYWH(0, 0, 100, 200)), nullptr)},
       sk_sp<PaintFilter>{new MatrixConvolutionPaintFilter(

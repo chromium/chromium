@@ -543,8 +543,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
   const cc::FilterOperations* filters = FiltersForPass(quad->render_pass_id);
   if (filters) {
     DCHECK(!filters->IsEmpty());
-    auto paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(
-        *filters, gfx::SizeF(source_bitmap.width(), source_bitmap.height()));
+    auto paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(*filters);
     auto image_filter =
         paint_filter ? paint_filter->cached_sk_filter_ : nullptr;
     if (image_filter) {
@@ -861,15 +860,13 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
     image_offset = filter_clip.origin();
   }
 
-  gfx::Vector2dF clipping_offset =
-      (unclipped_rect.top_right() - backdrop_rect.top_right()) +
-      (unclipped_rect.bottom_left() - backdrop_rect.bottom_left());
-
+  // TODO (crbug.com/1451898): software_renderer doesn't apply backdrop filters
+  // correctly in the context of the ZOOM_FILTER operation (the lens bounds are
+  // not applied correctly). The ZOOM_FILTER is never used on platforms that
+  // use software_renderer, so skip calculating the filter bounds to pass
+  // to BuildImageFilter().
   sk_sp<cc::PaintFilter> paint_filter =
-      cc::RenderSurfaceFilters::BuildImageFilter(
-          *backdrop_filters,
-          gfx::SizeF(backdrop_bitmap.width(), backdrop_bitmap.height()),
-          clipping_offset);
+      cc::RenderSurfaceFilters::BuildImageFilter(*backdrop_filters);
   if (!paint_filter)
     return nullptr;
   sk_sp<SkImageFilter> filter = paint_filter->cached_sk_filter_;

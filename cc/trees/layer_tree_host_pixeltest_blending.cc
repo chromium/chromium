@@ -322,8 +322,8 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackdropFilter) {
   PaintFlags grayscale;
   grayscale.setColor(kCSSOrange);
 
-  sk_sp<PaintFilter> paint_filter = RenderSurfaceFilters::BuildImageFilter(
-      filters, gfx::SizeF(kRootWidth, kRootHeight));
+  sk_sp<PaintFilter> paint_filter =
+      RenderSurfaceFilters::BuildImageFilter(filters);
   grayscale.setImageFilter(paint_filter);
   paint_canvas.drawRect(SkRect::MakeWH(kRootWidth, kRootHeight), grayscale);
 

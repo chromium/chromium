@@ -856,7 +856,8 @@ void PaintOpWriter::Write(const DropShadowPaintFilter& filter,
 
 void PaintOpWriter::Write(const MagnifierPaintFilter& filter,
                           const SkM44& current_ctm) {
-  WriteSimple(filter.src_rect());
+  WriteSimple(filter.lens_bounds());
+  WriteSimple(filter.zoom_amount());
   WriteSimple(filter.inset());
   Write(filter.input().get(), current_ctm);
 }

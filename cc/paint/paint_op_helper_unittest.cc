@@ -367,11 +367,11 @@ TEST(PaintOpHelperFilters, DropShadowPaintFilter) {
 
 TEST(PaintOpHelperFilters, MagnifierPaintFilter) {
   PaintFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
-  MagnifierPaintFilter filter(SkRect::MakeWH(100.f, 100.f), /*inset=*/0.1f,
-                              /*input=*/nullptr, &crop_rect);
+  MagnifierPaintFilter filter(SkRect::MakeWH(100.f, 100.f), /*zoom_amount=*/2.f,
+                              /*inset=*/0.1f, /*input=*/nullptr, &crop_rect);
   EXPECT_EQ(PaintOpHelper::ToString(filter),
-            "MagnifierPaintFilter(src_rect=[0.000,0.000 100.000x100.000], "
-            "inset=0.100, input=(nil), "
+            "MagnifierPaintFilter(lens_bounds=[0.000,0.000 100.000x100.000], "
+            "zoom_amount=2.000, inset=0.100, input=(nil), "
             "crop_rect=[0.000,0.000 100.000x100.000])");
 }
 

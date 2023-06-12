@@ -1034,16 +1034,19 @@ void PaintOpReader::ReadDropShadowPaintFilter(
 void PaintOpReader::ReadMagnifierPaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
-  SkRect src_rect = SkRect::MakeEmpty();
+  SkRect lens_bounds = SkRect::MakeEmpty();
+  SkScalar zoom_amount = 1.f;
   SkScalar inset = 0.f;
   sk_sp<PaintFilter> input;
 
-  Read(&src_rect);
+  Read(&lens_bounds);
+  Read(&zoom_amount);
   Read(&inset);
   Read(&input);
   if (!valid_)
     return;
-  filter->reset(new MagnifierPaintFilter(src_rect, inset, std::move(input),
+  filter->reset(new MagnifierPaintFilter(lens_bounds, zoom_amount, inset,
+                                         std::move(input),
                                          base::OptionalToPtr(crop_rect)));
 }
 
