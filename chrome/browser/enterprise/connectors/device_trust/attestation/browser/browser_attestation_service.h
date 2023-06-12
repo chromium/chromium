@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_BROWSER_ATTESTATION_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_BROWSER_ATTESTATION_SERVICE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+struct KeyInfo;
 
 namespace enterprise_connectors {
 
@@ -48,7 +51,7 @@ class BrowserAttestationService : public AttestationService {
   void OnKeyInfoDecorated(const SignedData& signed_data,
                           const std::set<DTCPolicyLevel>& levels,
                           AttestationCallback callback,
-                          KeyInfo& key_info);
+                          std::unique_ptr<KeyInfo> key_info);
 
   void OnResponseCreated(const std::set<DTCPolicyLevel>& levels,
                          AttestationCallback callback,
