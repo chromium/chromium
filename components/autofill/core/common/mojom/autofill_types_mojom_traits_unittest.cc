@@ -272,7 +272,10 @@ std::vector<Section> SectionTestCases() {
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   FormFieldData field;
   field.name = u"from_field_name";
-  field.host_frame = test::MakeLocalFrameToken();
+  // Randomizing the LocalFrameToken requires an AutofillTestEnvironment, which
+  // doesn't exist yet because SectionTestCases() is called by
+  // INSTANTIATE_TEST_SUITE_P().
+  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
   field.unique_renderer_id = FieldRendererId(123);
   s = Section::FromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
