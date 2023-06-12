@@ -114,13 +114,6 @@ ThreadableLoader::ThreadableLoader(
 }
 
 void ThreadableLoader::Start(ResourceRequest request) {
-  // Back/forward-cache is interested in use of the "Authorization" header.
-  if (request.HttpHeaderField(http_names::kAuthorization)) {
-    execution_context_->GetScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kAuthorizationHeader,
-        {SchedulingPolicy::DisableBackForwardCache()});
-  }
-
   const auto request_context = request.GetRequestContext();
   if (request.GetMode() == network::mojom::RequestMode::kNoCors) {
     SECURITY_CHECK(cors::IsNoCorsAllowedContext(request_context));
@@ -299,6 +292,16 @@ void ThreadableLoader::ResponseReceived(Resource* resource,
   DCHECK_EQ(resource, GetResource());
 
   checker_.ResponseReceived();
+
+  // If "Cache-Control: no-store" header exists in the XHR response,
+  // Back/Forward cache will be disabled for the page if the main resource has
+  // "Cache-Control: no-store" as well.
+  if (response.CacheControlContainsNoStore()) {
+    execution_context_->GetScheduler()->RegisterStickyFeature(
+        SchedulingPolicy::Feature::
+            kJsNetworkRequestReceivedCacheControlNoStoreResource,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
 
   client_->DidReceiveResponse(resource->InspectorId(), response);
 }

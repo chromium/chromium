@@ -242,7 +242,8 @@ constexpr WebSchedulerTrackedFeatures kAllowedFeatures = {
     WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
     // We only record this if "Cache-Control: no-store" header is present on the
     // main frame.
-    WebSchedulerTrackedFeature::kAuthorizationHeader,
+    WebSchedulerTrackedFeature::
+        kJsNetworkRequestReceivedCacheControlNoStoreResource,
     // TODO(crbug.com/1357482): Figure out if this should be allowed.
     WebSchedulerTrackedFeature::kWebNfc};
 
@@ -930,8 +931,11 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
       rfh->GetLastCommittedOrigin().IsSameOriginWith(
           root_rfh_->GetLastCommittedOrigin()) &&
       rfh->GetBackForwardCacheDisablingFeatures().Has(
-          WebSchedulerTrackedFeature::kAuthorizationHeader)) {
-    result.NoDueToFeatures({WebSchedulerTrackedFeature::kAuthorizationHeader});
+          WebSchedulerTrackedFeature::
+              kJsNetworkRequestReceivedCacheControlNoStoreResource)) {
+    result.NoDueToFeatures(
+        {WebSchedulerTrackedFeature::
+             kJsNetworkRequestReceivedCacheControlNoStoreResource});
   }
 }
 

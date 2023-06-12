@@ -121,8 +121,11 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"KeepaliveRequest", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
-    case WebSchedulerTrackedFeature::kAuthorizationHeader:
-      return {"AuthorizationHeader", "Authorization header used"};
+    case WebSchedulerTrackedFeature::
+        kJsNetworkRequestReceivedCacheControlNoStoreResource:
+      return {"JsNetworkRequestReceivedCacheControlNoStoreResource",
+              "JavaScript network request received Cache-Control: no-store "
+              "resource"};
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
       return {"IndexedDBEvent", "IndexedDB event is pending"};
     case WebSchedulerTrackedFeature::kWebSerial:
@@ -214,7 +217,8 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kInjectedStyleSheet,
       WebSchedulerTrackedFeature::kKeepaliveRequest,
       WebSchedulerTrackedFeature::kDummy,
-      WebSchedulerTrackedFeature::kAuthorizationHeader};
+      WebSchedulerTrackedFeature::
+          kJsNetworkRequestReceivedCacheControlNoStoreResource};
   return features;
 }
 

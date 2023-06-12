@@ -1594,8 +1594,10 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       // This is a test only reason and should never be called.
       NOTREACHED();
       return Page::BackForwardCacheNotRestoredReasonEnum::Dummy;
-    case WebSchedulerTrackedFeature::kAuthorizationHeader:
-      return Page::BackForwardCacheNotRestoredReasonEnum::AuthorizationHeader;
+    case WebSchedulerTrackedFeature::
+        kJsNetworkRequestReceivedCacheControlNoStoreResource:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          JsNetworkRequestReceivedCacheControlNoStoreResource;
     case WebSchedulerTrackedFeature::kWebSerial:
       // Currently we add WebSchedulerTrackedFeature::kWebSerial only for
       // disabling aggressive throttling.
@@ -1811,7 +1813,8 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kInjectedJavascript:
     case WebSchedulerTrackedFeature::kDocumentLoaded:
     case WebSchedulerTrackedFeature::kDummy:
-    case WebSchedulerTrackedFeature::kAuthorizationHeader:
+    case WebSchedulerTrackedFeature::
+        kJsNetworkRequestReceivedCacheControlNoStoreResource:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case WebSchedulerTrackedFeature::kWebSerial:
       NOTREACHED_NORETURN();
