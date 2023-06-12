@@ -228,6 +228,11 @@ void EmbeddedA11yManagerLacros::InstallExtension(
     return;
   }
 
+  // TODO(crbug.com/1454038): This crashes in some cases. Investigate why
+  // this is missing.
+  if (!manifest) {
+    return;
+  }
   CHECK(manifest) << "Unable to load extension manifest for extension "
                   << extension_id;
   std::string actual_id =
