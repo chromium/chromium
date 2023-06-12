@@ -65,6 +65,10 @@ void FakeGlanceablesTasksClient::PopulateTaskLists() {
       "TaskListItem4", "Task List 2 Item 2 Title", /*completed=*/false,
       /*due=*/base::Time::Now(),
       /*has_subtasks=*/false, /*has_email_link=*/false));
+  task_list_2->Add(std::make_unique<GlanceablesTask>(
+      "TaskListItem5", "Task List 2 Item 3 Title", /*completed=*/false,
+      /*due=*/base::Time::Now(),
+      /*has_subtasks=*/false, /*has_email_link=*/false));
   tasks_in_task_lists_.emplace("TaskListID1", std::move(task_list_1));
   tasks_in_task_lists_.emplace("TaskListID2", std::move(task_list_2));
 }

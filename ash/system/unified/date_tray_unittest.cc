@@ -6,6 +6,7 @@
 
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -22,7 +23,9 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -203,11 +206,68 @@ TEST_P(DateTrayTest, DISABLED_ShowTasksComboModel) {
                     ->GetTasksView()
                     ->task_list_combo_box_view()
                     ->GetVisible());
+
+    EXPECT_EQ(GetGlanceableTrayBubble()
+                  ->GetTasksView()
+                  ->task_items_container_view()
+                  ->children()
+                  .size(),
+              2u);
+
+    // Verify that tapping on combobox opens the selection menu.
     GestureTapOn(
         GetGlanceableTrayBubble()->GetTasksView()->task_list_combo_box_view());
-    PressAndReleaseKey(ui::VKEY_DOWN);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(GetGlanceableTrayBubble()->GetTasksView()->IsMenuRunning());
+
+    // Select the next task list using keyboard navigation.
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+    // Verify the number of items in task_items_container_view()->children().
+    EXPECT_EQ(GetGlanceableTrayBubble()
+                  ->GetTasksView()
+                  ->task_items_container_view()
+                  ->children()
+                  .size(),
+              3u);
+  }
+}
+
+TEST_P(DateTrayTest, MarkTaskAsComplete) {
+  LeftClickOn(GetDateTray());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
+
+  if (!AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(GetGlanceableTrayBubble(), nullptr);
+  } else {
+    EXPECT_TRUE(GetGlanceableTrayBubble()->GetTasksView()->GetVisible());
+    EXPECT_FALSE(GetGlanceableTrayBubble()->GetTasksView()->IsMenuRunning());
+    EXPECT_TRUE(GetGlanceableTrayBubble()
+                    ->GetTasksView()
+                    ->task_list_combo_box_view()
+                    ->GetVisible());
+    EXPECT_EQ(GetGlanceableTrayBubble()
+                  ->GetTasksView()
+                  ->task_items_container_view()
+                  ->children()
+                  .size(),
+              2u);
+
+    // Verify that tapping on combobox opens the selection menu.
+    GlanceablesTaskView* task_view = views::AsViewClass<GlanceablesTaskView>(
+        GetGlanceableTrayBubble()
+            ->GetTasksView()
+            ->task_items_container_view()
+            ->children()[0]);
+
+    ASSERT_TRUE(task_view);
+    ASSERT_FALSE(task_view->GetCompletedForTest());
+    GestureTapOn(task_view->GetButtonForTest());
+    ASSERT_TRUE(task_view->GetCompletedForTest());
   }
 }
 

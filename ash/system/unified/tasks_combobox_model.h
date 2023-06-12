@@ -24,6 +24,8 @@ class TasksComboboxModel : public ui::ComboboxModel {
 
   ~TasksComboboxModel() override;
 
+  GlanceablesTaskList* GetTaskListAt(size_t index) const;
+
  private:
   void SetTaskLists();
 
