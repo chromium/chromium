@@ -96,8 +96,8 @@ wheel: <
 >
 
 wheel: <
-  name: "infra/python/wheels/requests-py2_py3"
-  version: "version:2.26.0"
+  name: "infra/python/wheels/requests-py3"
+  version: "version:2.31.0"
 >
 
 wheel: <
