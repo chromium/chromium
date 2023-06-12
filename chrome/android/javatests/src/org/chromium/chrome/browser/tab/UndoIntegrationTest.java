@@ -11,14 +11,15 @@ import androidx.test.filters.LargeTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -37,10 +39,17 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class UndoIntegrationTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
+    @Rule
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
+    // clang-format off
     private static final String WINDOW_OPEN_BUTTON_URL = UrlUtils.encodeHtmlDataUri(
             "<html>"
             + "  <head>"
@@ -55,11 +64,11 @@ public class UndoIntegrationTest {
             + "  </body>"
             + "</html>"
     );
+    // clang-format on
 
     @Before
     public void setUp() throws InterruptedException {
         SnackbarManager.setDurationForTesting(1500);
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     /**
@@ -67,35 +76,40 @@ public class UndoIntegrationTest {
      * @throws TimeoutException
      */
     @Test
-    @DisabledTest(message = "https://crbug.com/679480")
     @LargeTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testAddNewContentsFromClosingTab() throws TimeoutException {
-        mActivityTestRule.loadUrl(WINDOW_OPEN_BUTTON_URL);
+        // Load in a new tab as Chrome will close if the last tab is closed.
+        sActivityTestRule.loadUrlInNewTab(WINDOW_OPEN_BUTTON_URL);
 
         final TabModel model =
-                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+                sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
         final Tab tab = TabModelUtils.getCurrentTab(model);
 
-        // Clock on the link that will trigger a delayed window popup.
+        // Click on the link that will trigger a delayed window popup. If this resolves it will open
+        // a second about:blank tab.
         DOMUtils.clickNode(tab.getWebContents(), "link");
 
         // Attempt to close the tab, which will delay closing until the undo timeout goes away.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("Model should have two tabs", 2, model.getCount());
             TabModelUtils.closeTabById(model, tab.getId(), true);
             Assert.assertTrue("Tab was not marked as closing", tab.isClosing());
             Assert.assertTrue("Tab is not actually closing", model.isClosurePending(tab.getId()));
         });
 
-        // Give the model a chance to process the undo and close the tab.
+        // Give the model a chance to process the pending closure.
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(model.isClosurePending(tab.getId()), Matchers.is(false));
-            Criteria.checkThat(model.getCount(), Matchers.is(0));
+            Criteria.checkThat(model.getCount(), Matchers.is(1));
         });
 
         // Validate that the model doesn't contain the original tab or any newly opened tabs.
-        Assert.assertFalse(
-                "Model is still waiting to close the tab", model.isClosurePending(tab.getId()));
-        Assert.assertEquals("Model still has tabs", 0, model.getCount());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(
+                    "Model is still waiting to close the tab", model.isClosurePending(tab.getId()));
+            Assert.assertEquals(
+                    "Model has more than the expected about:blank tab", 1, model.getCount());
+        });
     }
 }
