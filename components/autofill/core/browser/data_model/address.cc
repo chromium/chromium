@@ -171,7 +171,10 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                                 const std::string& locale,
                                                 VerificationStatus status) {
   if (type.html_type() == HtmlFieldType::kCountryCode) {
-    std::string country_code = base::ToUpperASCII(base::UTF16ToASCII(value));
+    std::string country_code =
+        base::IsStringASCII(value)
+            ? base::ToUpperASCII(base::UTF16ToASCII(value))
+            : std::string();
     if (!data_util::IsValidCountryCode(country_code)) {
       // To counteract the misuse of autocomplete=country attribute when used
       // with full country names, if the supplied country code is not a valid,
