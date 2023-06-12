@@ -84,9 +84,9 @@ def debug(extra_options):
 
 
 def stack(out_dir):
-  return run_shell(
-      'adb logcat -d | CHROMIUM_OUTPUT_DIR=' + shlex.quote(out_dir) +
-      ' third_party/android_platform/development/scripts/stack')
+  return run_shell('adb logcat -d | CHROMIUM_OUTPUT_DIR=' +
+                   shlex.quote(out_dir) +
+                   ' third_party/android_platform/development/scripts/stack')
 
 
 def use_goma():

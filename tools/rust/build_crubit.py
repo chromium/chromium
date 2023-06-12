@@ -16,7 +16,6 @@ import collections
 import hashlib
 import os
 import platform
-import pipes
 import shutil
 import stat
 import string

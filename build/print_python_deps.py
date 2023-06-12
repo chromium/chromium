@@ -11,7 +11,7 @@ required for .isolate files.
 
 import argparse
 import os
-import pipes
+import shlex
 import sys
 
 # Don't use any helper modules, or else they will end up in the results.
@@ -68,7 +68,7 @@ def _NormalizeCommandLine(options):
   if os.name == 'nt':
     return ' '.join(quote(x) for x in args).replace('\\', '/')
   else:
-    return ' '.join(pipes.quote(x) for x in args)
+    return ' '.join(shlex.quote(x) for x in args)
 
 
 def _FindPythonInDirectory(directory, allow_test):

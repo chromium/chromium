@@ -328,7 +328,7 @@ class TastTest(RemoteTest):
       self._attr_expr = '(' + ' || '.join(names) + ')'
 
     if self._attr_expr:
-      # Don't use pipes.quote() here. Something funky happens with the arg
+      # Don't use shlex.quote() here. Something funky happens with the arg
       # as it gets passed down from cros_run_test to tast. (Tast picks up the
       # escaping single quotes and complains that the attribute expression
       # "must be within parentheses".)
