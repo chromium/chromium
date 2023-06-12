@@ -267,10 +267,6 @@ void PrintUIHierarchies() {
   HandlePrintViewHierarchy();
 }
 
-bool CanTuckFloatedWindow() {
-  return !!window_util::GetFloatedWindowForActiveDesk();
-}
-
 bool DebugAcceleratorsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshDebugShortcuts);
