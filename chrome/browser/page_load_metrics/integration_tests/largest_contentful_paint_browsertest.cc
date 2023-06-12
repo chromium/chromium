@@ -343,8 +343,8 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
 
     // Need to navigate away from the test html page to force metrics to get
     // flushed/synced.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     waiter->Wait();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     ExpectUKMPageLoadMetricFlagSet(
         PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
         LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
