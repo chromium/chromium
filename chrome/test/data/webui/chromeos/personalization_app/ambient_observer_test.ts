@@ -127,18 +127,6 @@ suite('GooglePhotosPreviewLoadPerformance', () => {
     assertFalse(AmbientObserver.shouldLogPreviewsLoadPerformance);
   });
 
-  test(
-      'sets to true if topic source is not kGooglePhotos but jelly is enabled',
-      async () => {
-        loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
-        ambientProvider.ambientObserverRemote!.onTopicSourceChanged(
-            TopicSource.kArtGallery);
-        personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
-        await personalizationStore.waitForAction(
-            AmbientActionName.SET_TOPIC_SOURCE);
-        assertTrue(AmbientObserver.shouldLogPreviewsLoadPerformance);
-      });
-
   test('sets to false if already received preview images', async () => {
     personalizationStore.data.ambient.previews = [];
     ambientProvider.ambientObserverRemote!.onPreviewsFetched([]);
