@@ -151,6 +151,7 @@
     "android-arm64-archive-rel": "Ubuntu-22.04",
     "android-binary-size-generator": "Ubuntu-22.04",
     "android-build-perf-developer": "Ubuntu-22.04",
+    "android-cronet-x86-dbg": "Ubuntu-22.04",
     "android-official": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
     "android-rust-arm32-rel": "Ubuntu-22.04",
