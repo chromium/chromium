@@ -1894,7 +1894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
-    expires_after="2023-08-05">
+    expires_after="2024-06-07">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -1904,7 +1904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.PageTooLargeFailure" units="KB"
-    expires_after="2023-06-07">
+    expires_after="2024-06-07">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
