@@ -21,6 +21,11 @@ namespace {
 constexpr CGFloat kHorizontalSpacing = 16;
 }  // namespace
 
+const CGFloat kButtonHorizontalMargin = 16;
+const CGFloat kChipsHorizontalMargin = -1;
+const CGFloat TopSystemSpacingMultiplier = 2;
+const CGFloat BottomSystemSpacingMultiplier = 2.26;
+
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
   UIButton* button = [ChipButton buttonWithType:UIButtonTypeCustom];
   button.translatesAutoresizingMaskIntoConstraints = NO;

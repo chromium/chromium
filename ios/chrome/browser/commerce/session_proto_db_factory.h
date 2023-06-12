@@ -17,7 +17,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
-namespace {
+namespace session_proto_db::internal {
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 
 template <typename T>
@@ -41,7 +41,7 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
                      "supported on current platform.";
   }
 }
-}  // namespace
+}  // namespace session_proto_db::internal
 
 SessionProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*
@@ -83,7 +83,8 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForBrowserState(
 template <typename T>
 BrowserStateKeyedServiceFactory::TestingFactory
 SessionProtoDBFactory<T>::GetDefaultFactory() {
-  return base::BindRepeating(&BuildSessionProtoDB<T>);
+  return base::BindRepeating(
+      &session_proto_db::internal::BuildSessionProtoDB<T>);
 }
 
 template <typename T>
@@ -95,7 +96,7 @@ SessionProtoDBFactory<T>::SessionProtoDBFactory()
 template <typename T>
 std::unique_ptr<KeyedService> SessionProtoDBFactory<T>::BuildServiceInstanceFor(
     web::BrowserState* state) const {
-  return BuildSessionProtoDB<T>(state);
+  return session_proto_db::internal::BuildSessionProtoDB<T>(state);
 }
 
 #endif  // IOS_CHROME_BROWSER_COMMERCE_SESSION_PROTO_DB_FACTORY_H_

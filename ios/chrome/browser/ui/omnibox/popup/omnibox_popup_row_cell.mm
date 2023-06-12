@@ -66,6 +66,9 @@ BOOL IsMultilineSearchSuggestionEnabled() {
 
 }  // namespace
 
+NSString* const OmniboxPopupRowCellReuseIdentifier = @"OmniboxPopupRowCell";
+const CGFloat kOmniboxPopupCellMinimumHeight = 58;
+
 @interface OmniboxPopupRowCell ()
 
 /// The suggestion that this cell is currently displaying.

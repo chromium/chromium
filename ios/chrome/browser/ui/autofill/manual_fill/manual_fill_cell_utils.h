@@ -7,19 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-namespace {
-
 // Left and right margins of the cell content and buttons.
-static const CGFloat kButtonHorizontalMargin = 16;
+extern const CGFloat kButtonHorizontalMargin;
 
 // Left and right margins for the chips.
-static const CGFloat kChipsHorizontalMargin = -1;
+extern const CGFloat kChipsHorizontalMargin;
 
 // The multiplier for the base system spacing at the top margin.
-static const CGFloat TopSystemSpacingMultiplier = 2;
+extern const CGFloat TopSystemSpacingMultiplier;
 
 // The multiplier for the base system spacing at the bottom margin.
-static const CGFloat BottomSystemSpacingMultiplier = 2.26;
+extern const CGFloat BottomSystemSpacingMultiplier;
 
 // Options for `AppendHorizontalConstraintsForViews`.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
@@ -29,8 +27,6 @@ typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
   // The views can be constraint smaller than the guide.
   AppendConstraintsHorizontalEqualOrSmallerThanGuide = 1 << 1,
 };
-
-}  // namespace
 
 // Creates a blank button in chip style, for the given `action` and `target`.
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target);

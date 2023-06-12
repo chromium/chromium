@@ -15,6 +15,9 @@ namespace {
 const CGFloat kDefaultCornerRadius = 3;
 }
 
+const CGFloat kFaviconMinSize = 16.0f;
+const CGFloat kFaviconPreferredSize = 24.0f;
+
 @interface FaviconView () {
   // Property releaser for FaviconView.
 }

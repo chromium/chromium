@@ -26,8 +26,6 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeVideo = 4,
 };
 
-namespace {
-
 // Enum actions for the IOS.DefaultBrowserFullscreenPromo* UMA metrics. Entries
 // should not be renumbered and numeric values should never be reused.
 enum class IOSDefaultBrowserFullscreenPromoAction {
@@ -36,8 +34,6 @@ enum class IOSDefaultBrowserFullscreenPromoAction {
   kRemindMeLater = 2,
   kMaxValue = kRemindMeLater,
 };
-
-}  // namespace
 
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];

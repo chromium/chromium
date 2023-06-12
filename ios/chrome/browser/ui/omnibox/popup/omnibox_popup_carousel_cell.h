@@ -15,12 +15,6 @@
 @protocol AutocompleteSuggestionGroup;
 @protocol CarouselItemMenuProvider;
 
-namespace {
-
-NSString* OmniboxPopupCarouselCellReuseIdentifier = @"OmniboxPopupCarouselCell";
-
-}  // namespace
-
 /// Delegate for actions happening in OmniboxPopupCarouselCell.
 @protocol OmniboxPopupCarouselCellDelegate <NSObject>
 

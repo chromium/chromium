@@ -36,6 +36,7 @@ source_set("translate_public") {
   sources = [
     "infobar_translate_language_selection_consumer.h",
     "infobar_translate_modal_consumer.h",
+    "infobar_translate_modal_consumer.mm",
   ]
   deps = []
 }

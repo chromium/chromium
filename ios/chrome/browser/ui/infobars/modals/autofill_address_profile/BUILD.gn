@@ -9,6 +9,7 @@ source_set("modals") {
     "infobar_edit_address_profile_table_view_controller.h",
     "infobar_edit_address_profile_table_view_controller.mm",
     "infobar_save_address_profile_modal_consumer.h",
+    "infobar_save_address_profile_modal_consumer.mm",
     "infobar_save_address_profile_modal_delegate.h",
     "infobar_save_address_profile_table_view_controller.h",
     "infobar_save_address_profile_table_view_controller.mm",
