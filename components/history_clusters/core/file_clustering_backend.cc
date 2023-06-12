@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -15,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "components/history_clusters/core/filter_cluster_processor.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -243,14 +245,59 @@ void FileClusteringBackend::GetClustersForUI(
     QueryClustersFilterParams filter_params,
     ClustersCallback callback,
     std::vector<history::Cluster> clusters) {
-  // TODO(b/259466296): Implement this - just invoke the callback as is for now.
-  std::move(callback).Run(std::move(clusters));
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileClusteringBackend::GetClustersForUIOnBackgroundThread,
+                     clustering_request_source, std::move(filter_params),
+                     std::move(clusters)),
+      base::BindOnce(std::move(callback)));
+}
+
+std::vector<history::Cluster>
+FileClusteringBackend::GetClustersForUIOnBackgroundThread(
+    ClusteringRequestSource clustering_request_source,
+    QueryClustersFilterParams filter_params,
+    std::vector<history::Cluster> persisted_clusters) {
+  // Return if no persisted_clusters.
+  if (persisted_clusters.empty()) {
+    return {};
+  }
+
+  // Construct map of all visit ids to visits in persisted clusters.
+  std::vector<history::Cluster> clusters_from_command_line =
+      GetClustersFromFile();
+  base::flat_map<int64_t, history::ClusterVisit> persisted_visit_id_visit_map;
+  for (const auto& cluster : persisted_clusters) {
+    for (auto& visit : cluster.visits) {
+      persisted_visit_id_visit_map.insert(
+          {visit.annotated_visit.visit_row.visit_id, visit});
+    }
+  }
+
+  // Patch visits from persistence onto clusters from command line.
+  for (auto& cluster : clusters_from_command_line) {
+    for (auto it = cluster.visits.begin(); it != cluster.visits.end(); ++it) {
+      if (persisted_visit_id_visit_map.contains(
+              it->annotated_visit.visit_row.visit_id)) {
+        *it = persisted_visit_id_visit_map[it->annotated_visit.visit_row
+                                               .visit_id];
+        continue;
+      }
+      cluster.visits.erase(it);
+    }
+  }
+
+  // Apply any filtering after we've patched clusters from file.
+  auto filterer = std::make_unique<FilterClusterProcessor>(
+      clustering_request_source, filter_params,
+      /*engagement_score_provider_is_valid=*/true);
+  filterer->ProcessClusters(&clusters_from_command_line);
+  return clusters_from_command_line;
 }
 
 void FileClusteringBackend::GetClusterTriggerability(
     ClustersCallback callback,
     std::vector<history::Cluster> clusters) {
-  // TODO(b/259466296): Implement this - just invoke the callback as is for now.
   std::move(callback).Run(std::move(clusters));
 }
 

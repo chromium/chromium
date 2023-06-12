@@ -62,6 +62,10 @@ history::ClusterVisit CreateClusterVisit(
 history::DuplicateClusterVisit ClusterVisitToDuplicateClusterVisit(
     history::ClusterVisit cluster_visit);
 
+// Creates a Cluster from |cluster_visits|.
+history::Cluster CreateCluster(
+    std::vector<history::ClusterVisit>& cluster_visits);
+
 }  // namespace history_clusters::testing
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_TEST_UTILS_H_
