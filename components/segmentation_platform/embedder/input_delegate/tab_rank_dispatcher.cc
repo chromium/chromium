@@ -45,7 +45,7 @@ void RecordTabCountAtStartup(long cross_device_tab_count) {
 
 void RecordTabCountFromStartupToFirstSyncUpdate(long cross_device_tab_count) {
   base::UmaHistogramCounts1000(
-      "SegmentationPlatform.SyncSessions.TotalTabsCountAtFirstSyncUpdate",
+      "SegmentationPlatform.SyncSessions.TotalTabCountAtFirstSyncUpdate",
       cross_device_tab_count);
 }
 
