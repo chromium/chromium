@@ -27,6 +27,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
@@ -343,7 +344,11 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
     }
   } else {
     // No elements to focus on the shelf.
-    NOTREACHED();
+    //
+    // TODO(b/261774910): This is reachable apparently.
+    // Reaching this and not doing anything probably means that no view element
+    // is focused, but this is preferable to crashing via NOTREACHED().
+    base::debug::DumpWithoutCrashing();
   }
 }
 
