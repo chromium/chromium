@@ -5,6 +5,8 @@
 #ifndef PPAPI_CPP_FILE_REF_H_
 #define PPAPI_CPP_FILE_REF_H_
 
+#include <vector>
+
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/c/ppb_file_ref.h"

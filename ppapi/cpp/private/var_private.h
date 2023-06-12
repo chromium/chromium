@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 #include "ppapi/cpp/var.h"
 
 namespace pp {

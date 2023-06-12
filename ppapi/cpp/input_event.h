@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
+#include <utility>
 #include <vector>
 
 #include "ppapi/c/ppb_input_event.h"

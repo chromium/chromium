@@ -5,9 +5,7 @@
 #ifndef PPAPI_PROXY_DISPATCHER_H_
 #define PPAPI_PROXY_DISPATCHER_H_
 
-#include <set>
-#include <string>
-#include <vector>
+#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"

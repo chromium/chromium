@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
+#include <vector>
 
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"

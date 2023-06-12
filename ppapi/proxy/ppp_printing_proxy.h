@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
 #include "ppapi/c/dev/ppp_printing_dev.h"

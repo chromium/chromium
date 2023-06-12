@@ -6,7 +6,6 @@
 #define PPAPI_TESTS_TEST_MESSAGE_HANDLER_H_
 
 #include <string>
-#include <vector>
 
 #include "ppapi/c/ppb_messaging.h"
 #include "ppapi/tests/test_case.h"

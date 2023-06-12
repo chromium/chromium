@@ -6,7 +6,6 @@
 #define PPAPI_TESTS_TEST_CRYPTO_H_
 
 #include <string>
-#include <vector>
 
 #include "ppapi/c/dev/ppb_crypto_dev.h"
 #include "ppapi/tests/test_case.h"
