@@ -267,6 +267,9 @@ void It2MeHost::ConnectOnNetworkThread(
         chrome_os_enterprise_params_->terminate_upon_input);
     options.set_enable_curtaining(
         chrome_os_enterprise_params_->curtain_local_user_session);
+    // TODO(b/286835721): Inform in UI when file transfer is disabled by policy.
+    options.set_enable_file_transfer(
+        chrome_os_enterprise_params_->allow_file_transfer);
   }
 #endif
 

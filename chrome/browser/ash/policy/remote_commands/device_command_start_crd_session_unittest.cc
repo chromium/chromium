@@ -54,6 +54,7 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdAdminRemoteAccess;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
+using remoting::features::kEnableCrdFileTransferForKiosk;
 
 using Payload = base::Value::Dict;
 
@@ -240,6 +241,25 @@ bool SupportsRemoteAccess(TestSessionType user_session_type) {
     case TestSessionType::kAutoLaunchedArcKioskSession:
     case TestSessionType::kAutoLaunchedWebKioskSession:
     case TestSessionType::kAutoLaunchedKioskSession:
+    case TestSessionType::kManagedGuestSession:
+    case TestSessionType::kAffiliatedUserSession:
+    case TestSessionType::kGuestSession:
+    case TestSessionType::kUnaffiliatedUserSession:
+      return false;
+  }
+}
+
+// Returns true if the given session type is a kiosk session.
+bool IsKioskSession(TestSessionType user_session_type) {
+  switch (user_session_type) {
+    case TestSessionType::kManuallyLaunchedArcKioskSession:
+    case TestSessionType::kManuallyLaunchedWebKioskSession:
+    case TestSessionType::kManuallyLaunchedKioskSession:
+    case TestSessionType::kAutoLaunchedArcKioskSession:
+    case TestSessionType::kAutoLaunchedWebKioskSession:
+    case TestSessionType::kAutoLaunchedKioskSession:
+      return true;
+    case TestSessionType::kNoSession:
     case TestSessionType::kManagedGuestSession:
     case TestSessionType::kAffiliatedUserSession:
     case TestSessionType::kGuestSession:
@@ -822,6 +842,40 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       duration, /*expected_bucket_count=*/1);
 }
 
+TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
+       ShouldAllowFileTransferForKioskSessionsWhenFeatureIsEnabled) {
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+  if (!SupportsRemoteSupport(user_session_type)) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableCrdFileTransferForKiosk);
+  StartSessionOfType(user_session_type);
+  RunJobAndWaitForResult();
+  bool supports_file_transfer = IsKioskSession(user_session_type);
+
+  EXPECT_EQ(session_controller().session_parameters().allow_file_transfer,
+            supports_file_transfer);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
+       ShouldNotAllowFileTransferForAnySessionWhenFeatureIsNotEnabled) {
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+  if (!SupportsRemoteSupport(user_session_type)) {
+    return;
+  }
+
+  StartSessionOfType(user_session_type);
+  RunJobAndWaitForResult();
+
+  EXPECT_EQ(session_controller().session_parameters().allow_file_transfer,
+            false);
+}
+
 TEST_F(DeviceCommandStartCrdSessionJobTest,
        ShouldSendErrorUmaLogWhenUserTypeIsNotSupported) {
   base::HistogramTester histogram_tester;
@@ -1072,6 +1126,26 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     EXPECT_SUCCESS(result);
     EXPECT_TRUE(session_controller().session_parameters().allow_reconnections);
   }
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldNeverAllowFileTransferForRemoteAccessWhenFeatureIsEnabled) {
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+  if (!SupportsRemoteAccess(user_session_type)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableCrdFileTransferForKiosk);
+  StartSessionOfType(user_session_type);
+  AddActiveManagedNetwork();
+  RunJobAndWaitForResult(
+      Payload().Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION));
+
+  EXPECT_EQ(session_controller().session_parameters().allow_file_transfer,
+            false);
 }
 
 TEST_P(

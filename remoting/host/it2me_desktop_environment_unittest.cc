@@ -17,6 +17,7 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_events.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -375,6 +376,33 @@ TEST_F(It2MeDesktopEnvironmentTest,
   EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
 
   EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
+}
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ShouldHaveFileTransferCapabilitiesWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnableCrdFileTransferForKiosk);
+  DesktopEnvironmentOptions options(default_options());
+  std::string expected_capabilities(" ");
+  expected_capabilities += protocol::kFileTransferCapability;
+
+  options.set_enable_file_transfer(true);
+  auto desktop_environment = Create(options);
+
+  EXPECT_THAT(desktop_environment->GetCapabilities(),
+              testing::HasSubstr(expected_capabilities));
+}
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ShouldNotHaveFileTransferCapabilitiesWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnableCrdFileTransferForKiosk);
+  DesktopEnvironmentOptions options(default_options());
+
+  options.set_enable_file_transfer(false);
+  auto desktop_environment = Create(options);
+
+  EXPECT_THAT(desktop_environment->GetCapabilities(), testing::HasSubstr(""));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

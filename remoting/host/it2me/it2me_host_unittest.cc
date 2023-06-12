@@ -877,6 +877,17 @@ TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_curtaining());
 }
 
+TEST_F(It2MeHostTest, ConnectRespectsAllowFileTransferParameter) {
+  enterprise_params_ = {.allow_file_transfer = true};
+  StartHost();
+  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_file_transfer());
+}
+
+TEST_F(It2MeHostTest, EnableFileTransferDefaultsToFalse) {
+  StartHost();
+  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
+}
+
 TEST_F(It2MeHostTest,
        EnterpriseSessionsSucceedWhenRemoteSupportConnectionsPolicyDisabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowRemoteSupportConnections,

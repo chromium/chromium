@@ -226,6 +226,7 @@ class CrdAdminSessionController::CrdHostSession {
         .curtain_local_user_session = parameters_.curtain_local_user_session,
         .allow_troubleshooting_tools = parameters_.allow_troubleshooting_tools,
         .allow_reconnections = parameters_.allow_reconnections,
+        .allow_file_transfer = parameters_.allow_file_transfer,
     };
   }
 

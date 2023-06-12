@@ -33,6 +33,9 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
   void InitializeCurtainMode(
       base::WeakPtr<ClientSessionControl> client_session_control);
 
+  // BasicDesktopEnvironment implementation:
+  std::string GetCapabilities() const override;
+
   bool is_curtained() const { return curtain_mode_ != nullptr; }
 
  protected:
