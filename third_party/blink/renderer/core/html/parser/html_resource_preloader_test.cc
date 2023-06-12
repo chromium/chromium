@@ -56,8 +56,7 @@ class HTMLResourcePreloaderTest : public PageTestBase {
     // TODO(yoav): Need a mock loader here to verify things are happenning
     // beyond preconnect.
     auto preload_request = PreloadRequest::CreateIfNeeded(
-        String(), TextPosition::MinimumPosition(), test_case.url,
-        KURL(test_case.base_url), ResourceType::kImage,
+        String(), test_case.url, KURL(test_case.base_url), ResourceType::kImage,
         network::mojom::ReferrerPolicy(), ResourceFetcher::kImageNotImageSet,
         nullptr /* exclusion_info */, absl::nullopt /* resource_width */,
         absl::nullopt /* resource_height */,

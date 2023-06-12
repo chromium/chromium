@@ -61,7 +61,6 @@ KURL PreloadRequest::CompleteURL(Document* document) {
 // static
 std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     const String& initiator_name,
-    const TextPosition& initiator_position,
     const String& resource_url,
     const KURL& base_url,
     ResourceType resource_type,
@@ -84,9 +83,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     return nullptr;
 
   return base::WrapUnique(new PreloadRequest(
-      initiator_name, initiator_position, resource_url, base_url, resource_type,
-      resource_width, resource_height, request_type, referrer_policy,
-      is_image_set));
+      initiator_name, resource_url, base_url, resource_type, resource_width,
+      resource_height, request_type, referrer_policy, is_image_set));
 }
 
 Resource* PreloadRequest::Start(Document* document) {

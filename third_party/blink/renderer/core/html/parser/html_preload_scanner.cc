@@ -228,7 +228,6 @@ class TokenPreloadScanner::StartTagScanner {
 
   std::unique_ptr<PreloadRequest> CreatePreloadRequest(
       const KURL& predicted_base_url,
-      const SegmentedString& source,
       const PictureData& picture_data,
       const CachedDocumentParameters& document_parameters,
       const PreloadRequest::ExclusionInfo* exclusion_info,
@@ -253,8 +252,6 @@ class TokenPreloadScanner::StartTagScanner {
       }
     }
 
-    TextPosition position =
-        TextPosition(source.CurrentLine(), source.CurrentColumn());
     float source_size = source_size_;
     bool source_size_set = source_size_set_;
     if (picture_data.picked) {
@@ -282,7 +279,7 @@ class TokenPreloadScanner::StartTagScanner {
             ? referrer_policy_
             : document_parameters.referrer_policy;
     auto request = PreloadRequest::CreateIfNeeded(
-        InitiatorFor(tag_impl_, link_is_modulepreload_), position, url_to_load_,
+        InitiatorFor(tag_impl_, link_is_modulepreload_), url_to_load_,
         predicted_base_url, type.value(), referrer_policy, is_image_set,
         exclusion_info, resource_width_, resource_height_, request_type);
     if (!request)
@@ -796,16 +793,6 @@ TokenPreloadScanner::TokenPreloadScanner(
 
 TokenPreloadScanner::~TokenPreloadScanner() = default;
 
-void TokenPreloadScanner::Scan(const HTMLToken& token,
-                               const SegmentedString& source,
-                               PreloadRequestStream& requests,
-                               MetaCHValues& meta_ch_values,
-                               absl::optional<ViewportDescription>* viewport,
-                               bool* is_csp_meta_tag) {
-  ScanCommon(token, source, requests, meta_ch_values, viewport,
-             is_csp_meta_tag);
-}
-
 static void HandleMetaViewport(
     const String& attribute_value,
     const CachedDocumentParameters* document_parameters,
@@ -869,13 +856,12 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
   }
 }
 
-void TokenPreloadScanner::ScanCommon(
-    const HTMLToken& token,
-    const SegmentedString& source,
-    PreloadRequestStream& requests,
-    MetaCHValues& meta_ch_values,
-    absl::optional<ViewportDescription>* viewport,
-    bool* is_csp_meta_tag) {
+void TokenPreloadScanner::Scan(const HTMLToken& token,
+                               const SegmentedString& source,
+                               PreloadRequestStream& requests,
+                               MetaCHValues& meta_ch_values,
+                               absl::optional<ViewportDescription>* viewport,
+                               bool* is_csp_meta_tag) {
   if (!document_parameters_->do_html_preload_scanning)
     return;
 
@@ -1035,10 +1021,11 @@ void TokenPreloadScanner::ScanCommon(
       if (in_style_)
         css_scanner_.SetMediaMatches(scanner.GetMatched());
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
-          predicted_base_element_url_, source, picture_data_,
-          *document_parameters_, exclusion_info_.get(),
-          seen_img_ || seen_body_);
+          predicted_base_element_url_, picture_data_, *document_parameters_,
+          exclusion_info_.get(), seen_img_ || seen_body_);
       if (request) {
+        request->SetInitiatorPosition(
+            TextPosition(source.CurrentLine(), source.CurrentColumn()));
         requests.push_back(std::move(request));
       }
       return;
