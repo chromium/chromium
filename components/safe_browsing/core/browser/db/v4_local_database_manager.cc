@@ -265,10 +265,19 @@ void MaybeDeleteStore(const base::FilePath& path) {
   // simple structure to delete them all.
   base::FileEnumerator enumerator(
       path.DirName(), false, base::FileEnumerator::FILES,
-      path.BaseName().value() + FILE_PATH_LITERAL("*"));
+      path.BaseName().value() + FILE_PATH_LITERAL("*"),
+      // Since the search is non-recursive and only on files, the folder search
+      // policy doesn't matter. We set it to the default value here.
+      base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
+      base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
   for (base::FilePath store_path = enumerator.Next(); !store_path.empty();
        store_path = enumerator.Next()) {
     base::DeleteFile(store_path);
+  }
+
+  if (enumerator.GetError() != base::File::FILE_OK) {
+    LOG(ERROR) << "Removing store at " << path << " failed with error "
+               << base::File::ErrorToString(enumerator.GetError());
   }
 }
 
