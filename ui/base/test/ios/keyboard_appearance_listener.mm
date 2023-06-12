@@ -6,6 +6,10 @@
 
 #include <vector>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation KeyboardAppearanceListener {
  @private
   std::vector<id> _notificationObservers;
@@ -16,31 +20,38 @@
 - (id)init {
   self = [super init];
   if (self) {
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    _notificationObservers.push_back(
-        [center addObserverForName:UIKeyboardDidShowNotification
-                            object:nil
-                             queue:nil
-                        usingBlock:^(NSNotification* arg) {
-                          _keyboardVisible = true;
-                        }]);
-    _notificationObservers.push_back(
-        [center addObserverForName:UIKeyboardWillHideNotification
-                            object:nil
-                             queue:nil
-                        usingBlock:^(NSNotification* arg) {
-                          _keyboardVisible = false;
-                        }]);
+    KeyboardAppearanceListener* __weak weakSelf = self;
+
+    NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
+    _notificationObservers.push_back([center
+        addObserverForName:UIKeyboardDidShowNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* arg) {
+                  KeyboardAppearanceListener* strongSelf = weakSelf;
+                  if (strongSelf) {
+                    strongSelf->_keyboardVisible = true;
+                  }
+                }]);
+    _notificationObservers.push_back([center
+        addObserverForName:UIKeyboardWillHideNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* arg) {
+                  KeyboardAppearanceListener* strongSelf = weakSelf;
+                  if (strongSelf) {
+                    strongSelf->_keyboardVisible = false;
+                  }
+                }]);
   }
   return self;
 }
 
 - (void)dealloc {
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter* nc = NSNotificationCenter.defaultCenter;
   for (const auto& observer : _notificationObservers) {
     [nc removeObserver:observer];
   }
   _notificationObservers.clear();
-  [super dealloc];
 }
 @end

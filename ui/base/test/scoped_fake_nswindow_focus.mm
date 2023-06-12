@@ -9,6 +9,10 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using base::mac::ScopedObjCClassSwizzler;
 
 namespace {
@@ -85,8 +89,7 @@ void ClearFocus() {
 
 @end
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 ScopedFakeNSWindowFocus::ScopedFakeNSWindowFocus()
     : is_main_swizzler_(
@@ -125,5 +128,4 @@ ScopedFakeNSWindowFocus::~ScopedFakeNSWindowFocus() {
   ClearFocus();
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

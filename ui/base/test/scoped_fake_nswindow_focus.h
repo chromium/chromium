@@ -7,14 +7,11 @@
 
 #include <memory>
 
-namespace base {
-namespace mac {
+namespace base::mac {
 class ScopedObjCClassSwizzler;
 }
-}
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 // Simulates key and main status by listening for -makeKeyWindow,
 // -makeMainWindow and -orderOut:. This allows test coverage of code relying on
@@ -38,7 +35,6 @@ class ScopedFakeNSWindowFocus {
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> order_out_swizzler_;
 };
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
 #endif  // UI_BASE_TEST_SCOPED_FAKE_NSWINDOW_FOCUS_H_

@@ -6,9 +6,11 @@
 
 #include "base/mac/scoped_cftyperef.h"
 
-namespace ui {
-namespace test {
-namespace uiimage_utils {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace ui::test::uiimage_utils {
 
 UIImage* UIImageWithSizeAndSolidColor(CGSize const& size, UIColor* color) {
   return UIImageWithSizeAndSolidColorAndScale(size, color, /*scale=*/1.0);
@@ -49,6 +51,4 @@ bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
   return memcmp(ptr_1, ptr_2, length_1) == 0;
 }
 
-}  // namespace uiimage_utils
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test::uiimage_utils

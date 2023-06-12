@@ -7,14 +7,11 @@
 
 #include <memory>
 
-namespace base {
-namespace mac {
+namespace base::mac {
 class ScopedObjCClassSwizzler;
 }
-}
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 // Overrides system setting for scrollbar style with NSScrollerOverlay if we
 // want the scrollbar to overlay. Otherwise, override with
@@ -36,7 +33,6 @@ class ScopedPreferredScrollerStyle {
   bool overlay_;
 };
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
 #endif  // UI_BASE_TEST_SCOPED_PREFERRED_SCROLLER_STYLE_MAC_H_

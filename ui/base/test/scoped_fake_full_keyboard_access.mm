@@ -5,10 +5,15 @@
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 
 #import <Cocoa/Cocoa.h>
+
 #include <ostream>
 
 #include "base/check_op.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -29,8 +34,7 @@ ui::test::ScopedFakeFullKeyboardAccess* g_instance = nullptr;
 
 @end
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 ScopedFakeFullKeyboardAccess::ScopedFakeFullKeyboardAccess()
     : full_keyboard_access_state_(true),
@@ -53,5 +57,4 @@ ScopedFakeFullKeyboardAccess* ScopedFakeFullKeyboardAccess::GetInstance() {
   return g_instance;
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

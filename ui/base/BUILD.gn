@@ -803,6 +803,10 @@ static_library("test_support") {
     "test/idle_test_utils.h",
   ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "interaction/interaction_test_util_mac.h",

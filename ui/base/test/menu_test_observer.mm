@@ -6,6 +6,10 @@
 
 #include "base/check_op.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation MenuTestObserver
 
 @synthesize menu = _menu;
@@ -16,9 +20,9 @@
 
 - (instancetype)initWithMenu:(NSMenu*)menu {
   if ((self = [super init])) {
-    _menu = [menu retain];
+    _menu = menu;
 
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
     [center addObserver:self
                selector:@selector(menuDidBeginTracking:)
                    name:NSMenuDidBeginTrackingNotification
@@ -32,10 +36,7 @@
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_menu release];
-  [_openCallback release];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)menuDidBeginTracking:(NSNotification*)notif {
