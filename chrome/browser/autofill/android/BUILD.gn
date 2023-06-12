@@ -21,7 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/LegalMessageLine.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
-    "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditor.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldAdapter.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldView.java",

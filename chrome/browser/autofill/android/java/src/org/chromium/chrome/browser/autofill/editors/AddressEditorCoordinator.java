@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * An address editor. Can be used for either shipping or billing address editing.
  */
-public class AddressEditor {
+public class AddressEditorCoordinator {
     private final AddressEditorMediator mMediator;
     private final EditorDialogView mEditorDialog;
 
@@ -57,7 +57,7 @@ public class AddressEditor {
      * @param profile Current user's profile.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditor(
+    public AddressEditorCoordinator(
             EditorDialogView editorDialog, Delegate delegate, Profile profile, boolean saveToDisk) {
         this(editorDialog, delegate, profile,
                 new AutofillAddress(editorDialog.getContext(), AutofillProfile.builder().build()),
@@ -74,8 +74,9 @@ public class AddressEditor {
      * @param userFlow
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditor(EditorDialogView editorDialog, Delegate delegate, Profile profile,
-            AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
+    public AddressEditorCoordinator(EditorDialogView editorDialog, Delegate delegate,
+            Profile profile, AutofillAddress addressToEdit, @UserFlow int userFlow,
+            boolean saveToDisk) {
         mMediator = new AddressEditorMediator(
                 editorDialog.getContext(), delegate, profile, addressToEdit, userFlow, saveToDisk);
         mEditorDialog = editorDialog;

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 
 import android.app.Activity;
 import android.text.TextUtils;
@@ -23,8 +23,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.editors.AddressEditor;
-import org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,7 +49,7 @@ public class SaveUpdateAddressProfilePrompt {
     private final PropertyModel mDialogModel;
     private final View mDialogView;
     private final EditorDialogView mEditorDialog;
-    private AddressEditor mAddressEditor;
+    private AddressEditorCoordinator mAddressEditor;
     private boolean mEditorClosingPending;
 
     /**
@@ -89,13 +90,13 @@ public class SaveUpdateAddressProfilePrompt {
         mEditorDialog = new EditorDialogView(activity, /*deleteRunnable=*/null,
                 HelpAndFeedbackLauncherImpl.getForProfile(browserProfile));
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
-        AddressEditor.Delegate delegate = new AddressEditor.Delegate() {
+        Delegate delegate = new Delegate() {
             @Override
             public void onDone(AutofillAddress address) {
                 onEdited(address);
             }
         };
-        mAddressEditor = new AddressEditor(mEditorDialog, delegate, browserProfile,
+        mAddressEditor = new AddressEditorCoordinator(mEditorDialog, delegate, browserProfile,
                 new AutofillAddress(activity, autofillProfile), userFlow,
                 /*saveToDisk=*/false);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
@@ -272,7 +273,7 @@ public class SaveUpdateAddressProfilePrompt {
         });
     }
 
-    void setAddressEditorForTesting(AddressEditor addressEditor) {
+    void setAddressEditorForTesting(AddressEditorCoordinator addressEditor) {
         mAddressEditor = addressEditor;
     }
 

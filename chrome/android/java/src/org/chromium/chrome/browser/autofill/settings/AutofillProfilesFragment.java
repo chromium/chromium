@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -30,7 +30,9 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
-import org.chromium.chrome.browser.autofill.editors.AddressEditor;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
+;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
@@ -54,7 +56,7 @@ import org.chromium.components.sync.UserSelectableType;
 public class AutofillProfilesFragment extends PreferenceFragmentCompat
         implements PersonalDataManager.PersonalDataManagerObserver, FragmentHelpAndFeedbackLauncher,
                    ProfileDependentSetting {
-    private static AddressEditor.Delegate sAddressEditorDelegate = new AddressEditor.Delegate() {
+    private static Delegate sAddressEditorDelegate = new Delegate() {
         // User has either created a new address, or edited an existing address.
         // We should save changes in any case.
         @Override
@@ -229,14 +231,15 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         mEditorDialog = prepareEditorDialog(editorPreference.getGUID());
         AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
         if (autofillAddress == null) {
-            AddressEditor addressEditor =
-                    new AddressEditor(mEditorDialog, sAddressEditorDelegate, mProfile,
+            AddressEditorCoordinator addressEditor =
+                    new AddressEditorCoordinator(mEditorDialog, sAddressEditorDelegate, mProfile,
                             /*saveToDisk=*/true);
             addressEditor.showEditorDialog();
         } else {
-            AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
-                    mProfile, autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
-                    /*saveToDisk=*/true);
+            AddressEditorCoordinator addressEditor =
+                    new AddressEditorCoordinator(mEditorDialog, sAddressEditorDelegate, mProfile,
+                            autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
+                            /*saveToDisk=*/true);
             addressEditor.showEditorDialog();
         }
     }

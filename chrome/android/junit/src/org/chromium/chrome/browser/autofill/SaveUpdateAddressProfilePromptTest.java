@@ -34,7 +34,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.editors.AddressEditor;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
@@ -68,7 +68,7 @@ public class SaveUpdateAddressProfilePromptTest {
     @Mock
     private Profile mProfile;
     @Mock
-    private AddressEditor mAddressEditor;
+    private AddressEditorCoordinator mAddressEditor;
 
     @Captor
     private ArgumentCaptor<Callback<AutofillAddress>> mCallbackCaptor;

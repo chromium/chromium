@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.CREATE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.CREATE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
@@ -61,7 +61,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.Source;
-import org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,8 +88,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Contains the logic for the AddressEditor component. It sets the state of the model and reacts to
- * events like address country selection.
+ * Contains the logic for the autofill address editor component. It sets the state of the model and
+ * reacts to events like address country selection.
  */
 class AddressEditorMediator {
     private final Handler mHandler = new Handler();
@@ -99,7 +100,7 @@ class AddressEditorMediator {
             new CountryAwarePhoneNumberValidator(true);
     private final AutofillProfileBridge mAutofillProfileBridge = new AutofillProfileBridge();
     private final Context mContext;
-    private final AddressEditor.Delegate mDelegate;
+    private final Delegate mDelegate;
     private final Profile mProfile;
     private final AutofillProfile mProfileToEdit;
     private final AutofillAddress mAddressToEdit;
@@ -183,7 +184,7 @@ class AddressEditorMediator {
         return supportedCountries;
     }
 
-    AddressEditorMediator(Context context, AddressEditor.Delegate delegate, Profile profile,
+    AddressEditorMediator(Context context, Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
         mContext = context;
         mDelegate = delegate;

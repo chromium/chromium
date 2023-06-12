@@ -11,9 +11,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.UiRestriction.RESTRICTION_TYPE_PHONE;
 
@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.Source;
+import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,7 +68,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * These tests render screenshots of the {@link AddressEditor} and compare them to a gold standard.
+ * These tests render screenshots of the autofill address editor and compare them to a gold
+ * standard.
  */
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @RunWith(ParameterizedRunner.class)
@@ -144,7 +146,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     @Mock
     private HelpAndFeedbackLauncher mLauncher;
     @Mock
-    private AddressEditor.Delegate mDelegate;
+    private Delegate mDelegate;
 
     private final CoreAccountInfo mAccountInfo =
             CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
@@ -237,8 +239,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         View editor = runOnUiThreadBlocking(() -> {
             EditorDialogView dialog =
                     new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditor addressEditor =
-                    new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
+            AddressEditorCoordinator addressEditor =
+                    new AddressEditorCoordinator(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
@@ -253,8 +255,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialogView dialog =
                     new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditor addressEditor =
-                    new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
+            AddressEditorCoordinator addressEditor =
+                    new AddressEditorCoordinator(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
@@ -269,8 +271,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialogView dialog =
                     new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
-                    new AutofillAddress(getActivity(), sLocalProfile),
+            AddressEditorCoordinator addressEditor = new AddressEditorCoordinator(dialog, mDelegate,
+                    mProfile, new AutofillAddress(getActivity(), sLocalProfile),
                     UPDATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
@@ -286,8 +288,9 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialogView dialog =
                     new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
-                    new AutofillAddress(getActivity(), sAccountProfile), SAVE_NEW_ADDRESS_PROFILE,
+            AddressEditorCoordinator addressEditor = new AddressEditorCoordinator(dialog, mDelegate,
+                    mProfile, new AutofillAddress(getActivity(), sAccountProfile),
+                    SAVE_NEW_ADDRESS_PROFILE,
                     /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
@@ -303,8 +306,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialogView dialog =
                     new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
-                    new AutofillAddress(getActivity(), sLocalProfile),
+            AddressEditorCoordinator addressEditor = new AddressEditorCoordinator(dialog, mDelegate,
+                    mProfile, new AutofillAddress(getActivity(), sLocalProfile),
                     MIGRATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
