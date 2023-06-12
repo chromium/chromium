@@ -14,6 +14,7 @@
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -27,6 +28,10 @@
 #include "ui/aura/env_observer.h"
 
 class PrefService;
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace ash {
 
@@ -84,7 +89,6 @@ class ASH_EXPORT ScheduledFeature
     return active_user_pref_service_;
   }
   ScheduleCheckpoint current_checkpoint() const { return current_checkpoint_; }
-  base::OneShotTimer* timer() { return timer_.get(); }
 
   bool GetEnabled() const;
   ScheduleType GetScheduleType() const;
@@ -114,6 +118,8 @@ class ASH_EXPORT ScheduledFeature
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   void SetClockForTesting(const Clock* clock);
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  protected:
   // Called by `Refresh()` and `RefreshScheduleTimer()` to refresh the feature

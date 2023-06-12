@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -21,6 +22,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -220,6 +222,12 @@ void ScheduledFeature::SetClockForTesting(const Clock* clock) {
   clock_ = clock;
   CHECK(!timer_->IsRunning());
   timer_ = std::make_unique<base::OneShotTimer>(clock_);
+}
+
+void ScheduledFeature::SetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  CHECK(!timer_->IsRunning());
+  timer_->SetTaskRunner(std::move(task_runner));
 }
 
 bool ScheduledFeature::MaybeRestoreSchedule() {

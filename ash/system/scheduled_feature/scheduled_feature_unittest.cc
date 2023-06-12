@@ -30,11 +30,11 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
-#include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -171,7 +171,9 @@ class TestScheduledFeature : public ScheduledFeature {
 class ScheduledFeatureTest : public NoSessionAshTestBase,
                              public ScheduledFeature::Clock {
  public:
-  ScheduledFeatureTest() = default;
+  ScheduledFeatureTest()
+      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
+        task_runner_origin_ticks_(task_runner_->NowTicks()) {}
   ScheduledFeatureTest(const ScheduledFeatureTest& other) = delete;
   ScheduledFeatureTest& operator=(const ScheduledFeatureTest& rhs) = delete;
   ~ScheduledFeatureTest() override = default;
@@ -190,7 +192,6 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   GeolocationController* geolocation_controller() {
     return geolocation_controller_;
   }
-  base::SimpleTestClock* test_clock() { return &test_clock_; }
   const base::OneShotTimer* timer_ptr() const { return timer_ptr_; }
   TestGeolocationUrlLoaderFactory* factory() const { return factory_; }
 
@@ -198,9 +199,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    base::Time now;
-    EXPECT_TRUE(base::Time::FromUTCString("23 Dec 2021 12:00:00", &now));
-    test_clock()->SetNow(now);
+    SetWallClockOrigin("23 Dec 2021 12:00:00");
 
     // Set the clock of geolocation controller to our test clock to control the
     // time now.
@@ -224,6 +223,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     ASSERT_FALSE(feature_->GetEnabled());
 
     feature_->SetClockForTesting(this);
+    feature_->SetTaskRunnerForTesting(task_runner_);
     feature_->OnActiveUserPrefServiceChanged(
         Shell::Get()->session_controller()->GetActivePrefService());
 
@@ -241,9 +241,18 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   }
 
   // ScheduledFeature::Clock:
-  base::Time Now() const override { return test_clock_.Now(); }
+  base::Time Now() const override {
+    // Some tests may want to control the UTC wall clock time around which the
+    // test is centered. `wall_clock_origin_` allows for this, and the value
+    // returned here still reflects the advancement of `task_runner_`'s mock
+    // time.
+    const base::TimeDelta mock_time_elapsed =
+        NowTicks() - task_runner_origin_ticks_;
+    return wall_clock_origin_ + wall_clock_artificial_advancement_ +
+           mock_time_elapsed;
+  }
 
-  base::TimeTicks NowTicks() const override { return tick_clock_.NowTicks(); }
+  base::TimeTicks NowTicks() const override { return task_runner_->NowTicks(); }
 
   void CreateTestUserSessions() {
     GetSessionControllerClient()->Reset();
@@ -294,39 +303,11 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
       hour %= 24;
     }
 
-    return TimeOfDay(hour * 60).SetClock(&test_clock_);
+    return TimeOfDay(hour * 60).SetClock(this);
   }
 
-  // It is infeasible to initialize AshTestBase with "mock" time and fast
-  // forward the mock TaskEnvironment in these test cases. Why: The AshTestBase
-  // harness also instantiates a large portion of the UI stack (even though it's
-  // irrelevant to these tests), which causes TaskEnvironment::FastForwardBy()
-  // to block for long periods of time. The test cases ultimately take too long.
-  //
-  // This implementation is a workaround that only fast forwards the custom
-  // test "clocks" that are visible to the ScheduledFeature and its relevant
-  // dependencies. It also runs the internal ScheduledFeature "timer" as time
-  // progresses, so test cases may call this and the related methods below as if
-  // they were using TaskEnvironment::FastForwardBy() and the end result will
-  // look the same to them.
   void FastForwardBy(base::TimeDelta amount) {
-    while (amount.is_positive()) {
-      base::TimeDelta advance_increment;
-      if (feature()->timer()->IsRunning() &&
-          feature()->timer()->desired_run_time() <=
-              tick_clock_.NowTicks() + amount) {
-        // Emulates the internal timer firing at its scheduled time.
-        advance_increment =
-            feature()->timer()->desired_run_time() - tick_clock_.NowTicks();
-        AdvanceTimeBy(advance_increment);
-        feature()->timer()->FireNow();
-      } else {
-        advance_increment = amount;
-        AdvanceTimeBy(advance_increment);
-      }
-      ASSERT_LE(advance_increment, amount);
-      amount -= advance_increment;
-    }
+    task_runner_->FastForwardBy(amount);
   }
 
   // Fast forwards to the next point in time that the specified `time_of_day`
@@ -334,8 +315,8 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   // 1) now = 2 PM time_of_day = 5 PM, advances 3 hours
   // 2) now = 7 PM time_of_day = 5 PM, advances 22 hours (the next day)
   void FastForwardTo(TimeOfDay time_of_day) {
-    base::Time target_time = time_of_day.SetClock(&test_clock_).ToTimeToday();
-    const base::Time now = test_clock_.Now();
+    base::Time target_time = time_of_day.SetClock(this).ToTimeToday();
+    const base::Time now = Now();
     if (target_time < now) {
       target_time += base::Days(1);
       ASSERT_GT(target_time, now);
@@ -343,9 +324,10 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     FastForwardBy(target_time - now);
   }
 
+  // To simulate events like the device suspending (wall clock advances, but
+  // clock "ticks" don't).
   void AdvanceTimeBy(base::TimeDelta amount) {
-    test_clock_.Advance(amount);
-    tick_clock_.Advance(amount);
+    wall_clock_artificial_advancement_ += amount;
   }
 
   // Fires the timer of the scheduler to request geoposition and wait for all
@@ -373,13 +355,39 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     return geolocation_controller()->HasObserverForTesting(feature());
   }
 
+  // Sets the wall clock time at which the test case starts. After calling this,
+  // future calls to Now() will return `utc_time_str` plus the amount of mock
+  // time that has elapsed thus far in the test. See
+  // `base::Time::FromUTCString()` for format of `utc_time_str`.
+  void SetWallClockOrigin(const std::string& utc_time_str) {
+    ASSERT_TRUE(
+        base::Time::FromUTCString(utc_time_str.c_str(), &wall_clock_origin_));
+  }
+
  private:
+  // It is infeasible to initialize AshTestBase with "mock" time and fast
+  // forward the mock TaskEnvironment in these test cases. Why: The
+  // AshTestBase harness also instantiates a large portion of the UI stack
+  // (even though it's irrelevant to these tests), which causes
+  // TaskEnvironment::FastForwardBy() to block for long periods of time. The
+  // test cases ultimately take too long.
+  //
+  // To solve, create a dedicated `base::TestMockTimeTaskRunner` just for
+  // `ScheduledFeature` and its dependencies. The `task_runner_` is still
+  // run on the main test thread.
+  const scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  // The time at which `task_runner_`'s internal mock tick clock starts.
+  const base::TimeTicks task_runner_origin_ticks_;
+  // Wall clock time at which the test case starts. Individual test cases may
+  // adjust this with the `SetWallClockOrigin()` method. This is reflected in
+  // the return value of `Now()`.
+  base::Time wall_clock_origin_;
+  // Used to support `AdvanceTimeBy()`, where the wall clock is advanced but
+  // the tick clock is not (simulates a device suspending). This is reflected
+  // in the return value of `Now()` and defaults to 0.
+  base::TimeDelta wall_clock_artificial_advancement_;
   std::unique_ptr<TestScheduledFeature> feature_;
   raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
-  // The `test_clock_` and `tick_clock_` are advanced in unison so that the
-  // ScheduledFeature sees time progressing consistently in all facets.
-  base::SimpleTestClock test_clock_;
-  base::SimpleTestTickClock tick_clock_;
   raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
   raw_ptr<TestGeolocationUrlLoaderFactory, ExperimentalAsh> factory_;
   Geoposition position_;
@@ -478,7 +486,7 @@ TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
   // hours scheduling the end.
   feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(GetEnabled());
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
   FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
   EXPECT_FALSE(GetEnabled());
   EXPECT_THAT(change_log.changes(),
@@ -507,7 +515,7 @@ TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
   feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(GetEnabled());
 
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
 
   // Simulate reaching the end time by triggering the timer's user task. Make
   // sure that the feature ended.
@@ -550,7 +558,7 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
   SetFeatureEnabled(true);
   EXPECT_TRUE(GetEnabled());
 
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
   // The feature should automatically turn off at 8:00 PM tomorrow.
   FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
   EXPECT_FALSE(GetEnabled());
@@ -603,7 +611,7 @@ TEST_F(ScheduledFeatureTest, MAYBE_ChangingStartTimesThatDontChangeTheStatus) {
   // off at the scheduled times.
   feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_FALSE(GetEnabled());
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
   FastForwardBy(base::Days(1));
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(MakeTimeOfDay(6, AmPm::kPM), true),
@@ -634,11 +642,11 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
 
   // Set time now to 10:00 AM.
   FastForwardTo(MakeTimeOfDay(10, AmPm::kAM));
-  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+  const CheckpointObserver checkpoint_observer(feature(), this);
   feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(GetEnabled());
 
-  const PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  const PrefChangeObserver change_log(user1_pref_service(), this);
 
   // Set time now to 4:00 PM.
   FastForwardTo(MakeTimeOfDay(4, AmPm::kPM));
@@ -691,7 +699,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
 
   // Prepare a valid geoposition.
   const Geoposition position = CreateGeoposition(
-      kFakePosition1_Latitude, kFakePosition1_Longitude, test_clock()->Now());
+      kFakePosition1_Latitude, kFakePosition1_Longitude, Now());
 
   // Set and fetch position update.
   SetServerPosition(position);
@@ -736,7 +744,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   //
 
   const Geoposition position2 = CreateGeoposition(
-      kFakePosition2_Latitude, kFakePosition2_Longitude, test_clock()->Now());
+      kFakePosition2_Latitude, kFakePosition2_Longitude, Now());
   // Replace a response `position` with `position2`.
   factory()->ClearResponses();
   SetServerPosition(position2);
@@ -749,10 +757,10 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   // We choose the second location such that the new sunrise time is later
   // in the day compared to the old sunrise time, which is also the current
   // time.
-  ASSERT_GT(test_clock()->Now(), sunset_time2);
-  ASSERT_LT(test_clock()->Now(), sunset_time2 + base::Days(1));
-  ASSERT_GT(test_clock()->Now(), sunrise_time2);
-  ASSERT_LT(test_clock()->Now(), sunrise_time2 + base::Days(1));
+  ASSERT_GT(Now(), sunset_time2);
+  ASSERT_LT(Now(), sunset_time2 + base::Days(1));
+  ASSERT_GT(Now(), sunrise_time2);
+  ASSERT_LT(Now(), sunrise_time2 + base::Days(1));
 
   // Expect that the scheduled end delay has been updated to sunrise of the
   // same (second) day in location 2, and the status hasn't changed.
@@ -774,11 +782,9 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseAllDaylight) {
   constexpr double kTestLatitude = 67.855800;
   constexpr double kTestLongitude = 20.225282;
 
-  base::Time now;
-  EXPECT_TRUE(base::Time::FromUTCString("07 Jun 2023 20:30:00.000", &now));
-  test_clock()->SetNow(now);
+  SetWallClockOrigin("07 Jun 2023 20:30:00.000");
   const Geoposition position =
-      CreateGeoposition(kTestLatitude, kTestLongitude, now);
+      CreateGeoposition(kTestLatitude, kTestLongitude, Now());
 
   // Set and fetch position update.
   SetServerPosition(position);
@@ -808,7 +814,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
   feature()->SetScheduleType(ScheduleType::kCustom);
   ASSERT_FALSE(feature()->GetEnabled());
 
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
 
   // Now simulate that the device was suspended for 3 hours, and the time now
   // is 7:00 PM when the devices was resumed. Expect that the feature turns on.
@@ -847,7 +853,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase1) {
   feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_TRUE(GetEnabled());
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
   FastForwardBy(base::Days(1));
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(MakeTimeOfDay(6, AmPm::kAM), false),
@@ -871,7 +877,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase2) {
   feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_FALSE(GetEnabled());
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
   FastForwardBy(base::Days(1));
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(MakeTimeOfDay(9, AmPm::kPM), true),
@@ -895,7 +901,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase3) {
   feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_TRUE(GetEnabled());
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
   FastForwardBy(base::Days(1));
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(MakeTimeOfDay(4, AmPm::kAM), false),
@@ -1001,7 +1007,7 @@ TEST_F(ScheduledFeatureTest,
   feature()->SetEnabled(true);
   EXPECT_TRUE(feature()->GetEnabled());
 
-  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  PrefChangeObserver change_log(user1_pref_service(), this);
 
   // Simulate suspend and then resume at 2:00 PM (which is outside the user's
   // custom schedule). However, the manual toggle to on should be kept.
@@ -1027,7 +1033,7 @@ TEST_F(ScheduledFeatureTest,
 TEST_F(ScheduledFeatureTest, CurrentCheckpointForNoneSchedule) {
   ASSERT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
 
-  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+  const CheckpointObserver checkpoint_observer(feature(), this);
 
   feature()->SetEnabled(true);
   feature()->SetEnabled(true);
@@ -1042,7 +1048,7 @@ TEST_F(ScheduledFeatureTest, CurrentCheckpointForCustomSchedule) {
   FastForwardTo(MakeTimeOfDay(12, kAM));
   ASSERT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
 
-  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+  const CheckpointObserver checkpoint_observer(feature(), this);
   // Checkpoint 0:
   // Custom schedule is enabled from 6 PM to 6 AM, so it should immediately
   // flip to enabled.
@@ -1066,7 +1072,7 @@ TEST_F(ScheduledFeatureTest, CurrentCheckpointForSwitchingScheduleTypes) {
   FastForwardTo(MakeTimeOfDay(12, kAM));
   ASSERT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
 
-  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+  const CheckpointObserver checkpoint_observer(feature(), this);
 
   // Checkpoint 0:
   // Sunset is 6 PM and sunrise is 6 AM, so it should immediately flip to
