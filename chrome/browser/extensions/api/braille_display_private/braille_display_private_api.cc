@@ -160,12 +160,10 @@ void BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState(
 }
 
 BrailleDisplayPrivateWriteDotsFunction::
-BrailleDisplayPrivateWriteDotsFunction() {
-}
+    BrailleDisplayPrivateWriteDotsFunction() = default;
 
 BrailleDisplayPrivateWriteDotsFunction::
-~BrailleDisplayPrivateWriteDotsFunction() {
-}
+    ~BrailleDisplayPrivateWriteDotsFunction() = default;
 
 ExtensionFunction::ResponseAction
 BrailleDisplayPrivateWriteDotsFunction::Run() {
