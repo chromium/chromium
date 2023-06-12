@@ -200,9 +200,14 @@
   }
 
   :host-context([chrome-refresh-2023]) .folder {
+    --cr-icon-color: currentColor;
     --cr-icon-size: 20px;
-    height: 20px;
-    width: 20px;
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=compact]) .folder {
+    --cr-icon-size: 16px;
   }
 
   .count {
@@ -249,6 +254,9 @@
   :host-context([chrome-refresh-2023]):host([size=large]) .count {
     background: var(--color-list-item-folder-icon-background,
         var(--cr-fallback-color-primary-container));
+    color: var(--color-list-item-folder-icon-foreground,
+        var(--cr-fallback-color-on-primary-container));
+    font-weight: 500;
   }
 
   .image-container {
@@ -369,6 +377,10 @@
     font-weight: 400;
   }
 
+  :host-context([chrome-refresh-2023]):host([size=compact]) .description {
+    font-size: 12px;
+  }
+
   .title,
   .description-text,
   .timestamp {
@@ -394,8 +406,13 @@
     display: none;
   }
 
+  :host-context([chrome-refresh-2023]):host([has-badges_]) .badges {
+    margin-inline-start: 4px;
+  }
+
   .suffix-icons {
     align-items: center;
+    color: var(--cr-secondary-text-color);
     display: flex;
     flex-shrink: 0;
     margin-inline-end: -4px;
