@@ -97,6 +97,10 @@
   _browserState = nullptr;
 }
 
+- (void)dealloc {
+  DCHECK(!_profileBookmarkModel);
+}
+
 #pragma mark - Public
 
 - (void)manuallyChangeFolder:(const bookmarks::BookmarkNode*)folder {

@@ -66,6 +66,7 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
                       browserState:nullptr];
   controller.mutator = mediator;
   [controller updateSync];
+  [mediator disconnect];
 }
 
 }  // namespace
