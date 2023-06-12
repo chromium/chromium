@@ -478,9 +478,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation"
-    units="pixels" expires_after="2022-05-01">
+    units="pixels" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.org</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Measures an average distance that represents how the page sticks to the
@@ -492,15 +492,17 @@ chromium-metrics-reviews@google.com.
     Updates, which are separately logged by
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.
 
+    Note: This histogram was expired from 2022-05-01 to 2023-06-20.
+
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram
     name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation.NoPrediction"
-    units="pixels" expires_after="2022-11-23">
+    units="pixels" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.org</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Measures an average distance that represents how the page sticks to the
@@ -512,6 +514,8 @@ chromium-metrics-reviews@google.com.
     each touch interaction there is a GSB followed by multiple Gesture Scroll
     Updates, which are separately logged by
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.
+
+    Note: This histogram was expired from 2022-11-23 to 2023-06-20.
 
     Team: input-dev@chromium.org.
   </summary>
@@ -702,9 +706,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"
-    units="pixels" expires_after="2022-12-25">
+    units="pixels" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Measures an average distance that represents how the page sticks to the
@@ -714,13 +718,15 @@ chromium-metrics-reviews@google.com.
     This is the lag observed in processing the Gesture Scroll Updates occurring
     in the lifetime of a scroll interaction.
 
+    Note: This histogram was expired from 2022-12-25 to 2023-06-20.
+
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction"
-    units="pixels" expires_after="2022-11-23">
+    units="pixels" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -733,13 +739,15 @@ chromium-metrics-reviews@google.com.
     This is the lag observed in processing the Gesture Scroll Updates occurring
     in the lifetime of a scroll interaction.
 
+    Note: This histogram was expired from 2022-11-23 to 2023-06-12.
+
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.RemainingLagPercentage"
-    units="%" expires_after="2022-11-23">
+    units="%" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -763,13 +771,15 @@ chromium-metrics-reviews@google.com.
     Lag_without_prediction =
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction
 
+    Note: This histogram was expired from 2022-11-23 to 2023-06-20.
+
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.{PredictionImpact}"
-    units="pixels" expires_after="2022-11-23">
+    units="pixels" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -794,6 +804,8 @@ chromium-metrics-reviews@google.com.
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation
     Lag_without_prediction =
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction
+
+    Note: This histogram was expired from 2022-11-23 to 2023-06-20.
 
     Team: input-dev@chromium.org.
   </summary>
