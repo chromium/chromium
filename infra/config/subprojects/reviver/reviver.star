@@ -62,10 +62,10 @@ polymorphic.launcher(
 polymorphic.launcher(
     name = "android-coverage-launcher",
     # To avoid peak hours, we run it at 10AM UTC.
-    schedule = "0 10 * * *",
+    schedule = "0 6 * * *",
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
-    runner = "reviver/runner",
+    runner = "reviver/coverage-runner",
     target_builders = [
         "ci/android-code-coverage-native",
     ],
@@ -211,6 +211,27 @@ builder(
     free_space = free_space.standard,
     auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,
+    resultdb_bigquery_exports = [
+        resultdb.export_test_results(
+            bq_table = "chrome-luci-data.chromium.reviver_test_results",
+        ),
+    ],
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+)
+
+builder(
+    name = "coverage-runner",
+    executable = "recipe:reviver/chromium/runner",
+    pool = ci.DEFAULT_POOL,
+    builderless = 1,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    ssd = False,
+    free_space = free_space.high,
+    auto_builder_dimension = False,
+    execution_timeout = 12 * time.hour,
     resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
