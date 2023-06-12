@@ -89,6 +89,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "continue_files_light.icon",
     "copy.icon",
     "delete.icon",
+    "desk_button_visibility_off.icon",
+    "desk_button_visibility_on.icon",
     "desks_new_desk_button.icon",
     "desks_templates.icon",
     "dictation_bubble.icon",

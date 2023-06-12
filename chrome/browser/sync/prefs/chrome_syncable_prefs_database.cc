@@ -252,6 +252,7 @@ enum {
   kAccessibilityColorFiltering = 100200,
   kAccessibilityColorVisionCorrectionAmount = 100201,
   kAccessibilityColorVisionDeficiencyType = 100202,
+  kShowDeskButtonInShelf = 100203,
 };
 }  // namespace syncable_prefs_ids
 
@@ -554,6 +555,9 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kShelfAlignment, syncer::OS_PREFERENCES, false}},
         {ash::prefs::kShelfAutoHideBehavior,
          {syncable_prefs_ids::kShelfAutoHideBehavior, syncer::OS_PREFERENCES,
+          false}},
+        {ash::prefs::kShowDeskButtonInShelf,
+         {syncable_prefs_ids::kShowDeskButtonInShelf, syncer::OS_PREFERENCES,
           false}},
         {ash::prefs::kSuggestedContentEnabled,
          {syncable_prefs_ids::kSuggestedContentEnabled, syncer::OS_PREFERENCES,

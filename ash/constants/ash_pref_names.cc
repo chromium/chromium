@@ -951,6 +951,15 @@ const char kShelfLauncherNudge[] = "ash.shelf.launcher_nudge";
 // kShelfAutoHideBehavior.
 const char kShelfPreferences[] = "shelf_preferences";
 
+// String pref indicating that the user has manually chosen to show or hide the
+// desk button.
+const char kShowDeskButtonInShelf[] = "show_desk_button_in_shelf";
+
+// Boolean pref indicating that a virtual desk (other than the default desk)
+// has been used on this device at any point in time after the addition of this
+// pref.
+const char kDeviceUsesDesks[] = "device_uses_desks";
+
 // Boolean pref indicating whether to show a logout button in the system tray.
 const char kShowLogoutButtonInTray[] = "show_logout_button_in_tray";
 

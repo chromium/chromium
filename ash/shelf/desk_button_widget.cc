@@ -5,6 +5,7 @@
 #include "ash/shelf/desk_button_widget.h"
 
 #include "ash/focus_cycler.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/scrollable_shelf_view.h"
@@ -140,10 +141,13 @@ bool DeskButtonWidget::ShouldBeVisible() const {
   const ShelfLayoutManager* layout_manager = shelf_->shelf_layout_manager();
   const OverviewController* overview_controller =
       Shell::Get()->overview_controller();
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 
   return layout_manager->is_active_session_state() &&
          !overview_controller->InOverviewSession() &&
-         shelf_->hotseat_widget()->state() == HotseatState::kShownClamshell;
+         shelf_->hotseat_widget()->state() == HotseatState::kShownClamshell &&
+         GetDeskButtonVisibility(prefs);
 }
 
 void DeskButtonWidget::SetExpanded(bool expanded) {

@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -620,6 +621,14 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
     observer.OnDeskAdded(new_desk);
 
   if (!is_first_ever_desk) {
+    if (features::IsDeskButtonEnabled()) {
+      PrefService* prefs =
+          Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+      // Record that virtual desks have been used on this device so we can show
+      // the desk button from now on, if the user doesn't and hasn't elected to
+      // hide it from the shelf context menu.
+      SetDeviceUsesDesksPref(prefs, true);
+    }
     desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
     desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();

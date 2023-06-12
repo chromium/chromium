@@ -53,8 +53,12 @@ bool IsFullScreenMode(int64_t display_id) {
 }  // namespace
 
 ShelfContextMenuModel::ShelfContextMenuModel(ShelfItemDelegate* delegate,
-                                             int64_t display_id)
-    : ui::SimpleMenuModel(this), delegate_(delegate), display_id_(display_id) {
+                                             int64_t display_id,
+                                             bool menu_in_shelf)
+    : ui::SimpleMenuModel(this),
+      delegate_(delegate),
+      display_id_(display_id),
+      menu_in_shelf_(menu_in_shelf) {
   // Add shelf and wallpaper items if ShelfView or HomeButton are selected.
   if (!delegate)
     AddShelfAndWallpaperItems();
@@ -130,6 +134,12 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       DCHECK(is_tablet_mode);
       shell->app_list_controller()->SetHideContinueSection(false);
       break;
+    case MENU_HIDE_DESK_NAME:
+      SetShowDeskButtonInShelfPref(prefs, false);
+      break;
+    case MENU_SHOW_DESK_NAME:
+      SetShowDeskButtonInShelfPref(prefs, true);
+      break;
     // Using reorder CommandId in ash/public/cpp/app_menu_constants.h
     case REORDER_BY_NAME_ALPHABETICAL:
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
@@ -160,7 +170,8 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
   // In fullscreen, the shelf is either hidden or auto-hidden, depending on the
   // type of fullscreen. Do not show the auto-hide menu item while in fullscreen
   // because it is confusing when the preference appears not to apply.
-  if (CanUserModifyShelfAutoHide(prefs) && !IsFullScreenMode(display_id_)) {
+  const bool is_fullscreen = IsFullScreenMode(display_id_);
+  if (CanUserModifyShelfAutoHide(prefs) && !is_fullscreen) {
     const bool is_autohide_set =
         GetShelfAutoHideBehaviorPref(prefs, display_id_) ==
         ShelfAutoHideBehavior::kAlways;
@@ -178,8 +189,10 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
   // (regular or Family Link user). In tablet mode, the shelf alignment option
   // is not shown.
   LoginStatus status = Shell::Get()->session_controller()->login_status();
+  const bool in_tablet_mode =
+      Shell::Get()->tablet_mode_controller()->InTabletMode();
   if ((status == LoginStatus::USER || status == LoginStatus::CHILD) &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !in_tablet_mode &&
       prefs->FindPreference(prefs::kShelfAlignmentLocal)->IsUserModifiable()) {
     alignment_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
 
@@ -202,6 +215,25 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
       MENU_PERSONALIZATION_HUB, IDS_AURA_OPEN_PERSONALIZATION_HUB,
       ui::ImageModel::FromVectorIcon(kPaintBrushIcon,
                                      ui::kColorAshSystemUIMenuIcon));
+
+  // Only add the desk button items if the context menu was spawned on the
+  // shelf, tablet mode is not enabled, and full screen is not enabled.
+  if (features::IsDeskButtonEnabled() && !in_tablet_mode && menu_in_shelf_ &&
+      !is_fullscreen) {
+    // If the button is visible for any reason, show the option to hide it
+    // manually. If it isn't visible show the option to show it.
+    if (GetDeskButtonVisibility(prefs)) {
+      AddItemWithStringIdAndIcon(
+          MENU_HIDE_DESK_NAME, IDS_ASH_SHELF_CONTEXT_MENU_HIDE_DESK_NAME,
+          ui::ImageModel::FromVectorIcon(kDeskButtonVisibilityOffIcon,
+                                         ui::kColorAshSystemUIMenuIcon));
+    } else {
+      AddItemWithStringIdAndIcon(
+          MENU_SHOW_DESK_NAME, IDS_ASH_SHELF_CONTEXT_MENU_SHOW_DESK_NAME,
+          ui::ImageModel::FromVectorIcon(kDeskButtonVisibilityOnIcon,
+                                         ui::kColorAshSystemUIMenuIcon));
+    }
+  }
 }
 
 }  // namespace ash

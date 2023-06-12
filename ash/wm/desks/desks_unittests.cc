@@ -22,6 +22,7 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
@@ -9272,6 +9273,10 @@ struct DeskBarTestBasicCase {
 // bounds for different shelf alignments.
 TEST_P(DeskBarTest, Basic) {
   UpdateDisplay("800x600");
+  // Ensure the desk button is visible for the test cases with a single desk.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  SetShowDeskButtonInShelfPref(prefs, true);
 
   const DeskBarTestBasicCase tests[] = {
       {.test_name = "single desk + bottom shelf + saved desks",
@@ -9825,6 +9830,7 @@ class DeskButtonTest
         GetPrimaryShelf()->GetShelfViewForTesting());
     Shelf::ForWindow(Shell::GetPrimaryRootWindow())
         ->SetAlignment(GetParam().alignment);
+    SetShowDeskButtonInShelfPref(GetPrimaryUserPrefService(), true);
   }
 
   DeskButton* GetDeskButton() {

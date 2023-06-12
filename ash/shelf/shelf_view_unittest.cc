@@ -14,6 +14,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/focus_cycler.h"
@@ -47,6 +48,7 @@
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -3589,16 +3591,20 @@ class ShelfViewDeskButtonTest : public ShelfViewTest {
                   ->GetWindowBoundsInScreen()
                   .width(),
               336);
+    prefs_ = Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   }
+
+  PrefService* prefs_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verify that the desk button is visible normally, and not visible in overview
-// mode.
+// Verify that the desk button is visible outside of overview, and not visible
+// in overview mode.
 TEST_F(ShelfViewDeskButtonTest, OverviewVisibility) {
-  // The button should be normally visible.
+  SetShowDeskButtonInShelfPref(prefs_, true);
+  // The button should be visible.
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
   const int original_hotseat_width = GetPrimaryShelf()
                                          ->shelf_widget()
@@ -3631,6 +3637,7 @@ TEST_F(ShelfViewDeskButtonTest, OverviewVisibility) {
 
 // Verify that the desk button is not visible in tablet mode.
 TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
+  SetShowDeskButtonInShelfPref(prefs_, true);
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
   // In tablet mode, the shelf should be visible but the desk button shouldn't.
@@ -3645,6 +3652,7 @@ TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
 // Verify that the desk button is 136 wide if the screen width is greater than
 // 1280px, and 96 otherwise, and that the button is 36x36 in vertical alignment.
 TEST_F(ShelfViewDeskButtonTest, Position) {
+  SetShowDeskButtonInShelfPref(prefs_, true);
   test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kBottom);
   UpdateDisplay("1281x400");
   EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 136);
@@ -3658,4 +3666,112 @@ TEST_F(ShelfViewDeskButtonTest, Position) {
   EXPECT_EQ(desk_button_widget()->GetTargetBounds().height(), 36);
 }
 
+// Verify that the desk button does not appear by default, appears when the user
+// has more than 1 desk, and stays even if they go back to having just one desk.
+TEST_F(ShelfViewDeskButtonTest, NewDeskVisibility) {
+  // By default the visibility pref should be `kNotSet`, the device uses desks
+  // pref should be false, and the button should not be visible.
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Going into and out of tablet mode and overview shouldn't change this.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  ToggleOverview();
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  ToggleOverview();
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Adding one desk should change the device uses desks pref to true, and it
+  // should stay that way when the desk is removed. The desk button visibility
+  // pref should not be changed.
+  Shell::Get()->desks_controller()->NewDesk(
+      DesksCreationRemovalSource::kButton);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
+  EXPECT_TRUE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  RemoveDesk(Shell::Get()->desks_controller()->GetTargetActiveDesk(),
+             DeskCloseType::kCloseAllWindows);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
+  EXPECT_TRUE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+}
+
+// Verify that if the user hides the desk button, the button will never show
+// unless the user elects to show the button manually.
+TEST_F(ShelfViewDeskButtonTest, PrefHidden) {
+  SetShowDeskButtonInShelfPref(prefs_, false);
+  SetDeviceUsesDesksPref(prefs_, false);
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Adding a desk should not make the button visible.
+  Shell::Get()->desks_controller()->NewDesk(
+      DesksCreationRemovalSource::kButton);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
+  EXPECT_TRUE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Removing the desk, cycling overview, and tablet mode should not make it
+  // visible.
+
+  RemoveDesk(Shell::Get()->desks_controller()->GetTargetActiveDesk(),
+             DeskCloseType::kCloseAllWindows);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  ToggleOverview();
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  ToggleOverview();
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Setting the pref to shown after being hidden should make the button
+  // visible.
+  SetShowDeskButtonInShelfPref(prefs_, true);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Shown");
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Setting the pref to hidden after being shown should make the button
+  // disappear.
+  SetShowDeskButtonInShelfPref(prefs_, false);
+  EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+}
+
+// Verify that the correct combination of values for the two desk button
+// visibility preferences result in the desk button being shown and not shown.
+TEST_F(ShelfViewDeskButtonTest, PrefVisibilityRelationship) {
+  for (std::string visibility : {"", "Shown", "Hidden"}) {
+    for (bool uses_desks : {true, false}) {
+      prefs_->SetString(prefs::kShowDeskButtonInShelf, visibility);
+      SetDeviceUsesDesksPref(prefs_, uses_desks);
+      if (uses_desks) {
+        if (visibility == "Hidden") {
+          EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+        } else {
+          EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+        }
+      } else {
+        if (visibility == "Shown") {
+          EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+        } else {
+          EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+        }
+      }
+    }
+  }
+}
 }  // namespace ash

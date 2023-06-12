@@ -2497,7 +2497,8 @@ void ShelfView::ShowShelfContextMenu(
     std::unique_ptr<ui::SimpleMenuModel> model) {
   if (!model) {
     const int64_t display_id = GetDisplayIdForView(this);
-    model = std::make_unique<ShelfContextMenuModel>(nullptr, display_id);
+    model = std::make_unique<ShelfContextMenuModel>(nullptr, display_id,
+                                                    /*menu_in_shelf=*/true);
   }
   ShowMenu(std::move(model), source, shelf_id, point, /*context_menu=*/true,
            source_type);

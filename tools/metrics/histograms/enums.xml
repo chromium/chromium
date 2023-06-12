@@ -101282,6 +101282,7 @@ would be helpful to identify which type is being sent.
   <int value="100200" label="AccessibilityColorFiltering"/>
   <int value="100201" label="AccessibilityColorVisionCorrectionAmount"/>
   <int value="100202" label="AccessibilityColorVisionDeficiencyType"/>
+  <int value="100203" label="ShowDeskButtonInShelf"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

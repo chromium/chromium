@@ -46,6 +46,19 @@ ASH_PUBLIC_EXPORT void SetShelfAlignmentPref(PrefService* prefs,
                                              int64_t display_id,
                                              ShelfAlignment alignment);
 
+// Whether the desk button should be shown according to the current prefs.
+ASH_PUBLIC_EXPORT bool GetDeskButtonVisibility(PrefService* prefs);
+
+// Set the show desk button pref to reflect the user manually showing or
+// hiding the desk button.
+ASH_PUBLIC_EXPORT void SetShowDeskButtonInShelfPref(PrefService* prefs,
+                                                    bool show);
+
+// Set the device uses desks pref to reflect if the user has ever added a
+// virtual desk (true) or not (false).
+ASH_PUBLIC_EXPORT void SetDeviceUsesDesksPref(PrefService* prefs,
+                                              bool uses_desks);
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_SHELF_PREFS_H_

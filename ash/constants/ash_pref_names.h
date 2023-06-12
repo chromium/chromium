@@ -440,6 +440,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kShelfAutoHideTabletModeBehaviorLocal[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfLauncherNudge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfPreferences[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowDeskButtonInShelf[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeviceUsesDesks[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLogoutButtonInTray[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLogoutDialogDurationMs[];

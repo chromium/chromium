@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/launcher_nudge_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -77,6 +78,15 @@ void SetShelfAlignmentFromPrefs() {
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id()))
       shelf->SetAlignment(GetShelfAlignmentPref(prefs, display.id()));
+  }
+}
+
+// Re-layouts the shelf on every display.
+void LayoutShelves() {
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    if (Shelf* shelf = GetShelfForDisplay(display.id())) {
+      shelf->shelf_layout_manager()->LayoutShelf(true);
+    }
   }
 }
 
@@ -143,6 +153,12 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterStringPref(prefs::kShelfAutoHideTabletModeBehaviorLocal,
                                  std::string());
   }
+  if (base::FeatureList::IsEnabled(features::kDeskButton)) {
+    registry->RegisterStringPref(
+        prefs::kShowDeskButtonInShelf, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterBooleanPref(prefs::kDeviceUsesDesks, false);
+  }
   registry->RegisterStringPref(
       prefs::kShelfAlignment, kShelfAlignmentBottom,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -165,6 +181,12 @@ void ShelfController::OnActiveUserPrefServiceChanged(
     pref_change_registrar_->Add(
         prefs::kShelfAutoHideTabletModeBehaviorLocal,
         base::BindRepeating(&SetShelfAutoHideFromPrefs));
+  }
+  if (base::FeatureList::IsEnabled(features::kDeskButton)) {
+    pref_change_registrar_->Add(prefs::kShowDeskButtonInShelf,
+                                base::BindRepeating(&LayoutShelves));
+    pref_change_registrar_->Add(prefs::kDeviceUsesDesks,
+                                base::BindRepeating(&LayoutShelves));
   }
   pref_change_registrar_->Add(prefs::kShelfPreferences,
                               base::BindRepeating(&SetShelfBehaviorsFromPrefs));

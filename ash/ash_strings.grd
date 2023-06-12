@@ -223,6 +223,12 @@ Style notes:
       <message name="IDS_ASH_SHELF_CONTEXT_MENU_ALIGN_RIGHT" desc="Title of the menu item in the context menu for aligning the shelf to the right of the screen">
         Right
       </message>
+      <message name="IDS_ASH_SHELF_CONTEXT_MENU_SHOW_DESK_NAME" desc="Title of the menu item in the context menu for showing the desk button">
+        Show desk name
+      </message>
+      <message name="IDS_ASH_SHELF_CONTEXT_MENU_HIDE_DESK_NAME" desc="Title of the menu item in the context menu for hiding the desk button">
+        Hide desk name
+      </message>
       <message name="IDS_ASH_SHELF_ACCESSIBLE_NAME" desc="The accessible name of the shelf.">
         Shelf
       </message>
