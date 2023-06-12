@@ -729,7 +729,6 @@ void ContentSettingStorageAccessBubbleModel::CommitChanges() {
     const GURL& secondary = web_contents()->GetURL();
     ContentSetting setting =
         entry.second ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
-
     permissions::PermissionUmaUtil::ScopedRevocationReporter
         scoped_revocation_reporter(
             GetProfile(), primary, secondary,

@@ -28,6 +28,8 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern_parser.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -787,13 +789,39 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
   }
 }
 
-void PageSpecificContentSettings::OnTwoSitePermissionRequested(
+void PageSpecificContentSettings::OnTwoSitePermissionChanged(
     ContentSettingsType type,
     net::SchemefulSite requesting_site,
-    bool is_allowed) {
-  content_settings_two_site_requests_[type][requesting_site] = is_allowed;
+    ContentSetting content_setting) {
+  bool access_changed = false;
 
-  MaybeUpdateLocationBar();
+  auto& site_map = content_settings_two_site_requests_[type];
+
+  switch (content_setting) {
+    case CONTENT_SETTING_ASK:
+    case CONTENT_SETTING_DEFAULT:
+      if (site_map.contains(requesting_site)) {
+        site_map.erase(requesting_site);
+        access_changed = true;
+      }
+      break;
+    case CONTENT_SETTING_ALLOW:
+    case CONTENT_SETTING_BLOCK: {
+      bool is_allowed = content_setting == CONTENT_SETTING_ALLOW;
+      if (!site_map.contains(requesting_site) ||
+          site_map[requesting_site] != is_allowed) {
+        site_map[requesting_site] = is_allowed;
+        access_changed = true;
+      }
+      break;
+    }
+    default:
+      NOTREACHED() << content_setting;
+  }
+
+  if (access_changed) {
+    MaybeUpdateLocationBar();
+  }
 }
 
 namespace {
@@ -1141,8 +1169,14 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     return;
 
   const GURL current_url = page().GetMainDocument().GetLastCommittedURL();
-  if (!primary_pattern.Matches(current_url)) {
-    return;
+  if (content_type == ContentSettingsType::STORAGE_ACCESS) {
+    if (!secondary_pattern.Matches(current_url)) {
+      return;
+    }
+  } else {
+    if (!primary_pattern.Matches(current_url)) {
+      return;
+    }
   }
 
   ContentSettingsStatus& status = content_settings_status_[content_type];
@@ -1197,6 +1231,23 @@ void PageSpecificContentSettings::OnContentSettingChanged(
         status.allowed = false;
         OnContentAllowed(content_type);
       }
+      break;
+    }
+    case ContentSettingsType::STORAGE_ACCESS: {
+      GURL requesting_url = primary_pattern.ToRepresentativeUrl();
+      if (!requesting_url.is_valid()) {
+        return;
+      }
+      // Only forward updates for sites which we are already tracking.
+      net::SchemefulSite requesting_site(requesting_url);
+      if (!content_settings_two_site_requests_[content_type].contains(
+              requesting_site)) {
+        return;
+      }
+
+      ContentSetting setting =
+          map_->GetContentSetting(requesting_url, current_url, content_type);
+      OnTwoSitePermissionChanged(content_type, requesting_site, setting);
       break;
     }
     default:

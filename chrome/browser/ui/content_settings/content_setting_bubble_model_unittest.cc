@@ -1539,8 +1539,8 @@ TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
                                      ContentSettingsType::STORAGE_ACCESS,
                                      CONTENT_SETTING_BLOCK);
 
-  content_settings->OnTwoSitePermissionRequested(
-      ContentSettingsType::STORAGE_ACCESS, site, false);
+  content_settings->OnTwoSitePermissionChanged(
+      ContentSettingsType::STORAGE_ACCESS, site, CONTENT_SETTING_BLOCK);
 
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(

@@ -305,10 +305,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, PermissionDecided) {
   EXPECT_EQ(CONTENT_SETTING_ASK, future.Get());
   histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
                                         RequestOutcome::kDismissedByUser, 1);
-
+  // Expect no pscs entry for dismissed permissions.
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
-              UnorderedElementsAre(Pair(GetRequesterSite(), false)));
+              IsEmpty());
 }
 
 // No user gesture should force a permission rejection.

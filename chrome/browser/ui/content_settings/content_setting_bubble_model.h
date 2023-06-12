@@ -563,7 +563,7 @@ class ContentSettingStorageAccessBubbleModel
                         bool is_allowed) override;
 
  private:
-  std::map<net::SchemefulSite, bool> changed_permissions_;
+  std::map<net::SchemefulSite, /*is_allowed*/ bool> changed_permissions_;
 };
 
 // The bubble that informs users that Chrome does not have access to Location

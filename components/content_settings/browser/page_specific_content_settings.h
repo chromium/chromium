@@ -397,11 +397,11 @@ class PageSpecificContentSettings
   void OnContentBlocked(ContentSettingsType type);
   void OnContentAllowed(ContentSettingsType type);
 
-  // Call when a two-site permission was prompted in order to display a
-  // ContentSettingsImageModel icon.
-  void OnTwoSitePermissionRequested(ContentSettingsType type,
-                                    net::SchemefulSite requesting_site,
-                                    bool is_allowed);
+  // Call when a two-site permission was prompted or modified in order to
+  // display a ContentSettingsImageModel icon.
+  void OnTwoSitePermissionChanged(ContentSettingsType type,
+                                  net::SchemefulSite requesting_site,
+                                  ContentSetting content_setting);
 
   // |originating_page| is non-null when it differs from page(), which happens
   // when an embedding page's PSCS is notified of an access that happens in an

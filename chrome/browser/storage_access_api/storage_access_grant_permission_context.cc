@@ -352,9 +352,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
         content_settings::PageSpecificContentSettings::GetForFrame(
             id.global_render_frame_host_id());
     if (content_settings) {
-      content_settings->OnTwoSitePermissionRequested(
+      content_settings->OnTwoSitePermissionChanged(
           ContentSettingsType::STORAGE_ACCESS,
-          net::SchemefulSite(requesting_origin), permission_allowed);
+          net::SchemefulSite(requesting_origin), content_setting);
     }
   }
 
