@@ -73,6 +73,9 @@ gfx::FontList GetFontListFromType(SystemTextfield::Type type) {
 SystemTextfield::SystemTextfield(Type type) : type_(type) {
   SetFontList(GetFontListFromType(type_));
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
+  // Remove the default hover effect, since the hover effect of system textfield
+  // appears not only on hover but also on focus.
+  RemoveHoverEffect();
 
   // Configure focus ring.
   auto* focus_ring = views::FocusRing::Get(this);
