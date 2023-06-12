@@ -374,7 +374,8 @@ crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_M
 crbug.com/1382332 [ linux release renderer-skia-vulkan intel-0x9bc5 ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/1382332 [ display-server-wayland intel-0x9bc5 linux no-clang-coverage release renderer-skia-gl ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
-# Fails on Linux AMD RX 5500 XT with RADV 20.0.8
+# Fails / flaky on Linux AMD RX 5500 XT with RADV 20.0.8
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
@@ -392,6 +393,8 @@ crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_Video_
 # Pixel 4 shifted images
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_VP9 [ Failure ]
 
+# Flake on Linux NVIDIA
+crbug.com/1453989 [ linux nvidia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
 
 
 #######################################################################
