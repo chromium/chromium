@@ -1202,6 +1202,12 @@ const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[] =
     "directed to the chrome security settings page through ESB promotions and "
     "also collapses the ESB option.";
 
+const char kEnableFriendlierSafeBrowsingSettingsName[] =
+    "Enable friendlier safe browsing settings";
+const char kEnableFriendlierSafeBrowsingSettingsDescription[] =
+    "Updates the text, layout, and icons on both the privacy guide and the "
+    "security settings page.";
+
 const char kEnableTailoredSecurityUpdatedMessagesName[] =
     "Enable tailored security updated messages";
 const char kEnableTailoredSecurityUpdatedMessagesDescription[] =

@@ -59198,6 +59198,7 @@ from previous Chrome versions.
   <int value="-1961931929" label="ContextualSuggestionsBottomSheet:enabled"/>
   <int value="-1961755742" label="LightweightReactions:enabled"/>
   <int value="-1961648833" label="show_summary"/>
+  <int value="-1961576881" label="FriendlierSafeBrowsingSettings:enabled"/>
   <int value="-1961102654" label="WebNotesStylize:enabled"/>
   <int value="-1961071650" label="InterestFeedV2Autoplay:disabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
@@ -66276,6 +66277,7 @@ from previous Chrome versions.
   <int value="1762346365"
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:enabled"/>
   <int value="1764618580" label="MojoLinuxChannelSharedMem:disabled"/>
+  <int value="1764618778" label="FriendlierSafeBrowsingSettings:disabled"/>
   <int value="1765184717"
       label="HighlightManagedPrefDisclaimerAndroid:disabled"/>
   <int value="1766676896" label="affiliation-based-matching:disabled"/>

@@ -8308,6 +8308,12 @@ const FeatureEntry kFeatureEntries[] = {
          "EsbIphBubbleAndCollapseSettingsVariations")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"enable-friendlier-safe-browsing-settings",
+     flag_descriptions::kEnableFriendlierSafeBrowsingSettingsName,
+     flag_descriptions::kEnableFriendlierSafeBrowsingSettingsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(safe_browsing::kFriendlierSafeBrowsingSettings)},
+
     {"enable-tailored-security-updated-messages",
      flag_descriptions::kEnableTailoredSecurityUpdatedMessagesName,
      flag_descriptions::kEnableTailoredSecurityUpdatedMessagesDescription,
