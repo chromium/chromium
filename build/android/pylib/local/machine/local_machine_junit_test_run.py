@@ -406,7 +406,9 @@ def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
   # Output any remaining output from a timed-out first shard.
   shard_0_pump.join()
   while not shard_0_q.empty():
-    yield shard_0_q.get()
+    line = shard_0_q.get()
+    if line:
+      yield f'{first_shard:2}| {line}'
 
   for i, shard in enumerate(shard_list[1:]):
     f = temp_files[i + 1]
