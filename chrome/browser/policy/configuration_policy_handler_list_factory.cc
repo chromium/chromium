@@ -1898,6 +1898,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBeforeunloadEventCancelByPreventDefaultEnabled,
     policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
     base::Value::Type::BOOLEAN},
+#if !BUILDFLAG(IS_FUCHSIA)
+  { key::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
+    policy_prefs::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
+    base::Value::Type::BOOLEAN},
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 };
 // clang-format on
 

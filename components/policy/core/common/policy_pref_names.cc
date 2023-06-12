@@ -144,5 +144,10 @@ const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
 // If this is set to True, the page will be accessible.
 const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
 
+// A boolean pref indicating whether the new the page with "Cache-Control:
+// no-store" header is allowed to be stored in back/forward cache.
+const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
+    "policy.allow_back_forward_cache_for_cache_control_no_store_page_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy

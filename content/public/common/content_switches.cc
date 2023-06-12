@@ -104,6 +104,11 @@ const char kDisableBackgroundTimerThrottling[] =
 // Disables the BackForwardCache feature.
 const char kDisableBackForwardCache[] = "disable-back-forward-cache";
 
+// Disables BackForwardCache for the pages with "Cache-Control: no-store"
+// header.
+const char kDisableBackForwardCacheForCacheControlNoStorePage[] =
+    "disable-back-forward-cache-for-cache-control-no-store-page";
+
 // Disable one or more Blink runtime-enabled features.
 // Use names from runtime_enabled_features.json5, separated by commas.
 // Applied after kEnableBlinkFeatures, and after other flags that change these

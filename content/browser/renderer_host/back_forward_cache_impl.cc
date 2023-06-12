@@ -42,6 +42,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -1437,6 +1438,12 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
 
 // static
 bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
+  if (base::CommandLine::InitializedForCurrentProcess() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableBackForwardCacheForCacheControlNoStorePage)) {
+    return false;
+  }
+
   return GetCacheControlNoStoreLevel() >
          CacheControlNoStoreExperimentLevel::kDoNotStore;
 }

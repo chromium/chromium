@@ -1654,6 +1654,11 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       policy::policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
       true);
 
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::
+          kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
+      true);
+
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
 #endif
@@ -2723,6 +2728,16 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
         command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
+      }
+
+      if (prefs->HasPrefPath(
+              policy::policy_prefs::
+                  kAllowBackForwardCacheForCacheControlNoStorePageEnabled) &&
+          !prefs->GetBoolean(
+              policy::policy_prefs::
+                  kAllowBackForwardCacheForCacheControlNoStorePageEnabled)) {
+        command_line->AppendSwitch(
+            switches::kDisableBackForwardCacheForCacheControlNoStorePage);
       }
 
 #if !BUILDFLAG(IS_ANDROID)

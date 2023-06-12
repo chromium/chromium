@@ -33043,6 +33043,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1111" label="BeforeunloadEventCancelByPreventDefaultEnabled"/>
   <int value="1112" label="PolicyTestPageEnabled"/>
   <int value="1113" label="UrlKeyedMetricsAllowed"/>
+  <int value="1114"
+      label="AllowBackForwardCacheForCacheControlNoStorePageEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

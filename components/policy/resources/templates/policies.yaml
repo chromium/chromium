@@ -1112,6 +1112,7 @@ policies:
   1111: BeforeunloadEventCancelByPreventDefaultEnabled
   1112: PolicyTestPageEnabled
   1113: UrlKeyedMetricsAllowed
+  1114: AllowBackForwardCacheForCacheControlNoStorePageEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
