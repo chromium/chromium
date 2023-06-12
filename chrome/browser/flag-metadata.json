@@ -6276,6 +6276,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "post-restore-default-browser-promo",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb", "skym" ],
     "expiry_milestone": 118

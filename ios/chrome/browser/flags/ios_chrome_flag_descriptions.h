@@ -776,6 +776,11 @@ extern const char kPasswordReuseDetectionDescription[];
 extern const char kPolicyLogsPageIOSName[];
 extern const char kPolicyLogsPageIOSDescription[];
 
+// Title and description for the flag to enable the post restore default browser
+// promo.
+extern const char kPostRestoreDefaultBrowserPromoName[];
+extern const char kPostRestoreDefaultBrowserPromoDescription[];
+
 // Title and description for the flag to have the Promos Manager use the FET as
 // its impression tracking system.
 extern const char kPromosManagerUsesFETName[];
