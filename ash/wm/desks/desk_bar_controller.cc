@@ -19,6 +19,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -168,6 +169,12 @@ void DeskBarController::DestroyAllDeskBars() {
   CHECK_EQ(desk_bar_views_.size(), desk_bar_widgets_.size());
 
   desk_bar_views_.clear();
+
+  // Deletes asynchronously so it is less likely to result in UAF.
+  for (auto& bar_widget : desk_bar_widgets_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, bar_widget.release());
+  }
   desk_bar_widgets_.clear();
 }
 
