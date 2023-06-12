@@ -256,6 +256,10 @@
   self.started = NO;
 }
 
+- (void)dealloc {
+  DCHECK(!self.mediator);
+}
+
 #pragma mark - ReadingListListViewControllerAudience
 
 - (void)readingListHasItems:(BOOL)hasItems {
