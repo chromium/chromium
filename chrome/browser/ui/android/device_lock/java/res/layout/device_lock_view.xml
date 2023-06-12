@@ -11,7 +11,8 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/device_lock_view">
 
     <ScrollView
         android:id="@+id/scroll_view"

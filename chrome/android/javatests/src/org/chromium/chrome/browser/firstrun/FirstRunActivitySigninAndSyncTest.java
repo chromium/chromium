@@ -46,12 +46,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -71,6 +74,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /**
  * Integration tests for the first run experience with sign-in and sync decoupled.
@@ -138,6 +142,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void continueButtonClickShowsSyncConsentPage() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -147,6 +152,20 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
 
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
+    public void continueButtonClickShowsDeviceLockPageOnAutomotive() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -217,6 +236,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
+        completeAutoDeviceLockIfNeeded();
+
         waitUntilCurrentPageIs(DefaultSearchEngineFirstRunFragment.class);
     }
 
@@ -244,6 +265,7 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
         clickButton(R.id.button_primary);
@@ -261,9 +283,10 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.positive_button);
+        clickMoreThenClickButton(R.id.positive_button);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
         SyncTestUtil.waitForSyncFeatureEnabled();
@@ -277,9 +300,10 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.button_secondary);
+        clickMoreThenClickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
@@ -294,9 +318,10 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.negative_button);
+        clickMoreThenClickButton(R.id.negative_button);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
@@ -312,6 +337,7 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
         onView(withId(R.id.signin_details_description)).perform(new LinkClick());
@@ -336,6 +362,7 @@ public class FirstRunActivitySigninAndSyncTest {
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
         clickButton(R.id.button_primary);
@@ -356,9 +383,10 @@ public class FirstRunActivitySigninAndSyncTest {
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.button_secondary);
+        clickMoreThenClickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
@@ -376,6 +404,7 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
         onView(withId(R.id.signin_details_description)).perform(new LinkClick());
@@ -408,6 +437,15 @@ public class FirstRunActivitySigninAndSyncTest {
             return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                     && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
         });
+    }
+
+    private void clickMoreThenClickButton(@IdRes int buttonId) {
+        // The more button is shown on smaller screens. Click it if it's visible so the
+        // main button bar is shown.
+        if (mFirstRunActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        clickButton(buttonId);
     }
 
     private void clickButton(@IdRes int buttonId) {
@@ -443,6 +481,21 @@ public class FirstRunActivitySigninAndSyncTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mFirstRunActivity = ApplicationTestUtils.waitForActivityWithClass(
                 FirstRunActivity.class, Stage.RESUMED, () -> context.startActivity(intent));
+    }
+
+    private void completeAutoDeviceLockIfNeeded() {
+        if (!ThreadUtils.runOnUiThreadBlockingNoException(
+                    () -> BuildInfo.getInstance().isAutomotive)) {
+            return;
+        }
+
+        onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SigninFirstRunFragment signinFirstRunFragment =
+                    (SigninFirstRunFragment) mFirstRunActivity.getCurrentFragmentForTesting();
+            signinFirstRunFragment.onDeviceLockReady();
+        });
     }
 
     private static class LinkClick implements ViewAction {
