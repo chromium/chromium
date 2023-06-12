@@ -7843,7 +7843,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         There are no bookmarks that match your search.
       </message>
       <message name="IDS_BOOKMARK_FOLDER_CHILD_COUNT" desc="Text description for the number of children of a bookmark folder">
-        {NUM_BOOKMARKS, plural, =1 {1 bookmark} other {# bookmarks}}
+        (<ph name="COUNT">$1<ex>1</ex></ph>)
       </message>
       <message name="IDS_BOOKMARKS_EDIT_BOOKMARK" desc="Title for the bookmarks side panel edit dialog when full editing is available">
         Edit Bookmark

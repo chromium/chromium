@@ -253,9 +253,8 @@
           items="[[shownBookmarks_]]" scroll-target="bookmarks">
         <template>
           <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-              description="[[getBookmarkDescription_(item,
-                              compactDescriptions_.*, expandedDescriptions_.*,
-                              compact_)]]"
+              description="[[getBookmarkDescription_(
+                             item, compact_, searchQuery_, item.*)]]"
               compact="[[compact_]]" trailing-icon="cr:more-vert"
               trailing-icon-aria-label="[[getBookmarkMenuA11yLabel_(
                                           item.url, item.title)]]"

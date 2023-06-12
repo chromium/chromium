@@ -14,12 +14,10 @@ import {SpEmptyStateElement} from 'chrome://bookmarks-side-panel.top-chrome/shar
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
 import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -89,9 +87,6 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     shoppingListApi = new TestShoppingListApiProxy();
     ShoppingListApiProxyImpl.setInstance(shoppingListApi);
-
-    const pluralString = new TestPluralStringProxy();
-    PluralStringProxyImpl.setInstance(pluralString);
 
     imageServiceHandler = TestMock.fromClass(PageImageServiceHandlerRemote);
     PageImageServiceBrowserProxy.setInstance(
@@ -254,9 +249,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     const urlListItemElement =
         folderElement.shadowRoot!.querySelector('cr-url-list-item');
-    const pluralString =
-        await PluralStringProxyImpl.getInstance().getPluralString('foo', 1);
-    assertTrue(urlListItemElement!.description!.includes(pluralString));
+    const compactDescription = '(1)';
+    assertTrue(urlListItemElement!.description!.includes(compactDescription));
   });
 
   test('SetsExpandedDescription', () => {

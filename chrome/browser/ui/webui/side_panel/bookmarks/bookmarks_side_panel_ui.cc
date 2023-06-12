@@ -155,6 +155,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
        IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_CHANGE},
       {"checkboxA11yLabel", IDS_BOOKMARKS_CHECKBOX_LABEL},
       {"editInvalidUrl", IDS_BOOKMARK_MANAGER_INVALID_URL},
+      {"bookmarkFolderChildCount", IDS_BOOKMARK_FOLDER_CHILD_COUNT},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
@@ -222,8 +223,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  plural_string_handler->AddLocalizedString("bookmarkFolderChildCount",
-                                            IDS_BOOKMARK_FOLDER_CHILD_COUNT);
   plural_string_handler->AddLocalizedString("bookmarkDeletionCount",
                                             IDS_BOOKMARK_DELETION_COUNT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));

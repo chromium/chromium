@@ -217,8 +217,6 @@ export class PowerBookmarksListElement extends PolymerElement {
   private compact_: boolean;
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
   private labels_: Label[];
-  private compactDescriptions_ = new Map<string, string>();
-  private expandedDescriptions_ = new Map<string, string>();
   private imageUrls_ = new Map<string, string>();
   private activeSortIndex_: number;
   private sortTypes_: SortOption[];
@@ -291,16 +289,6 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   setCurrentUrl(url: string) {
     this.currentUrl_ = url;
-  }
-
-  setCompactDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
-    this.set(`compactDescriptions_.${bookmark.id}`, description);
-  }
-
-  setExpandedDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
-    this.set(`expandedDescriptions_.${bookmark.id}`, description);
   }
 
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {
@@ -521,18 +509,29 @@ export class PowerBookmarksListElement extends PolymerElement {
   private getBookmarkDescription_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       string|undefined {
     if (this.compact_) {
-      return this.get(`compactDescriptions_.${bookmark.id}`);
+      if (bookmark.url) {
+        return undefined;
+      }
+      const count = bookmark.children ? bookmark.children.length : 0;
+      return loadTimeData.getStringF('bookmarkFolderChildCount', count);
     } else {
-      const url = this.get(`expandedDescriptions_.${bookmark.id}`);
-      if (this.searchQuery_ && url && bookmark.parentId) {
+      let urlString;
+      if (bookmark.url) {
+        const url = new URL(bookmark.url);
+        // Show chrome:// if it's a chrome internal url
+        if (url.protocol === 'chrome:') {
+          urlString = 'chrome://' + url.hostname;
+        }
+        urlString = url.hostname;
+      }
+      if (urlString && this.searchQuery_ && bookmark.parentId) {
         const parentFolder =
             this.bookmarksService_.findBookmarkWithId(bookmark.parentId);
         const folderLabel = this.getFolderLabel_(parentFolder);
         return loadTimeData.getStringF(
-            'urlFolderDescription', url, folderLabel);
-      } else {
-        return url;
+            'urlFolderDescription', urlString, folderLabel);
       }
+      return urlString;
     }
   }
 

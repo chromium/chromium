@@ -7,7 +7,6 @@
 import {PageImageServiceBrowserProxy} from '//resources/cr_components/page_image_service/browser_proxy.js';
 import {ClientId as PageImageServiceClientId} from '//resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
@@ -26,10 +25,6 @@ export interface Label {
 
 interface PowerBookmarksDelegate {
   setCurrentUrl(url: string|undefined): void;
-  setCompactDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string): void;
-  setExpandedDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string): void;
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string): void;
   onBookmarksLoaded(): void;
   onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo): void;
@@ -175,9 +170,6 @@ export class PowerBookmarksService {
         url => this.delegate_.setCurrentUrl(url));
     this.bookmarksApi_.getFolders().then(folders => {
       this.folders_ = folders;
-      this.folders_.forEach(bookmark => {
-        this.findBookmarkDescriptions_(bookmark, true);
-      });
       this.addListener_(
           'onChanged',
           (id: string, changedInfo: chrome.bookmarks.ChangeInfo) =>
@@ -386,7 +378,6 @@ export class PowerBookmarksService {
   private onChanged_(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
     const bookmark = this.findBookmarkWithId(id)!;
     Object.assign(bookmark, changedInfo);
-    this.findBookmarkDescriptions_(bookmark, false);
     this.findBookmarkImageUrls_(bookmark, false, true);
     this.delegate_.onBookmarkChanged(id, changedInfo);
   }
@@ -400,8 +391,6 @@ export class PowerBookmarksService {
     }
     parent.children!.splice(node.index!, 0, node);
     this.delegate_.onBookmarkCreated(node, parent);
-    this.findBookmarkDescriptions_(parent, false);
-    this.findBookmarkDescriptions_(node, false);
     this.findBookmarkImageUrls_(node, false, false);
   }
 
@@ -420,11 +409,6 @@ export class PowerBookmarksService {
     }
     newParent.children!.splice(movedInfo.index, 0, movedNode);
     this.delegate_.onBookmarkMoved(movedNode, oldParent, newParent);
-
-    if (movedInfo.oldParentId !== movedInfo.parentId) {
-      this.findBookmarkDescriptions_(oldParent, false);
-      this.findBookmarkDescriptions_(newParent, false);
-    }
   }
 
   private onRemoved_(id: string) {
@@ -433,7 +417,6 @@ export class PowerBookmarksService {
     const oldParent = oldPath[oldPath.length - 1]!;
     oldParent.children!.splice(oldParent.children!.indexOf(removedNode), 1);
     this.delegate_.onBookmarkRemoved(removedNode);
-    this.findBookmarkDescriptions_(oldParent, false);
   }
 
   /**
@@ -466,37 +449,6 @@ export class PowerBookmarksService {
 
     this.folders_.some(bookmark => findPathByIdInternal(id, bookmark));
     return path;
-  }
-
-  /**
-   * Assigns a text description for the given bookmark, to be displayed
-   * following the bookmark title. Also assigns a description to all
-   * descendants if recurse is true.
-   */
-  private findBookmarkDescriptions_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, recurse: boolean) {
-    if (bookmark.url) {
-      const url = new URL(bookmark.url);
-      // Show chrome:// if it's a chrome internal url
-      if (url.protocol === 'chrome:') {
-        this.delegate_.setExpandedDescription(
-            bookmark, 'chrome://' + url.hostname);
-      } else {
-        this.delegate_.setExpandedDescription(bookmark, url.hostname);
-      }
-    } else {
-      PluralStringProxyImpl.getInstance()
-          .getPluralString(
-              'bookmarkFolderChildCount',
-              bookmark.children ? bookmark.children.length : 0)
-          .then(pluralString => {
-            this.delegate_.setCompactDescription(bookmark, pluralString);
-          });
-    }
-    if (recurse && bookmark.children) {
-      bookmark.children.forEach(
-          child => this.findBookmarkDescriptions_(child, recurse));
-    }
   }
 
   /**
