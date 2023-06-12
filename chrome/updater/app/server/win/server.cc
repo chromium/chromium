@@ -314,16 +314,14 @@ void ComServerApp::TaskStarted() {
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
           .IncrementObjectCount();
   VLOG(2) << "Starting task, Microsoft::WRL::Module count: " << count;
+  AppServer::TaskStarted();
 }
 
-void ComServerApp::TaskCompleted() {
-  main_task_runner_->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&ComServerApp::AcknowledgeTaskCompletion, this),
-      external_constants()->ServerKeepAliveTime());
+bool ComServerApp::ShutdownIfIdleAfterTask() {
+  return false;
 }
 
-void ComServerApp::AcknowledgeTaskCompletion() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void ComServerApp::OnDelayedTaskComplete() {
   const auto count =
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
           .DecrementObjectCount();

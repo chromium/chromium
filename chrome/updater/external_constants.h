@@ -60,6 +60,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // Overrides the overinstall timeout.
   virtual base::TimeDelta OverinstallTimeout() const = 0;
 
+  // Overrides the idleness check period.
+  virtual base::TimeDelta IdleCheckPeriod() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;
   scoped_refptr<ExternalConstants> next_provider_;

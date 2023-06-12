@@ -196,6 +196,19 @@ base::TimeDelta ExternalConstantsOverrider::OverinstallTimeout() const {
   return base::Seconds(value->GetInt());
 }
 
+base::TimeDelta ExternalConstantsOverrider::IdleCheckPeriod() const {
+  if (!override_values_.contains(kDevOverrideKeyIdleCheckPeriodSeconds)) {
+    return next_provider_->IdleCheckPeriod();
+  }
+
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyIdleCheckPeriodSeconds);
+  CHECK(value->is_int()) << "Unexpected type of override["
+                         << kDevOverrideKeyIdleCheckPeriodSeconds
+                         << "]: " << base::Value::GetTypeName(value->type());
+  return base::Seconds(value->GetInt());
+}
+
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(

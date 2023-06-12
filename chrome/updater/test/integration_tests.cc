@@ -309,6 +309,11 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunWakeActive(exit_code);
   }
 
+  void RunServer(int exit_code, bool internal) {
+    ASSERT_TRUE(WaitForUpdaterExit());
+    test_commands_->RunServer(exit_code, internal);
+  }
+
   void CheckForUpdate(const std::string& app_id) {
     test_commands_->CheckForUpdate(app_id);
   }
@@ -1022,6 +1027,19 @@ TEST_F(IntegrationTest, UpdateServiceStress) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(StressUpdateService());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, IdleServerExits) {
+#if BUILDFLAG(IS_WIN)
+  if (GetTestScope() == UpdaterScope::kSystem) {
+    GTEST_SKIP() << "System server startup is complicated on Windows.";
+  }
+#endif
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(RunServer(kErrorIdle, true));
+  ASSERT_NO_FATAL_FAILURE(RunServer(kErrorIdle, false));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

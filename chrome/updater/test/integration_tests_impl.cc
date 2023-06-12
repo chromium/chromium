@@ -432,6 +432,22 @@ void RunCrashMe(UpdaterScope scope) {
                        absl::nullopt);
 }
 
+void RunServer(UpdaterScope scope, int expected_exit_code, bool internal) {
+  const absl::optional<base::FilePath> installed_executable_path =
+      GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion))
+          ->Append(GetExecutableRelativePath());
+  ASSERT_TRUE(installed_executable_path);
+  ASSERT_TRUE(base::PathExists(*installed_executable_path));
+  base::CommandLine command_line(*installed_executable_path);
+  command_line.AppendSwitch(kServerSwitch);
+  command_line.AppendSwitchASCII(
+      kServerServiceSwitch, internal ? kServerUpdateServiceInternalSwitchValue
+                                     : kServerUpdateServiceSwitchValue);
+  int exit_code = -1;
+  Run(scope, command_line, &exit_code);
+  ASSERT_EQ(exit_code, expected_exit_code);
+}
+
 void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;

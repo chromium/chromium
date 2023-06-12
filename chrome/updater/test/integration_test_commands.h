@@ -84,6 +84,7 @@ class IntegrationTestCommands
   virtual void RunWakeAll() const = 0;
   virtual void RunWakeActive(int exit_code) const = 0;
   virtual void RunCrashMe() const = 0;
+  virtual void RunServer(int exit_code, bool internal) const = 0;
 
   virtual void CheckForUpdate(const std::string& app_id) const = 0;
   virtual void Update(const std::string& app_id,

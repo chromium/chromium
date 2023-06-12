@@ -67,6 +67,11 @@ class ExternalConstantsBuilder {
 
   ExternalConstantsBuilder& SetOverinstallTimeout(
       const base::TimeDelta& overinstall_timeout);
+  ExternalConstantsBuilder& ClearOverinstallTimeout();
+
+  ExternalConstantsBuilder& SetIdleCheckPeriod(
+      const base::TimeDelta& idle_check_period);
+  ExternalConstantsBuilder& ClearIdleCheckPeriod();
 
   // Write the external constants overrides file in the default location
   // with the values that have been previously set, replacing any file

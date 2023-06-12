@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/external_constants.h"
@@ -42,8 +44,16 @@ class AppServer : public App {
 
   scoped_refptr<Configurator> config() const { return config_; }
 
+  void TaskStarted();
+  void TaskCompleted();
+
+  // Returns whether the process is (or recently was) idle.
+  bool IsIdle();
+
   // Overrides of App.
   void Uninitialize() override;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   // Overrides of App.
@@ -68,6 +78,13 @@ class AppServer : public App {
   // Uninstalls this candidate version of the updater.
   virtual void UninstallSelf() = 0;
 
+  // If true, this server will shut itself down after being idle for a period
+  // after completing a task.
+  virtual bool ShutdownIfIdleAfterTask() = 0;
+
+  // The server will call this method a short time after completing a task.
+  virtual void OnDelayedTaskComplete() = 0;
+
   // As part of initialization, an AppServer must do a mode check to determine
   // what mode of operation it should continue in. Possible modes include:
   //  - Qualify: this candidate is not yet qualified or active.
@@ -87,6 +104,7 @@ class AppServer : public App {
   scoped_refptr<ExternalConstants> external_constants_;
   scoped_refptr<UpdaterPrefs> prefs_;
   scoped_refptr<Configurator> config_;
+  base::RepeatingTimer hang_timer_;
 
   // If true, this version of the updater should uninstall itself during
   // shutdown.
@@ -94,6 +112,9 @@ class AppServer : public App {
 
   // The number of times the server has started, as read from global prefs.
   int server_starts_ = 0;
+
+  // The number of currently running tasks.
+  int tasks_running_ = 0;
 };
 
 scoped_refptr<App> AppServerInstance();

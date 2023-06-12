@@ -197,6 +197,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWakeActive(updater_scope_, exit_code);
   }
 
+  void RunServer(int exit_code, bool internal) const override {
+    updater::test::RunServer(updater_scope_, exit_code, internal);
+  }
+
   void CheckForUpdate(const std::string& app_id) const override {
     updater::test::CheckForUpdate(updater_scope_, app_id);
   }

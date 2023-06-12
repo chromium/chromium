@@ -51,6 +51,8 @@ class DefaultExternalConstants : public ExternalConstants {
     return base::Minutes(2);
   }
 
+  base::TimeDelta IdleCheckPeriod() const override { return base::Minutes(5); }
+
  private:
   ~DefaultExternalConstants() override = default;
 };

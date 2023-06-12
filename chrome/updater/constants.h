@@ -225,6 +225,7 @@ extern const char kDevOverrideKeyServerKeepAliveSeconds[];
 extern const char kDevOverrideKeyCrxVerifierFormat[];
 extern const char kDevOverrideKeyGroupPolicies[];
 extern const char kDevOverrideKeyOverinstallTimeout[];
+extern const char kDevOverrideKeyIdleCheckPeriodSeconds[];
 
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
@@ -393,6 +394,9 @@ inline constexpr int kErrorFailedToGetSetupFiles = 43;
 
 // Failed to run install list.
 inline constexpr int kErrorFailedToRunInstallList = 44;
+
+// The server was running but had no tasks to do.
+inline constexpr int kErrorIdle = 45;
 
 inline constexpr int kErrorTagParsing = 50;
 

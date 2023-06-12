@@ -150,6 +150,23 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::SetOverinstallTimeout(
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearOverinstallTimeout() {
+  overrides_.Remove(kDevOverrideKeyOverinstallTimeout);
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetIdleCheckPeriod(
+    const base::TimeDelta& idle_check_period) {
+  overrides_.Set(kDevOverrideKeyIdleCheckPeriodSeconds,
+                 static_cast<int>(idle_check_period.InSeconds()));
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearIdleCheckPeriod() {
+  overrides_.Remove(kDevOverrideKeyIdleCheckPeriodSeconds);
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
   const absl::optional<base::FilePath> override_path =
       GetOverrideFilePath(GetUpdaterScope());
@@ -195,6 +212,9 @@ bool ExternalConstantsBuilder::Modify() {
     SetGroupPolicies(verifier->GroupPolicies());
   if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout))
     SetOverinstallTimeout(verifier->OverinstallTimeout());
+  if (!overrides_.contains(kDevOverrideKeyIdleCheckPeriodSeconds)) {
+    SetIdleCheckPeriod(verifier->IdleCheckPeriod());
+  }
 
   return Overwrite();
 }

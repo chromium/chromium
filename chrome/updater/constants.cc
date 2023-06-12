@@ -102,6 +102,7 @@ const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";
 const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
 const char kDevOverrideKeyGroupPolicies[] = "group_policies";
 const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
+const char kDevOverrideKeyIdleCheckPeriodSeconds[] = "idle_check_period";
 
 // Policy Management constants.
 const char kProxyModeDirect[] = "direct";

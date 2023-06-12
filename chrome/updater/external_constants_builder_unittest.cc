@@ -72,7 +72,9 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetUseCUP(false)
       .SetInitialDelay(base::Seconds(123))
       .SetServerKeepAliveTime(base::Seconds(2))
-      .SetGroupPolicies(group_policies);
+      .SetGroupPolicies(group_policies)
+      .SetOverinstallTimeout(base::Seconds(3))
+      .SetIdleCheckPeriod(base::Seconds(4));
   EXPECT_TRUE(builder.Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -90,6 +92,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(2));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+  EXPECT_EQ(verifier->OverinstallTimeout(), base::Seconds(3));
+  EXPECT_EQ(verifier->IdleCheckPeriod(), base::Seconds(4));
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
@@ -134,6 +138,8 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearInitialDelay()
                   .ClearServerKeepAliveSeconds()
                   .ClearGroupPolicies()
+                  .ClearOverinstallTimeout()
+                  .ClearIdleCheckPeriod()
                   .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =

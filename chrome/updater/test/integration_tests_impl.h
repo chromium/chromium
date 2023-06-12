@@ -116,6 +116,10 @@ void RunWakeActive(UpdaterScope scope, int exit_code);
 // Starts an updater process with switch `--crash-me`.
 void RunCrashMe(UpdaterScope scope);
 
+// Runs the server and waits for it to exit. Assert that it exits with
+// `exit_code`.
+void RunServer(UpdaterScope scope, int exit_code, bool internal);
+
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(UpdaterScope scope,
             const std::string& app_id,

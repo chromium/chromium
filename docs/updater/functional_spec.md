@@ -885,6 +885,18 @@ logon trigger on the scheduled task. For user installs, this is done via both
 the logon trigger on the scheduled task, as well as the "Run" registry entry in
 `HKCU` for redundancy.
 
+### Server Lifetime
+The updater's RPC server starts and waits for incoming RPCs. The server
+considers itself idle if it has not been processing any RPC in the last ten
+seconds. Every five minutes, the updater will check itself for idleness and
+shut down if idle.
+
+Additionally, on macOS, after answering at least one RPC, the server will shut
+itself down as soon as it becomes idle.
+
+Additionally, on Windows, the updater will shut itself down if all clients
+release their references to the server.
+
 ### On-Demand Updates
 The updater exposes an RPC interface for any user to trigger an update check.
 The update can be triggered by any user on the system, even in the system scope.

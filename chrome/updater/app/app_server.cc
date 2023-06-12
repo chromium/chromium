@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"
@@ -122,7 +123,38 @@ base::OnceClosure AppServer::ModeCheck() {
                         base::MakeRefCounted<UpdateServiceImpl>(config_));
 }
 
+void AppServer::TaskStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ++tasks_running_;
+}
+
+void AppServer::TaskCompleted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AppServer> server) {
+            --(server->tasks_running_);
+            server->OnDelayedTaskComplete();
+            if (server->IsIdle() && server->ShutdownIfIdleAfterTask()) {
+              server->Shutdown(0);
+            }
+          },
+          base::WrapRefCounted(this)),
+      external_constants()->ServerKeepAliveTime());
+}
+
+bool AppServer::IsIdle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tasks_running_ == 0;
+}
+
 void AppServer::Uninitialize() {
+  // Simply stopping the timer does not destroy its task. The task holds a
+  // refcount to this AppServer; therefore the task must be replaced and then
+  // the timer stopped.
+  hang_timer_.Start(FROM_HERE, base::Minutes(1), base::DoNothing());
+  hang_timer_.Stop();
   if (prefs_) {
     PrefsCommitPendingWrites(prefs_->GetPrefService());
   }
@@ -168,6 +200,14 @@ void AppServer::MaybeUninstall() {
 
 void AppServer::FirstTaskRun() {
   std::move(first_task_).Run();
+  hang_timer_.Start(FROM_HERE, external_constants_->IdleCheckPeriod(),
+                    base::BindRepeating(
+                        [](scoped_refptr<AppServer> server) {
+                          if (server->IsIdle()) {
+                            server->Shutdown(kErrorIdle);
+                          }
+                        },
+                        base::WrapRefCounted(this)));
 }
 
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {

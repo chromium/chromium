@@ -19,28 +19,6 @@ namespace updater {
 AppServerPosix::AppServerPosix() = default;
 AppServerPosix::~AppServerPosix() = default;
 
-void AppServerPosix::TaskStarted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ++tasks_running_;
-  VLOG(2) << "Starting task, " << tasks_running_ << " tasks running";
-}
-
-void AppServerPosix::TaskCompleted() {
-  main_task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AppServerPosix::AcknowledgeTaskCompletion, this),
-      external_constants()->ServerKeepAliveTime());
-}
-
-void AppServerPosix::AcknowledgeTaskCompletion() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (--tasks_running_ < 1) {
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&AppServerPosix::Shutdown, this, 0));
-  }
-  VLOG(2) << "Completing task, " << tasks_running_ << " tasks running";
-}
-
 void AppServerPosix::UninstallSelf() {
   UninstallCandidate(updater_scope());
 }
@@ -77,5 +55,11 @@ bool AppServerPosix::SwapInNewVersion() {
   VLOG_IF(1, result != kErrorOk) << __func__ << " failed: " << result;
   return result == kErrorOk;
 }
+
+bool AppServerPosix::ShutdownIfIdleAfterTask() {
+  return true;
+}
+
+void AppServerPosix::OnDelayedTaskComplete() {}
 
 }  // namespace updater

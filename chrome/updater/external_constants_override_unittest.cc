@@ -58,6 +58,8 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   overrides.Set(kDevOverrideKeyInitialDelay, 137.1);
   overrides.Set(kDevOverrideKeyServerKeepAliveSeconds, 1);
   overrides.Set(kDevOverrideKeyGroupPolicies, std::move(group_policies));
+  overrides.Set(kDevOverrideKeyOverinstallTimeout, 3);
+  overrides.Set(kDevOverrideKeyIdleCheckPeriodSeconds, 4);
   auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
       std::move(overrides), CreateDefaultExternalConstants());
 
@@ -78,6 +80,8 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   EXPECT_EQ(overrider->InitialDelay(), base::Seconds(137.1));
   EXPECT_EQ(overrider->ServerKeepAliveTime(), base::Seconds(1));
   EXPECT_EQ(overrider->GroupPolicies().size(), 2U);
+  EXPECT_EQ(overrider->OverinstallTimeout(), base::Seconds(3));
+  EXPECT_EQ(overrider->IdleCheckPeriod(), base::Seconds(4));
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {

@@ -218,6 +218,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void RunCrashMe() const override { RunCommand("run_crash_me", {}); }
 
+  void RunServer(int expected_exit_code, bool internal) const override {
+    RunCommand("run_server",
+               {Param("internal", internal ? "true" : "false"),
+                Param("exit_code", base::NumberToString(expected_exit_code))});
+  }
+
   void CheckForUpdate(const std::string& app_id) const override {
     RunCommand("check_for_update", {Param("app_id", app_id)});
   }

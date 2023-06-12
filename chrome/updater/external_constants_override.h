@@ -56,6 +56,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   crx_file::VerifierFormat CrxVerifierFormat() const override;
   base::Value::Dict GroupPolicies() const override;
   base::TimeDelta OverinstallTimeout() const override;
+  base::TimeDelta IdleCheckPeriod() const override;
 
  private:
   const base::Value::Dict override_values_;
