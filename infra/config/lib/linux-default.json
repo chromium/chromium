@@ -180,6 +180,7 @@
     "chromeos-arm-generic-rel": "Ubuntu-22.04",
     "chromeos-arm64-generic-rel": "Ubuntu-22.04",
     "chromeos-jacuzzi-rel": "Ubuntu-22.04",
+    "chromeos-js-code-coverage": "Ubuntu-22.04",
     "chromeos-octopus-rel": "Ubuntu-22.04",
     "fuchsia-angle-builder": "Ubuntu-22.04",
     "fuchsia-arm64-rel": "Ubuntu-22.04",
