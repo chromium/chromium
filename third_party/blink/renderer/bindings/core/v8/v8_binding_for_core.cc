@@ -630,15 +630,20 @@ String ReplaceUnmatchedSurrogates(String string) {
   return String::Adopt(result);
 }
 
-DOMWindow* ToDOMWindow(v8::Isolate* isolate, v8::Local<v8::Value> value) {
-  return V8Window::ToWrappable(isolate, value);
-}
-
 LocalDOMWindow* ToLocalDOMWindow(v8::Local<v8::Context> context) {
   if (context.IsEmpty())
     return nullptr;
+  v8::Local<v8::Object> global = context->Global();
+
+  // There are several global objects that are not ScriptWrappable, and
+  // therefore are definitely not a LocalDOMWindow (GC context, DevTools'
+  // context (debug context), and maybe more). These types do not have any
+  // internal fields, and will therefore crash if passed to ToScriptWrappable().
+  if (global->InternalFieldCount() == 0) {
+    return nullptr;
+  }
   return To<LocalDOMWindow>(
-      ToDOMWindow(context->GetIsolate(), context->Global()));
+      ToScriptWrappable(global)->ToMostDerived<DOMWindow>());
 }
 
 LocalDOMWindow* EnteredDOMWindow(v8::Isolate* isolate) {
@@ -673,10 +678,10 @@ ExecutionContext* ToExecutionContext(v8::Local<v8::Context> context) {
   CHECK(!global_proxy.IsEmpty());
   CHECK(global_proxy->IsObject());
 
-  // There are several contexts other than Window, WorkerGlobalScope or
-  // WorkletGlobalScope but entering into ToExecutionContext, namely GC context,
-  // DevTools' context (debug context), and maybe more.  They all don't have
-  // any internal field.
+  // There are several global objects that are not ScriptWrappable, and
+  // therefore are definitely not an ExecutionContext (GC context, DevTools'
+  // context (debug context), and maybe more). These types do not have any
+  // internal fields, and will therefore crash if passed to ToScriptWrappable().
   if (global_proxy->InternalFieldCount() == 0)
     return nullptr;
 

@@ -678,11 +678,7 @@ static EventTarget* FirstArgumentAsEventTarget(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return nullptr;
-  if (EventTarget* target =
-          V8EventTarget::ToWrappable(info.GetIsolate(), info[0])) {
-    return target;
-  }
-  return ToDOMWindow(info.GetIsolate(), info[0]);
+  return V8EventTarget::ToWrappable(info.GetIsolate(), info[0]);
 }
 
 void ThreadDebuggerCommonImpl::SetMonitorEventsCallback(

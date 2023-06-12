@@ -190,12 +190,7 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
     return;
   }
 
-  EventTarget* target = V8EventTarget::ToWrappable(isolate, value);
-  // We need to handle LocalDOMWindow specially, because LocalDOMWindow wrapper
-  // exists on prototype chain.
-  if (!target)
-    target = ToDOMWindow(isolate, value);
-  if (target) {
+  if (EventTarget* target = V8EventTarget::ToWrappable(isolate, value)) {
     CollectEventListeners(isolate, target, value, nullptr, false,
                           event_information);
   }
