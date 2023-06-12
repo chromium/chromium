@@ -34,12 +34,29 @@ export class ChannelProxy {
   readonly #sendMessageHandle: CommonDataTypes.Handle;
 
   private constructor(
+    channelHandle: CommonDataTypes.Handle,
+    sendMessageHandle: CommonDataTypes.Handle,
     channel: Script.ChannelProperties,
     eventManager: IEventManager,
-    realm: Realm,
-    channelHandle: CommonDataTypes.Handle,
-    sendMessageHandle: CommonDataTypes.Handle
+    realm: Realm
   ) {
+    if (
+      ![0, null, undefined].includes(channel.serializationOptions?.maxDomDepth)
+    )
+      throw new Error(
+        'serializationOptions.maxDomDepth other than 0 or null is not supported'
+      );
+
+    if (
+      ![undefined, 'none'].includes(
+        channel.serializationOptions?.includeShadowTree
+      )
+    ) {
+      throw new Error(
+        'serializationOptions.includeShadowTree other than "none" is not supported'
+      );
+    }
+
     this.#channel = channel;
     this.#eventManager = eventManager;
     this.#realm = realm;
@@ -59,11 +76,11 @@ export class ChannelProxy {
     );
 
     const channelProxy = new ChannelProxy(
+      channelHandle,
+      sendMessageHandle,
       channel,
       eventManager,
-      realm,
-      channelHandle,
-      sendMessageHandle
+      realm
     );
 
     void channelProxy.initChannelListener();
@@ -143,7 +160,7 @@ export class ChannelProxy {
         arguments: [{objectId: channelHandle}],
         executionContextId: realm.executionContextId,
         serializationOptions: {
-          serialization: 'deep',
+          serialization: 'idOnly',
         },
       }
     );
@@ -171,6 +188,11 @@ export class ChannelProxy {
           executionContextId: this.#realm.executionContextId,
           serializationOptions: {
             serialization: 'deep',
+            ...(this.#channel.serializationOptions?.maxObjectDepth ===
+              undefined ||
+            this.#channel.serializationOptions.maxObjectDepth === null
+              ? {}
+              : {maxDepth: this.#channel.serializationOptions.maxObjectDepth}),
           },
         }
       );

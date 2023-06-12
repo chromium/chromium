@@ -15,7 +15,7 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (execute_command, read_JSON_message,
+from test_helpers import (ANY_SHARED_ID, execute_command, read_JSON_message,
                           send_JSON_command, subscribe)
 
 
@@ -29,10 +29,10 @@ async def test_channel_twoMessageEvents(websocket, context_id):
             "method": "script.callFunction",
             "params": {
                 # A small delay is needed to avoid a race condition.
-                "functionDeclaration": """(binding) => {
+                "functionDeclaration": """(channel) => {
                     setTimeout(() => {
-                        binding('MY_MESSAGE1');
-                        binding('MY_MESSAGE2');
+                        channel('MY_MESSAGE1');
+                        channel('MY_MESSAGE2');
                     }, 1);
                 }""",
                 "arguments": [{
@@ -93,10 +93,10 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
             "method": "script.callFunction",
             "params": {
                 # A small delay is needed to avoid a race condition.
-                "functionDeclaration": """(binding) => {
-                    binding('MESSAGE_BEFORE_EXEC_FINISHED');
+                "functionDeclaration": """(channel) => {
+                    channel('MESSAGE_BEFORE_EXEC_FINISHED');
                     setTimeout(() => {
-                        binding('MESSAGE_AFTER_EXEC_FINISHED');
+                        channel('MESSAGE_AFTER_EXEC_FINISHED');
                     }, 1);
                 }""",
                 "arguments": [{
@@ -143,6 +143,232 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
                 "type": "string",
                 "value": "MESSAGE_AFTER_EXEC_FINISHED"
             },
+            "source": {
+                "context": context_id,
+                "realm": ANY_STR,
+            }
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_channel_and_another_channel(websocket, context_id):
+    await subscribe(websocket, "script.message")
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "script.callFunction",
+            "params": {
+                # A small delay is needed to avoid a race condition.
+                "functionDeclaration": """(channel_1, channel_2) => {
+                    channel_1('CHANNEL_1_MESSAGE');
+                    channel_2('CHANNEL_2_MESSAGE');
+                }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "CHANNEL_1",
+                        "ownership": "root",
+                    },
+                }, {
+                    "type": "channel",
+                    "value": {
+                        "channel": "CHANNEL_2",
+                        "ownership": "root",
+                    },
+                }],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "resultOwnership": "root"
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "script.message",
+        "params": {
+            "channel": "CHANNEL_1",
+            "data": {
+                "type": "string",
+                "value": "CHANNEL_1_MESSAGE"
+            },
+            "source": {
+                "context": context_id,
+                "realm": ANY_STR,
+            }
+        }
+    }
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "script.message",
+        "params": {
+            "channel": "CHANNEL_2",
+            "data": {
+                "type": "string",
+                "value": "CHANNEL_2_MESSAGE"
+            },
+            "source": {
+                "context": context_id,
+                "realm": ANY_STR,
+            }
+        }
+    }
+
+
+@pytest.mark.parametrize("serialization_options, expected_result", [
+    ({}, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    ({
+        "maxDomDepth": 0
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    pytest.param({"maxDomDepth": 1}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+    pytest.param({"maxDomDepth": None}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+    ({
+        "maxObjectDepth": 0
+    }, {
+        "type": "object",
+        "handle": ANY_STR
+    }),
+    ({
+        "maxObjectDepth": 1
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    ({
+        "maxObjectDepth": None
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    ({
+        "includeShadowTree": "none"
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    pytest.param({"includeShadowTree": "open"}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+    pytest.param({"includeShadowTree": "all"}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+])
+@pytest.mark.asyncio
+async def test_channel_serialization_options(websocket, context_id,
+                                             serialization_options,
+                                             expected_result):
+    await subscribe(websocket, "script.message")
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "script.callFunction",
+            "params": {
+                # A small delay is needed to avoid a race condition.
+                "functionDeclaration": """(channel) => {
+                    channel({a: document.body});
+                }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "MY_CHANNEL",
+                        "ownership": "root",
+                        "serializationOptions": serialization_options,
+                    },
+                }],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "resultOwnership": "root"
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "script.message",
+        "params": {
+            "channel": "MY_CHANNEL",
+            "data": expected_result,
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
