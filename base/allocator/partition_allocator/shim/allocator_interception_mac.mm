@@ -246,9 +246,7 @@ bool CanGetContextForCFAllocator() {
 #if BUILDFLAG(IS_IOS)
   return !partition_alloc::internal::base::ios::IsRunningOnOrLater(17, 0, 0);
 #else
-  // As of macOS 14, the allocators seem to be in read-only memory? See
-  // https://crbug.com/1454013.
-  return !partition_alloc::internal::base::mac::IsAtMostOS13();
+  return !partition_alloc::internal::base::mac::IsOSLaterThan14_DontCallThis();
 #endif
 }
 
