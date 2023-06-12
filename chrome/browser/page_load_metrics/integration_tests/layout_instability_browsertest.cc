@@ -343,15 +343,13 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
-// TODO(crbug.com/1400401): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
-                       DISABLED_CumulativeLayoutShift_hadRecentInput) {
+                       CumulativeLayoutShift_hadRecentInput) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
-  // TODO(crbug.com/1403026): Modify the AddPageLayoutShiftExpectation so we can
-  // pass number of layout shift as an argument.
-  waiter->AddPageLayoutShiftExpectation();
+  waiter->AddPageLayoutShiftExpectation(ShiftFrame::LayoutShiftOnlyInMainFrame,
+                                        /*num_layout_shifts=*/1);
   Start();
 
   // Start tracking with layout_shift related information.
