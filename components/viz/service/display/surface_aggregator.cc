@@ -211,46 +211,46 @@ SharedQuadState* CopySharedQuadState(
       dest_render_pass);
 }
 
-void UpdateParentClipDataMergeState(ResolvedPassData& resolved_pass,
-                                    AggregatedRenderPass* dest_pass,
-                                    bool is_merged_pass) {
-  auto& parent_clip_data = resolved_pass.current_parent_clip_data();
+void UpdatePersistentPassDataMergeState(ResolvedPassData& resolved_pass,
+                                        AggregatedRenderPass* dest_pass,
+                                        bool is_merged_pass) {
+  auto& persistent_data = resolved_pass.current_persistent_data();
 
-  ParentClipData::MergeState merge_state = is_merged_pass
-                                               ? ParentClipData::kAlwaysMerged
-                                               : ParentClipData::kNotMerged;
+  PersistentPassData::MergeState merge_state =
+      is_merged_pass ? PersistentPassData::kAlwaysMerged
+                     : PersistentPassData::kNotMerged;
 
-  if (parent_clip_data.merge_state == ParentClipData::kInitState) {
+  if (persistent_data.merge_state == PersistentPassData::kInitState) {
     // This is the first time it's embedded.
-    parent_clip_data.merge_state = merge_state;
-  } else if (parent_clip_data.merge_state != merge_state) {
-    parent_clip_data.merge_state = ParentClipData::kSomeTimesMerged;
+    persistent_data.merge_state = merge_state;
+  } else if (persistent_data.merge_state != merge_state) {
+    persistent_data.merge_state = PersistentPassData::kSomeTimesMerged;
   }
 }
 
 bool ChangeInMergeState(ResolvedPassData& resolved_pass) {
-  DCHECK(resolved_pass.current_parent_clip_data().merge_state !=
-         ParentClipData::kInitState);
+  DCHECK(resolved_pass.current_persistent_data().merge_state !=
+         PersistentPassData::kInitState);
   // If this is the first frame and previous_merge_state is empty,
   // this function will returns false.
   auto current_merge_state =
-      resolved_pass.current_parent_clip_data().merge_state;
+      resolved_pass.current_persistent_data().merge_state;
   auto previous_merge_state =
-      resolved_pass.previous_parent_clip_data().merge_state;
+      resolved_pass.previous_persistent_data().merge_state;
 
   // Check if this render pass is merged to its parent render pass in the
   // previous frame but is not in the current frame.
   bool change_in_merged_pass =
-      previous_merge_state == ParentClipData::kAlwaysMerged &&
-      current_merge_state == ParentClipData::kNotMerged;
+      previous_merge_state == PersistentPassData::kAlwaysMerged &&
+      current_merge_state == PersistentPassData::kNotMerged;
 
   // If it's embedded multiple times and some are merged while some are not,
   // just redraw the render pass. It's complicated to track individual change.
   change_in_merged_pass |=
-      resolved_pass.current_parent_clip_data().merge_state ==
-          ParentClipData::kSomeTimesMerged ||
-      resolved_pass.previous_parent_clip_data().merge_state ==
-          ParentClipData::kSomeTimesMerged;
+      resolved_pass.current_persistent_data().merge_state ==
+          PersistentPassData::kSomeTimesMerged ||
+      resolved_pass.previous_persistent_data().merge_state ==
+          PersistentPassData::kSomeTimesMerged;
 
   return change_in_merged_pass;
 }
@@ -267,12 +267,12 @@ void UpdateNeedsRedraw(
 
   // Save the parent_clip_rect from the current frame.
   auto& current_parent_clip_rect =
-      resolved_pass.current_parent_clip_data().parent_clip_rect;
+      resolved_pass.current_persistent_data().parent_clip_rect;
   current_parent_clip_rect.Union(dest_root_target_clip_rect.value());
 
   // Get the parent_clip_rect from the preious frame;
   auto& previous_parent_clip_rect =
-      resolved_pass.previous_parent_clip_data().parent_clip_rect;
+      resolved_pass.previous_persistent_data().parent_clip_rect;
 
   // If the parent clip rect expands, the new area of the render pass output
   // buffer has never been updated. Redraw is needed.
@@ -884,12 +884,12 @@ void SurfaceAggregator::EmitSurfaceContent(
         added_clip_rect, ComputeDrawableRectForQuad(surface_quad),
         target_transform);
   }
-  // Update ParentClipData.merge_status of the root render pass of the current
-  // frame before making a call to AddSurfaceDamageToDamageList() where
+  // Update PersistentPassData.merge_status of the root render pass of the
+  // current frame before making a call to AddSurfaceDamageToDamageList() where
   // RenderPassNeedsFullDamage() is called and needs root pass |merge_state|
   // info.
-  UpdateParentClipDataMergeState(resolved_frame.GetRootRenderPassData(),
-                                 dest_pass, merge_pass);
+  UpdatePersistentPassDataMergeState(resolved_frame.GetRootRenderPassData(),
+                                     dest_pass, merge_pass);
 
   if (needs_surface_damage_rect_list_ && resolved_frame.WillDraw()) {
     AddSurfaceDamageToDamageList(
@@ -935,8 +935,8 @@ void SurfaceAggregator::EmitSurfaceContent(
         source.cache_render_pass, resolved_pass.aggregation().has_damage,
         source.generate_mipmap);
 
-    UpdateParentClipDataMergeState(resolved_pass, copy_pass.get(),
-                                   /*is_merged_pass=*/false);
+    UpdatePersistentPassDataMergeState(resolved_pass, copy_pass.get(),
+                                       /*is_merged_pass=*/false);
 
     MoveMatchingRequests(source.id, &copy_requests, &copy_pass->copy_requests);
 
@@ -960,7 +960,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   auto& resolved_root_pass = resolved_frame.GetRootRenderPassData();
 
   if (merge_pass) {
-    // UpdateParentClipDataMergeState() has been called earlier.
+    // UpdatePersistentPassDataMergeState() has been called earlier.
     CopyQuadsToPass(resolved_frame, resolved_root_pass, dest_pass,
                     frame.device_scale_factor(), combined_transform,
                     surface_quad_clip, dest_root_target_clip_rect, surface,
@@ -1556,8 +1556,8 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
         source.has_transparent_background, source.cache_render_pass,
         resolved_pass.aggregation().has_damage, source.generate_mipmap);
 
-    UpdateParentClipDataMergeState(resolved_pass, copy_pass.get(),
-                                   /*is_merged_pass=*/false);
+    UpdatePersistentPassDataMergeState(resolved_pass, copy_pass.get(),
+                                       /*is_merged_pass=*/false);
 
     if (needs_surface_damage_rect_list_ && resolved_pass.is_root()) {
       AddSurfaceDamageToDamageList(

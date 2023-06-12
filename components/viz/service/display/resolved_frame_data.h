@@ -110,13 +110,15 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   bool will_draw = false;
 };
 
-struct ParentClipData {
-  ParentClipData();
-  ParentClipData(ParentClipData&& other);
-  ParentClipData& operator=(ParentClipData& other);
-  ParentClipData& operator=(const ParentClipData& other);
-  ParentClipData& operator=(ParentClipData&& other);
-  ~ParentClipData();
+// Render pass data that must be recomputed each aggregation and needs to be
+// persisted to next aggregation.
+struct PersistentPassData {
+  PersistentPassData();
+  PersistentPassData(PersistentPassData&& other);
+  PersistentPassData& operator=(PersistentPassData& other);
+  PersistentPassData& operator=(const PersistentPassData& other);
+  PersistentPassData& operator=(PersistentPassData&& other);
+  ~PersistentPassData();
 
   enum MergeState { kInitState, kNotMerged, kAlwaysMerged, kSomeTimesMerged };
 
@@ -164,19 +166,19 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   AggregationPassData& aggregation() { return aggregation_; }
   const AggregationPassData& aggregation() const { return aggregation_; }
 
-  ParentClipData& current_parent_clip_data() {
-    return current_parent_clip_data_;
+  PersistentPassData& current_persistent_data() {
+    return current_persistent_data_;
   }
 
-  ParentClipData& previous_parent_clip_data() {
-    return previous_parent_clip_data_;
+  PersistentPassData& previous_persistent_data() {
+    return previous_persistent_data_;
   }
 
-  const ParentClipData& previous_parent_clip_data() const {
-    return previous_parent_clip_data_;
+  const PersistentPassData& previous_persistent_data() const {
+    return previous_persistent_data_;
   }
 
-  void CopyAndResetParentClipData();
+  void CopyAndResetPersistentPassData();
 
  private:
   friend class ResolvedFrameData;
@@ -187,8 +189,8 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   // Data that will change each aggregation.
   AggregationPassData aggregation_;
 
-  ParentClipData current_parent_clip_data_;
-  ParentClipData previous_parent_clip_data_;
+  PersistentPassData current_persistent_data_;
+  PersistentPassData previous_persistent_data_;
 };
 
 enum FrameDamageType {
@@ -294,7 +296,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
  private:
   void RegisterWithResourceProvider();
-  void MoveParentClipDataFromPreviousFrame(
+  void MovePersistentPassDataFromPreviousFrame(
       const std::vector<ResolvedPassData>& previoius_resolved_passes);
 
   const raw_ptr<DisplayResourceProvider> resource_provider_;
