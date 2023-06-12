@@ -351,6 +351,10 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
     return new PasswordsPrivateDelegateImpl(profile());
   }
 
+  // Queries and returns the list of saved credentials, blocking until finished.
+  PasswordsPrivateDelegate::UiEntries GetCredentials(
+      PasswordsPrivateDelegate& delegate);
+
  protected:
   raw_ptr<extensions::TestEventRouter, DanglingUntriaged> event_router_ =
       nullptr;
@@ -410,6 +414,22 @@ void PasswordsPrivateDelegateImplTest::SetUpRouters() {
   // factory is set, resulting in nul PasswordsPrivateEventRouter.
   PasswordsPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildPasswordsPrivateEventRouter));
+}
+
+PasswordsPrivateDelegate::UiEntries
+PasswordsPrivateDelegateImplTest::GetCredentials(
+    PasswordsPrivateDelegate& delegate) {
+  PasswordsPrivateDelegate::UiEntries result;
+  base::RunLoop run_loop;
+  delegate.GetSavedPasswordsList(base::BindLambdaForTesting(
+      [&](const PasswordsPrivateDelegate::UiEntries& entries) {
+        for (const auto& entry : entries) {
+          result.emplace_back(entry.Clone());
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return result;
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetSavedPasswordsList) {
@@ -850,6 +870,190 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInAccountStore) {
 
   auto result = delegate->ChangeSavedPassword(account_form_id, params);
   EXPECT_THAT(result, new_account_form_id);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Password) {
+  password_manager::PasswordForm sample_form = CreateSampleForm();
+  SetUpPasswordStores({sample_form});
+  auto delegate = CreateDelegate();
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  api::passwords_private::PasswordUiEntry updated_credential =
+      GetCredentials(*delegate).at(0).Clone();
+  updated_credential.password = "new_pass";
+  updated_credential.username = "new_user";
+
+  EXPECT_TRUE(delegate->ChangeCredential(updated_credential));
+
+  // Spin the loop to allow PasswordStore tasks posted when changing the
+  // password to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the changing the password got reflected in the passwords list.
+  // `note` field should not be filled when `GetSavedPasswordsList` is called.
+  const PasswordsPrivateDelegate::UiEntries& credentials =
+      GetCredentials(*delegate);
+  EXPECT_EQ(credentials.size(), 1u);
+  const api::passwords_private::PasswordUiEntry& refreshed_credential =
+      credentials.at(0);
+  EXPECT_EQ(refreshed_credential.username, "new_user");
+  EXPECT_EQ(refreshed_credential.note, absl::nullopt);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ChangeCredential_PasswordInBothStores) {
+  password_manager::PasswordForm profile_form = CreateSampleForm();
+  password_manager::PasswordForm account_form = profile_form;
+  account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  SetUpPasswordStores({profile_form, account_form});
+
+  auto delegate = CreateDelegate();
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  api::passwords_private::PasswordUiEntry updated_credential =
+      GetCredentials(*delegate).at(0).Clone();
+  updated_credential.password = "new_pass";
+  updated_credential.username = "new_user";
+
+  EXPECT_TRUE(delegate->ChangeCredential(updated_credential));
+
+  // Spin the loop to allow PasswordStore tasks posted when changing the
+  // password to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  const PasswordsPrivateDelegate::UiEntries& credentials =
+      GetCredentials(*delegate);
+  EXPECT_EQ(credentials.size(), 1u);
+  const api::passwords_private::PasswordUiEntry& refreshed_credential =
+      credentials.at(0);
+  EXPECT_EQ(refreshed_credential.username, "new_user");
+  EXPECT_EQ(refreshed_credential.stored_in,
+            api::passwords_private::PasswordStoreSet::
+                PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ChangeCredential_PasswordInAccountStore) {
+  password_manager::PasswordForm profile_form = CreateSampleForm();
+  profile_form.password_value = u"different_pass";
+  password_manager::PasswordForm account_form = CreateSampleForm();
+  account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  SetUpPasswordStores({profile_form, account_form});
+
+  auto delegate = CreateDelegate();
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Get the account credential.
+  const PasswordsPrivateDelegate::UiEntries& credentials =
+      GetCredentials(*delegate);
+  EXPECT_EQ(credentials.size(), 2u);
+  const auto account_credential_it =
+      std::ranges::find_if(credentials, [](const auto& credential) {
+        return credential.stored_in ==
+               api::passwords_private::PasswordStoreSet::
+                   PASSWORD_STORE_SET_ACCOUNT;
+      });
+  ASSERT_NE(account_credential_it, credentials.end());
+
+  api::passwords_private::PasswordUiEntry updated_credential =
+      account_credential_it->Clone();
+  updated_credential.password = "new_pass";
+  updated_credential.username = "new_user";
+
+  EXPECT_TRUE(delegate->ChangeCredential(updated_credential));
+
+  // Spin the loop to allow PasswordStore tasks posted when changing the
+  // password to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  const PasswordsPrivateDelegate::UiEntries& updated_credentials =
+      GetCredentials(*delegate);
+  EXPECT_EQ(updated_credentials.size(), 2u);
+  const auto refreshed_credential_it =
+      std::ranges::find_if(updated_credentials, [](const auto& credential) {
+        return credential.stored_in ==
+               api::passwords_private::PasswordStoreSet::
+                   PASSWORD_STORE_SET_ACCOUNT;
+      });
+  ASSERT_NE(account_credential_it, updated_credentials.end());
+  EXPECT_EQ(refreshed_credential_it->username, "new_user");
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Passkey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordsGrouping,
+       password_manager::features::kPasswordManagerPasskeys,
+       syncer::kSyncWebauthnCredentials},
+      /*disabled_features=*/{});
+
+  PasskeyModel* passkey_model = PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
+  ASSERT_TRUE(passkey_model);
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
+  passkey_model->AddNewPasskeyForTesting(passkey);
+
+  auto delegate = CreateDelegate();
+  // Spin the loop to allow PasskeyModel tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Get the passkey credential.
+  const PasswordsPrivateDelegate::UiEntries& credentials =
+      GetCredentials(*delegate);
+  EXPECT_EQ(credentials.size(), 1u);
+  const api::passwords_private::PasswordUiEntry& existing_credential =
+      credentials.at(0);
+  EXPECT_TRUE(existing_credential.is_passkey);
+
+  api::passwords_private::PasswordUiEntry updated_credential =
+      existing_credential.Clone();
+  updated_credential.username = "new_user";
+  updated_credential.display_name = "new_display_name";
+
+  EXPECT_TRUE(delegate->ChangeCredential(updated_credential));
+
+  // Spin the loop to allow PasskeyModel tasks posted when changing the
+  // password to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  const PasswordsPrivateDelegate::UiEntries& updated_credentials =
+      GetCredentials(*delegate);
+  EXPECT_EQ(updated_credentials.size(), 1u);
+  EXPECT_EQ(updated_credentials.at(0).username, "new_user");
+  EXPECT_EQ(updated_credentials.at(0).display_name, "new_display_name");
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_NotFound) {
+  SetUpPasswordStores({});
+  auto delegate = CreateDelegate();
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      delegate->ChangeCredential(api::passwords_private::PasswordUiEntry()));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_EmptyPassword) {
+  password_manager::PasswordForm sample_form = CreateSampleForm();
+  SetUpPasswordStores({sample_form});
+  auto delegate = CreateDelegate();
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  api::passwords_private::PasswordUiEntry updated_credential =
+      GetCredentials(*delegate).at(0).Clone();
+  updated_credential.password = "";
+  updated_credential.username = "new_user";
+
+  EXPECT_FALSE(delegate->ChangeCredential(updated_credential));
 }
 
 // Checking callback result of RequestPlaintextPassword with reason Copy.

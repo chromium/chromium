@@ -118,6 +118,27 @@ absl::optional<int> TestPasswordsPrivateDelegate::ChangeSavedPassword(
   return id;
 }
 
+bool TestPasswordsPrivateDelegate::ChangeCredential(
+    const api::passwords_private::PasswordUiEntry& credential) {
+  const auto existing = std::ranges::find_if(
+      current_entries_,
+      [&credential](const auto& entry) { return entry.id == credential.id; });
+  if (existing == current_entries_.end()) {
+    return false;
+  }
+  existing->username = credential.username;
+  if (credential.password) {
+    existing->password = credential.password;
+  }
+  if (credential.display_name) {
+    existing->display_name = credential.display_name;
+  }
+  if (credential.note) {
+    existing->note = credential.note;
+  }
+  return true;
+}
+
 void TestPasswordsPrivateDelegate::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {

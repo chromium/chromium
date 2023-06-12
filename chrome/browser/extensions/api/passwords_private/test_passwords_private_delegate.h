@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/passwords_private.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -44,6 +45,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   absl::optional<int> ChangeSavedPassword(
       const int id,
       const api::passwords_private::ChangeSavedPasswordParams& params) override;
+  bool ChangeCredential(
+      const api::passwords_private::PasswordUiEntry& credential) override;
   void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_store) override;

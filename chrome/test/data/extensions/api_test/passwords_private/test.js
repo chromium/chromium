@@ -121,6 +121,59 @@ var availableTests = [
         });
   },
 
+  async function changeCredentialChangePassword() {
+    let groups = await chrome.passwordsPrivate.getCredentialGroups();
+    let credential = groups[0].entries[0];
+    chrome.test.assertFalse(credential.isPasskey);
+
+    credential.username = 'anya';
+    credential.password = 'secret';
+    credential.note = 'note';
+    await chrome.passwordsPrivate.changeCredential(credential);
+
+    groups = await chrome.passwordsPrivate.getCredentialGroups();
+    credential = groups[0].entries.find(entry => entry.username == 'anya');
+    chrome.test.assertTrue(!!credential);
+    chrome.test.assertEq(credential.note, 'note');
+    chrome.test.succeed();
+  },
+
+  async function changeCredentialChangePasskey() {
+    let groups = await chrome.passwordsPrivate.getCredentialGroups();
+    let credential = groups[0].entries.find(credential => credential.isPasskey);
+
+    credential.username = 'anya';
+    credential.displayName = 'Anya Forger';
+    await chrome.passwordsPrivate.changeCredential(credential);
+
+    groups = await chrome.passwordsPrivate.getCredentialGroups();
+    credential = groups[0].entries.find(entry => entry.username == 'anya');
+    chrome.test.assertTrue(!!credential);
+    chrome.test.assertEq(credential.displayName, 'Anya Forger');
+    chrome.test.succeed();
+  },
+
+  async function changeCredentialNotFound() {
+    const expected =
+        'Error: Could not change the credential. Either the arguments are ' +
+        'not valid or the credential does not exist';
+    await chrome.test.assertPromiseRejects(
+        chrome.passwordsPrivate.changeCredential({
+          id: 42,
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
+          isAndroidCredential: false,
+          isPasskey: false,
+          username: 'alice',
+          storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+          note: '',
+        }), expected);
+    chrome.test.succeed();
+  },
+
   function removeAndUndoRemoveSavedPassword() {
     var numCalls = 0;
     var numSavedPasswords;
@@ -677,7 +730,7 @@ var availableTests = [
       // The last entry should be a passkey.
       var passkey = group.entries[group.entries.length - 1];
       chrome.test.assertTrue(passkey.isPasskey);
-      chrome.test.assertEq(passkey.displayName, "displayName");
+      chrome.test.assertEq(passkey.displayName, 'displayName');
 
       // Ensure that all entry ids are unique.
       chrome.test.assertEq(group.entries.length, idSet.size);

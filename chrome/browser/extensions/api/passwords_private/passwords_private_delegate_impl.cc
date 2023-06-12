@@ -446,6 +446,38 @@ absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   return credential_id_generator_.GenerateId(std::move(updated_credential));
 }
 
+bool PasswordsPrivateDelegateImpl::ChangeCredential(
+    const api::passwords_private::PasswordUiEntry& credential) {
+  const CredentialUIEntry* original_credential =
+      credential_id_generator_.TryGetKey(credential.id);
+  if (!original_credential) {
+    return false;
+  }
+  CredentialUIEntry updated_credential = *original_credential;
+  updated_credential.username = base::UTF8ToUTF16(credential.username);
+  if (credential.password) {
+    updated_credential.password = base::UTF8ToUTF16(*credential.password);
+  }
+  if (credential.note) {
+    updated_credential.note = base::UTF8ToUTF16(*credential.note);
+  }
+  if (credential.display_name) {
+    CHECK(!updated_credential.passkey_credential_id.empty());
+    updated_credential.user_display_name =
+        base::UTF8ToUTF16(*credential.display_name);
+  }
+  switch (saved_passwords_presenter_.EditSavedCredentials(*original_credential,
+                                                          updated_credential)) {
+    case password_manager::SavedPasswordsPresenter::EditResult::kSuccess:
+    case password_manager::SavedPasswordsPresenter::EditResult::kNothingChanged:
+      return true;
+    case password_manager::SavedPasswordsPresenter::EditResult::kNotFound:
+    case password_manager::SavedPasswordsPresenter::EditResult::kAlreadyExisits:
+    case password_manager::SavedPasswordsPresenter::EditResult::kEmptyPassword:
+      return false;
+  }
+}
+
 void PasswordsPrivateDelegateImpl::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {

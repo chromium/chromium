@@ -36418,6 +36418,7 @@ Called by update_extension_histograms.py.-->
   <int value="1791" label="AUTOTESTPRIVATE_REMOVEBRUSCHETTA"/>
   <int value="1792" label="AUTOFILLPRIVATE_AUTHENTICATEUSERTOEDITLOCALCARD"/>
   <int value="1793" label="AUTOTESTPRIVATE_ISFEATUREENABLED"/>
+  <int value="1794" label="PASSWORDSPRIVATE_CHANGECREDENTIAL"/>
 </enum>
 
 <enum name="ExtensionIconState">

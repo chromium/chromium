@@ -96,6 +96,15 @@ class PasswordsPrivateDelegate
       int id,
       const api::passwords_private::ChangeSavedPasswordParams& params) = 0;
 
+  // Updates a credential. Not all attributes can be updated.
+  // |credential|: The credential to be updated. Matched to an existing
+  // credential by id.
+  // Returns absl::nullopt if the credential could not be found or updated.
+  // Otherwise, returns the newly updated credential. Note that the new
+  // credential may have a different ID, so it should replace the old one.
+  virtual bool ChangeCredential(
+      const api::passwords_private::PasswordUiEntry& credential) = 0;
+
   // Removes the credential entry corresponding to the |id| in the specified
   // |from_stores|. Any invalid id will be ignored.
   virtual void RemoveCredential(

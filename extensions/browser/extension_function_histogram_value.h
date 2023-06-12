@@ -1853,6 +1853,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_REMOVEBRUSCHETTA = 1791,
   AUTOFILLPRIVATE_AUTHENTICATEUSERTOEDITLOCALCARD = 1792,
   AUTOTESTPRIVATE_ISFEATUREENABLED = 1793,
+  PASSWORDSPRIVATE_CHANGECREDENTIAL = 1794,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
