@@ -38,7 +38,7 @@
     margin: 12px 0;
   }
 
-  iron-icon[icon='personalization:managed'] {
+  iron-icon[icon='personalization:managed-old'] {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
   }
 
@@ -87,7 +87,7 @@
     min-width: 278px;
   }
 
-  iron-icon[icon='personalization:managed2'] {
+  iron-icon[icon='personalization:managed'] {
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
   }
@@ -122,7 +122,7 @@
       <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
         <div id="wallpaperLabel">
           <p>$i18n{wallpaperLabel}</p>
-          <iron-icon icon="personalization:managed" title="$i18n{managedSetting}">
+          <iron-icon icon="personalization:managed-old" title="$i18n{managedSetting}">
           </iron-icon>
         </div>
         <div id="imageContainer" class="photo-images-container">
@@ -135,7 +135,7 @@
       <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
         <div id="wallpaperLabel" class="disabled">
           <p>$i18n{wallpaperLabel}</p>
-          <iron-icon icon="personalization:managed2" disabled
+          <iron-icon icon="personalization:managed" disabled
               title="$i18n{managedSetting}">
           </iron-icon>
         </div>

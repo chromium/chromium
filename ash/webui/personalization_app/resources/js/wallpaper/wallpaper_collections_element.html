@@ -145,12 +145,12 @@
             <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
               <div slot="text" class="primary-text">
                 <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
-                  <iron-icon icon="personalization:managed"
+                  <iron-icon icon="personalization:managed-old"
                       title$="$i18n{managedSetting}">
                   </iron-icon>
                 </template>
                 <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
-                  <iron-icon icon="personalization:managed2"
+                  <iron-icon icon="personalization:managed"
                       title$="$i18n{managedSetting}">
                   </iron-icon>
                 </template>
