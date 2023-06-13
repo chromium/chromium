@@ -500,11 +500,14 @@ class GpuIntegrationTest(
   # pylint: enable=no-self-use
 
   def _RunGpuTest(self, url: str, test_name: str, args: ct.TestArgs) -> None:
-    expected_results, should_retry_on_failure = (
-        self.GetExpectationsForTest()[:2])
-    should_retry_on_failure = (
-        should_retry_on_failure
-        or self._DetermineFirstTestRetryWorkaround(test_name))
+    def _GetExpectedResultsAndShouldRetry():
+      expected_results, should_retry_on_failure = (
+          self.GetExpectationsForTest()[:2])
+      should_retry_on_failure = (
+          should_retry_on_failure
+          or self._DetermineFirstTestRetryWorkaround(test_name))
+      return expected_results, should_retry_on_failure
+
     expected_crashes = {}
     try:
       expected_crashes = self.GetExpectedCrashes(args)
@@ -515,6 +518,12 @@ class GpuIntegrationTest(
       # pylint: enable=attribute-defined-outside-init
       raise
     except Exception as e:
+      # We get these values here instead of at the beginning of the function
+      # because it's possible that RunActualGpuTest() will restart the browser
+      # with new browser args, causing any expectation-related data from before
+      # then to become invalid due to different typ tags.
+      (expected_results,
+       should_retry_on_failure) = _GetExpectedResultsAndShouldRetry()
       if not should_retry_on_failure and self._DetermineRetryWorkaround(e):
         should_retry_on_failure = True
         # Notify typ that it should retry this test.
@@ -528,6 +537,8 @@ class GpuIntegrationTest(
         self._HandleUnexpectedFailure(test_name)
       raise
     else:
+      (expected_results,
+       should_retry_on_failure) = _GetExpectedResultsAndShouldRetry()
       self._HandlePass(test_name, expected_crashes, expected_results)
 
   def _HandleExpectedFailureOrFlake(self, test_name: str,
