@@ -3960,10 +3960,12 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
 
 AXObject* AXObjectCacheImpl::RestoreParentOrPrune(AXObject* child) {
   AXObject* parent = child->ComputeParentOrNull();
-  if (parent)
+  if (parent) {
     child->SetParent(parent);
-  else  // If no parent is possible, the child is no longer part of the tree.
-    Remove(child, /* notify_parent */ false);
+  } else {
+    // If no parent is possible, the child is no longer part of the tree.
+    RemoveSubtreeWhenSafe(child->GetNode());
+  }
 
   return parent;
 }
