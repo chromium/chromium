@@ -2552,7 +2552,7 @@ class Port(object):
         normalized_test_name = self.normalize_test_name(test_name)
         for suite in self.virtual_test_suites():
             if normalized_test_name.startswith(suite.full_prefix):
-                return suite.args
+                return suite.args.copy()
         return []
 
     @memoized
