@@ -1116,10 +1116,9 @@ class BookmarkManagerMediator
     // ImprovedBookmarkRow methods.
 
     private void resolveIconForBookmark(BookmarkItem item, PropertyModel model) {
-        @BookmarkRowDisplayPref
-        int displayPref = mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        boolean useImages = BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                && displayPref == BookmarkRowDisplayPref.VISUAL;
+        final @BookmarkRowDisplayPref int displayPref =
+                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
+        boolean useImages = displayPref == BookmarkRowDisplayPref.VISUAL;
         model.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
                 item.isFolder() && useImages ? StartImageVisibility.FOLDER_DRAWABLE
                                              : StartImageVisibility.DRAWABLE);
