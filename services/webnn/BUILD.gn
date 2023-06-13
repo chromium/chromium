@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
+
 source_set("webnn") {
   sources = [
     "webnn_context_impl.cc",
@@ -71,4 +73,21 @@ source_set("tests") {
       "//ui/gl/init",
     ]
   }
+}
+
+mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
+  sources = [ "webnn_graph_mojolpm_fuzzer.cc" ]
+
+  proto_source = "webnn_graph_mojolpm_fuzzer.proto"
+
+  proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
+
+  deps = [
+    ":webnn",
+    "//base",
+    "//base/test:test_support",
+    "//content/test/fuzzer:mojolpm_fuzzer_support",
+    "//services/webnn/public/mojom",
+    "//third_party/libprotobuf-mutator",
+  ]
 }

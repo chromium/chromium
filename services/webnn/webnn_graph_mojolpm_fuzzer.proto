@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Message format for the MojoLPM fuzzer for the webnn service interface.
+
+syntax = "proto2";
+
+package services.fuzzing.webnn_graph.proto;
+
+import "services/webnn/public/mojom/webnn_graph.mojom.mojolpm.proto";
+
+// GraphInfo mojo struct describe an entire WebNN graph
+message CreateGraphAction {
+  required mojolpm.webnn.mojom.GraphInfo graph_info = 1;
+}
+
+// Actions that can be performed by the fuzzer.
+message Action {
+  required CreateGraphAction create_graph = 1;
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+}
