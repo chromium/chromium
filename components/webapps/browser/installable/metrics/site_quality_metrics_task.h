@@ -71,6 +71,7 @@ class SiteQualityMetricsTask {
   // that web_contents->GetLastCommittedURL() is not opaque when calling this
   // function.
   static std::unique_ptr<SiteQualityMetricsTask> CreateAndStart(
+      const GURL& site_url,
       content::WebContents& web_contents,
       content::StoragePartition& storage_partition,
       content::ServiceWorkerContext& service_worker_context,
@@ -78,7 +79,8 @@ class SiteQualityMetricsTask {
       ResultCallback on_complete);
 
  private:
-  SiteQualityMetricsTask(content::WebContents& web_contents,
+  SiteQualityMetricsTask(const GURL& site_url,
+                         content::WebContents& web_contents,
                          content::StoragePartition& storage_partition,
                          content::ServiceWorkerContext& service_worker_context,
                          scoped_refptr<base::SequencedTaskRunner> task_runner,

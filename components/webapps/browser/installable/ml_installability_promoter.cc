@@ -89,7 +89,7 @@ void MLInstallabilityPromoter::StartGatheringMetricsForSiteUrl() {
   }
 
   site_quality_metrics_task_ = SiteQualityMetricsTask::CreateAndStart(
-      *web_contents(), *storage_partition_, *service_worker_context_,
+      site_url_, *web_contents(), *storage_partition_, *service_worker_context_,
       sequenced_task_runner_,
       base::BindOnce(&MLInstallabilityPromoter::OnDidCollectSiteQualityMetrics,
                      weak_factory_.GetWeakPtr()));
@@ -317,7 +317,7 @@ void MLInstallabilityPromoter::OnRegistrationStored(int64_t registration_id,
   // Restart the SiteQualityMetricsTask to read data from the QuotaManagerProxy
   // and the ServiceWorkerContext with registered service worker.
   site_quality_metrics_task_ = SiteQualityMetricsTask::CreateAndStart(
-      *web_contents(), *storage_partition_, *service_worker_context_,
+      site_url_, *web_contents(), *storage_partition_, *service_worker_context_,
       sequenced_task_runner_,
       base::BindOnce(&MLInstallabilityPromoter::OnDidCollectSiteQualityMetrics,
                      weak_factory_.GetWeakPtr()));

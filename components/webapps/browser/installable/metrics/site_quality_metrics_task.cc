@@ -21,6 +21,7 @@
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace webapps {
@@ -29,6 +30,7 @@ SiteQualityMetricsTask::~SiteQualityMetricsTask() = default;
 
 // static
 std::unique_ptr<SiteQualityMetricsTask> SiteQualityMetricsTask::CreateAndStart(
+    const GURL& site_url,
     content::WebContents& web_contents,
     content::StoragePartition& storage_partition,
     content::ServiceWorkerContext& service_worker_context,
@@ -36,19 +38,20 @@ std::unique_ptr<SiteQualityMetricsTask> SiteQualityMetricsTask::CreateAndStart(
     ResultCallback on_complete) {
   std::unique_ptr<SiteQualityMetricsTask> result =
       base::WrapUnique(new SiteQualityMetricsTask(
-          web_contents, storage_partition, service_worker_context, task_runner,
-          std::move(on_complete)));
+          site_url, web_contents, storage_partition, service_worker_context,
+          task_runner, std::move(on_complete)));
   result->Start();
   return result;
 }
 
 SiteQualityMetricsTask::SiteQualityMetricsTask(
+    const GURL& site_url,
     content::WebContents& web_contents,
     content::StoragePartition& storage_partition,
     content::ServiceWorkerContext& service_worker_context,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ResultCallback on_complete)
-    : site_url_(web_contents.GetLastCommittedURL()),
+    : site_url_(site_url),
       web_contents_(web_contents),
       storage_partition_(storage_partition),
       service_worker_context_(service_worker_context),
