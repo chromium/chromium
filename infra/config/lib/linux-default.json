@@ -327,7 +327,8 @@
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
   "reclient": {
-    "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04"
+    "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04",
+    "Simple Chrome Builder reclient staging": "Ubuntu-22.04"
   },
   "reviver": {
     "android-launcher": "Ubuntu-22.04",
