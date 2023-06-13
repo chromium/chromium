@@ -172,6 +172,8 @@ template("clang_lib") {
           _suffix = "-arm-android"
         } else if (current_cpu == "arm64") {
           _suffix = "-aarch64-android"
+        } else if (current_cpu == "riscv64") {
+          _suffix = "-riscv64-android"
         } else {
           assert(false)  # Unhandled cpu type
         }

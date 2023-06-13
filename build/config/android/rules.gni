@@ -23,6 +23,8 @@ if (target_cpu == "arm") {
   _sanitizer_arch = "aarch64"
 } else if (target_cpu == "x86") {
   _sanitizer_arch = "i686"
+} else if (target_cpu == "riscv64") {
+  _sanitizer_arch = "riscv64"
 }
 
 _sanitizer_runtimes = []

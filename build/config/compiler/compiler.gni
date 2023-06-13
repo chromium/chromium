@@ -249,7 +249,8 @@ declare_args() {
                 current_cpu == "arm" || current_cpu == "arm64" ||
                 current_cpu == "mipsel" || current_cpu == "mips64el")) ||
               (is_android && (current_cpu == "x86" || current_cpu == "x64" ||
-                              current_cpu == "arm" || current_cpu == "arm64")))
+                              current_cpu == "arm" || current_cpu == "arm64" ||
+                              current_cpu == "riscv64")))
 }
 
 # Use relative paths for debug info. This is important to make the build
