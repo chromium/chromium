@@ -85,7 +85,7 @@ class FilesPolicyNotificationManager
   size_t notification_count_ = 0;
 
  private:
-  // Holds all information related to IO task warning. Any extra information
+  // Holds all information related to file task warning. Any extra information
   // needed for custom messaging should be added here.
   struct WarningInfo {
     WarningInfo() = delete;
@@ -104,11 +104,11 @@ class FilesPolicyNotificationManager
     OnDlpRestrictionCheckedCallback warning_callback;
   };
 
-  // Holds needed information for each tracked IO task.
-  struct IOTaskInfo {
-    explicit IOTaskInfo(dlp::FileAction action);
-    IOTaskInfo(IOTaskInfo&& other);
-    ~IOTaskInfo();
+  // Holds needed information for each tracked file task.
+  struct FileTaskInfo {
+    explicit FileTaskInfo(dlp::FileAction action);
+    FileTaskInfo(FileTaskInfo&& other);
+    ~FileTaskInfo();
 
     // Should have value only if there's warning.
     absl::optional<WarningInfo> warning_info;
@@ -201,7 +201,7 @@ class FilesPolicyNotificationManager
   content::BrowserContext* context_;
 
   // A map from tracked IO tasks ids to their info.
-  std::map<file_manager::io_task::IOTaskId, IOTaskInfo> io_tasks_;
+  std::map<file_manager::io_task::IOTaskId, FileTaskInfo> io_tasks_;
 
   base::WeakPtrFactory<FilesPolicyNotificationManager> weak_factory_{this};
 };

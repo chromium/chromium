@@ -333,13 +333,14 @@ FilesPolicyNotificationManager::WarningInfo::WarningInfo(WarningInfo&& other) =
 
 FilesPolicyNotificationManager::WarningInfo::~WarningInfo() = default;
 
-FilesPolicyNotificationManager::IOTaskInfo::IOTaskInfo(dlp::FileAction action)
+FilesPolicyNotificationManager::FileTaskInfo::FileTaskInfo(
+    dlp::FileAction action)
     : action(action) {}
 
-FilesPolicyNotificationManager::IOTaskInfo::IOTaskInfo(IOTaskInfo&& other) =
-    default;
+FilesPolicyNotificationManager::FileTaskInfo::FileTaskInfo(
+    FileTaskInfo&& other) = default;
 
-FilesPolicyNotificationManager::IOTaskInfo::~IOTaskInfo() = default;
+FilesPolicyNotificationManager::FileTaskInfo::~FileTaskInfo() = default;
 
 void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
     file_manager::io_task::IOTaskId task_id,
@@ -459,7 +460,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
 void FilesPolicyNotificationManager::AddIOTask(
     file_manager::io_task::IOTaskId task_id,
     dlp::FileAction action) {
-  io_tasks_.emplace(std::move(task_id), IOTaskInfo(action));
+  io_tasks_.emplace(std::move(task_id), FileTaskInfo(action));
 }
 
 void FilesPolicyNotificationManager::OnBrowserSetLastActive(Browser* browser) {
