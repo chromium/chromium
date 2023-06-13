@@ -244,11 +244,6 @@ class SystemNotificationManager {
       file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
-  // Makes a notification instance Data Protection errors and warnings.
-  NotificationPtr MakeDataProtectionPolicyNotification(
-      const std::string& notification_id,
-      const file_manager::io_task::ProgressStatus& status);
-
   // Makes a notification instance for Data Protection progress notifications.
   NotificationPtr MakeDataProtectionPolicyProgressNotification(
       const std::string& notification_id,

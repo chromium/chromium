@@ -323,7 +323,7 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
   io_task_controller_->RemoveObserver(&observer);
 }
 
-// Tests that cancelling a paused IO IO task will run the warning callback.
+// Tests that cancelling a paused IO task will run the warning callback.
 TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
@@ -386,7 +386,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
   io_task_controller_->RemoveObserver(&observer);
 }
 
-// Tests that resuming a paused IO IO task will run the warning callback.
+// Tests that resuming a paused IO task will run the warning callback.
 TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
@@ -435,10 +435,175 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
       DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
 
   // Warning callback is run with should_proceed set to true when the task is
-  // reumed.
+  // resumed.
   EXPECT_CALL(mock_cb, Run(/*should_proceed=*/true)).Times(1);
   fpnm_->ResumeIOTask(task_id);
 }
+
+class FPNMPausedStatusNotification
+    : public FilesPolicyNotificationManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<file_manager::io_task::OperationType,
+                     Policy,
+                     std::u16string,
+                     std::u16string>> {};
+
+TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
+  auto [type, policy, title, ok_button] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kPaused;
+  status.type = type;
+  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_FALSE(src_file_path.empty());
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path.value()),
+                              absl::nullopt);
+  status.pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(policy);
+
+  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"File may contain sensitive content");
+  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
+  EXPECT_EQ(notification->buttons()[1].title, ok_button);
+}
+
+TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
+  auto [type, policy, title, ok_button] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kPaused;
+  status.type = type;
+  base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_FALSE(src_file_path_1.empty());
+  base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII("test2.txt");
+  ASSERT_FALSE(src_file_path_2.empty());
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path_1.value()),
+                              absl::nullopt);
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path_2.value()),
+                              absl::nullopt);
+  status.pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(policy);
+
+  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"Files may contain sensitive content");
+  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
+  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMPausedStatusNotification,
+    ::testing::Values(
+        std::make_tuple(file_manager::io_task::OperationType::kCopy,
+                        Policy::kDlp,
+                        u"Review is required before copying",
+                        u"Copy anyway"),
+        std::make_tuple(file_manager::io_task::OperationType::kCopy,
+                        Policy::kEnterpriseConnectors,
+                        u"Review is required before copying",
+                        u"Copy anyway"),
+        std::make_tuple(file_manager::io_task::OperationType::kMove,
+                        Policy::kDlp,
+                        u"Review is required before moving",
+                        u"Move anyway"),
+        std::make_tuple(file_manager::io_task::OperationType::kMove,
+                        Policy::kEnterpriseConnectors,
+                        u"Review is required before moving",
+                        u"Move anyway")));
+
+class FPNMErrorStatusNotification
+    : public FilesPolicyNotificationManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<file_manager::io_task::OperationType,
+                     file_manager::io_task::PolicyErrorType,
+                     std::u16string>> {};
+
+TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
+  auto [type, policy, title] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kError;
+  status.type = type;
+  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_FALSE(src_file_path.empty());
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path.value()),
+                              absl::nullopt);
+  status.policy_error = policy;
+
+  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"File was blocked");
+  EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
+  EXPECT_EQ(notification->buttons()[1].title, u"Learn more");
+}
+
+TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
+  auto [type, policy, title] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kError;
+  status.type = type;
+  base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_FALSE(src_file_path_1.empty());
+  base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII("test2.txt");
+  ASSERT_FALSE(src_file_path_2.empty());
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path_1.value()),
+                              absl::nullopt);
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path_2.value()),
+                              absl::nullopt);
+  status.policy_error = policy;
+
+  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"Review for further details");
+  EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
+  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMErrorStatusNotification,
+    ::testing::Values(
+        std::make_tuple(file_manager::io_task::OperationType::kCopy,
+                        file_manager::io_task::PolicyErrorType::kDlp,
+                        u"Blocked copy"),
+        std::make_tuple(
+            file_manager::io_task::OperationType::kCopy,
+            file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+            u"Blocked copy"),
+        std::make_tuple(file_manager::io_task::OperationType::kMove,
+                        file_manager::io_task::PolicyErrorType::kDlp,
+                        u"Blocked move"),
+        std::make_tuple(
+            file_manager::io_task::OperationType::kMove,
+            file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+            u"Blocked move")));
 
 class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
                           public ::testing::WithParamInterface<

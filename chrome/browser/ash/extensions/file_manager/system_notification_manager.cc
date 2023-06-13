@@ -191,62 +191,6 @@ std::u16string GetIOTaskMessage(Profile* profile,
                       .BaseName()
                       .value()));
 }
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationTitle(const ProgressStatus& status) {
-  if (status.HasWarning()) {
-    return u"Confirmation required";
-  } else {
-    return u"files blocked";
-  }
-}
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationMessage(const ProgressStatus& status) {
-  if (status.HasWarning()) {
-    return (status.sources.size() == 1)
-               ? u"File may contain sensitive content"
-               : u"files may contain sensitive content";
-  }
-  // error
-  return (status.sources.size() == 1) ? u"File was blocked" : u"Files blocked";
-}
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationCancelButton(const ProgressStatus& status) {
-  if (status.HasWarning()) {
-    return GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL);
-  } else {
-    return u"Dismiss";
-  }
-}
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationProceedButton(
-    const ProgressStatus& status) {
-  if (status.sources.size() > 1) {
-    return u"Review";
-  }
-
-  DCHECK(status.HasWarning());
-
-  switch (status.type) {
-    case OperationType::kCopy:
-      return u"Copy anyway";
-    case OperationType::kMove:
-      return u"Move anyway";
-    case OperationType::kDelete:
-    case OperationType::kEmptyTrash:
-    case OperationType::kExtract:
-    case OperationType::kRestore:
-    case OperationType::kRestoreToDestination:
-    case OperationType::kTrash:
-    case OperationType::kZip:
-      NOTREACHED() << "Unexpected operation type " << status.type;
-      return u"";
-  }
-}
-
 }  // namespace
 
 NotificationPtr CreateSystemNotification(const std::string& notification_id,
@@ -823,12 +767,17 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // If there's a warning or security error, show a data protection
   // notification.
   if (status.HasWarning() || status.HasPolicyError()) {
+    policy::FilesPolicyNotificationManager* manager =
+        policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+            profile_);
+    if (!manager) {
+      LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                    "can't show policy dialog for task_id "
+                 << status.task_id;
+      return;
+    }
     Dismiss(id);
-    NotificationPtr notification =
-        MakeDataProtectionPolicyNotification(id, status);
-    GetNotificationDisplayService()->Display(
-        NotificationHandler::Type::TRANSIENT, *notification,
-        /*metadata=*/nullptr);
+    manager->ShowsFilesPolicyNotification(id, status);
     return;
   }
 
@@ -1132,68 +1081,6 @@ NotificationPtr SystemNotificationManager::MakeRemovableNotification(
       notification = MakeMountErrorNotification(event, volume);
     }
   }
-
-  return notification;
-}
-
-NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
-    const std::string& notification_id,
-    const ProgressStatus& status) {
-  std::u16string title = GetPolicyNotificationTitle(status);
-  std::u16string message = GetPolicyNotificationMessage(status);
-  std::u16string cancel_button = GetPolicyNotificationCancelButton(status);
-
-  std::vector<ButtonInfo> notification_buttons;
-  notification_buttons.emplace_back(cancel_button);
-
-  RepeatingClosure proceed_callback;
-  RepeatingClosure cancel_callback;
-  if (status.HasWarning()) {
-    notification_buttons.emplace_back(
-        GetPolicyNotificationProceedButton(status));
-    if (status.sources.size() == 1) {
-      // Single file: the user can continue the action directly from the
-      // notification.
-      proceed_callback =
-          BindRepeating(&SystemNotificationManager::ResumeTask,
-                        weak_ptr_factory_.GetWeakPtr(), status.task_id,
-                        status.pause_params.policy_params->type);
-    } else {
-      // Multiple files: add the "Review" button. The user can continue the
-      // action from the dialog.
-      proceed_callback = BindRepeating(
-          &SystemNotificationManager::ShowDataProtectionPolicyDialog,
-          weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kWarning);
-    }
-    cancel_callback =
-        BindRepeating(&SystemNotificationManager::CancelTask,
-                      weak_ptr_factory_.GetWeakPtr(), status.task_id);
-  } else {  // Error - some files couldn't be transferred.
-    DCHECK(status.HasPolicyError());
-    if (status.policy_error != io_task::PolicyErrorType::kDlpWarningTimeout &&
-        status.sources.size() > 1) {
-      // If more than one file was blocked, add the "Review" button.
-      notification_buttons.emplace_back(
-          GetPolicyNotificationProceedButton(status));
-      proceed_callback = BindRepeating(
-          &SystemNotificationManager::ShowDataProtectionPolicyDialog,
-          weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kError);
-    }
-    cancel_callback =
-        BindRepeating(&SystemNotificationManager::Dismiss,
-                      weak_ptr_factory_.GetWeakPtr(), notification_id);
-  }
-
-  NotificationPtr notification = CreateSystemNotification(
-      notification_id, title, message,
-      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
-          &SystemNotificationManager::
-              HandleDataProtectionPolicyNotificationClick,
-          weak_ptr_factory_.GetWeakPtr(), proceed_callback, cancel_callback)));
-
-  notification->set_buttons(notification_buttons);
 
   return notification;
 }

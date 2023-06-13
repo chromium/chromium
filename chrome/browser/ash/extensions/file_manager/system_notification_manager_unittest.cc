@@ -1130,8 +1130,8 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressWarning) {
   // Check: We have the same notification.
   ASSERT_EQ(1u, GetNotificationCount());
   strings = bridge_->GetStrings("swa-file-operation-1");
-  EXPECT_EQ(strings.title, u"Confirmation required");
-  EXPECT_EQ(strings.message, u"files may contain sensitive content");
+  EXPECT_EQ(strings.title, u"Review is required before copying");
+  EXPECT_EQ(strings.message, u"Files may contain sensitive content");
 
   // Send the success progress status.
   status.bytes_transferred = 100;
@@ -1175,7 +1175,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
   // Check: We have the same notification.
   ASSERT_EQ(1u, GetNotificationCount());
   strings = bridge_->GetStrings("swa-file-operation-1");
-  EXPECT_EQ(strings.title, u"files blocked");
+  EXPECT_EQ(strings.title, u"Blocked copy");
   EXPECT_EQ(strings.message, u"File was blocked");
 
   // Send the success progress status.

@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -54,6 +55,12 @@ class FilesPolicyNotificationManager
       std::vector<base::FilePath> warning_files,
       const DlpFileDestination& destination,
       dlp::FileAction action);
+
+  // Shows a Files Policy warning or error desktop notification with
+  // `notification_id` based on `status`.
+  void ShowsFilesPolicyNotification(
+      const std::string& notification_id,
+      const file_manager::io_task::ProgressStatus& status);
 
   // Shows a policy dialog of type `type` for task identified by `task_id`.
   // Used for copy and move operations.
@@ -112,6 +119,20 @@ class FilesPolicyNotificationManager
     dlp::FileAction action;
   };
 
+  // Click handler for Data Leak Prevention or Enterprise Connectors policy
+  // warning notifications.
+  void HandleFilesPolicyWarningNotificationClick(
+      file_manager::io_task::IOTaskId task_id,
+      std::string notification_id,
+      absl::optional<int> button_index);
+
+  // Click handler for Data Leak Prevention or Enterprise Connectors policy
+  // error notifications.
+  void HandleFilesPolicyErrorNotificationClick(
+      file_manager::io_task::IOTaskId task_id,
+      std::string notification_id,
+      absl::optional<int> button_index);
+
   // Shows a FilesPolicyDialog.
   void ShowFilesPolicyDialog(file_manager::io_task::IOTaskId task_id,
                              FilesDialogType type,
@@ -146,6 +167,12 @@ class FilesPolicyNotificationManager
   // `notification_id`.
   void OnLearnMoreButtonClicked(const std::string& notification_id,
                                 absl::optional<int> button_index);
+
+  // Calls the IOTaskController to resume the task with `task_id`.
+  void Resume(file_manager::io_task::IOTaskId task_id);
+
+  // Calls the IOTaskController to cancel the task with `task_id`.
+  void Cancel(file_manager::io_task::IOTaskId task_id);
 
   // KeyedService overrides:
   void Shutdown() override;
