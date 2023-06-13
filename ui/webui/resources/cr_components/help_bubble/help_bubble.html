@@ -1,6 +1,14 @@
 <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome&shadow_host=true">
 <style include="cr-hidden-style">
   :host {
+    /* Color declarations.
+     * TODO(crbug.com/1454258): Temporary fallback values for cases where
+     * colors.css and its colors are not available within the WebUI. */
+    --help-bubble-background: var(--color-feature-promo-bubble-background,
+        var(--google-blue-700));
+    --help-bubble-foreground: var(--color-feature-promo-bubble-foreground,
+        var(--google-grey-200));
+
     /* Variable declarations. Some of these will change for the 2023 refresh. */
     --help-bubble-border-radius: 8px;
     --help-bubble-close-button-icon-size: 16px;
@@ -41,7 +49,7 @@
   /* #inner-arrow is rotated and positioned in a container to simplify
    * positioning */
   #inner-arrow {
-    background-color: var(--color-feature-promo-bubble-background);
+    background-color: var(--help-bubble-background);
     height: var(--help-bubble-arrow-size);
     left: calc(0px - var(--help-bubble-arrow-size-half));
     position: absolute;
@@ -119,8 +127,8 @@
 
   #progress div {
     --help-bubble-progress-size: 8px;
-    background-color: var(--color-feature-promo-bubble-foreground);
-    border: 1px solid var(--color-feature-promo-bubble-foreground);
+    background-color: var(--help-bubble-foreground);
+    border: 1px solid var(--help-bubble-foreground);
     border-radius: 50%;
     display: inline-block;
     height: var(--help-bubble-progress-size);
@@ -130,7 +138,7 @@
   }
 
   #progress .total-progress {
-    background-color: var(--color-feature-promo-bubble-background);
+    background-color: var(--help-bubble-background);
   }
 
   #topBody,
@@ -154,11 +162,11 @@
   }
 
   .help-bubble {
-    --cr-focus-outline-color: var(--color-feature-promo-bubble-foreground);
-    background-color: var(--color-feature-promo-bubble-background);
+    --cr-focus-outline-color: var(--help-bubble-foreground);
+    background-color: var(--help-bubble-background);
     border-radius: var(--help-bubble-border-radius);
     box-sizing: border-box;
-    color: var(--color-feature-promo-bubble-foreground);
+    color: var(--help-bubble-foreground);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -188,14 +196,18 @@
    */
   cr-icon-button,
   cr-button {
-    --help-bubble-button-foreground: var(--color-feature-promo-bubble-foreground);
-    --help-bubble-button-background: var(--color-feature-promo-bubble-background);
+    --help-bubble-button-foreground: var(--help-bubble-foreground);
+    --help-bubble-button-background: var(--help-bubble-background);
     --help-bubble-button-hover-alpha: 10%;
   }
 
   cr-button.default-button {
-    --help-bubble-button-foreground: var(--color-feature-promo-bubble-default-button-foreground);
-    --help-bubble-button-background: var(--color-feature-promo-bubble-default-button-background);
+    --help-bubble-button-foreground: var(
+        --color-feature-promo-bubble-default-button-foreground,
+        var(--help-bubble-background));
+    --help-bubble-button-background: var(
+        --color-feature-promo-bubble-default-button-background,
+        var(--help-bubble-foreground));
     --help-bubble-button-hover-alpha: 6%;
   }
 
@@ -240,10 +252,10 @@
     --help-bubble-body-icon-size: 24px;
     --iron-icon-height: var(--help-bubble-body-icon-image-size);
     --iron-icon-width: var(--help-bubble-body-icon-image-size);
-    background-color: var(--color-feature-promo-bubble-foreground);
+    background-color: var(--help-bubble-foreground);
     border-radius: 50%;
     box-sizing: border-box;
-    color: var(--color-feature-promo-bubble-background);
+    color: var(--help-bubble-background);
     height: var(--help-bubble-body-icon-size);
     margin-inline-end: var(--help-bubble-element-spacing);
     padding: calc((var(--help-bubble-body-icon-size) -
@@ -264,14 +276,14 @@
   }
 
   #buttons cr-button {
-    --border-color: var(--color-feature-promo-bubble-foreground);
-    --focus-shadow-color: var(--color-feature-promo-bubble-foreground);
+    --border-color: var(--help-bubble-foreground);
+    --focus-shadow-color: var(--help-bubble-foreground);
     --text-color: var(--help-bubble-button-foreground);
     background-color: var(--help-bubble-button-background);
   }
 
   #buttons cr-button:focus {
-    border: 2px solid var(--color-feature-promo-bubble-background);
+    border: 2px solid var(--help-bubble-background);
     padding: 7px 15px;
   }
 
