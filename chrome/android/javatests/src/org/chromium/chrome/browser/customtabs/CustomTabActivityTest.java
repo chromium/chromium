@@ -513,11 +513,9 @@ public class CustomTabActivityTest {
      * Test if an action button is shown with correct image and size, and clicking it sends the
      * correct {@link PendingIntent}.
      */
-    // TODO(crbug.com/1420991): Re-enable this test after fixing/diagnosing flakiness.
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @DisabledTest(message = "https://crbug.com/1420991")
     public void testMultipleActionButtons() throws TimeoutException {
         Bitmap expectedIcon1 = createVectorDrawableBitmap(R.drawable.ic_content_copy_black, 48, 48);
         Bitmap expectedIcon2 =
