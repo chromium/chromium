@@ -698,6 +698,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_CURRENT_TABS},
       {"tabDiscardingExceptionsAddDialogManual",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL},
+      {"tabDiscardingExceptionsActiveSiteAriaDescription",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

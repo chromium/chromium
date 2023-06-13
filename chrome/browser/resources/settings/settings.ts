@@ -70,6 +70,7 @@ export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performanc
 export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discard_exception_add_dialog.js';
+export {TabDiscardExceptionCurrentSitesEntryElement} from './performance_page/tab_discard_exception_current_sites_entry.js';
 export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
 export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';

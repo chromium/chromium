@@ -1,39 +1,14 @@
-<style include="settings-shared">
-  /* add padding so that checkbox ripple is not cut off */
-  .ripple-padding {
-    padding-inline-end: 20px;
-    padding-inline-start: 20px;
-  }
-
-  cr-checkbox::part(label-container) {
-    min-width: 0;
-  }
-
-  .label-slot {
-    align-items: center;
-    display: flex;
-  }
-
-  .checkbox-label {
-    margin-inline-start: 10px;
-  }
-</style>
 <div id="container" scrollable>
-  <iron-list id="list" scroll-target="container" role="grid"
+  <iron-list id="list" scroll-target="container" role="listbox"
       items="[[currentSites_]]" selected-items="{{selectedSites_}}"
-      selection-enabled multi-selection
-      aria-rowcount$="[[currentSites_.length]]"
+      selection-enabled multi-selection aria-multiselectable="true"
       hidden$="[[!currentSites_.length]]">
     <template>
-      <cr-checkbox class="list-item no-outline ripple-padding" role="row"
-          tab-index="[[tabIndex]]"
-          aria-rowindex$="[[getAriaRowindex_(index)]]"
-          on-change="onToggleSelection_" checked="{{selected}}">
-        <div class="label-slot">
-          <site-favicon url="[[item]]"></site-favicon>
-          <div class="checkbox-label text-elide">[[item]]</div>
-        </div>
-      </cr-checkbox>
+      <tab-discard-exception-current-sites-entry item="[[item]]" role="option"
+          aria-description="$i18n{tabDiscardingExceptionsActiveSiteAriaDescription}"
+          aria-selected="[[selected]]" tab-index="[[tabIndex]]"
+          on-change="onToggleSelection_">
+      </tab-discard-exception-current-sites-entry>
     </template>
   </iron-list>
 </div>

@@ -1579,6 +1579,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL" desc="Label for the second tab of the tab discarding exception list add dialog, where users can manually input a site to be added to the list.">
     Add sites manually
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION" desc="Accessibilty description which will be read by screen readers when focusing a currently opened site in the list under the first tab of the add exception dialog.">
+    Active site
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP" desc="Label for button that expands the tab discarding exceptions list to show all entries. Sites added to the list will not be discarded by memory saver.">
     Sites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about site exclusion<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>

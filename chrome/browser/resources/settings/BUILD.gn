@@ -115,6 +115,7 @@ build_webui("build") {
     "performance_page/performance_page.ts",
     "performance_page/tab_discard_exception_add_dialog.ts",
     "performance_page/tab_discard_exception_add_input.ts",
+    "performance_page/tab_discard_exception_current_sites_entry.ts",
     "performance_page/tab_discard_exception_current_sites_list.ts",
     "performance_page/tab_discard_exception_edit_dialog.ts",
     "performance_page/tab_discard_exception_edit_input.ts",
