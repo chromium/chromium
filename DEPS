@@ -680,7 +680,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal',
-          'version': '7VhToYn-E3LXpYnm9s9jYdxNXke02DtWaJDqYrYRnNUC',
+          'version': 'wqWHMpsZxCa2LfUjZrdZkjgOQ80CkkHwst9JdQFFkAkC',
         },
       ],
   },
@@ -691,7 +691,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
-          'version': 'uqOkqx9ZABdcpvWB7T3mIcj19oJJyqHrtEBrx8n0C5IC',
+          'version': 'M_TrB6I8-_jAoxW0cj0EnHM5pEwvgZO18jFILu8R4LcC',
         },
       ],
   },
