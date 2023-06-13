@@ -840,10 +840,10 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   SetupSyncInternal(setup_mode);
 
   // Because clients may modify sync data as part of startup (for example
-  // local session-releated data is rewritten), we need to ensure all
+  // local session-related data is rewritten), we need to ensure all
   // startup-based changes have propagated between the clients.
   //
-  // Tests that don't use self-notifications can't await quiescense.  They'll
+  // Tests that don't use self-notifications can't await quiescence.  They'll
   // have to find their own way of waiting for an initial state if they really
   // need such guarantees.
   if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {

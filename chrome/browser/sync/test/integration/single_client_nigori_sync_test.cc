@@ -315,7 +315,7 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
 
   bool TestUsesSelfNotifications() override {
     // This test fixture is used with tests, which expect SetupSync() to be
-    // waiting for completion, but not for quiescense, because it can't be
+    // waiting for completion, but not for quiescence, because it can't be
     // achieved and isn't needed.
     return false;
   }
