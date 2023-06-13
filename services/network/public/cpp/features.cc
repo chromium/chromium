@@ -327,7 +327,7 @@ BASE_FEATURE(kPrefetchNoVarySearch,
 
 BASE_FEATURE(kLessChattyNetworkService,
              "LessChattyNetworkService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
              "NetworkServiceEmptyOutOfProcess",
