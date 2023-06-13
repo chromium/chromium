@@ -1464,7 +1464,7 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &SearchByPattern, root_path, excluded_paths, search_params.query,
-          base::Time::FromJsTime(search_params.timestamp), file_type,
+          base::Time::FromJsTime(search_params.modified_timestamp), file_type,
           base::internal::checked_cast<size_t>(search_params.max_results)),
       base::BindOnce(
           &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone,

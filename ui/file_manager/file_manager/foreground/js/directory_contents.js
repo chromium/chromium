@@ -488,7 +488,7 @@ export class SearchV2ContentScanner extends ContentScanner {
       query: this.query_,
       types: chrome.fileManagerPrivate.SearchType.ALL,
       maxResults: maxResults,
-      timestamp: modifiedTimestamp,
+      modifiedTimestamp: modifiedTimestamp,
       category: category,
     };
     return folders.map(
@@ -598,7 +598,7 @@ export class SearchV2ContentScanner extends ContentScanner {
             category: category,
             types: searchType,
             maxResults: maxResults,
-            timestamp: modifiedTimestamp,
+            modifiedTimestamp: modifiedTimestamp,
           },
           (results) => {
             if (chrome.runtime.lastError) {
@@ -626,7 +626,9 @@ export class SearchV2ContentScanner extends ContentScanner {
    */
   createDirectorySearch_(modifiedTimestamp, category, maxResults) {
     if (isEntryInsideDrive({rootType: this.rootType_})) {
-      return [this.createDriveSearch_(modifiedTimestamp, category, maxResults)];
+      return [
+        this.createDriveSearch_(modifiedTimestamp, category, maxResults),
+      ];
     }
     const searchFolder = this.options_.location === SearchLocation.THIS_FOLDER ?
         this.entry_ :
@@ -673,13 +675,14 @@ export class SearchV2ContentScanner extends ContentScanner {
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
     const category = this.options_.fileCategory;
-    const timestamp = getEarliestTimestamp(this.options_.recency, new Date());
+    const modifiedTimestamp =
+        getEarliestTimestamp(this.options_.recency, new Date());
     const maxResults = 100;
 
     const searchPromises =
         this.options_.location === SearchLocation.EVERYWHERE ?
-        this.createEverywhereSearch_(timestamp, category, maxResults) :
-        this.createDirectorySearch_(timestamp, category, maxResults);
+        this.createEverywhereSearch_(modifiedTimestamp, category, maxResults) :
+        this.createDirectorySearch_(modifiedTimestamp, category, maxResults);
 
     if (!searchPromises) {
       console.warn(

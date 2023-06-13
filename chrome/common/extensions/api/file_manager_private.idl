@@ -866,7 +866,7 @@ dictionary SearchMetadataParams {
 
   // Modified timestamp. The file must have modified timestamp more recent
   // than this to be included in results.
-  double? timestamp;
+  double? modifiedTimestamp;
 
   // The category of files to which the search is limited.
   FileCategory? category;

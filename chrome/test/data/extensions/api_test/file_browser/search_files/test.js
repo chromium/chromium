@@ -112,7 +112,7 @@ chrome.test.runTests([
             query: 'bar',
             types: 'ALL',
             maxResults: 10,
-            timestamp: 1579089600000 - delta,  // Jan 15 2020, noon - 1s
+            modifiedTimestamp: 1579089600000 - delta,  // Jan 15 2020, noon - 1s
           },
           (entryList) => {
             resolve(entryList);
@@ -125,7 +125,7 @@ chrome.test.runTests([
             query: 'bar',
             types: 'ALL',
             maxResults: 10,
-            timestamp: 1577880000000 - delta,  // Jan 01 2020, noon - 1s
+            modifiedTimestamp: 1577880000000 - delta,  // Jan 01 2020, noon - 1s
           },
           (entryList) => {
             resolve(entryList);
@@ -139,7 +139,7 @@ chrome.test.runTests([
             query: 'bar',
             types: 'ALL',
             maxResults: 10,
-            timestamp: 1579089600000 + delta,  // Jan 15 2020, noon + 1s
+            modifiedTimestamp: 1579089600000 + delta,  // Jan 15 2020, noon + 1s
           },
           (entryList) => {
             resolve(entryList);

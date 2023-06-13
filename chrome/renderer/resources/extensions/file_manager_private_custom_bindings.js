@@ -129,7 +129,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       query: params.query,
       types: params.types,
       maxResults: params.maxResults,
-      timestamp: params.timestamp || 0,
+      modifiedTimestamp: params.modifiedTimestamp || 0,
       category: params.category || chrome.fileManagerPrivate.FileCategory.ALL
     };
     if (params.rootDir) {

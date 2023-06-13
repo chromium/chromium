@@ -724,9 +724,9 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
     query->query_source =
         drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   }
-  if (params->search_params.timestamp.has_value()) {
+  if (params->search_params.modified_timestamp.has_value()) {
     query->modified_time =
-        base::Time::FromJsTime(*params->search_params.timestamp);
+        base::Time::FromJsTime(*params->search_params.modified_timestamp);
     query->modified_time_operator =
         drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
   }

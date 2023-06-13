@@ -28,7 +28,7 @@ namespace fileManagerPrivateInternal {
     DOMString query;
     fileManagerPrivate.SearchType types;
     long maxResults;
-    double timestamp;
+    double modifiedTimestamp;
     fileManagerPrivate.FileCategory category;
   };
 
