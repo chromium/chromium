@@ -205,7 +205,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   void OnStateChange() override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                  "v8.wasm.compileConsume");
-    while (true) {
+    // Continue reading until we either finished, aborted, or no data is
+    // available any more (handled below).
+    while (streaming_) {
       // |buffer| is owned by |consumer_|.
       const char* buffer = nullptr;
       size_t available = 0;
@@ -215,7 +217,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         // Ignore more bytes after an abort (streaming == nullptr).
-        if (available > 0 && streaming_) {
+        if (available > 0) {
           if (code_cache_state_ == CodeCacheState::kBeforeFirstByte)
             code_cache_state_ = MaybeConsumeCodeCache();
 
@@ -238,10 +240,6 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kDone: {
-          // Ignore this event if we already aborted.
-          if (!streaming_) {
-            return;
-          }
           TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "v8.wasm.compileConsumeDone");
           {
@@ -253,8 +251,18 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
           return;
         }
         case BytesConsumer::Result::kError:
-          return AbortCompilation("Network error: " +
-                                  consumer_->GetError().Message());
+          switch (consumer_->GetPublicState()) {
+            case BytesConsumer::PublicState::kClosed:
+              AbortCompilation("Download cancelled");
+              break;
+            case BytesConsumer::PublicState::kErrored:
+              AbortCompilation("Network error: " +
+                               consumer_->GetError().Message());
+              break;
+            default:
+              NOTREACHED();
+          }
+          break;
       }
     }
   }
