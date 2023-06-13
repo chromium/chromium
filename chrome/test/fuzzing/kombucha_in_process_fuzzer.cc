@@ -86,12 +86,12 @@ class KombuchaInProcessFuzzer
     InteractiveBrowserTestT::SetUp();
   }
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override {
-    InteractiveBrowserTestT::TearDownOnMainThread();
 #if BUILDFLAG(IS_WIN)
+  void TearDown() override {
+    InteractiveBrowserTestT::TearDown();
     com_initializer_.reset();
-#endif
   }
+#endif
   int Fuzz(const uint8_t* data, size_t size) override;
   static std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
       base::WeakPtr<KombuchaInProcessFuzzer> fuzzer_weak,
