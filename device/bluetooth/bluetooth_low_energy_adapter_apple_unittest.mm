@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -39,6 +38,10 @@
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #endif
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 const char kTestPropertyListFileName[] = "test_property_list_file.plist";
@@ -48,7 +51,7 @@ const char kTestNSUUID[] = "00000000-1111-2222-3333-444444444444";
 const char kTestHashAddress[] = "D1:6F:E3:22:FD:5B";
 const int kTestRssi = 0;
 
-NSDictionary* CreateTestPropertyListData() {
+NSDictionary* TestPropertyListData() {
   return @{
     @"CoreBluetoothCache" : @{
       @"00000000-1111-2222-3333-444444444444" : @{
@@ -97,7 +100,7 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
 
     void ReadBluetoothPropertyListFile() override {
       low_energy_device_list_updated_callback().Run(
-          ParseBluetoothDevicePropertyListData(CreateTestPropertyListData()));
+          ParseBluetoothDevicePropertyListData(TestPropertyListData()));
     }
 
     base::WeakPtrFactory<FakeBluetoothLowEnergyDeviceWatcherMac>
@@ -156,17 +159,16 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
   }
 
   CBPeripheral* CreateMockPeripheral(const char* identifier) {
-    base::scoped_nsobject<MockCBPeripheral> mock_peripheral(
-        [[MockCBPeripheral alloc] initWithUTF8StringIdentifier:identifier]);
-    return [[mock_peripheral peripheral] retain];
+    MockCBPeripheral* mock_peripheral =
+        [[MockCBPeripheral alloc] initWithUTF8StringIdentifier:identifier];
+    return [mock_peripheral peripheral];
   }
 
   NSDictionary* AdvertisementData() {
-    NSDictionary* advertisement_data = @{
+    return @{
       CBAdvertisementDataIsConnectable : @YES,
       CBAdvertisementDataServiceDataKey : @{},
     };
-    return [advertisement_data retain];
   }
 
   std::string GetHashAddress(CBPeripheral* peripheral) {
@@ -178,14 +180,14 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
   bool DevicePresent(CBPeripheral* peripheral) {
     BluetoothDevice* device = adapter_low_energy_->GetDevice(
         BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(peripheral));
-    return (device != NULL);
+    return device;
   }
 
   bool SetMockCentralManager(CBManagerState desired_state) {
-    mock_central_manager_.reset([[MockCentralManager alloc] init]);
-    [mock_central_manager_ setState:desired_state];
+    mock_central_manager_ = [[MockCentralManager alloc] init];
+    mock_central_manager_.state = desired_state;
     CBCentralManager* centralManager =
-        static_cast<CBCentralManager*>(mock_central_manager_.get());
+        static_cast<CBCentralManager*>(mock_central_manager_);
     adapter_low_energy_->SetCentralManagerForTesting(centralManager);
     return true;
   }
@@ -223,7 +225,7 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> active_sessions_;
 
   // Owned by |adapter_low_energy_|.
-  base::scoped_nsobject<MockCentralManager> mock_central_manager_;
+  MockCentralManager* __strong mock_central_manager_;
 
   int callback_count_;
   int error_callback_count_;
@@ -353,8 +355,7 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, CheckGetPeripheralHashAddress) {
   if (!SetMockCentralManager(CBManagerStatePoweredOn)) {
     return;
   }
-  base::scoped_nsobject<CBPeripheral> mock_peripheral(
-      CreateMockPeripheral(kTestNSUUID));
+  CBPeripheral* mock_peripheral = CreateMockPeripheral(kTestNSUUID);
   if (!mock_peripheral) {
     return;
   }
@@ -365,12 +366,11 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, LowEnergyDeviceUpdatedNewDevice) {
   if (!SetMockCentralManager(CBManagerStatePoweredOn)) {
     return;
   }
-  base::scoped_nsobject<CBPeripheral> mock_peripheral(
-      CreateMockPeripheral(kTestNSUUID));
+  CBPeripheral* mock_peripheral = CreateMockPeripheral(kTestNSUUID);
   if (!mock_peripheral) {
     return;
   }
-  base::scoped_nsobject<NSDictionary> advertisement_data(AdvertisementData());
+  NSDictionary* advertisement_data = AdvertisementData();
 
   EXPECT_EQ(0, NumDevices());
   EXPECT_FALSE(DevicePresent(mock_peripheral));
@@ -430,27 +430,22 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, GetNewlyPairedLowEnergyDevice) {
 
   ASSERT_TRUE(SetMockCentralManager(CBManagerStatePoweredOn));
 
-  base::scoped_nsobject<CBPeripheral> mock_peripheral_one(
-      CreateMockPeripheral(kTestNSUUID));
+  CBPeripheral* mock_peripheral_one = CreateMockPeripheral(kTestNSUUID);
   ASSERT_TRUE(mock_peripheral_one);
 
-  LowEnergyDeviceUpdated(
-      mock_peripheral_one,
-      base::scoped_nsobject<NSDictionary>(AdvertisementData()), kTestRssi);
+  LowEnergyDeviceUpdated(mock_peripheral_one, AdvertisementData(), kTestRssi);
 
-  base::scoped_nsobject<CBPeripheral> mock_peripheral_two(
-      CreateMockPeripheral(kTestAddedDeviceNSUUID));
+  CBPeripheral* mock_peripheral_two =
+      CreateMockPeripheral(kTestAddedDeviceNSUUID);
   ASSERT_TRUE(mock_peripheral_two);
 
-  LowEnergyDeviceUpdated(
-      mock_peripheral_two,
-      base::scoped_nsobject<NSDictionary>(AdvertisementData()), kTestRssi);
+  LowEnergyDeviceUpdated(mock_peripheral_two, AdvertisementData(), kTestRssi);
   observer_.Reset();
 
   // BluetoothAdapterMac only notifies observers of changed devices detected by
   // BluetoothLowEnergyDeviceWatcherMac if the device has been already known to
-  // the system(i.e. the changed device is in BluetoothAdatper::devices_). As
-  // so, add mock devices prior to setting BluetoothLowenergyDeviceWatcherMac.
+  // the system(i.e. the changed device is in BluetoothAdapter::devices_). As
+  // so, add mock devices prior to setting BluetoothLowEnergyDeviceWatcherMac.
   SetFakeLowEnergyDeviceWatcher();
 
   EXPECT_EQ(1, observer_.device_changed_count());
@@ -481,15 +476,12 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, NotifyObserverWhenDeviceIsUnpaired) {
     return;
   }
 
-  base::scoped_nsobject<CBPeripheral> mock_peripheral(
-      CreateMockPeripheral(kTestNSUUID));
+  CBPeripheral* mock_peripheral = CreateMockPeripheral(kTestNSUUID);
   if (!mock_peripheral) {
     return;
   }
 
-  LowEnergyDeviceUpdated(
-      mock_peripheral, base::scoped_nsobject<NSDictionary>(AdvertisementData()),
-      kTestRssi);
+  LowEnergyDeviceUpdated(mock_peripheral, AdvertisementData(), kTestRssi);
   observer_.Reset();
 
   SetFakeLowEnergyDeviceWatcher();

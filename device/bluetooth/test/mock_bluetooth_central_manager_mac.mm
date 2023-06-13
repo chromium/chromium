@@ -5,15 +5,16 @@
 #import "device/bluetooth/test/mock_bluetooth_central_manager_mac.h"
 
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #import "device/bluetooth/test/bluetooth_test_mac.h"
 #import "device/bluetooth/test/mock_bluetooth_cbperipheral_mac.h"
 
-using base::scoped_nsobject;
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @implementation MockCentralManager {
-  scoped_nsobject<NSMutableDictionary> _connectedMockPeripheralPerServiceUUID;
-  scoped_nsobject<NSMutableArray> _retrieveConnectedPeripheralServiceUUIDs;
+  NSMutableDictionary* __strong _connectedMockPeripheralPerServiceUUID;
+  NSMutableArray* __strong _retrieveConnectedPeripheralServiceUUIDs;
 }
 
 @synthesize scanForPeripheralsCallCount = _scanForPeripheralsCallCount;
@@ -25,10 +26,8 @@ using base::scoped_nsobject;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _connectedMockPeripheralPerServiceUUID.reset(
-        [[NSMutableDictionary alloc] init]);
-    _retrieveConnectedPeripheralServiceUUIDs.reset(
-        [[NSMutableArray alloc] init]);
+    _connectedMockPeripheralPerServiceUUID = [[NSMutableDictionary alloc] init];
+    _retrieveConnectedPeripheralServiceUUIDs = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -78,7 +77,7 @@ using base::scoped_nsobject;
 }
 
 - (NSArray*)retrieveConnectedPeripheralServiceUUIDs {
-  return [[_retrieveConnectedPeripheralServiceUUIDs copy] autorelease];
+  return _retrieveConnectedPeripheralServiceUUIDs;
 }
 
 - (NSArray*)retrieveConnectedPeripheralsWithServices:(NSArray*)services {

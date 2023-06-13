@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -21,6 +20,10 @@
 #include "device/bluetooth/bluetooth_low_energy_device_watcher_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class CBUUID;
 
@@ -111,7 +114,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
   virtual void LazyInitialize();
   virtual void InitForTest(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
-  virtual GetDevicePairedStatusCallback GetDevicePariedStatus() const;
+  virtual GetDevicePairedStatusCallback GetDevicePairedStatus() const;
   virtual base::WeakPtr<BluetoothLowEnergyAdapterApple>
   GetLowEnergyWeakPtr() = 0;
 
@@ -200,13 +203,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
       low_energy_advertisement_manager_;
 
   // Underlying CoreBluetooth CBCentralManager and its delegate.
-  base::scoped_nsobject<CBCentralManager> low_energy_central_manager_;
-  base::scoped_nsobject<BluetoothLowEnergyCentralManagerDelegate>
+  CBCentralManager* __strong low_energy_central_manager_;
+  BluetoothLowEnergyCentralManagerDelegate* __strong
       low_energy_central_manager_delegate_;
 
   // Underlying CoreBluetooth CBPeripheralManager and its delegate.
-  base::scoped_nsobject<CBPeripheralManager> low_energy_peripheral_manager_;
-  base::scoped_nsobject<BluetoothLowEnergyPeripheralManagerDelegate>
+  CBPeripheralManager* __strong low_energy_peripheral_manager_;
+  BluetoothLowEnergyPeripheralManagerDelegate* __strong
       low_energy_peripheral_manager_delegate_;
 
   // Watches system file /Library/Preferences/com.apple.Bluetooth.plist to

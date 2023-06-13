@@ -5,19 +5,21 @@
 #include "device/bluetooth/test/mock_bluetooth_cbservice_mac.h"
 
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using base::mac::ObjCCast;
-using base::scoped_nsobject;
 
 @interface MockCBService () {
   // Owner of this instance.
-  CBPeripheral* _peripheral;
-  scoped_nsobject<CBUUID> _UUID;
+  CBPeripheral* __weak _peripheral;
+  CBUUID* __strong _UUID;
   BOOL _primary;
-  scoped_nsobject<NSMutableArray> _characteristics;
+  NSMutableArray* __strong _characteristics;
 }
 
 @end
@@ -31,10 +33,10 @@ using base::scoped_nsobject;
                            primary:(BOOL)isPrimary {
   self = [super init];
   if (self) {
-    _UUID.reset([uuid retain]);
+    _UUID = uuid;
     _primary = isPrimary;
     _peripheral = peripheral;
-    _characteristics.reset([[NSMutableArray alloc] init]);
+    _characteristics = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -64,15 +66,15 @@ using base::scoped_nsobject;
 }
 
 - (void)addCharacteristicWithUUID:(CBUUID*)cb_uuid properties:(int)properties {
-  scoped_nsobject<MockCBCharacteristic> characteristic_mock(
+  MockCBCharacteristic* characteristicMock =
       [[MockCBCharacteristic alloc] initWithService:self.service
                                              CBUUID:cb_uuid
-                                         properties:properties]);
-  [_characteristics addObject:characteristic_mock];
+                                         properties:properties];
+  [_characteristics addObject:characteristicMock];
 }
 
-- (void)removeCharacteristicMock:(MockCBCharacteristic*)characteristic_mock {
-  [_characteristics removeObject:characteristic_mock];
+- (void)removeCharacteristicMock:(MockCBCharacteristic*)characteristicMock {
+  [_characteristics removeObject:characteristicMock];
 }
 
 - (CBService*)service {

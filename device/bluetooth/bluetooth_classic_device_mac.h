@@ -10,10 +10,13 @@
 
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class IOBluetoothDevice;
 
@@ -98,7 +101,7 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
   int GetHostTransmitPower(
       BluetoothHCITransmitPowerLevelType power_level_type) const;
 
-  base::scoped_nsobject<IOBluetoothDevice> device_;
+  IOBluetoothDevice* __strong device_;
 };
 
 }  // namespace device

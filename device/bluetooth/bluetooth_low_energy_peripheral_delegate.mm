@@ -10,6 +10,10 @@
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace device {
 
 // This class exists to bridge between the Objective-C CBPeripheralDelegate
@@ -20,7 +24,7 @@ class BluetoothLowEnergyPeripheralBridge {
   BluetoothLowEnergyPeripheralBridge(BluetoothLowEnergyDeviceMac* device_mac)
       : device_mac_(device_mac) {}
 
-  ~BluetoothLowEnergyPeripheralBridge() {}
+  ~BluetoothLowEnergyPeripheralBridge() = default;
 
   void DidModifyServices(NSArray* invalidatedServices) {
     device_mac_->DidModifyServices(invalidatedServices);

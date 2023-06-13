@@ -20,11 +20,11 @@ class BluetoothTestMac;
 @interface MockCBPeripheral : NSObject
 
 @property(nonatomic, readonly) CBPeripheralState state;
-@property(nonatomic, readonly) NSUUID* identifier;
+@property(nonatomic, strong, readonly) NSUUID* identifier;
 @property(nonatomic, readonly) NSString* name;
-@property(nonatomic, assign) id<CBPeripheralDelegate> delegate;
+@property(nonatomic, weak) id<CBPeripheralDelegate> delegate;
 @property(nonatomic, readonly) CBPeripheral* peripheral;
-@property(retain, readonly) NSArray* services;
+@property(strong, readonly) NSArray* services;
 @property(nonatomic, assign) device::BluetoothTestMac* bluetoothTestMac;
 
 - (instancetype)init NS_UNAVAILABLE;

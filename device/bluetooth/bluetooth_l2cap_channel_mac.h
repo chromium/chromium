@@ -12,8 +12,11 @@
 
 #include <memory>
 
-#include "base/mac/scoped_nsobject.h"
 #include "device/bluetooth/bluetooth_channel_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class BluetoothL2capChannelDelegate;
 
@@ -23,7 +26,6 @@ class BluetoothL2capChannelMac : public BluetoothChannelMac {
  public:
   // Creates a new L2CAP channel wrapper with the given |socket| and native
   // |channel|.
-  // NOTE: The |channel| is expected to already be retained.
   BluetoothL2capChannelMac(BluetoothSocketMac* socket,
                            IOBluetoothL2CAPChannel* channel);
 
@@ -60,10 +62,10 @@ class BluetoothL2capChannelMac : public BluetoothChannelMac {
 
  private:
   // The wrapped native L2CAP channel.
-  base::scoped_nsobject<IOBluetoothL2CAPChannel> channel_;
+  IOBluetoothL2CAPChannel* __strong channel_;
 
   // The delegate for the native channel.
-  base::scoped_nsobject<BluetoothL2capChannelDelegate> delegate_;
+  BluetoothL2capChannelDelegate* __strong delegate_;
 };
 
 }  // namespace device

@@ -20,7 +20,7 @@
 
 @property(nonatomic, assign) NSInteger scanForPeripheralsCallCount;
 @property(nonatomic, assign) NSInteger stopScanCallCount;
-@property(nonatomic, assign) id<CBCentralManagerDelegate> delegate;
+@property(nonatomic, weak) id<CBCentralManagerDelegate> delegate;
 @property(nonatomic, assign) CBManagerState state;
 @property(nonatomic, assign) device::BluetoothTestMac* bluetoothTestMac;
 @property(nonatomic, readonly) NSArray* retrieveConnectedPeripheralServiceUUIDs;

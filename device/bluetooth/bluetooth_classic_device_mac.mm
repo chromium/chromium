@@ -18,6 +18,10 @@
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Undocumented API for accessing the Bluetooth transmit power level.
 // Similar to the API defined here [ http://goo.gl/20Q5vE ].
 @interface IOBluetoothHostController (UndocumentedAPI)
@@ -65,12 +69,11 @@ BluetoothUUID ExtractUuid(IOBluetoothSDPDataElement* service_class_data) {
 BluetoothClassicDeviceMac::BluetoothClassicDeviceMac(
     BluetoothAdapterMac* adapter,
     IOBluetoothDevice* device)
-    : BluetoothDeviceMac(adapter), device_([device retain]) {
+    : BluetoothDeviceMac(adapter), device_(device) {
   UpdateTimestamp();
 }
 
-BluetoothClassicDeviceMac::~BluetoothClassicDeviceMac() {
-}
+BluetoothClassicDeviceMac::~BluetoothClassicDeviceMac() = default;
 
 uint32_t BluetoothClassicDeviceMac::GetBluetoothClass() const {
   return [device_ classOfDevice];
@@ -258,8 +261,7 @@ void BluetoothClassicDeviceMac::ConnectToService(
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
   scoped_refptr<BluetoothSocketMac> socket = BluetoothSocketMac::CreateSocket();
-  socket->Connect(device_.get(), uuid,
-                  base::BindOnce(std::move(callback), socket),
+  socket->Connect(device_, uuid, base::BindOnce(std::move(callback), socket),
                   std::move(error_callback));
 }
 

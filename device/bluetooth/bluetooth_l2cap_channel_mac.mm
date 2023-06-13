@@ -11,6 +11,10 @@
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // A simple delegate class for an open L2CAP channel that forwards methods to
 // its wrapped |channel_|.
 @interface BluetoothL2capChannelDelegate
@@ -78,19 +82,15 @@ std::unique_ptr<BluetoothL2capChannelMac> BluetoothL2capChannelMac::OpenAsync(
     IOReturn* status) {
   DCHECK(socket);
   std::unique_ptr<BluetoothL2capChannelMac> channel(
-      new BluetoothL2capChannelMac(socket, nil));
+      new BluetoothL2capChannelMac(socket, /*channel=*/nil));
 
-  // Retain the delegate, because IOBluetoothDevice's
-  // |-openL2CAPChannelAsync:withPSM:delegate:| assumes that it can take
-  // ownership of the delegate without calling |-retain| on it...
   DCHECK(channel->delegate_);
-  [channel->delegate_ retain];
   IOBluetoothL2CAPChannel* l2cap_channel;
   *status = [device openL2CAPChannelAsync:&l2cap_channel
                                   withPSM:psm
                                  delegate:channel->delegate_];
   if (*status == kIOReturnSuccess)
-    channel->channel_.reset([l2cap_channel retain]);
+    channel->channel_ = l2cap_channel;
   else
     channel.reset();
 
@@ -105,8 +105,7 @@ void BluetoothL2capChannelMac::SetSocket(BluetoothSocketMac* socket) {
   // Now that the socket is set, it's safe to associate a delegate, which can
   // call back to the socket.
   DCHECK(!delegate_);
-  delegate_.reset(
-      [[BluetoothL2capChannelDelegate alloc] initWithChannel:this]);
+  delegate_ = [[BluetoothL2capChannelDelegate alloc] initWithChannel:this];
   [channel_ setDelegate:delegate_];
 }
 

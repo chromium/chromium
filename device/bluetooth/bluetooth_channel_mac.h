@@ -5,12 +5,16 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <IOKit/IOReturn.h>
 #include <stdint.h>
 
 #include <string>
+
+#include "base/memory/raw_ptr.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class IOBluetoothDevice;
 

@@ -18,34 +18,6 @@ if (is_mac) {
 
 is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
 
-if (is_mac) {
-  # TODO(https://crbug.com/1280317): Merge back into device_unittests once all
-  # .mm files are ARCed.
-  source_set("device_unittests_arc") {
-    testonly = true
-    sources = [
-      "fido/mac/authenticator_unittest.mm",
-      "fido/mac/browsing_data_deletion_unittest.mm",
-      "fido/mac/credential_store_unittest.mm",
-      "fido/mac/get_assertion_operation_unittest_mac.mm",
-      "fido/mac/icloud_keychain_unittest.mm",
-      "fido/mac/make_credential_operation_unittest_mac.mm",
-    ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      "//base/test:test_support",
-      "//device/base:base",
-      "//device/fido",
-      "//device/fido:icloud_keychain_test_support",
-      "//device/fido:mocks",
-      "//device/fido:test_support",
-      "//services/data_decoder/public/cpp:test_support",
-    ]
-
-    data_deps = [ "fido/strings:fido_test_strings" ]
-  }
-}
-
 test("device_unittests") {
   sources = [
     "base/synchronization/one_writer_seqlock_unittest.cc",
@@ -107,6 +79,7 @@ test("device_unittests") {
       "bluetooth/test/mock_bluetooth_central_manager_mac.h",
       "bluetooth/test/mock_bluetooth_central_manager_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
@@ -169,10 +142,6 @@ test("device_unittests") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_mac) {
-    deps += [ ":device_unittests_arc" ]
-  }
 
   data_deps = [
     "bluetooth/strings:bluetooth_test_strings",
@@ -239,11 +208,16 @@ test("device_unittests") {
 
   if (is_mac) {
     sources += [
-      # TODO(https://crbug.com/1280317): Put the fido/mac/*.mm files from
-      # device_unittests_arc back here.
+      "fido/mac/authenticator_unittest.mm",
+      "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
+      "fido/mac/credential_store_unittest.mm",
+      "fido/mac/get_assertion_operation_unittest_mac.mm",
+      "fido/mac/icloud_keychain_unittest.mm",
+      "fido/mac/make_credential_operation_unittest_mac.mm",
       "fido/mac/util_unittest.cc",
     ]
+    deps += [ "//device/fido:icloud_keychain_test_support" ]
   }
 
   if (is_win) {

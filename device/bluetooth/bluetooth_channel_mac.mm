@@ -9,12 +9,15 @@
 #include "base/check.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace device {
 
 BluetoothChannelMac::BluetoothChannelMac() : socket_(nullptr) {}
 
-BluetoothChannelMac::~BluetoothChannelMac() {
-}
+BluetoothChannelMac::~BluetoothChannelMac() = default;
 
 void BluetoothChannelMac::SetSocket(BluetoothSocketMac* socket) {
   DCHECK(!socket_);

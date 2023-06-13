@@ -5,25 +5,23 @@
 #include "device/bluetooth/test/mock_bluetooth_cbperipheral_mac.h"
 
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "device/bluetooth/test/bluetooth_test_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbdescriptor_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbservice_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using base::mac::ObjCCast;
-using base::scoped_nsobject;
 
-@interface MockCBPeripheral () {
-  scoped_nsobject<NSUUID> _identifier;
-  scoped_nsobject<NSString> _name;
-  id<CBPeripheralDelegate> _delegate;
-  scoped_nsobject<NSMutableArray> _services;
+@implementation MockCBPeripheral {
+  NSUUID* __strong _identifier;
+  NSString* __strong _name;
+  id<CBPeripheralDelegate> __weak _delegate;
+  NSMutableArray* __strong _services;
 }
-
-@end
-
-@implementation MockCBPeripheral
 
 @synthesize state = _state;
 @synthesize delegate = _delegate;
@@ -40,18 +38,15 @@ using base::scoped_nsobject;
 
 - (instancetype)initWithUTF8StringIdentifier:(const char*)utf8Identifier
                                         name:(NSString*)name {
-  scoped_nsobject<NSUUID> identifier(
-      [[NSUUID alloc] initWithUUIDString:@(utf8Identifier)]);
+  NSUUID* identifier = [[NSUUID alloc] initWithUUIDString:@(utf8Identifier)];
   return [self initWithIdentifier:identifier name:name];
 }
 
 - (instancetype)initWithIdentifier:(NSUUID*)identifier name:(NSString*)name {
   self = [super init];
   if (self) {
-    _identifier.reset([identifier retain]);
-    if (name) {
-      _name.reset([name retain]);
-    }
+    _identifier = identifier;
+    _name = name;
     _state = CBPeripheralStateDisconnected;
   }
   return self;
@@ -76,7 +71,7 @@ using base::scoped_nsobject;
 - (void)setState:(CBPeripheralState)state {
   _state = state;
   if (_state == CBPeripheralStateDisconnected) {
-    _services.reset();
+    _services = nil;
   }
 }
 
@@ -128,13 +123,13 @@ using base::scoped_nsobject;
 
 - (void)addServices:(NSArray*)services {
   if (!_services) {
-    _services.reset([[NSMutableArray alloc] init]);
+    _services = [[NSMutableArray alloc] init];
   }
   for (CBUUID* uuid in services) {
-    base::scoped_nsobject<MockCBService> service([[MockCBService alloc]
-        initWithPeripheral:self.peripheral
-                    CBUUID:uuid
-                   primary:YES]);
+    MockCBService* service =
+        [[MockCBService alloc] initWithPeripheral:self.peripheral
+                                           CBUUID:uuid
+                                          primary:YES];
     [_services addObject:[service service]];
   }
 }
@@ -144,11 +139,9 @@ using base::scoped_nsobject;
 }
 
 - (void)removeService:(CBService*)service {
-  base::scoped_nsobject<CBService> serviceToRemove(service,
-                                                   base::scoped_policy::RETAIN);
-  DCHECK(serviceToRemove);
-  [_services removeObject:serviceToRemove];
-  [self didModifyServices:@[ serviceToRemove ]];
+  DCHECK(service);
+  [_services removeObject:service];
+  [self didModifyServices:@[ service ]];
 }
 
 - (void)mockDidDiscoverServices {
@@ -189,7 +182,7 @@ using base::scoped_nsobject;
   // -[CBPeripheral discoverCharacteristics:forService:] for each services,
   // so -[<CBPeripheralDelegate peripheral:didDiscoverCharacteristicsForService:
   // error:] needs to be called for all services.
-  for (CBService* service in _services.get()) {
+  for (CBService* service in _services) {
     [self mockDidDiscoverCharacteristicsForService:service];
     for (CBCharacteristic* characteristic in service.characteristics) {
       // After discovering services, BluetoothLowEnergyDeviceMac is expected to

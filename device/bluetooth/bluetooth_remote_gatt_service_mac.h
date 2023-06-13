@@ -10,9 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class CBCharacteristic;
 @class CBDescriptor;
@@ -81,7 +84,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceMac
   // bluetooth_device_mac_ owns instances of this class.
   raw_ptr<BluetoothLowEnergyDeviceMac> bluetooth_device_mac_;
   // A service from CBPeripheral.services.
-  base::scoped_nsobject<CBService> service_;
+  CBService* __strong service_;
   bool is_primary_;
   // Service identifier.
   std::string identifier_;

@@ -16,6 +16,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 const char kTestUUID[] = "00000000-1111-2222-3333-444444444444";
 }  // namespace
@@ -100,8 +104,8 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> ui_task_runner_;
   BluetoothLowEnergyAdvertisementManagerMac advertisement_manager_;
-  CBPeripheralManager* peripheral_manager_;
-  id peripheral_manager_mock_;
+  CBPeripheralManager* __strong peripheral_manager_;
+  id __strong peripheral_manager_mock_;
   CBManagerState peripheral_manager_state_;
 
   scoped_refptr<BluetoothAdvertisement> advertisement_;

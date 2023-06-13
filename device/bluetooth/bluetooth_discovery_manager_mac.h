@@ -30,7 +30,7 @@ class BluetoothDiscoveryManagerMac {
     virtual void ClassicDiscoveryStopped(bool unexpected) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   BluetoothDiscoveryManagerMac(const BluetoothDiscoveryManagerMac&) = delete;
