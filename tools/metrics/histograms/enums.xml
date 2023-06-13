@@ -55146,13 +55146,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
 </enum>
 
-<enum name="JavaJsBridgeMethodInvocationError">
-  <int value="0" label="MethodInvocationAsConstructorDisallowed"/>
-  <int value="1" label="MethodInvocationNonexistentMethod"/>
-  <int value="2" label="MethodInvocationOnNonInjectedObjectDisallowed"/>
-  <int value="3" label="MethodInvocationErrorMessage"/>
-</enum>
-
 <enum name="JavaScriptDialogDismissalCause">
   <int value="0" label="Tab closed">The tab owning the dialog was closed</int>
   <int value="1" label="New dialog">
