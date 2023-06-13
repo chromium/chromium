@@ -580,12 +580,6 @@ crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constru
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
-# Overlay scheduling issue can leave destroyed overlays around for tests that follow these. Creating confusing flakes.
-# Seen on Pixel-6 and Samsung, skipping generically for now.
-# Occurring with both passthrough and validating command decoders.
-crbug.com/1445548 [ android ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/1445548 [ android ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-
 ## Nexus 5X ##
 
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
