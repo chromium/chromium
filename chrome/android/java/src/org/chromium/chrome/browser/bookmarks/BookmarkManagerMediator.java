@@ -1093,7 +1093,7 @@ class BookmarkManagerMediator
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
         propertyModel.set(ImprovedBookmarkRowProperties.DRAG_ENABLED, false);
-        // TODO(crbug.com/1442044): Invesigate caching ModelList for the menu.
+        // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
         propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
         propertyModel.set(ImprovedBookmarkRowProperties.EDITABLE, item.isEditable());
@@ -1128,7 +1128,7 @@ class BookmarkManagerMediator
 
         if (item.isFolder()) {
             int type = item.getId().getType();
-            Drawable folderDrawable = null;
+            Drawable folderDrawable;
             if (useImages) {
                 model.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
                         BookmarkUtils.getChildCountForDisplay(item.getId(), mBookmarkModel));
@@ -1200,8 +1200,6 @@ class BookmarkManagerMediator
         listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
         listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
 
-        boolean canReorder = bookmarkItem != null && bookmarkItem.isReorderable()
-                && !Objects.equals(getCurrentFolderId(), mBookmarkModel.getRootFolderId());
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
         }
@@ -1278,9 +1276,6 @@ class BookmarkManagerMediator
 
     void setPriceTrackingEnabled(PropertyModel model, boolean enabled) {
         BookmarkListEntry entry = model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
-        PowerBookmarkMeta meta = entry.getPowerBookmarkMeta();
-        CommerceSubscription sub =
-                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
 
         Callback<Boolean> callback = success -> {
             if (!success) return;
