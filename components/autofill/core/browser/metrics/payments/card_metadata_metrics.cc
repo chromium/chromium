@@ -152,6 +152,12 @@ void LogCardWithMetadataFormEventMetric(
                                       GetCardIssuerIdSuffix(issuer) +
                                       ".FilledWithMetadata",
                                   has_metadata);
+        if (!has_been_logged.value()) {
+          base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                        GetCardIssuerIdSuffix(issuer) +
+                                        ".FilledWithMetadataOnce",
+                                    has_metadata);
+        }
         break;
       case CardMetadataLoggingEvent::kWillSubmit:
         base::UmaHistogramBoolean("Autofill.CreditCard." +

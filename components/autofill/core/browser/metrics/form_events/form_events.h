@@ -189,6 +189,19 @@ enum FormEvent {
   FORM_EVENT_SERVER_CARD_FILLED_FOR_AN_EXISTING_LOCAL_CARD_ONCE = 73,
   FORM_EVENT_SERVER_CARD_SUBMITTED_FOR_AN_EXISTING_LOCAL_CARD_ONCE = 74,
 
+  // The filled credit card suggestion had metadata. Logged once per
+  // page load.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED_ONCE = 75,
+  // The filled credit card suggestion had no metadata. Logged once per
+  // page load.
+  FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE = 76,
+  // A credit card was about to be submitted after a suggestion was filled,
+  // and the suggested card had metadata. Logged once per page load.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_WILL_SUBMIT_ONCE = 77,
+  // A credit card was about to be submitted after a suggestion was filled,
+  // and the suggested card had no metadata. Logged once per page load.
+  FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE = 78,
+
   NUM_FORM_EVENTS,
 };
 

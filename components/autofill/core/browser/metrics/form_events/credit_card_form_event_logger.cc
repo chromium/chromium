@@ -204,7 +204,7 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
   // was filled.
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kFilled,
-      metadata_logging_context_, HasBeenLogged());
+      metadata_logging_context_, HasBeenLogged(has_logged_suggestion_filled_));
 
   if (!has_logged_suggestion_filled_) {
     has_logged_suggestion_filled_ = true;
@@ -243,6 +243,11 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
         Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, form);
         break;
     }
+    // Log if filled suggestions had metadata, logged once per page load
+    Log(metadata_logging_context_.card_metadata_available
+            ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED_ONCE
+            : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
+        form);
   }
 
   base::RecordAction(
@@ -297,12 +302,18 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
 
-  // Log issuer-specific metrics on whether a card suggestion with metadata
-  // was filled before submission.
   if (has_logged_suggestion_filled_) {
+    // Log issuer-specific metrics on whether a card suggestion with metadata
+    // was filled before submission.
     LogCardWithMetadataFormEventMetric(
         autofill_metrics::CardMetadataLoggingEvent::kWillSubmit,
         metadata_logging_context_, HasBeenLogged(false));
+    // If a card suggestion was filled before submission, log it for metadata.
+    // This event can only be triggered once per page load
+    Log(metadata_logging_context_.card_metadata_available
+            ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_WILL_SUBMIT_ONCE
+            : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE,
+        form);
   }
 }
 

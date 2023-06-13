@@ -1251,6 +1251,8 @@ chromium-metrics-reviews@google.com.
   <token key="FormEventWithMetadata">
     <variant name="FilledWithMetadata"
         summary="A card with issuer id was filled"/>
+    <variant name="FilledWithMetadataOnce"
+        summary="A card with issuer id was filled, logged once per page load"/>
     <variant name="SelectedWithMetadata"
         summary="A card with issuer id was selected"/>
     <variant name="SelectedWithMetadataOnce"
