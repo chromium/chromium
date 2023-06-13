@@ -60,12 +60,20 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   if (!value.empty())
     return value;
 
+  // The name of a leaf node in Views is displayed inside the View, i.e.
+  // `GetNameFrom` == `ax::mojom::NameFrom::kContents`, except in text fields,
+  // where the name attribute is the field's label and the value attribute is
+  // the field's text contents. For maximum compatibility with the Web code, we
+  // compute the text of a non-leaf text field from the text contents of its
+  // children, even though we currently know of no such text field in Views.
+  //
   // TODO(https://crbug.com/1030703): The check for `IsInvisibleOrIgnored()`
   // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
   // supposed to skip over nodes that are invisible or ignored, but
   // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
-  if (IsLeaf() && !IsInvisibleOrIgnored())
+  if (IsLeaf() && !GetData().IsTextField() && !IsInvisibleOrIgnored()) {
     return GetString16Attribute(ax::mojom::StringAttribute::kName);
+  }
 
   std::u16string text_content;
   for (size_t i = 0; i < GetChildCount(); ++i) {
