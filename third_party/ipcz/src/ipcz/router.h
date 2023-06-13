@@ -151,7 +151,7 @@ class Router : public RefCounted {
   // Begins a two-phase retrieval of the next available inbound parcel. See
   // ipcz BeginGet() for details.
   IpczResult BeginGetNextInboundParcel(IpczBeginGetFlags flags,
-                                       const void** data,
+                                       const volatile void** data,
                                        size_t* num_bytes,
                                        IpczHandle* handles,
                                        size_t* num_handles,

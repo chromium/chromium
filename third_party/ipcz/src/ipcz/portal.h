@@ -52,7 +52,7 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
   IpczResult Put(absl::Span<const uint8_t> data,
                  absl::Span<const IpczHandle> handles);
   IpczResult BeginPut(IpczBeginPutFlags flags,
-                      void** data,
+                      volatile void** data,
                       size_t* num_bytes,
                       IpczTransaction* transaction);
   IpczResult EndPut(IpczTransaction transaction,
@@ -67,7 +67,7 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
                  size_t* num_handles,
                  IpczHandle* parcel);
   IpczResult BeginGet(IpczBeginGetFlags flags,
-                      const void** data,
+                      const volatile void** data,
                       size_t* num_data_bytes,
                       IpczHandle* handles,
                       size_t* num_handles,

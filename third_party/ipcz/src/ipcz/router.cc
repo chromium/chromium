@@ -429,7 +429,7 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
 }
 
 IpczResult Router::BeginGetNextInboundParcel(IpczBeginGetFlags flags,
-                                             const void** data,
+                                             const volatile void** data,
                                              size_t* num_bytes,
                                              IpczHandle* handles,
                                              size_t* num_handles,

@@ -57,7 +57,7 @@ class MessageTest : public testing::Test {
     // transmissible driver handle.
     EXPECT_CALL(driver(), Serialize(_, kTransportHandle, _, _, _, _, _, _))
         .WillRepeatedly([&](IpczDriverHandle handle, IpczDriverHandle transport,
-                            uint32_t, const void*, void* data,
+                            uint32_t, const void*, volatile void* data,
                             size_t* num_bytes, IpczDriverHandle* handles,
                             size_t* num_handles) {
           const size_t data_capacity = num_bytes ? *num_bytes : 0;
@@ -71,7 +71,8 @@ class MessageTest : public testing::Test {
           if (!data || !handles || data_capacity < 2 || handle_capacity < 1) {
             return IPCZ_RESULT_RESOURCE_EXHAUSTED;
           }
-          static_cast<uint16_t*>(data)[0] = static_cast<uint16_t>(handle >> 16);
+          static_cast<volatile uint16_t*>(data)[0] =
+              static_cast<uint16_t>(handle >> 16);
           handles[0] = handle & 0xffff;
           return IPCZ_RESULT_OK;
         });
@@ -80,7 +81,7 @@ class MessageTest : public testing::Test {
     // and 1 transmissible handle is expected, and these are combined into a
     // single new driver handle value to represent the deserialized object.
     EXPECT_CALL(driver(), Deserialize(_, _, _, _, kTransportHandle, _, _, _))
-        .WillRepeatedly([&](const void* data, size_t num_bytes,
+        .WillRepeatedly([&](const volatile void* data, size_t num_bytes,
                             const IpczDriverHandle* handles, size_t num_handles,
                             IpczDriverHandle transport, uint32_t, const void*,
                             IpczDriverHandle* handle) {
@@ -90,7 +91,8 @@ class MessageTest : public testing::Test {
 
           ABSL_ASSERT(num_bytes == 2);
           ABSL_ASSERT(num_handles == 1);
-          const uint16_t data_value = static_cast<const uint16_t*>(data)[0];
+          const uint16_t data_value =
+              static_cast<const volatile uint16_t*>(data)[0];
           *handle =
               (static_cast<IpczDriverHandle>(data_value) << 16) | handles[0];
           return IPCZ_RESULT_OK;

@@ -332,7 +332,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
                                   IpczDriverHandle transport,  // in
                                   uint32_t flags,              // in
                                   const void* options,         // in
-                                  void* data,                  // out
+                                  volatile void* data,         // out
                                   size_t* num_bytes,           // in/out
                                   IpczDriverHandle* handles,   // out
                                   size_t* num_handles);        // in/out
@@ -348,7 +348,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // that `handle` is unmodified. Otherwise `handle` must contain a valid driver
   // handle to the deserialized object.
   IpczResult(IPCZ_API* Deserialize)(
-      const void* data,                        // in
+      const volatile void* data,               // in
       size_t num_bytes,                        // in
       const IpczDriverHandle* driver_handles,  // in
       size_t num_driver_handles,               // in
@@ -527,7 +527,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
       IpczDriverHandle driver_memory,     // in
       uint32_t flags,                     // in
       const void* options,                // in
-      void** address,                     // out
+      volatile void** address,            // out
       IpczDriverHandle* driver_mapping);  // out
 
   // GenerateRandomBytes()
@@ -706,7 +706,7 @@ typedef uint32_t IpczBoxType;
 typedef IpczResult (*IpczApplicationObjectSerializer)(uintptr_t object,
                                                       uint32_t flags,
                                                       const void* options,
-                                                      void* data,
+                                                      volatile void* data,
                                                       size_t* num_bytes,
                                                       IpczHandle* handles,
                                                       size_t* num_handles);
@@ -1270,7 +1270,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   IpczResult(IPCZ_API* BeginPut)(IpczHandle portal,              // in
                                  IpczBeginPutFlags flags,        // in
                                  const void* options,            // in
-                                 void** data,                    // out
+                                 volatile void** data,           // out
                                  size_t* num_bytes,              // in/out
                                  IpczTransaction* transaction);  // out
 
@@ -1515,7 +1515,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   IpczResult(IPCZ_API* BeginGet)(IpczHandle source,              // in
                                  IpczBeginGetFlags flags,        // in
                                  const void* options,            // in
-                                 const void** data,              // out
+                                 const volatile void** data,     // out
                                  size_t* num_bytes,              // out
                                  IpczHandle* handles,            // out
                                  size_t* num_handles,            // in/out

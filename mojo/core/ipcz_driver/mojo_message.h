@@ -95,7 +95,7 @@ class MojoMessage {
   static IpczResult SerializeForIpcz(uintptr_t object,
                                      uint32_t,
                                      const void*,
-                                     void* data,
+                                     volatile void* data,
                                      size_t* num_bytes,
                                      IpczHandle* handles,
                                      size_t* num_handles);
@@ -115,7 +115,7 @@ class MojoMessage {
   static std::unique_ptr<MojoMessage> UnwrapFrom(MojoMessage& message);
 
  private:
-  IpczResult SerializeForIpczImpl(void* data,
+  IpczResult SerializeForIpczImpl(volatile void* data,
                                   size_t* num_bytes,
                                   IpczHandle* handles,
                                   size_t* num_handles);

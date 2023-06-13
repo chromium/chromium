@@ -180,7 +180,7 @@ TEST_F(DriverTransportTest, SerializationFailure) {
 
   EXPECT_CALL(driver(), Serialize(kFakeObject, kTransport0, _, _, _, _, _, _))
       .WillRepeatedly([&](IpczDriverHandle, IpczDriverHandle, uint32_t,
-                          const void*, void* data, size_t* num_bytes,
+                          const void*, volatile void* data, size_t* num_bytes,
                           IpczDriverHandle* handles, size_t* num_handles) {
         if (!data && !handles) {
           // Return valid outputs when ipcz is sizing the object.

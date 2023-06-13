@@ -48,11 +48,12 @@ MULTINODE_TEST(BoxTest, Peek) {
 
   const IpczDriverHandle memory = box_contents.object.driver_object;
   IpczDriverHandle mapping;
-  void* base;
+  volatile void* base;
   EXPECT_EQ(IPCZ_RESULT_OK,
             GetDriver().MapSharedMemory(memory, IPCZ_NO_FLAGS, nullptr, &base,
                                         &mapping));
-  std::string contents(static_cast<const char*>(base), kMessage.size());
+  std::string contents(static_cast<const char*>(const_cast<const void*>(base)),
+                       kMessage.size());
   EXPECT_EQ(kMessage, contents);
   EXPECT_EQ(IPCZ_RESULT_OK, GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr));
 
@@ -195,7 +196,7 @@ class NamedPortal {
   static IpczResult Serialize(uintptr_t object,
                               uint32_t,
                               const void*,
-                              void* data,
+                              volatile void* data,
                               size_t* num_bytes,
                               IpczHandle* handles,
                               size_t* num_handles) {
@@ -215,9 +216,10 @@ class NamedPortal {
       return IPCZ_RESULT_RESOURCE_EXHAUSTED;
     }
 
-    auto* header = static_cast<Header*>(data);
+    auto* header = static_cast<volatile Header*>(data);
     header->name_length = static_cast<size_t>(portal.name_.size());
-    memcpy(header + 1, portal.name_.data(), portal.name_.size());
+    memcpy(const_cast<Header*>(header + 1), portal.name_.data(),
+           portal.name_.size());
     handles[0] = std::exchange(portal.portal_, IPCZ_INVALID_HANDLE);
     return IPCZ_RESULT_OK;
   }

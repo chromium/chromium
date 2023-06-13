@@ -41,6 +41,11 @@ class ParcelTestNode : public test::TestNode {
 
 using ParcelTest = test::MultinodeTest<ParcelTestNode>;
 
+std::string_view StringFromData(const volatile void* data, size_t size) {
+  return std::string_view{
+      static_cast<const char*>(const_cast<const void*>(data)), size};
+}
+
 constexpr std::string_view kMessage = "here's that box of hornets you wanted";
 constexpr std::string_view kHornets = "bzzzzz";
 
@@ -129,14 +134,13 @@ MULTINODE_TEST_NODE(ParcelTestNode, TwoPhaseGetClient) {
                             nullptr, &num_handles, &transaction));
 
   IpczHandle box;
-  const void* data;
+  const volatile void* data;
   size_t num_bytes;
   EXPECT_EQ(1u, num_handles);
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(parcel, IPCZ_NO_FLAGS, nullptr, &data, &num_bytes,
                             &box, &num_handles, &transaction));
-  EXPECT_EQ(kMessage,
-            std::string_view(static_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(kMessage, StringFromData(data, num_bytes));
   EXPECT_EQ(1u, num_handles);
 
   // We can't start a new get of any kind during the two-phase get.
@@ -157,8 +161,7 @@ MULTINODE_TEST_NODE(ParcelTestNode, TwoPhaseGetClient) {
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(parcel, IPCZ_NO_FLAGS, nullptr, &data, &num_bytes,
                             &box, &num_handles, &transaction));
-  EXPECT_EQ(kMessage,
-            std::string_view(static_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(kMessage, StringFromData(data, num_bytes));
   EXPECT_EQ(0u, num_handles);
 
   // `box` is still valid from the original successful BeginGet() further above.
@@ -263,14 +266,13 @@ MULTINODE_TEST(ParcelTest, PartialTwoPhaseGetOnPortal) {
   // a portal we can ping-pong.
   IpczHandle handles[4];
   num_handles = 4;
-  const void* data;
+  const volatile void* data;
   size_t num_bytes;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(c, IPCZ_BEGIN_GET_PARTIAL, nullptr, &data,
                             &num_bytes, handles, &num_handles, &transaction));
   EXPECT_EQ(1u, num_handles);
-  EXPECT_EQ(kMessage,
-            std::string_view(static_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(kMessage, StringFromData(data, num_bytes));
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().EndGet(c, transaction, IPCZ_NO_FLAGS, nullptr, nullptr));
 
@@ -324,14 +326,13 @@ MULTINODE_TEST(ParcelTest, PartialTwoPhaseGetOnParcel) {
   // a portal we can ping-pong.
   IpczHandle handles[4];
   num_handles = 4;
-  const void* data;
+  const volatile void* data;
   size_t num_bytes;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(parcel, IPCZ_BEGIN_GET_PARTIAL, nullptr, &data,
                             &num_bytes, handles, &num_handles, &transaction));
   EXPECT_EQ(1u, num_handles);
-  EXPECT_EQ(kMessage,
-            std::string_view(static_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(kMessage, StringFromData(data, num_bytes));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(parcel, transaction, IPCZ_NO_FLAGS,
                                           nullptr, nullptr));
 
@@ -377,30 +378,27 @@ MULTINODE_TEST(ParcelTest, OverlappedTwoPhaseGets) {
 
   // Now start three concurrent transactions.
   IpczTransaction t1;
-  const void* data1;
+  const volatile void* data1;
   size_t size1;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(c, IPCZ_BEGIN_GET_OVERLAPPED, nullptr, &data1,
                             &size1, nullptr, nullptr, &t1));
   IpczTransaction t2;
-  const void* data2;
+  const volatile void* data2;
   size_t size2;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(c, IPCZ_BEGIN_GET_OVERLAPPED, nullptr, &data2,
                             &size2, nullptr, nullptr, &t2));
   IpczTransaction t3;
-  const void* data3;
+  const volatile void* data3;
   size_t size3;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(c, IPCZ_BEGIN_GET_OVERLAPPED, nullptr, &data3,
                             &size3, nullptr, nullptr, &t3));
 
-  EXPECT_EQ(kMessage1,
-            std::string_view(static_cast<const char*>(data1), size1));
-  EXPECT_EQ(kMessage2,
-            std::string_view(static_cast<const char*>(data2), size2));
-  EXPECT_EQ(kMessage3,
-            std::string_view(static_cast<const char*>(data3), size3));
+  EXPECT_EQ(kMessage1, StringFromData(data1, size1));
+  EXPECT_EQ(kMessage2, StringFromData(data2, size2));
+  EXPECT_EQ(kMessage3, StringFromData(data3, size3));
 
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().EndGet(c, t1, IPCZ_NO_FLAGS, nullptr, nullptr));

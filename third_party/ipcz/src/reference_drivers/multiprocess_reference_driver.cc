@@ -187,7 +187,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
                               IpczDriverHandle transport,
                               uint32_t flags,
                               const void* options,
-                              void* data,
+                              volatile void* data,
                               size_t* num_bytes,
                               IpczDriverHandle* handles,
                               size_t* num_handles) {
@@ -223,7 +223,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
     return IPCZ_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  auto& header = *reinterpret_cast<SerializedObjectHeader*>(data);
+  auto& header = *reinterpret_cast<volatile SerializedObjectHeader*>(data);
   header.type = object->type();
   header.memory_size = 0;
 
@@ -247,7 +247,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API Deserialize(const void* data,
+IpczResult IPCZ_API Deserialize(const volatile void* data,
                                 size_t num_bytes,
                                 const IpczDriverHandle* handles,
                                 size_t num_handles,
@@ -255,7 +255,8 @@ IpczResult IPCZ_API Deserialize(const void* data,
                                 uint32_t flags,
                                 const void* options,
                                 IpczDriverHandle* driver_handle) {
-  const auto& header = *static_cast<const SerializedObjectHeader*>(data);
+  const auto& header =
+      *static_cast<const volatile SerializedObjectHeader*>(data);
   if (num_bytes < sizeof(header)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
@@ -377,7 +378,7 @@ IpczResult GetSharedMemoryInfo(IpczDriverHandle driver_memory,
 IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
                                     uint32_t flags,
                                     const void* options,
-                                    void** address,
+                                    volatile void** address,
                                     IpczDriverHandle* driver_mapping) {
   auto mapping = MultiprocessMemory::FromHandle(driver_memory)->Map();
   *address = mapping->address();

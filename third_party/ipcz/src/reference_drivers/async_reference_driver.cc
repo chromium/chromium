@@ -242,7 +242,7 @@ IpczResult IPCZ_API SerializeWithForcedBrokering(IpczDriverHandle handle,
                                                  IpczDriverHandle transport,
                                                  uint32_t flags,
                                                  const void* options,
-                                                 void* data,
+                                                 volatile void* data,
                                                  size_t* num_bytes,
                                                  IpczDriverHandle* handles,
                                                  size_t* num_handles) {

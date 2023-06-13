@@ -113,7 +113,7 @@ IpczResult Portal::Put(absl::Span<const uint8_t> data,
 }
 
 IpczResult Portal::BeginPut(IpczBeginPutFlags flags,
-                            void** data,
+                            volatile void** data,
                             size_t* num_bytes,
                             IpczTransaction* transaction) {
   const bool allow_partial = (flags & IPCZ_BEGIN_PUT_ALLOW_PARTIAL) != 0;
@@ -195,7 +195,7 @@ IpczResult Portal::Get(IpczGetFlags flags,
 }
 
 IpczResult Portal::BeginGet(IpczBeginGetFlags flags,
-                            const void** data,
+                            const volatile void** data,
                             size_t* num_data_bytes,
                             IpczHandle* handles,
                             size_t* num_handles,

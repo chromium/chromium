@@ -18,6 +18,11 @@ const IpczDriver& kDefaultDriver = reference_drivers::kSyncReferenceDriver;
 
 using APITest = test::Test;
 
+std::string_view StringFromData(const volatile void* data, size_t size) {
+  return std::string_view{
+      static_cast<const char*>(const_cast<const void*>(data)), size};
+}
+
 TEST_F(APITest, CloseInvalid) {
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().Close(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr));
@@ -327,7 +332,7 @@ TEST_F(APITest, BeginEndPutFailure) {
   // Invalid portal.
   constexpr size_t kPutSize = 64;
   size_t num_bytes = kPutSize;
-  void* data;
+  volatile void* data;
   IpczTransaction transaction;
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().BeginPut(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, &data,
@@ -435,23 +440,22 @@ TEST_F(APITest, TwoPhasePutGet) {
 
   constexpr std::string_view kMessage = "ipcz!";
   size_t num_bytes = kMessage.size();
-  void* out_data;
+  volatile void* out_data;
   IpczTransaction put;
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr,
                                             &out_data, &num_bytes, &put));
   EXPECT_EQ(kMessage.size(), num_bytes);
-  memcpy(out_data, kMessage.data(), kMessage.size());
+  memcpy(const_cast<void*>(out_data), kMessage.data(), kMessage.size());
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, put, num_bytes, nullptr, 0,
                                           IPCZ_NO_FLAGS, nullptr));
 
   IpczTransaction get;
-  const void* in_data = nullptr;
+  const volatile void* in_data = nullptr;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data, &num_bytes,
                             nullptr, nullptr, &get));
   ASSERT_TRUE(in_data);
-  EXPECT_EQ(kMessage,
-            std::string_view(static_cast<const char*>(in_data), num_bytes));
+  EXPECT_EQ(kMessage, StringFromData(in_data, num_bytes));
 
   // Aborting the get leaves its parcel queued for another get.
   EXPECT_EQ(IPCZ_RESULT_OK,
@@ -462,7 +466,7 @@ TEST_F(APITest, TwoPhasePutGet) {
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data, &num_bytes,
                             nullptr, nullptr, &get));
-  EXPECT_EQ(kMessage[0], *reinterpret_cast<const char*>(in_data));
+  EXPECT_EQ(kMessage[0], *reinterpret_cast<const volatile char*>(in_data));
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().EndGet(b, get, IPCZ_NO_FLAGS, nullptr, nullptr));
 
@@ -485,31 +489,31 @@ TEST_F(APITest, OverlappedTwoPhasePuts) {
   // Set up three concurrent transactions.
 
   size_t num_bytes1 = kMessage1.size();
-  void* out_data1;
+  volatile void* out_data1;
   IpczTransaction transaction1;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data1, &num_bytes1,
                             &transaction1));
   EXPECT_EQ(kMessage1.size(), num_bytes1);
-  memcpy(out_data1, kMessage1.data(), kMessage1.size());
+  memcpy(const_cast<void*>(out_data1), kMessage1.data(), kMessage1.size());
 
   size_t num_bytes2 = kMessage2.size();
-  void* out_data2;
+  volatile void* out_data2;
   IpczTransaction transaction2;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data2, &num_bytes2,
                             &transaction2));
   EXPECT_EQ(kMessage2.size(), num_bytes2);
-  memcpy(out_data2, kMessage2.data(), kMessage2.size());
+  memcpy(const_cast<void*>(out_data2), kMessage2.data(), kMessage2.size());
 
   size_t num_bytes3 = kMessage3.size();
-  void* out_data3;
+  volatile void* out_data3;
   IpczTransaction transaction3;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data3, &num_bytes3,
                             &transaction3));
   EXPECT_EQ(kMessage3.size(), num_bytes3);
-  memcpy(out_data3, kMessage3.data(), kMessage3.size());
+  memcpy(const_cast<void*>(out_data3), kMessage3.data(), kMessage3.size());
 
   // Complete them out-of-order. They should arrive in the order in which they
   // were completed rather than the order in which they were started.

@@ -374,11 +374,11 @@ IpczHandle TestNode::BoxBlob(std::string_view contents) {
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
 
   IpczDriverHandle mapping;
-  void* base;
+  volatile void* base;
   result = GetDriver().MapSharedMemory(memory, IPCZ_NO_FLAGS, nullptr, &base,
                                        &mapping);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
-  memcpy(base, contents.data(), contents.size());
+  memcpy(const_cast<void*>(base), contents.data(), contents.size());
   GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr);
 
   IpczHandle box;
@@ -405,12 +405,13 @@ std::string TestNode::UnboxBlob(IpczHandle box) {
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
 
   IpczDriverHandle mapping;
-  void* base;
+  volatile void* base;
   result = GetDriver().MapSharedMemory(memory, IPCZ_NO_FLAGS, nullptr, &base,
                                        &mapping);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
 
-  std::string contents(static_cast<const char*>(base), info.region_num_bytes);
+  std::string contents(static_cast<const char*>(const_cast<const void*>(base)),
+                       info.region_num_bytes);
   GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr);
   GetDriver().Close(memory, IPCZ_NO_FLAGS, nullptr);
   return contents;

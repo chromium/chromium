@@ -101,7 +101,7 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
 
   parcel_ = std::move(parcel);
 
-  const void* data;
+  const volatile void* data;
   size_t num_bytes;
   size_t num_handles = 0;
   IpczTransaction transaction;
@@ -120,7 +120,15 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
   if (num_bytes > 0) {
     data_storage_.reset(
         static_cast<uint8_t*>(base::AllocNonScannable(num_bytes)));
-    memcpy(data_storage_.get(), data, num_bytes);
+
+    // Copy into private memory, out of the potentially shared and volatile
+    // `data` buffer. Note that it's fine to cast away volatility here since we
+    // aren't concerned with consistency across reads: a well-behaved peer won't
+    // modify the buffer concurrently, so the copied bytes will always be
+    // correct in that case; and in any other case we don't care what's copied,
+    // as long as all subsequent reads operate on the private copy and not on
+    // `data`.
+    memcpy(data_storage_.get(), const_cast<const void*>(data), num_bytes);
   } else {
     data_storage_.reset();
   }
@@ -267,7 +275,7 @@ MojoResult MojoMessage::Serialize() {
 IpczResult MojoMessage::SerializeForIpcz(uintptr_t object,
                                          uint32_t,
                                          const void*,
-                                         void* data,
+                                         volatile void* data,
                                          size_t* num_bytes,
                                          IpczHandle* handles,
                                          size_t* num_handles) {
@@ -368,7 +376,7 @@ std::unique_ptr<MojoMessage> MojoMessage::UnwrapFrom(MojoMessage& message) {
   return new_message;
 }
 
-IpczResult MojoMessage::SerializeForIpczImpl(void* data,
+IpczResult MojoMessage::SerializeForIpczImpl(volatile void* data,
                                              size_t* num_bytes,
                                              IpczHandle* handles,
                                              size_t* num_handles) {
@@ -399,7 +407,8 @@ IpczResult MojoMessage::SerializeForIpczImpl(void* data,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  memcpy(data, data_.data(), data_.size());
+  // TODO(https://crbug.com/1451717): Do a volatile-friendly copy here.
+  memcpy(const_cast<void*>(data), data_.data(), data_.size());
   for (size_t i = 0; i < handles_.size(); ++i) {
     handles[i] = std::exchange(handles_[i], IPCZ_INVALID_HANDLE);
   }

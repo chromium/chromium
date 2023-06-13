@@ -83,7 +83,7 @@ IpczResult ParcelWrapper::Get(IpczGetFlags flags,
 }
 
 IpczResult ParcelWrapper::BeginGet(IpczBeginGetFlags flags,
-                                   const void** data,
+                                   const volatile void** data,
                                    size_t* num_data_bytes,
                                    IpczHandle* handles,
                                    size_t* num_handles,

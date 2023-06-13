@@ -41,7 +41,7 @@ class ParcelWrapper : public APIObjectImpl<ParcelWrapper, APIObject::kParcel> {
                  size_t* num_handles,
                  IpczHandle* parcel);
   IpczResult BeginGet(IpczBeginGetFlags flags,
-                      const void** data,
+                      const volatile void** data,
                       size_t* num_data_bytes,
                       IpczHandle* handles,
                       size_t* num_handles,
