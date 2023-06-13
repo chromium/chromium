@@ -34,11 +34,6 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
   // Displays the button's hover card, if possible.
   void MaybeShowHoverCard();
 
-  // views::View:
-  void OnMouseMoved(const ui::MouseEvent& event) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-
   // ToolbarButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
@@ -55,7 +50,7 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
   // Runs `extension_ids_` actions in the current site.
   void OnButtonPressed();
 
-  content::WebContents* GetActiveWebContents();
+  content::WebContents* GetActiveWebContents() const;
 
   raw_ptr<Browser> browser_;
   raw_ptr<ExtensionsContainer> extensions_container_;

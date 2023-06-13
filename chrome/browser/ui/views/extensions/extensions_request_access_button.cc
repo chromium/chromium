@@ -7,15 +7,19 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
@@ -69,6 +73,9 @@ void ExtensionsRequestAccessButton::Update(
       color);
 }
 
+// TODO(crbug.com/1390952): Remove hover card once
+// kExtensionsMenuAccessControlWithPermittedSites is rolled out. We are keeping
+// it for now since we may bring the hover card back.
 void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
   if (hover_card_coordinator_->IsShowing() ||
       !GetWidget()->IsMouseEventsEnabled()) {
@@ -81,15 +88,19 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
 
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
     const gfx::Point& p) const {
-  // Request access button hover cards replace tooltips.
-  return std::u16string();
+  std::vector<std::u16string> tooltip_parts;
+  tooltip_parts.push_back(l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
+      GetCurrentHost(GetActiveWebContents())));
+  for (const auto& extension_id : extension_ids_) {
+    ToolbarActionViewController* action =
+        extensions_container_->GetActionForId(extension_id);
+    tooltip_parts.push_back(action->GetActionName());
+  }
+  return base::JoinString(tooltip_parts, u"\n");
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
-  if (hover_card_coordinator_->IsShowing()) {
-    hover_card_coordinator_->HideBubble();
-  }
-
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
@@ -106,22 +117,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   action_runner->GrantTabPermissions(extensions_to_run);
 }
 
-// Linux enter/leave events are sometimes flaky, so we don't want to "miss"
-// an enter event and fail to hover the button. This is effectively a no-op if
-// the button is already showing the hover card (crbug.com/1326272).
-void ExtensionsRequestAccessButton::OnMouseMoved(const ui::MouseEvent& event) {
-  MaybeShowHoverCard();
-}
-
-void ExtensionsRequestAccessButton::OnMouseEntered(
-    const ui::MouseEvent& event) {
-  MaybeShowHoverCard();
-}
-
-void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
-  hover_card_coordinator_->HideBubble();
-}
-
-content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents() {
+content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()
+    const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }

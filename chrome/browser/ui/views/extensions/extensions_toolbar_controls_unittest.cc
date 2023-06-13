@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -230,13 +231,16 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   // Add an extension that only requests access to a.com, and
   // withhold host permissions.
-  auto extension_a =
-      InstallExtensionWithHostPermissions("Extension A", {url_a.spec()});
-  WithholdHostPermissions(extension_a.get());
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {url_a.spec()});
+  WithholdHostPermissions(extension.get());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
+  std::u16string tooltip = base::UTF8ToUTF16(
+      base::StrCat({"Click to allow on a.com:\n", extension->name()}));
+  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()), tooltip);
 
   // Add an extension with all urls host permissions, and withhold host
   // permissions.
@@ -247,6 +251,10 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 2));
+  tooltip = base::UTF8ToUTF16(
+      base::StrCat({"Click to allow on a.com:\n", extension->name(), "\n",
+                    extension_all_urls->name()}));
+  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()), tooltip);
 
   // Navigate to a different url. Only "all_urls" should request access.
   NavigateAndCommit(url_b);
@@ -254,6 +262,9 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
+  tooltip = base::UTF8ToUTF16(
+      base::StrCat({"Click to allow on b.com:\n", extension_all_urls->name()}));
+  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()), tooltip);
 
   // Remove the only extension that requests access to the current site.
   UninstallExtension(extension_all_urls->id());
