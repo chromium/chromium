@@ -4,6 +4,9 @@
 
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/json/json_string_value_serializer.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -156,42 +159,57 @@ cbor::Value SerializeInterestGroup(base::Time start_time,
 
 }  // namespace
 
+BiddingAndAuctionData::BiddingAndAuctionData() = default;
+BiddingAndAuctionData::BiddingAndAuctionData(BiddingAndAuctionData&& other) =
+    default;
+BiddingAndAuctionData::~BiddingAndAuctionData() = default;
+
+BiddingAndAuctionData& BiddingAndAuctionData::operator=(
+    BiddingAndAuctionData&& other) = default;
+
 BiddingAndAuctionSerializer::BiddingAndAuctionSerializer() {
   start_time_ = base::Time::Now();
 }
 BiddingAndAuctionSerializer::BiddingAndAuctionSerializer(
-    BiddingAndAuctionSerializer&& state) = default;
+    BiddingAndAuctionSerializer&& other) = default;
 BiddingAndAuctionSerializer::~BiddingAndAuctionSerializer() = default;
 
 void BiddingAndAuctionSerializer::AddGroups(
-    std::string owner,
+    url::Origin owner,
     std::vector<StorageInterestGroup> groups) {
   base::EraseIf(groups, [](const StorageInterestGroup& group) {
     return (!group.interest_group.ads) ||
            (group.interest_group.ads->size() == 0);
   });
   if (groups.size() > 0) {
-    accumulated_groups_.emplace_back(owner, std::move(groups));
+    accumulated_groups_.emplace_back(std::move(owner), std::move(groups));
   }
 }
 
-std::vector<uint8_t> BiddingAndAuctionSerializer::Build() {
+BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   if (accumulated_groups_.empty()) {
     return {};
   }
+  BiddingAndAuctionData data;
+
   cbor::Value::MapValue message_obj;
   message_obj[cbor::Value("version")] = cbor::Value(0);
   // "gzip" is the default so we don't need to specify the compression.
   // message_obj[cbor::Value("compression")] = cbor::Value("gzip");
+  DCHECK(generation_id_.is_valid());
+  message_obj[cbor::Value("generationId")] =
+      cbor::Value(generation_id_.AsLowercaseString());
   message_obj[cbor::Value("publisher")] = cbor::Value(publisher_);
 
   cbor::Value::MapValue groups_map;
   groups_map.reserve(accumulated_groups_.size());
   for (const auto& bidder_groups : accumulated_groups_) {
     cbor::Value::ArrayValue groups;
+    std::vector<std::string> names;
     for (const auto& group : bidder_groups.second) {
       cbor::Value group_obj = SerializeInterestGroup(start_time_, group);
       groups.emplace_back(std::move(group_obj));
+      names.push_back(group.interest_group.name);
     }
     cbor::Value groups_obj(std::move(groups));
     absl::optional<std::vector<uint8_t>> maybe_sub_message =
@@ -201,8 +219,9 @@ std::vector<uint8_t> BiddingAndAuctionSerializer::Build() {
     bool success = compression::GzipCompress(maybe_sub_message.value(),
                                              &compressed_groups);
     DCHECK(success);
-    groups_map[cbor::Value(bidder_groups.first)] =
+    groups_map[cbor::Value(bidder_groups.first.Serialize())] =
         cbor::Value(compressed_groups, cbor::Value::Type::BYTE_STRING);
+    data.group_names.emplace(bidder_groups.first, std::move(names));
   }
 
   message_obj[cbor::Value("interestGroups")] =
@@ -264,7 +283,8 @@ std::vector<uint8_t> BiddingAndAuctionSerializer::Build() {
   cbor::Value message(std::move(message_obj));
   absl::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
   DCHECK(maybe_msg);
-  return *maybe_msg;
+  data.request = std::move(*maybe_msg);
+  return data;
 }
 
 }  // namespace content

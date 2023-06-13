@@ -88,7 +88,7 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
     BiddingAndAuctionDataConstructionState()
-    : uuid(base::Uuid::GenerateRandomV4()) {}
+    : request_id(base::Uuid::GenerateRandomV4()) {}
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
     BiddingAndAuctionDataConstructionState(
         BiddingAndAuctionDataConstructionState&& other) = default;
@@ -382,7 +382,8 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
   state.callback = std::move(callback);
 
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
-      seller, GetTopWindowOrigin(),
+      GetTopWindowOrigin(),
+      /* generation_id=*/base::Uuid::GenerateRandomV4(),
       base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
@@ -710,13 +711,13 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
 
 void AdAuctionServiceImpl::OnGotAuctionData(
     BiddingAndAuctionDataConstructionState state,
-    std::vector<uint8_t> plaintext) {
-  if (plaintext.empty()) {
+    BiddingAndAuctionData data) {
+  if (data.request.empty()) {
     std::move(state.callback).Run({}, "");
     return;
   }
 
-  state.plaintext = std::move(plaintext);
+  state.data = std::move(data);
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
       GetRefCountedTrustedURLLoaderFactory().get(),
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
@@ -738,7 +739,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
 
   auto maybe_request =
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
-          std::string(state.plaintext.begin(), state.plaintext.end()),
+          std::string(state.data.request.begin(), state.data.request.end()),
           maybe_key->key, maybe_key_config.value());
   if (!maybe_request.ok()) {
     std::move(state.callback).Run({}, "");
@@ -750,7 +751,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   std::move(state.callback)
       .Run(mojo_base::BigBuffer(
                base::make_span(bytes, data.size() * sizeof(char))),
-           state.uuid.AsLowercaseString());
+           state.request_id.AsLowercaseString());
   // TODO(behamilton): Save request context for decryption.
 }
 

@@ -31,6 +31,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/cbor/diagnostic_writer.h"
+#include "components/cbor/reader.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
@@ -7629,9 +7631,14 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     network_responder_->RegisterUpdateResponse(kBAndAKeyPath, json_output);
   }
 
+  struct AdAuctionDataAndId {
+    std::string request;
+    std::string request_id;
+  };
+
   // Gets auction data in the frame `rfh`. If `rfh` is nullptr, uses the main
   // frame. Returns the auction data.
-  absl::optional<std::string> GetAdAuctionDataAndFlushForFrame(
+  absl::optional<AdAuctionDataAndId> GetAdAuctionDataAndFlushForFrame(
       url::Origin seller,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
@@ -7639,15 +7646,15 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
-    absl::optional<std::string> output;
-    std::string output_id;
+    absl::optional<AdAuctionDataAndId> output;
     interest_service->GetInterestGroupAdAuctionData(
-        seller, base::BindLambdaForTesting([&run_loop, &output, &output_id](
-                                               mojo_base::BigBuffer result,
+        seller, base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
                                                const std::string& id) {
-          output = std::string(reinterpret_cast<char*>(result.data()),
-                               result.size());
-          output_id = id;
+          AdAuctionDataAndId data;
+          data.request = std::string(reinterpret_cast<char*>(result.data()),
+                                     result.size());
+          data.request_id = id;
+          output = data;
           run_loop.Quit();
         }));
     interest_service.FlushForTesting();
@@ -7697,24 +7704,33 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<uint8_t> msg;
+  base::flat_map<url::Origin, std::vector<std::string>> group_names;
   base::RunLoop run_loop;
   manager_->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin, /*top_level_origin=*/test_origin,
-      base::BindLambdaForTesting([&](std::vector<uint8_t> inner_msg) {
-        msg = inner_msg;
+      /*top_level_origin=*/test_origin,
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        msg = std::move(data.request);
+        group_names = std::move(data.group_names);
         run_loop.Quit();
       }));
   run_loop.Run();
   std::string expected =
-      "pABYIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABndmVyc2lvbgBpcHVibGlz"
-      "aGVybmh0dHBzOi8vYS50ZXN0bmludGVyZXN0R3JvdXBzoW5odHRwczovL2EudGVzdFiXH4sI"
-      "AAAAAAAAAFWNOw7CMBAF+"
-      "V0oIfxaUlJS0GJ7V85Cso7WCchCFPFZEOfERDQ0r5nRvOFtFPgIWb4sTLFaA6sGwSjxtYLSN"
-      "a1j5M4PZrPdsRZ39yhHsqxq/"
-      "7KCBtmERaUpuT13k6oVvJ2IfYyzc5yPWbo44hFPJYlAbH+FA4Z0fcWQfSeXPsX3f4Z+PD+"
-      "l5cGLogAAAA==";
+      "pQBY7wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZ3ZlcnNpb24AaXB1Ymxpc2hlcm5odHRwczov"
+      "L2EudGVzdGxnZW5lcmF0aW9uSWR4JDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAw"
+      "MDAwMG5pbnRlcmVzdEdyb3Vwc6FuaHR0cHM6Ly9hLnRlc3RYlx+"
+      "LCAAAAAAAAABVjTsOwjAQBfldKCH8WlJSUtBie1fOQrKO1gnIQhTxWRDnxEQ0NK+"
+      "Z0bzhbRT4CFm+LEyxWgOrBsEo8bWC0jWtY+TOD2az3bEWd/"
+      "coR7Ksav+yggbZhEWlKbk9d5OqFbydiH2Ms3Ocj1m6OOIRTyWJQGx/"
+      "hQOGdH3FkH0nlz7F93+Gfjw/peXBi6IAAAA=";
   EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
   EXPECT_EQ(expected, base::Base64Encode(msg));
+  EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
+                               test_origin, testing::ElementsAre("cars"))));
 }
 
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithAnomalousPadding) {
@@ -7724,7 +7740,6 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithAnomalousPadding) {
   // request.
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
-          .SetUserBiddingSignals(R"("ABCDEFGHIJKLMNOPQRSTUVWXYZ")")
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"",
                      /*size_group=*/absl::nullopt,
                      /*buyer_reporting_id=*/absl::nullopt,
@@ -7734,21 +7749,20 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithAnomalousPadding) {
   std::vector<uint8_t> msg;
   base::RunLoop run_loop;
   manager_->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin, /*top_level_origin=*/
-      url::Origin::Create(GURL("https://the.new.top.level.origin.test")),
-      base::BindLambdaForTesting([&](std::vector<uint8_t> inner_msg) {
-        msg = inner_msg;
+      /*top_level_origin=*/
+      url::Origin::Create(GURL("https://very.long.origin.test")),
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        msg = std::move(data.request);
         run_loop.Quit();
       }));
   run_loop.Run();
   std::string expected =
-      "pQBWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAZ3ZlcnNpb24AaXB1Ymxpc2hlcnglaHR0cHM6"
-      "Ly90aGUubmV3LnRvcC5sZXZlbC5vcmlnaW4udGVzdG5pbnRlcmVzdEdyb3Vwc6FuaHR0cHM6"
-      "Ly9hLnRlc3RYih+"
-      "LCAAAAAAAAABrXJKcmFLcmGJoZGySkpeYm5qSnFhUnJdUlF9enFoUnJmel5hTvCS9KDU5NS+"
-      "5kiEjKTPFOb80r4Qho6AotSw8M6+"
-      "4ITMrPzMPLMhYVArU5JSZkpKZlw7VWyGj5Ojk7OLq5u7h6eXt4+"
-      "vnHxAYFBwSGhYeERmlBAD8GWK6fwAAAA==";
+      "pgBWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAZ3ZlcnNpb24AaXB1Ymxpc2hlcngdaHR0cHM6"
+      "Ly92ZXJ5Lmxvbmcub3JpZ2luLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDAwLTAw"
+      "MDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS50ZXN0WF8f"
+      "iwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeYU7wkvSg1OTUv"
+      "uZIhIykzxTm/NK+EIaOgKLUsPDOvuCEzKz8zDyzICAAUFTd6TgAAAA==";
   EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
   EXPECT_EQ(expected, base::Base64Encode(msg));
 }
@@ -7756,15 +7770,19 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithAnomalousPadding) {
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithNoGroups) {
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
   std::vector<uint8_t> msg;
+  base::flat_map<url::Origin, std::vector<std::string>> group_names;
   base::RunLoop run_loop;
   manager_->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin, /*top_level_origin=*/test_origin,
-      base::BindLambdaForTesting([&](std::vector<uint8_t> inner_msg) {
-        msg = inner_msg;
+      /*top_level_origin=*/test_origin,
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        msg = std::move(data.request);
+        group_names = std::move(data.group_names);
         run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ("", base::Base64Encode(msg));
+  EXPECT_TRUE(group_names.empty());
 }
 
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithEmptyGroup) {
@@ -7775,15 +7793,19 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithEmptyGroup) {
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<uint8_t> msg;
+  base::flat_map<url::Origin, std::vector<std::string>> group_names;
   base::RunLoop run_loop;
   manager_->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin, /*top_level_origin=*/test_origin,
-      base::BindLambdaForTesting([&](std::vector<uint8_t> inner_msg) {
-        msg = inner_msg;
+      /*top_level_origin=*/test_origin,
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        msg = std::move(data.request);
+        group_names = std::move(data.group_names);
         run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ("", base::Base64Encode(msg));
+  EXPECT_TRUE(group_names.empty());
 }
 
 TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
@@ -7864,20 +7886,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<uint8_t> msg;
+  base::flat_map<url::Origin, std::vector<std::string>> group_names;
   base::RunLoop run_loop;
   manager_->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin_a, /*top_level_origin=*/test_origin_a,
-      base::BindLambdaForTesting([&](std::vector<uint8_t> inner_msg) {
-        msg = inner_msg;
+      /*top_level_origin=*/test_origin_a,
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        msg = std::move(data.request);
+        group_names = std::move(data.group_names);
         run_loop.Quit();
       }));
   run_loop.Run();
 
   std::string expected =
-      "pABYnQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "pQBYagAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABn"
-      "dmVyc2lvbgBpcHVibGlzaGVybmh0dHBzOi8vYS50ZXN0bmludGVyZXN0R3JvdXBzom5odHRw"
+      "AABndmVyc2lvbgBpcHVibGlzaGVybmh0dHBzOi8vYS50ZXN0bGdlbmVyYXRpb25JZHgkMDAw"
+      "MDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwbmludGVyZXN0R3JvdXBzom5odHRw"
       "czovL2EudGVzdFiZH4sIAAAAAAAAAHXNOw7CMAwGYCi9UB+"
       "8VjgCAyuOY7VBrVPZAcQGOUsPShUGJASL9cu2/"
       "i+"
@@ -7888,6 +7913,11 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
       "MaMrPyM/PAgowA36E6yG4AAAA=";
   EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
   EXPECT_EQ(expected, base::Base64Encode(msg));
+  EXPECT_THAT(
+      group_names,
+      testing::ElementsAre(
+          testing::Pair(test_origin_a, testing::ElementsAre("boats", "cars")),
+          testing::Pair(test_origin_b, testing::ElementsAre("trains"))));
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
@@ -7921,7 +7951,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   manager_->RecordInterestGroupWin(
       {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
   task_environment()->FastForwardBy(base::Seconds(1));
-  absl::optional<std::string> result =
+  absl::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
 
@@ -7935,20 +7965,28 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
                       sizeof(kTestPrivateKey)),
           key_config)
           .value();
-  auto request = ohttp_gateway.DecryptObliviousHttpRequest(result.value());
+  auto request =
+      ohttp_gateway.DecryptObliviousHttpRequest(result.value().request);
   EXPECT_TRUE(request.ok()) << request.status();
-  std::string expected =
-      "pABYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAABndmVyc2lvbgBpcHVibGlzaGVybmh0dHBzOi8vYS50ZXN0bmludGVy"
-      "ZXN0R3JvdXBzoW5odHRwczovL2EudGVzdFh5H4sIAAAAAAAAAB3MSw6CUAxGYdEVqfgauwQH"
-      "Ti1tAzXwX9KihCF3LSxUw/"
-      "h8OfPCJJFlfziWXJ7OAupUmDxaknvq+gTFEDNfrjdUnsZQf1gNamOpXVnB066p7G8/GDZN7/"
-      "p9GiLn4pW369beybDm4gdbHLhHbgAAAA==";
-  const auto got = request->GetPlaintextData();
-  const auto* bytes = reinterpret_cast<const uint8_t*>(got.data());
-  EXPECT_EQ(1, absl::popcount(got.size()));  // Should be a power of 2.
-  EXPECT_EQ(expected, base::Base64Encode(
-                          base::make_span(bytes, got.size() * sizeof(char))));
+  auto got = request->GetPlaintextData();
+  EXPECT_EQ(1, absl::popcount(got.size()));
+  // The generation ID is random, so match against everything before and
+  // everything after.
+  std::string got_str = cbor::DiagnosticWriter::Write(
+      cbor::Reader::Read(base::as_bytes(base::make_span(got))).value());
+  EXPECT_THAT(got_str, testing::StartsWith(
+                           R"({0: h'0000000000000000000000000000', )"
+                           R"("version": 0, "publisher": "https://a.test", )"
+                           R"("generationId": ")"));
+  EXPECT_THAT(
+      got_str,
+      testing::EndsWith(
+          R"(", )"
+          R"("interestGroups": {"https://a.test": )"
+          R"(h'1F8B08000000000000001DCC4B0E82500C4661D115A9F81ABB04074E2D6D033)"
+          R"(5F05FD2A28421772D2C54C3F87C39F3C22491657F38965C9ECE02EA54983C5A92)"
+          R"(7BEAFA04C510335FAE37549EC6507F580D6A63A95D59C1D3AEA9EC6F3F18364DE)"
+          R"(FFA7D1A22E7E295B7EBD6DEC9B0E6E2075B1CB8476E000000'}})"));
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
@@ -7974,10 +8012,10 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
                  /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
-  absl::optional<std::string> result =
+  absl::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
-  EXPECT_EQ("", result.value());
+  EXPECT_EQ("", result.value().request);
 }
 
 }  // namespace content

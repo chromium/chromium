@@ -410,11 +410,12 @@ void InterestGroupManagerImpl::UpdateLastKAnonymityReported(
 }
 
 void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
-    url::Origin seller,
     url::Origin top_level_origin,
-    base::OnceCallback<void(std::vector<uint8_t>)> callback) {
+    base::Uuid generation_id,
+    base::OnceCallback<void(BiddingAndAuctionData)> callback) {
   AdAuctionDataLoaderState state;
   state.serializer.SetPublisher(top_level_origin.Serialize());
+  state.serializer.SetGenerationId(std::move(generation_id));
   state.callback = std::move(callback);
   GetAllInterestGroupOwners(base::BindOnce(
       &InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData,
@@ -444,7 +445,7 @@ void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
     std::vector<url::Origin> owners,
     url::Origin owner,
     std::vector<StorageInterestGroup> groups) {
-  state.serializer.AddGroups(owner.Serialize(), std::move(groups));
+  state.serializer.AddGroups(std::move(owner), std::move(groups));
   LoadNextInterestGroupAdAuctionData(std::move(state), std::move(owners));
 }
 

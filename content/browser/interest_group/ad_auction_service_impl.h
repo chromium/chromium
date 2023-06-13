@@ -18,6 +18,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
@@ -109,8 +110,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
         BiddingAndAuctionDataConstructionState&& other);
     ~BiddingAndAuctionDataConstructionState();
 
-    std::vector<uint8_t> plaintext;  // unencrypted auction request blob
-    base::Uuid uuid;                 // request ID
+    BiddingAndAuctionData data;
+    base::Uuid request_id;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 
@@ -156,7 +157,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           private_aggregation_requests);
 
   void OnGotAuctionData(BiddingAndAuctionDataConstructionState state,
-                        std::vector<uint8_t> plaintext);
+                        BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
       BiddingAndAuctionDataConstructionState state,
       absl::optional<BiddingAndAuctionServerKey> key);

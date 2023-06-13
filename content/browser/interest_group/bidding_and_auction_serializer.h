@@ -8,27 +8,44 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/common/content_export.h"
 
 namespace content {
+
+struct CONTENT_EXPORT BiddingAndAuctionData {
+  BiddingAndAuctionData();
+  BiddingAndAuctionData(BiddingAndAuctionData&& other);
+  ~BiddingAndAuctionData();
+
+  BiddingAndAuctionData& operator=(BiddingAndAuctionData&& other);
+
+  std::vector<uint8_t> request;
+  base::flat_map<url::Origin, std::vector<std::string>> group_names;
+};
 
 // Serializes Bidding and Auction requests
 class BiddingAndAuctionSerializer {
  public:
   BiddingAndAuctionSerializer();
-  BiddingAndAuctionSerializer(BiddingAndAuctionSerializer&& state);
+  BiddingAndAuctionSerializer(BiddingAndAuctionSerializer&& other);
   ~BiddingAndAuctionSerializer();
 
   void SetPublisher(std::string publisher) { publisher_ = publisher; }
-  // TODO(behamilton): void SetGenerationId(std::string generation_id);
-  void AddGroups(std::string owner, std::vector<StorageInterestGroup> groups);
-  std::vector<uint8_t> Build();
+  void SetGenerationId(base::Uuid generation_id) {
+    generation_id_ = generation_id;
+  }
+  void AddGroups(url::Origin owner, std::vector<StorageInterestGroup> groups);
+  BiddingAndAuctionData Build();
 
  private:
+  base::Uuid generation_id_;
   base::Time start_time_;
   std::string publisher_;
-  std::vector<std::pair<std::string, std::vector<StorageInterestGroup>>>
+  std::vector<std::pair<url::Origin, std::vector<StorageInterestGroup>>>
       accumulated_groups_;
 };
 

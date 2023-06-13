@@ -317,9 +317,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void UpdateLastKAnonymityReported(const std::string& key);
 
   void GetInterestGroupAdAuctionData(
-      url::Origin seller,
       url::Origin top_level_origin,
-      base::OnceCallback<void(std::vector<uint8_t>)> callback);
+      base::Uuid generation_id,
+      base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
@@ -359,7 +359,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     ~AdAuctionDataLoaderState();
     AdAuctionDataLoaderState(AdAuctionDataLoaderState&& state);
     BiddingAndAuctionSerializer serializer;
-    base::OnceCallback<void(std::vector<uint8_t>)> callback;
+    base::OnceCallback<void(BiddingAndAuctionData)> callback;
   };
 
   // Callbacks for CheckPermissionsAndJoinInterestGroup() and
