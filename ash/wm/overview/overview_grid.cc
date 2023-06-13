@@ -2276,7 +2276,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
   // |high_height|. Once this optimal height is known, |height_fixed| is set to
   // true and the rows are balanced by repeatedly squeezing the widest row to
   // cause windows to overflow to the subsequent rows.
-  int low_height = kSpaceBetweenItemsDp;
+  int low_height = kVerticalSpaceBetweenItemsDp;
   int high_height = std::max(low_height, total_bounds.height() + 1);
   int height = 0.5 * (low_height + high_height);
   bool height_fixed = false;
@@ -2396,7 +2396,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
   // |window_position| remains where the item was as to then reposition the
   // other window's bounds in place of that item.
   const int height = (total_bounds.height() -
-                      ((kTabletLayoutRow - 1) * kSpaceBetweenItemsDp)) /
+                      ((kTabletLayoutRow - 1) * kVerticalSpaceBetweenItemsDp)) /
                      kTabletLayoutRow;
   int window_position = 0;
   std::vector<gfx::RectF> rects;
@@ -2409,16 +2409,16 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
 
     // Calculate the width and y position of the item.
     const int width = CalculateWidthAndMaybeSetUnclippedBounds(item, height);
-    const int y =
-        (height + kSpaceBetweenItemsDp) * (window_position % kTabletLayoutRow) +
-        total_bounds.y();
+    const int y = (height + kVerticalSpaceBetweenItemsDp) *
+                      (window_position % kTabletLayoutRow) +
+                  total_bounds.y();
 
     // Use the right bounds of the item next to in the row as the x position, if
     // that item exists.
     const int x = right_edge_map.contains(y)
                       ? right_edge_map[y]
                       : total_bounds.x() + scroll_offset_;
-    right_edge_map[y] = x + width + kSpaceBetweenItemsDp;
+    right_edge_map[y] = x + width + kHorizontalSpaceBetweenItemsDp;
     DCHECK_LE(static_cast<int>(right_edge_map.size()), kTabletLayoutRow);
 
     const gfx::RectF bounds(x, y, width, height);
@@ -2461,18 +2461,19 @@ bool OverviewGrid::FitWindowRectsInBounds(
     int width =
         CalculateWidthAndMaybeSetUnclippedBounds(window_list_[i].get(), height);
 
-    if ((left + width + kSpaceBetweenItemsDp) > bounds.right()) {
+    if ((left + width + kHorizontalSpaceBetweenItemsDp) > bounds.right()) {
       // Move to the next row if possible.
       if (*out_min_right > left)
         *out_min_right = left;
       if (*out_max_right < left)
         *out_max_right = left;
-      top += (height + kSpaceBetweenItemsDp);
+      top += (height + kVerticalSpaceBetweenItemsDp);
 
       // Check if the new row reaches the bottom or if the first item in the new
       // row does not fit within the available width.
-      if ((top + height + kSpaceBetweenItemsDp) > bounds.bottom() ||
-          bounds.x() + width + kSpaceBetweenItemsDp > bounds.right()) {
+      if ((top + height + kVerticalSpaceBetweenItemsDp) > bounds.bottom() ||
+          bounds.x() + width + kHorizontalSpaceBetweenItemsDp >
+              bounds.right()) {
         return false;
       }
       left = bounds.x();
@@ -2482,7 +2483,7 @@ bool OverviewGrid::FitWindowRectsInBounds(
     (*out_rects)[i] = gfx::RectF(left, top, width, height);
 
     // Increment horizontal position using sanitized positive `width`.
-    left += (width + kSpaceBetweenItemsDp);
+    left += (width + kHorizontalSpaceBetweenItemsDp);
 
     *out_max_bottom = top + height;
   }

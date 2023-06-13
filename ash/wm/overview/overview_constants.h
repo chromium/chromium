@@ -19,9 +19,12 @@ constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 constexpr base::TimeDelta kWindowRestoreDurationCrOSNext =
     base::Milliseconds(350);
 
-// In the conceptual overview table, the space between two adjacent items
-// horizontally and vertically.
-constexpr int kSpaceBetweenItemsDp = 10;
+// In the conceptual overview table, the horizontal space between two adjacent
+// items.
+constexpr int kHorizontalSpaceBetweenItemsDp = 10;
+
+// The vertical space between two adjacent items.
+constexpr int kVerticalSpaceBetweenItemsDp = 15;
 
 // The amount we want to enlarge the dragged overview window.
 constexpr int kDraggingEnlargeDp = 10;
