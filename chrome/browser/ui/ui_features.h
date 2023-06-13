@@ -39,6 +39,10 @@ BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 BASE_DECLARE_FEATURE(kAccessCodeCastUI);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kCameraMicPreview);
+#endif
+
 BASE_DECLARE_FEATURE(kDisplayOpenLinkAsProfile);
 
 BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
