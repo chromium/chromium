@@ -17,7 +17,8 @@ GridItems NGGridNode::ConstructGridItems(
     const NGGridPlacementData& placement_data,
     HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
-  return ConstructGridItems(placement_data, Style(),
+  return ConstructGridItems(placement_data, /* root_grid_style */ Style(),
+                            /* parent_grid_style */ Style(),
                             placement_data.HasStandaloneAxis(kForColumns),
                             placement_data.HasStandaloneAxis(kForRows),
                             oof_children, has_nested_subgrid);
@@ -26,6 +27,7 @@ GridItems NGGridNode::ConstructGridItems(
 GridItems NGGridNode::ConstructGridItems(
     const NGGridPlacementData& placement_data,
     const ComputedStyle& root_grid_style,
+    const ComputedStyle& parent_grid_style,
     bool must_consider_grid_items_for_column_sizing,
     bool must_consider_grid_items_for_row_sizing,
     HeapVector<Member<LayoutBox>>* oof_children,
@@ -65,6 +67,7 @@ GridItems NGGridNode::ConstructGridItems(
 
       auto grid_item = std::make_unique<GridItemData>(
           To<NGBlockNode>(child), root_grid_style,
+          parent_grid_style.GetFontBaseline(),
           must_consider_grid_items_for_column_sizing,
           must_consider_grid_items_for_row_sizing);
 
@@ -121,7 +124,7 @@ void NGGridNode::AppendSubgriddedItems(GridItems* grid_items) const {
     const auto subgrid = To<NGGridNode>(current_item.node);
 
     auto subgridded_items = subgrid.ConstructGridItems(
-        subgrid.CachedPlacementData(), root_grid_style,
+        subgrid.CachedPlacementData(), root_grid_style, subgrid.Style(),
         current_item.must_consider_grid_items_for_column_sizing,
         current_item.must_consider_grid_items_for_row_sizing);
 

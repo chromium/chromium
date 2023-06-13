@@ -122,6 +122,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
 GridItemData::GridItemData(
     NGBlockNode node,
     const ComputedStyle& root_grid_style,
+    FontBaseline parent_grid_font_baseline,
     bool parent_must_consider_grid_items_for_column_sizing,
     bool parent_must_consider_grid_items_for_row_sizing)
     : node(node),
@@ -132,7 +133,8 @@ GridItemData::GridItemData(
       is_sizing_dependent_on_block_size(false),
       is_subgridded_to_parent_grid(false),
       must_consider_grid_items_for_column_sizing(false),
-      must_consider_grid_items_for_row_sizing(false) {
+      must_consider_grid_items_for_row_sizing(false),
+      parent_grid_font_baseline(parent_grid_font_baseline) {
   const auto& style = node.Style();
 
   const bool is_replaced = node.IsReplaced();
@@ -198,7 +200,7 @@ GridItemData::GridItemData(
   // The `false, true, false, true` parameters get the converter to calculate
   // whether the subgrids and its root grid are opposite direction in all cases.
   const LogicalToLogical<bool> direction_converter(
-      style.GetWritingDirection(), root_grid_style.GetWritingDirection(),
+      style.GetWritingDirection(), root_grid_writing_direction,
       /* inline_start */ false, /* inline_end */ true,
       /* block_start */ false, /* block_end */ true);
 

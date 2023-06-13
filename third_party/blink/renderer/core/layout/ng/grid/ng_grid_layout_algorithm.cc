@@ -1021,28 +1021,32 @@ LayoutUnit GetExtraMarginForBaseline(
               : margins.block_start);
 }
 
-}  // namespace
+LayoutUnit GetLogicalBaseline(const GridItemData& grid_item,
+                              const NGBoxFragment& baseline_fragment,
+                              GridTrackSizingDirection track_direction) {
+  const auto font_baseline = grid_item.parent_grid_font_baseline;
 
-LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
-    const NGBoxFragment& baseline_fragment,
-    const bool is_last_baseline) const {
-  const auto font_baseline = Style().GetFontBaseline();
-  return is_last_baseline
+  return grid_item.IsLastBaselineSpecified(track_direction)
              ? baseline_fragment.BlockSize() -
                    baseline_fragment.LastBaselineOrSynthesize(font_baseline)
              : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
 }
 
-LayoutUnit NGGridLayoutAlgorithm::GetSynthesizedLogicalBaseline(
-    const LayoutUnit block_size,
-    const bool is_flipped_lines,
-    const bool is_last_baseline) const {
-  const auto font_baseline = Style().GetFontBaseline();
+LayoutUnit GetSynthesizedLogicalBaseline(
+    const GridItemData& grid_item,
+    LayoutUnit block_size,
+    GridTrackSizingDirection track_direction) {
   const auto synthesized_baseline = NGBoxFragment::SynthesizedBaseline(
-      font_baseline, is_flipped_lines, block_size);
-  return is_last_baseline ? block_size - synthesized_baseline
-                          : synthesized_baseline;
+      grid_item.parent_grid_font_baseline,
+      grid_item.BaselineWritingDirection(track_direction).IsFlippedLines(),
+      block_size);
+
+  return grid_item.IsLastBaselineSpecified(track_direction)
+             ? block_size - synthesized_baseline
+             : synthesized_baseline;
 }
+
+}  // namespace
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     const NGGridSizingSubtree& sizing_subtree,
@@ -1139,9 +1143,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
     if (grid_item->IsBaselineAligned(track_direction)) {
       CalculateBaselineShim(GetSynthesizedLogicalBaseline(
-          content_size,
-          grid_item->BaselineWritingDirection(track_direction).IsFlippedLines(),
-          grid_item->IsLastBaselineSpecified(track_direction)));
+          *grid_item, content_size, track_direction));
     }
     return content_size + baseline_shim;
   };
@@ -1191,9 +1193,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
     if (grid_item->IsBaselineAligned(track_direction)) {
-      CalculateBaselineShim(GetLogicalBaseline(
-          baseline_fragment,
-          grid_item->IsLastBaselineSpecified(track_direction)));
+      CalculateBaselineShim(
+          GetLogicalBaseline(*grid_item, baseline_fragment, track_direction));
     }
     return baseline_fragment.BlockSize() + baseline_shim;
   };
@@ -1587,10 +1588,9 @@ void NGGridLayoutAlgorithm::ComputeGridItemBaselines(
         ComputeMarginsFor(space, item_style, baseline_writing_direction),
         subgridded_item, track_direction, writing_mode);
 
-    const bool is_last_baseline =
-        grid_item.IsLastBaselineSpecified(track_direction);
     const LayoutUnit baseline =
-        extra_margin + GetLogicalBaseline(baseline_fragment, is_last_baseline);
+        extra_margin +
+        GetLogicalBaseline(grid_item, baseline_fragment, track_direction);
 
     // "If a box spans multiple shared alignment contexts, then it participates
     //  in first/last baseline alignment within its start-most/end-most shared
@@ -3505,9 +3505,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
       // and its track baseline.
       const LayoutUnit baseline_delta =
           Baseline(layout_data, grid_item, track_direction) -
-          GetLogicalBaseline(
-              baseline_fragment,
-              grid_item.IsLastBaselineSpecified(track_direction));
+          GetLogicalBaseline(grid_item, baseline_fragment, track_direction);
       if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
         return baseline_delta;
 
@@ -4050,7 +4048,8 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     DCHECK(child.IsOutOfFlowPositioned());
 
     absl::optional<LogicalRect> containing_block_rect;
-    GridItemData out_of_flow_item(child, container_style);
+    GridItemData out_of_flow_item(child, container_style,
+                                  container_style.GetFontBaseline());
 
     // TODO(layout-dev): If the below ends up being removed (as a result of
     // [1]), we could likely implement some of the same optimizations as OOFs in

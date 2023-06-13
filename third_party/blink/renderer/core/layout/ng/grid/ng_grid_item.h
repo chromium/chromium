@@ -34,6 +34,7 @@ struct CORE_EXPORT GridItemData {
 
   GridItemData(NGBlockNode node,
                const ComputedStyle& root_grid_style,
+               FontBaseline parent_grid_font_baseline,
                bool parent_must_consider_grid_items_for_column_sizing = false,
                bool parent_must_consider_grid_items_for_row_sizing = false);
 
@@ -232,6 +233,8 @@ struct CORE_EXPORT GridItemData {
   bool is_opposite_direction_in_root_grid_rows : 1;
   bool must_consider_grid_items_for_column_sizing : 1;
   bool must_consider_grid_items_for_row_sizing : 1;
+
+  FontBaseline parent_grid_font_baseline;
 
   AxisEdge inline_axis_alignment;
   AxisEdge block_axis_alignment;

@@ -18,8 +18,6 @@
 
 namespace blink {
 
-class NGBoxFragment;
-
 // This enum corresponds to each step used to accommodate grid items across
 // intrinsic tracks according to their min and max track sizing functions, as
 // defined in https://drafts.csswg.org/css-grid-2/#algo-spanning-items.
@@ -87,12 +85,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                            LayoutUnit* intrinsic_block_size);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
-
-  LayoutUnit GetLogicalBaseline(const NGBoxFragment&,
-                                const bool is_last_baseline) const;
-  LayoutUnit GetSynthesizedLogicalBaseline(const LayoutUnit block_size,
-                                           const bool is_flipped_lines,
-                                           const bool is_last_baseline) const;
 
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.
