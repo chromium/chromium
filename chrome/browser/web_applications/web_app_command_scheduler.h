@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -211,11 +212,18 @@ class WebAppCommandScheduler {
                        OnceInstallCallback callback,
                        const base::Location& location = FROM_HERE);
 
-  // Schedules a command that uninstalls a web app.
+  // Schedules a command that, if `external_install_source` is set, removes the
+  // install source from a web app, otherwise uninstalls the web app. If the
+  // last install source of a web app is removed the web app will be
+  // uninstalled. If the uninstalled web app has sub apps their parent install
+  // source will be removed, uninstalling them too if they no longer have any
+  // install sources, this process will repeat as many times as needed.
+  // TODO(crbug.com/1427340): Expose this as separate RemoveInstallUrl(),
+  // RemoveInstallSource() and UninstallWebApp() methods.
   void Uninstall(const AppId& app_id,
                  absl::optional<WebAppManagement::Type> external_install_source,
                  webapps::WebappUninstallSource uninstall_source,
-                 WebAppInstallFinalizer::UninstallWebAppCallback callback,
+                 UninstallJob::Callback callback,
                  const base::Location& location = FROM_HERE);
 
   // Schedules a command that updates run on os login to provided `login_mode`

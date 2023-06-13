@@ -512,7 +512,7 @@ void WebAppSyncBridge::OnWebAppUninstallComplete(
     const AppId& app,
     webapps::UninstallResultCode code) {
   base::UmaHistogramBoolean("Webapp.SyncInitiatedUninstallResult",
-                            code == webapps::UninstallResultCode::kSuccess);
+                            UninstallSucceeded(code));
 }
 
 void WebAppSyncBridge::ReportErrorToChangeProcessor(

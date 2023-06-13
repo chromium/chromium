@@ -120,17 +120,12 @@ AppId InstallWebApp(Profile* profile,
 
 void UninstallWebApp(Profile* profile, const AppId& app_id) {
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile);
-  base::RunLoop run_loop;
-
+  base::test::TestFuture<webapps::UninstallResultCode> future;
   DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        run_loop.Quit();
-      }));
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
 
-  run_loop.Run();
   // Allow updates to be published to App Service listeners.
   base::RunLoop().RunUntilIdle();
 }

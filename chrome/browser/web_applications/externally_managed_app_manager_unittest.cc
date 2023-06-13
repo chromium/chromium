@@ -501,6 +501,113 @@ TEST_F(ExternallyAppManagerTest, TwoInstallUrlsSameApp) {
                       /*additional_policy_ids=*/{}))));
 }
 
+TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kInstallUrl1 =
+      GURL("https://www.example.com/nested/install_url.html");
+  const GURL kInstallUrl2 =
+      GURL("https://www.example.com/nested/install_url2.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  AppId app_id = PopulateBasicInstallPageWithManifest(kInstallUrl1,
+                                                      kManifestUrl, kStartUrl);
+  AppId app_id2 = PopulateBasicInstallPageWithManifest(kInstallUrl2,
+                                                       kManifestUrl, kStartUrl);
+  EXPECT_EQ(app_id, app_id2);
+
+  // Synchronize with 2 install URLs.
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl1, kInstallUrl2},
+            ExternalInstallSource::kExternalPolicy),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+
+    // Empty uninstall results.
+    EXPECT_THAT(result.Get<UninstallResults>(), IsEmpty());
+
+    // Installs should have both succeeded.
+    EXPECT_THAT(
+        result.Get<InstallResults>(),
+        UnorderedElementsAre(
+            std::make_pair(
+                kInstallUrl1,
+                ExternallyManagedAppManager::InstallResult(
+                    webapps::InstallResultCode::kSuccessNewInstall, app_id)),
+            std::make_pair(
+                kInstallUrl2,
+                ExternallyManagedAppManager::InstallResult(
+                    webapps::InstallResultCode::kSuccessNewInstall, app_id))));
+
+    EXPECT_EQ(app_registrar().GetAppIds().size(), 1ul);
+    const WebApp* app = app_registrar().GetAppById(app_id);
+    ASSERT_TRUE(app);
+    EXPECT_THAT(app->management_to_external_config_map(),
+                ElementsAre(std::make_pair(
+                    WebAppManagement::kPolicy,
+                    WebApp::ExternalManagementConfig(
+                        /*is_placeholder=*/false,
+                        /*install_urls=*/{kInstallUrl1, kInstallUrl2},
+                        /*additional_policy_ids=*/{}))));
+  }
+
+  // Synchronize with 1 install URL.
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl1}, ExternalInstallSource::kExternalPolicy),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+
+    // Empty install results.
+    EXPECT_THAT(result.Get<InstallResults>(),
+                UnorderedElementsAre(std::make_pair(
+                    kInstallUrl1,
+                    ExternallyManagedAppManager::InstallResult(
+                        webapps::InstallResultCode::kSuccessAlreadyInstalled,
+                        app_id))));
+
+    // One install URL uninstalled.
+    EXPECT_THAT(result.Get<UninstallResults>(),
+                UnorderedElementsAre(std::make_pair(kInstallUrl2, true)));
+
+    EXPECT_EQ(app_registrar().GetAppIds().size(), 1ul);
+    const WebApp* app = app_registrar().GetAppById(app_id);
+    ASSERT_TRUE(app);
+    EXPECT_THAT(app->management_to_external_config_map(),
+                ElementsAre(std::make_pair(WebAppManagement::kPolicy,
+                                           WebApp::ExternalManagementConfig(
+                                               /*is_placeholder=*/false,
+                                               /*install_urls=*/{kInstallUrl1},
+                                               /*additional_policy_ids=*/{}))));
+  }
+
+  // Synchronize with 0 install URLs.
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {}, ExternalInstallSource::kExternalPolicy),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+
+    // Empty install results.
+    EXPECT_THAT(result.Get<InstallResults>(), IsEmpty());
+
+    // One install URL uninstalled.
+    EXPECT_THAT(result.Get<UninstallResults>(),
+                UnorderedElementsAre(std::make_pair(kInstallUrl1, true)));
+
+    // App should be cleaned up.
+    EXPECT_EQ(app_registrar().GetAppIds().size(), 0ul);
+    const WebApp* app = app_registrar().GetAppById(app_id);
+    ASSERT_FALSE(app);
+  }
+}
+
 TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
   const GURL kStartUrl = GURL("https://www.example.com/index.html");
   const GURL kInstallUrl =

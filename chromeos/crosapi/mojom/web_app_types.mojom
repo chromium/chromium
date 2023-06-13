@@ -48,7 +48,8 @@ enum WebAppUninstallResultCode {
   kSuccess,
   kNoAppToUninstall,
   kCancelled,
-  kError,
+  [Default] kError,
+  [MinVersion=1] kShutdown,
 };
 
 // A subset of |WebAppInstallInfo| necessary to install a web app originated in

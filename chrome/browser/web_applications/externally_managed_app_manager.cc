@@ -174,8 +174,7 @@ void ExternallyManagedAppManager::UninstallApps(
         base::BindOnce(
             [](const UninstallCallback& callback, const GURL& app_url,
                webapps::UninstallResultCode code) {
-              callback.Run(app_url,
-                           code == webapps::UninstallResultCode::kSuccess);
+              callback.Run(app_url, UninstallSucceeded(code));
             },
             callback, url));
   }

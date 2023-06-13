@@ -7,24 +7,13 @@
 
 #include <memory>
 
-#include "base/containers/circular_deque.h"
-#include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/uninstall_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class Profile;
+#include "chrome/browser/web_applications/uninstall/uninstall_job.h"
 
 namespace webapps {
 enum class UninstallResultCode;
-enum class WebappUninstallSource;
 }  // namespace webapps
 
 namespace web_app {
@@ -32,45 +21,13 @@ namespace web_app {
 class AllAppsLock;
 class AllAppsLockDescription;
 class LockDescription;
-class RemoveWebAppJob;
 
-// This command is used to uninstall a web_app. Once started, this command will:
-// 1. Start maintaining a queue of all app_ids that need to be uninstalled.
-// 2. For each app_id:
-//     a. If an app was triggered by an external install source (like policy,
-//     default or system) and was installed by multiple sources, it will
-//     remove the source that triggered the uninstallation. Sometimes doing so
-//     might change the behavior of an app from being user uninstallable to not
-//     being user uninstallable in which case, OS integration for user
-//     uninstallation is unregistered.
-//     b. If an app uninstallation was triggered by any other source and if the
-//     app was a default app, the app_id is stored in the
-//     UserUninstalledPreinstalledWebAppPrefs so that the
-//     ExternallyManagedAppManager does not auto synchronize and reinstall the
-//     default app on next step. See
-//     `ExternallyManagedAppManager::SynchronizeInstalledApps()` for more info.
-//     c. If the app being uninstalled is a parent app with multiple sub apps,
-//     all sub app IDs are queued onto the overall uninstallation queue.
-// 3. For all other use-cases, a RemoveWebAppJob is initialized and kicked
-//    off per app_id. The job is owned by the command, and the command keeps
-//    track of all currently running jobs.
-// 4. The command ends only when both of the conditions below are successful:
-//    a. All running RemoveWebAppJobs have been completed.
-//    b. The queue that was keeping track of app_ids that needed to be
-//    uninstalled is empty.
+// This command acquires the AllAppsLock needed by three uninstall related jobs:
+// `RemoveInstallUrlJob`, `RemoveInstallSourceJob`, and `RemoveWebAppJob`.
 class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
  public:
-  using UninstallWebAppCallback =
-      base::OnceCallback<void(webapps::UninstallResultCode)>;
-  using RemoveManagementTypeCallback =
-      base::RepeatingCallback<void(const AppId& app_id)>;
-
-  WebAppUninstallCommand(
-      const AppId& app_id,
-      absl::optional<WebAppManagement::Type> management_type_or_all,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallWebAppCallback callback,
-      Profile& profile);
+  WebAppUninstallCommand(std::unique_ptr<UninstallJob> job,
+                         UninstallJob::Callback callback);
   ~WebAppUninstallCommand() override;
 
   // WebAppCommandTemplate<AllAppsLock>:
@@ -80,53 +37,13 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
   base::Value ToDebugValue() const override;
 
  private:
-  // Used to store information needed for uninstalling an app with app_id.
-  struct UninstallInfo {
-    UninstallInfo(AppId app_id,
-                  absl::optional<WebAppManagement::Type> management_type_or_all,
-                  webapps::WebappUninstallSource uninstall_source);
-    ~UninstallInfo();
-    UninstallInfo(const UninstallInfo& uninstall_info);
-    UninstallInfo(UninstallInfo&& uninstall_info);
-    UninstallInfo& operator=(const UninstallInfo& uninstall_info) = delete;
-    UninstallInfo& operator=(UninstallInfo&& uninstall_info) = delete;
-
-    AppId app_id;
-    absl::optional<WebAppManagement::Type> management_type_or_all;
-    webapps::WebappUninstallSource uninstall_source;
-  };
-
-  void AppendUninstallInfoToDebugLog(const UninstallInfo& uninstall_info);
-  void AppendUninstallResultsToDebugLog(const AppId& app_id);
-  void Abort(webapps::UninstallResultCode code);
-  void Uninstall(const AppId& app_id,
-                 webapps::WebappUninstallSource uninstall_source);
-  void QueueSubAppsForUninstallIfAny(const AppId& app_id);
-  void RemoveManagementTypeAfterOsUninstallRegistration(
-      const AppId& app_id,
-      const WebAppManagement::Type& install_source,
-      webapps::WebappUninstallSource uninstall_source,
-      OsHooksErrors os_hooks_errors);
-  void OnSingleUninstallComplete(const AppId& app_id,
-                                 webapps::WebappUninstallSource source,
-                                 bool success);
-  void MaybeFinishUninstallAndDestruct();
+  void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
 
   std::unique_ptr<AllAppsLockDescription> lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
 
-  const AppId app_id_;
-  base::circular_deque<UninstallInfo> queued_uninstalls_;
-  base::flat_map<AppId, webapps::UninstallResultCode> uninstall_results_;
-  base::flat_map<AppId, std::unique_ptr<RemoveWebAppJob>>
-      apps_pending_uninstall_;
-  base::Value::Dict debug_log_;
-  bool all_uninstalled_queued_ = false;
-
-  UninstallWebAppCallback callback_;
-
-  // `this` is owned by `profile_`.
-  raw_ref<Profile> profile_;
+  std::unique_ptr<UninstallJob> job_;
+  UninstallJob::Callback callback_;
 
   base::WeakPtrFactory<WebAppUninstallCommand> weak_factory_{this};
 };
