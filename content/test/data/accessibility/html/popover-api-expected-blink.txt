@@ -10,6 +10,9 @@ rootWebArea
 ++++++++genericContainer ignored invisible
 ++++++++++staticText ignored invisible name='Listbox role on ul'
 ++++++details ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++disclosureTriangle ignored invisible
+++++++++++++staticText ignored invisible name='summary/details popover'
 ++++++button collapsed name='Button pointing to hidden popover'
 ++++++++staticText name='Button pointing to hidden popover'
 ++++++++++inlineTextBox name='Button pointing to hidden popover'
