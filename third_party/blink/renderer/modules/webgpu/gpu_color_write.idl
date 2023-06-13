@@ -9,9 +9,9 @@ typedef [EnforceRange] unsigned long GPUColorWriteFlags;
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] namespace GPUColorWrite {
-    const unsigned long RED = 1;
-    const unsigned long GREEN = 2;
-    const unsigned long BLUE = 4;
-    const unsigned long ALPHA = 8;
-    const unsigned long ALL = 15;
+    const GPUFlagsConstant RED = 1;
+    const GPUFlagsConstant GREEN = 2;
+    const GPUFlagsConstant BLUE = 4;
+    const GPUFlagsConstant ALPHA = 8;
+    const GPUFlagsConstant ALL = 15;
 };

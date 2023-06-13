@@ -9,14 +9,14 @@ typedef [EnforceRange] unsigned long GPUBufferUsageFlags;
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] namespace GPUBufferUsage {
-    const unsigned long MAP_READ = 1;
-    const unsigned long MAP_WRITE = 2;
-    const unsigned long COPY_SRC = 4;
-    const unsigned long COPY_DST = 8;
-    const unsigned long INDEX = 16;
-    const unsigned long VERTEX = 32;
-    const unsigned long UNIFORM = 64;
-    const unsigned long STORAGE = 128;
-    const unsigned long INDIRECT = 256;
-    const unsigned long QUERY_RESOLVE = 512;
+    const GPUFlagsConstant MAP_READ = 1;
+    const GPUFlagsConstant MAP_WRITE = 2;
+    const GPUFlagsConstant COPY_SRC = 4;
+    const GPUFlagsConstant COPY_DST = 8;
+    const GPUFlagsConstant INDEX = 16;
+    const GPUFlagsConstant VERTEX = 32;
+    const GPUFlagsConstant UNIFORM = 64;
+    const GPUFlagsConstant STORAGE = 128;
+    const GPUFlagsConstant INDIRECT = 256;
+    const GPUFlagsConstant QUERY_RESOLVE = 512;
 };

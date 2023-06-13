@@ -21,7 +21,7 @@ typedef unsigned long long GPUSize64Out;
     [CallWith=Isolate] void destroy();
 
     readonly attribute GPUSize64Out size;
-    readonly attribute GPUBufferUsageFlags usage;
+    readonly attribute GPUFlagsConstant usage;
     readonly attribute GPUBufferMapState mapState;
 };
 GPUBuffer includes GPUObjectBase;

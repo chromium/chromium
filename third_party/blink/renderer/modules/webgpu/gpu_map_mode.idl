@@ -9,6 +9,6 @@ typedef [EnforceRange] unsigned long GPUMapModeFlags;
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] namespace GPUMapMode {
-    const unsigned long READ  = 0x0001;
-    const unsigned long WRITE = 0x0002;
+    const GPUFlagsConstant READ  = 0x0001;
+    const GPUFlagsConstant WRITE = 0x0002;
 };
