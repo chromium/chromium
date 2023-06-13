@@ -1690,7 +1690,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1148544")
     public void closeButton_closesActivityIfNoLandingPage() throws TimeoutException {
         Context context = InstrumentationRegistry.getInstrumentation()
                 .getTargetContext()
