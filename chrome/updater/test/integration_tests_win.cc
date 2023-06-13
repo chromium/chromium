@@ -1877,10 +1877,12 @@ void RunOfflineInstall(UpdaterScope scope,
   }
 
   // Updater should have written "pv".
-  EXPECT_EQ(base::MakeRefCounted<PersistedData>(
-                scope, CreateGlobalPrefs(scope)->GetPrefService())
-                ->GetProductVersion(base::WideToASCII(kTestAppID)),
-            kTestPV);
+  const base::Version pv =
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService())
+          ->GetProductVersion(base::WideToASCII(kTestAppID));
+  ASSERT_TRUE(pv.IsValid());
+  EXPECT_EQ(pv, kTestPV);
 
   // App installer should have created the expected reg value.
   base::win::RegKey key;
