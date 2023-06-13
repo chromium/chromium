@@ -121,6 +121,77 @@ void LoadTestPopUpExtension(Profile* profile) {
       test_extension_dir.UnpackedPath());
 }
 
+void TestDraggableRegions(BrowserView* browser_view,
+                          gfx::Point& draggable_point,
+                          gfx::Point& non_draggable_point,
+                          gfx::Point& border_point,
+                          bool is_isolated_web_app) {
+  views::NonClientFrameView* frame_view =
+      browser_view->GetWidget()->non_client_view()->frame_view();
+
+  views::View::ConvertPointToTarget(browser_view->contents_web_view(),
+                                    frame_view, &draggable_point);
+  views::View::ConvertPointToTarget(browser_view->contents_web_view(),
+                                    frame_view, &non_draggable_point);
+
+  // Wait for draggable regions value to update. This is to avoid flakiness
+  // crbug.com/1277860.
+  while (frame_view->NonClientHitTest(draggable_point) != HTCAPTION) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+  // Validate that a point marked "app-region: drag" is draggable.
+  EXPECT_EQ(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
+  EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), draggable_point));
+
+  // Validate that a point marked "app-region: no-drag" within a draggable
+  // region is not draggable.
+  EXPECT_EQ(frame_view->NonClientHitTest(non_draggable_point), HTCLIENT);
+  EXPECT_TRUE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), non_draggable_point));
+
+  // Validate that a point at the border that does not intersect with the
+  // overlays is not marked as draggable.
+  EXPECT_NE(frame_view->NonClientHitTest(border_point), HTCAPTION);
+  EXPECT_TRUE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), border_point));
+
+  // Validate that draggable region does not clear after history.replaceState is
+  // invoked.
+  std::string kHistoryReplaceState =
+      "history.replaceState({ test: 'test' }, null);";
+  EXPECT_TRUE(
+      ExecJs(browser_view->GetActiveWebContents(), kHistoryReplaceState));
+  EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), draggable_point));
+
+  // Isolated Web Apps do not support out-scope navigations.
+  if (is_isolated_web_app) {
+    return;
+  }
+
+  // Validate that the draggable region reset behaviour on navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_view->browser(),
+                                           GURL("http://example.test/")));
+
+  // Wait for draggable regions value to update. This is to avoid flakiness
+  // crbug.com/1277860.
+  while (frame_view->NonClientHitTest(draggable_point) == HTCAPTION) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+  EXPECT_NE(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
+  EXPECT_TRUE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), draggable_point));
+}
+
 }  // namespace
 
 class WebAppFrameToolbarBrowserTest
@@ -790,6 +861,20 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
   EXPECT_EQ(frame_view()->GetMinimumSize(), gfx::Size(1, 1));
 #endif
 }
+
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, DraggableRegions) {
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  GrantWindowManagementPermission();
+
+  // The draggable and non-draggable regions are defined in
+  // borderless_isolated_app/styles.css.
+  gfx::Point draggable_point(100, 100), non_draggable_point(106, 106),
+      border_point(100, 1);
+  TestDraggableRegions(browser_view(), draggable_point, non_draggable_point,
+                       border_point,
+                       /*is_isolated_web_app=*/true);
+}
+
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
 class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
@@ -1241,13 +1326,19 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(initial_height_value, updated_rect_list[3].GetInt());
 }
 
-// TODO(https://crbug.com/1277860): Flaky. Also enable for borderless mode when
-// fixed.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       DISABLED_WindowControlsOverlayDraggableRegions) {
+                       DraggableRegions) {
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
-  helper()->TestDraggableRegions();
+
+  // The draggable and non-draggable regions are defined in kTestHTML in
+  // `WebAppFrameToolbarTestHelper::
+  //  LoadWindowControlsOverlayTestPageWithDataAndGetURL`.
+  gfx::Point draggable_point(100, 100), non_draggable_point(106, 106),
+      border_point(100, 1);
+  TestDraggableRegions(helper()->browser_view(), draggable_point,
+                       non_draggable_point, border_point,
+                       /*is_isolated_web_app=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,

@@ -66,8 +66,6 @@ class WebAppFrameToolbarTestHelper {
   // Add window-controls-overlay's ongeometrychange callback into the document.
   void SetupGeometryChangeCallback(content::WebContents* web_contents);
 
-  void TestDraggableRegions();
-
   // Opens a new popup window from |app_browser_| by running
   // |window_open_script| and returns the |BrowserView| it opened in.
   BrowserView* OpenPopup(const std::string& window_open_script);
