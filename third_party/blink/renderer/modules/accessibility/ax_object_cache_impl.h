@@ -192,10 +192,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // changed.
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
-
-  void TextOffsetsChanged(const LayoutBlockFlow*) override;
-  void TextOffsetsChangedWithCleanLayout(Node*, AXObject*);
-
   void FocusableChangedWithCleanLayout(Element* element);
   void DocumentTitleChanged() override;
   // Called when a layout tree for a node has just been attached, so we can make

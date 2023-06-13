@@ -3565,10 +3565,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ShadowDomFirstChild) {
   RunHtmlTest(FILE_PATH_LITERAL("shadow-dom-first-child.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, WhitespaceDynamic) {
-  RunHtmlTest(FILE_PATH_LITERAL("whitespace-dynamic.html"));
-}
-
 //
 // AccName tests where having the full tree is desired.
 //

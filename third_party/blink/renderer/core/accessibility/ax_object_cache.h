@@ -54,7 +54,6 @@ class HTMLOptionElement;
 class HTMLTableElement;
 class HTMLFrameOwnerElement;
 class HTMLSelectElement;
-class LayoutBlockFlow;
 class LayoutRect;
 class LocalFrameView;
 class NGAbstractInlineTextBox;
@@ -116,8 +115,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Called by a node when text or a text equivalent (e.g. alt) attribute is
   // changed.
   virtual void TextChanged(const LayoutObject*) = 0;
-  // Called when the NGOffsetMapping is invalidated for the given object.
-  virtual void TextOffsetsChanged(const LayoutBlockFlow*) = 0;
   virtual void DocumentTitleChanged() = 0;
   // Called when a layout tree for a node has just been attached, so we can make
   // sure we have the right subclass of AXObject.

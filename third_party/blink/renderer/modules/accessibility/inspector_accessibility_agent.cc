@@ -1236,9 +1236,8 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
       AXObject* descendant = reachable.back();
       reachable.pop_back();
       DCHECK(descendant->AccessibilityIsIncludedInTree());
-      if (!MarkAXObjectDirty(descendant)) {
+      if (!MarkAXObjectDirty(descendant))
         continue;
-      }
       const AXObject::AXObjectVector& children =
           descendant->ChildrenIncludingIgnored();
       reachable.AppendRange(children.rbegin(), children.rend());

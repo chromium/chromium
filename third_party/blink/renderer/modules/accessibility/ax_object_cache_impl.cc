@@ -1552,18 +1552,6 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
     return;
 
   if (notify_parent && !has_been_disposed_) {
-    // Eagerly mark the cached parent's dirty bits (in addition to scheduling a
-    // children-changed notification to happen later, which is what calling
-    // ChildrenChangedOnAncestorOf() does). That way, if a different clean
-    // layout callback happens after Detach() is called but before,
-    // ChildrenChangedOnAncestorOf(), it won't accidentally walk into a detached
-    // subtree.
-    if (AXObject* parent = obj->CachedParentObject()) {
-      if (!parent->IsDetached()) {
-        parent->SetNeedsToUpdateChildren();
-      }
-    }
-
     ChildrenChangedOnAncestorOf(obj);
   }
 
@@ -2048,31 +2036,6 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
   }
 
   MarkAXObjectDirty(ax_object);
-}
-
-void AXObjectCacheImpl::TextOffsetsChanged(const LayoutBlockFlow* block_flow) {
-  if (AXObject* obj = Get(block_flow)) {
-    DeferTreeUpdate(&AXObjectCacheImpl::TextOffsetsChangedWithCleanLayout, obj);
-  }
-}
-
-void AXObjectCacheImpl::TextOffsetsChangedWithCleanLayout(Node*,
-                                                          AXObject* obj) {
-  DCHECK(obj);
-  if (obj->IsDetached()) {
-    return;
-  }
-#if DCHECK_IS_ON()
-  Document* document = obj->GetDocument();
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-
-  // Text changing for a block flow invalidates all of the
-  // text strings for children, such as via LayoutObject::GetName().
-  if (obj->AccessibilityIsIncludedInTree()) {
-    MarkAXSubtreeDirtyWithCleanLayout(obj);
-  }
 }
 
 void AXObjectCacheImpl::TextChanged(Node* node) {
