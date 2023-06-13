@@ -6,8 +6,11 @@
 
 #include <memory>
 
-#include "base/mac/scoped_nsobject.h"
 #import "ui/base/test/cocoa_helper.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // This class runs an animation for exactly two frames then end it.
 @interface ConstrainedWindowAnimationTestDelegate
@@ -25,8 +28,9 @@
 - (float)animation:(NSAnimation*)animation
     valueForProgress:(NSAnimationProgress)progress {
   ++_frameCount;
-  if (_frameCount >= 2)
-    [animation setDuration:0.0];
+  if (_frameCount >= 2) {
+    animation.duration = 0.0;
+  }
   return _frameCount == 1 ? 0.2 : 0.6;
 }
 
@@ -37,8 +41,8 @@
 - (void)runAnimation:(NSAnimation*)animation {
   // This class will end the animation after 2 frames. Set a large duration to
   // ensure that both frames are processed.
-  [animation setDuration:600];
-  [animation setDelegate:self];
+  animation.duration = 600;
+  animation.delegate = self;
   [animation startAnimation];
   EXPECT_EQ(2, _frameCount);
 }
@@ -47,30 +51,30 @@
 
 class ConstrainedWindowAnimationTest : public ui::CocoaTest {
  protected:
-  ConstrainedWindowAnimationTest() : CocoaTest() {
-    delegate_.reset([[ConstrainedWindowAnimationTestDelegate alloc] init]);
+  ConstrainedWindowAnimationTest() {
+    delegate_ = [[ConstrainedWindowAnimationTestDelegate alloc] init];
   }
 
-  base::scoped_nsobject<ConstrainedWindowAnimationTestDelegate> delegate_;
+  ConstrainedWindowAnimationTestDelegate* __strong delegate_;
 };
 
 // Test the show animation.
 TEST_F(ConstrainedWindowAnimationTest, Show) {
-  base::scoped_nsobject<NSAnimation> animation(
-      [[ConstrainedWindowAnimationShow alloc] initWithWindow:test_window()]);
+  NSAnimation* animation =
+      [[ConstrainedWindowAnimationShow alloc] initWithWindow:test_window()];
   [delegate_ runAnimation:animation];
 }
 
 // Test the hide animation.
 TEST_F(ConstrainedWindowAnimationTest, Hide) {
-  base::scoped_nsobject<NSAnimation> animation(
-      [[ConstrainedWindowAnimationHide alloc] initWithWindow:test_window()]);
+  NSAnimation* animation =
+      [[ConstrainedWindowAnimationHide alloc] initWithWindow:test_window()];
   [delegate_ runAnimation:animation];
 }
 
 // Test the pulse animation.
 TEST_F(ConstrainedWindowAnimationTest, Pulse) {
-  base::scoped_nsobject<NSAnimation> animation(
-      [[ConstrainedWindowAnimationPulse alloc] initWithWindow:test_window()]);
+  NSAnimation* animation =
+      [[ConstrainedWindowAnimationPulse alloc] initWithWindow:test_window()];
   [delegate_ runAnimation:animation];
 }

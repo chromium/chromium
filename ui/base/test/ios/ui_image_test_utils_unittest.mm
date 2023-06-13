@@ -6,8 +6,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ui {
-namespace test {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace ui::test {
 
 // Test the creation of UIImages.
 TEST(UIImageTestUtilsTest, TestImageCreation) {
@@ -51,5 +54,4 @@ TEST(UIImageTestUtilsTest, TestImageEquality) {
       uiimage_utils::UIImagesAreEqual(imageGreen10x10, imageGreen10x10Bis));
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

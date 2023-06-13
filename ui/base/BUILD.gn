@@ -770,6 +770,8 @@ if (is_mac) {
     sources = [
       "test/cocoa_helper.h",
       "test/cocoa_helper.mm",
+      "test/view_tree_validator.h",
+      "test/view_tree_validator.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
@@ -824,7 +826,6 @@ static_library("test_support") {
       "test/scoped_preferred_scroller_style_mac.h",
       "test/scoped_preferred_scroller_style_mac.mm",
       "test/ui_controls_mac.mm",
-      "test/view_tree_validator.mm",
       "test/windowed_nsnotification_observer.h",
       "test/windowed_nsnotification_observer.mm",
     ]
@@ -847,7 +848,6 @@ static_library("test_support") {
       "test/test_dialog_model_host.h",
       "test/ui_controls.cc",
       "test/ui_controls.h",
-      "test/view_tree_validator.h",
     ]
   } else {
     sources += [
@@ -1115,6 +1115,10 @@ test("ui_base_unittests") {
 
   if (!is_android && !is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
+  }
+
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

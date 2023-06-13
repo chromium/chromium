@@ -9,12 +9,16 @@
 
 #include <ostream>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface NSEventForTesting : NSEvent
 @property(copy, nonatomic) NSString* characters;
@@ -37,15 +41,14 @@
 @end
 
 std::ostream& operator<<(std::ostream& out, NSObject* obj) {
-  return out << base::SysNSStringToUTF8([obj description]);
+  return out << base::SysNSStringToUTF8(obj.description);
 }
 
 std::ostream& operator<<(std::ostream& out, NSMenuItem* item) {
-  return out << "NSMenuItem " << base::SysNSStringToUTF8([item keyEquivalent]);
+  return out << "NSMenuItem " << base::SysNSStringToUTF8(item.keyEquivalent);
 }
 
-namespace ui {
-namespace cocoa {
+namespace ui::cocoa {
 namespace {
 
 NSEvent* KeyEvent(const NSUInteger modifierFlags,
@@ -65,11 +68,11 @@ NSEvent* KeyEvent(const NSUInteger modifierFlags,
 }
 
 NSMenuItem* MenuItem(NSString* equiv, NSUInteger mask = 0) {
-  NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
-                                                 action:NULL
-                                          keyEquivalent:@""] autorelease];
-  [item setKeyEquivalent:equiv];
-  [item setKeyEquivalentModifierMask:mask];
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
+                                                action:nil
+                                         keyEquivalent:@""];
+  item.keyEquivalent = equiv;
+  item.keyEquivalentModifierMask = mask;
   return item;
 }
 
@@ -97,12 +100,12 @@ void ExpectKeyFiresItemEq(bool expected_result,
   // Make sure that Cocoa does in fact agree with our expectations. However,
   // in some cases cocoa behaves weirdly (if you create e.g. a new event that
   // contains all fields of the event that you get when hitting cmd-a with a
-  // russion keyboard layout, the copy won't fire a menu item that has cmd-a as
+  // Russian keyboard layout, the copy won't fire a menu item that has cmd-a as
   // key equivalent, even though the original event would) and isn't a good
   // oracle function.
   if (compare_cocoa) {
-    base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"Menu!"]);
-    [menu setAutoenablesItems:NO];
+    NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Menu!"];
+    menu.autoenablesItems = NO;
     EXPECT_FALSE([menu performKeyEquivalent:key]);
     [menu addItem:item];
     EXPECT_EQ(expected_result, [menu performKeyEquivalent:key])
@@ -486,48 +489,48 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // raw characters, where "shift" should be handled correctly.
   key = KeyEvent(0x100108, @"t", @"\u3145", 17);
   ExpectKeyFiresItem(key, MenuItem(@"t", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
   ExpectKeyDoesntFireItem(key, MenuItem(@"T", NSEventModifierFlagCommand),
-                          /*compareCocoa=*/false);
+                          /*compare_cocoa=*/false);
 
   key = KeyEvent(0x12010a, @"t", @"\u3146", 17);
   ExpectKeyDoesntFireItem(key, MenuItem(@"t", NSEventModifierFlagCommand),
-                          /*compareCocoa=*/false);
+                          /*compare_cocoa=*/false);
   ExpectKeyFiresItem(key, MenuItem(@"T", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
 
   // On Czech layout, cmd + '+' should instead trigger cmd + '1'.
   key = KeyEvent(0x100108, @"1", @"+", 18);
   ExpectKeyFiresItem(key, MenuItem(@"1", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
 
   // On Vietnamese layout, cmd + '' [vkeycode = 18] should instead trigger cmd +
   // '1'. Ditto for other number keys.
   key = KeyEvent(0x100108, @"1", @"", 18);
   ExpectKeyFiresItem(key, MenuItem(@"1", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
   key = KeyEvent(0x100108, @"4", @"", 21);
   ExpectKeyFiresItem(key, MenuItem(@"4", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
 
   // On French AZERTY layout, cmd + '&' [vkeycode = 18] should instead trigger
   // cmd + '1'. Ditto for other number keys.
   key = KeyEvent(0x100108, @"&", @"&", 18);
   ExpectKeyFiresItem(key, MenuItem(@"1", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
   key = KeyEvent(0x100108, @"é", @"é", 19);
   ExpectKeyFiresItem(key, MenuItem(@"2", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
 
   // In Hebrew layout, make sure Cmd-q works.
   key = KeyEvent(0x100110, @"q", @"/", 12);
   ExpectKeyDoesntFireItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
-                          /*compareCocoa=*/false);
+                          /*compare_cocoa=*/false);
 
   SetIsInputSourceCommandHebrewForTesting(true);
 
   ExpectKeyFiresItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
 
   SetIsInputSourceCommandHebrewForTesting(false);
 }
@@ -550,7 +553,7 @@ TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
   // the string to lower case.
   [base::mac::ObjCCastStrict<NSEventForTesting>(cmdWWithCapsLock)
       setCharacters:capitalW];
-  ExpectKeyFiresItem(cmdWWithCapsLock, closeTabItem, /*compareCocoa=*/false);
+  ExpectKeyFiresItem(cmdWWithCapsLock, closeTabItem, /*compare_cocoa=*/false);
 
   // Make sure Shift-Cmd W triggers Close Window.
   NSEvent* shiftCmdW =
@@ -558,7 +561,7 @@ TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
                @"\u1612", kVK_ANSI_W);
   [base::mac::ObjCCastStrict<NSEventForTesting>(shiftCmdW)
       setCharacters:capitalW];
-  ExpectKeyFiresItem(shiftCmdW, closeWindowItem, /*compareCocoa=*/false);
+  ExpectKeyFiresItem(shiftCmdW, closeWindowItem, /*compare_cocoa=*/false);
 
   // And also Shift-Cmd W with Caps Lock down.
   NSEvent* shiftCmdWWithCapsLock =
@@ -568,7 +571,7 @@ TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
   [base::mac::ObjCCastStrict<NSEventForTesting>(shiftCmdWWithCapsLock)
       setCharacters:capitalW];
   ExpectKeyFiresItem(shiftCmdWWithCapsLock, closeWindowItem,
-                     /*compareCocoa=*/false);
+                     /*compare_cocoa=*/false);
 }
 
 NSString* keyCodeToCharacter(NSUInteger keyCode,
@@ -579,9 +582,8 @@ NSString* keyCodeToCharacter(NSUInteger keyCode,
       layout, (UInt16)keyCode, kUCKeyActionDown, modifiers, LMGetKbdType(),
       &deadKeyStateUnused);
 
-  CFStringRef temp =
-      CFStringCreateWithCharacters(kCFAllocatorDefault, &unicodeChar, 1);
-  return [(NSString*)temp autorelease];
+  return base::apple::CFToNSOwnershipCast(
+      CFStringCreateWithCharacters(kCFAllocatorDefault, &unicodeChar, 1));
 }
 
 TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
@@ -608,8 +610,9 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
     NSUInteger key_code = 0x2e;  // "m" on a US layout and most other layouts.
 
     // On a few layouts, "m" has a different key code.
-    NSString* layout_id = base::mac::CFToNSCast(base::mac::CFCast<CFStringRef>(
-        TISGetInputSourceProperty(ref, kTISPropertyInputSourceID)));
+    NSString* layout_id =
+        base::apple::CFToNSPtrCast(base::mac::CFCast<CFStringRef>(
+            TISGetInputSourceProperty(ref, kTISPropertyInputSourceID)));
     ASSERT_TRUE(layout_id);
     if ([layout_id isEqualToString:@"com.apple.keylayout.Belgian"] ||
         [layout_id isEqualToString:@"com.apple.keylayout.Italian"] ||
@@ -740,5 +743,4 @@ TEST(NSMenuItemAdditionsTest, MMFKEHandlesFlagsChangedEvents) {
 }
 
 }  // namespace
-}  // namespace cocoa
-}  // namespace ui
+}  // namespace ui::cocoa
