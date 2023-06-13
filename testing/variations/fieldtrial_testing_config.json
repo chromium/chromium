@@ -10205,6 +10205,21 @@
             ]
         }
     ],
+    "PdfOcr": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfOcr"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfUseSkiaRenderer": [
         {
             "platforms": [

@@ -640,6 +640,13 @@ class PDFExtensionAccessibilityTreeDumpTest
     return enabled;
   }
 
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled = PDFExtensionAccessibilityTest::GetDisabledFeatures();
+    // PDF OCR should not modify the dump.
+    disabled.push_back(::features::kPdfOcr);
+    return disabled;
+  }
+
   void RunPDFTest(const base::FilePath::CharType* pdf_file) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
