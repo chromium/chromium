@@ -59,7 +59,7 @@ class DlpFilesController {
 
   virtual ~DlpFilesController();
 
-  static constexpr bool kCopyTaskFlowEnabled = false;
+  static bool kNewFilesPolicyUXEnabled;
 
  protected:
   explicit DlpFilesController(const DlpRulesManager& rules_manager);

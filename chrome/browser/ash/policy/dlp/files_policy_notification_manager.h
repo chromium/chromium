@@ -38,6 +38,14 @@ class FilesPolicyNotificationManager
 
   ~FilesPolicyNotificationManager() override;
 
+  // Show DLP block UI. If `task_id` is set, the corresponding IOTask will be
+  // updated with the blocked files. Otherwise a desktop notification will be
+  // shown.
+  virtual void ShowDlpBlockedFiles(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
+      std::vector<base::FilePath> blocked_files,
+      dlp::FileAction action);
+
   // Shows DLP Warning UI. If `task_id` is set, the corresponding IOTask will be
   // paused. Otherwise a desktop notification will be shown.
   virtual void ShowDlpWarning(
@@ -47,11 +55,6 @@ class FilesPolicyNotificationManager
       const DlpFileDestination& destination,
       dlp::FileAction action);
 
-  // Shows DLP block desktop notification.
-  virtual void ShowDlpBlockNotification(
-      dlp::FileAction action,
-      const std::vector<base::FilePath>& blocked_files);
-
   // Shows a policy dialog of type `type` for task identified by `task_id`.
   // Used for copy and move operations.
   void ShowDialog(file_manager::io_task::IOTaskId task_id,
@@ -59,6 +62,9 @@ class FilesPolicyNotificationManager
 
   // Returns whether IO task is being tracked.
   bool HasIOTask(file_manager::io_task::IOTaskId task_id) const;
+
+  std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
+      file_manager::io_task::IOTaskId task_id) const;
 
  protected:
   // The number of notifications shown so far. Used to calculate a unique
@@ -136,6 +142,10 @@ class FilesPolicyNotificationManager
 
   // KeyedService overrides:
   void Shutdown() override;
+
+  // Shows DLP block desktop notification.
+  void ShowDlpBlockNotification(std::vector<base::FilePath> blocked_files,
+                                dlp::FileAction action);
 
   // Show DLP warning desktop notifications.
   void ShowDlpWarningNotification(OnDlpRestrictionCheckedCallback callback,

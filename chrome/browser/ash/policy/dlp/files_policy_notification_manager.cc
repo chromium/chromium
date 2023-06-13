@@ -98,71 +98,40 @@ FilesPolicyNotificationManager::FilesPolicyNotificationManager(
 
 FilesPolicyNotificationManager::~FilesPolicyNotificationManager() = default;
 
+void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::vector<base::FilePath> blocked_files,
+    dlp::FileAction action) {
+  // If `task_id` has value, the corresponding IOTask should be updated
+  // accordingly.
+  if (task_id.has_value()) {
+    if (!HasIOTask(task_id.value())) {
+      // Task already completed and removed.
+      return;
+    }
+    for (const auto& file : blocked_files) {
+      io_tasks_.at(task_id.value())
+          .blocked_files.emplace(DlpConfidentialFile(file), Policy::kDlp);
+    }
+  } else {
+    ShowDlpBlockNotification(std::move(blocked_files), action);
+  }
+}
+
 void FilesPolicyNotificationManager::ShowDlpWarning(
     OnDlpRestrictionCheckedCallback callback,
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  // If `task_id` and there's a corresponding IOTask tracker, it should be
-  // paused.
-  if (task_id.has_value() && base::Contains(io_tasks_, task_id.value())) {
+  // If `task_id` has value, the corresponding IOTask should be paused.
+  if (task_id.has_value()) {
     PauseIOTask(task_id.value(), std::move(callback), std::move(warning_files),
                 action, Policy::kDlp);
   } else {
     ShowDlpWarningNotification(std::move(callback), std::move(warning_files),
                                destination, action);
   }
-}
-
-void FilesPolicyNotificationManager::ShowDlpBlockNotification(
-    dlp::FileAction action,
-    const std::vector<base::FilePath>& blocked_files) {
-  std::u16string title;
-  std::u16string message;
-
-  switch (action) {
-    case dlp::FileAction::kDownload:
-      title =
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE);
-      // ignore `blocked_files.size()` for downloads.
-      message = l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE);
-      break;
-    case dlp::FileAction::kUpload:
-      title =
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE);
-      message = l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE, blocked_files.size());
-      break;
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      title = l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE);
-      message = l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE, blocked_files.size());
-      break;
-    case dlp::FileAction::kCopy:
-    case dlp::FileAction::kMove:
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:
-      // TODO(b/269609831): Show correct notification here.
-      return;
-  }
-  const std::string notification_id =
-      GetNotificationId(action, notification_count_++);
-  auto notification = file_manager::CreateSystemNotification(
-      notification_id, std::move(title), std::move(message),
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(
-              &FilesPolicyNotificationManager::OnLearnMoreButtonClicked,
-              weak_factory_.GetWeakPtr(), notification_id)));
-  notification->set_buttons(
-      {message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
-
-  NotificationDisplayServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(context_))
-      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
-                /*metadata=*/nullptr);
 }
 
 void FilesPolicyNotificationManager::ShowDialog(
@@ -211,6 +180,15 @@ void FilesPolicyNotificationManager::ShowDialog(
 bool FilesPolicyNotificationManager::HasIOTask(
     file_manager::io_task::IOTaskId task_id) const {
   return base::Contains(io_tasks_, task_id);
+}
+
+std::map<DlpConfidentialFile, Policy>
+FilesPolicyNotificationManager::GetIOTaskBlockedFilesForTesting(
+    file_manager::io_task::IOTaskId task_id) const {
+  if (!HasIOTask(task_id)) {
+    return {};
+  }
+  return io_tasks_.at(task_id).blocked_files;
 }
 
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(
@@ -382,6 +360,56 @@ void FilesPolicyNotificationManager::Shutdown() {
   }
 }
 
+void FilesPolicyNotificationManager::ShowDlpBlockNotification(
+    std::vector<base::FilePath> blocked_files,
+    dlp::FileAction action) {
+  std::u16string title;
+  std::u16string message;
+
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      title =
+          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE);
+      // ignore `blocked_files.size()` for downloads.
+      message = l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE);
+      break;
+    case dlp::FileAction::kUpload:
+      title =
+          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE);
+      message = l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE, blocked_files.size());
+      break;
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      title = l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE);
+      message = l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE, blocked_files.size());
+      break;
+    case dlp::FileAction::kCopy:
+    case dlp::FileAction::kMove:
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
+      // TODO(b/269609831): Show correct notification here.
+      return;
+  }
+  const std::string notification_id =
+      GetNotificationId(action, notification_count_++);
+  auto notification = file_manager::CreateSystemNotification(
+      notification_id, std::move(title), std::move(message),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &FilesPolicyNotificationManager::OnLearnMoreButtonClicked,
+              weak_factory_.GetWeakPtr(), notification_id)));
+  notification->set_buttons(
+      {message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
+
+  NotificationDisplayServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context_))
+      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
+                /*metadata=*/nullptr);
+}
+
 void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     OnDlpRestrictionCheckedCallback callback,
     std::vector<base::FilePath> warning_files,
@@ -407,7 +435,7 @@ void FilesPolicyNotificationManager::PauseIOTask(
     dlp::FileAction action,
     Policy warning_reason) {
   auto* io_task_controller = GetIOTaskController(context_);
-  if (!io_task_controller) {
+  if (!io_task_controller || !HasIOTask(task_id)) {
     // Proceed because the IO task can't be paused.
     std::move(callback).Run(/*should_proceed=*/true);
     return;

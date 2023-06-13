@@ -25,18 +25,19 @@ class MockFilesPolicyNotificationManager
   ~MockFilesPolicyNotificationManager() override;
 
   MOCK_METHOD(void,
+              ShowDlpBlockedFiles,
+              (absl::optional<file_manager::io_task::IOTaskId> task_id,
+               std::vector<base::FilePath> blocked_files,
+               dlp::FileAction action),
+              (override));
+
+  MOCK_METHOD(void,
               ShowDlpWarning,
               (OnDlpRestrictionCheckedCallback callback,
                absl::optional<file_manager::io_task::IOTaskId> task_id,
                std::vector<base::FilePath> warning_files,
                const DlpFileDestination& destination,
                dlp::FileAction action),
-              (override));
-
-  MOCK_METHOD(void,
-              ShowDlpBlockNotification,
-              (dlp::FileAction action,
-               const std::vector<base::FilePath>& blocked_files),
               (override));
 };
 

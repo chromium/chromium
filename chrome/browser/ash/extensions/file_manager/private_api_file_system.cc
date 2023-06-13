@@ -941,8 +941,9 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
   policy::DlpFilesControllerAsh* files_controller =
       static_cast<policy::DlpFilesControllerAsh*>(
           rules_manager->GetDlpFilesController());
-  files_controller->GetDisallowedTransfers(
-      source_urls_, destination_url_, params->is_move,
+  files_controller->CheckIfTransferAllowed(
+      /*task_id=*/absl::nullopt, source_urls_, destination_url_,
+      params->is_move,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
                          OnGetDisallowedFiles,
                      this));

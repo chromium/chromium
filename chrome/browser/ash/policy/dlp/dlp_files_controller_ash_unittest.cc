@@ -337,7 +337,7 @@ class DlpFilesControllerAshTest : public testing::Test {
   FileSystemURL my_files_dir_url_;
 };
 
-TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_DiffFileSystem) {
+TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -374,10 +374,18 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_DiffFileSystem) {
       blink::StorageKey(), "archive",
       base::FilePath("file.rar/path/in/archive"));
 
+  files_controller_->SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{1},
+                          std::vector<base::FilePath>{files_urls[0].path(),
+                                                      files_urls[2].path()},
+                          dlp::FileAction::kMove));
+
   base::test::TestFuture<std::vector<FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(
-      transferred_files, dst_url, /*is_move=*/true, future.GetCallback());
+  files_controller_->CheckIfTransferAllowed(/*task_id=*/1, transferred_files,
+                                            dst_url, /*is_move=*/true,
+                                            future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(disallowed_files, future.Take());
 
@@ -399,7 +407,7 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_DiffFileSystem) {
   EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
 }
 
-TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_SameFileSystem) {
+TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_SameFileSystem) {
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -415,13 +423,14 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_SameFileSystem) {
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(
-      transferred_files, CreateFileSystemURL("Downloads"), /*is_move=*/false,
-      future.GetCallback());
+  files_controller_->CheckIfTransferAllowed(
+      /*task_id=*/absl::nullopt, transferred_files,
+      CreateFileSystemURL("Downloads"),
+      /*is_move=*/false, future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
-TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ClientNotRunning) {
+TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ClientNotRunning) {
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -452,12 +461,13 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ClientNotRunning) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(false);
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(
-      transferred_files, dst_url, /*is_move=*/true, future.GetCallback());
+  files_controller_->CheckIfTransferAllowed(
+      /*task_id=*/absl::nullopt, transferred_files, dst_url, /*is_move=*/true,
+      future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
-TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ErrorResponse) {
+TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ErrorResponse) {
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -495,9 +505,9 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ErrorResponse) {
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
-                                            /*is_move=*/false,
-                                            future.GetCallback());
+  files_controller_->CheckIfTransferAllowed(
+      /*task_id=*/absl::nullopt, transferred_files, dst_url,
+      /*is_move=*/false, future.GetCallback());
 
   ASSERT_EQ(3u, future.Get().size());
   EXPECT_EQ(transferred_files, future.Take());
@@ -520,7 +530,7 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ErrorResponse) {
   EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
 }
 
-TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_MultiFolder) {
+TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
   base::ScopedTempDir sub_dir1;
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
   base::ScopedTempDir sub_dir2;
@@ -564,10 +574,19 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_MultiFolder) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
+  files_controller_->SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{1},
+                          std::vector<base::FilePath>{files_urls[1].path(),
+                                                      files_urls[2].path(),
+                                                      files_urls[4].path()},
+                          dlp::FileAction::kCopy));
+
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(
-      transferred_files, dst_url, /*is_move=*/false, future.GetCallback());
+  files_controller_->CheckIfTransferAllowed(/*task_id=*/1, transferred_files,
+                                            dst_url, /*is_move=*/false,
+                                            future.GetCallback());
 
   std::vector<storage::FileSystemURL> expected_restricted_files(
       {files_urls[1], files_urls[2], files_urls[4]});
@@ -592,7 +611,7 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_MultiFolder) {
   EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
 }
 
-TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ExternalFiles) {
+TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ExternalFiles) {
   base::ScopedTempDir external_dir;
   ASSERT_TRUE(external_dir.CreateUniqueTempDir());
   base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
@@ -605,9 +624,9 @@ TEST_F(DlpFilesControllerAshTest, GetDisallowedTransfers_ExternalFiles) {
   std::vector<FileSystemURL> transferred_files({file_url1, file_url2});
   base::test::TestFuture<std::vector<FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(transferred_files,
-                                            my_files_dir_url_, /*is_move=*/true,
-                                            future.GetCallback());
+  files_controller_->CheckIfTransferAllowed(
+      /*task_id=*/absl::nullopt, transferred_files, my_files_dir_url_,
+      /*is_move=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(std::vector<FileSystemURL>(), future.Take());
 
@@ -664,10 +683,11 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MixedFiles) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                          dlp::FileAction::kUpload,
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
                           std::vector<base::FilePath>{files_urls[0].path(),
-                                                      files_urls[2].path()}));
+                                                      files_urls[2].path()},
+                          dlp::FileAction::kUpload));
 
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
@@ -805,11 +825,12 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MultiFolder) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                          dlp::FileAction::kUpload,
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
                           std::vector<base::FilePath>{files_urls[0].path(),
                                                       files_urls[1].path(),
-                                                      files_urls[3].path()}));
+                                                      files_urls[3].path()},
+                          dlp::FileAction::kUpload));
 
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
@@ -1500,9 +1521,10 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                          dlp::FileAction::kMove,
-                          std::vector<base::FilePath>{file_path2}));
+  EXPECT_CALL(*fpnm_,
+              ShowDlpBlockedFiles(/*task_id=*/{absl::nullopt},
+                                  std::vector<base::FilePath>{file_path2},
+                                  dlp::FileAction::kMove));
 
   std::vector<ui::FileInfo> dropped_files{
       ui::FileInfo(file_path1, file_path1),
@@ -1737,9 +1759,10 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
-  EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                          dlp::FileAction::kDownload,
-                          std::vector<base::FilePath>{dst_url.path()}));
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
+                          std::vector<base::FilePath>{dst_url.path()},
+                          dlp::FileAction::kDownload));
 
   files_controller_->CheckIfDownloadAllowed(DlpFileDestination(kExampleUrl1),
                                             dst_url.path(), cb.Get());
@@ -1932,9 +1955,10 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   ASSERT_TRUE(dst_url.is_valid());
 
   if (!choice_result) {
-    EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                            dlp::FileAction::kDownload,
-                            std::vector<base::FilePath>{dst_url.path()}));
+    EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                            /*task_id=*/{absl::nullopt},
+                            std::vector<base::FilePath>{dst_url.path()},
+                            dlp::FileAction::kDownload));
   }
 
   files_controller_->CheckIfDownloadAllowed(DlpFileDestination(kExampleUrl1),
@@ -2309,9 +2333,10 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                          dlp::FileAction::kOpen,
-                          std::vector<base::FilePath>{base::FilePath(path1)}));
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
+                          std::vector<base::FilePath>{base::FilePath(path1)},
+                          dlp::FileAction::kOpen));
 
   auto app_service_intent =
       std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
@@ -2499,9 +2524,10 @@ TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  EXPECT_CALL(*fpnm_, ShowDlpBlockNotification(
-                          dlp::FileAction::kMove,
-                          std::vector<base::FilePath>{file_path1}));
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
+                          std::vector<base::FilePath>{file_path1},
+                          dlp::FileAction::kMove));
 
   std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
   auto [data_dst, expected_component] = GetParam();

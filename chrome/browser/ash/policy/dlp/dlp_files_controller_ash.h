@@ -90,11 +90,9 @@ class DlpFilesControllerAsh : public DlpFilesController {
     std::vector<data_controls::Component> components;
   };
 
-  using GetDisallowedTransfersCallback =
-      base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
   using CheckIfTransferAllowedCallback =
-      base::OnceCallback<void(std::set<storage::FileSystemURL>)>;
-  using GetFilesRestrictedByAnyRuleCallback = GetDisallowedTransfersCallback;
+      base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
+  using GetFilesRestrictedByAnyRuleCallback = CheckIfTransferAllowedCallback;
   using FilterDisallowedUploadsCallback =
       base::OnceCallback<void(std::vector<ui::SelectedFileInfo>)>;
   using CheckIfDlpAllowedCallback = base::OnceCallback<void(bool is_allowed)>;
@@ -112,19 +110,11 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Returns a sublist of |transferred_files| disallowed to be transferred to
   // |destination| in |result_callback|. |is_move| is true if it's a move
   // operation. Otherwise it's false.
-  void GetDisallowedTransfers(
+  void CheckIfTransferAllowed(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       const std::vector<storage::FileSystemURL>& transferred_files,
       storage::FileSystemURL destination,
       bool is_move,
-      GetDisallowedTransfersCallback result_callback);
-
-  // Checks whether transferring `transferred_urls` to `destination` is
-  // allowed. Runs `result_callback` with false if the user cancelled the
-  // warning. Otherwise, it'll return the blocked entries.
-  void CheckIfTransferAllowed(
-      file_manager::io_task::IOTaskId task_id,
-      const std::vector<storage::FileSystemURL>& transferred_urls,
-      storage::FileSystemURL destination,
       CheckIfTransferAllowedCallback result_callback);
 
   // Retrieves metadata for each entry in |files| and returns it as a list in
@@ -196,6 +186,8 @@ class DlpFilesControllerAsh : public DlpFilesController {
   void SetFileSystemContextForTesting(
       storage::FileSystemContext* file_system_context);
 
+  void SetNewFilesPolicyUXEnabledForTesting(bool is_enabled);
+
  protected:
   absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
       Profile* profile,
@@ -221,9 +213,11 @@ class DlpFilesControllerAsh : public DlpFilesController {
       IsFilesTransferRestrictedCallback callback,
       bool should_proceed);
 
-  void ReturnDisallowedTransfers(
+  void ReturnDisallowedFiles(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       base::flat_map<std::string, storage::FileSystemURL> files_map,
-      GetDisallowedTransfersCallback result_callback,
+      dlp::FileAction file_action,
+      CheckIfTransferAllowedCallback result_callback,
       ::dlp::CheckFilesTransferResponse response);
 
   void ReturnAllowedUploads(std::vector<ui::SelectedFileInfo> uploaded_files,
@@ -254,10 +248,11 @@ class DlpFilesControllerAsh : public DlpFilesController {
 
   // Called when `transferred_files` is ready. Constructs CheckFilesTransfer
   // request and forwards it to the dlp daemon.
-  void ContinueGetDisallowedTransfers(
+  void ContinueCheckIfTransferAllowed(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       storage::FileSystemURL destination,
       bool is_move,
-      GetDisallowedTransfersCallback result_callback,
+      CheckIfTransferAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> transferred_files);
 
   // Called when `uploaded_files` is ready. Constructs CheckFilesTransfer

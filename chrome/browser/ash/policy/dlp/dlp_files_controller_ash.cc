@@ -337,8 +337,10 @@ DlpFileDestination DTEndpointToFileDestination(
 }
 
 // Shows DLP block desktop notification.
-void ShowDlpBlockNotification(dlp::FileAction action,
-                              std::vector<base::FilePath> blocked_files) {
+void ShowDlpBlockedFiles(
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::vector<base::FilePath> blocked_files,
+    dlp::FileAction action) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
 
@@ -350,7 +352,8 @@ void ShowDlpBlockNotification(dlp::FileAction action,
     return;
   }
 
-  fpnm->ShowDlpBlockNotification(action, std::move(blocked_files));
+  fpnm->ShowDlpBlockedFiles(std::move(task_id), std::move(blocked_files),
+                            action);
 }
 
 }  // namespace
@@ -389,11 +392,12 @@ DlpFilesControllerAsh::DlpFilesControllerAsh(
 
 DlpFilesControllerAsh::~DlpFilesControllerAsh() = default;
 
-void DlpFilesControllerAsh::GetDisallowedTransfers(
+void DlpFilesControllerAsh::CheckIfTransferAllowed(
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
     const std::vector<storage::FileSystemURL>& transferred_files,
     storage::FileSystemURL destination,
     bool is_move,
-    GetDisallowedTransfersCallback result_callback) {
+    CheckIfTransferAllowedCallback result_callback) {
   auto* file_system_context = GetFileSystemContext();
   if (!file_system_context) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
@@ -424,24 +428,16 @@ void DlpFilesControllerAsh::GetDisallowedTransfers(
 
   auto* roots_recursion_delegate = new RootsRecursionDelegate(
       file_system_context, std::move(filtered_files),
-      base::BindOnce(&DlpFilesControllerAsh::ContinueGetDisallowedTransfers,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(destination),
-                     is_move, std::move(result_callback)));
+      base::BindOnce(&DlpFilesControllerAsh::ContinueCheckIfTransferAllowed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(task_id),
+                     std::move(destination), is_move,
+                     std::move(result_callback)));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&RootsRecursionDelegate::Run,
                      // base::Unretained() is safe since |recursion_delegate|
                      // will delete itself after all the files list if ready.
                      base::Unretained(roots_recursion_delegate)));
-}
-
-void DlpFilesControllerAsh::CheckIfTransferAllowed(
-    file_manager::io_task::IOTaskId task_id,
-    const std::vector<storage::FileSystemURL>& transferred_urls,
-    storage::FileSystemURL destination,
-    CheckIfTransferAllowedCallback result_callback) {
-  // TODO(b/281043020): Add Implementation.
-  std::move(result_callback).Run(/*blocked_entries=*/{});
 }
 
 void DlpFilesControllerAsh::GetDlpMetadata(
@@ -549,7 +545,8 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
               }
             }
             if (!is_allowed) {
-              ShowDlpBlockNotification(dlp::FileAction::kDownload, {file_path});
+              ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, {file_path},
+                                  dlp::FileAction::kDownload);
             }
             std::move(result_callback).Run(is_allowed);
           },
@@ -893,6 +890,11 @@ void DlpFilesControllerAsh::SetFileSystemContextForTesting(
   g_file_system_context_for_testing = file_system_context;
 }
 
+void DlpFilesControllerAsh::SetNewFilesPolicyUXEnabledForTesting(
+    bool is_enabled) {
+  kNewFilesPolicyUXEnabled = is_enabled;
+}
+
 // Maps |file_path| to data_controls::Component if possible.
 absl::optional<data_controls::Component>
 DlpFilesControllerAsh::MapFilePathtoPolicyComponent(
@@ -966,25 +968,35 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
   std::move(callback).Run(std::move(files_levels));
 }
 
-void DlpFilesControllerAsh::ReturnDisallowedTransfers(
+void DlpFilesControllerAsh::ReturnDisallowedFiles(
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
     base::flat_map<std::string, storage::FileSystemURL> files_map,
-    GetDisallowedTransfersCallback result_callback,
+    dlp::FileAction file_action,
+    CheckIfTransferAllowedCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
-  std::vector<storage::FileSystemURL> restricted_files;
+  std::vector<storage::FileSystemURL> restricted_files_urls;
+  std::vector<base::FilePath> restricted_files_paths;
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
     for (const auto& [file_path, file_system_url] : files_map) {
-      restricted_files.push_back(file_system_url);
+      restricted_files_urls.push_back(file_system_url);
     }
-    std::move(result_callback).Run(std::move(restricted_files));
+    std::move(result_callback).Run(std::move(restricted_files_urls));
     return;
   }
+
   for (const auto& file : response.files_paths()) {
     DCHECK(files_map.find(file) != files_map.end());
-    restricted_files.push_back(files_map.at(file));
+    restricted_files_urls.push_back(files_map.at(file));
+    restricted_files_paths.emplace_back(file);
   }
-  std::move(result_callback).Run(std::move(restricted_files));
+  if (!restricted_files_paths.empty() && kNewFilesPolicyUXEnabled &&
+      task_id.has_value()) {
+    ShowDlpBlockedFiles(std::move(task_id), std::move(restricted_files_paths),
+                        file_action);
+  }
+  std::move(result_callback).Run(std::move(restricted_files_urls));
 }
 
 void DlpFilesControllerAsh::ReturnAllowedUploads(
@@ -1013,8 +1025,8 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
               });
         });
 
-    ShowDlpBlockNotification(dlp::FileAction::kUpload,
-                             std::move(restricted_files));
+    ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, std::move(restricted_files),
+                        dlp::FileAction::kUpload);
   }
 
   std::move(result_callback).Run(std::move(selected_files));
@@ -1106,7 +1118,8 @@ void DlpFilesControllerAsh::ReturnIfActionAllowed(
 
   std::vector<base::FilePath> blocked_files(response.files_paths().begin(),
                                             response.files_paths().end());
-  ShowDlpBlockNotification(action, std::move(blocked_files));
+  ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, std::move(blocked_files),
+                      action);
   std::move(result_callback).Run(/*is_allowed=*/false);
 }
 
@@ -1160,10 +1173,11 @@ void DlpFilesControllerAsh::MaybeReportEvent(
   reporting_manager->ReportEvent(event_builder->Create());
 }
 
-void DlpFilesControllerAsh::ContinueGetDisallowedTransfers(
+void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
     storage::FileSystemURL destination,
     bool is_move,
-    GetDisallowedTransfersCallback result_callback,
+    CheckIfTransferAllowedCallback result_callback,
     std::vector<storage::FileSystemURL> transferred_files) {
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
@@ -1186,10 +1200,12 @@ void DlpFilesControllerAsh::ContinueGetDisallowedTransfers(
   request.set_file_action(is_move ? ::dlp::FileAction::MOVE
                                   : ::dlp::FileAction::COPY);
 
-  auto return_transfers_callback = base::BindOnce(
-      &DlpFilesControllerAsh::ReturnDisallowedTransfers,
-      weak_ptr_factory_.GetWeakPtr(), std::move(transferred_files_map),
-      std::move(result_callback));
+  auto return_transfers_callback =
+      base::BindOnce(&DlpFilesControllerAsh::ReturnDisallowedFiles,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(task_id),
+                     std::move(transferred_files_map),
+                     is_move ? dlp::FileAction::kMove : dlp::FileAction::kCopy,
+                     std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_transfers_callback));
 }

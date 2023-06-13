@@ -120,6 +120,8 @@ DlpFilesController::DlpFilesController(const DlpRulesManager& rules_manager)
 
 DlpFilesController::~DlpFilesController() = default;
 
+bool DlpFilesController::kNewFilesPolicyUXEnabled = false;
+
 void DlpFilesController::RequestCopyAccess(
     const storage::FileSystemURL& source_file,
     const storage::FileSystemURL& destination,

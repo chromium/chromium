@@ -178,20 +178,23 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
   // Show first notification for upload.
-  fpnm_->ShowDlpBlockNotification(dlp::FileAction::kUpload, files_1);
+  fpnm_->ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, files_1,
+                             dlp::FileAction::kUpload);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
   // Show another notification for the same action - should get a new ID.
-  fpnm_->ShowDlpBlockNotification(dlp::FileAction::kUpload, files_1);
+  fpnm_->ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, files_1,
+                             dlp::FileAction::kUpload);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
   // Show a notification for a different action & files - should still increment
   // the ID.
-  fpnm_->ShowDlpBlockNotification(
-      dlp::FileAction::kOpen,
-      {base::FilePath("file1.txt"), base::FilePath("file2.txt")});
+  fpnm_->ShowDlpBlockedFiles(
+      /*task_id=*/absl::nullopt,
+      {base::FilePath("file1.txt"), base::FilePath("file2.txt")},
+      dlp::FileAction::kOpen);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_3));
@@ -262,6 +265,63 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   io_task_controller_->RemoveObserver(&observer);
 }
 
+// ShowDlpBlockedFiles updates IO task info.
+TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
+  IOTaskStatusObserver observer;
+  io_task_controller_->AddObserver(&observer);
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_TRUE(CreateDummyFile(src_file_path));
+  auto src_url = CreateFileSystemURL(src_file_path.value());
+  ASSERT_TRUE(src_url.is_valid());
+  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
+
+  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+      file_manager::io_task::OperationType::kCopy,
+      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
+      file_system_context_);
+
+  // Task is queued.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kQueued))));
+  io_task_controller_->Add(std::move(task));
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  fpnm_->ShowDlpBlockedFiles(task_id,
+                             std::vector<base::FilePath>{src_file_path},
+                             dlp::FileAction::kCopy);
+
+  std::map<DlpConfidentialFile, Policy> expected_blocked_files{
+      {DlpConfidentialFile(src_file_path), Policy::kDlp}};
+
+  EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
+            expected_blocked_files);
+
+  // Task in progress.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kInProgress))));
+
+  // Task completes successfully.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kSuccess))));
+
+  base::RunLoop().RunUntilIdle();
+  io_task_controller_->RemoveObserver(&observer);
+}
+
 class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
                           public ::testing::WithParamInterface<
                               std::tuple<dlp::FileAction, std::string>> {};
@@ -283,9 +343,11 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
-  fpnm_->ShowDlpBlockNotification(
-      action, {base::FilePath("file1.txt"), base::FilePath("file2.txt"),
-               base::FilePath("file3.txt")});
+  fpnm_->ShowDlpBlockedFiles(
+      /*task_id=*/absl::nullopt,
+      {base::FilePath("file1.txt"), base::FilePath("file2.txt"),
+       base::FilePath("file3.txt")},
+      action);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id));
 }
 
