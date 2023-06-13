@@ -408,9 +408,9 @@ static bool ParseDoubleWithPrefix(const LChar* string,
 //
 // NOTE: Digits after the seventh decimal are ignored, potentially leading
 // to accuracy issues. (All digits _before_ the decimal points are used.)
-static unsigned ParsePositiveDouble(const LChar* string,
-                                    const LChar* end,
-                                    double& value) {
+ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
+                                                  const LChar* end,
+                                                  double& value) {
   unsigned length = FindLengthOfValidDouble(string, end);
   if (length == 0) {
     return 0;
@@ -428,17 +428,118 @@ static unsigned ParsePositiveDouble(const LChar* string,
     local_value = local_value * 10 + (string[position] - '0');
   }
 
-  if (++position == length) {
+  if (++position >= length) {
     value = local_value;
     return length;
   }
+  constexpr int kMaxDecimals = 7;
+  int bytes_left = length - position;
+  unsigned num_decimals = bytes_left > kMaxDecimals ? kMaxDecimals : bytes_left;
 
+#ifdef __SSE2__
+  // The closest double to 1e-7, rounded _up_ instead of to nearest.
+  // We specifically don't want a value _smaller_ than 1e-7, because
+  // we have specific midpoints (like 0.1) that we want specific values for
+  // after rounding.
+  static constexpr double kDiv1e7 = 0.000000100000000000000009;
+
+  // If we have SSE2 and have a little bit of slop in our string,
+  // we can parse all of our desired (up to) seven decimals
+  // pretty much in one go. We subtract '0' from every digit,
+  // widen to 16-bit, and then do multiplication with all the
+  // digit weights in parallel. (This also blanks out characters
+  // that are not digits.) Essentially what we want is
+  //
+  //   1000000 * d0 + 100000 * d1 + 10000 * d2 + ...
+  //
+  // Since we use PMADDWD (_mm_madd_epi16) for the multiplication,
+  // we get pairwise addition of each of the products and automatic
+  // widening to 32-bit for free, so that we do not get overflow
+  // from the 16-bit values. Still, we need a little bit of care,
+  // since we cannot store the largest weights directly; see below.
+  if (end - (string + position) >= 7) {
+    __m128i bytes = _mm_loadu_si64(string + position - 1);
+    __m128i words = _mm_unpacklo_epi8(bytes, _mm_setzero_si128());
+    words = _mm_sub_epi16(words, _mm_set1_epi16('0'));
+
+    // NOTE: We cannot use _mm_setr_epi16(), as it is not constexpr.
+    static constexpr __m128i kWeights[kMaxDecimals + 1] = {
+        (__m128i)(__v8hi){0, 0, 0, 0, 0, 0, 0, 0},
+        (__m128i)(__v8hi){0, 25000, 0, 0, 0, 0, 0, 0},
+        (__m128i)(__v8hi){0, 25000, 2500, 0, 0, 0, 0, 0},
+        (__m128i)(__v8hi){0, 25000, 2500, 250, 0, 0, 0, 0},
+        (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 0, 0, 0},
+        (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 0, 0},
+        (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 10, 0},
+        (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 10, 1},
+    };
+    __m128i v = _mm_madd_epi16(words, kWeights[num_decimals]);
+
+    // Now we have, ignoring scale factors:
+    //
+    //   {d0} {d1+d2} {d3+d4} {d5+d6}
+    //
+    // Do a standard SSE2 horizontal add of the neighboring pairs:
+    v = _mm_add_epi32(v, _mm_shuffle_epi32(v, _MM_SHUFFLE(2, 3, 0, 1)));
+
+    // Now we have:
+    //
+    //   {d0+d1+d2} {d0+d1+d2} {d3+d4+d5+d6} {d3+d4+d5+d6}
+    //
+    // We need to multiply the {d0+d1+d2} elements by 40 (we could not
+    // fit 1000000 into a 16-bit int for kWeights[] above, and multiplication
+    // with 40 can be done cheaply), before we do the final add,
+    // conversion to float and scale.
+    __v4si v_int = (__v4si)v;
+    uint32_t fraction = v_int[0] * 40 + v_int[2];
+
+    value = local_value + fraction * kDiv1e7;
+    return length;
+  }
+#elif defined(__aarch64__) && defined(__ARM_NEON__)
+  // See the SSE2 path.
+  static constexpr double kDiv1e7 = 0.000000100000000000000009;
+
+  // NEON is similar, but we don't have pairwise muladds, so we need to
+  // structure with slightly more explicit widening, and an extra mul
+  // by 10000. We can join the subtraction of '0' and the widening to
+  // 16-bit into one operation, though, as NEON has widening subtraction.
+  if (end - (string + position) >= 7) {
+    uint8x8_t bytes = vld1_u8(string + position - 1);
+    uint16x8_t words = vsubl_u8(bytes, vdup_n_u8('0'));
+    static constexpr uint16x8_t kWeights[kMaxDecimals + 1] = {
+        (uint16x8_t){0, 0, 0, 0, 0, 0, 0, 0},
+        (uint16x8_t){0, 100, 0, 0, 0, 0, 0, 0},
+        (uint16x8_t){0, 100, 10, 0, 0, 0, 0, 0},
+        (uint16x8_t){0, 100, 10, 1, 0, 0, 0, 0},
+        (uint16x8_t){0, 100, 10, 1, 1000, 0, 0, 0},
+        (uint16x8_t){0, 100, 10, 1, 1000, 100, 0, 0},
+        (uint16x8_t){0, 100, 10, 1, 1000, 100, 10, 0},
+        (uint16x8_t){0, 100, 10, 1, 1000, 100, 10, 1},
+    };
+    uint32x4_t pairs = vpaddlq_u16(vmulq_u16(words, kWeights[num_decimals]));
+
+    // Now we have:
+    //
+    //   {100*d0} {10*d1 + d2} {1000*d3 + 100*d4} + {10*d5 + d6}
+    //
+    // Multiply the first two lanes by 10000, and then sum all four
+    // to get our final integer answer. (This final horizontal add
+    // only exists on A64; thus the check for __aarch64__ and not
+    // __ARM_NEON__.)
+    static constexpr uint32x4_t kScaleFac{10000, 10000, 1, 1};
+    uint32_t fraction = vaddvq_u32(vmulq_u32(pairs, kScaleFac));
+
+    value = local_value + fraction * kDiv1e7;
+    return length;
+  }
+#endif
+
+  // OK, do it the slow, scalar way.
   double fraction = 0;
   double scale = 1;
-
-  const double kMaxScale = 10000000;
-  while (position < length && scale < kMaxScale) {
-    fraction = fraction * 10 + (string[position++] - '0');
+  for (unsigned i = 0; i < num_decimals; ++i) {
+    fraction = fraction * 10 + (string[position + i] - '0');
     scale *= 10;
   }
 
