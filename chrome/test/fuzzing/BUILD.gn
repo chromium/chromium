@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
 import("//chrome/test/fuzzing/in_process_fuzzer.gni")
 
 # This target exists to reference other test executables to bring these files
@@ -39,5 +41,18 @@ if (!is_android) {
     sources = [ "kombucha_in_process_fuzzer.cc" ]
 
     proto_source = "kombucha_in_process_fuzzer.proto"
+
+    deps = []
+
+    # Used for UI controls
+    if (use_aura) {
+      deps += [ "//ui/aura:test_support" ]
+    }
+    if (use_aura && use_ozone) {
+      deps += [
+        "//ui/ozone",
+        "//ui/platform_window/common:common",
+      ]
+    }
   }
 }

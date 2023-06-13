@@ -26,6 +26,22 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 
+// The following includes are used to enable ui_controls only.
+#include "ui/base/test/ui_controls.h"
+#if BUILDFLAG(IS_OZONE)
+#include "ui/views/test/test_desktop_screen_ozone.h"
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/test/ui_controls_ash.h"
+#elif BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#include "ui/aura/test/ui_controls_aurawin.h"
+#endif
+#if defined(USE_AURA) && BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/platform_window/common/platform_window_defaults.h"
+#endif  // defined(USE_AURA) && BUILDFLAG(IS_OZONE)
+
 #define DEFINE_BINARY_PROTO_IN_PROCESS_FUZZER(arg) \
   DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(true, arg)
 
@@ -41,13 +57,41 @@
 class KombuchaInProcessFuzzer
     : virtual public InteractiveBrowserTestT<InProcessFuzzer> {
  public:
+  ~KombuchaInProcessFuzzer() override = default;
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kTabGroupsSave, features::kExtensionsMenuInAppMenu}, {});
+
+    // Mouse movements require enabling ui_controls manually for tests
+    // that live outside the ui_interaction_test directory.
+    // The following is copied from
+    // chrome/test/base/interactive_ui_tests_main.cc
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::test::EnableUIControlsAsh();
+#elif BUILDFLAG(IS_WIN)
+    com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
+    aura::test::EnableUIControlsAuraWin();
+#elif BUILDFLAG(IS_OZONE)
+    // Notifies the platform that test config is needed. For Wayland, for
+    // example, makes its possible to use emulated input.
+    ui::test::EnableTestConfigForPlatformWindows();
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
+    ui_controls::EnableUIControls();
+#else
+    ui_controls::EnableUIControls();
+#endif
+
     InteractiveBrowserTestT::SetUp();
   }
-
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override {
+    InteractiveBrowserTestT::TearDownOnMainThread();
+#if BUILDFLAG(IS_WIN)
+    com_initializer_.reset();
+#endif
+  }
   int Fuzz(const uint8_t* data, size_t size) override;
   static std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
       base::WeakPtr<KombuchaInProcessFuzzer> fuzzer_weak,
@@ -91,6 +135,10 @@ class KombuchaInProcessFuzzer
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
+#endif
+
   base::WeakPtrFactory<KombuchaInProcessFuzzer> weak_ptr_factory_{this};
 };
 
@@ -102,6 +150,7 @@ void KombuchaInProcessFuzzer::SetUpOnMainThread() {
       base::BindRepeating(&KombuchaInProcessFuzzer::HandleHTTPRequest,
                           weak_ptr_factory_.GetWeakPtr()));
   ASSERT_TRUE(embedded_test_server()->Start());
+
   // Accelerators for using in fuzzing
   chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
       IDC_FULLSCREEN, &fullscreen_accelerator_);
