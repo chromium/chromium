@@ -11047,6 +11047,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ProcessPerSiteUpToMainFrameThreshold"
+                    ],
+                    "disable_features": [
+                        "AllowDevToolsMainThreadDebuggerForMultipleMainFrames"
                     ]
                 }
             ]
