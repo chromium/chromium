@@ -161,6 +161,7 @@
     "android-12-x64-fyi-rel": "Ubuntu-22.04",
     "android-angle-chromium-arm64-builder": "Ubuntu-22.04",
     "android-angle-chromium-arm64-nexus5x": "Ubuntu-22.04",
+    "android-annotator-rel": "Ubuntu-22.04",
     "android-archive-dbg": "Ubuntu-22.04",
     "android-archive-rel": "Ubuntu-22.04",
     "android-arm64-archive-rel": "Ubuntu-22.04",
