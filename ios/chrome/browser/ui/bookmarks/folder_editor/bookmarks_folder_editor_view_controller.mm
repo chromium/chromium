@@ -170,6 +170,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _titleItem.delegate = nil;
 }
 
+- (void)dealloc {
+  DCHECK(!_browserState);
+}
+
 #pragma mark - Public
 
 - (void)presentationControllerDidAttemptToDismiss {
