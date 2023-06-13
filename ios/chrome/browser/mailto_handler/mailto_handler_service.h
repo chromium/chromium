@@ -31,14 +31,7 @@ class MailtoHandlerService : public KeyedService {
 
   // Handles the specified mailto: URL. Should fall back on the built-in
   // URL handling in case of error.
-  // TODO(crbug.com/1443722): Make pure once all subclasses provide their
-  // implementation.
-  virtual void HandleMailtoURL(NSURL* url, base::OnceClosure completion);
-
-  // Same as `HandleMailtoURL(url, completion)` without completion.
-  // TODO(crbug.com/1443722): Remove once `HandleMailtoURL(url, completion)` is
-  // used everywhere.
-  virtual void HandleMailtoURL(NSURL* url);
+  virtual void HandleMailtoURL(NSURL* url, base::OnceClosure completion) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAILTO_HANDLER_MAILTO_HANDLER_SERVICE_H_

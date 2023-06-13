@@ -24,7 +24,6 @@ class TestMailtoHandlerService final : public MailtoHandlerService {
   NSString* SettingsTitle() const final;
   UIViewController* CreateSettingsController() final;
   void DismissAllMailtoHandlerInterfaces() final;
-  void HandleMailtoURL(NSURL* url) final;
   void HandleMailtoURL(NSURL* url, base::OnceClosure completion) final;
 };
 
@@ -38,10 +37,6 @@ UIViewController* TestMailtoHandlerService::CreateSettingsController() {
 
 void TestMailtoHandlerService::DismissAllMailtoHandlerInterfaces() {
   // nothing to do
-}
-
-void TestMailtoHandlerService::HandleMailtoURL(NSURL* url) {
-  HandleMailtoURL(url, base::NullCallback());
 }
 
 void TestMailtoHandlerService::HandleMailtoURL(NSURL* url,

@@ -24,9 +24,6 @@ class ChromiumMailtoHandlerService final : public MailtoHandlerService {
   NSString* SettingsTitle() const final;
   UIViewController* CreateSettingsController() final;
   void DismissAllMailtoHandlerInterfaces() final;
-  // TODO(crbug.com/1443722): Remove once `HandleMailtoURL(url, completion)` is
-  // used everywhere.
-  void HandleMailtoURL(NSURL* url) final;
   void HandleMailtoURL(NSURL* url, base::OnceClosure completion) final;
 };
 
@@ -40,12 +37,6 @@ UIViewController* ChromiumMailtoHandlerService::CreateSettingsController() {
 
 void ChromiumMailtoHandlerService::DismissAllMailtoHandlerInterfaces() {
   // nothing to do
-}
-
-void ChromiumMailtoHandlerService::HandleMailtoURL(NSURL* url) {
-  // TODO(crbug.com/1443722): Remove once `HandleMailtoURL(url, completion)` is
-  // used everywhere.
-  HandleMailtoURL(url, base::NullCallback());
 }
 
 void ChromiumMailtoHandlerService::HandleMailtoURL(
