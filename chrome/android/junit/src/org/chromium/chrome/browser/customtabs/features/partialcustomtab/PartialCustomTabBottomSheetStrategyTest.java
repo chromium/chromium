@@ -60,7 +60,6 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
@@ -690,7 +689,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q)
+    @Config(sdk = Build.VERSION_CODES.P)
     public void fixedHeightReactsToSoftKeyboardBelowR() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         assertTabIsAtInitialPos(getWindowAttributes());
