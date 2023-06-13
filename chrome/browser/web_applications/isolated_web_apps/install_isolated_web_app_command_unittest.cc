@@ -569,6 +569,21 @@ TEST_F(InstallIsolatedWebAppCommandTest,
               IsInstallationError(HasSubstr("App is not installable")));
 }
 
+TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                                 .url_info = url_info,
+                             })
+                  .has_value(),
+              IsTrue());
+  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
+              Pointee(Property(
+                  &WebApp::isolation_data,
+                  Optional(Property(&WebApp::IsolationData::pending_update_info,
+                                    Eq(absl::nullopt))))));
+}
+
 struct InvalidVersionParam {
   absl::optional<std::u16string> version;
   std::string error;

@@ -705,6 +705,26 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
   EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
 }
 
+TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedDevModeProxyIsolationData) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeProxy{.proxy_url =
+                       url::Origin::Create(GURL("https://example.com"))},
+      base::Version("1.0.0")));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+
+  web_app_proto->mutable_isolation_data()
+      ->mutable_dev_mode_proxy()
+      ->mutable_proxy_url()
+      ->assign("");
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
+}
+
 TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   // The version must have three numeric parts, thus using five parts here
@@ -719,6 +739,70 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
   std::unique_ptr<WebApp> protoed_web_app =
       WebAppDatabase::CreateWebApp(*web_app_proto);
   EXPECT_THAT(protoed_web_app, IsNull());
+}
+
+TEST_F(WebAppDatabaseProtoDataTest,
+       HandlesCorruptedIsolationDataPendingUpdateVersion) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  // The version must have three numeric parts, thus using five parts here
+  // should break deserialization.
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.2.3"), {},
+      WebApp::IsolationData::PendingUpdateInfo(InstalledBundle{.path = path},
+                                               base::Version("1.2.3.4.5"))));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
+}
+
+TEST_F(WebAppDatabaseProtoDataTest,
+       HandlesMismatchedIsolationDataPendingUpdateLocation) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.0.0"), {},
+      WebApp::IsolationData::PendingUpdateInfo(InstalledBundle{.path = path},
+                                               base::Version("2.0.0"))));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+  web_app_proto->mutable_isolation_data()
+      ->mutable_pending_update_info()
+      ->clear_location();
+  web_app_proto->mutable_isolation_data()
+      ->mutable_pending_update_info()
+      ->mutable_dev_mode_proxy()
+      ->set_proxy_url("https://example.com");
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
+}
+
+TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  base::FilePath update_path(FILE_PATH_LITERAL("update_path"));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.0.0"), {},
+      WebApp::IsolationData::PendingUpdateInfo(
+          InstalledBundle{.path = update_path}, base::Version("2.0.0"))));
+
+  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
+  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
+  EXPECT_THAT(web_app->isolation_data()->location,
+              VariantWith<InstalledBundle>(
+                  Field("path", &InstalledBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
+  EXPECT_THAT(web_app->isolation_data()->pending_update_info()->location,
+              VariantWith<InstalledBundle>(
+                  Field("path", &InstalledBundle::path, Eq(update_path))));
+  EXPECT_THAT(web_app->isolation_data()->pending_update_info()->version,
+              Eq(base::Version("2.0.0")));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {

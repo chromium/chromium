@@ -747,10 +747,13 @@ WebApp::IsolationData::IsolationData(IsolatedWebAppLocation location,
 WebApp::IsolationData::IsolationData(
     IsolatedWebAppLocation location,
     base::Version version,
-    const std::set<std::string>& controlled_frame_partitions)
+    const std::set<std::string>& controlled_frame_partitions,
+    const absl::optional<PendingUpdateInfo>& pending_update_info)
     : location(location),
       version(std::move(version)),
-      controlled_frame_partitions(controlled_frame_partitions) {}
+      controlled_frame_partitions(controlled_frame_partitions) {
+  SetPendingUpdateInfo(pending_update_info);
+}
 WebApp::IsolationData::~IsolationData() = default;
 WebApp::IsolationData::IsolationData(const WebApp::IsolationData&) = default;
 WebApp::IsolationData& WebApp::IsolationData::operator=(
@@ -762,7 +765,8 @@ WebApp::IsolationData& WebApp::IsolationData::operator=(
 bool WebApp::IsolationData::operator==(
     const WebApp::IsolationData& other) const {
   return location == other.location && version == other.version &&
-         controlled_frame_partitions == other.controlled_frame_partitions;
+         controlled_frame_partitions == other.controlled_frame_partitions &&
+         pending_update_info_ == other.pending_update_info_;
 }
 bool WebApp::IsolationData::operator!=(
     const WebApp::IsolationData& other) const {
@@ -779,8 +783,46 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
   for (const std::string& partition : controlled_frame_partitions) {
     partitions->Append(partition);
   }
+
+  value.Set("pending_update_info", pending_update_info_.has_value()
+                                       ? pending_update_info_->AsDebugValue()
+                                       : base::Value());
+
   return base::Value(std::move(value));
 }
+
+WebApp::IsolationData::PendingUpdateInfo::PendingUpdateInfo(
+    IsolatedWebAppLocation location,
+    base::Version version)
+    : location(std::move(location)), version(std::move(version)) {}
+WebApp::IsolationData::PendingUpdateInfo::~PendingUpdateInfo() = default;
+
+WebApp::IsolationData::PendingUpdateInfo::PendingUpdateInfo(
+    const PendingUpdateInfo&) = default;
+WebApp::IsolationData::PendingUpdateInfo&
+WebApp::IsolationData::PendingUpdateInfo::operator=(const PendingUpdateInfo&) =
+    default;
+
+base::Value WebApp::IsolationData::PendingUpdateInfo::AsDebugValue() const {
+  auto value = base::Value::Dict()
+                   .Set("isolated_web_app_location",
+                        IsolatedWebAppLocationAsDebugValue(location))
+                   .Set("version", version.GetString());
+  return base::Value(std::move(value));
+}
+
+void WebApp::IsolationData::SetPendingUpdateInfo(
+    const absl::optional<PendingUpdateInfo>& pending_update_info) {
+  if (pending_update_info.has_value()) {
+    CHECK_EQ(pending_update_info->location.index(), location.index());
+  }
+  pending_update_info_ = pending_update_info;
+}
+
+bool WebApp::IsolationData::PendingUpdateInfo::operator==(
+    const WebApp::IsolationData::PendingUpdateInfo& other) const = default;
+bool WebApp::IsolationData::PendingUpdateInfo::operator!=(
+    const WebApp::IsolationData::PendingUpdateInfo& other) const = default;
 
 bool WebApp::operator==(const WebApp& other) const {
   auto AsTuple = [](const WebApp& app) {

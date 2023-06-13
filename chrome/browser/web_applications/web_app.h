@@ -333,10 +333,36 @@ class WebApp {
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
   struct IsolationData {
+    // If present, signals that an update for this app is available locally and
+    // waiting to be applied.
+    struct PendingUpdateInfo {
+      PendingUpdateInfo(IsolatedWebAppLocation location, base::Version version);
+      ~PendingUpdateInfo();
+      PendingUpdateInfo(const PendingUpdateInfo&);
+      PendingUpdateInfo& operator=(const PendingUpdateInfo&);
+
+      bool operator==(const PendingUpdateInfo&) const;
+      bool operator!=(const PendingUpdateInfo&) const;
+
+      base::Value AsDebugValue() const;
+      friend std::ostream& operator<<(std::ostream& os,
+                                      const PendingUpdateInfo& update_info) {
+        return os << update_info.AsDebugValue();
+      }
+
+      IsolatedWebAppLocation location;
+      base::Version version;
+
+      // TODO(cmfcmf): Add further information about the update here, such as
+      // whether it should be applied immediately, or only once the IWA is
+      // closed.
+    };
+
     IsolationData(IsolatedWebAppLocation location, base::Version version);
     IsolationData(IsolatedWebAppLocation location,
                   base::Version version,
-                  const std::set<std::string>& controlled_frame_partitions);
+                  const std::set<std::string>& controlled_frame_partitions,
+                  const absl::optional<PendingUpdateInfo>& pending_update_info);
     ~IsolationData();
     IsolationData(const IsolationData&);
     IsolationData& operator=(const IsolationData&);
@@ -345,11 +371,30 @@ class WebApp {
 
     bool operator==(const IsolationData&) const;
     bool operator!=(const IsolationData&) const;
+
     base::Value AsDebugValue() const;
+    friend std::ostream& operator<<(std::ostream& os,
+                                    const IsolationData& isolation_data) {
+      return os << isolation_data.AsDebugValue();
+    }
+
+    // Sets the pending update info. Will `CHECK` if the type of
+    // `pending_update_info.location` is not the same as `location`. In other
+    // words, a `DevModeBundle` app cannot be updated to, e.g.,
+    // `InstalledBundle`.
+    void SetPendingUpdateInfo(
+        const absl::optional<PendingUpdateInfo>& pending_update_info);
+
+    const absl::optional<PendingUpdateInfo>& pending_update_info() const {
+      return pending_update_info_;
+    }
 
     IsolatedWebAppLocation location;
     base::Version version;
     std::set<std::string> controlled_frame_partitions;
+
+   private:
+    absl::optional<PendingUpdateInfo> pending_update_info_;
   };
   const absl::optional<IsolationData>& isolation_data() const {
     return isolation_data_;

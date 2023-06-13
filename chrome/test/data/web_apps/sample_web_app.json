@@ -195,6 +195,14 @@
             "path": "1234"
          }
       },
+      "pending_update_info": {
+         "isolated_web_app_location": {
+            "dev_mode_bundle": {
+               "path": "1234"
+            }
+         },
+         "version": "2943622033.3502924369.2975492436"
+      },
       "version": "2831420433.2572177745.363425051"
    },
    "last_badging_time": "1970-02-06 10:58:36.765 UTC",

@@ -914,6 +914,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     if (random.next_bool()) {
       isolation_data.controlled_frame_partitions.insert("partition_name");
     }
+    if (random.next_bool()) {
+      base::Version pending_version = base::Version({
+          random.next_uint(),
+          random.next_uint(),
+          random.next_uint(),
+      });
+      WebApp::IsolationData::PendingUpdateInfo pending_update_info(
+          location_type, pending_version);
+      isolation_data.SetPendingUpdateInfo(pending_update_info);
+    }
     app->SetIsolationData(isolation_data);
   }
 

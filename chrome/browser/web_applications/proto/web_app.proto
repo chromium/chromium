@@ -182,6 +182,17 @@ message IsolationDataProto {
 
   // The version of the IWA.
   required string version = 5;
+
+  message PendingUpdateInfo {
+    oneof location {
+      InstalledBundle installed_bundle = 1;
+      DevModeBundle dev_mode_bundle = 2;
+      DevModeProxy dev_mode_proxy = 3;
+    }
+    required string version = 4;
+  }
+
+  optional PendingUpdateInfo pending_update_info = 6;
 }
 
 // Full WebApp object data. See detailed comments in

@@ -116,7 +116,7 @@ void SaveExpectationsContentsOrDie(const base::FilePath path,
 }  // namespace
 
 TEST(WebAppTest, HasAnySources) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
 
   EXPECT_FALSE(app.HasAnySources());
@@ -135,7 +135,7 @@ TEST(WebAppTest, HasAnySources) {
 }
 
 TEST(WebAppTest, HasOnlySource) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
 
   for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
@@ -175,7 +175,7 @@ TEST(WebAppTest, HasOnlySource) {
 }
 
 TEST(WebAppTest, WasInstalledByUser) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
 
   app.AddSource(WebAppManagement::kSync);
@@ -228,7 +228,7 @@ TEST(WebAppTest, WasInstalledByUser) {
 }
 
 TEST(WebAppTest, CanUserUninstallWebApp) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
 
   app.AddSource(WebAppManagement::kDefault);
@@ -332,14 +332,14 @@ TEST(WebAppTest, RandomAppAsDebugValue_NoCrash) {
 }
 
 TEST(WebAppTest, IsolationDataStartsEmpty) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
 
   EXPECT_FALSE(app.isolation_data().has_value());
 }
 
 TEST(WebAppTest, IsolationDataDebugValue) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
   app.SetIsolationData(WebApp::IsolationData(
       InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
@@ -354,7 +354,47 @@ TEST(WebAppTest, IsolationDataDebugValue) {
           }
         },
         "version": "1.0.0",
-        "controlled_frame_partitions": []
+        "controlled_frame_partitions": [],
+        "pending_update_info": null
+      })")
+                                            .value();
+
+  base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
+  base::Value::Dict* debug_isolation_data =
+      debug_app.FindDict("isolation_data");
+  EXPECT_TRUE(debug_isolation_data != nullptr);
+  EXPECT_EQ(*debug_isolation_data, expected_isolation_data);
+}
+
+TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+                           GURL("https://example.com"))};
+  app.SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
+      base::Version("1.0.0"), {},
+      WebApp::IsolationData::PendingUpdateInfo(
+          InstalledBundle{
+              .path = base::FilePath(FILE_PATH_LITERAL("another_path"))},
+          base::Version("2.0.0"))));
+
+  EXPECT_TRUE(app.isolation_data().has_value());
+
+  base::Value expected_isolation_data = base::JSONReader::Read(R"({
+        "isolated_web_app_location": {
+          "installed_bundle": {
+            "path": "random_path"
+          }
+        },
+        "version": "1.0.0",
+        "controlled_frame_partitions": [],
+        "pending_update_info": {
+          "isolated_web_app_location": {
+            "installed_bundle": {
+              "path": "another_path"
+            }
+          },
+          "version": "2.0.0"
+        }
       })")
                                             .value();
 
@@ -366,7 +406,7 @@ TEST(WebAppTest, IsolationDataDebugValue) {
 }
 
 TEST(WebAppTest, PermissionsPolicyDebugValue) {
-  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+  WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
   app.SetPermissionsPolicy({
       {blink::mojom::PermissionsPolicyFeature::kGyroscope,
