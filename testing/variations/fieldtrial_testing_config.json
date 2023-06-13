@@ -14182,7 +14182,7 @@
             ]
         }
     ],
-    "V8MaglevStability": [
+    "V8Maglev": [
         {
             "platforms": [
                 "chromeos",
