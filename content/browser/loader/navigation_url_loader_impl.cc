@@ -1151,7 +1151,12 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
 
 void NavigationURLLoaderImpl::Clone(
     mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver> listener) {
-  accept_ch_frame_observers_.Add(this, std::move(listener));
+  // Use |kNavigationNetworkResponse| thread runner. Messages received related
+  // to AcceptCHFrame are not order dependent and can restart the navigation,
+  // blocking navigation when they do.
+  accept_ch_frame_observers_.Add(
+      this, std::move(listener),
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 }
 
 // Returns true if an interceptor wants to handle the response, i.e. return a
@@ -1335,8 +1340,12 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
       accept_ch_frame_observer;
+  // Use |kNavigationNetworkResponse| thread runner. Messages received related
+  // to AcceptCHFrame are not order dependent and can restart the navigation,
+  // blocking navigation when they do.
   accept_ch_frame_observers_.Add(
-      this, accept_ch_frame_observer.InitWithNewPipeAndPassReceiver());
+      this, accept_ch_frame_observer.InitWithNewPipeAndPassReceiver(),
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);

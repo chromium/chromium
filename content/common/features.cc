@@ -11,6 +11,10 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
+BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
+             "BeforeUnloadBrowserResponseQueue",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNavigationUpdatesChildViewsVisibility,
              "NavigationUpdatesChildViewsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);

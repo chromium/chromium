@@ -35,6 +35,14 @@ enum class BrowserTaskType {
   // Tasks processing ServiceWorker's storage control's response.
   // TODO(chikamune): Make this content-internal.
   kServiceWorkerStorageControlResponse,
+
+  // Task continuing navigation asynchronously after determining that no before
+  // unload handlers are registered in the unloading render.
+  // NOTE: This task type should not be used for other navigation-related tasks
+  // as they should be ordered w.r.t. IPC channel and the UI thread's default
+  // task runner. Reach out to navigation-dev@ before adding new usages.
+  kBeforeUnloadBrowserResponse,
+
 };
 
 class CONTENT_EXPORT BrowserTaskTraits {

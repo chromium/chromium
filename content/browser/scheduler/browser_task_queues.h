@@ -78,7 +78,10 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // after startup.
     kServiceWorkerStorageControlResponse,
 
-    kMaxValue = kServiceWorkerStorageControlResponse
+    // For before unload navigation continuation tasks.
+    kBeforeUnloadBrowserResponse,
+
+    kMaxValue = kBeforeUnloadBrowserResponse
   };
 
   static constexpr size_t kNumQueueTypes =

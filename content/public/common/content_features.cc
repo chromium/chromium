@@ -735,7 +735,7 @@ BASE_FEATURE(kMojoVideoCaptureSecondary,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When NavigationNetworkResponseQueue is enabled, the browser will schedule
-// some tasks related to navigation network responses in a kHighest priority
+// some tasks related to navigation network responses in a kHigh priority
 // queue.
 BASE_FEATURE(kNavigationNetworkResponseQueue,
              "NavigationNetworkResponseQueue",

@@ -13361,15 +13361,20 @@ void RenderFrameHostImpl::SendBeforeUnload(
                                        ->common_params()
                                        .navigation_start);
     }
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
-               base::TimeTicks start_time, base::TimeTicks end_time) {
-              std::move(callback).Run(/*proceed=*/true, start_time, end_time);
-            },
-            std::move(before_unload_closure), send_before_unload_start_time_,
-            base::TimeTicks::Now()));
+    // Use a high-priority task to continue the navigation. This is safe as it
+    // happens early in the navigation flow and shouldn't race with any other
+    // tasks associated with this navigation.
+    GetUIThreadTaskRunner({BrowserTaskType::kBeforeUnloadBrowserResponse})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
+                   base::TimeTicks start_time, base::TimeTicks end_time) {
+                  std::move(callback).Run(/*proceed=*/true, start_time,
+                                          end_time);
+                },
+                std::move(before_unload_closure),
+                send_before_unload_start_time_, base::TimeTicks::Now()));
     return;
   }
   // Experiment to run beforeunload handlers at a higher priority in the
