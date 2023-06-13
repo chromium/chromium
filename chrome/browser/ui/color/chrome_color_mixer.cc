@@ -262,7 +262,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionMenuPinButtonIconDisabled] = ui::SetAlpha(
       kColorExtensionMenuPinButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorExtensionsMenuHighlightedBackground] = {
-      kColorToolbarBackgroundSubtleEmphasis};
+      ui::kColorSysNeutralContainer};
   mixer[kColorExtensionsToolbarControlsBackground] = {
       kColorToolbarBackgroundSubtleEmphasis};
   mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
