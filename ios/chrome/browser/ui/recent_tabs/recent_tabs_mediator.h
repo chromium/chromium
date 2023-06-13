@@ -13,19 +13,17 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
 
 class ChromeBrowserState;
-class WebStateList;
 
 @protocol RecentTabsConsumer;
 
-// RecentTabsMediator controls the RecentTabsConsumer,
-// based on the user's signed-in and chrome-sync states.
+// RecentTabsMediator controls the RecentTabsConsumer, based on the user's
+// signed-in and chrome-sync states.
 //
-// RecentTabsMediator listens for notifications about Chrome Sync
-// and ChromeToDevice and changes/updates the RecentTabsConsumer
-// accordingly.
-@interface RecentTabsMediator : NSObject<ClosedTabsObserving,
-                                         RecentTabsTableViewControllerDelegate,
-                                         TableViewFaviconDataSource>
+// RecentTabsMediator listens for notifications about Chrome Sync and
+// ChromeToDevice and changes/updates the RecentTabsConsumer accordingly.
+@interface RecentTabsMediator : NSObject <ClosedTabsObserving,
+                                          RecentTabsTableViewControllerDelegate,
+                                          TableViewFaviconDataSource>
 
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
@@ -33,9 +31,6 @@ class WebStateList;
 
 // The coordinator's BrowserState.
 @property(nonatomic, assign) ChromeBrowserState* browserState;
-
-// The WebStateList that this mediator listens for.
-@property(nonatomic, assign) WebStateList* webStateList;
 
 // Starts observing the he user's signed-in and chrome-sync states.
 - (void)initObservers;

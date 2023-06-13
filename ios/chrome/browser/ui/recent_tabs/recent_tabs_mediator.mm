@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -30,10 +33,14 @@
 
 @interface RecentTabsMediator () <SyncedSessionsObserver,
                                   WebStateListObserving> {
+  std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
   std::unique_ptr<recent_tabs::ClosedTabsObserverBridge> _closedTabsObserver;
   SessionsSyncUserState _userState;
+  // The list of web state list currently processing batch operations (e.g.
+  // Closing All, or Undoing a Close All).
+  std::set<WebStateList*> _webStateListsWithBatchOperations;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -46,29 +53,21 @@
 - (BOOL)isSyncCompleted;
 // Reload the panel.
 - (void)refreshSessionsView;
-// YES if Tabs are being updated in batch. (e.g. Closing All, or Undoing a Close
-// All).
-@property(nonatomic, assign) BOOL processingBatchOperation;
 
 @end
 
-@implementation RecentTabsMediator {
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-}
-@synthesize browserState = _browserState;
-@synthesize consumer = _consumer;
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-  }
-  return self;
-}
+@implementation RecentTabsMediator
 
 #pragma mark - Public Interface
 
 - (void)initObservers {
+  if (!_registrar) {
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(_browserState);
+    _registrar = std::make_unique<AllWebStateListObservationRegistrar>(
+        browserList, std::make_unique<WebStateListObserverBridge>(self),
+        AllWebStateListObservationRegistrar::Mode::REGULAR);
+  }
   if (!_syncedSessionsObserver) {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(_browserState);
@@ -90,13 +89,8 @@
 }
 
 - (void)disconnect {
+  _registrar.reset();
   _syncedSessionsObserver.reset();
-
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-    _webStateListObserver.reset();
-    _webStateList = nullptr;
-  }
 
   if (_closedTabsObserver) {
     sessions::TabRestoreService* restoreService =
@@ -130,13 +124,14 @@
   restoreService->LoadTabsFromLastSession();
   // A WebStateList batch operation can result in batch changes to the
   // TabRestoreService (e.g., closing or restoring all tabs). To properly batch
-  // process TabRestoreService changes, those changes must be executed inside
-  // the WebStateList batch operation callback. This allows RecentTabs to ignore
-  // individual tabRestoreServiceChanged calls that correspond to the
-  // WebStateList batch operation. The consumer is updated once after the batch
-  // operation is completed.
-  if (!self.processingBatchOperation)
+  // process TabRestoreService changes, those changes must be executed after the
+  // WebStateList batch operation ended. This allows RecentTabs to ignore
+  // individual tabRestoreServiceChanged calls that correspond to a WebStateList
+  // batch operation. The consumer is updated once after all batch operations
+  // have completed.
+  if (_webStateListsWithBatchOperations.empty()) {
     [self.consumer refreshRecentlyClosedTabs];
+  }
 }
 
 - (void)tabRestoreServiceDestroyed:(sessions::TabRestoreService*)service {
@@ -146,18 +141,35 @@
 #pragma mark - WebStateListObserving
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  self.processingBatchOperation = YES;
+  _webStateListsWithBatchOperations.insert(webStateList);
 }
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  self.processingBatchOperation = NO;
+  _webStateListsWithBatchOperations.erase(webStateList);
   // A WebStateList batch operation can result in batch changes to the
   // TabRestoreService (e.g., closing or restoring all tabs). Individual
   // TabRestoreService updates are ignored between
   // `-webStateListWillBeginBatchOperation:` and
-  // `-webStateListBatchOperationEnded:`. The consumer is updated once after the
-  // batch operation is complete.
-  [self.consumer refreshRecentlyClosedTabs];
+  // `-webStateListBatchOperationEnded:` for all observed WebStateLists. The
+  // consumer is updated once after all batch operations have completed.
+  if (_webStateListsWithBatchOperations.empty()) {
+    [self.consumer refreshRecentlyClosedTabs];
+  }
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  if (_webStateListsWithBatchOperations.contains(webStateList)) {
+    // This means a WebStateList was in a batch operation (received
+    // `-webStateListWillBeginBatchOperation:`) that didn't finish (didn't
+    // receive `-webStateListBatchOperationEnded:`). This is not supposed to
+    // happen, but if it did, handle it by removing the web state list from the
+    // set and dump without crashing.
+    base::debug::DumpWithoutCrashing();
+    _webStateListsWithBatchOperations.erase(webStateList);
+    if (_webStateListsWithBatchOperations.empty()) {
+      [self.consumer refreshRecentlyClosedTabs];
+    }
+  }
 }
 
 #pragma mark - TableViewFaviconDataSource
@@ -171,18 +183,6 @@
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });
-}
-
-#pragma mark - Setters/Getters
-
-- (void)setWebStateList:(WebStateList*)webStateList {
-  if (_webStateList)
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-
-  _webStateList = webStateList;
-
-  if (_webStateList)
-    _webStateList->AddObserver(_webStateListObserver.get());
 }
 
 #pragma mark - Private

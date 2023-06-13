@@ -896,7 +896,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.remoteTabsMediator = [[RecentTabsMediator alloc] init];
   self.remoteTabsMediator.browserState = regularBrowserState;
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-  self.remoteTabsMediator.webStateList = regularWebStateList;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =
