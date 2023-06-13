@@ -42,9 +42,9 @@ suite('PersonalizationThemeTest', function() {
     personalizationThemeElement = initElement(PersonalizationThemeElement);
     await waitAfterNextRender(personalizationThemeElement);
 
-    assertEquals(
-        personalizationThemeElement.i18n('themeLabel'),
-        personalizationThemeElement.shadowRoot!.querySelector('h2')!.innerText);
+    const radioButton =
+        personalizationThemeElement.shadowRoot!.getElementById('darkMode');
+    assertTrue(!!radioButton);
   });
 
   test('sets color mode in store on first load', async () => {
