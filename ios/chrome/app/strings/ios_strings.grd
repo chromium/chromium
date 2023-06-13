@@ -2062,8 +2062,20 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_DETAILS" desc="Subtitle that describes to which email address price tracking notifications would be sent.">
         Send to <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
       </message>
-      <message name="IDS_IOS_PRIVACY_LOCKDOWN_MODE_TITLE" desc="Title for Lockdown Mode.">
+      <message name="IDS_IOS_LOCKDOWN_MODE_TITLE" desc="Title for Lockdown Mode.">
         Lockdown Mode
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_SWITCH_BUTTON_SUMMARY" desc="Title for Lockdown Mode.">
+        Extreme optional protection for your browser. It should only be used if you believe you may be targeted by a highly sophisticated cyberattack.
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_TITLE" desc="Title for Lockdown Mode.">
+        This setting is enabled on your device
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY" desc="Title for Lockdown Mode.">
+        To disable Lockdown Mode in Chrome turn it off on your device.
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_FOOTER" desc="Title for Lockdown Mode.">
+        When Chrome is in Lockdown Mode, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.
       </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.

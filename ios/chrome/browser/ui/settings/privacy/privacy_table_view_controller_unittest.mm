@@ -178,15 +178,6 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
       SafeBrowsingDetailText(), currentSection, 0);
 
-  // Lockdown Mode section.
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
-    currentSection++;
-    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_PRIVACY_LOCKDOWN_MODE_TITLE),
-        l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
-  }
-
   // HTTPS-Only Mode section.
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
@@ -234,6 +225,15 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   } else {
     CheckSwitchCellStateAndTextWithId(
         NO, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL, currentSection, 0);
+  }
+
+  // Lockdown Mode section.
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
+        l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
   }
 
   // Testing section index and text of the privacy footer.

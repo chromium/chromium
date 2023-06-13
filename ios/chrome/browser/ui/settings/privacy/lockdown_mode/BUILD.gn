@@ -1,0 +1,84 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("lockdown_mode") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "lockdown_mode_consumer.h",
+    "lockdown_mode_coordinator.h",
+    "lockdown_mode_coordinator.mm",
+    "lockdown_mode_mediator.h",
+    "lockdown_mode_mediator.mm",
+    "lockdown_mode_view_controller.h",
+    "lockdown_mode_view_controller.mm",
+    "lockdown_mode_view_controller_delegate.h",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/elements:info_popover_view_controller",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "lockdown_mode_mediator_unittest.mm",
+    "lockdown_mode_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":lockdown_mode",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "lockdown_mode_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

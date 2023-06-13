@@ -107,6 +107,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewDetailIconItem* _handoffDetailItem;
   // Safe Browsing item.
   TableViewDetailIconItem* _safeBrowsingDetailItem;
+  // Locdown Mode item.
+  TableViewDetailIconItem* _lockdownModeDetailItem;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
@@ -161,6 +163,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         prefs::kSafeBrowsingEnabled, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kSafeBrowsingEnhanced, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kBrowserLockdownModeEnabled, &_prefChangeRegistrar);
 
     _incognitoReauthPref = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
@@ -206,7 +210,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
   [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
-  [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
@@ -219,6 +222,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
+  if (web::IsBrowserLockdownModeEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
+  }
+
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierPrivacyContent];
@@ -227,18 +234,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self safeBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
 
-  // Lockdown Mode item.
-  if (web::IsBrowserLockdownModeEnabled()) {
-    [model addItem:[self lockdownModeDetailItem]
-        toSectionWithIdentifier:SectionIdentifierLockdownMode];
-  }
-
   // Web Services item.
   [model addItem:[self handoffDetailItem]
       toSectionWithIdentifier:SectionIdentifierWebServices];
-
-  [model setFooter:[self showPrivacyFooterItem]
-      forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Incognito reauth item is added. If Incognito mode is disabled, or device
   // authentication is not supported, a disabled version is shown instead with
@@ -262,6 +260,17 @@ const char kSyncSettingsURL[] = "settings://open_sync";
           : self.incognitoInterstitialItem;
   [model addItem:incognitoInterstitialItem
       toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
+
+  // Lockdown Mode item.
+  if (web::IsBrowserLockdownModeEnabled()) {
+    [model addItem:[self lockdownModeDetailItem]
+        toSectionWithIdentifier:SectionIdentifierLockdownMode];
+    [model setFooter:[self showPrivacyFooterItem]
+        forSectionWithIdentifier:SectionIdentifierLockdownMode];
+  } else {
+    [model setFooter:[self showPrivacyFooterItem]
+        forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
+  }
 }
 
 #pragma mark - Model Objects
@@ -373,12 +382,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       _browserState->GetPrefs()->GetBoolean(prefs::kBrowserLockdownModeEnabled)
           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  TableViewDetailIconItem* lockdownModeDetailItem =
+  _lockdownModeDetailItem =
       [self detailItemWithType:ItemTypeLockdownMode
-                          titleId:IDS_IOS_PRIVACY_LOCKDOWN_MODE_TITLE
+                          titleId:IDS_IOS_LOCKDOWN_MODE_TITLE
                        detailText:detailText
           accessibilityIdentifier:kPrivacyLockdownModeCellId];
-  return lockdownModeDetailItem;
+  return _lockdownModeDetailItem;
 }
 
 - (TableViewSwitchItem*)incognitoReauthItem {
@@ -487,6 +496,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
           "SafeBrowsing.Settings.ShowedFromParentSettings"));
       [self.handler showSafeBrowsing];
       break;
+    case ItemTypeLockdownMode:
+      [self.handler showLockdownMode];
+      break;
     default:
       break;
   }
@@ -561,6 +573,15 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       preferenceName == prefs::kSafeBrowsingEnhanced) {
     _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
     [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
+  }
+
+  if (preferenceName == prefs::kBrowserLockdownModeEnabled) {
+    NSString* detailText = _browserState->GetPrefs()->GetBoolean(preferenceName)
+                               ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    _lockdownModeDetailItem.detailText = detailText;
+    [self reconfigureCellsForItems:@[ _lockdownModeDetailItem ]];
+    return;
   }
 }
 

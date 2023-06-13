@@ -19719,6 +19719,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileLockdownModeSettingsBack">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Safe Browsing Standard Protection Settings
+    UI to root Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileLockdownModeSettingsClose">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Safe Browsing Standard Protection Settings UI was dismissed.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileMenuAddToBookmarks">
   <owner>aurimas@chromium.org</owner>
   <description>
