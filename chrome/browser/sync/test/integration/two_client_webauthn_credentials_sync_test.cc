@@ -37,13 +37,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  PasskeyModel& model0 = GetModel(0);
+  webauthn::PasskeyModel& model0 = GetModel(0);
   EXPECT_EQ(model0.GetAllSyncIds().size(), 0u);
   sync_pb::WebauthnCredentialSpecifics passkey0 = NewPasskey();
   const std::string sync_id0 = model0.AddNewPasskeyForTesting(passkey0);
   EXPECT_EQ(model0.GetAllSyncIds().size(), 1u);
 
-  PasskeyModel& model1 = GetModel(1);
+  webauthn::PasskeyModel& model1 = GetModel(1);
   ASSERT_TRUE(AwaitAllModelsMatch());
   EXPECT_EQ(model1.GetAllSyncIds().size(), 1u);
 

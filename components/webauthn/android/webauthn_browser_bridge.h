@@ -7,6 +7,8 @@
 
 #include "base/android/scoped_java_ref.h"
 
+namespace webauthn {
+
 class WebAuthnBrowserBridge {
  public:
   WebAuthnBrowserBridge(JNIEnv* env,
@@ -45,5 +47,7 @@ class WebAuthnBrowserBridge {
   // Java object that owns this WebAuthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_BROWSER_BRIDGE_H_

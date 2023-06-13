@@ -22,6 +22,8 @@ namespace syncer {
 class ModelTypeControllerDelegate;
 }
 
+namespace webauthn {
+
 // PasskeyModel provides access to passkeys, which are represented as
 // WebauthnCredentialSpecifics in Sync.
 //
@@ -76,5 +78,7 @@ class PasskeyModel : public KeyedService {
   virtual std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) = 0;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_

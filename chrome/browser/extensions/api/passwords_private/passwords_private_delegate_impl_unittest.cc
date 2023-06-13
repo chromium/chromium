@@ -389,7 +389,7 @@ void PasswordsPrivateDelegateImplTest::SetUp() {
       profile(),
       base::BindRepeating(
           [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<TestPasskeyModel>();
+            return std::make_unique<webauthn::TestPasskeyModel>();
           }));
 }
 
@@ -1698,7 +1698,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
 
   auto delegate = CreateDelegate();
 
-  PasskeyModel* passkey_model = PasskeyModelFactory::GetForProfile(profile());
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
   ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
   ASSERT_TRUE(passkey_model);
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
@@ -1742,7 +1743,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
 
   auto delegate = CreateDelegate();
 
-  PasskeyModel* passkey_model = PasskeyModelFactory::GetForProfile(profile());
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
   ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
   ASSERT_TRUE(passkey_model);
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();

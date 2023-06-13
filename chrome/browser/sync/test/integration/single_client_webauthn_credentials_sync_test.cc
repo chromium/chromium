@@ -96,7 +96,7 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       syncer::kSyncWebauthnCredentials};
 
-  PasskeyModel& GetModel() {
+  webauthn::PasskeyModel& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);
   }
 };
