@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,7 +30,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -172,7 +172,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug/1199248
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     // clang-format off
     @CommandLineFlags.Add({
@@ -183,7 +183,6 @@ public class UndoBarControllerTest {
     // clang-format on
     public void
     testUndoSnackbarEnabled_AccessibilityEnabledWithGroupM5() throws Exception {
-        // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
 
