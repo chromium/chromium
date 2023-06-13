@@ -2881,7 +2881,7 @@
       },
       'fuchsia-fyi-x64-asan': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'swarming': {
           'dimension_sets': [
