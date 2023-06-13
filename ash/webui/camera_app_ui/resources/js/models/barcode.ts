@@ -52,9 +52,6 @@ export class BarcodeScanner {
     }, SCAN_INTERVAL);
   }
 
-  /**
-   * Stops scanning barcodes.
-   */
   stop(): void {
     if (this.scanRunner === null) {
       return;

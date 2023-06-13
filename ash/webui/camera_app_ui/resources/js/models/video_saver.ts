@@ -101,8 +101,6 @@ export class VideoSaver {
 
   /**
    * Finishes the write of video data parts and returns result video file.
-   *
-   * @return Result video file.
    */
   async endWrite(): Promise<FileAccessEntry> {
     await this.processor.close();
