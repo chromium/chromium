@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
+#include "chrome/browser/ash/crostini/crostini_shared_devices.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
@@ -176,6 +177,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   crostini::CrostiniMetricsService::Factory::GetInstance();
   crostini::CrostiniPackageService::EnsureFactoryBuilt();
   crostini::CrostiniPortForwarder::EnsureFactoryBuilt();
+  crostini::CrostiniSharedDevices::EnsureFactoryBuilt();
   crostini::CrostiniThrottle::EnsureFactoryBuilt();
   crostini::CrostiniUpgrader::EnsureFactoryBuilt();
 #if BUILDFLAG(USE_CUPS)
