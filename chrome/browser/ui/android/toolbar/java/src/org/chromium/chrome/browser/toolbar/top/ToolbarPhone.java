@@ -1124,7 +1124,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * Updates the toolbar height and bottom padding during URL focus changing.
      */
     private void updateToolbarLayoutForUrlFocusChangeAnimation() {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
+        // With the smallest margins variant enabled, we still increase the height of the location
+        // bar bg but don't increase the height of the toolbar.
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
+                || OmniboxFeatures.shouldShowSmallestMargins(getContext())) {
             return;
         }
 
