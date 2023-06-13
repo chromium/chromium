@@ -719,5 +719,62 @@ TEST_F(AttributionHostTest, ImpressionNavigation_FeaturePolicyChecked) {
   }
 }
 
+TEST_F(AttributionHostTest, InsecureTaintTracking) {
+  blink::Impression impression;
+
+  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+  const SuitableOrigin source_origin =
+      *SuitableOrigin::Deserialize("https://secure_impression.com");
+
+  const GURL b_url(kConversionUrl);
+  const SuitableOrigin b_origin = *SuitableOrigin::Create(b_url);
+
+  const GURL insecure_url("http://insecure.com");
+
+  const GURL d_url("https://d.com");
+  const SuitableOrigin d_origin = *SuitableOrigin::Create(d_url);
+
+  GlobalRenderFrameHostId frame_id = main_rfh()->GetGlobalId();
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationStarted(
+                  impression.attribution_src_token, source_origin,
+                  /*is_within_fenced_frame=*/false, frame_id,
+                  /*navigation_id=*/_));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationData(
+                  impression.attribution_src_token, redirect_headers.get(),
+                  /*reporting_origin=*/b_origin, source_origin, _,
+                  /*is_within_fenced_frame=*/false, frame_id, _, _,
+                  /*is_final_response=*/false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationData(
+                  impression.attribution_src_token, headers.get(),
+                  /*reporting_origin=*/d_origin, source_origin, _,
+                  /*is_within_fenced_frame=*/false, frame_id, _, _,
+                  /*is_final_response=*/true))
+      .WillOnce(Return(true));
+
+  contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
+
+  base::HistogramTester histograms;
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(b_url, main_rfh());
+  navigation->SetInitiatorFrame(main_rfh());
+  navigation->set_impression(std::move(impression));
+  navigation->SetRedirectHeaders(redirect_headers);
+  navigation->Redirect(insecure_url);
+  navigation->SetRedirectHeaders(redirect_headers);
+  navigation->Redirect(d_url);
+  navigation->SetResponseHeaders(headers);
+  navigation->Commit();
+
+  histograms.ExpectUniqueSample("Conversions.IncrementalTaintingFailures", 1,
+                                1);
+}
+
 }  // namespace
 }  // namespace content

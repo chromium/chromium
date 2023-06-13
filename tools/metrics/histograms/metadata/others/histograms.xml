@@ -3797,6 +3797,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.IncrementalTaintingFailures"
+    units="failed registrations" expires_after="M121">
+  <owner>csharrison@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of failures via the proposed insecure tainting
+    mechanism, where a redirect chain will be considered &quot;tainted&quot;
+    when it encounters its first insecure redirect, causing any subsequent
+    registrations to fail even if they are secure. This metric attempts to
+    measure the breakage. It is emitted on the completion of any main frame
+    navigation which had at least one secure response register ARA headers. It
+    counts how many failed registrations that navigation would have observed
+    with tainting enabled.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.NavigationDataHostStatus3"
     enum="ConversionNavigationDataHostStatus" expires_after="M121">
   <owner>linnan@chromium.org</owner>

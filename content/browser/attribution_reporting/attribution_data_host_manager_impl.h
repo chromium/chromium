@@ -83,7 +83,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id) override;
-  void NotifyNavigationRegistrationData(
+  bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,

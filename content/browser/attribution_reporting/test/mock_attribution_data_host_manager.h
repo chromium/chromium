@@ -59,7 +59,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
                int64_t navigation_id),
               (override));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               NotifyNavigationRegistrationData,
               (const blink::AttributionSrcToken& attribution_src_token,
                const net::HttpResponseHeaders* headers,

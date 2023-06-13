@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -29,11 +30,13 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,6 +55,45 @@
 namespace content {
 
 namespace {
+
+// Auxiliary data that lives alongside a NavigationHandle, tracking
+// whether the navigation is "insecurely tainted" i.e. has seen an
+// insecure hop in its path. This should only be present for navigations which
+// have had at least one secure response with Attribution headers.
+//
+// For now, it is only used for metrics collection, but it may be extended in
+// the future to block secure registration attempts after an insecure redirect
+// was seen. See https://github.com/WICG/attribution-reporting-api/issues/767.
+class InsecureTaintTracker
+    : public NavigationHandleUserData<InsecureTaintTracker> {
+ public:
+  explicit InsecureTaintTracker(NavigationHandle&) {}
+  ~InsecureTaintTracker() override {
+    if (had_any_secure_attempts_) {
+      base::UmaHistogramExactLinear("Conversions.IncrementalTaintingFailures",
+                                    num_secure_registrations_after_tainting_,
+                                    net::URLRequest::kMaxRedirects + 1);
+    }
+  }
+
+  InsecureTaintTracker(const InsecureTaintTracker&) = delete;
+  InsecureTaintTracker& operator=(const InsecureTaintTracker&) = delete;
+
+  void TaintInsecure() { navigation_is_tainted_ = true; }
+
+  void NotifySecureRegistrationAttempt() {
+    had_any_secure_attempts_ = true;
+    num_secure_registrations_after_tainting_ += navigation_is_tainted_;
+  }
+
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
+ private:
+  int num_secure_registrations_after_tainting_ = 0;
+  bool navigation_is_tainted_ = false;
+  bool had_any_secure_attempts_ = false;
+};
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(InsecureTaintTracker);
 
 using ::attribution_reporting::SuitableOrigin;
 
@@ -250,7 +292,13 @@ void AttributionHost::NotifyNavigationRegistrationData(
   }
   absl::optional<SuitableOrigin> reporting_origin =
       SuitableOrigin::Create(redirect_chain[redirect_chain.size() - offset]);
+
+  // Pass the suitability as a proxy for the potentially trustworthy check, as
+  // redirects should only happen for HTTP-based navigations.
+  auto* tracker =
+      InsecureTaintTracker::GetOrCreateForNavigationHandle(*navigation_handle);
   if (!reporting_origin) {
+    tracker->TaintInsecure();
     return;
   }
 
@@ -258,13 +306,20 @@ void AttributionHost::NotifyNavigationRegistrationData(
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
-  attribution_manager->GetDataHostManager()->NotifyNavigationRegistrationData(
-      impression->attribution_src_token,
-      navigation_handle->GetResponseHeaders(), std::move(*reporting_origin),
-      it->second.source_origin, it->second.input_event,
-      it->second.is_within_fenced_frame, it->second.initiator_root_frame_id,
-      navigation_handle->GetNavigationId(), impression->runtime_features,
-      is_final_response);
+  bool had_header =
+      attribution_manager->GetDataHostManager()
+          ->NotifyNavigationRegistrationData(
+              impression->attribution_src_token,
+              navigation_handle->GetResponseHeaders(),
+              std::move(*reporting_origin), it->second.source_origin,
+              it->second.input_event, it->second.is_within_fenced_frame,
+              it->second.initiator_root_frame_id,
+              navigation_handle->GetNavigationId(),
+              impression->runtime_features, is_final_response);
+
+  if (had_header) {
+    tracker->NotifySecureRegistrationAttempt();
+  }
 }
 
 absl::optional<SuitableOrigin>

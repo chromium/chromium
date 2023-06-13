@@ -80,7 +80,9 @@ class AttributionDataHostManager
   // initiator render frame for obtaining the page access report.
   // `is_final_response` indicates whether this is a redirect or a final
   // response.
-  virtual void NotifyNavigationRegistrationData(
+  //
+  // Returns true if there was Attribution Reporting relevant response headers.
+  virtual bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,

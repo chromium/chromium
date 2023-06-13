@@ -550,7 +550,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
   }
 }
 
-void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
+bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     const blink::AttributionSrcToken& attribution_src_token,
     const net::HttpResponseHeaders* headers,
     SuitableOrigin reporting_origin,
@@ -561,10 +561,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     int64_t navigation_id,
     network::AttributionReportingRuntimeFeatures runtime_features,
     bool is_final_response) {
-  if (auto header = RegistrarAndHeader::Get(
-          headers,
-          runtime_features.Has(
-              network::AttributionReportingRuntimeFeature::kCrossAppWeb))) {
+  auto header = RegistrarAndHeader::Get(
+      headers, runtime_features.Has(
+                   network::AttributionReportingRuntimeFeature::kCrossAppWeb));
+  if (header.has_value()) {
     auto [it, inserted] = registrations_.emplace(
         source_origin, is_within_fenced_frame, std::move(input_event),
         render_frame_id,
@@ -600,6 +600,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
       MaybeOnRegistrationsFinished(it);
     }
   }
+  return header.has_value();
 }
 
 const AttributionDataHostManagerImpl::ReceiverContext*
