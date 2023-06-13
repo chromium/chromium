@@ -41,6 +41,9 @@
     }
   },
   "$build/reclient": {
+    "bootstrap_env": {
+      "RBE_fast_log_collection": "true"
+    },
     "ensure_verified": true,
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",

@@ -41,6 +41,9 @@
     }
   },
   "$build/reclient": {
+    "bootstrap_env": {
+      "RBE_fast_log_collection": "true"
+    },
     "disable_bq_upload": true,
     "ensure_verified": true,
     "instance": "rbe-chromium-untrusted",
