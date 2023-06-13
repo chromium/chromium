@@ -466,7 +466,7 @@
   {
     "prefix": "percent-based-scrolling",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/scrolling/scrollbars"],
+    "bases": [],
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],
@@ -485,8 +485,7 @@
     "prefix": "compositor-threaded-percent-based-scrolling",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/wheel",
-              "fast/scrolling",
-              "virtual/percent-based-scrolling"],
+              "fast/scrolling"],
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],

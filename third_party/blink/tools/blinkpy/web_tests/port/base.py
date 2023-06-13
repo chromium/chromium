@@ -1578,6 +1578,11 @@ class Port(object):
     @memoized
     def args_for_test(self, test_name):
         args = self._lookup_virtual_test_args(test_name)
+
+        if self._is_in_allowlist_for_threaded_compositing(test_name):
+            if (ENABLE_THREADED_COMPOSITING_FLAG not in args):
+                args.append(ENABLE_THREADED_COMPOSITING_FLAG)
+
         pac_url = self.extract_wpt_pac(test_name)
         if pac_url is not None:
             args.append("--proxy-pac-url=" + pac_url)
@@ -1594,10 +1599,6 @@ class Port(object):
             file_name = 'trace_layout_test_{}_{}.json'.format(
                 self._filesystem.sanitize_filename(test_name), current_time)
             args.append('--trace-startup-file=' + file_name)
-
-        if self._is_in_allowlist_for_threaded_compositing(test_name):
-            if (ENABLE_THREADED_COMPOSITING_FLAG not in args):
-                args.append(ENABLE_THREADED_COMPOSITING_FLAG)
 
         return args
 
@@ -2558,7 +2559,7 @@ class Port(object):
     def _get_blocked_tests_for_threaded_compositing_testing(self):
         path = self._filesystem.join(self.web_tests_dir(),
                                      'SmokeTests/SingleThreadedTests')
-        return self._filesystem.read_text_file(path).split('\n')
+        return set(self._filesystem.read_text_file(path).split('\n'))
 
     def _is_in_allowlist_for_threaded_compositing(self, test_name):
         # We currently only turn on threaded compositing tests for Linux
@@ -2570,14 +2571,14 @@ class Port(object):
 
         block_list = self._get_blocked_tests_for_threaded_compositing_testing()
 
+        if test_name in block_list:
+            return False
+
         # We apply the setting of a base test to all of its virtual versions
         base_name = self.lookup_virtual_test_base(test_name)
         if base_name:
             if base_name in block_list:
                 return False
-
-        if test_name in block_list:
-            return False
 
         return True
 
@@ -2724,7 +2725,13 @@ class VirtualTestSuite(object):
         self.platforms = [x.lower() for x in platforms]
         self.bases = bases
         self.exclusive_tests = exclusive_tests
-        self.args = args
+        self.args = sorted(args)
+        # always put --enable-threaded-compositing at the end of list, so that after appending
+        # this parameter due to crrev.com/c/4599846, we do not need to restart content shell
+        # if the parameter set is same.
+        if ENABLE_THREADED_COMPOSITING_FLAG in self.args:
+            self.args.remove(ENABLE_THREADED_COMPOSITING_FLAG)
+            self.args.append(ENABLE_THREADED_COMPOSITING_FLAG)
 
     def __repr__(self):
         return "VirtualTestSuite('%s', %s, %s, %s)" % (self.full_prefix,
