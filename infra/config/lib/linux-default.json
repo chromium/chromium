@@ -178,6 +178,7 @@
     "android-cronet-x86-dbg-marshmallow-tests": "Ubuntu-22.04",
     "android-cronet-x86-dbg-oreo-tests": "Ubuntu-22.04",
     "android-cronet-x86-rel": "Ubuntu-22.04",
+    "android-cronet-x86-rel-kitkat-tests": "Ubuntu-22.04",
     "android-official": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
     "android-pie-x86-rel": "Ubuntu-22.04",
