@@ -6696,8 +6696,6 @@ crbug.com/1453982 [ Mac ] external/wpt/pointerevents/touch-action-with-swipe-dir
 crbug.com/1454064 [ Linux ] fast/events/autoscroll-should-not-stop-on-keypress.html [ Failure Pass ]
 crbug.com/1454070 [ Linux ] fast/css/inline-outline-with-border-radius-outset.html [ Failure Pass ]
 
-crbug.com/1453272 http/tests/devtools/indexeddb/database-refresh-view.js [ Failure Pass Timeout ]
-
 # Gardener 2023-06-13
 crbug.com/1453982 [ Mac11-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
 crbug.com/1453982 [ Mac12-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
