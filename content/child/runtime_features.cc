@@ -323,6 +323,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kRemoveMobileViewportDoubleTap)},
     {wf::EnableServiceWorkerBypassFetchHandler,
      raw_ref(features::kServiceWorkerBypassFetchHandler)},
+    {wf::EnableServiceWorkerStaticRouter,
+     raw_ref(features::kServiceWorkerStaticRouter)},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

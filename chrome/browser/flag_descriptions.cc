@@ -740,6 +740,11 @@ const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[] =
     "fetch handler, the feature may affect the page load. This feature will be "
     "overridden by chrome://flags/#service-worker-bypass-fetch-handler";
 
+const char kServiceWorkerStaticRouterName[] = "Service Worker Static Router";
+const char kServiceWorkerStaticRouterDescription[] =
+    "When enabled, Chrome will enable the Service Worker Static Routing API. "
+    "https://chromestatus.com/feature/5185352976826368";
+
 const char kChromeLabsName[] = "Chrome Labs";
 const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "

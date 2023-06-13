@@ -1096,6 +1096,12 @@ constexpr base::FeatureParam<int>
         0,
     };
 
+// Enables ServiceWorker static routing API.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+BASE_FEATURE(kServiceWorkerStaticRouter,
+             "ServiceWorkerStaticRouter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,

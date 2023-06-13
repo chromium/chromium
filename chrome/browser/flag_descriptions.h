@@ -403,6 +403,9 @@ extern const char kServiceWorkerBypassFetchHandlerDescription[];
 extern const char kServiceWorkerBypassFetchHandlerForMainResourceName[];
 extern const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[];
 
+extern const char kServiceWorkerStaticRouterName[];
+extern const char kServiceWorkerStaticRouterDescription[];
+
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 

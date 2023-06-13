@@ -59564,6 +59564,7 @@ from previous Chrome versions.
       label="OptimizationGuideInstallWideModelStore:enabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
+  <int value="-1774921110" label="ServiceWorkerStaticRouter:enabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
   <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
   <int value="-1773925297" label="TimedHtmlParserBudget:disabled"/>
@@ -62395,6 +62396,7 @@ from previous Chrome versions.
       label="CrossOriginMediaPlaybackRequiresUserGesture:disabled"/>
   <int value="-296762162" label="ExoOrdinalMotion:enabled"/>
   <int value="-296493265" label="ProjectorAppDebug:enabled"/>
+  <int value="-296208832" label="ServiceWorkerStaticRouter:disabled"/>
   <int value="-296179618" label="CookiesWithoutSameSiteMustBeSecure:enabled"/>
   <int value="-295237704" label="EnableRemovingAllThirdPartyCookies:enabled"/>
   <int value="-293546827" label="HideIncognitoMediaMetadata:enabled"/>

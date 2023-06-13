@@ -10063,6 +10063,11 @@ const FeatureEntry kFeatureEntries[] = {
          kServiceWorkerBypassFetchHandlerForMainResourceDescription,
      kOsAll, FEATURE_VALUE_TYPE(features::kServiceWorkerBypassFetchHandler)},
 
+    {"service-worker-static-router",
+     flag_descriptions::kServiceWorkerStaticRouterName,
+     flag_descriptions::kServiceWorkerStaticRouterDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kServiceWorkerStaticRouter)},
+
     {"autofill-remove-card-expiration-and-type-titles",
      flag_descriptions::kAutofillRemoveCardExpirationAndTypeTitlesName,
      flag_descriptions::kAutofillRemoveCardExpirationAndTypeTitlesDescription,
