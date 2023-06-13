@@ -1244,7 +1244,8 @@ body.check-select #list-container.thumbnail-view .thumbnail-grid:focus
 
 /* Only display outlines for entries with thumbnails. */
 #list-container.thumbnail-view li:has(.thumbnail) .inline-status .progress,
-#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline] {
+#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline],
+#list-container.thumbnail-view li.cant-pin:has(.thumbnail) .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color-outline: var(--cros-sys-app_base);
 }
 

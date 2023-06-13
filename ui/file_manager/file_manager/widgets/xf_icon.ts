@@ -39,8 +39,8 @@ export class XfIcon extends XfBase {
 
   static get multiColor() {
     return {
-      [constants.ICON_TYPES.OFFLINE]:
-          svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
+      [constants.ICON_TYPES.CANT_PIN]:
+          svg`<use xlink:href="foreground/images/files/ui/cant_pin.svg#cant_pin"></use>`,
       [constants.ICON_TYPES.CLOUD_DONE]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_done.svg#cloud_done"></use>`,
       [constants.ICON_TYPES.CLOUD_ERROR]:
@@ -55,6 +55,8 @@ export class XfIcon extends XfBase {
           svg`<use xlink:href="foreground/images/files/ui/encrypted.svg#encrypted"></use>`,
       [constants.ICON_TYPES.ERROR]:
           svg`<use xlink:href="foreground/images/files/ui/error.svg#error"></use>`,
+      [constants.ICON_TYPES.OFFLINE]:
+          svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
     };
   }
 
@@ -192,10 +194,6 @@ function getCSS() {
 
     :host([type="camera-folder"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/camera.svg);
-    }
-
-    :host([type="cant-pin"]) span {
-      -webkit-mask-image: url(../foreground/images/files/ui/cant_pin.svg);
     }
 
     :host([type="computer"]) span {
