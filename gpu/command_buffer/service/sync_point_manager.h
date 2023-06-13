@@ -134,8 +134,6 @@ class GPU_EXPORT SyncPointOrderData
   // Whether or not the current order number is being processed or paused.
   bool paused_ = false;
 
-  // This lock protects destroyed_, processed_order_num_,
-  // unprocessed_order_nums_, and order_fence_queue_.
   mutable base::Lock lock_;
 
   bool destroyed_ GUARDED_BY(lock_) = false;

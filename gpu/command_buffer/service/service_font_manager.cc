@@ -240,7 +240,6 @@ bool ServiceFontManager::Deserialize(
 
 bool ServiceFontManager::AddHandle(SkDiscardableHandleId handle_id,
                                    ServiceDiscardableHandle handle) {
-  lock_.AssertAcquired();
   bool inserted;
   std::tie(std::ignore, inserted) =
       discardable_handle_map_.try_emplace(handle_id, std::move(handle));

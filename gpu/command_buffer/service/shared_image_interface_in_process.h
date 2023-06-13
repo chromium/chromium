@@ -275,10 +275,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // Sequence checker for tasks that run on the gpu "thread".
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 
-  // Accessed on any thread. release_id_lock_ protects access to
-  // next_fence_sync_release_.
+  // Accessed on any thread.
   base::Lock lock_;
-  uint64_t next_fence_sync_release_ = 1;
+  uint64_t next_fence_sync_release_ GUARDED_BY(lock_) = 1;
 
   // Accessed on compositor thread.
   // This is used to get NativePixmap, and is only used when SharedImageManager

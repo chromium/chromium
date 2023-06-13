@@ -38,7 +38,6 @@ class GPU_GLES2_EXPORT ServiceFontManager
   bool disable_oopr_debug_crash_dump() const {
     return disable_oopr_debug_crash_dump_;
   }
-  bool is_destroyed() const { return destroyed_; }
 
  private:
   friend class base::RefCountedThreadSafe<ServiceFontManager>;
@@ -47,12 +46,13 @@ class GPU_GLES2_EXPORT ServiceFontManager
   ~ServiceFontManager();
 
   bool AddHandle(SkDiscardableHandleId handle_id,
-                 ServiceDiscardableHandle handle);
+                 ServiceDiscardableHandle handle)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool DeleteHandle(SkDiscardableHandleId handle_id);
 
   base::Lock lock_;
 
-  raw_ptr<Client> client_;
+  raw_ptr<Client> client_ GUARDED_BY(lock_);
   const base::PlatformThreadId client_thread_id_;
   std::unique_ptr<SkStrikeClient> strike_client_;
 
@@ -74,8 +74,9 @@ class GPU_GLES2_EXPORT ServiceFontManager
     // ref count hold by GPU service.
     int ref_count_ = 0;
   };
-  base::flat_map<SkDiscardableHandleId, Handle> discardable_handle_map_;
-  bool destroyed_ = false;
+  base::flat_map<SkDiscardableHandleId, Handle> discardable_handle_map_
+      GUARDED_BY(lock_);
+  bool destroyed_ GUARDED_BY(lock_) = false;
   const bool disable_oopr_debug_crash_dump_;
 };
 
