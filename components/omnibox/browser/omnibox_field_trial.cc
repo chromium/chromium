@@ -660,7 +660,7 @@ bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconAnswers",
-    false);
+    true);
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconIcons",
