@@ -93,6 +93,8 @@ std::string LocalDeviceDataProviderImpl::GetDeviceId() {
 }
 
 std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
+  // TODO(b/283987579): When NP Settings page is implemented, check for any
+  // changes to the user set device name.
   std::u16string device_type = ui::GetChromeOSDeviceName();
 
   const CoreAccountInfo account_info =
