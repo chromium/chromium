@@ -148,6 +148,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     @Mock
     private Delegate mDelegate;
 
+    private AddressEditorCoordinator mAddressEditor;
+
     private final CoreAccountInfo mAccountInfo =
             CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
 
@@ -237,12 +239,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest"})
     public void editNewAddressProfile() throws Exception {
         View editor = runOnUiThreadBlocking(() -> {
-            EditorDialogView dialog =
-                    new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditorCoordinator addressEditor =
-                    new AddressEditorCoordinator(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
-            addressEditor.showEditorDialog();
-            return dialog.getDataViewForTest();
+            mAddressEditor = new AddressEditorCoordinator(
+                    getActivity(), mLauncher, mDelegate, mProfile, /*saveToDisk=*/false);
+            mAddressEditor.showEditorDialog();
+            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
         });
         mRenderTestRule.render(editor, "edit_new_address_profile");
     }
@@ -253,12 +253,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     public void editNewAccountAddressProfile() throws Exception {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
-            EditorDialogView dialog =
-                    new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditorCoordinator addressEditor =
-                    new AddressEditorCoordinator(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
-            addressEditor.showEditorDialog();
-            return dialog.getDataViewForTest();
+            mAddressEditor = new AddressEditorCoordinator(
+                    getActivity(), mLauncher, mDelegate, mProfile, /*saveToDisk=*/false);
+            mAddressEditor.showEditorDialog();
+            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
         });
         mRenderTestRule.render(editor, "edit_new_account_address_profile");
     }
@@ -269,13 +267,11 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     public void editLocalOrSyncableAddressProfile() throws Exception {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
-            EditorDialogView dialog =
-                    new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditorCoordinator addressEditor = new AddressEditorCoordinator(dialog, mDelegate,
+            mAddressEditor = new AddressEditorCoordinator(getActivity(), mLauncher, mDelegate,
                     mProfile, new AutofillAddress(getActivity(), sLocalProfile),
                     UPDATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
-            addressEditor.showEditorDialog();
-            return dialog.getDataViewForTest();
+            mAddressEditor.showEditorDialog();
+            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
         });
         mRenderTestRule.render(editor, "edit_local_or_syncable_address_profile");
     }
@@ -286,14 +282,12 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     public void editAccountAddressProfile() throws Exception {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
-            EditorDialogView dialog =
-                    new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditorCoordinator addressEditor = new AddressEditorCoordinator(dialog, mDelegate,
+            mAddressEditor = new AddressEditorCoordinator(getActivity(), mLauncher, mDelegate,
                     mProfile, new AutofillAddress(getActivity(), sAccountProfile),
                     SAVE_NEW_ADDRESS_PROFILE,
                     /*saveToDisk=*/false);
-            addressEditor.showEditorDialog();
-            return dialog.getDataViewForTest();
+            mAddressEditor.showEditorDialog();
+            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
         });
         mRenderTestRule.render(editor, "edit_account_address_profile");
     }
@@ -304,13 +298,11 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     public void migrateLocalOrSyncableAddressProfile() throws Exception {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
-            EditorDialogView dialog =
-                    new EditorDialogView(getActivity(), /*deleteRunnable=*/null, mLauncher);
-            AddressEditorCoordinator addressEditor = new AddressEditorCoordinator(dialog, mDelegate,
+            mAddressEditor = new AddressEditorCoordinator(getActivity(), mLauncher, mDelegate,
                     mProfile, new AutofillAddress(getActivity(), sLocalProfile),
                     MIGRATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
-            addressEditor.showEditorDialog();
-            return dialog.getDataViewForTest();
+            mAddressEditor.showEditorDialog();
+            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
         });
         mRenderTestRule.render(editor, "migrate_local_or_syncable_address_profile");
     }

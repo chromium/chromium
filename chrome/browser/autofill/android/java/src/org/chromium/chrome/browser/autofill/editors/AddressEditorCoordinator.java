@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import android.app.Activity;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.lang.annotation.Retention;
@@ -19,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class AddressEditorCoordinator {
     private final AddressEditorMediator mMediator;
-    private final EditorDialogView mEditorDialog;
+    private EditorDialogView mEditorDialog;
 
     /**
      * Delegate used to subscribe to AddressEditor user interactions.
@@ -52,34 +56,36 @@ public class AddressEditorCoordinator {
     /**
      * Builds an address editor for a new address profile.
      *
-     * @param editorDialog Editor's view displayed to the user.
+     * @param activity The activity on top of which the UI should be displayed.
+     * @param helpLauncher The launcher of user help activity.
      * @param delegate Delegate to react to users interactions with the editor.
      * @param profile Current user's profile.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditorCoordinator(
-            EditorDialogView editorDialog, Delegate delegate, Profile profile, boolean saveToDisk) {
-        this(editorDialog, delegate, profile,
-                new AutofillAddress(editorDialog.getContext(), AutofillProfile.builder().build()),
+    public AddressEditorCoordinator(Activity activity, HelpAndFeedbackLauncher helpLauncher,
+            Delegate delegate, Profile profile, boolean saveToDisk) {
+        this(activity, helpLauncher, delegate, profile,
+                new AutofillAddress(activity, AutofillProfile.builder().build()),
                 UserFlow.CREATE_NEW_ADDRESS_PROFILE, saveToDisk);
     }
 
     /**
      * Builds an address editor for an existing address profile.
      *
-     * @param editorDialog Editor's view displayed to the user.
+     * @param activity The activity on top of which the UI should be displayed.
+     * @param helpLauncher The launcher of user help activity.
      * @param delegate Delegate to react to users interactions with the editor.
      * @param profile Current user's profile.
      * @param addressToEdit Address the user wants to modify.
-     * @param userFlow
+     * @param userFlow the current user flow this editor is used for.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditorCoordinator(EditorDialogView editorDialog, Delegate delegate,
-            Profile profile, AutofillAddress addressToEdit, @UserFlow int userFlow,
-            boolean saveToDisk) {
+    public AddressEditorCoordinator(Activity activity, HelpAndFeedbackLauncher helpLauncher,
+            Delegate delegate, Profile profile, AutofillAddress addressToEdit,
+            @UserFlow int userFlow, boolean saveToDisk) {
         mMediator = new AddressEditorMediator(
-                editorDialog.getContext(), delegate, profile, addressToEdit, userFlow, saveToDisk);
-        mEditorDialog = editorDialog;
+                activity, delegate, profile, addressToEdit, userFlow, saveToDisk);
+        mEditorDialog = new EditorDialogView(activity, helpLauncher);
     }
 
     /**
@@ -93,9 +99,71 @@ public class AddressEditorCoordinator {
     }
 
     /**
+     * Sets the runnable deleting the current autofill profile, e.g. when the user selects
+     * the delete option in the menu and confirms autofill profile deletion.
+     * TODO(crbug.com/1435314): make this part of model.
+     *
+     * @param deleteRunnable A {@link Runnable} deleting the current profile.
+     */
+    public void setDeleteRunnable(Runnable deleteRunnable) {
+        mEditorDialog.setDeleteRunnable(deleteRunnable);
+    }
+
+    /**
+     * Sets a boolean flag indicating if done callback needs to be triggered prior to dismissing
+     * this address editor.
+     * TODO(crbug.com/1435314): make this part of model.
+     *
+     * @param shouldTrigger If true, done callback is triggered immediately after the user clicked
+     *         on the done button. Otherwise, by default, it is triggered only after the dialog is
+     *         dismissed with animation.
+     */
+    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
+        mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(shouldTrigger);
+    }
+
+    /**
+     * Notifies underlying view that device configuration has changed.
+     */
+    public void onConfigurationChanged() {
+        mEditorDialog.onConfigurationChanged();
+    }
+
+    /**
      * Shows editor dialog to the user.
      */
     public void showEditorDialog() {
         mEditorDialog.show(mMediator.buildEditorModel());
+    }
+
+    /**
+     * Check if current editor dialog is visible to the user.
+     *
+     * @return true if this editor is visible to the user, false otherwise.
+     */
+    public boolean isShowing() {
+        return mEditorDialog.isShowing();
+    }
+
+    /**
+     * Dismiss currently visible editor dialog.
+     */
+    public void dismiss() {
+        mEditorDialog.dismiss();
+    }
+
+    /**
+     * @param editorDialog Test version of the editor dialog.
+     */
+    void setEditorDialogForTesting(EditorDialogView editorDialog) {
+        mEditorDialog = editorDialog;
+    }
+
+    /**
+     * @return editor dialog view for testing purposes.
+     */
+    @VisibleForTesting
+    public EditorDialogView getEditorDialogForTesting() {
+        return mEditorDialog;
     }
 }

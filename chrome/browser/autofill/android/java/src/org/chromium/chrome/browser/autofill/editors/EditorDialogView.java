@@ -119,11 +119,9 @@ public class EditorDialogView
      * Builds the editor dialog.
      *
      * @param activity             The activity on top of which the UI should be displayed.
-     * @param deleteRunnable       The runnable that when called will delete the profile.
      * @param helpLauncher         The launcher of user help activity.
      */
-    public EditorDialogView(
-            Activity activity, Runnable deleteRunnable, HelpAndFeedbackLauncher helpLauncher) {
+    public EditorDialogView(Activity activity, HelpAndFeedbackLauncher helpLauncher) {
         super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -154,8 +152,6 @@ public class EditorDialogView
         mFieldViews = new ArrayList<>();
         mEditableTextFields = new ArrayList<>();
         mDropdownFields = new ArrayList<>();
-
-        mDeleteRunnable = deleteRunnable;
     }
 
     /** Prevents screenshots of this editor. */
@@ -172,6 +168,13 @@ public class EditorDialogView
      */
     public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
         mShouldTriggerDoneCallbackBeforeCloseAnimation = shouldTrigger;
+    }
+
+    /**
+     * @param deleteRunnable The runnable that when called will delete the profile.
+     */
+    public void setDeleteRunnable(Runnable deleteRunnable) {
+        mDeleteRunnable = deleteRunnable;
     }
 
     /**
@@ -626,6 +629,7 @@ public class EditorDialogView
     }
 
     private void handleDelete() {
+        assert mDeleteRunnable != null;
         mDeleteRunnable.run();
         animateOutDialog();
     }

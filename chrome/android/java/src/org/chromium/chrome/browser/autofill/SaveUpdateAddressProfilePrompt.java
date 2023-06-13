@@ -26,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
-import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,7 +47,6 @@ public class SaveUpdateAddressProfilePrompt {
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
     private final View mDialogView;
-    private final EditorDialogView mEditorDialog;
     private AddressEditorCoordinator mAddressEditor;
     private boolean mEditorClosingPending;
 
@@ -87,18 +85,17 @@ public class SaveUpdateAddressProfilePrompt {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 
-        mEditorDialog = new EditorDialogView(activity, /*deleteRunnable=*/null,
-                HelpAndFeedbackLauncherImpl.getForProfile(browserProfile));
-        mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         Delegate delegate = new Delegate() {
             @Override
             public void onDone(AutofillAddress address) {
                 onEdited(address);
             }
         };
-        mAddressEditor = new AddressEditorCoordinator(mEditorDialog, delegate, browserProfile,
+        mAddressEditor = new AddressEditorCoordinator(activity,
+                HelpAndFeedbackLauncherImpl.getForProfile(browserProfile), delegate, browserProfile,
                 new AutofillAddress(activity, autofillProfile), userFlow,
                 /*saveToDisk=*/false);
+        mAddressEditor.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
             mAddressEditor.showEditorDialog();
         });
@@ -209,7 +206,7 @@ public class SaveUpdateAddressProfilePrompt {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void dismiss() {
         // Do not dismiss the editor if closing is pending to not abort the animation.
-        if (!mEditorClosingPending && mEditorDialog.isShowing()) mEditorDialog.dismiss();
+        if (!mEditorClosingPending && mAddressEditor.isShowing()) mAddressEditor.dismiss();
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 

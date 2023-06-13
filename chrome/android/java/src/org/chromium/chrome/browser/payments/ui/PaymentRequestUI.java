@@ -407,8 +407,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
-        mEditorDialog = new EditorDialogView(activity, /*deleteRunnable =*/null,
-                HelpAndFeedbackLauncherImpl.getForProfile(profile));
+        mEditorDialog =
+                new EditorDialogView(activity, HelpAndFeedbackLauncherImpl.getForProfile(profile));
         DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
 
         mDialog = new DimmingDialog(activity, this);

@@ -78,7 +78,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     };
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
-    private @Nullable EditorDialogView mEditorDialog;
+    private @Nullable AddressEditorCoordinator mAddressEditor;
 
     private Profile mProfile;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -98,8 +98,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (mEditorDialog != null) {
-            mEditorDialog.onConfigurationChanged();
+        if (mAddressEditor != null) {
+            mAddressEditor.onConfigurationChanged();
         }
     }
 
@@ -226,26 +226,11 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             super.onDisplayPreferenceDialog(preference);
             return;
         }
+
         AutofillProfileEditorPreference editorPreference =
                 (AutofillProfileEditorPreference) preference;
-        mEditorDialog = prepareEditorDialog(editorPreference.getGUID());
-        AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
-        if (autofillAddress == null) {
-            AddressEditorCoordinator addressEditor =
-                    new AddressEditorCoordinator(mEditorDialog, sAddressEditorDelegate, mProfile,
-                            /*saveToDisk=*/true);
-            addressEditor.showEditorDialog();
-        } else {
-            AddressEditorCoordinator addressEditor =
-                    new AddressEditorCoordinator(mEditorDialog, sAddressEditorDelegate, mProfile,
-                            autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
-                            /*saveToDisk=*/true);
-            addressEditor.showEditorDialog();
-        }
-    }
 
-    @VisibleForTesting
-    EditorDialogView prepareEditorDialog(String guid) {
+        final String guid = editorPreference.getGUID();
         Runnable runnable = guid == null ? null : () -> {
             PersonalDataManager.getInstance().deleteProfile(guid);
             SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
@@ -254,8 +239,22 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             }
         };
 
-        return new EditorDialogView(
-                getActivity(), runnable, HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
+        AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
+        if (autofillAddress == null) {
+            mAddressEditor = new AddressEditorCoordinator(getActivity(),
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
+                    mProfile,
+                    /*saveToDisk=*/true);
+            mAddressEditor.setDeleteRunnable(runnable);
+            mAddressEditor.showEditorDialog();
+        } else {
+            mAddressEditor = new AddressEditorCoordinator(getActivity(),
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
+                    mProfile, autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
+                    /*saveToDisk=*/true);
+            mAddressEditor.setDeleteRunnable(runnable);
+            mAddressEditor.showEditorDialog();
+        }
     }
 
     @Nullable
@@ -290,7 +289,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
 
     @VisibleForTesting
     EditorDialogView getEditorDialogForTest() {
-        return mEditorDialog;
+        return mAddressEditor.getEditorDialogForTesting();
     }
 
     @Override
