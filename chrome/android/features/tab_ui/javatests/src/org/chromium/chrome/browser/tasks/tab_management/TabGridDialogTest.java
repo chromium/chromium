@@ -55,6 +55,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.p
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyAllTabsHaveThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.waitForThumbnailsToFetch;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
@@ -164,6 +165,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
+                    .setRevision(1)
                     .build();
 
     @Mock
@@ -1106,12 +1108,12 @@ public class TabGridDialogTest {
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisabledTest(message = "https://crbug.com/1139475")
     public void testRenderDialog_3Tabs_Portrait(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule, 3, 0, "about:blank");
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
+        waitForThumbnailsToFetch((RecyclerView) cta.findViewById(R.id.tab_list_view));
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Create a tab group.
@@ -1120,19 +1122,20 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
+        waitForThumbnailsToFetch((RecyclerView) dialogView.findViewById(R.id.tab_list_view));
         mRenderTestRule.render(dialogView, "3_tabs_portrait");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1110099")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Landscape(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule, 3, 0, "about:blank");
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
+        waitForThumbnailsToFetch((RecyclerView) cta.findViewById(R.id.tab_list_view));
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Rotate to landscape mode and create a tab group.
@@ -1142,11 +1145,11 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
+        waitForThumbnailsToFetch((RecyclerView) dialogView.findViewById(R.id.tab_list_view));
         mRenderTestRule.render(dialogView, "3_tabs_landscape");
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/1065153")
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
@@ -1155,6 +1158,7 @@ public class TabGridDialogTest {
         prepareTabsWithThumbnail(mActivityTestRule, 5, 0, "about:blank");
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
+        waitForThumbnailsToFetch((RecyclerView) cta.findViewById(R.id.tab_list_view));
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Create a tab group.
@@ -1169,6 +1173,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 5, null);
 
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
+        waitForThumbnailsToFetch((RecyclerView) dialogView.findViewById(R.id.tab_list_view));
         mRenderTestRule.render(dialogView, "5_tabs_select_last");
     }
 
@@ -1418,8 +1423,8 @@ public class TabGridDialogTest {
         openDialogFromStripAndVerify(cta, 2, null);
         Espresso.pressBack();
 
-        // Tab switcher is created, and the dummy signal to hide dialog is sent. This line would
-        // crash if the dummy signal is not properly handled. See crbug.com/1096358.
+        // Tab switcher is created, and a fake signal to hide dialog is sent. This line would
+        // crash if the fake signal is not properly handled. See crbug.com/1096358.
         enterTabSwitcher(cta);
         onView(allOf(withParent(withId(getTabSwitcherParentId(mActivityTestRule.getActivity()))),
                        withId(R.id.tab_list_view)))
@@ -1564,7 +1569,7 @@ public class TabGridDialogTest {
                     assertFalse(v.isFocused());
                 });
 
-        // Check dummy views used for animations are not visible.
+        // Check views used for animations are not visible.
         onView(allOf(withParent(withId(R.id.dialog_parent_view)), withId(R.id.dialog_frame)))
                 .check((v, e) -> assertEquals(0f, v.getAlpha(), 0.0));
         onView(allOf(withParent(withId(R.id.dialog_parent_view)),
