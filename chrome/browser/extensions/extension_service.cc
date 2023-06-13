@@ -76,6 +76,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -531,8 +532,14 @@ void ExtensionService::Init() {
   OnInstalledExtensionsLoaded();
 
   LoadExtensionsFromCommandLineFlag(::switches::kDisableExtensionsExcept);
-  if (load_command_line_extensions)
-    LoadExtensionsFromCommandLineFlag(switches::kLoadExtension);
+  if (load_command_line_extensions) {
+    if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+      VLOG(1) << "--load-extension is not allowed for users opted into "
+              << "Enhanced Safe Browsing, ignoring.";
+    } else {
+      LoadExtensionsFromCommandLineFlag(switches::kLoadExtension);
+    }
+  }
   EnabledReloadableExtensions();
   MaybeFinishShutdownDelayed();
   SetReadyAndNotifyListeners();
