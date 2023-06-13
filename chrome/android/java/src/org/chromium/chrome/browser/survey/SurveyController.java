@@ -32,7 +32,7 @@ public class SurveyController {
     }
 
     @VisibleForTesting
-    static void setInstanceForTesting(SurveyController testInstance) {
+    public static void setInstanceForTesting(SurveyController testInstance) {
         sInstance = testInstance;
     }
 
