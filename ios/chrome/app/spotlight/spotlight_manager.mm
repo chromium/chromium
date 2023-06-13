@@ -5,11 +5,14 @@
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 
 #import "base/check.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,6 +24,7 @@
   BookmarksSpotlightManager* _bookmarkManager;
   TopSitesSpotlightManager* _topSitesManager;
   ActionsSpotlightManager* _actionsManager;
+  TemplateURLService* _templateURLService;
 }
 
 @property(nonatomic, strong) ReadingListSpotlightManager* readingListManager;
@@ -45,6 +49,8 @@
   DCHECK(spotlight::IsSpotlightAvailable());
   self = [super init];
   if (self) {
+    _templateURLService =
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
     _topSitesManager = [TopSitesSpotlightManager
         topSitesSpotlightManagerWithBrowserState:browserState];
     _bookmarkManager = [BookmarksSpotlightManager
@@ -64,11 +70,13 @@
   DCHECK(!_topSitesManager);
   DCHECK(!_actionsManager);
   DCHECK(!_readingListManager);
+  DCHECK(!_templateURLService);
 }
 
 - (void)resyncIndex {
   [_bookmarkManager reindexBookmarksIfNeeded];
-  [_actionsManager indexActions];
+  [_actionsManager indexActionsWithIsGoogleDefaultSearchEngine:
+                       [self isGoogleDefaultSearchEngine]];
   [self.readingListManager clearAndReindexReadingList];
 }
 
@@ -86,6 +94,23 @@
   _topSitesManager = nil;
   _actionsManager = nil;
   _readingListManager = nil;
+  _templateURLService = nullptr;
+}
+
+#pragma mark - Private
+
+- (BOOL)isGoogleDefaultSearchEngine {
+  if (!_templateURLService) {
+    return NO;
+  }
+
+  const TemplateURL* defaultURL =
+      _templateURLService->GetDefaultSearchProvider();
+  BOOL isGoogleDefaultSearchProvider =
+      defaultURL &&
+      defaultURL->GetEngineType(_templateURLService->search_terms_data()) ==
+          SEARCH_ENGINE_GOOGLE;
+  return isGoogleDefaultSearchProvider;
 }
 
 @end

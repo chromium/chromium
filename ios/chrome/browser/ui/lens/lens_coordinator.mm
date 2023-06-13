@@ -252,6 +252,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     case LensEntrypoint::Keyboard:
       RecordCameraOpen(CameraOpenEntryPoint::KEYBOARD);
       break;
+    case LensEntrypoint::Spotlight:
+      RecordCameraOpen(CameraOpenEntryPoint::SPOTLIGHT);
+      break;
     default:
       // Do not record the camera open histogram for other entry points.
       break;
@@ -444,7 +447,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   NSString* shortcutTitle;
   UIApplicationShortcutIcon* shortcutIcon;
   if (useLens) {
-    shortcutType = @"OpenLens";
+    shortcutType = @"OpenLensFromAppIconLongPress";
     shortcutTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_APPLICATION_SHORTCUT_LENS_TITLE);
     shortcutIcon =

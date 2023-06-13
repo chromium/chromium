@@ -787,7 +787,12 @@ TEST_F(UserActivityHandlerTest,
     @[ @"OpenNewSearch", @NO, @(FOCUS_OMNIBOX) ],
     @[ @"OpenIncognitoSearch", @YES, @(FOCUS_OMNIBOX) ],
     @[ @"OpenVoiceSearch", @NO, @(START_VOICE_SEARCH) ],
-    @[ @"OpenQRScanner", @NO, @(START_QR_CODE_SCANNER) ]
+    @[ @"OpenQRScanner", @NO, @(START_QR_CODE_SCANNER) ],
+    @[
+      @"OpenLensFromAppIconLongPress", @NO,
+      @(START_LENS_FROM_APP_ICON_LONG_PRESS)
+    ],
+    @[ @"OpenLensFromSpotlight", @NO, @(START_LENS_FROM_SPOTLIGHT) ]
   ];
 
   swizzleHandleStartupParameters();

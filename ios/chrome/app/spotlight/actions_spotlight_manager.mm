@@ -12,6 +12,8 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -44,6 +46,7 @@ const char kSpotlightActionNewIncognitoTab[] = "OpenIncognitoTab";
 const char kSpotlightActionVoiceSearch[] = "OpenVoiceSearch";
 const char kSpotlightActionQRScanner[] = "OpenQRScanner";
 const char kSpotlightActionSetDefaultBrowser[] = "SetDefaultBrowser";
+const char kSpotlightActionLens[] = "OpenLensFromSpotlight";
 
 // Enum is used to record the actions performed by the user.
 enum {
@@ -57,6 +60,8 @@ enum {
   SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
   // Recorded when a user pressed the Set Default Browser spotlight action.
   SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
+  // Recorded when a user pressed the Lens spotlight action.
+  SPOTLIGHT_ACTION_LENS_PRESSED,
   // NOTE: Add new spotlight actions in sources only immediately above this
   // line. Also, make sure the enum list for histogram `SpotlightActions` in
   // histograms.xml is updated with any change in here.
@@ -107,6 +112,13 @@ BOOL SetStartupParametersForSpotlightAction(
                               URLWithString:UIApplicationOpenSettingsURLString]
                   options:{}
         completionHandler:nil];
+  } else if ([action isEqualToString:base::SysUTF8ToNSString(
+                                         kSpotlightActionLens)]) {
+    UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
+                              SPOTLIGHT_ACTION_LENS_PRESSED,
+                              SPOTLIGHT_ACTION_COUNT);
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+    [startupParams setPostOpeningAction:START_LENS_FROM_SPOTLIGHT];
   } else {
     return NO;
   }
@@ -120,7 +132,8 @@ BOOL SetStartupParametersForSpotlightAction(
 - (CSSearchableItem*)itemForAction:(NSString*)action title:(NSString*)title;
 
 // Clears and re-inserts all Spotlight actions.
-- (void)clearAndAddSpotlightActions;
+- (void)clearAndAddSpotlightActionsWithIsGoogleDefaultSearchEngine:
+    (BOOL)isGoogleDefaultSearchEngine;
 
 @end
 
@@ -135,19 +148,22 @@ BOOL SetStartupParametersForSpotlightAction(
 
 #pragma mark public methods
 
-- (void)indexActions {
+- (void)indexActionsWithIsGoogleDefaultSearchEngine:
+    (BOOL)isGoogleDefaultSearchEngine {
   __weak ActionsSpotlightManager* weakSelf = self;
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, static_cast<int64_t>(1 * NSEC_PER_SEC)),
       dispatch_get_main_queue(), ^{
         ActionsSpotlightManager* strongSelf = weakSelf;
-        [strongSelf clearAndAddSpotlightActions];
+        [strongSelf clearAndAddSpotlightActionsWithIsGoogleDefaultSearchEngine:
+                        isGoogleDefaultSearchEngine];
       });
 }
 
 #pragma mark private methods
 
-- (void)clearAndAddSpotlightActions {
+- (void)clearAndAddSpotlightActionsWithIsGoogleDefaultSearchEngine:
+    (BOOL)isGoogleDefaultSearchEngine {
   __weak ActionsSpotlightManager* weakSelf = self;
   [self clearAllSpotlightItems:^(NSError* error) {
     dispatch_after(
@@ -185,14 +201,29 @@ BOOL SetStartupParametersForSpotlightAction(
           NSString* defaultBrowserAction = base::SysUTF8ToNSString(
               spotlight::kSpotlightActionSetDefaultBrowser);
 
-          NSArray* spotlightItems = @[
+          NSMutableArray<CSSearchableItem*>* spotlightItems =
+              [NSMutableArray array];
+
+          [spotlightItems addObjectsFromArray:@[
             [strongSelf itemForAction:voiceSearchAction title:voiceSearchTitle],
             [strongSelf itemForAction:newTabAction title:newTabTitle],
             [strongSelf itemForAction:incognitoAction title:incognitoTitle],
             [strongSelf itemForAction:qrScannerAction title:qrScannerTitle],
             [strongSelf itemForAction:defaultBrowserAction
                                 title:defaultBrowserTitle],
-          ];
+          ]];
+
+          const BOOL useLens =
+              lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+                  LensEntrypoint::Spotlight, isGoogleDefaultSearchEngine);
+          if (useLens) {
+            NSString* lensTitle =
+                l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_LENS_TITLE);
+            NSString* lensAction =
+                base::SysUTF8ToNSString(spotlight::kSpotlightActionLens);
+            [spotlightItems addObject:[strongSelf itemForAction:lensAction
+                                                          title:lensTitle]];
+          }
 
           [self.spotlightInterface indexSearchableItems:spotlightItems];
         });

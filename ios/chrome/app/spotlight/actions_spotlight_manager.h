@@ -36,7 +36,8 @@ BOOL SetStartupParametersForSpotlightAction(
 
 // Updates the index with the Spotlight actions if the EnableSpotlightActions
 // experimental flag is set. Otherwise the index is only cleared.
-- (void)indexActions;
+- (void)indexActionsWithIsGoogleDefaultSearchEngine:
+    (BOOL)isGoogleDefaultSearchEngine;
 
 @end
 

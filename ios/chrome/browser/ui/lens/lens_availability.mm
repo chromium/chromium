@@ -23,6 +23,8 @@ const char kIOSLensKeyboardSupportStatusHistogramName[] =
     "Mobile.Keyboard.LensSupportStatus";
 const char kIOSLensNewTabPageSupportStatusHistogramName[] =
     "Mobile.NewTabPage.LensSupportStatus";
+const char kIOSSpotlightSupportStatusHistogramName[] =
+    "Mobile.Spotlight.LensSupportStatus";
 
 namespace lens_availability {
 bool CheckAndLogAvailabilityForLensEntryPoint(
@@ -67,7 +69,7 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
       if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
         flag_enabled = NO;
       }
-      // Spotlight cannot log availailability.
+      availability_metric_name = kIOSSpotlightSupportStatusHistogramName;
       break;
     default:
       NOTREACHED() << "Unsupported Lens Entry Point.";

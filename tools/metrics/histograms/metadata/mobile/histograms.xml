@@ -454,6 +454,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Mobile.Spotlight.LensSupportStatus"
+    enum="IOSLensSupportStatus" expires_after="2023-08-26">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Whether or not Lens is supported in iOS spotlight search, and if not, the
+    reason why. Recorded once when the spotlight actions are populated, which
+    happens after app startup.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.SystemNotification.Action.Click"
     enum="SystemNotificationActionType" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->

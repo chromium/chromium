@@ -2307,6 +2307,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf startLensWithEntryPoint:LensEntrypoint::AppIconLongPress];
       };
+    case START_LENS_FROM_SPOTLIGHT:
+      return ^{
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::Spotlight];
+      };
     case FOCUS_OMNIBOX:
       return ^{
         [weakSelf focusOmnibox];

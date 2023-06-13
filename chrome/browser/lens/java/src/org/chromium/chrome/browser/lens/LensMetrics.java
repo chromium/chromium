@@ -77,7 +77,8 @@ public class LensMetrics {
     // Only add new values at the end, right before NUM_ENTRIES.
     @IntDef({CameraOpenEntryPoint.OMNIBOX, CameraOpenEntryPoint.NEW_TAB_PAGE,
             CameraOpenEntryPoint.QUICK_ACTION_SEARCH_WIDGET, CameraOpenEntryPoint.TASKS_SURFACE,
-            CameraOpenEntryPoint.KEYBOARD, CameraOpenEntryPoint.NUM_ENTRIES})
+            CameraOpenEntryPoint.KEYBOARD, CameraOpenEntryPoint.SPOTLIGHT,
+            CameraOpenEntryPoint.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface CameraOpenEntryPoint {
         int OMNIBOX = 0;
@@ -85,7 +86,8 @@ public class LensMetrics {
         int QUICK_ACTION_SEARCH_WIDGET = 2;
         int TASKS_SURFACE = 3;
         int KEYBOARD = 4;
-        int NUM_ENTRIES = 5;
+        int SPOTLIGHT = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /**
