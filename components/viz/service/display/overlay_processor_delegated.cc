@@ -164,7 +164,9 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   }
 
   const OverlayCandidateFactory::OverlayContext context = {
-      .is_delegated_context = true, .supports_clip_rect = supports_clip_rect_};
+      .is_delegated_context = true,
+      .supports_clip_rect = supports_clip_rect_,
+      .supports_mask_filter = true};
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,

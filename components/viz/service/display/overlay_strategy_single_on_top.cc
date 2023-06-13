@@ -101,7 +101,7 @@ void OverlayStrategySingleOnTop::Propose(
   QuadList* quad_list = &render_pass->quad_list;
 
   const OverlayCandidateFactory::OverlayContext context = {
-      .supports_rounded_display_masks = true};
+      .supports_rounded_display_masks = true, .supports_mask_filter = false};
 
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
@@ -131,10 +131,6 @@ void OverlayStrategySingleOnTop::Propose(
         OverlayCandidate::CandidateStatus::kSuccess) {
       // Quads with display masks should always be valid overlay candidates.
       DCHECK(!HasRoundedDisplayMasks(*quad_it));
-      continue;
-    }
-
-    if (candidate.has_mask_filter) {
       continue;
     }
 

@@ -132,13 +132,20 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
     return CandidateStatus::kFailOpacity;
   }
   candidate.opacity = sqs->opacity;
-  candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
 
   // We support only kSrc (no blending) and kSrcOver (blending with premul).
   if (!(sqs->blend_mode == SkBlendMode::kSrc ||
         sqs->blend_mode == SkBlendMode::kSrcOver)) {
     return CandidateStatus::kFailBlending;
   }
+
+  if (!sqs->mask_filter_info.IsEmpty() && !context_.supports_mask_filter) {
+    return CandidateStatus::kFailMaskFilterNotSupported;
+  }
+
+  candidate.has_mask_filter =
+      !quad->shared_quad_state->mask_filter_info.IsEmpty();
+  candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
 
   candidate.requires_overlay = OverlayCandidate::RequiresOverlay(quad);
   candidate.overlay_damage_index =
@@ -348,7 +355,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   candidate.clip_rect = sqs->clip_rect;
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
-  candidate.has_mask_filter = !sqs->mask_filter_info.IsEmpty();
 
   if (resource_id != kInvalidResourceId) {
     candidate.resource_size_in_pixels =
@@ -503,8 +509,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromVideoHoleQuad(
   }
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
-  candidate.has_mask_filter =
-      !quad->shared_quad_state->mask_filter_info.IsEmpty();
 
   AssignDamage(quad, candidate);
   candidate.tracking_id = base::FastHash(quad->overlay_plane_id.AsBytes());
