@@ -117,6 +117,60 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Test deleting grand parent is reflected in the bookmarks list UI. Regression
+// test for crbug.com/1445457
+- (void)testRemoveGrandParentFolder {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Enter Folder 1
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
+      performAction:grey_tap()];
+  // Enter Folder 2
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 2")]
+      performAction:grey_tap()];
+  // Enter Folder 3
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 3")]
+      performAction:grey_tap()];
+
+  // Delete the Folder 1 programmatically in background. This will delete child
+  // Folder 2 and Folder 3 as well.
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Folder 1"];
+
+  // Verify the empty background appears because Folder 3 is deleted.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+}
+
+// Test deleting grand parent is reflected in the bookmarks folder editor UI.
+// Regression test for crbug.com/1446133
+- (void)testRemoveGrandParentWhileEditingFolder {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Enter Folder 1
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
+      performAction:grey_tap()];
+  // Enter Folder 2
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 2")]
+      performAction:grey_tap()];
+  // Enter edit mode with Folder 3
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
+      performAction:grey_tap()];
+
+  // Delete the Folder 1 programmatically in background. This will delete child
+  // Folder 2 and Folder 3 as well.
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Folder 1"];
+
+  // Verify the empty background appears because Folder 3 is deleted.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+}
+
 // Test to set bookmarks in multiple tabs.
 - (void)testBookmarkMultipleTabs {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
