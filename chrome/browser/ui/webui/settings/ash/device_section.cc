@@ -578,6 +578,14 @@ const std::vector<SearchConcept>& GetAudioPowerSoundsSearchConcepts() {
           mojom::SearchResultType::kSetting,
           {.setting = mojom::Setting::kChargingSounds},
       },
+      {
+          IDS_OS_SETTINGS_TAG_LOW_BATTERY_SOUND,
+          mojom::kAudioSubpagePath,
+          mojom::SearchResultIcon::kAudio,
+          mojom::SearchResultDefaultRank::kMedium,
+          mojom::SearchResultType::kSetting,
+          {.setting = mojom::Setting::kLowBatterySound},
+      },
   });
   return *tags;
 }
@@ -1011,6 +1019,8 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"deviceStartupSoundLabel",
        IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_STARTUP_SOUND_LABEL},
       {"deviceSoundsTitle", IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_TITLE},
+      {"lowBatterySoundLabel",
+       IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_LOW_BATTERY_SOUND_LABEL},
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
@@ -1369,6 +1379,8 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kAudio, mojom::SearchResultDefaultRank::kMedium,
       mojom::kAudioSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kChargingSounds,
+                                   mojom::Subpage::kAudio);
+  generator->RegisterNestedSetting(mojom::Setting::kLowBatterySound,
                                    mojom::Subpage::kAudio);
 
   // Power.

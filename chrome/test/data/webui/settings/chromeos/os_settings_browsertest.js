@@ -203,6 +203,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
+ ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
  [
    'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'
  ],

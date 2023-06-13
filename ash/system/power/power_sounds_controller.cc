@@ -46,6 +46,11 @@ bool GetChargingSoundsEnabled() {
   return prefs && prefs->GetBoolean(prefs::kChargingSoundsEnabled);
 }
 
+bool GetLowBatterySoundEnabled() {
+  PrefService* prefs = GetActivePrefService();
+  return prefs && prefs->GetBoolean(prefs::kLowBatterySoundEnabled);
+}
+
 }  // namespace
 
 // static
@@ -81,6 +86,8 @@ PowerSoundsController::~PowerSoundsController() {
 void PowerSoundsController::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kChargingSoundsEnabled,
                                 /*default_value=*/false);
+  registry->RegisterBooleanPref(prefs::kLowBatterySoundEnabled,
+                                /*default_value=*/true);
 }
 
 void PowerSoundsController::OnPowerStatusChanged() {
@@ -154,6 +161,12 @@ void PowerSoundsController::MaybePlaySoundsForCharging(
 void PowerSoundsController::MaybePlaySoundsForLowBattery(
     int old_battery_level,
     bool is_battery_charging) {
+  // Don't play the low battery sound if the user turns off the toggle button in
+  // the Settings UI.
+  if (!GetLowBatterySoundEnabled()) {
+    return;
+  }
+
   // Don't play the warning sound if the battery is charging.
   if (is_battery_charging)
     return;

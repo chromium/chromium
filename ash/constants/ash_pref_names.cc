@@ -50,6 +50,9 @@ const char kManagedCellularIccidSmdpPair[] =
 // A boolean pref for whether playing charging sounds is enabled.
 const char kChargingSoundsEnabled[] = "ash.charging_sounds.enabled";
 
+// A boolean pref for whether playing a low battery sound is enabled.
+const char kLowBatterySoundEnabled[] = "ash.low_battery_sound.enabled";
+
 // A dictionary pref to hold the mute setting for all the currently known
 // audio devices.
 const char kAudioDevicesMute[] = "settings.audio.devices.mute";

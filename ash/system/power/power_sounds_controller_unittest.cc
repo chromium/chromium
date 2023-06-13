@@ -160,6 +160,20 @@ TEST_F(PowerSoundsControllerTest, PlaySoundsForCharging) {
   EXPECT_TRUE(VerifySounds({Sound::kChargeHighBattery}));
 }
 
+// Tests that when the user disables the toggle button for charging sounds, when
+// plugging in a charger, the device won't play any charging sound.
+TEST_F(PowerSoundsControllerTest, NoChargingSoundPlayedIfToggleButtonDisabled) {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  pref->SetBoolean(prefs::kChargingSoundsEnabled, false);
+  ASSERT_FALSE(pref->GetBoolean(prefs::kChargingSoundsEnabled));
+
+  // Charge the device after disabling the button, and no sounds will be played.
+  SetPowerStatus(5, /*line_power_connected=*/true);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+}
+
 // Tests if the warning sound can be played when the battery level drops below
 // 15% at the first time.
 TEST_F(PowerSoundsControllerTest, PlaySoundForLowBatteryWarning) {
@@ -176,6 +190,26 @@ TEST_F(PowerSoundsControllerTest, PlaySoundForLowBatteryWarning) {
   // When the battery level keeps dropping, the device shouldn't play sound for
   // warning.
   SetPowerStatus(14, /*line_power_connected=*/false);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+}
+
+// When the toggle button for the low battery sound is disabled, the sound won't
+// be played if the battery drops below 15%.
+TEST_F(PowerSoundsControllerTest,
+       NoLowBatterySoundPlayedIfToggleButtonDisabled) {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  pref->SetBoolean(prefs::kLowBatterySoundEnabled, false);
+  ASSERT_FALSE(pref->GetBoolean(prefs::kLowBatterySoundEnabled));
+
+  // Don't play warning sound if the battery level is no less than 15%.
+  SetPowerStatus(16, /*line_power_connected=*/false);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // When the battery drops below 15% at the first time, e.g. 15%, the device
+  // should play the sound for warning.
+  SetPowerStatus(15, /*line_power_connected=*/false);
   EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 }
 
@@ -240,20 +274,6 @@ TEST_F(PowerSoundsControllerTest, PlaySoundsOnlyIfLidIsOpened) {
   SetPowerStatus(10, /*line_power_connected=*/false);
   SetPowerStatus(5, /*line_power_connected=*/true);
   EXPECT_TRUE(VerifySounds({Sound::kChargeLowBattery}));
-}
-
-// Tests that when the user disables the toggle button for charging sounds, when
-// plugging in a charger, the device won't play any charging sound.
-TEST_F(PowerSoundsControllerTest, NoChargingSoundPlayedIfToggleButtonDisabled) {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-
-  pref->SetBoolean(prefs::kChargingSoundsEnabled, false);
-  ASSERT_FALSE(pref->GetBoolean(prefs::kChargingSoundsEnabled));
-
-  // Charge the device after disabling the button, and no sounds will be played.
-  SetPowerStatus(5, /*line_power_connected=*/true);
-  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 }
 
 }  // namespace ash
