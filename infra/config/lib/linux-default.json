@@ -35,6 +35,7 @@
     "Comparison Linux (reclient)": "Ubuntu-22.04",
     "Comparison Linux (reclient)(CQ)": "Ubuntu-22.04",
     "Comparison Simple Chrome (reclient)": "Ubuntu-22.04",
+    "Comparison Simple Chrome (reclient)(CQ)": "Ubuntu-22.04",
     "Dawn Android arm DEPS Release (Pixel 4)": "Ubuntu-22.04",
     "Dawn Android arm Release (Pixel 4)": "Ubuntu-22.04",
     "Dawn Android arm64 DEPS Release (Pixel 6)": "Ubuntu-22.04",
