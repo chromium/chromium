@@ -269,6 +269,7 @@ public abstract class ChromeFeatureList {
     public static final String HISTORY_ORGANIC_REPEATABLE_QUERIES = "OrganicRepeatableQueries";
     public static final String HTTPS_FIRST_MODE = "HttpsOnlyMode";
     public static final String IDENTITY_STATUS_CONSISTENCY = "IdentityStatusConsistency";
+    public static final String IMPROVED_INCOGNITO_SCREENSHOT = "ImprovedIncognitoScreenshot";
     public static final String INCOGNITO_DOWNLOADS_WARNING = "IncognitoDownloadsWarning";
     public static final String INCOGNITO_NTP_REVAMP = "IncognitoNtpRevamp";
     public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =

@@ -1864,6 +1864,13 @@ const char kIgnoreSyncEncryptionKeysLongMissingDescription[] =
     "resets the counter. The threshold is configurable via the "
     "MinGuResponsesToIgnoreKey feature parameter.";
 
+const char kImprovedIncognitoScreenshotName[] =
+    "Improved Incognito Screenshots";
+const char kImprovedIncognitoScreenshotDescription[] =
+    "Enable Incognito screenshots on Android except while the user is on "
+    "recents screen. Only affects devices on API version >= 33. The "
+    "IncognitoScreenshot flag will be ignored when this flag is enabled.";
+
 const char kImprovedKeyboardShortcutsName[] =
     "Enable improved keyboard shortcuts";
 const char kImprovedKeyboardShortcutsDescription[] =
@@ -1889,7 +1896,8 @@ const char kIncognitoNtpRevampDescription[] =
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
-    "thumbnails visible.";
+    "thumbnails visible. This flag will be ignored when the "
+    "ImprovedIncognitoScreenshot flag is enabled.";
 
 const char kInfobarScrollOptimizationName[] = "Infobar scroll optimiaztion";
 const char kInfobarScrollOptimizationDescription[] =

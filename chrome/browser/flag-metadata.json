@@ -4595,6 +4595,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "improved-incognito-screenshot",
+    "owners": [ "roagarwal", "zalmashni@google.com", "chrome-incognito@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

@@ -59060,6 +59060,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:enabled"/>
   <int value="-2033225430" label="NTPMostLikelyFaviconsFromServer:disabled"/>
   <int value="-2033136855" label="MessagesForAndroidPasswords:disabled"/>
+  <int value="-2032292269" label="ImprovedIncognitoScreenshot:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
   <int value="-2030972455"
@@ -60065,6 +60066,7 @@ from previous Chrome versions.
   <int value="-1507722271" label="ImprovedDesksKeyboardShortcuts:enabled"/>
   <int value="-1506880454"
       label="SupervisedUserCommittedInterstitials:disabled"/>
+  <int value="-1505836593" label="ImprovedIncognitoScreenshot:disabled"/>
   <int value="-1505222604" label="ClearIdentityInCanMakePaymentEvent:disabled"/>
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>

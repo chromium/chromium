@@ -8347,6 +8347,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    // TODO(https://crbug.com/985245): remove flag when API version 33 is the
+    // lowest supported version and the kImprovedIncognitoScreenshot flag is
+    // cleaned up, Since this flag has no effect when
+    // kImprovedIncognitoScreenshot is enabled and is used as a fallback when
+    // kImprovedIncognitoScreenshot is disabled.
     {"incognito-screenshot", flag_descriptions::kIncognitoScreenshotName,
      flag_descriptions::kIncognitoScreenshotDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},
@@ -8355,6 +8360,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoDownloadsWarningName,
      flag_descriptions::kIncognitoDownloadsWarningDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kIncognitoDownloadsWarning)},
+
+    {"improved-incognito-screenshot",
+     flag_descriptions::kImprovedIncognitoScreenshotName,
+     flag_descriptions::kImprovedIncognitoScreenshotDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kImprovedIncognitoScreenshot)},
 #endif
 
     {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,

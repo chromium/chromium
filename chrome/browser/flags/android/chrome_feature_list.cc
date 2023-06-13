@@ -230,6 +230,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFocusOmniboxInIncognitoTabIntents,
     &kFoldableJankFix,
     &kGridTabSwitcherForTablets,
+    &kImprovedIncognitoScreenshot,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kInfobarScrollOptimization,
@@ -724,6 +725,11 @@ BASE_FEATURE(kFoldableJankFix,
 
 BASE_FEATURE(kGridTabSwitcherForTablets,
              "GridTabSwitcherForTablets",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Only affects devices on API version >= 33.
+BASE_FEATURE(kImprovedIncognitoScreenshot,
+             "ImprovedIncognitoScreenshot",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIncognitoReauthenticationForAndroid,
