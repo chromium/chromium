@@ -215,3 +215,18 @@ test("v4l2_unittest") {
     "//testing/gtest",
   ]
 }
+
+if (is_chromeos && (current_cpu == "arm" || current_cpu == "arm64")) {
+  test("mt21_unittest") {
+    testonly = true
+    sources = [
+      "mt21/mt21_util.h",
+      "mt21/mt21_util_unittest.cc",
+    ]
+    deps = [
+      "//base:base",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
