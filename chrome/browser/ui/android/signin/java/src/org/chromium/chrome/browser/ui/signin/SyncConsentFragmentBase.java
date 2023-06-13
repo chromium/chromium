@@ -764,7 +764,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         addAccount();
     }
 
-    private void onSettingsLinkClicked(View view) {
+    protected void onSettingsLinkClicked(View view) {
         if (!areControlsEnabled()) return;
         mIsSigninInProgress = true;
         RecordUserAction.record("Signin_Signin_WithAdvancedSyncSettings");

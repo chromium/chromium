@@ -1044,15 +1044,7 @@ public class SyncConsentFragmentTest {
         onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
-        // Mimic a successful device lock creation.
-        SyncConsentFragment syncConsentFragment =
-                (SyncConsentFragment) mSyncConsentActivity.getSupportFragmentManager()
-                        .findFragmentById(R.id.fragment_container);
-        assertNotNull("The SyncConsentActivity should contain the SyncConsentFragment!",
-                syncConsentFragment);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            syncConsentFragment.onDeviceLockReady();
-        });
+        simulateDeviceLockReady();
 
         // Wait for the sync consent to be set and the activity has finished.
         CriteriaHelper.pollUiThread(() -> {
@@ -1091,16 +1083,7 @@ public class SyncConsentFragmentTest {
         onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
-        // Mimic a refusal of the device lock.
-        SyncConsentFragment syncConsentFragment =
-                (SyncConsentFragment) mSyncConsentActivity.getSupportFragmentManager()
-                        .findFragmentById(R.id.fragment_container);
-        assertNotNull("The SyncConsentActivity should contain the SyncConsentFragment!",
-                syncConsentFragment);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            syncConsentFragment.onDeviceLockRefused();
-            assertFalse(syncConsentFragment.getDeviceLockReadyForTesting());
-        });
+        simulateDeviceLockRefused();
 
         // Check that the user is not consented to sync and the activity has finished.
         CriteriaHelper.pollUiThread(() -> {
@@ -1111,6 +1094,111 @@ public class SyncConsentFragmentTest {
         });
         onView(withId(R.id.device_lock_title)).check(doesNotExist());
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testAutomotiveDevice_tryNavigateViaClickableSpan_deviceLockCreated() {
+        mAutoTestRule.setIsAutomotive(true);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            accountInfo.getEmail());
+                });
+
+        onView(withText(accountInfo.getEmail())).check(matches(isDisplayed()));
+
+        // Should display the sync page, clicking the 'more' button to scroll down if needed.
+        if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
+
+        simulateDeviceLockReady();
+
+        // Wait for sync opt-in process to finish.
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .getIdentityManager()
+                    .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue("The service should have recorded user consent for sync.",
+                    SyncServiceFactory.get().hasSyncConsent());
+            assertFalse("Sync feature setup should not be complete without the confirm button "
+                            + "being clicked.",
+                    SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
+            assertEquals("All syncable data types should be selected by default.",
+                    ALL_CLANK_SYNCABLE_DATA_TYPES, SyncServiceFactory.get().getSelectedTypes());
+            assertTrue("All data types should be enabled for sync.",
+                    SyncServiceFactory.get().hasKeepEverythingSynced());
+        });
+
+        // Close the SettingsActivity.
+        onView(withId(R.id.cancel_button)).perform(click());
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testAutomotiveDevice_tryNavigateViaClickableSpan_deviceLockRefused() {
+        mAutoTestRule.setIsAutomotive(true);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            accountInfo.getEmail());
+                });
+
+        onView(withText(accountInfo.getEmail())).check(matches(isDisplayed()));
+
+        // Should display the sync page, clicking the 'more' button to scroll down if needed.
+        if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
+
+        simulateDeviceLockRefused();
+
+        // Check that the user is not consented to sync and the activity has finished.
+        CriteriaHelper.pollUiThread(() -> {
+            return !IdentityServicesProvider.get()
+                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    private void simulateDeviceLockReady() {
+        SyncConsentFragment syncConsentFragment =
+                (SyncConsentFragment) mSyncConsentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        assertNotNull("The SyncConsentActivity should contain the SyncConsentFragment!",
+                syncConsentFragment);
+        TestThreadUtils.runOnUiThreadBlocking(syncConsentFragment::onDeviceLockReady);
+    }
+
+    private void simulateDeviceLockRefused() {
+        SyncConsentFragment syncConsentFragment =
+                (SyncConsentFragment) mSyncConsentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        assertNotNull("The SyncConsentActivity should contain the SyncConsentFragment!",
+                syncConsentFragment);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            syncConsentFragment.onDeviceLockRefused();
+            assertFalse(syncConsentFragment.getDeviceLockReadyForTesting());
+        });
     }
 
     private void launchActivityWithFragment(Fragment fragment) {
