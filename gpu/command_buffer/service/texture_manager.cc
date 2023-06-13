@@ -572,22 +572,6 @@ void TexturePassthrough::SetLevelImage(GLenum target,
   SetLevelImageInternal(target, level, image, owned_service_id_);
 }
 #endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
-                                               GLint level) const {
-#if BUILDFLAG(IS_APPLE)
-  return nullptr;
-#else
-  size_t face_idx = 0;
-  if (!LevelInfoExists(target, level, &face_idx)) {
-    return nullptr;
-  }
-
-  return level_images_[face_idx][level].image.get();
-#endif
-}
-#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1929,16 +1913,6 @@ const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
   }
   return nullptr;
 }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
-  const LevelInfo* info = GetLevelInfo(target, level);
-  if (!info)
-    return nullptr;
-
-  return info->image.get();
-}
-#endif
 
 void Texture::DumpLevelMemory(base::trace_event::ProcessMemoryDump* pmd,
                               uint64_t client_tracing_id,

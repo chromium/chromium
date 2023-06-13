@@ -329,18 +329,11 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
 
   // Binding an image should make the texture renderable.
   EXPECT_EQ(texture->SafeToRenderFrom(), true);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_EQ(abstract_texture->GetImageForTesting(), image.get());
-  EXPECT_EQ(texture->GetLevelImage(target, 0), image.get());
-#endif
 
   // Unbinding should make it not renderable.
   abstract_texture->SetBoundImage(nullptr);
 
   EXPECT_EQ(texture->SafeToRenderFrom(), false);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_EQ(abstract_texture->GetImageForTesting(), nullptr);
-#endif
 
   // Deleting |abstract_texture| should delete the platform texture as well,
   // since we haven't make a copy of the TextureRef.  Also make sure that the

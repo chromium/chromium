@@ -35,9 +35,6 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
   void SetBoundImage(gl::GLImage* image) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  gl::GLImage* GetImageForTesting() const override;
-#endif
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
   void NotifyOnContextLost() override;

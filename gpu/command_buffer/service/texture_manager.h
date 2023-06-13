@@ -79,13 +79,8 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   // native GL texture in the destructor
   void MarkContextLost();
 
-#if !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
   void SetLevelImage(GLenum target, GLint level, gl::GLImage* image);
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  gl::GLImage* GetLevelImage(GLenum target, GLint level) const;
-#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -331,12 +326,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   bool CompatibleWithSamplerUniformType(
       GLenum type,
       const SamplerState& sampler_state) const;
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  // Get the image associated with a particular level. Returns NULL if level
-  // does not exist.
-  gl::GLImage* GetLevelImage(GLint target, GLint level) const;
-#endif
 
   bool HasImages() const {
     return has_images_;

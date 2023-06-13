@@ -73,17 +73,6 @@ void ValidatingAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-gl::GLImage* ValidatingAbstractTextureImpl::GetImageForTesting() const {
-  if (!texture_ref_)
-    return nullptr;
-
-  const GLuint target = texture_ref_->texture()->target();
-  const GLint level = 0;
-  return texture_ref_->texture()->GetLevelImage(target, level);
-}
-#endif
-
 void ValidatingAbstractTextureImpl::SetCleared() {
   if (!texture_ref_)
     return;

@@ -1679,32 +1679,6 @@ TEST_F(TextureTest, UseDeletedTexture) {
   texture_ref = nullptr;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-TEST_F(TextureTest, GetLevelImage) {
-  manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
-  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
-  Texture* texture = texture_ref_->texture();
-  EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-  // Set image.
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
-  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
-                               image.get());
-  EXPECT_FALSE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-  // Remove it.
-  manager_->UnsetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1);
-  EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-
-  // Re-add it, and check that it's reset when SetLevelInfo is called.
-  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
-                               image.get());
-  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
-  EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-}
-
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TextureTest, SetStreamTextureImageServiceID) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES);
@@ -2098,9 +2072,6 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   scoped_refptr<TextureRef> restored_texture = manager_->GetTexture(client_id);
   EXPECT_EQ(produced_texture, restored_texture->texture());
   EXPECT_EQ(service_id, restored_texture->service_id());
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  EXPECT_EQ(image.get(), restored_texture->texture()->GetLevelImage(target, 0));
-#endif
 }
 
 static const GLenum kTextureTargets[] = {GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES,
