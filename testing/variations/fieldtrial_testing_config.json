@@ -5132,6 +5132,21 @@
             ]
         }
     ],
+    "EnableBookmarksAccountStorage": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableBookmarksAccountStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCrossSiteFlagNetworkIsolationKey": [
         {
             "platforms": [
