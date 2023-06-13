@@ -700,9 +700,32 @@ void WaylandSurface::ApplyPendingState() {
     viewport_src_dip =
         gfx::ScaleRect(crop_transformed, bounds.width(), bounds.height());
     DCHECK(viewport());
-    if (wl_fixed_from_double(viewport_src_dip.width()) == 0 ||
-        wl_fixed_from_double(viewport_src_dip.height()) == 0 ||
-        wl_fixed_from_double(viewport_src_dip.x()) < 0 ||
+
+    // It not completely unexpected to stretch a texture more than the smallest
+    // fixed point can represent. The two cases here are solid color buffers
+    // (1x1 or 4x4) and something like 9-patch shadows (5x5) stretched to the
+    // entire window width/height.
+    {
+      constexpr wl_fixed_t kViewportSizeMin = 1;
+      const float kViewPortSizeMinFloat =
+          static_cast<float>(wl_fixed_to_double(kViewportSizeMin));
+
+      if (wl_fixed_from_double(viewport_src_dip.width()) <= 0) {
+        viewport_src_dip.set_width(kViewPortSizeMinFloat);
+        src_to_set[2] = kViewportSizeMin;
+      } else {
+        src_to_set[2] = wl_fixed_from_double(viewport_src_dip.width());
+      }
+
+      if (wl_fixed_from_double(viewport_src_dip.height()) <= 0) {
+        viewport_src_dip.set_height(kViewPortSizeMinFloat);
+        src_to_set[3] = kViewportSizeMin;
+      } else {
+        src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
+      }
+    }
+
+    if (wl_fixed_from_double(viewport_src_dip.x()) < 0 ||
         wl_fixed_from_double(viewport_src_dip.y()) < 0) {
       LOG(ERROR) << "Sending viewport src with width/height zero or negative "
                     "origin will result in wayland disconnection";
@@ -713,23 +736,13 @@ void WaylandSurface::ApplyPendingState() {
                  << " bounds=" << bounds.ToString()
                  << "  pending_state_.buffer_size_px="
                  << pending_state_.buffer_size_px.ToString();
-      constexpr wl_fixed_t kViewportSizeMin = 1;
-      const float kViewPortSizeMinFloat =
-          static_cast<float>(wl_fixed_to_double(kViewportSizeMin));
-      LOG(ERROR)
-          << "Limiting viewport_src_dip size to be non zero with a minium of "
-          << kViewportSizeMin;
-      viewport_src_dip.set_width(
-          std::max(viewport_src_dip.width(), kViewPortSizeMinFloat));
-      viewport_src_dip.set_height(
-          std::max(viewport_src_dip.height(), kViewPortSizeMinFloat));
+
       viewport_src_dip.set_x(std::max(viewport_src_dip.x(), 0.f));
       viewport_src_dip.set_y(std::max(viewport_src_dip.y(), 0.f));
     }
+
     src_to_set[0] = wl_fixed_from_double(viewport_src_dip.x()),
     src_to_set[1] = wl_fixed_from_double(viewport_src_dip.y());
-    src_to_set[2] = wl_fixed_from_double(viewport_src_dip.width());
-    src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
   }
   // Apply crop (wp_viewport.set_source).
   if (viewport() && !base::ranges::equal(src_to_set, src_set_)) {
