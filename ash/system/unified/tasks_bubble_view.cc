@@ -20,8 +20,10 @@
 namespace ash {
 
 TasksBubbleView::TasksBubbleView() {
-  SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   SetOrientation(views::LayoutOrientation::kVertical);
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+      kGlanceablesVerticalMargin, kGlanceablesLeftRightMargin)));
 
   if (ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()) {
     ash::Shell::Get()
@@ -49,7 +51,8 @@ void TasksBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size TasksBubbleView::CalculatePreferredSize() const {
-  // TODO(b:277268122): Scale height based on task_items_list_view_ contents.
+  // TODO(b:277268122): Scale height based on `task_items_container_view_`
+  // contents.
   return gfx::Size(kRevampedTrayMenuWidth - 2 * kGlanceablesLeftRightMargin,
                    kGlanceableMinHeight - 2 * kGlanceablesVerticalMargin);
 }
@@ -61,28 +64,38 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   }
 
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   tasks_header_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
+  tasks_header_view_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(kGlanceablesVerticalMargin, 0)));
 
-  task_items_list_view_ =
+  task_items_container_view_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
-  task_items_list_view_->SetCrossAxisAlignment(
-      views::LayoutAlignment::kStretch);
-  task_items_list_view_->SetOrientation(views::LayoutOrientation::kVertical);
-  task_items_list_view_->SetProperty(
+  task_items_container_view_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
+  task_items_container_view_->SetMainAxisAlignment(
+      views::LayoutAlignment::kStart);
+  task_items_container_view_->SetOrientation(
+      views::LayoutOrientation::kVertical);
+  task_items_container_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
 
   task_icon_view_ =
       tasks_header_view_->AddChildView(std::make_unique<views::ImageView>());
-  task_list_combo_box_view_ =
-      tasks_header_view_->AddChildView(std::make_unique<views::Combobox>(
-          std::make_unique<TasksComboboxModel>(task_list)));
+
+  tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_list);
+  task_list_combo_box_view_ = tasks_header_view_->AddChildView(
+      std::make_unique<views::Combobox>(tasks_combobox_model_.get()));
+  // Update combobox size to match active task list label size.
+  task_list_combo_box_view_->SetSizeToLargestLabel(false);
+
   // TODO(b:277268122): Implement accessibility behavior.
   task_list_combo_box_view_->SetTooltipTextAndAccessibleName(
       u"Task list selector");
@@ -95,6 +108,7 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
           base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
                               base::Unretained(this)),
           views::kLaunchIcon, u"Open tasks app"));
+  ScheduleUpdateTasksList();
 }
 
 void TasksBubbleView::ActionButtonPressed() {
@@ -102,7 +116,31 @@ void TasksBubbleView::ActionButtonPressed() {
 }
 
 void TasksBubbleView::SelectedTasksListChanged() {
-  // TODO(b:277268122): Update task_items_list_view_.
+  task_items_container_view_->RemoveAllChildViews();
+  ScheduleUpdateTasksList();
+}
+
+void TasksBubbleView::ScheduleUpdateTasksList() {
+  if (!task_list_combo_box_view_->GetSelectedIndex().has_value()) {
+    return;
+  }
+
+  GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
+      task_list_combo_box_view_->GetSelectedIndex().value());
+  ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
+      active_task_list->id, base::BindOnce(&TasksBubbleView::UpdateTasksList,
+                                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TasksBubbleView::UpdateTasksList(ui::ListModel<GlanceablesTask>* tasks) {
+  for (const auto& task : *tasks) {
+    if (!task->completed) {
+      auto* view = task_items_container_view_->AddChildView(
+          std::make_unique<GlanceablesTaskView>(task.get()));
+      view->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+      view->SetOrientation(views::LayoutOrientation::kHorizontal);
+    }
+  }
 }
 
 BEGIN_METADATA(TasksBubbleView, views::View)

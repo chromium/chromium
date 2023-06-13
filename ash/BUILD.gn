@@ -626,6 +626,8 @@ component("ash") {
     "glanceables/glanceables_weather_view.h",
     "glanceables/glanceables_welcome_label.cc",
     "glanceables/glanceables_welcome_label.h",
+    "glanceables/tasks/glanceables_task_view.cc",
+    "glanceables/tasks/glanceables_task_view.h",
     "glanceables/tasks/glanceables_tasks_client.h",
     "glanceables/tasks/glanceables_tasks_types.cc",
     "glanceables/tasks/glanceables_tasks_types.h",
