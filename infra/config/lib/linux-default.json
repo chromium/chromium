@@ -180,6 +180,7 @@
     "android-cronet-arm-rel": "Ubuntu-22.04",
     "android-cronet-asan-x86-rel": "Ubuntu-22.04",
     "android-cronet-x86-dbg": "Ubuntu-22.04",
+    "android-cronet-x86-dbg-10-tests": "Ubuntu-22.04",
     "android-cronet-x86-dbg-11-tests": "Ubuntu-22.04",
     "android-cronet-x86-dbg-marshmallow-tests": "Ubuntu-22.04",
     "android-cronet-x86-dbg-oreo-tests": "Ubuntu-22.04",
