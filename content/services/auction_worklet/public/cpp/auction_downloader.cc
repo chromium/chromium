@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/services/auction_worklet/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 
 #include <memory>
 #include <string>
@@ -39,6 +39,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Requested when running a FLEDGE auction."
           data: "URL associated with an interest group or seller."
           destination: WEBSITE
+          user_data: {
+            type: SENSITIVE_URL
+          }
+          internal {
+            contacts {
+              email: "privacy-sandbox-dev@chromium.org"
+            }
+          }
+          last_reviewed: "2023-06-12"
         }
         policy {
           cookies_allowed: NO
@@ -294,8 +303,9 @@ void AuctionDownloader::OnResponseStarted(
       "data", [&](perfetto::TracedValue dest) {
         perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
         dict.Add("requestId", GetRequestId());
-        if (response_head.headers)
+        if (response_head.headers) {
           dict.Add("statusCode", response_head.headers->response_code());
+        }
         dict.Add("mimeType", response_head.mime_type);
         dict.Add("encodedDataLength", response_head.encoded_data_length);
 
@@ -335,8 +345,9 @@ void AuctionDownloader::OnResponseStarted(
 }
 
 std::string AuctionDownloader::GetRequestId() {
-  if (!request_id_.has_value())
+  if (!request_id_.has_value()) {
     request_id_ = base::UnguessableToken::Create();
+  }
   return request_id_->ToString();
 }
 
@@ -352,8 +363,9 @@ void AuctionDownloader::TraceResult(bool failure,
         dict.Add("didFail", failure);
         dict.Add("encodedDataLength", encoded_data_length);
         dict.Add("decodedBodyLength", decoded_body_length);
-        if (!completion_time.is_null())
+        if (!completion_time.is_null()) {
           dict.Add("finishTime", completion_time.since_origin().InSecondsF());
+        }
       });
 }
 

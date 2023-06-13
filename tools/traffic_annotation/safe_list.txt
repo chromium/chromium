@@ -284,7 +284,6 @@ missing_new_fields,content/browser/web_package/web_bundle_utils.cc
 missing_new_fields,content/browser/webid/idp_network_request_manager.cc
 missing_new_fields,content/browser/websockets/websocket_connector_impl.cc
 missing_new_fields,content/browser/worker_host/worker_script_fetcher.cc
-missing_new_fields,content/services/auction_worklet/auction_downloader.cc
 missing_new_fields,content/services/shared_storage_worklet/module_script_downloader.cc
 missing_new_fields,content/shell/browser/shell_devtools_bindings.cc
 missing_new_fields,device/bluetooth/bluetooth_socket_net.cc

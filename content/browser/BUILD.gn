@@ -150,6 +150,7 @@ source_set("browser") {
     "//content/public/common:common_sources",
     "//content/public/common:content_descriptor_keys",
     "//content/public/common/zygote:buildflags",
+    "//content/services/auction_worklet/public/cpp",
     "//content/services/auction_worklet/public/mojom",
     "//crypto",
     "//device/base",

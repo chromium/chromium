@@ -26,6 +26,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

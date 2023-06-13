@@ -32,8 +32,6 @@ inspector_protocol_generate("protocol_sources") {
 
 source_set("auction_worklet") {
   sources = [
-    "auction_downloader.cc",
-    "auction_downloader.h",
     "auction_v8_devtools_agent.cc",
     "auction_v8_devtools_agent.h",
     "auction_v8_devtools_session.cc",
@@ -104,7 +102,10 @@ source_set("auction_worklet") {
     "//v8",
   ]
 
-  public_deps = [ "public/mojom" ]
+  public_deps = [
+    "public/cpp",
+    "public/mojom",
+  ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
@@ -129,7 +130,7 @@ source_set("tests") {
   }
 
   sources = [
-    "auction_downloader_unittest.cc",
+    "public/cpp/auction_downloader_unittest.cc",
     "auction_v8_inspector_util_unittest.cc",
     "context_recycler_unittest.cc",
     "debug_command_queue_unittest.cc",

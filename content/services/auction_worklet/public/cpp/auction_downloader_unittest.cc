@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/services/auction_worklet/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 
 #include <string>
 #include <utility>

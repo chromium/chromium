@@ -1,0 +1,21 @@
+source_set("cpp") {
+  sources = [
+    "auction_downloader.cc",
+    "auction_downloader.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//content:content_implementation",
+  ]
+
+  deps = [
+    "//base",
+    "//content:export",
+    "//content/common",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
