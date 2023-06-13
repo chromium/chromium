@@ -287,6 +287,7 @@
     "win10-angle-chromium-x64-intel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-nvidia": "Ubuntu-22.04",
     "win10-updater-tester-dbg": "Ubuntu-22.04",
+    "win10-updater-tester-dbg-uac": "Ubuntu-22.04",
     "win10-wpt-content-shell-fyi-rel": "Ubuntu-22.04",
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
