@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -180,6 +181,64 @@ void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
              "  overlay_visible_from_event = e.visible;"
              "  document.title = 'ongeometrychange';"
              "}"));
+}
+
+// TODO(https://crbug.com/1277860): Flaky.
+void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
+  views::NonClientFrameView* frame_view =
+      browser_view()->GetWidget()->non_client_view()->frame_view();
+
+  // Draggable regions take some time to initialize after opening and tests fail
+  // if not exhausting the run loop before checking the value.
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  // Validate that a point marked "app-region: drag" is draggable. The draggable
+  // region is defined in the kTestHTML of WebAppFrameToolbarTestHelper's
+  // LoadWindowControlsOverlayTestPageWithDataAndGetURL.
+  gfx::Point draggable_point(100, 100);
+  views::View::ConvertPointToTarget(browser_view()->contents_web_view(),
+                                    frame_view, &draggable_point);
+
+  EXPECT_EQ(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
+
+  EXPECT_FALSE(browser_view()->ShouldDescendIntoChildForEventHandling(
+      browser_view()->GetWidget()->GetNativeView(), draggable_point));
+
+  // Validate that a point marked "app-region: no-drag" within a draggable
+  // region is not draggable.
+  gfx::Point non_draggable_point(106, 106);
+  views::View::ConvertPointToTarget(browser_view()->contents_web_view(),
+                                    frame_view, &non_draggable_point);
+
+  EXPECT_EQ(frame_view->NonClientHitTest(non_draggable_point), HTCLIENT);
+
+  EXPECT_TRUE(browser_view()->ShouldDescendIntoChildForEventHandling(
+      browser_view()->GetWidget()->GetNativeView(), non_draggable_point));
+
+  // Validate that a point at the border that does not intersect with the
+  // overlays is not marked as draggable.
+  constexpr gfx::Point kBorderPoint(100, 1);
+  EXPECT_NE(frame_view->NonClientHitTest(kBorderPoint), HTCAPTION);
+  EXPECT_TRUE(browser_view()->ShouldDescendIntoChildForEventHandling(
+      browser_view()->GetWidget()->GetNativeView(), kBorderPoint));
+
+  // Validate that draggable region does not clear after history.replaceState is
+  // invoked.
+  std::string kHistoryReplaceState =
+      "history.replaceState({ test: 'test' }, null);";
+  EXPECT_TRUE(
+      ExecJs(browser_view()->GetActiveWebContents(), kHistoryReplaceState));
+  EXPECT_FALSE(browser_view()->ShouldDescendIntoChildForEventHandling(
+      browser_view()->GetWidget()->GetNativeView(), draggable_point));
+
+  // Validate that the draggable region is reset on navigation and the point is
+  // no longer draggable.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_view()->browser(),
+                                           GURL("http://example.test/")));
+  EXPECT_NE(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
+  EXPECT_TRUE(browser_view()->ShouldDescendIntoChildForEventHandling(
+      browser_view()->GetWidget()->GetNativeView(), draggable_point));
 }
 
 BrowserView* WebAppFrameToolbarTestHelper::OpenPopup(
