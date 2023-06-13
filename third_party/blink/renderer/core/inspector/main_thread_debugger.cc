@@ -31,9 +31,11 @@
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 
 #include <memory>
+#include <set>
 
 #include "base/feature_list.h"
 #include "base/synchronization/lock.h"
+#include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
@@ -346,14 +348,14 @@ bool MainThreadDebugger::canExecuteScripts(int context_group_id) {
     return true;
   }
 
-  size_t num_main_frames = 0;
+  std::set<base::UnguessableToken> browsing_context_group_tokens;
   for (auto& page : Page::OrdinaryPages()) {
     if (page->MainFrame() && page->MainFrame()->IsOutermostMainFrame()) {
-      ++num_main_frames;
+      browsing_context_group_tokens.insert(page->BrowsingContextGroupToken());
     }
   }
 
-  if (num_main_frames > 1) {
+  if (browsing_context_group_tokens.size() > 1) {
     String message = String(
         "DevTools debugger is disabled because it is attached to a process "
         "that hosts multiple top-level frames, where DevTools debugger doesn't "
