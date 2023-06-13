@@ -303,14 +303,13 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1435090")
     public void testSwipeAndHoldOnNtp_EnterTabSwitcher() throws TimeoutException {
         // Clicking tab switcher button while swiping and holding the gesture navigation
         // bubble should reset the state and dismiss the UI.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mNavUtils.swipeFromEdgeAndHold(/*leftEdge=*/true);
         setTabSwitcherModeAndWait(true);
-        Assert.assertFalse("Navigation UI should be reset.", mNavigationHandler.isActive());
+        CriteriaHelper.pollUiThread(() -> !mNavigationHandler.isActive());
     }
 
     /**
