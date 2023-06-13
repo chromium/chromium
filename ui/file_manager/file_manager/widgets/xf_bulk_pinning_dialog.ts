@@ -20,6 +20,9 @@ const enum DialogState {
   // Currently offline. Cannot compute space requirement for the time being.
   OFFLINE,
 
+  // Currently not running due to battery saver mode active.
+  BATTERY_SAVER,
+
   // Listing files and computing space requirements.
   LISTING,
 
@@ -44,6 +47,7 @@ export class XfBulkPinningDialog extends XfBase {
   @query('cr-dialog') private $dialog_!: CrDialogElement;
   @query('#continue-button') private $button_!: CrButtonElement;
   @query('#offline-footer') private $offlineFooter_!: HTMLElement;
+  @query('#battery-saver-footer') private $batterySaverFooter_!: HTMLElement;
   @query('#listing-footer') private $listingFooter_!: HTMLElement;
   @query('#error-footer') private $errorFooter_!: HTMLElement;
   @query('#not-enough-space-footer')
@@ -85,8 +89,12 @@ export class XfBulkPinningDialog extends XfBase {
 
     this.stage_ = bpp.stage;
     switch (bpp.stage) {
-      case BulkPinStage.PAUSED:
+      case BulkPinStage.PAUSED_OFFLINE:
         this.state = DialogState.OFFLINE;
+        break;
+
+      case BulkPinStage.PAUSED_BATTERY_SAVER:
+        this.state = DialogState.BATTERY_SAVER;
         break;
 
       case BulkPinStage.GETTING_FREE_SPACE:
@@ -119,6 +127,8 @@ export class XfBulkPinningDialog extends XfBase {
   set state(s: DialogState) {
     this.$offlineFooter_.style.display =
         s === DialogState.OFFLINE ? 'initial' : 'none';
+    this.$batterySaverFooter_.style.display =
+        s === DialogState.BATTERY_SAVER ? 'initial' : 'none';
     this.$listingFooter_.style.display =
         s === DialogState.LISTING ? 'flex' : 'none';
     this.$errorFooter_.style.display =
@@ -195,6 +205,9 @@ export class XfBulkPinningDialog extends XfBase {
           </ul>
           <div id="offline-footer" class="offline-footer">
             ${str('BULK_PINNING_OFFLINE')}
+          </div>
+          <div id="battery-saver-footer" class="battery-saver-footer">
+            ${str('BULK_PINNING_BATTERY_SAVER')}
           </div>
           <div id="listing-footer" class="normal-footer">
             <files-spinner></files-spinner>
@@ -304,7 +317,7 @@ export class XfBulkPinningDialog extends XfBase {
         padding: 16px;
       }
 
-      .offline-footer {
+      .offline-footer, .battery-saver-footer {
         background-color: var(--cros-sys-surface_variant);
         border: 1px solid var(--cros-separator-color);
         border-radius: 0 0 12px 12px;

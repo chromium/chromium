@@ -97,10 +97,13 @@ export class CloudPanelContainer {
     }
 
     // If the bulk pinning is paused, this indicates that it is currently
-    // offline. This could be from either the network not being connected or
-    // cellular being disabled for syncing.
-    if (bulkPinProgress.stage === BulkPinStage.PAUSED) {
+    // offline or battery saver mode is active.
+    if (bulkPinProgress.stage === BulkPinStage.PAUSED_OFFLINE) {
       this.updatePanelType_(CloudPanelType.OFFLINE);
+      return;
+    }
+    if (bulkPinProgress.stage === BulkPinStage.PAUSED_BATTERY_SAVER) {
+      this.updatePanelType_(CloudPanelType.BATTERY_SAVER);
       return;
     }
 

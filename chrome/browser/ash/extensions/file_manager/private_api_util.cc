@@ -248,8 +248,12 @@ extensions::api::file_manager_private::BulkPinStage DrivefsPinStageToJs(
   switch (stage) {
     case drivefs::pinning::Stage::kStopped:
       return extensions::api::file_manager_private::BULK_PIN_STAGE_STOPPED;
-    case drivefs::pinning::Stage::kPaused:
-      return extensions::api::file_manager_private::BULK_PIN_STAGE_PAUSED;
+    case drivefs::pinning::Stage::kPausedOffline:
+      return extensions::api::file_manager_private::
+          BULK_PIN_STAGE_PAUSED_OFFLINE;
+    case drivefs::pinning::Stage::kPausedBatterySaver:
+      return extensions::api::file_manager_private::
+          BULK_PIN_STAGE_PAUSED_BATTERY_SAVER;
     case drivefs::pinning::Stage::kGettingFreeSpace:
       return extensions::api::file_manager_private::
           BULK_PIN_STAGE_GETTING_FREE_SPACE;

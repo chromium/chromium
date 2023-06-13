@@ -131,6 +131,7 @@ constants.ICON_TYPES = {
   ARCHIVE: 'archive',
   AUDIO: 'audio',
   BRUSCHETTA: 'bruschetta',
+  BULK_PINNING_BATTERY_SAVER: 'bulk_pinning_battery_saver',
   BULK_PINNING_DONE: 'bulk_pinning_done',
   BULK_PINNING_OFFLINE: 'bulk_pinning_offline',
   CAMERA_FOLDER: 'camera-folder',

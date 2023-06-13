@@ -575,7 +575,9 @@ export class ToolbarController {
   updateBulkPinningFolderIndicator_(currentDirectory, stage) {
     if (currentDirectory?.rootType === VolumeManagerCommon.RootType.DRIVE &&
         (stage === chrome.fileManagerPrivate.BulkPinStage.SYNCING ||
-         stage === chrome.fileManagerPrivate.BulkPinStage.PAUSED)) {
+         stage === chrome.fileManagerPrivate.BulkPinStage.PAUSED_OFFLINE ||
+         stage ===
+             chrome.fileManagerPrivate.BulkPinStage.PAUSED_BATTERY_SAVER)) {
       this.cloudOfflineFolderIndicator_.hidden = false;
       return;
     }
@@ -605,9 +607,15 @@ export class ToolbarController {
         this.cloudStatusIcon_.setAttribute(
             'type', constants.ICON_TYPES.CLOUD_ERROR);
         break;
-      case chrome.fileManagerPrivate.BulkPinStage.PAUSED:
+      case chrome.fileManagerPrivate.BulkPinStage.PAUSED_OFFLINE:
         this.cloudButtonIcon_.setAttribute(
             'type', constants.ICON_TYPES.BULK_PINNING_OFFLINE);
+        this.cloudStatusIcon_.removeAttribute('type');
+        this.cloudStatusIcon_.removeAttribute('size');
+        break;
+      case chrome.fileManagerPrivate.BulkPinStage.PAUSED_BATTERY_SAVER:
+        this.cloudButtonIcon_.setAttribute(
+            'type', constants.ICON_TYPES.BULK_PINNING_BATTERY_SAVER);
         this.cloudStatusIcon_.removeAttribute('type');
         this.cloudStatusIcon_.removeAttribute('size');
         break;

@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -215,11 +216,13 @@ class DriveFsPinManagerTest : public testing::Test {
   void SetUp() override {
     UserDataAuthClient::InitializeFake();
     SpacedClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
   }
 
   void TearDown() override {
     UserDataAuthClient::Shutdown();
     SpacedClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   PinManager::SpaceGetter GetSpaceGetter() {
@@ -242,7 +245,8 @@ TEST_F(DriveFsPinManagerTest, Stage) {
   std::unordered_set<std::string> labels;
   for (const Stage stage : {
            Stage::kStopped,
-           Stage::kPaused,
+           Stage::kPausedOffline,
+           Stage::kPausedBatterySaver,
            Stage::kGettingFreeSpace,
            Stage::kListingFiles,
            Stage::kSyncing,
@@ -274,7 +278,8 @@ TEST_F(DriveFsPinManagerTest, IsError) {
 
   for (const Stage stage : {
            Stage::kStopped,
-           Stage::kPaused,
+           Stage::kPausedOffline,
+           Stage::kPausedBatterySaver,
            Stage::kGettingFreeSpace,
            Stage::kListingFiles,
            Stage::kSyncing,
@@ -2389,13 +2394,14 @@ TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {
 }
 
 // Tests PinManager::SetOnline().
-TEST_F(DriveFsPinManagerTest, SetOnline) {
+TEST_F(DriveFsPinManagerTest, SetOnlineAndBatteryOk) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
   EXPECT_TRUE(manager.is_online_);
+  EXPECT_TRUE(manager.is_battery_ok_);
 
   manager.SetOnline(false);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
@@ -2408,9 +2414,51 @@ TEST_F(DriveFsPinManagerTest, SetOnline) {
   manager.SetOnline(false);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
   EXPECT_FALSE(manager.is_online_);
+
+  power_manager::BatterySaverModeState state;
+  state.set_enabled(true);
+  manager.BatterySaverModeStateChanged(state);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_FALSE(manager.is_battery_ok_);
+
+  state.set_enabled(false);
+  manager.BatterySaverModeStateChanged(state);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_TRUE(manager.is_battery_ok_);
+
+  manager.SetOnline(false);
+  state.set_enabled(true);
+  manager.BatterySaverModeStateChanged(state);
+  EXPECT_FALSE(manager.is_online_);
+  EXPECT_FALSE(manager.is_battery_ok_);
 
   manager.Start();
-  EXPECT_EQ(manager.progress_.stage, Stage::kPaused);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  EXPECT_FALSE(manager.is_online_);
+  EXPECT_FALSE(manager.is_battery_ok_);
+
+  manager.SetOnline(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  state.set_enabled(false);
+  manager.BatterySaverModeStateChanged(state);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  state.set_enabled(true);
+  manager.BatterySaverModeStateChanged(state);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+
+  manager.SetOnline(false);
+  state.set_enabled(false);
+  manager.BatterySaverModeStateChanged(state);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  manager.SetOnline(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  EXPECT_TRUE(manager.is_online_);
+
+  manager.SetOnline(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
   EXPECT_FALSE(manager.is_online_);
 
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
@@ -2419,16 +2467,7 @@ TEST_F(DriveFsPinManagerTest, SetOnline) {
   EXPECT_TRUE(manager.is_online_);
 
   manager.SetOnline(false);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPaused);
-  EXPECT_FALSE(manager.is_online_);
-
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
-  manager.SetOnline(true);
-  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
-  EXPECT_TRUE(manager.is_online_);
-
-  manager.SetOnline(false);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPaused);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
   EXPECT_FALSE(manager.is_online_);
 
   manager.Stop();

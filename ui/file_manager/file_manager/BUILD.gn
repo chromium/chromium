@@ -58,6 +58,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/common/ic_selected.svg",
     "foreground/images/files/ui/arrow_right.svg",
     "foreground/images/files/ui/back.svg",
+    "foreground/images/files/ui/bulk_pinning_battery_saver.svg",
     "foreground/images/files/ui/bulk_pinning_done.svg",
     "foreground/images/files/ui/bulk_pinning_offline.svg",
     "foreground/images/files/ui/check.svg",

@@ -21,6 +21,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
  */
 export enum CloudPanelType {
   OFFLINE = 'offline',
+  BATTERY_SAVER = 'battery_saver',
   NOT_ENOUGH_SPACE = 'not_enough_space',
 }
 
@@ -28,8 +29,8 @@ export enum CloudPanelType {
  * The `<xf-cloud-panel>` represents the current state that the Drive bulk
  * pinning process is currently in. When files are being pinned and downloaded,
  * the `items` and `progress` attributes are used to signify that the panel is
- * in progress. The `type` attribute can be used with `not_enough_space` and
- * `offline` to signify possible error or paused states.
+ * in progress. The `type` attribute can be used with `not_enough_space`,
+ * `offline`, and `battery_saver` to signify possible error or paused states.
  */
 @customElement('xf-cloud-panel')
 export class XfCloudPanel extends XfBase {
@@ -205,6 +206,14 @@ export class XfCloudPanel extends XfBase {
             ${str('DRIVE_BULK_PINNING_OFFLINE')}
           </div>
         </div>
+        <div class="static" id="progress-battery-saver">
+        <xf-icon type="${
+        constants.ICON_TYPES
+            .BULK_PINNING_BATTERY_SAVER}" size="large"></xf-icon>
+          <div class="status-description">
+            ${str('DRIVE_BULK_PINNING_BATTERY_SAVER')}
+          </div>
+        </div>
         <div class="static" id="progress-not-enough-space">
         <xf-icon type="${
         constants.ICON_TYPES.ERROR_BANNER}" size="large"></xf-icon>
@@ -254,6 +263,10 @@ function getCSS() {
       display: none;
     }
 
+    :host(:not([type="battery_saver"])) #progress-battery-saver {
+      display: none;
+    }
+
     :host(:not([type="not_enough_space"])) #progress-not-enough-space {
       display: none;
     }
@@ -281,6 +294,10 @@ function getCSS() {
     }
 
     xf-icon[type="bulk_pinning_offline"] {
+      --xf-icon-color: var(--cros-sys-secondary);
+    }
+
+    xf-icon[type="bulk_pinning_battery_saver"] {
       --xf-icon-color: var(--cros-sys-secondary);
     }
 

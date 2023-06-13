@@ -376,6 +376,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/files/ui/check.svg);
     }
 
+    :host([type="bulk_pinning_battery_saver"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_battery_saver.svg);
+    }
+
     :host([type="bulk_pinning_done"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_done.svg);
     }

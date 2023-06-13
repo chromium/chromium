@@ -458,7 +458,8 @@ chrome.fileManagerPrivate.PolicyDefaultHandlerStatus = {
  */
 chrome.fileManagerPrivate.BulkPinStage = {
   STOPPED: 'stopped',
-  PAUSED: 'paused',
+  PAUSED_OFFLINE: 'paused_offline',
+  PAUSED_BATTERY_SAVER: 'paused_battery_saver',
   GETTING_FREE_SPACE: 'getting_free_space',
   LISTING_FILES: 'listing_files',
   SYNCING: 'syncing',

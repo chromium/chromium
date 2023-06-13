@@ -1780,6 +1780,9 @@
     Preparing to sync Drive files...
   </message>
   <!-- TODO(b/276126188): Remove the translateable="false" when the copy has been landed on. -->
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_BATTERY_SAVER_LABEL" translateable="false" desc="The text used when the device is in battery saver mode and has paused syncing.">
+    Battery saver mode on. Sync will resume when battery saver mode is turned off.
+  </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
     You are currently offline. Sync will resume when the connection is back on.
   </message>
@@ -1794,6 +1797,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_VIEW_STORAGE" translateable="false" desc="Text of the 'View storage' link displayed next to the error message when there is not enough space to enable the Google Drive bulk pinning feature">
     View storage
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_BATTERY_SAVER" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because battery saver mode is active">
+    Battery saver mode on. Try again when battery saver mode is turned off.
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because of lack of internet connection">
     You are currently offline. Try again when you are connected to the internet.

@@ -1586,21 +1586,21 @@ util.canBulkPinningCloudPanelShow = (stage, pref) => {
     return false;
   }
 
+  const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
   // If the stage is in progress and the bulk pinning preference is enabled,
   // then the cloud panel should not be visible.
   if (pref &&
-      (stage === chrome.fileManagerPrivate.BulkPinStage.GETTING_FREE_SPACE ||
-       stage === chrome.fileManagerPrivate.BulkPinStage.LISTING_FILES ||
-       stage === chrome.fileManagerPrivate.BulkPinStage.SYNCING)) {
+      (stage === BulkPinStage.GETTING_FREE_SPACE ||
+       stage === BulkPinStage.LISTING_FILES ||
+       stage === BulkPinStage.SYNCING)) {
     return true;
   }
 
-  // The `PAUSED` stage represents the user being offline and the
-  // `NOT_ENOUGH_SPACE` represents the user not having enough space on disk
-  // to download. For the former the preference should still be enabled,
-  // however, for the latter the preference will have been disabled.
-  if ((stage === chrome.fileManagerPrivate.BulkPinStage.PAUSED && pref) ||
-      stage === chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE) {
+  // For the PAUSED... states the preference should still be enabled, however,
+  // for the latter the preference will have been disabled.
+  if ((stage === BulkPinStage.PAUSED_OFFLINE && pref) ||
+      (stage === BulkPinStage.PAUSED_BATTERY_SAVER && pref) ||
+      stage === BulkPinStage.NOT_ENOUGH_SPACE) {
     return true;
   }
 

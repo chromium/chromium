@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -149,7 +150,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     : public DriveFsHostObserver,
       ash::UserDataAuthClient::Observer,
-      ash::SpacedClient::Observer {
+      ash::SpacedClient::Observer,
+      chromeos::PowerManagerClient::Observer {
  public:
   using Path = base::FilePath;
 
@@ -387,6 +389,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // ash::SpacedClient::Observer
   void OnSpaceUpdate(const SpaceEvent& event) override;
 
+  // chromeos::PowerManagerClient::Observer
+  void BatterySaverModeStateChanged(
+      const power_manager::BatterySaverModeState& state) override;
+
+  // Callback used to query battery saver state from PowerManagerClient on
+  // startup.
+  void OnGotBatterySaverState(
+      absl::optional<power_manager::BatterySaverModeState> state);
+
   // Starts and stops monitoring space using the SpacedClient::Observer.
   bool StartMonitoringSpace();
   void StopMonitoringSpace();
@@ -415,6 +426,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Is the device connected to a suitable network? Assume it is online for
   // tests.
   bool is_online_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+
+  // Is the device battery ok for doing sync (e.g. not in battery saver mode).
+  bool is_battery_ok_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
@@ -473,7 +487,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace3);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSpaceUpdate);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, StartMonitoringSpace);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, SetOnline);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, SetOnlineAndBatteryOk);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnTransientError);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnError);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, StartWhenInProgress);

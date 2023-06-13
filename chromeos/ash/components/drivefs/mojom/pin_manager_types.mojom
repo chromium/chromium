@@ -14,19 +14,20 @@ enum Stage {
   kStopped = 0,
 
   // Paused because of unfavorable network conditions.
-  kPaused = 1,
+  kPausedOffline = 1,
+  kPausedBatterySaver = 2,
 
   // In-progress stages.
-  kGettingFreeSpace = 2,
-  kListingFiles = 3,
-  kSyncing = 4,
+  kGettingFreeSpace = 3,
+  kListingFiles = 4,
+  kSyncing = 5,
 
   // Final success stage.
-  kSuccess = 5,
+  kSuccess = 6,
 
   // Final error stages.
-  kCannotGetFreeSpace = 6,
-  kCannotListFiles = 7,
-  kNotEnoughSpace = 8,
-  kCannotEnableDocsOffline = 9,
+  kCannotGetFreeSpace = 7,
+  kCannotListFiles = 8,
+  kNotEnoughSpace = 9,
+  kCannotEnableDocsOffline = 10,
 };

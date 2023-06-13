@@ -388,13 +388,15 @@ enum PolicyDefaultHandlerStatus {
 };
 
 // Describes the stage the bulk pinning manager is in. This enum should be kept
-// in sync with chromeos/ash/components/drivefs/drivefs_pin_manager.h
+// in sync with chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.
 enum BulkPinStage {
   // Initial stage.
   stopped,
 
   // Paused because of unfavorable network conditions.
-  paused,
+  paused_offline,
+  // Paused due to battery saver mode active.
+  paused_battery_saver,
 
   // In-progress stages.
   getting_free_space,

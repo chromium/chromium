@@ -312,11 +312,22 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute(done: () => void) {
   // Pausing the bulk pinning operation does not update the attributes except
   // changing the type attribute to offline.
   store.dispatch(updateBulkPinProgress(
-      {...bulkPinning, pinnedBytes: 200, stage: BulkPinStage.PAUSED}));
+      {...bulkPinning, pinnedBytes: 200, stage: BulkPinStage.PAUSED_OFFLINE}));
   assertEquals(
       container!.updates, 2,
       'Bulk pin state stage should increment updates to 2');
   assertEquals(panel!.getAttribute('type'), 'offline');
+  assertFalse(panel!.hasAttribute('items'));
+  assertFalse(panel!.hasAttribute('percentage'));
+  store.dispatch(updateBulkPinProgress({
+    ...bulkPinning,
+    pinnedBytes: 200,
+    stage: BulkPinStage.PAUSED_BATTERY_SAVER,
+  }));
+  assertEquals(
+      container!.updates, 3,
+      'Bulk pin state stage should increment updates to 3');
+  assertEquals(panel!.getAttribute('type'), 'battery_saver');
   assertFalse(panel!.hasAttribute('items'));
   assertFalse(panel!.hasAttribute('percentage'));
 
@@ -324,8 +335,8 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute(done: () => void) {
   // attribute and updates the attributes.
   store.dispatch(updateBulkPinProgress({...bulkPinning, pinnedBytes: 300}));
   assertEquals(
-      container!.updates, 3,
-      'Bulk pin state stage should increment updates to 3');
+      container!.updates, 4,
+      'Bulk pin state stage should increment updates to 4');
   assertFalse(panel!.hasAttribute('type'));
   assertEquals(panel!.getAttribute('items'), '10');
   assertEquals(panel!.getAttribute('percentage'), '30');

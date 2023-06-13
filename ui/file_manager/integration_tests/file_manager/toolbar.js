@@ -586,7 +586,7 @@ testcase.toolbarCloudIconShouldNotShowWhenPrefDisabled = async () => {
   await sendTestMessage({name: 'forceBulkPinningCalculateRequiredSpace'});
 
   // Assert the stage is `PAUSED` and the cloud button is still hidden.
-  await remoteCall.waitForBulkPinningStage('Paused');
+  await remoteCall.waitForBulkPinningStage('PausedOffline');
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
   await remoteCall.waitForElement(appId, '#offline-folder-indicator[hidden]');
 };
@@ -606,12 +606,13 @@ testcase.toolbarCloudIconShouldShowWhenPausedState = async () => {
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
 
   // Set the bulk pinning manager to enter offline mode. This will surface a
-  // `PAUSED` state which has a UI representation iff the pref is enabled.
+  // `PAUSED_OFFLINE` state which has a UI representation iff the pref is
+  // enabled.
   await sendTestMessage({name: 'setBulkPinningOnline', enabled: false});
 
-  // Assert the stage is `PAUSED`, the cloud button is visible and the icon is
-  // the offline icon.
-  await remoteCall.waitForBulkPinningStage('Paused');
+  // Assert the stage is `PAUSED_OFFLINE`, the cloud button is visible and the
+  // icon is the offline icon.
+  await remoteCall.waitForBulkPinningStage('PausedOffline');
   await remoteCall.waitForElement(appId, '#cloud-button:not([hidden])');
   await remoteCall.waitForElement(
       appId, '#offline-folder-indicator:not([hidden])');

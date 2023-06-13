@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/file_errors.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
@@ -299,7 +300,8 @@ bool Progress::IsError() const {
 
     case Stage::kGettingFreeSpace:
     case Stage::kListingFiles:
-    case Stage::kPaused:
+    case Stage::kPausedOffline:
+    case Stage::kPausedBatterySaver:
     case Stage::kSuccess:
     case Stage::kSyncing:
     case Stage::kStopped:
@@ -317,7 +319,29 @@ bool InProgress(const Stage stage) {
       return true;
 
     case Stage::kStopped:
-    case Stage::kPaused:
+    case Stage::kPausedOffline:
+    case Stage::kPausedBatterySaver:
+    case Stage::kSuccess:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+    case Stage::kCannotEnableDocsOffline:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+bool IsPaused(const Stage stage) {
+  switch (stage) {
+    case Stage::kPausedOffline:
+    case Stage::kPausedBatterySaver:
+      return true;
+
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kSyncing:
+    case Stage::kStopped:
     case Stage::kSuccess:
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
@@ -583,6 +607,9 @@ PinManager::PinManager(Path profile_path,
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
   ash::UserDataAuthClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->GetBatterySaverModeState(base::BindOnce(
+      &PinManager::OnGotBatterySaverState, weak_ptr_factory_.GetWeakPtr()));
 }
 
 PinManager::~PinManager() {
@@ -590,6 +617,7 @@ PinManager::~PinManager() {
 
   StopMonitoringSpace();
   ash::UserDataAuthClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 
   DCHECK(!InProgress(progress_.stage))
       << "Pin manager is " << Quote(progress_.stage);
@@ -617,7 +645,12 @@ void PinManager::Start() {
 
   if (!is_online_) {
     LOG(WARNING) << "Device is currently offline";
-    return Complete(Stage::kPaused);
+    return Complete(Stage::kPausedOffline);
+  }
+
+  if (!is_battery_ok_) {
+    LOG(WARNING) << "Device is currently in battery saver mode";
+    return Complete(Stage::kPausedBatterySaver);
   }
 
   VLOG(2) << "Getting free space";
@@ -705,6 +738,30 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
     }
   } else if (progress_.stage != Stage::kNotEnoughSpace) {
     Complete(Stage::kNotEnoughSpace);
+  }
+}
+
+void PinManager::OnGotBatterySaverState(
+    absl::optional<power_manager::BatterySaverModeState> state) {
+  if (state) {
+    BatterySaverModeStateChanged(*state);
+  }
+}
+
+void PinManager::BatterySaverModeStateChanged(
+    const power_manager::BatterySaverModeState& state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_battery_ok_ = !state.enabled();
+  VLOG(2) << "Battery saver mode changed, online=" << is_online_
+          << ", battery=" << is_battery_ok_;
+  if (!is_battery_ok_ && InProgress(progress_.stage)) {
+    VLOG(1) << "Pausing for battery saver";
+    return Complete(Stage::kPausedBatterySaver);
+  }
+
+  if (is_online_ && is_battery_ok_ && IsPaused(progress_.stage)) {
+    VLOG(1) << "Restarting from battery saver";
+    Start();
   }
 }
 
@@ -949,8 +1006,12 @@ void PinManager::Complete(const Stage stage) {
       VLOG(1) << "Finished with success";
       break;
 
-    case Stage::kPaused:
-      VLOG(1) << "Paused";
+    case Stage::kPausedOffline:
+      VLOG(1) << "Paused offline";
+      break;
+
+    case Stage::kPausedBatterySaver:
+      VLOG(1) << "Paused battery saver";
       break;
 
     case Stage::kStopped:
@@ -1481,18 +1542,18 @@ void PinManager::OnMetadataForModifiedFile(const Id id,
 }
 
 void PinManager::SetOnline(const bool online) {
-  VLOG(2) << "Online: " << online;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << "Online: " << online << ", battery: " << is_battery_ok_;
   is_online_ = online;
 
-  if (!is_online_ && InProgress(progress_.stage)) {
+  if (InProgress(progress_.stage)) {
     VLOG(1) << "Going offline";
-    return Complete(Stage::kPaused);
+    return Complete(Stage::kPausedOffline);
   }
 
-  if (is_online_ && progress_.stage == Stage::kPaused) {
-    VLOG(1) << "Coming back online";
-    return Start();
+  if (is_online_ && is_battery_ok_ && IsPaused(progress_.stage)) {
+    VLOG(1) << "Restarting from battery saver";
+    Start();
   }
 }
 
