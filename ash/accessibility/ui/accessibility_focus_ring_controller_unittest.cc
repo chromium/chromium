@@ -75,7 +75,9 @@ TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
   controller->SetCursorRing(location);
   AccessibilityCursorRingLayer* cursor_layer =
       controller->cursor_layer_for_testing();
-  EXPECT_EQ(root_windows[0], cursor_layer->root_window());
+  aura::Window* window0_container = Shell::GetContainer(
+      root_windows[0], kShellWindowId_AccessibilityBubbleContainer);
+  EXPECT_EQ(window0_container, cursor_layer->root_window());
   EXPECT_LT(abs(cursor_layer->layer()->GetTargetBounds().x() - location.x()),
             50);
   EXPECT_LT(abs(cursor_layer->layer()->GetTargetBounds().y() - location.y()),
@@ -87,7 +89,9 @@ TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
   controller->SetCursorRing(location_on_secondary);
 
   cursor_layer = controller->cursor_layer_for_testing();
-  EXPECT_EQ(root_windows[1], cursor_layer->root_window());
+  aura::Window* window1_container = Shell::GetContainer(
+      root_windows[1], kShellWindowId_AccessibilityBubbleContainer);
+  EXPECT_EQ(window1_container, cursor_layer->root_window());
   EXPECT_LT(abs(cursor_layer->layer()->GetTargetBounds().x() - location.x()),
             50);
   EXPECT_LT(abs(cursor_layer->layer()->GetTargetBounds().y() - location.y()),

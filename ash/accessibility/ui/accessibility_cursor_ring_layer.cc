@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/ui/accessibility_cursor_ring_layer.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -49,8 +50,10 @@ void AccessibilityCursorRingLayer::Set(const gfx::Point& location) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
-  ::wm::ConvertRectFromScreen(root_window, &bounds);
-  CreateOrUpdateLayer(root_window, "AccessibilityCursorRing", bounds,
+  aura::Window* container = Shell::GetContainer(
+      root_window, kShellWindowId_AccessibilityBubbleContainer);
+  ::wm::ConvertRectFromScreen(container, &bounds);
+  CreateOrUpdateLayer(container, "AccessibilityCursorRing", bounds,
                       /*stack_at_top=*/true);
 }
 

@@ -204,6 +204,11 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
+  aura::Window* window0_container = Shell::GetContainer(
+      root_windows[0], kShellWindowId_AccessibilityBubbleContainer);
+  aura::Window* window1_container = Shell::GetContainer(
+      root_windows[1], kShellWindowId_AccessibilityBubbleContainer);
+
   AccessibilityHighlightController highlight_controller;
   highlight_controller.HighlightCursor(true);
   gfx::Point location(90, 90);
@@ -216,7 +221,7 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
   AccessibilityFocusRingControllerImpl* focus_ring_controller =
       Shell::Get()->accessibility_focus_ring_controller();
   auto* cursor_layer = focus_ring_controller->cursor_layer_for_testing();
-  EXPECT_EQ(root_windows[0], cursor_layer->root_window());
+  EXPECT_EQ(window0_container, cursor_layer->root_window());
   EXPECT_LT(
       std::abs(cursor_layer->layer()->GetTargetBounds().x() - location.x()),
       50);
@@ -231,7 +236,7 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
   highlight_controller.OnMouseEvent(&event1);
 
   cursor_layer = focus_ring_controller->cursor_layer_for_testing();
-  EXPECT_EQ(root_windows[1], cursor_layer->root_window());
+  EXPECT_EQ(window1_container, cursor_layer->root_window());
   EXPECT_LT(
       std::abs(cursor_layer->layer()->GetTargetBounds().x() - location.x()),
       50);
