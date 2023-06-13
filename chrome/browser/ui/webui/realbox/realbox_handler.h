@@ -66,13 +66,13 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
 
   // omnibox::mojom::PageHandler:
   void SetPage(mojo::PendingRemote<omnibox::mojom::Page> pending_page) override;
+  void OnFocusChanged(bool focused) override;
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete) override;
   void StopAutocomplete(bool clear_result) override;
   void OpenAutocompleteMatch(uint8_t line,
                              const GURL& url,
                              bool are_matches_showing,
-                             base::TimeDelta time_elapsed_since_last_focus,
                              uint8_t mouse_button,
                              bool alt_key,
                              bool ctrl_key,

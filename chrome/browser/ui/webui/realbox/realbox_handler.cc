@@ -790,6 +790,15 @@ void RealboxHandler::SetPage(
   page_.Bind(std::move(pending_page));
 }
 
+void RealboxHandler::OnFocusChanged(bool focused) {
+  if (focused) {
+    edit_model()->OnSetFocus(false);
+  } else {
+    edit_model()->OnWillKillFocus();
+    edit_model()->OnKillFocus();
+  }
+}
+
 void RealboxHandler::QueryAutocomplete(const std::u16string& input,
                                        bool prevent_inline_autocomplete) {
   // TODO(tommycli): We use the input being empty as a signal we are requesting
@@ -826,16 +835,14 @@ void RealboxHandler::StopAutocomplete(bool clear_result) {
   autocomplete_controller()->Stop(clear_result);
 }
 
-void RealboxHandler::OpenAutocompleteMatch(
-    uint8_t line,
-    const GURL& url,
-    bool are_matches_showing,
-    base::TimeDelta time_elapsed_since_last_focus,
-    uint8_t mouse_button,
-    bool alt_key,
-    bool ctrl_key,
-    bool meta_key,
-    bool shift_key) {
+void RealboxHandler::OpenAutocompleteMatch(uint8_t line,
+                                           const GURL& url,
+                                           bool are_matches_showing,
+                                           uint8_t mouse_button,
+                                           bool alt_key,
+                                           bool ctrl_key,
+                                           bool meta_key,
+                                           bool shift_key) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match) {
     // This can happen due to asynchronous updates changing the result while

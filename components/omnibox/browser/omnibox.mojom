@@ -101,6 +101,8 @@ struct AutocompleteResult {
 interface PageHandler {
   // The RealboxBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
+  // Informs the handler and model about focus state changes.
+  OnFocusChanged(bool focused);
   // Queries autocomplete matches from the browser.
   QueryAutocomplete(mojo_base.mojom.String16 input,
                     bool prevent_inline_autocomplete);
@@ -115,7 +117,6 @@ interface PageHandler {
   OpenAutocompleteMatch(uint8 line,
                         url.mojom.Url url,
                         bool are_matches_showing,
-                        mojo_base.mojom.TimeDelta time_elapsed_since_last_focus,
                         uint8 mouse_button,
                         bool alt_key,
                         bool ctrl_key,
