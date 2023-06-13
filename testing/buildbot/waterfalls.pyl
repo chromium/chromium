@@ -3513,6 +3513,12 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-arm64-generic-rel-skylab-fyi-tests': {
+        'test_suites': {
+          'skylab_tests': 'lacros_arm64_generic_rel_skylab_fyi',
+        },
+        'os_type': 'chromeos',
+      },
       'linux-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
