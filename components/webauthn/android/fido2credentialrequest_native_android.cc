@@ -14,7 +14,6 @@
 #include "components/webauthn/json/value_conversions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
-namespace webauthn {
 namespace {
 
 // MojoClassToJSON takes a serialized Mojo object and returns a Java String
@@ -91,5 +90,3 @@ JNI_Fido2CredentialRequest_GetCredentialResponseFromJson(
   return MojoClassFromJSON<blink::mojom::GetAssertionAuthenticatorResponse>(
       env, webauthn::GetAssertionResponseFromValue, jjson);
 }
-
-}  // namespace webauthn

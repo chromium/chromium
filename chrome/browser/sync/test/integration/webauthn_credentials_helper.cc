@@ -106,14 +106,13 @@ bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
-MockPasskeyModelObserver::MockPasskeyModelObserver(
-    webauthn::PasskeyModel* model) {
+MockPasskeyModelObserver::MockPasskeyModelObserver(PasskeyModel* model) {
   observation_.Observe(model);
 }
 
 MockPasskeyModelObserver::~MockPasskeyModelObserver() = default;
 
-webauthn::PasskeyModel& GetModel(int profile_idx) {
+PasskeyModel& GetModel(int profile_idx) {
   return *PasskeyModelFactory::GetForProfile(test()->GetProfile(profile_idx));
 }
 

@@ -19,8 +19,8 @@ PasskeyModelFactory* PasskeyModelFactory::GetInstance() {
   return instance.get();
 }
 
-webauthn::PasskeyModel* PasskeyModelFactory::GetForProfile(Profile* profile) {
-  return static_cast<webauthn::PasskeyModel*>(
+PasskeyModel* PasskeyModelFactory::GetForProfile(Profile* profile) {
+  return static_cast<PasskeyModel*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -41,8 +41,7 @@ PasskeyModelFactory::~PasskeyModelFactory() = default;
 KeyedService* PasskeyModelFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
-  return new webauthn::PasskeySyncBridge(
-      ModelTypeStoreServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context))
-          ->GetStoreFactory());
+  return new PasskeySyncBridge(ModelTypeStoreServiceFactory::GetForProfile(
+                                   Profile::FromBrowserContext(context))
+                                   ->GetStoreFactory());
 }

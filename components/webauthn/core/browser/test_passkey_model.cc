@@ -9,8 +9,6 @@
 #include "base/rand_util.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 
-namespace webauthn {
-
 TestPasskeyModel::TestPasskeyModel() = default;
 TestPasskeyModel::~TestPasskeyModel() = default;
 
@@ -79,5 +77,3 @@ void TestPasskeyModel::NotifyPasskeysChanged() {
     observer.OnPasskeysChanged();
   }
 }
-
-}  // namespace webauthn

@@ -22,8 +22,6 @@ class MetadataChangeList;
 class ModelError;
 }  // namespace syncer
 
-namespace webauthn {
-
 // Sync bridge implementation for WEBAUTHN_CREDENTIAL model type.
 class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
                           public PasskeyModel {
@@ -87,7 +85,5 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
 
   base::WeakPtrFactory<PasskeySyncBridge> weak_ptr_factory_{this};
 };
-
-}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_SYNC_BRIDGE_H_

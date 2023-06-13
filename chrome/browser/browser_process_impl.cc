@@ -367,7 +367,7 @@ void BrowserProcessImpl::Init() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  webauthn::WebAuthnClientAndroid::SetClient(
+  components::WebAuthnClientAndroid::SetClient(
       std::make_unique<ChromeWebAuthnClientAndroid>());
 #endif
 

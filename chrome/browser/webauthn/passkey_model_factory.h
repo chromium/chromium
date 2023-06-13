@@ -17,7 +17,7 @@ class BrowserContext;
 class PasskeyModelFactory : public ProfileKeyedServiceFactory {
  public:
   static PasskeyModelFactory* GetInstance();
-  static webauthn::PasskeyModel* GetForProfile(Profile* profile);
+  static PasskeyModel* GetForProfile(Profile* profile);
 
  private:
   friend class base::NoDestructor<PasskeyModelFactory>;

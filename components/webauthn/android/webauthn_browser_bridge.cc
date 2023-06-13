@@ -19,8 +19,6 @@
 
 using base::android::ScopedJavaLocalRef;
 
-namespace webauthn {
-
 device::DiscoverableCredentialMetadata ConvertJavaCredentialDetailsToMetadata(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> j_credential) {
@@ -96,7 +94,7 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
     jboolean is_conditional_request,
     const base::android::JavaParamRef<jobject>& jget_assertion_callback,
     const base::android::JavaParamRef<jobject>& jhybrid_callback) const {
-  auto* client = WebAuthnClientAndroid::GetClient();
+  auto* client = components::WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   // A null client indicates the embedder does not support Conditional UI.
@@ -145,7 +143,7 @@ void WebAuthnBrowserBridge::OnCredManConditionalRequestPending(
     const base::android::JavaParamRef<jobject>& jframe_host,
     jboolean jhas_results,
     const base::android::JavaParamRef<jobject>& jfull_request_runnable) {
-  auto* client = WebAuthnClientAndroid::GetClient();
+  auto* client = components::WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   if (!client || !render_frame_host ||
@@ -163,7 +161,7 @@ void WebAuthnBrowserBridge::OnCredManUiClosed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jframe_host,
     jboolean jsuccess) {
-  auto* client = WebAuthnClientAndroid::GetClient();
+  auto* client = components::WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   if (!client || !render_frame_host ||
@@ -176,7 +174,7 @@ void WebAuthnBrowserBridge::OnCredManUiClosed(
 void WebAuthnBrowserBridge::CleanupRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jframe_host) const {
-  auto* client = WebAuthnClientAndroid::GetClient();
+  auto* client = components::WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
 
@@ -191,5 +189,3 @@ void WebAuthnBrowserBridge::CleanupRequest(
 
   client->CleanupWebAuthnRequest(render_frame_host);
 }
-
-}  // namespace webauthn

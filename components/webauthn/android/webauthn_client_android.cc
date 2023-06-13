@@ -11,7 +11,7 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/web_contents.h"
 
-namespace webauthn {
+namespace components {
 
 // The WebAuthnClientAndroid instance, which is set by the embedder.
 WebAuthnClientAndroid* g_webauthn_client = nullptr;
@@ -56,4 +56,4 @@ void WebAuthnClientAndroid::OnCredManUiClosed(
   }
 }
 
-}  // namespace webauthn
+}  // namespace components

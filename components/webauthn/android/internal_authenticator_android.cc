@@ -27,8 +27,6 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
 
-namespace webauthn {
-
 InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()) {
@@ -229,5 +227,3 @@ JavaRef<jobject>& InternalAuthenticatorAndroid::GetJavaObject() {
   }
   return java_internal_authenticator_ref_;
 }
-
-}  // namespace webauthn
