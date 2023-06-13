@@ -2086,9 +2086,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
-    enum="DefaultAppName" expires_after="2023-06-01">
+    enum="DefaultAppName" expires_after="2024-06-01">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Records when a user attempts to launch a particular Chrome OS app.
     {DefaultAppLaunchSource}
