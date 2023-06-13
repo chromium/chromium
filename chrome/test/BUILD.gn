@@ -6022,6 +6022,7 @@ test("unit_tests") {
     "../browser/translate/fake_translate_agent.cc",
     "../browser/translate/fake_translate_agent.h",
     "../browser/translate/translate_service_unittest.cc",
+    "../browser/ui/autofill/autofill_popup_controller_unittest.cc",
     "../browser/ui/autofill/chrome_autofill_client_unittest.cc",
     "../browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl_unittest.cc",
     "../browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl_unittest.cc",
@@ -7512,11 +7513,6 @@ test("unit_tests") {
       # Background tab loading from performance_manager isn't supported on Android.
       "../browser/performance_manager/policies/background_tab_loading_policy_helpers_unittest.cc",
       "../browser/performance_manager/policies/background_tab_loading_policy_unittest.cc",
-    ]
-
-    sources += [
-      # The autofill popup is implemented in mostly native code on Android.
-      "../browser/ui/autofill/autofill_popup_controller_unittest.cc",
     ]
 
     sources += [
