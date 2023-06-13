@@ -745,6 +745,12 @@ const char kServiceWorkerStaticRouterDescription[] =
     "When enabled, Chrome will enable the Service Worker Static Routing API. "
     "https://chromestatus.com/feature/5185352976826368";
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+const char kCameraMicPreviewName[] = "Camera and Mic Preview";
+const char kCameraMicPreviewDescription[] =
+    "Enables camera and mic preview in permission bubble and site settings.";
+#endif
+
 const char kChromeLabsName[] = "Chrome Labs";
 const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "

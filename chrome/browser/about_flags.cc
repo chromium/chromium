@@ -10446,6 +10446,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kProcessPerSiteUpToMainFrameThreshold)},
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+    {"camera-mic-preview", flag_descriptions::kCameraMicPreviewName,
+     flag_descriptions::kCameraMicPreviewDescription,
+     static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux | kOsFuchsia),
+     FEATURE_VALUE_TYPE(features::kCameraMicPreview)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cros-battery-saver-always-on",
      flag_descriptions::kCrosBatterySaverAlwaysOnName,

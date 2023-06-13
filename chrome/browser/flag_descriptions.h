@@ -406,6 +406,11 @@ extern const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[];
 extern const char kServiceWorkerStaticRouterName[];
 extern const char kServiceWorkerStaticRouterDescription[];
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+extern const char kCameraMicPreviewName[];
+extern const char kCameraMicPreviewDescription[];
+#endif
+
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 

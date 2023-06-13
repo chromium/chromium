@@ -61265,6 +61265,7 @@ from previous Chrome versions.
   <int value="-907481658" label="ArcMouseWheelSmoothScroll:enabled"/>
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
+  <int value="-904337228" label="CameraMicPreview:enabled"/>
   <int value="-903524547" label="DiscoFeedEndpoint:disabled"/>
   <int value="-903359589" label="CrOSEnforceSystemAec:enabled"/>
   <int value="-902227224" label="MlRelevanceScoring:disabled"/>
@@ -63266,6 +63267,7 @@ from previous Chrome versions.
   <int value="141830539" label="MediaAppPdfSignature:enabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
   <int value="144868136" label="DesktopPWAsNotificationIconAndTitle:enabled"/>
+  <int value="145296783" label="CameraMicPreview:disabled"/>
   <int value="146229312" label="WebPaymentsExperimentalFeatures:enabled"/>
   <int value="146553675" label="BookmarkBottomSheet:disabled"/>
   <int value="147342055" label="ChromeHomeClearUrlOnOpen:disabled"/>
