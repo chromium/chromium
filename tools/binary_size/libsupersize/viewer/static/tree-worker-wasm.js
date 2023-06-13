@@ -128,6 +128,7 @@ function wasmLoadSizeFile(isBefore, sizeBuffer) {
   Module._free(heapBuffer.byteOffset);
 }
 
+/** @return {SizeProperties} */
 function wasmLoadSizeProperties() {
   const cwrapQueryProperty =
       Module.cwrap('QueryProperty', 'number', ['string']);

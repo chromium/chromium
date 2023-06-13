@@ -48,7 +48,6 @@ class SymbolTreeUi extends TreeUi {
     this.boundHandleFocusOut = this.handleFocusOut.bind(this);
   }
 
-
   /**
    * Displays an error modal to indicate that the symbol tree is empty.
    * @param {boolean} show
@@ -189,8 +188,8 @@ class SymbolTreeUi extends TreeUi {
   handleRefocus(event) {
     // Prevent click that would cause another focus event.
     event.preventDefault();
-    // focusout handler will handle cleanup.
     /** @type {!HTMLElement} */ (event.currentTarget).blur();
+    // Let focusout handles the cleanup.
   }
 
   /**
