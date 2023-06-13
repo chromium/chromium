@@ -166,6 +166,7 @@
     "android-code-coverage": "Ubuntu-22.04",
     "android-code-coverage-native": "Ubuntu-22.04",
     "android-cronet-x86-dbg": "Ubuntu-22.04",
+    "android-cronet-x86-dbg-11-tests": "Ubuntu-22.04",
     "android-official": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
     "android-pie-x86-rel": "Ubuntu-22.04",
