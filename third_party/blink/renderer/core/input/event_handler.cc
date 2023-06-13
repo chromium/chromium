@@ -452,17 +452,13 @@ void EventHandler::UpdateCursor() {
   }
 }
 
-bool EventHandler::ShouldShowResizeForNode(const Node* node,
+bool EventHandler::ShouldShowResizeForNode(const LayoutObject& layout_object,
                                            const HitTestLocation& location) {
-  if (LayoutObject* layout_object = node->GetLayoutObject()) {
-    PaintLayer* layer = layout_object->EnclosingLayer();
-    if (layer->GetScrollableArea() &&
-        layer->GetScrollableArea()->IsAbsolutePointInResizeControl(
-            ToRoundedPoint(location.Point()), kResizerForPointer)) {
-      return true;
-    }
-  }
-  return false;
+  const PaintLayer* layer = layout_object.EnclosingLayer();
+  const PaintLayerScrollableArea* scrollable_area = layer->GetScrollableArea();
+  return scrollable_area &&
+         scrollable_area->IsAbsolutePointInResizeControl(
+             ToRoundedPoint(location.Point()), kResizerForPointer);
 }
 
 bool EventHandler::IsSelectingLink(const HitTestResult& result) {
@@ -507,12 +503,13 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
     return PointerCursor();
 
   Node* node = result.InnerPossiblyPseudoNode();
-  if (!node)
+  if (!node || !node->GetLayoutObject()) {
     return SelectAutoCursor(result, node, IBeamCursor());
+  }
 
-  if (ShouldShowResizeForNode(node, location)) {
-    const LayoutBox* box =
-        node->GetLayoutObject()->EnclosingLayer()->GetLayoutBox();
+  const LayoutObject& layout_object = *node->GetLayoutObject();
+  if (ShouldShowResizeForNode(layout_object, location)) {
+    const LayoutBox* box = layout_object.EnclosingLayer()->GetLayoutBox();
     EResize resize = box->StyleRef().Resize(box->ContainingBlock()->StyleRef());
     switch (resize) {
       case EResize::kVertical:
@@ -530,12 +527,9 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
     }
   }
 
-  LayoutObject* layout_object = node->GetLayoutObject();
-  const ComputedStyle* style = layout_object ? layout_object->Style() : nullptr;
-
-  if (layout_object) {
+  {
     ui::Cursor override_cursor;
-    switch (layout_object->GetCursor(result.LocalPoint(), override_cursor)) {
+    switch (layout_object.GetCursor(result.LocalPoint(), override_cursor)) {
       case kSetCursorBasedOnStyle:
         break;
       case kSetCursor:
@@ -545,21 +539,18 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
     }
   }
 
-  if (style && style->Cursors()) {
-    const CursorList* cursors = style->Cursors();
-    for (unsigned i = 0; i < cursors->size(); ++i) {
-      StyleImage* style_image = (*cursors)[i].GetImage();
-      if (!style_image)
+  const ComputedStyle& style = layout_object.StyleRef();
+  if (const CursorList* cursors = style.Cursors()) {
+    for (const auto& cursor : *cursors) {
+      const StyleImage* style_image = cursor.GetImage();
+      if (!style_image || !style_image->CanRender()) {
         continue;
-      ImageResourceContent* cached_image = style_image->CachedImage();
-      if (!cached_image)
-        continue;
-      float scale = style_image->ImageScaleFactor();
-      bool hot_spot_specified = (*cursors)[i].HotSpotSpecified();
-      gfx::Point hot_spot = (*cursors)[i].HotSpot();
-
-      if (cached_image->ErrorOccurred())
-        continue;
+      }
+      // The 'cursor' property only allow url() and image-set(). Either of
+      // those will return false from their CanRender() implementation if they
+      // don't have an ImageResourceContent (and the former should always have
+      // one).
+      CHECK(style_image->CachedImage());
 
       // Compute the concrete object size in DIP based on the
       // default cursor size obtained from the OS.
@@ -570,7 +561,8 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
                                                 .system_cursor_size),
                                  kRespectImageOrientation);
 
-      Image* image = cached_image->GetImage();
+      float scale = style_image->ImageScaleFactor();
+      Image* image = style_image->CachedImage()->GetImage();
       if (image->IsSVGImage()) {
         // `StyleImage::ImageSize` does not take `StyleImage::ImageScaleFactor`
         // into account when computing the size for SVG images.
@@ -583,6 +575,7 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
         continue;
       }
 
+      gfx::Point hot_spot = cursor.HotSpot();
       // For large cursors below the max size, limit their ability to cover UI
       // elements by removing them when they are not fully contained by the
       // visual viewport. Careful, we need to make sure to translate coordinate
@@ -625,27 +618,26 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
             svg_image, size, device_scale_factor, NullURL(),
             frame_->GetDocument()
                 ->GetStyleEngine()
-                .ResolveColorSchemeForEmbedding(style));
+                .ResolveColorSchemeForEmbedding(&style));
         image = svg_image_holder.get();
       }
 
       // Convert from DIP to physical pixels.
       hot_spot = gfx::ScaleToRoundedPoint(hot_spot, scale);
 
+      const bool hot_spot_specified = cursor.HotSpotSpecified();
       return ui::Cursor::NewCustom(
           image->AsSkBitmapForCurrentFrame(kRespectImageOrientation),
           DetermineHotSpot(*image, hot_spot_specified, hot_spot), scale);
     }
   }
 
-  bool horizontal_text = !style || style->IsHorizontalWritingMode();
   const ui::Cursor& i_beam =
-      horizontal_text ? IBeamCursor() : VerticalTextCursor();
+      style.IsHorizontalWritingMode() ? IBeamCursor() : VerticalTextCursor();
 
-  switch (style ? style->Cursor() : ECursor::kAuto) {
-    case ECursor::kAuto: {
+  switch (style.Cursor()) {
+    case ECursor::kAuto:
       return SelectAutoCursor(result, node, i_beam);
-    }
     case ECursor::kCrosshair:
       return CrossCursor();
     case ECursor::kPointer:

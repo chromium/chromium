@@ -305,7 +305,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   bool GestureCorrespondsToAdjustedTouch(const WebGestureEvent&);
   bool IsSelectingLink(const HitTestResult&);
   bool ShouldShowIBeamForNode(const Node*, const HitTestResult&);
-  bool ShouldShowResizeForNode(const Node*, const HitTestLocation&);
+  bool ShouldShowResizeForNode(const LayoutObject&, const HitTestLocation&);
   absl::optional<ui::Cursor> SelectCursor(const HitTestLocation& location,
                                           const HitTestResult&);
   absl::optional<ui::Cursor> SelectAutoCursor(const HitTestResult&,
