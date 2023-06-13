@@ -182,7 +182,8 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   attrs.push_back(FourCC(format_));
 
   if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
-      format_ == gfx::BufferFormat::YVU_420) {
+      format_ == gfx::BufferFormat::YVU_420 ||
+      format_ == gfx::BufferFormat::P010) {
     // TODO(b/233667677): Since https://crrev.com/c/3855381, the only NV12
     // quads that we allow to be promoted to overlays are those that don't use
     // the BT.2020 primaries and that don't use full range. Furthermore, since

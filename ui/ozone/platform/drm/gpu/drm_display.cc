@@ -382,10 +382,14 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   hdr_output_metadata->hdmi_metadata_type1.max_cll = 0;
   hdr_output_metadata->hdmi_metadata_type1.max_fall =
       hdr_static_metadata_->max_avg;
+  // This value is coded as an unsigned 16-bit value in units of 1 cd/m2,
+  // where 0x0001 represents 1 cd/m2 and 0xFFFF represents 65535 cd/m2.
   hdr_output_metadata->hdmi_metadata_type1.max_display_mastering_luminance =
       hdr_static_metadata_->max;
+  // This value is coded as an unsigned 16-bit value in units of 0.0001 cd/m2,
+  // where 0x0001 represents 0.0001 cd/m2 and 0xFFFF represents 6.5535 cd/m2.
   hdr_output_metadata->hdmi_metadata_type1.min_display_mastering_luminance =
-      hdr_static_metadata_->min;
+      hdr_static_metadata_->min * 10000.0;
 
   SkColorSpacePrimaries primaries = color_space.GetPrimaries();
   constexpr int kPrimariesFixedPoint = 50000;

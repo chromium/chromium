@@ -730,8 +730,7 @@ struct TestParams {
      {{gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::MatrixID::BT709},
       {gfx::ColorSpace::PrimaryID::SMPTE170M,
        gfx::ColorSpace::MatrixID::SMPTE170M},
-      {gfx::ColorSpace::PrimaryID::BT2020,
-       gfx::ColorSpace::MatrixID::BT2020_CL}},
+      {gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::MatrixID::RGB}},
      {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::TransferID::HLG},
      absl::make_optional<gfx::HDRStaticMetadata>(

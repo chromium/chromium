@@ -561,14 +561,14 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           // opRGB, Colorimetry based on IEC 61966-2-5.
           {gfx::ColorSpace::PrimaryID::SMPTE170M,
            gfx::ColorSpace::MatrixID::RGB},
-          // BT2020RGB. Colorimetry based on ITU-R BT.2020 R’G’B’.
-          {gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::MatrixID::RGB},
+          // BT2020cYCC. Colorimetry based on ITU-R BT.2020 Y’cC’BCC’RC.
+          {gfx::ColorSpace::PrimaryID::BT2020,
+           gfx::ColorSpace::MatrixID::BT2020_CL},
           // BT2020YCC. Colorimetry based on ITU-R BT.2020 Y’C’BC’R.
           {gfx::ColorSpace::PrimaryID::BT2020,
            gfx::ColorSpace::MatrixID::BT2020_NCL},
-          // BT2020cYCC. Colorimetry based on ITU-R BT.2020 Y’cC’BCC’RC.
-          {gfx::ColorSpace::PrimaryID::BT2020,
-           gfx::ColorSpace::MatrixID::BT2020_CL}};
+          // BT2020RGB. Colorimetry based on ITU-R BT.2020 R’G’B’.
+          {gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::MatrixID::RGB}};
   // See CEA 861.G-2018, Sec.7.5.13, "HDR Static Metadata Data Block" for these.
   constexpr uint8_t kHDRStaticMetadataCapabilityTag = 0x6;
   constexpr gfx::ColorSpace::TransferID kTransferIDMap[] = {

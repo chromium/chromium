@@ -22,6 +22,7 @@
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -99,11 +100,6 @@ bool AllowColorSpaceCombination(
   if (!source_color_space.IsValid())
     return true;
 
-  // TODO(b/249215983): Disable promotion of HDR content to overlay until
-  // decoding to monitor colorspace is supported.
-  if (source_color_space.IsHDR())
-    return false;
-
   // Since https://crrev.com/c/2336347, we force BT.601/narrow for the
   // COLOR_ENCODING and COLOR_RANGE DRM/KMS properties. On the other hand, the
   // compositor is able to handle different YUV encodings and ranges. Therefore,
@@ -128,9 +124,12 @@ bool AllowColorSpaceCombination(
   //
   // TODO(b/243150091): Remove the call to IsYUVColorSpace() or turn it into a
   // DCHECK() once LaCrOS plumbs the correct color space.
+  bool is_yuv_color_space = features::IsLacrosColorManagementEnabled() ||
+                            IsYUVColorSpace(source_color_space);
   if ((source_format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-       source_format == gfx::BufferFormat::YVU_420) &&
-      IsYUVColorSpace(source_color_space) &&
+       source_format == gfx::BufferFormat::YVU_420 ||
+       source_format == gfx::BufferFormat::P010) &&
+      is_yuv_color_space &&
       (source_color_space.GetMatrixID() ==
            gfx::ColorSpace::MatrixID::BT2020_NCL ||
        source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
