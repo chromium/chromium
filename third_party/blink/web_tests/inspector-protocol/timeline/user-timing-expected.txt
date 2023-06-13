@@ -1,14 +1,23 @@
-Tests render blocking status in script traces.
+Tests user timing events in traces.
 Recording started
 Tracing complete
-now to first
-now
-now to first
-first to second
-first to third
-first
-first to second
-second
-first to third
-third
+
+Below offsets and startTimes are rounded to avoid flakiness on the bots.
+FYI: startTime in args is the equivalent DOMHighResTimeStamp.
+
+Marks:
+ph name                offset from ~zero   args
+R  ~zero                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":0}}
+R  @1200                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":1200}}
+R  @1000                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":1000}}
+R  @500                             0 ms   {"data":{"navigationId":"xNavIdx","startTime":500}}
+
+Measures:
+ph name                offset from ~zero   args
+b  ~zero to @500                    0 ms   {"startTime":0}
+e  ~zero to @500                  500 ms   {}
+b  @1000 to @1200                1000 ms   {"startTime":1000}
+e  @1000 to @1200                1200 ms   {}
+b  @2000 for 300                 2000 ms   {"startTime":2000}
+e  @2000 for 300                 2300 ms   {}
 
