@@ -220,6 +220,7 @@
     "linux-chromeos-code-coverage": "Ubuntu-22.04",
     "linux-chromeos-dbg": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
+    "linux-code-coverage": "Ubuntu-22.04",
     "linux-cr23-rel": "Ubuntu-22.04",
     "linux-exp-asan-lsan-fyi-rel": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
