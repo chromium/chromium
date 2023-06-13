@@ -92,12 +92,16 @@
 namespace drive {
 namespace {
 
+using base::Seconds;
+using base::SequencedTaskRunner;
+using base::TimeDelta;
 using content::BrowserContext;
 using content::BrowserThread;
 using drivefs::mojom::DriveFs;
 using drivefs::pinning::PinManager;
 using network::NetworkConnectionTracker;
 using network::mojom::ConnectionType;
+using prefs::kDriveFsBulkPinningEnabled;
 
 // Name of the directory used to store metadata.
 const base::FilePath::CharType kMetadataDirectory[] = FILE_PATH_LITERAL("meta");
@@ -287,7 +291,7 @@ std::vector<base::FilePath> GetPinnedAndDirtyFiles(
   // list of files to pin to the UI thread without waiting for the remaining
   // data to be cleared.
   metadata_storage.reset();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&CleanupGCacheV1, std::move(cache_directory),
                      std::move(downloads_directory), std::move(dirty_files)));
@@ -396,7 +400,7 @@ class DriveIntegrationService::PreferenceWatcher
 
     if (util::IsDriveFsBulkPinningEnabled(profile_)) {
       pref_change_registrar_.Add(
-          prefs::kDriveFsBulkPinningEnabled,
+          kDriveFsBulkPinningEnabled,
           base::BindRepeating(&PreferenceWatcher::ToggleBulkPinning,
                               weak_ptr_factory_.GetWeakPtr()));
     }
@@ -602,7 +606,7 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   void OnMountFailed(MountFailure failure,
-                     absl::optional<base::TimeDelta> remount_delay) override {
+                     absl::optional<TimeDelta> remount_delay) override {
     mount_observer_->OnMountFailed(failure, std::move(remount_delay));
   }
 
@@ -610,7 +614,7 @@ class DriveIntegrationService::DriveFsHolder
     mount_observer_->OnMounted(path);
   }
 
-  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override {
+  void OnUnmounted(absl::optional<TimeDelta> remount_delay) override {
     mount_observer_->OnUnmounted(std::move(remount_delay));
   }
 
@@ -733,9 +737,8 @@ class DriveIntegrationService::BulkPinningPrefUpdater
 
   void OnProgress(const Progress& progress) override {
     if (progress.IsError()) {
-      VLOG(1) << "Disabling bulk pinning preference";
-      pref_service_->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
-                                false);
+      pref_service_->SetBoolean(kDriveFsBulkPinningEnabled, false);
+      VLOG(1) << "Disabled bulk-pinning because of error " << progress.stage;
     }
   }
 
@@ -917,14 +920,14 @@ void DriveIntegrationService::ClearCacheAndRemountFileSystem(
   }
   in_clear_cache_ = true;
 
-  base::TimeDelta delay;
+  TimeDelta delay;
   if (IsMounted()) {
     RemoveDriveMountPoint();
     // TODO(crbug/1069328): We wait 2 seconds here so that DriveFS can unmount
     // completely. Ideally we'd wait for an unmount complete callback.
-    delay = base::Seconds(2);
+    delay = Seconds(2);
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &DriveIntegrationService::ClearCacheAndRemountFileSystemAfterDelay,
@@ -1049,7 +1052,7 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
           NotificationHandler::Type::TRANSIENT, *notification, nullptr);
 
       // Disable bulk-pinning.
-      GetPrefs()->SetBoolean(prefs::kDriveFsBulkPinningEnabled, false);
+      GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, false);
     }
   }
 
@@ -1118,7 +1121,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 }
 
 void DriveIntegrationService::MaybeRemountFileSystem(
-    absl::optional<base::TimeDelta> remount_delay,
+    absl::optional<TimeDelta> remount_delay,
     bool failed_to_mount) {
   DCHECK_EQ(INITIALIZED, state_);
 
@@ -1155,12 +1158,12 @@ void DriveIntegrationService::MaybeRemountFileSystem(
       return;
     }
     remount_delay =
-        base::Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
+        Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
     logger_->Log(logging::LOG_WARNING, "DriveFs died, retry in %d seconds",
                  static_cast<int>(remount_delay.value().InSeconds()));
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DriveIntegrationService::AddDriveMountPoint,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -1213,7 +1216,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 }
 
 void DriveIntegrationService::OnUnmounted(
-    absl::optional<base::TimeDelta> remount_delay) {
+    absl::optional<TimeDelta> remount_delay) {
   UmaEmitUnmountOutcome(remount_delay ? DriveMountStatus::kTemporaryUnavailable
                                       : DriveMountStatus::kUnknownFailure);
   MaybeRemountFileSystem(remount_delay, false);
@@ -1221,7 +1224,7 @@ void DriveIntegrationService::OnUnmounted(
 
 void DriveIntegrationService::OnMountFailed(
     MountFailure failure,
-    absl::optional<base::TimeDelta> remount_delay) {
+    absl::optional<TimeDelta> remount_delay) {
   PrefService* prefs = GetPrefs();
   DriveMountStatus status = ConvertMountFailure(failure);
   UmaEmitMountStatus(status);
@@ -1329,7 +1332,7 @@ void DriveIntegrationService::ToggleBulkPinning() {
     return;
   }
 
-  if (GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled)) {
+  if (GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)) {
     pin_manager_->ShouldPin(true);
     pin_manager_->Start();
   } else {
@@ -1532,7 +1535,7 @@ void DriveIntegrationService::GetPooledQuotaUsage(
 }
 
 void DriveIntegrationService::RestartDrive() {
-  MaybeRemountFileSystem(base::TimeDelta(), false);
+  MaybeRemountFileSystem(TimeDelta(), false);
 }
 
 void DriveIntegrationService::SetStartupArguments(
