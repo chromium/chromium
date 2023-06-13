@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOT
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
 
@@ -104,7 +105,6 @@ public class EditorDialogView
     private PropertyModel mEditorModel;
     private Button mDoneButton;
     private boolean mFormWasValid;
-    private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
     private ViewGroup mDataView;
     private View mFooter;
 
@@ -159,15 +159,6 @@ public class EditorDialogView
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         attributes.flags |= WindowManager.LayoutParams.FLAG_SECURE;
         getWindow().setAttributes(attributes);
-    }
-
-    /**
-     * @param shouldTrigger If true, done callback is triggered immediately after the user clicked
-     *         on the done button. Otherwise, by default, it is triggered only after the dialog is
-     *         dismissed with animation.
-     */
-    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
-        mShouldTriggerDoneCallbackBeforeCloseAnimation = shouldTrigger;
     }
 
     /**
@@ -283,7 +274,8 @@ public class EditorDialogView
 
         if (view.getId() == R.id.editor_dialog_done_button) {
             if (validateForm()) {
-                if (mShouldTriggerDoneCallbackBeforeCloseAnimation && mEditorModel != null) {
+                if (mEditorModel.get(TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION)
+                        && mEditorModel != null) {
                     mEditorModel.get(DONE_RUNNABLE).run();
                     mEditorModel = null;
                 }

@@ -32,6 +32,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
@@ -117,6 +118,7 @@ class AddressEditorMediator {
     @Nullable
     private String mCustomDoneButtonText;
     private boolean mAllowDelete;
+    private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
 
     /**
      * The list of possible address fields for editing is determined statically.
@@ -292,6 +294,10 @@ class AddressEditorMediator {
         mEmailField.set(VALUE, mProfileToEdit.getEmailAddress());
     }
 
+    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
+        mShouldTriggerDoneCallbackBeforeCloseAnimation = shouldTrigger;
+    }
+
     void setCustomDoneButtonText(@Nullable String customDoneButtonText) {
         mCustomDoneButtonText = customDoneButtonText;
     }
@@ -319,6 +325,8 @@ class AddressEditorMediator {
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
                         .with(SHOW_REQUIRED_INDICATOR, false)
+                        .with(TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION,
+                                mShouldTriggerDoneCallbackBeforeCloseAnimation)
                         .with(EDITOR_FIELDS,
                                 buildEditorFieldList(AutofillAddress.getCountryCode(mProfileToEdit),
                                         mProfileToEdit.getLanguageCode()))
