@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
   void StartAuthentication(AccountId accountId,
                            AuthPurpose purpose,
                            AuthAttemptConsumer* consumer) override;
+  void Shutdown() override;
 
   // AuthHubModeLifecycle::Owner:
   void OnReadyForMode(AuthHubMode mode,
@@ -80,6 +81,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
                              AshAuthFactor factor) override;
 
  private:
+  void SwitchToModeImpl(AuthHubMode target);
   bool PurposeMatchesMode(AuthPurpose purpose, AuthHubMode mode);
   // Checks if `first` attempt have higher priority and should
   // override `second`.

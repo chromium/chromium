@@ -56,8 +56,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubModeLifecycle {
   AuthEnginesMap GetAvailableEngines();
   AuthHubMode GetCurrentMode() const;
 
+  // Starts initialization sequence, or updates `target_mode_`, if stage is not
+  // `kUninitialized`, triggering `ShutDownEngines` if necessary.
   void SwitchToMode(AuthHubMode mode);
-  void Shutdown();
 
  private:
   enum class Stage {
@@ -68,10 +69,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubModeLifecycle {
   };
 
   struct EngineState;
-
-  // Starts initialization sequence, or updates `target_mode_`, if stage is not
-  // `kUninitialized`, triggering `ShutDownEngines` if necessary.
-  void SwitchToModeImpl(AuthHubMode mode);
 
   // Start initialization sequence.
   void InitializeEnginesForMode();

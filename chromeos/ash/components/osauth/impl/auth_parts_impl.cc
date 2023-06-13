@@ -95,4 +95,10 @@ AuthPartsImpl::GetEngineFactories() {
   return engine_factories_;
 }
 
+void AuthPartsImpl::Shutdown() {
+  if (auth_hub_) {
+    auth_hub_->Shutdown();
+  }
+}
+
 }  // namespace ash

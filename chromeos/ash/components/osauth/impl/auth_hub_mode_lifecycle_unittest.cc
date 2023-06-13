@@ -146,7 +146,7 @@ TEST_F(AuthHubModeLifecycleTest, SingleFactorInitShutdown) {
   EXPECT_CALL(*engines_[kOneFactor], ShutdownCommon(_))
       .WillOnce(MoveArg<0>(&callback));
 
-  lifecycle_.Shutdown();
+  lifecycle_.SwitchToMode(AuthHubMode::kNone);
 
   // Should not notify immediately.
   EXPECT_FALSE(lifecycle_.IsReady());
@@ -178,7 +178,7 @@ TEST_F(AuthHubModeLifecycleTest, SingleFactorShutdownEarly) {
   EXPECT_CALL(*engines_[kOneFactor], ShutdownCommon(_))
       .WillOnce(MoveArg<0>(&callback));
 
-  lifecycle_.Shutdown();
+  lifecycle_.SwitchToMode(AuthHubMode::kNone);
 
   // Eventually engine initializes.
   ASSERT_TRUE(init_callbacks_.contains(kOneFactor));
@@ -285,7 +285,7 @@ TEST_F(AuthHubModeLifecycleTest, FactorInitializationTimeout) {
   EXPECT_CALL(owner_, OnExitedMode(Eq(AuthHubMode::kLoginScreen)));
   EXPECT_CALL(owner_, OnModeShutdown());
 
-  lifecycle_.Shutdown();
+  lifecycle_.SwitchToMode(AuthHubMode::kNone);
 }
 
 // Check logic when one of the engines takes too long to shut down.
@@ -310,7 +310,7 @@ TEST_F(AuthHubModeLifecycleTest, FactorShutdownTimeout) {
   EXPECT_CALL(*engines_[kAnotherFactor], ShutdownCommon(_))
       .WillOnce(RunOnceCallback<0>(kAnotherFactor));
 
-  lifecycle_.Shutdown();
+  lifecycle_.SwitchToMode(AuthHubMode::kNone);
 
   // Should not notify immediately.
   EXPECT_FALSE(lifecycle_.IsReady());

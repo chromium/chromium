@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
 
   virtual const std::vector<std::unique_ptr<AuthFactorEngineFactory>>&
   GetEngineFactories() = 0;
+
+  virtual void Shutdown() = 0;
 };
 
 }  // namespace ash

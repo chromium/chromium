@@ -23,6 +23,15 @@ AuthHubImpl::AuthHubImpl(AuthFactorPresenceCache* factor_cache)
 AuthHubImpl::~AuthHubImpl() = default;
 
 void AuthHubImpl::InitializeForMode(AuthHubMode target) {
+  CHECK_NE(target, AuthHubMode::kNone);
+  SwitchToModeImpl(target);
+}
+
+void AuthHubImpl::Shutdown() {
+  SwitchToModeImpl(AuthHubMode::kNone);
+}
+
+void AuthHubImpl::SwitchToModeImpl(AuthHubMode target) {
   if (vector_lifecycle_ && !vector_lifecycle_->IsIdle()) {
     target_mode_ = target;
     // Eventually, after the current attempt gets canceled, `OnIdle()` will be

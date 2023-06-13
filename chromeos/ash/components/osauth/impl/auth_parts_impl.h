@@ -38,6 +38,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
       std::unique_ptr<AuthFactorEngineFactory> factory) override;
   const std::vector<std::unique_ptr<AuthFactorEngineFactory>>&
   GetEngineFactories() override;
+  void Shutdown() override;
 
   // Test-related setters:
   void SetAuthHub(std::unique_ptr<AuthHub> auth_hub);
