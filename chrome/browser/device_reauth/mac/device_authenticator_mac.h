@@ -26,6 +26,8 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
 
   bool CanAuthenticateWithBiometrics() override;
 
+  bool CanAuthenticateWithBiometricOrScreenLock() override;
+
   // Triggers an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication
   // request at a time.

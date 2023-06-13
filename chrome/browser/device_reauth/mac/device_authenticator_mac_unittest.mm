@@ -33,14 +33,17 @@ using password_manager::PasswordAccessAuthenticator;
 class MockSystemAuthenticator : public AuthenticatorMacInterface {
  public:
   MOCK_METHOD(bool, CheckIfBiometricsAvailable, (), (override));
+  MOCK_METHOD(bool, CheckIfBiometricsOrScreenLockAvailable, (), (override));
   MOCK_METHOD(bool,
               AuthenticateUserWithNonBiometrics,
               (const std::u16string&),
               (override));
 };
 
-// Test params decides whether biometric authentication is available.
-class DeviceAuthenticatorMacTest : public ::testing::TestWithParam<bool> {
+// Test params decides whether biometric authentication and screen lock are
+// available.
+class DeviceAuthenticatorMacTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  public:
   DeviceAuthenticatorMacTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
@@ -51,9 +54,13 @@ class DeviceAuthenticatorMacTest : public ::testing::TestWithParam<bool> {
         std::move(system_authenticator));
     ON_CALL(*system_authenticator_, CheckIfBiometricsAvailable)
         .WillByDefault(testing::Return(is_biometric_available()));
+    ON_CALL(*system_authenticator_, CheckIfBiometricsOrScreenLockAvailable)
+        .WillByDefault(testing::Return(is_biometric_available() ||
+                                       is_screen_lock_available()));
   }
 
-  bool is_biometric_available() { return GetParam(); }
+  bool is_biometric_available() { return std::get<0>(GetParam()); }
+  bool is_screen_lock_available() { return std::get<1>(GetParam()); }
 
   void SimulateReauthSuccess() {
     if (is_biometric_available()) {
@@ -213,4 +220,22 @@ TEST_P(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailablity) {
                 password_manager::prefs::kHadBiometricsAvailable));
 }
 
-INSTANTIATE_TEST_SUITE_P(, DeviceAuthenticatorMacTest, ::testing::Bool());
+TEST_P(DeviceAuthenticatorMacTest,
+       BiometricAndScreenLockAuthenticationAvailablity) {
+  if (is_biometric_available()) {
+    EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable);
+  } else {
+    EXPECT_CALL(system_authenticator(), CheckIfBiometricsOrScreenLockAvailable);
+  }
+
+  EXPECT_EQ(authenticator()->CanAuthenticateWithBiometricOrScreenLock(),
+            is_biometric_available() || is_screen_lock_available());
+  EXPECT_EQ(is_biometric_available(),
+            local_state().Get()->GetBoolean(
+                password_manager::prefs::kHadBiometricsAvailable));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DeviceAuthenticatorMacTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
