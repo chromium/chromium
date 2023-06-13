@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -106,14 +105,6 @@ void StartReportOnlyScanning(
   // Start the actual scanning.
   DoReportOnlyScanning(nullptr, 0, std::move(settings), std::move(sources),
                        std::move(outputs), profile, file_system_context);
-}
-
-// Returns DlpFilesControllerAsh* if exists.
-policy::DlpFilesControllerAsh* GetDlpFilesController() {
-  policy::DlpRulesManager* rules_manager =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  return static_cast<policy::DlpFilesControllerAsh*>(
-      rules_manager ? rules_manager->GetDlpFilesController() : nullptr);
 }
 
 }  // namespace
@@ -200,7 +191,8 @@ void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
       base::BindOnce(&CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed,
                      weak_ptr_factory_.GetWeakPtr());
 
-  if (auto* files_controller = GetDlpFilesController();
+  if (auto* files_controller =
+          policy::DlpFilesControllerAsh::GetForPrimaryProfile();
       policy::DlpFilesController::kNewFilesPolicyUXEnabled &&
       files_controller) {
     std::vector<storage::FileSystemURL> transferred_urls;

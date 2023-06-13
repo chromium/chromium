@@ -358,6 +358,17 @@ void ShowDlpBlockedFiles(
 
 }  // namespace
 
+// static
+DlpFilesControllerAsh* DlpFilesControllerAsh::GetForPrimaryProfile() {
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager) {
+    return nullptr;
+  }
+  return static_cast<DlpFilesControllerAsh*>(
+      rules_manager ? rules_manager->GetDlpFilesController() : nullptr);
+}
+
 DlpFilesControllerAsh::DlpFileMetadata::DlpFileMetadata(
     const std::string& source_url,
     bool is_dlp_restricted,

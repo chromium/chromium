@@ -32,8 +32,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -186,16 +184,6 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
   }
   LOG(ERROR) << "Unable to generate a RoutingID";
   return "";
-}
-
-// Returns an instance of DlpFilesController if there is one.
-policy::DlpFilesControllerAsh* GetDlpFilesController() {
-  policy::DlpRulesManager* rules_manager =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager)
-    return nullptr;
-  return static_cast<policy::DlpFilesControllerAsh*>(
-      rules_manager->GetDlpFilesController());
 }
 
 }  // namespace
@@ -574,7 +562,8 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
     return;
   }
 
-  if (auto* files_controller = GetDlpFilesController();
+  if (auto* files_controller =
+          policy::DlpFilesControllerAsh::GetForPrimaryProfile();
       files_controller && type_ == Type::SELECT_SAVEAS_FILE) {
     files_controller->CheckIfDownloadAllowed(
         dialog_caller.value(),

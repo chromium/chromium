@@ -45,6 +45,9 @@ class DlpFilesEventStorage;
 // of the Data leak prevention policy set by the admin.
 class DlpFilesControllerAsh : public DlpFilesController {
  public:
+  // Returns the instance if it exists.
+  static DlpFilesControllerAsh* GetForPrimaryProfile();
+
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
   // or not and the source URL, if it exists.
   struct DlpFileMetadata {

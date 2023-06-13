@@ -13,8 +13,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/message.h"
@@ -112,12 +110,8 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
     return;
   }
 
-  policy::DlpRulesManager* rules_manager =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  DCHECK(rules_manager);
   policy::DlpFilesControllerAsh* files_controller =
-      static_cast<policy::DlpFilesControllerAsh*>(
-          rules_manager->GetDlpFilesController());
+      policy::DlpFilesControllerAsh::GetForPrimaryProfile();
 
   // TODO(crbug.com/1360005): Add actual file path.
   bool restricted =
@@ -167,12 +161,8 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
                             file.source_url());
   }
 
-  policy::DlpRulesManager* rules_manager =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  DCHECK(rules_manager);
   policy::DlpFilesControllerAsh* files_controller =
-      static_cast<policy::DlpFilesControllerAsh*>(
-          rules_manager->GetDlpFilesController());
+      policy::DlpFilesControllerAsh::GetForPrimaryProfile();
   if (!files_controller) {
     std::vector<std::pair<policy::DlpFilesControllerAsh::FileDaemonInfo,
                           dlp::RestrictionLevel>>
