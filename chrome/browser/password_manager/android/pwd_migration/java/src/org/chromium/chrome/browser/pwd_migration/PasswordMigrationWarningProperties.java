@@ -22,11 +22,12 @@ class PasswordMigrationWarningProperties {
     /**
      * The different screens that can be shown on the sheet.
      */
-    @IntDef({ScreenType.INTRO_SCREEN, ScreenType.OPTIONS_SCREEN})
+    @IntDef({ScreenType.NONE, ScreenType.INTRO_SCREEN, ScreenType.OPTIONS_SCREEN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenType {
-        int INTRO_SCREEN = 0;
-        int OPTIONS_SCREEN = 1;
+        int NONE = 0;
+        int INTRO_SCREEN = 1;
+        int OPTIONS_SCREEN = 2;
     }
 
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProvi
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.version_info.VersionInfo;
@@ -36,10 +37,16 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     private final RelativeLayout mContentView;
     private Context mContext;
 
+    private @ScreenType int mScreenType = ScreenType.NONE;
+
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
         public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
             super.onSheetClosed(reason);
+            if (mBottomSheetController.getCurrentSheetContent()
+                    != PasswordMigrationWarningView.this) {
+                return;
+            }
             assert mDismissHandler != null;
             mDismissHandler.onResult(reason);
             mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -48,10 +55,25 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         @Override
         public void onSheetStateChanged(int newState, int reason) {
             super.onSheetStateChanged(newState, reason);
+            if (mBottomSheetController.getCurrentSheetContent()
+                    != PasswordMigrationWarningView.this) {
+                return;
+            }
             if (newState != BottomSheetController.SheetState.HIDDEN) return;
             // This is a fail-safe for cases where onSheetClosed isn't triggered.
             mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
             mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
+
+        @Override
+        public void onSheetOpened(@StateChangeReason int reason) {
+            if (mBottomSheetController.getCurrentSheetContent()
+                    != PasswordMigrationWarningView.this) {
+                return;
+            }
+            if (mScreenType != ScreenType.NONE && getContentView().isShown()) {
+                setFragment();
+            }
         }
     };
 
@@ -82,14 +104,21 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         }
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (!mBottomSheetController.requestShowContent(this, true)) {
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
             return false;
         }
         return true;
     }
 
-    void setScreen(int screenType) {
-        if (screenType == ScreenType.INTRO_SCREEN) {
+    void setScreen(@ScreenType int screenType) {
+        mScreenType = screenType;
+        if (getContentView().isShown()) {
+            setFragment();
+        }
+    }
+
+    private void setFragment() {
+        assert mScreenType != ScreenType.NONE;
+        if (mScreenType == ScreenType.INTRO_SCREEN) {
             PasswordMigrationWarningIntroFragment introFragment =
                     new PasswordMigrationWarningIntroFragment(mContext,
                             ()
@@ -99,7 +128,7 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                     .setReorderingAllowed(true)
                     .replace(R.id.fragment_container_view, introFragment)
                     .commit();
-        } else if (screenType == ScreenType.OPTIONS_SCREEN) {
+        } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
             PasswordMigrationWarningOptionsFragment optionsFragment =
                     new PasswordMigrationWarningOptionsFragment(mContext, mOnClickHandler::onNext,
                             ()
