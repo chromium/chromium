@@ -535,8 +535,9 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
       /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
+// TODO(crbug.com/1454389): Disabled due to flakiness.
 TEST_P(GameDashboardCaptureModeHistogramTest,
-       GameScreenRecordingFileSizeHistogram) {
+       DISABLED_GameScreenRecordingFileSizeHistogram) {
   constexpr char kHistogramNameBase[] = "ScreenRecordingFileSize";
 
   CaptureModeTestApi test_api;
