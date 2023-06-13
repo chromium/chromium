@@ -29,6 +29,11 @@ mojom("mojom") {
     "touch_action.mojom",
   ]
 
+  enabled_features = []
+  if (is_android || is_ios) {
+    enabled_features += [ "is_android_or_ios" ]
+  }
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
