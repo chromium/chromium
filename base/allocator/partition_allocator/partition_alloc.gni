@@ -213,15 +213,16 @@ if (!use_partition_alloc) {
 # enable_backup_ref_ptr_support is true.
 assert(
     enable_backup_ref_ptr_support || !put_ref_count_in_previous_slot,
-    "Can't put ref count in the previous slot if BackupRefPtr isn't enabled at all")
+    "Can't put ref count in the previous slot if BackupRefPtr isn't enabled " +
+        "at all")
 
-# enable_backup_ref_ptr_slow_checks can only be used if enable_backup_ref_ptr_support
-# is true.
+# enable_backup_ref_ptr_slow_checks can only be used if
+# enable_backup_ref_ptr_support is true.
 assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
        "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
 
-# enable_dangling_raw_ptr_checks can only be used if enable_backup_ref_ptr_support
-# is true.
+# enable_dangling_raw_ptr_checks can only be used if
+# enable_backup_ref_ptr_support is true.
 assert(
     enable_backup_ref_ptr_support || !enable_dangling_raw_ptr_checks,
     "Can't enable dangling raw_ptr checks if BackupRefPtr isn't enabled at all")
@@ -232,18 +233,21 @@ assert(
     enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_perf_experiment,
     "Missing dangling pointer checks feature for its performance experiment")
 
-# To poison OOB pointers for BackupRefPtr, the underlying feature must
-# be enabled, too.
+# To poison OOB pointers for BackupRefPtr, the underlying feature must be
+# enabled, too.
 assert(
     enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
-    "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled at all")
+    "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled " +
+        "at all")
 assert(has_64_bit_pointers || !backup_ref_ptr_poison_oob_ptr,
        "Can't enable poisoning for OOB pointers if pointers are only 32-bit")
 
-# AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
+# AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of
+# raw_ptr.
 assert(
     !use_asan_unowned_ptr || !use_asan_backup_ref_ptr,
-    "Both AsanUnownedPtr and AsanBackupRefPtr can't be enabled at the same time")
+    "Both AsanUnownedPtr and AsanBackupRefPtr can't be enabled at the same " +
+        "time")
 
 # BackupRefPtr and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
 assert(
@@ -254,15 +258,19 @@ assert(
 assert(!enable_backup_ref_ptr_support || !use_asan_unowned_ptr,
        "Both BackupRefPtr and AsanUnownedPtr can't be enabled at the same time")
 
-# RawPtrHookableImpl and BackupRefPtr are mutually exclusive variants of raw_ptr.
+# RawPtrHookableImpl and BackupRefPtr are mutually exclusive variants of
+# raw_ptr.
 assert(
     !use_hookable_raw_ptr || !enable_backup_ref_ptr_support,
-    "Both RawPtrHookableImpl and BackupRefPtr can't be enabled at the same time")
+    "Both RawPtrHookableImpl and BackupRefPtr can't be enabled at the same " +
+        "time")
 
-# RawPtrHookableImpl and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
+# RawPtrHookableImpl and AsanUnownedPtr are mutually exclusive variants of
+# raw_ptr.
 assert(
     !use_hookable_raw_ptr || !use_asan_unowned_ptr,
-    "Both RawPtrHookableImpl and AsanUnownedPtr can't be enabled at the same time")
+    "Both RawPtrHookableImpl and AsanUnownedPtr can't be enabled at the same " +
+        "time")
 
 assert(!use_asan_backup_ref_ptr || is_asan,
        "AsanBackupRefPtr requires AddressSanitizer")
@@ -279,8 +287,8 @@ if (is_apple) {
 }
 
 # AsanBackupRefPtr is not supported outside Chromium. The implementation is
-# entangled with `//base`. The code is only physically located with the
-# rest of `raw_ptr` to keep it together.
+# entangled with `//base`. The code is only physically located with the rest of
+# `raw_ptr` to keep it together.
 assert(build_with_chromium || !use_asan_backup_ref_ptr,
        "AsanBackupRefPtr is not supported outside Chromium")
 
@@ -288,9 +296,9 @@ assert(!use_asan_backup_ref_ptr || use_hookable_raw_ptr,
        "AsanBackupRefPtr requires RawPtrHookableImpl")
 
 declare_args() {
-  # pkeys support is explicitly disabled in all Cronet builds, as some test dependencies that
-  # use partition_allocator are compiled in AOSP against a version of glibc that does not
-  # include pkeys syscall numbers.
+  # pkeys support is explicitly disabled in all Cronet builds, as some test
+  # dependencies that use partition_allocator are compiled in AOSP against a
+  # version of glibc that does not include pkeys syscall numbers.
   enable_pkeys = is_linux && target_cpu == "x64" && !is_cronet_build
 }
 assert(!enable_pkeys || (is_linux && target_cpu == "x64"),
