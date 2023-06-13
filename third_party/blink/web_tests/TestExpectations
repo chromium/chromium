@@ -3713,7 +3713,6 @@ crbug.com/849694 [ Mac12 ] http/tests/media/controls/toggle-class-with-state-sou
 # Tests currently failing on Windows when run on Swarming
 crbug.com/757165 [ Win ] compositing/culling/filter-occlusion-blur.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] external/wpt/preload/download-resources.html [ Crash Failure Pass Timeout ]
-crbug.com/757165 [ Win ] fast/forms/file/recover-file-input-in-unposted-form.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-aligned-not-aligned.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-clipped-overflowed-content.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-container-only-white-space.html [ Crash Failure Pass Timeout ]
@@ -5178,8 +5177,6 @@ crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/layout-fonts/lang-fallback.
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/layout-instability/recent-input.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/layout-instability/recent-input.html [ Failure Pass ]
 crbug.com/1249176 virtual/gpu-rasterization/images/12-55.html [ Crash Failure Pass Timeout ]
-crbug.com/1249176 [ Mac11-arm64 ] fast/forms/file/recover-file-input-in-unposted-form.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] fast/forms/file/recover-file-input-in-unposted-form.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-015.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-003.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Failure Pass ]
