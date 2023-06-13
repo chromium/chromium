@@ -246,8 +246,8 @@ test("image_processor_test") {
 }
 
 if (use_v4l2_codec) {
-  test("image_processor_perftest") {
-    sources = [ "image_processor_perftest.cc" ]
+  test("image_processor_perf_test") {
+    sources = [ "image_processor_perf_test.cc" ]
     deps = [
       ":chromeos",
       "//base/test:test_support",
