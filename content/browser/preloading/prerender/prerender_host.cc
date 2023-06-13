@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prerender/prerender_host.h"
 
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -353,6 +354,17 @@ bool PrerenderHost::StartPrerendering() {
     // `begin_params_` and `common_params_` is null here, but it doesn't matter
     // as this branch is reached only when the initial navigation fails,
     // so this PrerenderHost can't be activated.
+
+    // Original code assumes the case CSP prefetch-src blocks prerendering, but
+    // prefetch-src was already deprecated, but this code path seems still
+    // reachable. To be clarify the actual scenario, let's have the dump code.
+    // We may eventually return false for this code path to make things simple.
+    // TODO(https://crbug.com/1394486): Monitor reports and decide if we
+    // continue to have the `is_ready_for_activation_` check in
+    // AreInitialPrerenderNavigationParamsCompatibleWithNavigation().
+    net::Error net_error = created_navigation_handle->GetNetErrorCode();
+    base::debug::Alias(&net_error);
+    base::debug::DumpWithoutCrashing();
   }
 
   NavigationRequest* navigation_request =
@@ -623,6 +635,12 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   // for main-frame / HTTP(s) navigations, but we still compare them here as a
   // defence-in-depth measure.
   CHECK(navigation_request.IsInPrimaryMainFrame());
+
+  // Check `common_params_` and `begin_params_` here as these can be nullptr
+  // if LoadURLWithParams failed without running PrerenderNavigationThrottle.
+  if (!common_params_ || !begin_params_) {
+    return false;
+  }
 
   // Compare BeginNavigationParams.
   ActivationNavigationParamsMatch result =
