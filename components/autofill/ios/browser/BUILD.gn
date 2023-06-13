@@ -98,9 +98,10 @@ optimize_ts("child_frame_registration_ts") {
   ]
 }
 
-optimize_js("suggestion_controller_js") {
-  primary_script = "resources/suggestion_controller.js"
-  sources = [ "resources/suggestion_controller.js" ]
+optimize_ts("suggestion_controller_js") {
+  sources = [ "resources/suggestion_controller.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 source_set("test_support") {
