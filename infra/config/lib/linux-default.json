@@ -326,6 +326,9 @@
     "win11-updater-tester-dbg-uac": "Ubuntu-22.04",
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
+  "goma": {
+    "linux-archive-rel-goma-rbe-ats-canary": "Ubuntu-22.04"
+  },
   "reclient": {
     "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04",
     "Simple Chrome Builder reclient staging": "Ubuntu-22.04"
