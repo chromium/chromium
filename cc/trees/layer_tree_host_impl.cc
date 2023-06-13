@@ -2676,11 +2676,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     TRACE_EVENT0("cc", "DrawLayers.UpdateHudTexture");
     active_tree_->hud_layer()->UpdateHudTexture(
         draw_mode, layer_tree_frame_sink_, &resource_provider_,
-        // The hud uses Gpu rasterization if the device is capable, not related
-        // to the content of the web page.
-        raster_caps().gpu_rasterization_status !=
-            GpuRasterizationStatus::OFF_DEVICE,
-        frame->render_passes);
+        raster_caps().use_gpu_rasterization, frame->render_passes);
   }
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
@@ -2909,12 +2905,6 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
     gpu_caps.can_use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
     gpu_caps.supports_disable_msaa = caps.multisample_compatibility;
   }(new_raster_caps);
-
-  if (!new_raster_caps.use_gpu_rasterization) {
-    raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::OFF_DEVICE;
-  } else {
-    raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::ON;
-  }
 
   // Changes in MSAA settings require that we re-raster resources for the
   // settings to take effect. But we don't need to trigger any raster

@@ -5494,8 +5494,7 @@ TEST_F(LegacySWTileSizeTest, SWTileSizes) {
   gfx::Size result;
 
   host_impl()->CommitComplete();
-  EXPECT_EQ(host_impl()->gpu_rasterization_status(),
-            GpuRasterizationStatus::OFF_DEVICE);
+  EXPECT_FALSE(host_impl()->use_gpu_rasterization());
   host_impl()->NotifyReadyToActivate();
 
   // Default tile-size for large layers.
@@ -5525,8 +5524,7 @@ TEST_F(TileSizeTest, GPUTileSizes) {
 
   // Gpu-rasterization uses 25% viewport-height tiles.
   // The +2's below are for border texels.
-  EXPECT_EQ(host_impl()->gpu_rasterization_status(),
-            GpuRasterizationStatus::ON);
+  EXPECT_TRUE(host_impl()->use_gpu_rasterization());
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(2000, 2000));
   host_impl()->NotifyReadyToActivate();
 
@@ -5570,8 +5568,7 @@ TEST_F(TileSizeTest, RawDrawTileSizes) {
   constexpr int kMaxTextureSize = 2048;
   // Gpu-RawDraw-rasterization uses 100%
   // std::max({viewport-width, viewport-height, 2280}) tiles.
-  EXPECT_EQ(host_impl()->gpu_rasterization_status(),
-            GpuRasterizationStatus::ON);
+  EXPECT_TRUE(host_impl()->use_gpu_rasterization());
   gfx::Rect viewport_rect(2000, 2000);
   host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
   layer->set_gpu_raster_max_texture_size(viewport_rect.size());
@@ -5609,8 +5606,7 @@ TEST_F(HalfWidthTileTest, TileSizes) {
 
   gfx::Size result;
   host_impl()->CommitComplete();
-  EXPECT_EQ(host_impl()->gpu_rasterization_status(),
-            GpuRasterizationStatus::ON);
+  EXPECT_TRUE(host_impl()->use_gpu_rasterization());
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(2000, 2000));
   host_impl()->NotifyReadyToActivate();
 

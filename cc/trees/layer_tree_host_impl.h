@@ -602,10 +602,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return raster_caps().use_gpu_rasterization;
   }
 
-  GpuRasterizationStatus gpu_rasterization_status() const {
-    return raster_caps().gpu_rasterization_status;
-  }
-
   bool create_low_res_tiling() const {
     return settings_.create_low_res_tiling &&
            !raster_caps().use_gpu_rasterization;
