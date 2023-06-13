@@ -165,6 +165,9 @@ bool MockScreenshotDelegate::IsScreenshotAllowed() {
 void MockScreenshotDelegate::TakeSnapshot(gfx::NativeWindow window,
                                           const gfx::Rect& source_rect,
                                           OnScreenshotTakenCallback callback) {
+  EXPECT_TRUE(screenshot_allowed_)
+      << "Should not take a screenshot unless it is allowed";
+
   const int width = source_rect.width();
   const int height = source_rect.height();
   scoped_refptr<base::RefCountedBytes> test_png =

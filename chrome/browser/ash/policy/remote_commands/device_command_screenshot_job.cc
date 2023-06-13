@@ -180,6 +180,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult result_callback) {
         FROM_HERE,
         base::BindOnce(std::move(result_callback_), ResultType::kFailure,
                        CreatePayload(FAILURE_USER_INPUT)));
+    return;
   }
 
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
