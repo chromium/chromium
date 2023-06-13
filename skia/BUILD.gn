@@ -329,6 +329,7 @@ component("skia") {
   # The imported Skia gni source paths are made absolute by gn.
   defines = []
   sources += skia_sksl_sources
+  sources += skia_codec_core
   sources += skia_utils_private
   sources += skia_xps_sources
   sources += skia_encode_srcs
@@ -345,7 +346,6 @@ component("skia") {
   ]
   if (use_blink) {
     sources -= [ "//third_party/skia/src/ports/SkImageGenerator_none.cpp" ]
-    sources += skia_codec_core
     sources += skia_codec_decode_bmp
     sources += skia_encode_jpeg_srcs
     public += skia_encode_jpeg_public
