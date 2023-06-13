@@ -8,6 +8,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -107,14 +108,29 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
   ~PDFExtensionPrintingTest() override = default;
 
   // PDFExtensionTestBase:
+  void SetUp() override {
+    // Avoid using a real PrintingContext, which can show modal print dialogs.
+    // Called here in SetUp() because it must be reset in TearDown(), as
+    // resetting in TearDownOnMainThread() is too early. The MessagePump may
+    // still process messages after TearDownOnMainThread(), which can trigger
+    // PrintingContext calls.
+    printing::PrintingContext::SetPrintingContextFactoryForTest(
+        &test_printing_context_factory_);
+    PDFExtensionTestBase::SetUp();
+  }
   void SetUpOnMainThread() override {
-    // Avoid getting blocked by modal print error dialogs.
+    // Avoid getting blocked by modal print error dialogs. Must be called after
+    // the UI thread is up and running.
     SetShowPrintErrorDialogForTest(base::DoNothing());
     PDFExtensionTestBase::SetUpOnMainThread();
   }
   void TearDownOnMainThread() override {
-    SetShowPrintErrorDialogForTest(base::NullCallback());
     PDFExtensionTestBase::TearDownOnMainThread();
+    SetShowPrintErrorDialogForTest(base::NullCallback());
+  }
+  void TearDown() override {
+    PDFExtensionTestBase::TearDown();
+    printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
   }
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     if (UseService()) {
@@ -131,10 +147,11 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
 
  private:
   bool UseService() const { return GetParam(); }
+
+  printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
 };
 
-// Flaky. See http://crbug.com/1415194
-IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
