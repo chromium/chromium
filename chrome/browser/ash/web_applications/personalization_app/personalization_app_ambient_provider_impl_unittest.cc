@@ -478,6 +478,14 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnAnimationThemeChanged) {
+  // When ambient mode is first enabled during test set up, the video theme
+  // should become active by default since the corresponding experiment flags
+  // are on. That should count as +1 in the usage metrics for the video theme.
+  histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
+                                       ash::AmbientTheme::kVideo, 1);
+  histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
+                                       ash::kDefaultAmbientVideo, 1);
+
   SetAmbientObserver();
   FetchSettings();
   SetAnimationTheme(ash::AmbientTheme::kSlideshow);
@@ -493,9 +501,21 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   SetAnimationTheme(ash::AmbientTheme::kVideo);
   EXPECT_EQ(ash::AmbientTheme::kVideo, ObservedAnimationTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
-                                       ash::AmbientTheme::kVideo, 1);
+                                       ash::AmbientTheme::kVideo, 2);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::kDefaultAmbientVideo, 1);
+                                       ash::kDefaultAmbientVideo, 2);
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       RestoresOldThemeAfterReenabling) {
+  SetAmbientObserver();
+  FetchSettings();
+  SetAnimationTheme(ash::AmbientTheme::kFeelTheBreeze);
+  SetEnabledPref(false);
+  SetEnabledPref(true);
+  EXPECT_EQ(ash::AmbientTheme::kFeelTheBreeze, ObservedAnimationTheme());
+  histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
+                                       ash::AmbientTheme::kFeelTheBreeze, 2);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, FetchPreviewImages) {
@@ -919,6 +939,12 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
                                           Eq(new_mexico_select))))}));
   };
 
+  // When ambient mode is first enabled during test set up, the video theme
+  // should become active by default since the corresponding experiment flags
+  // are on. That should count as +1 in the usage metrics for the video theme.
+  histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
+                                       ash::AmbientVideo::kNewMexico, 1);
+
   SetAmbientObserver();
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
@@ -945,7 +971,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
                          /*new_mexico_selected=*/true);
 
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::AmbientVideo::kNewMexico, 1);
+                                       ash::AmbientVideo::kNewMexico, 2);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
                                        ash::AmbientVideo::kClouds, 1);
 }

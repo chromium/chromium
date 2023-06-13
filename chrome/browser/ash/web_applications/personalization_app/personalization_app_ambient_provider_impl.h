@@ -128,6 +128,8 @@ class PersonalizationAppAmbientProviderImpl
   // non-video theme (ex: slideshow).
   AmbientModeTopicSource GetCurrentTopicSource() const;
 
+  void BroadcastAmbientModeEnabledStatus(bool enabled);
+
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
       ambient_receiver_{this};
 

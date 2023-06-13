@@ -27,9 +27,9 @@ enum class ColorMode {
 };
 
 constexpr char kAmbientModeAnimationThemeHistogramName[] =
-    "Ash.Personalization.AmbientMode.AnimationTheme";
+    "Ash.Personalization.AmbientMode.AnimationTheme2";
 constexpr char kAmbientModeVideoHistogramName[] =
-    "Ash.Personalization.AmbientMode.Video";
+    "Ash.Personalization.AmbientMode.Video2";
 constexpr char kPersonalizationThemeColorModeHistogramName[] =
     "Ash.Personalization.Theme.ColorMode";
 constexpr char kPersonalizationKeyboardBacklightColorHistogramName[] =

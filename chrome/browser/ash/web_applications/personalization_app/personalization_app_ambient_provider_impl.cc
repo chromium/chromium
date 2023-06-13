@@ -131,7 +131,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   ambient_observer_remote_.Bind(std::move(observer));
 
   // Call it once to get the current ambient mode enabled status.
-  OnAmbientModeEnabledChanged();
+  BroadcastAmbientModeEnabledStatus(IsAmbientModeEnabled());
 
   // Call it once to get the current ambient ui settings.
   OnAmbientUiSettingsChanged();
@@ -332,6 +332,21 @@ void PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums() {
 
 void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
   const bool enabled = IsAmbientModeEnabled();
+  if (enabled) {
+    // The usage metrics for the user's `AmbientUiSettings` should be
+    // incremented whenever ambient mode is enabled. They should not be
+    // incremented though every time the hub is simply opened.
+    AmbientUiSettings current_ui_settings = GetCurrentUiSettings();
+    LogAmbientModeTheme(current_ui_settings.theme());
+    if (current_ui_settings.theme() == AmbientTheme::kVideo) {
+      LogAmbientModeVideo(*current_ui_settings.video());
+    }
+  }
+  BroadcastAmbientModeEnabledStatus(enabled);
+}
+
+void PersonalizationAppAmbientProviderImpl::BroadcastAmbientModeEnabledStatus(
+    bool enabled) {
   if (ambient_observer_remote_.is_bound()) {
     ambient_observer_remote_->OnAmbientModeEnabledChanged(enabled);
   }

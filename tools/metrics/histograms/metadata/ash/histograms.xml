@@ -4863,12 +4863,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.AmbientMode.AnimationTheme"
+<histogram name="Ash.Personalization.AmbientMode.AnimationTheme2"
     enum="AmbientModeAnimationTheme" expires_after="2023-10-22">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
-    Emitted when a user selects an animation theme in screensaver subpage.
+    Emitted when a user selects an animation theme in screensaver subpage or
+    when screensaver is first enabled. In the latter case, the theme is recorded
+    here even without the user explicitly selecting it in the screensaver
+    subpage. The theme in this case will either be the default chosen by the
+    system, or the theme that the user had selected when they last disabled
+    screensaver.
   </summary>
 </histogram>
 
@@ -4882,14 +4887,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.AmbientMode.Video" enum="AmbientModeVideo"
-    expires_after="2023-10-22">
+<histogram name="Ash.Personalization.AmbientMode.Video2"
+    enum="AmbientModeVideo" expires_after="2023-10-22">
   <owner>jasontt@chromium.org</owner>
   <owner>esum@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
-    Emitted when a user selects the video theme or a new video in the
-    screensaver subpage.
+    Emitted when a user selects the video theme, selects a new video in the
+    screensaver subpage, or enables screensaver with a video theme automatically
+    active. The latter can happen if a video theme is the default on that
+    particular device model, or if the user had selected a video theme in the
+    past when they last disabled screensaver.
   </summary>
 </histogram>
 
