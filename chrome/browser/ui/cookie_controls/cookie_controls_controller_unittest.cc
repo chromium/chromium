@@ -13,6 +13,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -25,7 +26,7 @@ namespace {
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
-class MockCookieControlsObserver
+class MockOldCookieControlsObserver
     : public content_settings::OldCookieControlsObserver {
  public:
   MOCK_METHOD(void,
@@ -33,6 +34,17 @@ class MockCookieControlsObserver
               (CookieControlsStatus, CookieControlsEnforcement, int, int));
   MOCK_METHOD(void, OnCookiesCountChanged, (int, int));
   MOCK_METHOD(void, OnStatefulBounceCountChanged, (int));
+};
+
+class MockCookieControlsObserver
+    : public content_settings::CookieControlsObserver {
+ public:
+  MOCK_METHOD(void,
+              OnStatusChanged,
+              (CookieControlsStatus,
+               CookieControlsEnforcement,
+               absl::optional<base::Time>));
+  MOCK_METHOD(void, OnSitesCountChanged, (int, int));
 };
 
 }  // namespace
@@ -101,7 +113,7 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
     return cookie_settings_.get();
   }
 
-  MockCookieControlsObserver* mock() { return &mock_; }
+  MockOldCookieControlsObserver* mock() { return &mock_; }
 
   content_settings::PageSpecificContentSettings*
   page_specific_content_settings() {
@@ -110,7 +122,7 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  MockCookieControlsObserver mock_;
+  MockOldCookieControlsObserver mock_;
   std::unique_ptr<content_settings::CookieControlsController> cookie_controls_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
@@ -265,7 +277,7 @@ TEST_F(CookieControlsTest, Incognito) {
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
           incognito_web_contents.get()));
   auto* tester = content::WebContentsTester::For(incognito_web_contents.get());
-  MockCookieControlsObserver incognito_mock_;
+  MockOldCookieControlsObserver incognito_mock_;
   content_settings::CookieControlsController incognito_cookie_controls(
       CookieSettingsFactory::GetForProfile(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
@@ -293,4 +305,92 @@ TEST_F(CookieControlsTest, Incognito) {
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
   testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
+}
+
+class CookieControlsUserBypassTest : public CookieControlsTest {
+ public:
+  CookieControlsUserBypassTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{content_settings::features::kUserBypassUI, {{"expiration", "0d"}}}},
+        {});
+  }
+
+ protected:
+  void SetUp() override {
+    CookieControlsTest::SetUp();
+
+    cookie_controls()->AddObserver(mock());
+    testing::Mock::VerifyAndClearExpectations(mock());
+  }
+
+  MockCookieControlsObserver* mock() { return &mock_; }
+
+ private:
+  MockCookieControlsObserver mock_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(CookieControlsUserBypassTest, SiteCounts) {
+  absl::optional<base::Time> expiration = absl::nullopt;
+
+  // Visiting a website should enable the UI.
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsStatus::kEnabled,
+                      CookieControlsEnforcement::kNoEnforcement, expiration));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Accessing cookies should be notified.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Manually trigger a full update to check that the sites count changed.
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsStatus::kEnabled,
+                      CookieControlsEnforcement::kNoEnforcement, expiration));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Blocking cookies should update the blocked sites count.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 1));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://thirdparty.com"),
+      /*blocked_by_policy=*/true);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Manually trigger a full update to check that the sites count changed.
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsStatus::kEnabled,
+                      CookieControlsEnforcement::kNoEnforcement, expiration));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 1));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // A site accessing cookies should be counted only once.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 1));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Another site accessing cookies should update the sites count.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(2, 1));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://anothersite.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Navigating somewhere else should reset the sites count.
+  NavigateAndCommit(GURL("https://somethingelse.com"));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  cookie_controls()->Update(web_contents());
 }

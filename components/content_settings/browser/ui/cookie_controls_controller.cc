@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
+#include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
@@ -160,14 +161,25 @@ int CookieControlsController::GetBlockedCookieCount() const {
 }
 
 int CookieControlsController::GetAllowedSitesCount() const {
-  // TODO(crbug.com/1446230): Return the actual number of sites allowed to
-  // access cookies.
-  return 10;
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
+  if (!pscs) {
+    return 0;
+  }
+  return browsing_data::GetUniqueHostCount(
+      pscs->allowed_local_shared_objects(),
+      *(pscs->allowed_browsing_data_model()));
 }
+
 int CookieControlsController::GetBlockedSitesCount() const {
-  // TODO(crbug.com/1446230): Return the actual number of allowed blocked from
-  // accessing cookies.
-  return 5;
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
+  if (!pscs) {
+    return 0;
+  }
+  return browsing_data::GetUniqueHostCount(
+      pscs->blocked_local_shared_objects(),
+      *(pscs->blocked_browsing_data_model()));
 }
 
 int CookieControlsController::GetStatefulBounceCount() const {
