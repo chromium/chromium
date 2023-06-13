@@ -386,7 +386,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
                 // Use FromDeltaSinceWindowsEpoch because last_used_time_us has
                 // always used the Windows epoch.
                 base::Microseconds(last_used_time_us));
-        model->UpdateLastUsedTime(node, last_used_time);
+        model->UpdateLastUsedTime(node, last_used_time, /*just_opened=*/false);
       }
       SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
       return node;
@@ -429,7 +429,7 @@ void UpdateBookmarkNodeFromSpecifics(
           // Use FromDeltaSinceWindowsEpoch because last_used_time_us has
           // always used the Windows epoch.
           base::Microseconds(last_used_time_us));
-      model->UpdateLastUsedTime(node, last_used_time);
+      model->UpdateLastUsedTime(node, last_used_time, /*just_opened=*/false);
     }
   }
 }

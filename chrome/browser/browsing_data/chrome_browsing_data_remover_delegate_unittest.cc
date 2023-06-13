@@ -1902,7 +1902,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarkHistory) {
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
   const bookmarks::BookmarkNode* node = bookmark_model->AddURL(
       bookmark_model->bookmark_bar_node(), 0, u"a", bookmarked_page);
-  bookmark_model->UpdateLastUsedTime(node, base::Time::Now());
+  bookmark_model->UpdateLastUsedTime(node, base::Time::Now(),
+                                     /*just_opened=*/true);
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);

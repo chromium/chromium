@@ -166,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
 
   const BookmarkNode* node = bookmarks::AddIfNotBookmarked(
       bookmark_model, GURL(kPersistBookmarkURL), kPersistBookmarkTitle);
-  bookmark_model->UpdateLastUsedTime(node, kPersistLastUsedTime);
+  bookmark_model->UpdateLastUsedTime(node, kPersistLastUsedTime,
+                                     /*just_opened=*/true);
 }
 
 #if BUILDFLAG(IS_WIN)

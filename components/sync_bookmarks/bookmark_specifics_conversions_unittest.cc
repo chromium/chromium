@@ -94,7 +94,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
       kUrl);
   ASSERT_THAT(node, NotNull());
   model->SetDateAdded(node, kTime);
-  model->UpdateLastUsedTime(node, kTime);
+  model->UpdateLastUsedTime(node, kTime, /*just_opened=*/false);
   model->SetNodeMetaInfo(node, kKey1, kValue1);
   model->SetNodeMetaInfo(node, kKey2, kValue2);
 
