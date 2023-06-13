@@ -66,9 +66,10 @@ constexpr char kSetIconBackgroundJsTemplate[] =
 constexpr char kPageHtmlTemplate[] =
     R"(<html><script src="page.js"></script></html>)";
 
-// Runs |script| in the background page of the extension with the given
-// |extension_id|, and waits for it to send a test-passed result. This will
-// fail if the test in |script| fails.
+// Runs |script| in the given |web_contents| and waits for it to send a
+// test-passed result. This will fail if the test in |script| fails. Note:
+// |web_contents| is expected to be an extension contents with access to
+// extension APIs.
 void RunTestAndWaitForSuccess(content::WebContents* web_contents,
                               const std::string& script) {
   SCOPED_TRACE(script);
@@ -1754,6 +1755,118 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestBadgeTextColorErrors) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests the setting and unsetting of badge text works for both global and tab
+// specific cases.
+IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest,
+                       TestSetBadgeTextGlobalAndTab) {
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Test unsetting tab specific test",
+           "version": "0.1",
+           "manifest_version": %d,
+           "%s": {},
+           "background": { %s }
+         })";
+  const char* background_specification =
+      GetParam() == ActionInfo::TYPE_ACTION
+          ? R"("service_worker": "background.js")"
+          : R"("scripts": ["background.js"])";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate, GetManifestVersionForActionType(GetParam()),
+      ActionInfo::GetManifestKeyForActionType(GetParam()),
+      background_specification));
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Empty");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+
+  const int tab_id1 = GetActiveTabId();
+  EnsureActionIsEnabledOnTab(action, tab_id1);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://newtab"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  const int tab_id2 = GetActiveTabId();
+  EnsureActionIsEnabledOnTab(action, tab_id2);
+
+  constexpr char kGlobalText[] = "Global text";
+  constexpr char kTabText[] = "Tab text";
+
+  const std::string kSetGlobalText = base::StringPrintf(
+      R"(
+        chrome.%s.setBadgeText({text: 'Global text'}, () => {
+          chrome.test.sendScriptResult(true);
+        });
+      )",
+      GetAPINameForActionType(GetParam()));
+  const std::string kUnsetGlobalText = base::StringPrintf(
+      R"(
+        chrome.%s.setBadgeText({}, () => {
+          chrome.test.sendScriptResult(true);
+        });
+      )",
+      GetAPINameForActionType(GetParam()));
+  const std::string kSetTabText = base::StringPrintf(
+      R"(
+        chrome.%s.setBadgeText({tabId: %d, text: 'Tab text'}, () => {
+          chrome.test.sendScriptResult(true);
+        });
+      )",
+      GetAPINameForActionType(GetParam()), tab_id1);
+  const std::string kUnsetTabText = base::StringPrintf(
+      R"(
+        chrome.%s.setBadgeText({tabId: %d}, () => {
+          chrome.test.sendScriptResult(true);
+        });
+      )",
+      GetAPINameForActionType(GetParam()), tab_id1);
+
+  auto run_script_and_wait_for_callback = [&](std::string script) {
+    base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), script,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    return script_result;
+  };
+
+  EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id2));
+
+  // Set a global text for all tabs.
+  EXPECT_TRUE(run_script_and_wait_for_callback(kSetGlobalText).GetBool());
+  EXPECT_EQ(kGlobalText, action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ(kGlobalText, action->GetExplicitlySetBadgeText(tab_id2));
+
+  // Now set a tab specific text for tab 1.
+  EXPECT_TRUE(run_script_and_wait_for_callback(kSetTabText).GetBool());
+  EXPECT_EQ(kTabText, action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ(kGlobalText, action->GetExplicitlySetBadgeText(tab_id2));
+
+  // Unsetting the global text will leave the tab specific text in place.
+  EXPECT_TRUE(run_script_and_wait_for_callback(kUnsetGlobalText).GetBool());
+  EXPECT_EQ(kTabText, action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id2));
+
+  // Adding the global text back will not effect the tab specific text.
+  EXPECT_TRUE(run_script_and_wait_for_callback(kSetGlobalText).GetBool());
+  EXPECT_EQ(kTabText, action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ(kGlobalText, action->GetExplicitlySetBadgeText(tab_id2));
+
+  // Unsetting the tab specific text will return that tab to the global text.
+  EXPECT_TRUE(run_script_and_wait_for_callback(kUnsetTabText).GetBool());
+  EXPECT_EQ(kGlobalText, action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ(kGlobalText, action->GetExplicitlySetBadgeText(tab_id2));
+
+  // Finally unsetting the global text will return us back to nothing set.
+  EXPECT_TRUE(run_script_and_wait_for_callback(kUnsetGlobalText).GetBool());
+  EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id1));
+  EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id2));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
