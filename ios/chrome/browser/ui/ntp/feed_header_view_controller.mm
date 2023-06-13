@@ -34,8 +34,6 @@ const CGFloat kTitleHorizontalMargin = 19;
 // Trailing/leading margins for header buttons. Its used to align with the card
 // margins.
 const CGFloat kButtonHorizontalMargin = 14;
-// Font size for label text in header.
-const CGFloat kDiscoverFeedTitleFontSize = 16;
 // Font size for the custom search engine label.
 const CGFloat kCustomSearchEngineLabelFontSize = 13;
 // Font size for the hidden feed label.
@@ -377,9 +375,9 @@ NSInteger kFeedSymbolPointSize = 17;
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
-                                      weight:UIFontWeightMedium];
-  titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
+  titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.accessibilityIdentifier =
       ntp_home::DiscoverHeaderTitleAccessibilityID();
@@ -400,8 +398,7 @@ NSInteger kFeedSymbolPointSize = 17;
   [segmentedControl setApportionsSegmentWidthsByContent:NO];
 
   // Set text font and color.
-  UIFont* font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
-                                   weight:UIFontWeightMedium];
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   NSDictionary* attributes =
       [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
   [segmentedControl setTitleTextAttributes:attributes
