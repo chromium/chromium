@@ -97,6 +97,11 @@ bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
     admin_template_launch_trackers_.erase(it);
   }
 
+  // This will remove any admin template trackers that are no longer tracking
+  // any windows. Note that for the common case of only having a single admin
+  // template, the previous operation will have already removed the tracker.
+  RemoveInactiveAdminTemplateTrackers();
+
   auto admin_template = GetAdminTemplate(template_uuid);
   if (!admin_template) {
     return false;
@@ -199,9 +204,6 @@ void SavedDeskController::LaunchAdminTemplateImpl(
       kAdminTemplateUpdateDelay);
   tracker->LaunchTemplate(Shell::Get()->saved_desk_delegate(),
                           default_display_id);
-
-  // TODO(dandersson): Remove the launch tracker when all its windows have been
-  // closed.
 }
 
 std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(
@@ -225,6 +227,18 @@ std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(
 
   // Failed to get model, return nullptr.
   return nullptr;
+}
+
+void SavedDeskController::RemoveInactiveAdminTemplateTrackers() {
+  for (auto it = admin_template_launch_trackers_.begin();
+       it != admin_template_launch_trackers_.end();) {
+    if (!it->second->IsActive()) {
+      it->second->FlushPendingUpdate();
+      it = admin_template_launch_trackers_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 void SavedDeskController::SetAdminTemplateForTesting(

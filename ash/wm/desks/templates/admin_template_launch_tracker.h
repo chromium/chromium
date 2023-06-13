@@ -90,6 +90,13 @@ class ASH_EXPORT AdminTemplateLaunchTracker {
   // this is a no-op.
   void FlushPendingUpdate();
 
+  // Returns true if there are launched windows from this tracker that are still
+  // open. When this returns false, there are no more windows that can generate
+  // updates. Note that there may still be a pending update, so
+  // `FlushPendingUpdate` should typically be called before the tracker is
+  // destroyed.
+  bool IsActive() const;
+
  private:
   // Called when an observer is created (either a desk or window observer).
   void OnObserverCreated(std::unique_ptr<base::CheckedObserver> observer);

@@ -467,6 +467,10 @@ void AdminTemplateLaunchTracker::FlushPendingUpdate() {
   }
 }
 
+bool AdminTemplateLaunchTracker::IsActive() const {
+  return !window_observers_.empty();
+}
+
 void AdminTemplateLaunchTracker::OnObserverCreated(
     std::unique_ptr<base::CheckedObserver> observer) {
   window_observers_.push_back(std::move(observer));

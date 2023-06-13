@@ -92,6 +92,10 @@ class ASH_EXPORT SavedDeskController {
   std::unique_ptr<DeskTemplate> GetAdminTemplate(
       const base::Uuid& template_uuid) const;
 
+  // Removes all inactive admin template trackers. These are trackers that are
+  // no longer tracking any windows.
+  void RemoveInactiveAdminTemplateTrackers();
+
   // Install an admin template that can be used by `LaunchAdminTemplate`.
   void SetAdminTemplateForTesting(std::unique_ptr<DeskTemplate> admin_template);
 
