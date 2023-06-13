@@ -20,10 +20,8 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
                                public BuildStateObserver {
  public:
   ReportSchedulerDesktop();
-  /* `profile` is used for profile reporting or Chrome OS session.
-   * `profile_reporting` should be set to false for Chrome OS only.*/
-  explicit ReportSchedulerDesktop(Profile* profile,
-                                  bool profile_reporting = false);
+  /* `profile` is used for profile reporting */
+  explicit ReportSchedulerDesktop(Profile* profile);
   ReportSchedulerDesktop(const ReportSchedulerDesktop&) = delete;
   ReportSchedulerDesktop& operator=(const ReportSchedulerDesktop&) = delete;
 
@@ -36,22 +34,15 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
   void StopWatchingUpdates() override;
   void OnBrowserVersionUploaded() override;
 
-  void StartWatchingExtensionRequestIfNeeded() override;
-  void StopWatchingExtensionRequest() override;
-  void OnExtensionRequestUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
 
   // BuildStateObserver implementation.
   void OnUpdate(const BuildState* build_state) override;
 
-  void TriggerExtensionRequest(Profile* profile);
-
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> prefs_;
-  std::unique_ptr<ExtensionRequestObserverFactory>
-      extension_request_observer_factory_;
 };
 
 }  // namespace enterprise_reporting
