@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -96,8 +98,9 @@ public class AddressEditorCoordinator {
     public AddressEditorCoordinator(Activity activity, HelpAndFeedbackLauncher helpLauncher,
             Delegate delegate, Profile profile, AutofillAddress addressToEdit,
             @UserFlow int userFlow, boolean saveToDisk) {
-        mMediator = new AddressEditorMediator(
-                activity, delegate, profile, addressToEdit, userFlow, saveToDisk);
+        mMediator = new AddressEditorMediator(activity, delegate,
+                IdentityServicesProvider.get().getIdentityManager(profile),
+                SyncServiceFactory.getForProfile(profile), addressToEdit, userFlow, saveToDisk);
         mEditorDialog = new EditorDialogView(activity, helpLauncher);
     }
 

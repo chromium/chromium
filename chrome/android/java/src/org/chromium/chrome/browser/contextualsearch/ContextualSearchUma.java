@@ -16,7 +16,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.annotation.Retention;
@@ -222,10 +221,9 @@ public class ContextualSearchUma {
      * which approximately reflects this sync-enabled population).
      * @param wasPanelSeen Whether the panel was seen.
      */
-    public static void logTapResultsSeen(boolean wasPanelSeen) {
+    public static void logTapResultsSeen(boolean wasPanelSeen, @Nullable SyncService syncService) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.Tap.ResultsSeen", wasPanelSeen);
-        SyncService syncService = SyncServiceFactory.get();
         if (syncService != null && syncService.isSyncFeatureEnabled()) {
             RecordHistogram.recordBooleanHistogram(
                     "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", wasPanelSeen);

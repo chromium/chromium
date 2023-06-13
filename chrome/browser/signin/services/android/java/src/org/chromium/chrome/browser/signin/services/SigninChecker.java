@@ -14,7 +14,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
@@ -24,6 +23,7 @@ import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
 
 import java.util.List;
 
@@ -34,6 +34,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
     private static final String TAG = "SigninChecker";
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
+    private final SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
     // Counter to record the number of child account checks done for tests.
     private int mNumOfChildAccountChecksDone;
@@ -42,9 +43,11 @@ public class SigninChecker implements AccountTrackerService.Observer {
      * Please use {@link SigninCheckerProvider} to get {@link SigninChecker} instance instead of
      * creating it manually.
      */
-    public SigninChecker(SigninManager signinManager, AccountTrackerService accountTrackerService) {
+    public SigninChecker(SigninManager signinManager, AccountTrackerService accountTrackerService,
+            SyncService syncService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
+        mSyncService = syncService;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mNumOfChildAccountChecksDone = 0;
 
@@ -125,7 +128,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
                         SigninAccessPoint.ACCOUNT_RENAMED, new SignInCallback() {
                             @Override
                             public void onSignInComplete() {
-                                SyncServiceFactory.get().setInitialSyncFeatureSetupComplete(
+                                mSyncService.setInitialSyncFeatureSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
 

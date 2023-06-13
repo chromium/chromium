@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
@@ -37,9 +38,13 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -69,6 +74,12 @@ public class SaveUpdateAddressProfilePromptTest {
     private Profile mProfile;
     @Mock
     private AddressEditorCoordinator mAddressEditor;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private SyncService mSyncService;
 
     @Captor
     private ArgumentCaptor<Callback<AutofillAddress>> mCallbackCaptor;
@@ -82,6 +93,9 @@ public class SaveUpdateAddressProfilePromptTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+        SyncServiceFactory.overrideForTests(mSyncService);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
 

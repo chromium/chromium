@@ -1076,7 +1076,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (!mStarted) return; // Sync state reporting should work only in started state.
         if (mContextReporter != null || getActivityTab() == null) return;
 
-        final SyncService syncService = SyncServiceFactory.get();
+        final SyncService syncService = getSyncServiceForOriginalProfile();
 
         if (syncService != null && syncService.isSyncingUnencryptedUrls()) {
             ContextReporter.SelectionReporter controller =
@@ -1243,7 +1243,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (mGSAAccountChangeListener != null) mGSAAccountChangeListener.disconnect();
         }
         if (mSyncStateChangedListener != null) {
-            SyncService syncService = SyncServiceFactory.get();
+            SyncService syncService = getSyncServiceForOriginalProfile();
             if (syncService != null) {
                 syncService.removeSyncStateChangedListener(mSyncStateChangedListener);
             }
@@ -2930,5 +2930,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     protected int getAutomotiveToolbarImplementation() {
         return AutomotiveToolbarImplementation.WITH_ACTION_BAR;
+    }
+
+    private @Nullable SyncService getSyncServiceForOriginalProfile() {
+        if (!mTabModelProfileSupplier.hasValue()) return null;
+        return SyncServiceFactory.getForProfile(
+                mTabModelProfileSupplier.get().getOriginalProfile());
     }
 }

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
@@ -30,8 +33,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -74,6 +81,12 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     private PersonalDataManager mPersonalDataManager;
     @Mock
     private Profile mProfile;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private SyncService mSyncService;
 
     private SaveUpdateAddressProfilePromptController mPromptController;
     private SaveUpdateAddressProfilePrompt mPrompt;
@@ -87,7 +100,12 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @Override
     public void setUpTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+        runOnUiThreadBlocking(() -> {
+            PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+            SyncServiceFactory.overrideForTests(mSyncService);
+            IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+            when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        });
 
         mPromptController = SaveUpdateAddressProfilePromptController.create(
                 NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -363,7 +364,8 @@ class BookmarkManagerMediator
             mBookmarkQueryHandler =
                     new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
         } else {
-            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
+            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(
+                    mBookmarkModel, bookmarkUiPrefs, SyncServiceFactory.getForProfile(mProfile));
         }
 
         mModelList = modelList;

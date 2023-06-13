@@ -14,9 +14,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #include "base/android/callback_android.h"
@@ -144,7 +146,8 @@ SigninManagerAndroid::SigninManagerAndroid(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       identity_manager_->LegacyGetAccountTrackerServiceJavaObject(),
       identity_manager_->GetJavaObject(),
-      identity_manager_->GetIdentityMutatorJavaObject());
+      identity_manager_->GetIdentityMutatorJavaObject(),
+      SyncServiceFactory::GetForProfile(profile_)->GetJavaObject());
 }
 
 base::android::ScopedJavaLocalRef<jobject>

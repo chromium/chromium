@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
@@ -443,7 +444,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
                     new SafetyCheckUpdatesDelegateImpl(), mSettingsLauncher,
-                    SyncConsentActivityLauncherImpl.get(), getModalDialogManagerSupplier());
+                    SyncConsentActivityLauncherImpl.get(), getModalDialogManagerSupplier(),
+                    SyncServiceFactory.getForProfile(mProfile));
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,

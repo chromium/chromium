@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 /**
  * This class is responsible for all the logging triggered by activity of the
@@ -97,7 +98,8 @@ public class ContextualSearchPanelMetrics {
             }
 
             if (mWasActivatedByTap) {
-                ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen);
+                ContextualSearchUma.logTapResultsSeen(
+                        mWasSearchContentViewSeen, SyncServiceFactory.getForProfile(profile));
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
             if (mWasSearchContentViewSeen) {

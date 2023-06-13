@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 
 /**
@@ -33,6 +34,9 @@ public class PassphraseActivity extends AppCompatActivity
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
 
+    private IdentityManager mIdentityManager;
+    private SyncService mSyncService;
+
     private SyncService.SyncStateChangedListener mSyncStateChangedListener;
 
     @Override
@@ -43,24 +47,25 @@ public class PassphraseActivity extends AppCompatActivity
         // During a normal user flow the ChromeTabbedActivity would start the Chrome browser
         // process and this wouldn't be necessary.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-        assert SyncServiceFactory.get() != null;
+        Profile profile = Profile.getLastUsedRegularProfile();
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+        mSyncService = SyncServiceFactory.getForProfile(profile);
+        assert mSyncService != null;
         getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Profile profile = Profile.getLastUsedRegularProfile();
         Account account = CoreAccountInfo.getAndroidAccountFrom(
-                IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
-                        ConsentLevel.SYNC));
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         if (account == null) {
             finish();
             return;
         }
 
         if (!isShowingDialog(FRAGMENT_PASSPHRASE)) {
-            if (SyncServiceFactory.getForProfile(profile).isEngineInitialized()) {
+            if (mSyncService.isEngineInitialized()) {
                 displayPassphraseDialog();
             } else {
                 addSyncStateChangedListener();
@@ -81,22 +86,21 @@ public class PassphraseActivity extends AppCompatActivity
         if (mSyncStateChangedListener != null) {
             return;
         }
-        SyncService syncService = SyncServiceFactory.get();
         mSyncStateChangedListener = new SyncService.SyncStateChangedListener() {
             @Override
             public void syncStateChanged() {
-                if (syncService.isEngineInitialized()) {
+                if (mSyncService.isEngineInitialized()) {
                     removeSyncStateChangedListener();
                     displayPassphraseDialog();
                 }
             }
         };
-        syncService.addSyncStateChangedListener(mSyncStateChangedListener);
+        mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
     }
 
     private void removeSyncStateChangedListener() {
         if (mSyncStateChangedListener != null) {
-            SyncServiceFactory.get().removeSyncStateChangedListener(mSyncStateChangedListener);
+            mSyncService.removeSyncStateChangedListener(mSyncStateChangedListener);
             mSyncStateChangedListener = null;
         }
     }
@@ -106,7 +110,7 @@ public class PassphraseActivity extends AppCompatActivity
     }
 
     private void displayPassphraseDialog() {
-        assert SyncServiceFactory.get().isEngineInitialized();
+        assert mSyncService.isEngineInitialized();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(null);
         PassphraseDialogFragment.newInstance(null).show(ft, FRAGMENT_PASSPHRASE);
@@ -124,7 +128,7 @@ public class PassphraseActivity extends AppCompatActivity
      */
     @Override
     public boolean onPassphraseEntered(String passphrase) {
-        if (!passphrase.isEmpty() && SyncServiceFactory.get().setDecryptionPassphrase(passphrase)) {
+        if (!passphrase.isEmpty() && mSyncService.setDecryptionPassphrase(passphrase)) {
             // The passphrase was correct - close this activity.
             finish();
             return true;

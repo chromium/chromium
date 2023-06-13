@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -127,7 +126,6 @@ public class SigninManagerImplTest {
     public void setUp() {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        SyncServiceFactory.overrideForTests(mSyncService);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
@@ -148,8 +146,8 @@ public class SigninManagerImplTest {
 
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
 
-        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(
-                NATIVE_SIGNIN_MANAGER, mAccountTrackerService, mIdentityManager, mIdentityMutator);
+        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(NATIVE_SIGNIN_MANAGER,
+                mAccountTrackerService, mIdentityManager, mIdentityMutator, mSyncService);
         mSigninManager.addSignInStateObserver(mSignInStateObserver);
     }
 

@@ -68,9 +68,6 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Use
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -103,7 +100,8 @@ class AddressEditorMediator {
     private final AutofillProfileBridge mAutofillProfileBridge = new AutofillProfileBridge();
     private final Context mContext;
     private final Delegate mDelegate;
-    private final Profile mProfile;
+    private final IdentityManager mIdentityManager;
+    private final @Nullable SyncService mSyncService;
     private final AutofillProfile mProfileToEdit;
     private final AutofillAddress mAddressToEdit;
     private final @UserFlow int mUserFlow;
@@ -187,11 +185,13 @@ class AddressEditorMediator {
         return supportedCountries;
     }
 
-    AddressEditorMediator(Context context, Delegate delegate, Profile profile,
-            AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
+    AddressEditorMediator(Context context, Delegate delegate, IdentityManager identityManager,
+            @Nullable SyncService syncService, AutofillAddress addressToEdit,
+            @UserFlow int userFlow, boolean saveToDisk) {
         mContext = context;
         mDelegate = delegate;
-        mProfile = profile;
+        mIdentityManager = identityManager;
+        mSyncService = syncService;
         mProfileToEdit = addressToEdit.getProfile();
         mAddressToEdit = addressToEdit;
         mUserFlow = userFlow;
@@ -565,9 +565,7 @@ class AddressEditorMediator {
 
     @Nullable
     private String getUserEmail() {
-        final IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return CoreAccountInfo.getEmailFrom(accountInfo);
     }
 
@@ -615,10 +613,9 @@ class AddressEditorMediator {
     }
 
     private boolean isAddressSyncOn() {
-        SyncService service = SyncServiceFactory.get();
-        if (service == null) return false;
-        return service.isSyncFeatureEnabled()
-                && service.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
+        if (mSyncService == null) return false;
+        return mSyncService.isSyncFeatureEnabled()
+                && mSyncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
     /** Country based phone number validator. */

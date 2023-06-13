@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 /**
  * This class is used to get a singleton instance of {@link SigninChecker}.
@@ -28,7 +29,8 @@ public final class SigninCheckerProvider {
             SyncErrorNotifier.get();
             Profile profile = Profile.getLastUsedRegularProfile();
             sInstance = new SigninChecker(IdentityServicesProvider.get().getSigninManager(profile),
-                    IdentityServicesProvider.get().getAccountTrackerService(profile));
+                    IdentityServicesProvider.get().getAccountTrackerService(profile),
+                    SyncServiceFactory.getForProfile(profile));
         }
         return sInstance;
     }

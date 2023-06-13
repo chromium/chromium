@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.Tracker;
@@ -79,13 +78,12 @@ public class LegacyBookmarkQueryHandlerTest {
 
     @Before
     public void setup() {
-        SyncServiceFactory.overrideForTests(mSyncService);
         TrackerFactory.setTrackerForTests(mTracker);
         Profile.setLastUsedProfileForTesting(mProfile);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
-        mHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs);
+        mHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs, mSyncService);
     }
 
     @Test
