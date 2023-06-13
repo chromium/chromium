@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
@@ -27,7 +26,6 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual ~QuickStartView() = default;
 
   virtual void Show() = 0;
-  virtual void SetShapes(const quick_start::ShapeList& shape_list) = 0;
   virtual void SetPIN(const std::string pin) = 0;
   virtual void SetQRCode(base::Value::List blob) = 0;
   virtual void SetDiscoverableName(const std::string& discoverable_name) = 0;
@@ -53,7 +51,6 @@ class QuickStartScreenHandler : public QuickStartView,
 
   // QuickStartView:
   void Show() override;
-  void SetShapes(const quick_start::ShapeList& shape_list) override;
   void SetPIN(const std::string pin) override;
   void SetQRCode(base::Value::List blob) override;
   void SetDiscoverableName(const std::string& discoverable_name) override;

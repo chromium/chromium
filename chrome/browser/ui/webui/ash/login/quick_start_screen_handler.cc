@@ -19,23 +19,6 @@ void QuickStartScreenHandler::Show() {
   ShowInWebUI();
 }
 
-base::Value ToValue(const quick_start::ShapeList& list) {
-  base::Value::List result;
-  for (const quick_start::ShapeHolder& shape_holder : list) {
-    base::Value::Dict val;
-    val.Set("shape", static_cast<int>(shape_holder.shape));
-    val.Set("color", static_cast<int>(shape_holder.color));
-    val.Set("digit", static_cast<int>(shape_holder.digit));
-    result.Append(std::move(val));
-  }
-  return base::Value(std::move(result));
-}
-
-void QuickStartScreenHandler::SetShapes(
-    const quick_start::ShapeList& shape_list) {
-  CallExternalAPI("setFigures", ToValue(shape_list));
-}
-
 void QuickStartScreenHandler::SetPIN(const std::string pin) {
   CallExternalAPI("setPin", pin);
 }

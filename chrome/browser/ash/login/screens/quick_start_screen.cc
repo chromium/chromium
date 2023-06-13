@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
-#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
@@ -175,17 +174,6 @@ void QuickStartScreen::UnbindFromBootstrapController() {
   }
   bootstrap_controller_->RemoveObserver(this);
   bootstrap_controller_.reset();
-}
-
-void QuickStartScreen::SendRandomFiguresForTesting() const {
-  if (!view_) {
-    return;
-  }
-
-  std::string token = base::UTF16ToASCII(
-      base::TimeFormatWithPattern(base::Time::Now(), "MMMMdjmmss"));
-  const auto& shapes = quick_start::GenerateShapes(token);
-  view_->SetShapes(shapes);
 }
 
 void QuickStartScreen::SavePhoneInstanceID() {

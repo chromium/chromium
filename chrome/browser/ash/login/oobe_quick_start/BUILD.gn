@@ -42,8 +42,6 @@ source_set("oobe_quick_start") {
     "second_device_auth_broker.h",
     "target_device_bootstrap_controller.cc",
     "target_device_bootstrap_controller.h",
-    "verification_shapes.cc",
-    "verification_shapes.h",
   ]
 }
 
@@ -71,6 +69,5 @@ source_set("unit_tests") {
   sources = [
     "second_device_auth_broker_unittest.cc",
     "target_device_bootstrap_controller_unittest.cc",
-    "verification_shapes_unittest.cc",
   ]
 }

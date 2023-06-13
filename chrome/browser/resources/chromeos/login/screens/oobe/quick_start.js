@@ -29,15 +29,11 @@ import { loadTimeData } from '../../i18n_setup.js';
 export const QuickStartUIState = {
   LOADING: 'loading',
   VERIFICATION: 'verification',
-  FIGURES: 'figures',
   CONNECTING_TO_WIFI: 'connecting_to_wifi',
   CONNECTED_TO_WIFI: 'connected_to_wifi',
   GAIA_CREDENTIALS: 'gaia_credentials',
   FIDO_ASSERTION_RECEIVED: 'fido_assertion_received',
 };
-
-// Should be in sync with the C++ enum (ash::quick_start::Color).
-const QuickStartColors = ['blue', 'red', 'green', 'yellow'];
 
 // TODO(b/246697586) Figure out the right DPI.
 // The size of each tile in pixels.
@@ -71,7 +67,6 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   static get properties() {
     return {
-      figures_: Object,
       shapes_: {
         type: Object,
         // Should be in sync with the C++ enum (ash::quick_start::Shape).
@@ -113,7 +108,6 @@ class QuickStartScreen extends QuickStartScreenBase {
   constructor() {
     super();
     this.UI_STEPS = QuickStartUIState;
-    this.figures_ = [];
     this.canvasSize_ = 0;
     this.password_ = '';
     this.ssid_ = '';
@@ -123,7 +117,6 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   get EXTERNAL_API() {
     return [
-      'setFigures',
       'setQRCode',
       'setPin',
       'showConnectingToWifi',
@@ -153,16 +146,6 @@ class QuickStartScreen extends QuickStartScreenBase {
   /** @override */
   defaultUIStep() {
     return QuickStartUIState.LOADING;
-  }
-
-  /**
-   * @param {!Array<OobeTypes.QuickStartScreenFigureData>} figures
-   */
-  setFigures(figures) {
-    this.setUIStep(QuickStartUIState.FIGURES);
-    this.figures_ = figures.map(x => {
-      return {shape: x.shape, color: QuickStartColors[x.color], digit: x.digit};
-    });
   }
 
   showConnectingToWifi() {
