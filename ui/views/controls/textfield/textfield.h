@@ -668,12 +668,23 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns the corner radius of the text field.
   float GetCornerRadius();
 
-  // Checks and updates the selection dragging state for the upcoming scroll
-  // sequence, if required. If the scroll sequence starts while long pressing,
-  // it will be used for adjusting the text selection. Otherwise, if the scroll
-  // begins horizontally it will be used for cursor placement. Otherwise, the
-  // scroll sequence won't be used for selection dragging.
-  void MaybeStartSelectionDragging(ui::GestureEvent* event);
+  // Prepares the Textfield for gesture scrolling by setting the drag start
+  // state.
+  void OnGestureScrollBegin(int drag_start_location_x);
+
+  // Performs gesture scrolling.
+  void GestureScroll(int drag_location_x);
+
+  // Performs gesture handling needed for touch selection dragging. Sets `event`
+  // as handled and returns true if the event should not be processed further.
+  bool HandleGestureForSelectionDragging(ui::GestureEvent* event);
+
+  // Determines whether touch selection dragging should start and updates the
+  // selection dragging state if needed. Returns true if selection dragging
+  // starts.
+  bool StartSelectionDragging(const ui::GestureEvent& event);
+
+  void StopSelectionDragging();
 
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
@@ -761,10 +772,13 @@ class VIEWS_EXPORT Textfield : public View,
 
   SelectionController selection_controller_;
 
-  // Tracks when the current scroll sequence should be used for cursor placement
+  // Tracks the touch selection dragging state which is used when determining
+  // whether a dragging movement should be used for scrolling, cursor placement
   // or adjusting the text selection.
   enum class SelectionDraggingState {
     kNone,
+    kSelectedAll,
+    kSelectedWord,
     kDraggingCursor,
     kDraggingSelectionExtent
   };

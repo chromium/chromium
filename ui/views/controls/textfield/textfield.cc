@@ -773,21 +773,18 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP: {
       RequestFocusForGesture(event->details());
       if (controller_ && controller_->HandleGestureEvent(this, *event)) {
-        selection_dragging_state_ = SelectionDraggingState::kNone;
+        StopSelectionDragging();
         event->SetHandled();
         return;
       }
-
+      if (HandleGestureForSelectionDragging(event)) {
+        return;
+      }
       const size_t tap_pos =
           GetRenderText()->FindCursorPosition(event->location()).caret_pos();
       const bool should_toggle_menu = event->details().tap_count() == 1 &&
                                       GetSelectedRange() == gfx::Range(tap_pos);
-      if (selection_dragging_state_ != SelectionDraggingState::kNone) {
-        // Selection has already been set in the preceding ET_GESTURE_TAP_DOWN
-        // event, so handles should be shown without changing the selection.
-        // Just need to cancel selection dragging.
-        selection_dragging_state_ = SelectionDraggingState::kNone;
-      } else if (event->details().tap_count() == 1) {
+      if (event->details().tap_count() == 1) {
         // If tap is on the selection and touch handles are not present,
         // handles should be shown without changing selection. Otherwise,
         // cursor should be moved to the tap location.
@@ -814,52 +811,45 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_GESTURE_TAP_DOWN: {
-      if (::features::IsTouchTextEditingRedesignEnabled() && HasFocus()) {
-        if (event->details().tap_down_count() == 2) {
-          OnBeforeUserAction();
-          SelectWordAt(event->location());
-          OnAfterUserAction();
-        } else if (event->details().tap_down_count() == 3) {
-          OnBeforeUserAction();
-          SelectAll(false);
-          OnAfterUserAction();
-        } else {
-          break;
+      if (HasFocus()) {
+        if (HandleGestureForSelectionDragging(event)) {
+          return;
         }
-        DestroyTouchSelection();
-        selection_dragging_state_ =
-            SelectionDraggingState::kDraggingSelectionExtent;
-        event->SetHandled();
       }
       break;
     }
     case ui::ET_GESTURE_LONG_PRESS:
-      if (!GetRenderText()->IsPointInSelection(event->location())) {
+      if (GetRenderText()->IsPointInSelection(event->location())) {
+        // If long-press happens on the selection, deactivate touch selection
+        // and try to initiate drag-drop. If drag-drop is not enabled, context
+        // menu will be shown. Event is not marked as handled to let Views
+        // handle drag-drop or context menu.
+        DestroyTouchSelection();
+        StopSelectionDragging();
+        initiating_drag_ = switches::IsTouchDragDropEnabled();
+        break;
+      } else {
         // If long-press happens outside selection, select word and try to
         // activate touch selection.
         OnBeforeUserAction();
         SelectWordAt(event->location());
         OnAfterUserAction();
         CreateTouchSelectionControllerAndNotifyIt();
-        if (::features::IsTouchTextEditingRedesignEnabled()) {
-          selection_dragging_state_ =
-              SelectionDraggingState::kDraggingSelectionExtent;
+
+        if (HandleGestureForSelectionDragging(event)) {
+          return;
         }
-        // If touch selection activated successfully, mark event as handled
-        // so that the regular context menu is not shown.
-        if (touch_selection_controller_)
+
+        // If touch selection is activated, mark the event as handled so that
+        // the regular context menu is not shown.
+        if (touch_selection_controller_) {
           event->SetHandled();
-      } else {
-        // If long-press happens on the selection, deactivate touch
-        // selection and try to initiate drag-drop. If drag-drop is not
-        // enabled, context menu will be shown. Event is not marked as
-        // handled to let Views handle drag-drop or context menu.
-        DestroyTouchSelection();
-        initiating_drag_ = switches::IsTouchDragDropEnabled();
+          return;
+        }
       }
       break;
     case ui::ET_GESTURE_LONG_TAP:
-      selection_dragging_state_ = SelectionDraggingState::kNone;
+      StopSelectionDragging();
       // If touch selection is enabled, the context menu on long tap will be
       // shown by the |touch_selection_controller_|, hence we mark the event
       // handled so Views does not try to show context menu on it.
@@ -868,63 +858,28 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (HasFocus()) {
-        if (::features::IsTouchTextEditingRedesignEnabled()) {
-          MaybeStartSelectionDragging(event);
+        if (HandleGestureForSelectionDragging(event)) {
+          return;
         }
-        if (selection_dragging_state_ == SelectionDraggingState::kNone) {
-          drag_start_location_x_ = event->location().x();
-          drag_start_display_offset_ =
-              GetRenderText()->GetUpdatedDisplayOffset().x();
-          show_touch_handles_after_scroll_ =
-              touch_selection_controller_ != nullptr;
-          // Deactivate touch selection controller when scrolling.
-          DestroyTouchSelection();
-        } else {
-          // Create touch selection controller to show a magnifier when
-          // selection dragging.
-          CreateTouchSelectionControllerAndNotifyIt();
-          show_touch_handles_after_scroll_ = true;
-        }
+        OnGestureScrollBegin(event->location().x());
         event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (HasFocus()) {
-        // Switch from selection dragging to default scrolling behaviour if
-        // scroll update has multiple touch points.
-        if (selection_dragging_state_ != SelectionDraggingState::kNone &&
-            event->details().touch_points() > 1) {
-          selection_dragging_state_ = SelectionDraggingState::kNone;
-          drag_start_location_x_ = event->location().x();
-          drag_start_display_offset_ =
-              GetRenderText()->GetUpdatedDisplayOffset().x();
-          DestroyTouchSelection();
-          show_touch_handles_after_scroll_ = true;
+        if (HandleGestureForSelectionDragging(event)) {
+          return;
         }
-        switch (selection_dragging_state_) {
-          case SelectionDraggingState::kDraggingSelectionExtent:
-            MoveRangeSelectionExtent(event->location() +
-                                     selection_dragging_offset_);
-            break;
-          case SelectionDraggingState::kDraggingCursor:
-            MoveCursorTo(event->location(), false);
-            break;
-          case SelectionDraggingState::kNone: {
-            int new_display_offset = drag_start_display_offset_ +
-                                     event->location().x() -
-                                     drag_start_location_x_;
-            GetRenderText()->SetDisplayOffset(new_display_offset);
-            SchedulePaint();
-            break;
-          }
-        }
+        GestureScroll(event->location().x());
         event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
+      if (HandleGestureForSelectionDragging(event)) {
+        return;
+      }
       if (HasFocus()) {
-        selection_dragging_state_ = SelectionDraggingState::kNone;
         if (show_touch_handles_after_scroll_) {
           CreateTouchSelectionControllerAndNotifyIt();
           show_touch_handles_after_scroll_ = false;
@@ -933,7 +888,9 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_END:
-      selection_dragging_state_ = SelectionDraggingState::kNone;
+      if (HandleGestureForSelectionDragging(event)) {
+        return;
+      }
       break;
     default:
       return;
@@ -2961,18 +2918,108 @@ float Textfield::GetCornerRadius() {
       ShapeContextTokens::kTextfieldRadius, size());
 }
 
-void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
-  DCHECK_EQ(event->type(), ui::ET_GESTURE_SCROLL_BEGIN);
-  // Only start selection dragging if scrolling with one touch point.
-  if (event->details().touch_points() > 1) {
-    selection_dragging_state_ = SelectionDraggingState::kNone;
-    return;
+void Textfield::OnGestureScrollBegin(int drag_start_location_x) {
+  drag_start_location_x_ = drag_start_location_x;
+  drag_start_display_offset_ = GetRenderText()->GetUpdatedDisplayOffset().x();
+  show_touch_handles_after_scroll_ = touch_selection_controller_ != nullptr;
+  DestroyTouchSelection();
+}
+
+void Textfield::GestureScroll(int drag_location_x) {
+  int new_display_offset =
+      drag_start_display_offset_ + drag_location_x - drag_start_location_x_;
+  GetRenderText()->SetDisplayOffset(new_display_offset);
+  SchedulePaint();
+}
+
+bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    return false;
   }
 
-  const float delta_x = event->details().scroll_x_hint();
-  const float delta_y = event->details().scroll_y_hint();
-  if (selection_dragging_state_ ==
-      SelectionDraggingState::kDraggingSelectionExtent) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_TAP:
+      if (selection_dragging_state_ != SelectionDraggingState::kNone) {
+        // Selection has already been set in preceding events, so we can just
+        // cancel selection dragging and show touch handles without changing the
+        // selection.
+        StopSelectionDragging();
+        CreateTouchSelectionControllerAndNotifyIt();
+        event->SetHandled();
+        return true;
+      }
+      return false;
+    case ui::ET_GESTURE_TAP_DOWN:
+      if (event->details().tap_down_count() == 1) {
+        selection_dragging_state_ = SelectionDraggingState::kNone;
+        return false;
+      } else if (event->details().tap_down_count() == 2) {
+        OnBeforeUserAction();
+        SelectWordAt(event->location());
+        OnAfterUserAction();
+        selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
+      } else if (event->details().tap_down_count() == 3) {
+        OnBeforeUserAction();
+        SelectAll(false);
+        OnAfterUserAction();
+        selection_dragging_state_ = SelectionDraggingState::kSelectedAll;
+      }
+      DestroyTouchSelection();
+      event->SetHandled();
+      return true;
+    case ui::ET_GESTURE_LONG_PRESS:
+      selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
+      event->SetHandled();
+      return true;
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      // Only start selection dragging if scrolling with one touch point.
+      if (event->details().touch_points() == 1 &&
+          StartSelectionDragging(*event)) {
+        CreateTouchSelectionControllerAndNotifyIt();
+        show_touch_handles_after_scroll_ = true;
+        event->SetHandled();
+        return true;
+      }
+      StopSelectionDragging();
+      return false;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      // Switch from selection dragging to default scrolling behaviour if scroll
+      // update has multiple touch points.
+      if (IsSelectionDragging() && event->details().touch_points() > 1) {
+        StopSelectionDragging();
+        OnGestureScrollBegin(event->location().x());
+        return false;
+      } else if (selection_dragging_state_ ==
+                 SelectionDraggingState::kDraggingSelectionExtent) {
+        MoveRangeSelectionExtent(event->location() +
+                                 selection_dragging_offset_);
+        event->SetHandled();
+        return true;
+      } else if (selection_dragging_state_ ==
+                 SelectionDraggingState::kDraggingCursor) {
+        MoveCursorTo(event->location(), false);
+        event->SetHandled();
+        return true;
+      }
+      return false;
+    case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
+      StopSelectionDragging();
+      return false;
+    case ui::ET_GESTURE_END:
+      StopSelectionDragging();
+      return false;
+    default:
+      return false;
+  }
+}
+
+bool Textfield::StartSelectionDragging(const ui::GestureEvent& event) {
+  DCHECK_EQ(event.type(), ui::ET_GESTURE_SCROLL_BEGIN);
+
+  const float delta_x = event.details().scroll_x_hint();
+  const float delta_y = event.details().scroll_y_hint();
+  if (selection_dragging_state_ == SelectionDraggingState::kSelectedWord) {
     gfx::RenderText* render_text = GetRenderText();
     gfx::SelectionModel start_sel =
         render_text->GetSelectionModelForSelectionStart();
@@ -2984,12 +3031,12 @@ void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
 
     gfx::LogicalCursorDirection drag_direction = gfx::CURSOR_FORWARD;
     if (std::fabs(delta_y) > std::fabs(delta_x)) {
-      // If the initial dragging motion is up/down, extend the
-      // selection backwards/forwards.
+      // If the initial dragging motion is up/down, extend the selection
+      // backwards/forwards.
       drag_direction = delta_y < 0 ? gfx::CURSOR_BACKWARD : gfx::CURSOR_FORWARD;
     } else {
-      // Otherwise, extend the selection in the direction of
-      // horizontal movement.
+      // Otherwise, extend the selection in the direction of horizontal
+      // movement.
       drag_direction = delta_x * (selection_end.x() - selection_start.x()) < 0
                            ? gfx::CURSOR_BACKWARD
                            : gfx::CURSOR_FORWARD;
@@ -3000,13 +3047,23 @@ void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
     gfx::Point extent =
         drag_direction == gfx::CURSOR_FORWARD ? selection_end : selection_start;
     SelectBetweenCoordinates(base, extent);
-    selection_dragging_offset_ = extent - event->location();
-  } else if (std::fabs(delta_x) >= std::fabs(delta_y)) {
-    // Use the scroll sequence for cursor placement if it begins in a
-    // horizontal direction and is not already being used for dragging
-    // the selection.
+
+    selection_dragging_offset_ = extent - event.location();
+    selection_dragging_state_ =
+        SelectionDraggingState::kDraggingSelectionExtent;
+    return true;
+  } else if (selection_dragging_state_ == SelectionDraggingState::kNone &&
+             std::fabs(delta_x) >= std::fabs(delta_y)) {
+    // Only start dragging the cursor if the gesture begins in a horizontal
+    // direction.
     selection_dragging_state_ = SelectionDraggingState::kDraggingCursor;
+    return true;
   }
+  return false;
+}
+
+void Textfield::StopSelectionDragging() {
+  selection_dragging_state_ = SelectionDraggingState::kNone;
 }
 
 BEGIN_METADATA(Textfield, View)
