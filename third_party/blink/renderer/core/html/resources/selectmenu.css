@@ -122,49 +122,16 @@ selectmenu::-internal-selectmenu-listbox {
 }
 
 @position-fallback -internal-selectmenu-listbox-default-fallbacks {
-  /* Below the anchor, left-aligned, no vertical scrolling */
+  /* Fallbacks without vertical scrolling */
   @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
+    inset-block-start: anchor(auto);
+    inset-inline-start: anchor(auto-same);
   }
-  /* Below the anchor, right-aligned, no vertical scrolling */
+  /* Fallbacks with vertical scrolling */
   @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-  }
-  /* Over the anchor, left-aligned, no vertical scrolling */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-  }
-  /* Over the anchor, right-aligned, no vertical scrolling */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-  }
-  /* Below the anchor, left-aligned, fill up the available vertical space */
-  @try {
-    inset-block-start: anchor(self-end);
+    inset-block-start: anchor(auto);
+    inset-inline-start: anchor(auto-same);
     block-size: -webkit-fill-available;
-    inset-inline-start: anchor(self-start);
-  }
-  /* Below the anchor, right-aligned, fill up the available vertical space */
-  @try {
-    inset-block-start: anchor(self-end);
-    block-size: -webkit-fill-available;
-    inset-inline-end: anchor(self-end);
-  }
-  /* Over the anchor, left-aligned, fill up the available vertical space */
-  @try {
-    inset-block-end: anchor(self-start);
-    block-size: -webkit-fill-available;
-    inset-inline-start: anchor(self-start);
-  }
-  /* Over the anchor, right-aligned, fill up the available vertical space */
-  @try {
-    inset-block-end: anchor(self-start);
-    block-size: -webkit-fill-available;
-    inset-inline-end: anchor(self-end);
   }
 }
 
