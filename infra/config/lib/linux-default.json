@@ -31,6 +31,7 @@
     "ChromiumOS ASAN Release": "Ubuntu-22.04",
     "Comparison Android (reclient)": "Ubuntu-22.04",
     "Comparison Android (reclient) (reproxy cache)": "Ubuntu-22.04",
+    "Comparison Android (reclient)(CQ)": "Ubuntu-22.04",
     "Comparison Linux (reclient)": "Ubuntu-22.04",
     "Comparison Linux (reclient)(CQ)": "Ubuntu-22.04",
     "Comparison Simple Chrome (reclient)": "Ubuntu-22.04",
