@@ -5,7 +5,7 @@
 // clang-format off
 import {COLORS_CSS_SELECTOR, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // <if expr="chromeos_ash">
-import {addColorChangeListener, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {COLOR_PROVIDER_CHANGED} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // </if>
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
@@ -112,33 +112,19 @@ suite('ColorChangeListenerTest', () => {
   });
 
   // <if expr="chromeos_ash">
-  test('RegistersColorChangeListener', async () => {
+  test('AddAndRemoveColorProviderChangedListener', async () => {
     let listenerCalledTimes = 0;
-    addColorChangeListener(() => {
-      listenerCalledTimes++;
-    });
+    const listener = () => listenerCalledTimes++;
+    updater.eventTarget.addEventListener(COLOR_PROVIDER_CHANGED, listener);
 
     // Emulate a color change event from the mojo pipe.
     await updater.onColorProviderChanged();
-
     assertEquals(listenerCalledTimes, 1);
-  });
 
-  test('RemovesColorChangeListener', async () => {
-    let listenerCalledTimes = 0;
-    const listener = () => {
-      listenerCalledTimes++;
-    };
-    addColorChangeListener(listener);
+    updater.eventTarget.removeEventListener(COLOR_PROVIDER_CHANGED, listener);
 
     // Emulate a color change event from the mojo pipe.
     await updater.onColorProviderChanged();
-
-    removeColorChangeListener(listener);
-
-    // Emulate a color change event from the mojo pipe.
-    await updater.onColorProviderChanged();
-
     assertEquals(listenerCalledTimes, 1);
   });
   // </if>

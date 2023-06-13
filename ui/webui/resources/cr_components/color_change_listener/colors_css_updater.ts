@@ -20,8 +20,8 @@ export const COLORS_CSS_SELECTOR: string = 'link[href*=\'//theme/colors.css\']';
 let documentInstance: ColorChangeUpdater|null = null;
 
 // <if expr="chromeos_ash">
-const COLOR_PROVIDER_CHANGED: string = 'color-provider-changed';
-type ColorChangeListener = () => void;
+// Event fired after updated colors have been fetched and applied.
+export const COLOR_PROVIDER_CHANGED: string = 'color-provider-changed';
 // </if>
 
 export class ColorChangeUpdater {
@@ -114,18 +114,6 @@ export class ColorChangeUpdater {
         (documentInstance = new ColorChangeUpdater(document));
   }
 }
-
-// <if expr="chromeos_ash">
-export function addColorChangeListener(listener: ColorChangeListener) {
-  ColorChangeUpdater.forDocument().eventTarget.addEventListener(
-      COLOR_PROVIDER_CHANGED, listener);
-}
-
-export function removeColorChangeListener(listener: ColorChangeListener) {
-  ColorChangeUpdater.forDocument().eventTarget.removeEventListener(
-      COLOR_PROVIDER_CHANGED, listener);
-}
-// </if>
 
 /**
  * Starts listening for ColorProvider changes from the browser and updates the
