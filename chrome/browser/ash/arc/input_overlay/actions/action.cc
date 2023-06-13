@@ -448,12 +448,6 @@ bool Action::IsDefaultAction() const {
   return id_ <= kMaxDefaultActionID;
 }
 
-bool Action::IsOnLeftSide() {
-  auto* parent = action_view_->parent();
-  DCHECK(parent);
-  return action_view_->GetTouchCenterInWindow().x() < parent->width() / 2;
-}
-
 bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
                                      std::list<ui::TouchEvent>& touch_events) {
   if (touch_id_) {
@@ -579,17 +573,21 @@ void Action::UpdateTouchDownPositions() {
     const auto root_point = point.ToString();
     float scale = touch_injector_->window()->GetHost()->device_scale_factor();
     point.Scale(scale);
-    const auto root_point_pixel = point.ToString();
-    if (touch_injector_->rotation_transform()) {
-      point = touch_injector_->rotation_transform()->MapPoint(point);
-    }
-    touch_down_positions_.emplace_back(point);
 
     VLOG(1) << "Calculate touch position for location at index " << i
             << ": local position {" << calculated_point << "}, root location {"
-            << root_point << "}, root location in pixels {" << root_point_pixel
+            << root_point << "}, root location in pixels {" << point.ToString()
             << "}";
+
+    if (touch_injector_->rotation_transform()) {
+      point = touch_injector_->rotation_transform()->MapPoint(point);
+    }
+    touch_down_positions_.emplace_back(std::move(point));
   }
+
+  on_left_or_middle_side_ =
+      touch_down_positions_[0].x() <= content_bounds.width() / 2 ? true : false;
+
   DCHECK_EQ(touch_down_positions_.size(), original_positions_.size());
 }
 

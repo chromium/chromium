@@ -541,6 +541,10 @@ InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
   return type;
 }
 
+void DisplayOverlayController::AddNewAction(ActionType action_type) {
+  touch_injector_->AddNewAction(action_type);
+}
+
 int DisplayOverlayController::GetTouchInjectorActionsSize() {
   return touch_injector_->actions().size();
 }

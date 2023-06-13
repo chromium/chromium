@@ -154,7 +154,7 @@ void ButtonOptionsMenu::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetBorder(views::CreateEmptyBorder(
-      action_->IsOnLeftSide()
+      action_->on_left_or_middle_side()
           ? gfx::Insets::TLBR(16, 16 + kTriangleHeight, 16, 16)
           : gfx::Insets::TLBR(16, 16, 16, 16 + kTriangleHeight)));
 
@@ -343,7 +343,7 @@ void ButtonOptionsMenu::CalculatePosition() {
   int y = action_->GetUICenterPosition().y();
   auto parent_size = controller_->GetOverlayWidgetContentsView()->size();
 
-  if (action_->IsOnLeftSide()) {
+  if (action_->on_left_or_middle_side()) {
     x += action_view->width() + kMenuActionGap;
   } else {
     x -= width() + kMenuActionGap;
@@ -393,7 +393,7 @@ void ButtonOptionsMenu::OnPaintBackground(gfx::Canvas* canvas) {
   ui::ColorProvider* color_provider = GetColorProvider();
   flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysBaseElevated));
   int height = GetHeightForWidth(kMenuWidth);
-  bool draw_triangle_on_left = action_->IsOnLeftSide();
+  bool draw_triangle_on_left = action_->on_left_or_middle_side();
   int action_offset = CalculateActionOffset(height);
   canvas->DrawPath(BackgroundPath(height, draw_triangle_on_left, action_offset),
                    flags);

@@ -70,15 +70,23 @@ void EditingList::Init() {
 
   AddHeader(main_container);
 
+  scroll_content_ =
+      main_container->AddChildView(std::make_unique<views::View>());
+  scroll_content_
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          /*inside_border_insets=*/gfx::Insets(),
+          /*between_child_spacing=*/8))
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+
   // Add contents.
   if (HasControls()) {
-    AddControlListContent(main_container);
+    AddControlListContent();
   } else {
-    AddZeroStateContent(main_container);
+    AddZeroStateContent();
   }
 
   SizeToPreferredSize();
-  InvalidateLayout();
 }
 
 bool EditingList::HasControls() const {
@@ -119,9 +127,11 @@ void EditingList::AddHeader(views::View* container) {
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
 
-void EditingList::AddZeroStateContent(views::View* container) {
+void EditingList::AddZeroStateContent() {
+  DCHECK(scroll_content_);
+
   auto* content_container =
-      container->AddChildView(std::make_unique<ash::RoundedContainer>());
+      scroll_content_->AddChildView(std::make_unique<ash::RoundedContainer>());
   content_container->SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
   content_container->SetBorderInsets(gfx::Insets::VH(48, 32));
@@ -147,7 +157,7 @@ void EditingList::AddZeroStateContent(views::View* container) {
       u"Your button will show up here.", cros_tokens::kCrosSysSecondary));
 }
 
-void EditingList::AddControlListContent(views::View* container) {
+void EditingList::AddControlListContent() {
   // Add list content as:
   // --------------------------
   // | ---------------------- |
@@ -159,14 +169,8 @@ void EditingList::AddControlListContent(views::View* container) {
   // | ......                 |
   // --------------------------
   // TODO(b/270969479): Wrap |scroll_content| in a scroll view.
-  scroll_content_ = container->AddChildView(std::make_unique<views::View>());
-  scroll_content_
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          /*inside_border_insets=*/gfx::Insets(),
-          /*between_child_spacing=*/8))
-      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   DCHECK(controller_);
+  DCHECK(scroll_content_);
   for (const auto& action : controller_->touch_injector()->actions()) {
     scroll_content_->AddChildView(
         std::make_unique<ActionViewListItem>(controller_, action.get()));
@@ -174,8 +178,7 @@ void EditingList::AddControlListContent(views::View* container) {
 }
 
 void EditingList::OnAddButtonPressed() {
-  // TODO(b/270969479): Implement the function for the button.
-  NOTIMPLEMENTED();
+  controller_->AddNewAction();
 }
 
 void EditingList::OnDoneButtonPressed() {
@@ -188,9 +191,18 @@ gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
 }
 
-void EditingList::OnActionAdded(const Action& action) {
-  NOTIMPLEMENTED();
+void EditingList::OnActionAdded(Action& action) {
+  DCHECK(scroll_content_);
+  if (controller_->GetTouchInjectorActionsSize() == 1u) {
+    // Clear the zero-state.
+    scroll_content_->RemoveAllChildViews();
+  }
+  scroll_content_->AddChildView(
+      std::make_unique<ActionViewListItem>(controller_, &action));
+
+  SizeToPreferredSize();
 }
+
 void EditingList::OnActionRemoved(const Action& action) {
   NOTIMPLEMENTED();
 }

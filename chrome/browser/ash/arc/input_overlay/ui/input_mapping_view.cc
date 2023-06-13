@@ -136,10 +136,14 @@ void InputMappingView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void InputMappingView::OnActionAdded(const Action& action) {
+void InputMappingView::OnActionAdded(Action& action) {
   // No add function for pre-beta version.
   DCHECK(IsBeta());
-  NOTIMPLEMENTED();
+
+  auto view = action.CreateView(controller_);
+  if (view) {
+    AddChildView(std::move(view))->SetDisplayMode(current_display_mode_);
+  }
 }
 
 void InputMappingView::OnActionRemoved(const Action& action) {

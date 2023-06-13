@@ -239,7 +239,7 @@ class TouchInjector : public ui::EventRewriter {
   std::unique_ptr<Action> CreateRawAction(ActionType action_type);
 
   // For observers.
-  void NotifyActionAdded(const Action& action);
+  void NotifyActionAdded(Action& action);
   void NotifyActionRemoved(const Action& action);
   void NotifyActionTypeChanged(const Action& action, const Action& new_action);
   void NotifyActionUpdated(const Action& action);

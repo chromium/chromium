@@ -72,6 +72,9 @@ class DisplayOverlayController : public ui::EventHandler,
   // Get window state type.
   InputOverlayWindowStateType GetWindowStateType() const;
 
+  // For editor.
+  void AddNewAction(ActionType action_type = ActionType::TAP);
+
   int GetTouchInjectorActionsSize();
 
   // For menu entry hover state:

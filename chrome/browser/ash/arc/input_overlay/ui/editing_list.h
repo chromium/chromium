@@ -33,6 +33,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   ~EditingList() override;
 
  private:
+  friend class EditingListTest;
   friend class EditLabelTest;
 
   void Init();
@@ -40,8 +41,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // Add UI components to |container| as children.
   void AddHeader(views::View* container);
-  void AddZeroStateContent(views::View* container);
-  void AddControlListContent(views::View* container);
+  void AddZeroStateContent();
+  void AddControlListContent();
 
   // Functions related to buttons.
   void OnAddButtonPressed();
@@ -51,7 +52,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   gfx::Size CalculatePreferredSize() const override;
 
   // TouchInjectorObserver:
-  void OnActionAdded(const Action& action) override;
+  void OnActionAdded(Action& action) override;
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(const Action& action,
                            const Action& new_action) override;

@@ -42,7 +42,7 @@ class InputMappingView : public views::View, public TouchInjectorObserver {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // TouchInjectorObserver:
-  void OnActionAdded(const Action& action) override;
+  void OnActionAdded(Action& action) override;
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(const Action& action,
                            const Action& new_action) override;

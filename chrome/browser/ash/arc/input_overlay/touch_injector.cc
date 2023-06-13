@@ -858,7 +858,7 @@ std::unique_ptr<Action> TouchInjector::CreateRawAction(ActionType action_type) {
   return action;
 }
 
-void TouchInjector::NotifyActionAdded(const Action& action) {
+void TouchInjector::NotifyActionAdded(Action& action) {
   for (auto& observer : observers_) {
     observer.OnActionAdded(action);
   }
@@ -888,12 +888,15 @@ int TouchInjector::GetNextActionID() {
 }
 
 void TouchInjector::AddNewAction(ActionType action_type) {
+  DCHECK(IsBeta());
   auto action = CreateRawAction(action_type);
   if (!action) {
     return;
   }
-
   action->InitFromEditor();
+
+  // Apply the change right away for beta.
+  NotifyActionAdded(*actions_.emplace_back(std::move(action)));
 }
 
 void TouchInjector::RemoveAction(Action* action) {

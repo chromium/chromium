@@ -150,8 +150,6 @@ class Action {
   ActionView* action_view() const { return action_view_; }
   void set_action_view(ActionView* action_view) { action_view_ = action_view; }
 
-  bool IsOnLeftSide();
-
  protected:
   // |touch_injector| must be non-NULL and own this Action.
   explicit Action(TouchInjector* touch_injector);
