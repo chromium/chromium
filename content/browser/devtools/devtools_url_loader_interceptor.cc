@@ -1463,8 +1463,7 @@ void InterceptionJob::NotifyClient(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!waiting_for_resolution_);
   FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
-                              base::UnsafeDanglingUntriaged(this),
-                              std::move(request_info)));
+                              base::Unretained(this), std::move(request_info)));
 }
 
 void InterceptionJob::NotifyClientWithCookies(
