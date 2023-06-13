@@ -26,6 +26,7 @@
     "Cast Linux": "Ubuntu-22.04",
     "Cast Linux ARM64": "Ubuntu-22.04",
     "Cast Linux Debug": "Ubuntu-22.04",
+    "Centipede Upload Linux ASan": "Ubuntu-22.04",
     "ChromeOS FYI Release (amd64-generic)": "Ubuntu-22.04",
     "ChromeOS FYI Release (kevin)": "Ubuntu-22.04",
     "ChromeOS FYI Release Skylab (kevin)": "Ubuntu-22.04",
