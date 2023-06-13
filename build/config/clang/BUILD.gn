@@ -83,6 +83,12 @@ config("find_bad_constructs") {
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
         "raw-ptr-exclude-path=ui/views/controls/native/native_view_host_mac_unittest.mm",
+
+        # TODO(mikt): Remove this once crbug.com/1449812 is resolved.
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "raw-ptr-exclude-path=um/winnt.h",
       ]
     }
   }
