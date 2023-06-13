@@ -30,7 +30,7 @@ void UnloadNativeLibrary(NativeLibrary library) {
 }
 
 void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                          StringPiece name) {
+                                          const char* name) {
   NOTIMPLEMENTED();
   return nullptr;
 }

@@ -113,7 +113,7 @@ BASE_EXPORT void UnloadNativeLibrary(NativeLibrary library);
 
 // Gets a function pointer from a native library.
 BASE_EXPORT void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                                      StringPiece name);
+                                                      const char* name);
 
 // Returns the full platform-specific name for a native library. |name| must be
 // ASCII. This is also the default name for the output of a gn |shared_library|
