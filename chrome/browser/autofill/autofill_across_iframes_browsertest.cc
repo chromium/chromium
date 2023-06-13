@@ -679,8 +679,14 @@ class AutofillAcrossIframesTest_NestedAndLargeForm
 };
 
 // Tests that a large and deeply nested form is extracted and filled correctly.
+// The test makes heavy use of abbreviations to make it easier to spot the
+// pattern in the form.
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
                        FillAllFieldsOnTriggeredOrigin) {
+  // The `n` in `n.html` is the height of the frame sub-tree, i.e., a frame that
+  // loads `1.html` is a leaf frame, `2.html` has child frames but no
+  // grandchildren, and so on.
+  // The origins are picked arbitrarily.
   SetUrlContent("/", MakeCss(3) +
                          R"(<iframe src="$4/3.html"></iframe>
                             <iframe src="$3/3.html"></iframe>
@@ -698,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
                                R"(<form>
                                   <input autocomplete=cc-number>
                                   <input>
-                                  <iframe src="$1/1.html"></iframe>
+                                  <iframe src="$5/1.html"></iframe>
                                   <input>
                                   <input autocomplete=cc-exp>
                                   </form>)");
@@ -730,54 +736,54 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     // clang-format off
     EXPECT_THAT(form->fields(),
                 ElementsAre(
-                    // $3/3.html
+                    // $4/3.html
                     m("d.com", name),
                     m("d.com", unspecified),
                       m("b.com", num),
                       m("b.com", unspecified),
-                        m("a.com", name),
-                        m("a.com", num),
-                        m("a.com", exp),
-                        m("a.com", cvc),
+                        m("e.com", name),
+                        m("e.com", num),
+                        m("e.com", exp),
+                        m("e.com", cvc),
                       m("b.com", unspecified),
                       m("b.com", exp),
                     m("d.com", unspecified),
                     m("d.com", cvc),
-                    // $4/3.html
+                    // $3/3.html
                     m("c.com", name),
                     m("c.com", unspecified),
                       m("b.com", num),
                       m("b.com", unspecified),
-                        m("a.com", name),
-                        m("a.com", num),
-                        m("a.com", exp),
-                        m("a.com", cvc),
+                        m("e.com", name),
+                        m("e.com", num),
+                        m("e.com", exp),
+                        m("e.com", cvc),
                       m("b.com", unspecified),
                       m("b.com", exp),
                     m("c.com", unspecified),
                     m("c.com", cvc),
-                    // $5/3.html
+                    // $2/3.html
                     m("b.com", name),
                     m("b.com", unspecified),
                       m("b.com", num),
                       m("b.com", unspecified),
-                        m("a.com", name),
-                        m("a.com", num),
-                        m("a.com", exp),
-                        m("a.com", cvc),
+                        m("e.com", name),
+                        m("e.com", num),
+                        m("e.com", exp),
+                        m("e.com", cvc),
                       m("b.com", unspecified),
                       m("b.com", exp),
                     m("b.com", unspecified),
                     m("b.com", cvc),
-                    // $6/3.html
+                    // $1/3.html
                     m("a.com", name),
                     m("a.com", unspecified),
                       m("b.com", num),
                       m("b.com", unspecified),
-                        m("a.com", name),
-                        m("a.com", num),
-                        m("a.com", exp),
-                        m("a.com", cvc),
+                        m("e.com", name),
+                        m("e.com", num),
+                        m("e.com", exp),
+                        m("e.com", cvc),
                       m("b.com", unspecified),
                       m("b.com", exp),
                     m("a.com", unspecified),
@@ -786,22 +792,24 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     // clang-format on
   }
   const FormData& form_data = form->ToFormData();
-  ASSERT_EQ("a.com", form_data.fields[4].origin.host());
+  ASSERT_EQ("e.com", form_data.fields[4].origin.host());
   ASSERT_EQ("cc-name", form_data.fields[4].autocomplete_attribute);
   FillCard(main_frame(), form_data, form_data.fields[4]);
   EXPECT_TRUE(main_autofill_manager()->WaitForAutofill(5));
   {
-    const auto* name = kNameFull;
-    const auto* num = kNumber;
-    const auto* exp = kExp;
-    const auto* cvc = kCvc;
+    // `rat` represents a value that is not filled only due to rationalization.
+    constexpr const char* rat = "";
+    constexpr const char* name = kNameFull;
+    constexpr const char* num = kNumber;
+    constexpr const char* exp = kExp;
+    constexpr const char* cvc = kCvc;
     std::vector<std::string> values = AllFieldValues(web_contents(), form_data);
     EXPECT_THAT(
         values,
         ElementsAre("", "", "", "", name, num, exp, cvc, "", "", "", "",  //
                     "", "", "", "", name, num, exp, cvc, "", "", "", "",  //
                     "", "", "", "", name, num, exp, cvc, "", "", "", "",  //
-                    name, "", "", "", name, num, exp, cvc, "", "", "", cvc));
+                    name, "", "", "", name, num, exp, cvc, "", "", "", rat));
   }
 }
 

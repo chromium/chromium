@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -45,7 +46,8 @@ class FormStructureRationalizer {
 
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
-  void RationalizeFieldTypePredictions(LogManager* log_manager);
+  void RationalizeFieldTypePredictions(const url::Origin& main_origin,
+                                       LogManager* log_manager);
 
   // Ensures that only a single phone number (which can be split across multiple
   // fields) is autofilled in the `section`. If the section contains multiple
@@ -66,6 +68,12 @@ class FormStructureRationalizer {
   // card fields in an otherwise non-credit-card related form is unlikely to be
   // correct, the function will override that prediction.
   void RationalizeCreditCardFieldPredictions(LogManager* log_manager);
+
+  // Eradicates the type of credit card number and CVC fields on the main
+  // frame's origin if there are also fields of this type in a child frame.
+  // See crbug.com/1450502 for details.
+  void RationalizeMultiOriginCreditCardFields(const url::Origin& main_origin,
+                                              LogManager* log_manager);
 
   // Sets the offsets of adjacent credit card number fields. For example:
   // four adjacent card fields with `FormFieldData::max_length == 4` should

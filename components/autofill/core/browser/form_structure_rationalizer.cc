@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
@@ -329,6 +330,43 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
         break;
     }
   }
+}
+
+void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
+    const url::Origin& main_origin,
+    LogManager* log_manager) {
+  auto is_in_subframe = [&main_origin](const FormFieldData& field) {
+    return field.origin != main_origin;
+  };
+  auto rationalize = [&](ServerFieldType relevant_type) {
+    auto is_relevant = [relevant_type](const AutofillField& field) {
+      return field.ComputedType().GetStorableType() == relevant_type;
+    };
+    auto is_relevant_in_subframe = [&](const auto& field) {
+      return is_relevant(*field) && is_in_subframe(*field);
+    };
+    // If a relevant field exists in a sub-frame, we can ignore the
+    // corresponding field in the main frame as it is probably a
+    // misclassification.
+    if (base::ranges::any_of(*fields_, is_relevant_in_subframe)) {
+      for (auto& field : *fields_) {
+        if (is_relevant(*field) && !is_in_subframe(*field)) {
+          field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+          LOG_AF(log_manager)
+              << LoggingScope::kRationalization << LogMessage::kRationalization
+              << "Multi-origin Credit Card Rationalization: Converting type of "
+              << field->global_id() << " from "
+              << AutofillType::ServerFieldTypeToString(relevant_type)
+              << " to UNKNOWN_TYPE";
+        }
+      }
+    }
+  };
+  // These fields do usually not occur on the main frame's origin due to
+  // PCI-DSS. By contrast, cardholder name and expiration dates do commonly
+  // appear in the main frame and in cross-origin iframes.
+  rationalize(CREDIT_CARD_NUMBER);
+  rationalize(CREDIT_CARD_VERIFICATION_CODE);
 }
 
 void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
@@ -810,8 +848,10 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
 }
 
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
+    const url::Origin& main_origin,
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
+  RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   if (base::FeatureList::IsEnabled(
           features::kAutofillSplitCreditCardNumbersCautiously)) {
     RationalizeCreditCardNumberOffsets(log_manager);

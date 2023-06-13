@@ -52,6 +52,7 @@ struct FieldTemplate {
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
   FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
+  absl::optional<url::Origin> subframe_origin;
   absl::optional<FormGlobalId> host_form;
 };
 
@@ -96,6 +97,8 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.max_length = field_template.max_length;
     field.parsed_autocomplete = field_template.parsed_autocomplete;
     field.role = field_template.role;
+    field.origin =
+        field_template.subframe_origin.value_or(form.main_frame_origin);
     field.host_frame =
         field_template.host_form.value_or(form.global_id()).frame_token;
     field.host_form_id =
@@ -690,6 +693,79 @@ TEST_F(FormStructureRationalizerTest,
               ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
                           ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
                           ADDRESS_HOME_STATE));
+}
+
+// Tests the rationalization that ignores certain types on the main origin. The
+// underlying assumption is that the field in the main frame misclassified
+// because such fields usually do not occur on the main frame's origin due to
+// PCI-DSS.
+class FormStructureRationalizerTestMultiOriginCreditCardFields
+    : public FormStructureRationalizerTest,
+      public ::testing::WithParamInterface<ServerFieldType> {
+ public:
+  ServerFieldType sensitive_type() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FormStructureRationalizerTest,
+    FormStructureRationalizerTestMultiOriginCreditCardFields,
+    ::testing::Values(CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE));
+
+// Tests that if a sensitive type appears in both the main and a cross-origin
+// iframe, the field in the main frame is rationalized to UNKNOWN_TYPE.
+TEST_P(FormStructureRationalizerTestMultiOriginCreditCardFields,
+       RationalizeIfSensitiveFieldsOnMainAndCrossOrigin) {
+  EXPECT_THAT(
+      *BuildFormStructure(
+          CreateFormAndServerClassification({
+              {.field_type = CREDIT_CARD_NAME_FULL},
+              {.field_type = sensitive_type()},
+              {.field_type = sensitive_type(),
+               .subframe_origin = url::Origin::Create(GURL("https://psp.com"))},
+              {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+          }),
+          /*run_heuristics=*/false),
+      AreFields(HasType(CREDIT_CARD_NAME_FULL),
+                HasType(UNKNOWN_TYPE),  // Because there are sub-frames.
+                HasType(sensitive_type()),
+                HasType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)));
+}
+
+// Tests that if there is no sensitive type in a cross-origin iframe, the
+// multi-origin rationalization does *not* apply, i.e., all fields keep their
+// types.
+TEST_P(FormStructureRationalizerTestMultiOriginCreditCardFields,
+       DoNotRationalizeIfSensitiveFieldsOnlyOnMainOrigin) {
+  EXPECT_THAT(
+      *BuildFormStructure(CreateFormAndServerClassification({
+                              {.field_type = CREDIT_CARD_NAME_FULL},
+                              {.field_type = sensitive_type()},
+                              {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                          }),
+                          /*run_heuristics=*/false),
+      AreFields(HasType(CREDIT_CARD_NAME_FULL), HasType(sensitive_type()),
+                HasType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)));
+}
+
+// Tests that if there is no sensitive field in the main frame, the multi-origin
+// rationalization does *not* apply, i.e., all fields keep their types.
+TEST_P(FormStructureRationalizerTestMultiOriginCreditCardFields,
+       DoNotRationalizeIfSensitiveFieldsOnlyOnCrossOrigins) {
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = sensitive_type(),
+                       .subframe_origin =
+                           url::Origin::Create(GURL("https://psp1.com"))},
+                      {.field_type = sensitive_type(),
+                       .subframe_origin =
+                           url::Origin::Create(GURL("https://psp2.com"))},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasType(CREDIT_CARD_NAME_FULL),
+                        HasType(sensitive_type()), HasType(sensitive_type()),
+                        HasType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)));
 }
 
 // Tests that the offset of a cc-number field is not affected by non-adjacent
