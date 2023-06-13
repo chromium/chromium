@@ -46,9 +46,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.stubbing.OngoingStubbing;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.AndroidFontLookup;
 import org.chromium.blink.mojom.AndroidFontLookup.FetchAllFontFiles_Response;
 import org.chromium.blink.mojom.AndroidFontLookup.GetUniqueNameLookupTable_Response;
@@ -153,7 +153,10 @@ public final class AndroidFontLookupImplTest {
         whenFetchFontsWith(FONT_QUERY_2).thenReturn(result);
         whenFetchFontsWith(FONT_QUERY_3).thenReturn(result);
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM);
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
@@ -164,10 +167,6 @@ public final class AndroidFontLookupImplTest {
         assertNotNull(response.get(FULL_FONT_NAME_1));
         assertNotNull(response.get(FULL_FONT_NAME_2));
         assertNotNull(response.get(FULL_FONT_NAME_3));
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM));
     }
 
     @SmallTest
@@ -182,7 +181,10 @@ public final class AndroidFontLookupImplTest {
                 .thenReturn(new FontFamilyResult(
                         FontFamilyResult.STATUS_UNEXPECTED_DATA_PROVIDED, null));
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM);
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
@@ -192,10 +194,6 @@ public final class AndroidFontLookupImplTest {
         assertEquals(2, response.size());
         assertNotNull(response.get(FULL_FONT_NAME_1));
         assertNotNull(response.get(FULL_FONT_NAME_2));
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM));
 
         // Verify the font was removed from the lookup table.
         mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
@@ -210,7 +208,10 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup = new AndroidFontLookupImpl(
                 mMockContext, mMockFontsContractWrapper, ImmutableMap.of());
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM);
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
@@ -250,16 +251,15 @@ public final class AndroidFontLookupImplTest {
     @SmallTest
     @Test
     public void testMatchLocalFontByUniqueName_UnsupportedFontName() {
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
         mAndroidFontLookup.matchLocalFontByUniqueName("baz", mMatchLocalFontByUniqueNameCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(isNull());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     @SmallTest
@@ -269,17 +269,16 @@ public final class AndroidFontLookupImplTest {
                 new FontFamilyResult(FontFamilyResult.STATUS_UNEXPECTED_DATA_PROVIDED, null);
         whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
         mAndroidFontLookup.matchLocalFontByUniqueName(
                 FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(isNull());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     @SmallTest
@@ -288,17 +287,16 @@ public final class AndroidFontLookupImplTest {
         FontFamilyResult result = new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[0]);
         whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
         mAndroidFontLookup.matchLocalFontByUniqueName(
                 FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(isNull());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     @SmallTest
@@ -309,17 +307,16 @@ public final class AndroidFontLookupImplTest {
                 new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
         whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
         mAndroidFontLookup.matchLocalFontByUniqueName(
                 FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(isNull());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     @SmallTest
@@ -327,17 +324,16 @@ public final class AndroidFontLookupImplTest {
     public void testMatchLocalFontByUniqueName_Throws() throws NameNotFoundException {
         whenFetchFontsWith(FONT_QUERY_1).thenThrow(new NameNotFoundException());
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
         mAndroidFontLookup.matchLocalFontByUniqueName(
                 FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(isNull());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     @SmallTest
@@ -346,26 +342,30 @@ public final class AndroidFontLookupImplTest {
         // Request font and fail.
         whenFetchFontsWith(FONT_QUERY_1).thenThrow(new NameNotFoundException());
 
-        mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
-
+        {
+            HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                    AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
+            mAndroidFontLookup.matchLocalFontByUniqueName(
+                    FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+            watcher.pollInstrumentationThreadUntilSatisfied();
+        }
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(isNull());
 
         // Second request should early out with FAILED_AVOID_RETRY.
-        mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
-
+        {
+            HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                    AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
+            mAndroidFontLookup.matchLocalFontByUniqueName(
+                    FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+            watcher.pollInstrumentationThreadUntilSatisfied();
+        }
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(2))
                 .call(isNull());
-
-        assertEquals(2,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     @SmallTest
@@ -376,17 +376,16 @@ public final class AndroidFontLookupImplTest {
                 new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
         whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
 
+        HistogramWatcher watcher = HistogramWatcher.newSingleRecordWatcher(
+                AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM);
         mAndroidFontLookup.matchLocalFontByUniqueName(
                 FULL_FONT_NAME_1, mMatchLocalFontByUniqueNameCallback);
+        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mMatchLocalFontByUniqueNameCallback,
                 timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .call(notNull());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AndroidFontLookupImpl.MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM));
     }
 
     private OngoingStubbing<FontFamilyResult> whenFetchFontsWith(String query)
