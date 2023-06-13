@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "cbor_parser.mojom",
     "data_decoder_service.mojom",
     "gzipper.mojom",
     "image_decoder.mojom",
