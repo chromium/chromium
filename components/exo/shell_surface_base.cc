@@ -1095,9 +1095,6 @@ void ShellSurfaceBase::OnSurfaceDestroying(Surface* surface) {
 
   overlay_widget_.reset();
 
-  if (widget_)
-    SetShellRootSurface(widget_->GetNativeWindow(), nullptr);
-
   // Hide widget before surface is destroyed. This allows hide animations to
   // run using the current surface contents.
   if (widget_) {
