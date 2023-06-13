@@ -20,6 +20,10 @@ COMPONENT_EXPORT(AGGREGATION_SERVICE)
 extern const base::FeatureParam<std::string>
     kAggregationServiceCoordinatorAwsCloud;
 
+COMPONENT_EXPORT(AGGREGATION_SERVICE)
+extern const base::FeatureParam<std::string>
+    kAggregationServiceCoordinatorGcpCloud;
+
 }  // namespace aggregation_service
 
 #endif  // COMPONENTS_AGGREGATION_SERVICE_FEATURES_H_

@@ -20,4 +20,8 @@ const base::FeatureParam<std::string> kAggregationServiceCoordinatorAwsCloud{
     &kAggregationServiceMultipleCloudProviders, "aws_cloud",
     kDefaultAggregationCoordinatorAwsCloud};
 
+const base::FeatureParam<std::string> kAggregationServiceCoordinatorGcpCloud{
+    &kAggregationServiceMultipleCloudProviders, "gcp_cloud",
+    kDefaultAggregationCoordinatorGcpCloud};
+
 }  // namespace aggregation_service

@@ -62,6 +62,10 @@ TEST(AggregationCoordinatorUtilsTest, IsAggregationCoordinatorOriginAllowed) {
           .expected = true,
       },
       {
+          .origin = url::Origin::Create(GURL("https://gcp.example.test")),
+          .expected = true,
+      },
+      {
           .origin = url::Origin::Create(GURL("https://a.test")),
           .expected = false,
       },
@@ -70,7 +74,8 @@ TEST(AggregationCoordinatorUtilsTest, IsAggregationCoordinatorOriginAllowed) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"}});
+      {{"aws_cloud", "https://aws.example.test"},
+       {"gcp_cloud", "https://gcp.example.test"}});
 
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(IsAggregationCoordinatorOriginAllowed(test_case.origin),

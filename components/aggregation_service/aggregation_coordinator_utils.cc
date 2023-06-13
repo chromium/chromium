@@ -21,9 +21,10 @@ namespace {
 // An identifier to specify the deployment option for the aggregation service.
 enum AggregationCoordinator {
   kAwsCloud,
+  kGcpCloud,
 
   kMinValue = kAwsCloud,
-  kMaxValue = kAwsCloud,
+  kMaxValue = kGcpCloud,
   kDefault = kAwsCloud,
 };
 
@@ -40,14 +41,21 @@ url::Origin GetAggregationCoordinatorOriginFromString(
 
 url::Origin GetAggregationCoordinatorOrigin(
     AggregationCoordinator aggregation_coordinator) {
+  url::Origin origin;
   switch (aggregation_coordinator) {
     case AggregationCoordinator::kAwsCloud:
-      url::Origin origin = GetAggregationCoordinatorOriginFromString(
+      origin = GetAggregationCoordinatorOriginFromString(
           kAggregationServiceCoordinatorAwsCloud.Get(),
           kDefaultAggregationCoordinatorAwsCloud);
-      CHECK(attribution_reporting::IsOriginSuitable(origin));
-      return origin;
+      break;
+    case AggregationCoordinator::kGcpCloud:
+      origin = GetAggregationCoordinatorOriginFromString(
+          kAggregationServiceCoordinatorGcpCloud.Get(),
+          kDefaultAggregationCoordinatorGcpCloud);
+      break;
   }
+  CHECK(attribution_reporting::IsOriginSuitable(origin));
+  return origin;
 }
 
 }  // namespace

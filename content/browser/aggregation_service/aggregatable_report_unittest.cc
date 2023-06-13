@@ -874,7 +874,8 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"}});
+      {{"aws_cloud", "https://aws.example.test"},
+       {"gcp_cloud", "https://gcp.example.test"}});
 
   const struct {
     absl::optional<url::Origin> aggregation_coordinator_origin;
@@ -888,6 +889,11 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
       {
           url::Origin::Create(GURL("https://aws.example.test")),
           {GURL("https://aws.example.test/.well-known/aggregation-service/"
+                "public-keys")},
+      },
+      {
+          url::Origin::Create(GURL("https://gcp.example.test")),
+          {GURL("https://gcp.example.test/.well-known/aggregation-service/"
                 "public-keys")},
       },
       {
