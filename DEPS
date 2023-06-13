@@ -2015,7 +2015,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'k7xonW_WNZwSrxN7tuRU321LUBL--Y0vy6PIthiYv88C',
+        'version': 'AGaYoE5HgGxUdavPZXZ_WmzKlTj-huAqcrS67fSFdYwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
