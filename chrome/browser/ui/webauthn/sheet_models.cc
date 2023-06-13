@@ -1331,11 +1331,11 @@ bool AuthenticatorConnectedSheetModel::IsActivityIndicatorVisible() const {
 }
 
 std::u16string AuthenticatorConnectedSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_CONNECTED_DESCRIPTION);
 }
 
 std::u16string AuthenticatorConnectedSheetModel::GetStepDescription() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_CONNECTED_DESCRIPTION);
+  return u"";
 }
 
 // AuthenticatorCableErrorSheetModel ------------------------------------------

@@ -14129,7 +14129,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLEV2_CONNECTING_TITLE" desc="The title of a dialog that is shown when the computer is connecting to a phone or tablet.">
         Connecting to your device
       </message>
-      <message name="IDS_WEBAUTHN_CABLEV2_CONNECTED_DESCRIPTION" desc="The second line of a dialog that shows once the computer has successfully connected to the user's phone or tablet. That phone/tablet will be showing instructions for what to do next and the user should follow those instuctions.">
+      <message name="IDS_WEBAUTHN_CABLEV2_CONNECTED_DESCRIPTION" desc="The title of a dialog that shows once the computer has successfully connected to the user's phone or tablet. That phone/tablet will be showing instructions for what to do next and the user should follow those instuctions.">
         Follow the steps on your device
       </message>
       <message name="IDS_WEBAUTHN_CABLEV2_ERROR_DESCRIPTION" desc="The second line of a dialog that shows once the computer fails to connect to the user's phone or tablet.">
