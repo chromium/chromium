@@ -539,11 +539,14 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
 
   // Unblur when animation is completed (or right away if there was no
   // delayed animation) unless it's canceled, in which case, we should keep
-  // the blur. Also resume the activation frame state. No need to unblur the
-  // wallpaper if the feature `kJellyroll` is enabled, since it's not blurred
-  // on overview started.
+  // the blur. No need to unblur the wallpaper if the feature `kJellyroll` is
+  // enabled, since it's not blurred on overview started.
   if (!canceled && !chromeos::features::IsJellyrollEnabled()) {
     overview_wallpaper_controller_->Unblur();
+  }
+
+  // Resume the activation frame state.
+  if (!canceled) {
     paint_as_active_lock_.reset();
   }
 
