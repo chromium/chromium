@@ -71,7 +71,10 @@ struct Impression {
 };
 
 // Returns string representation of promos_manager::Promo `promo`.
-base::StringPiece NameForPromo(Promo promo);
+std::string NameForPromo(Promo promo);
+
+// Returns a string representation of the short name for the provided `promo`.
+base::StringPiece ShortNameForPromo(Promo promo);
 
 // Returns promos_manager::Promo for string `promo`.
 absl::optional<Promo> PromoForName(base::StringPiece promo);

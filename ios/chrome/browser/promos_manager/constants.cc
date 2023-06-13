@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/promos_manager/constants.h"
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace promos_manager {
@@ -42,22 +43,26 @@ absl::optional<Promo> PromoForName(base::StringPiece promo) {
   return absl::nullopt;
 }
 
-base::StringPiece NameForPromo(Promo promo) {
+std::string NameForPromo(Promo promo) {
+  return base::StrCat({"promos_manager::Promo::", ShortNameForPromo(promo)});
+}
+
+base::StringPiece ShortNameForPromo(Promo promo) {
   switch (promo) {
     case promos_manager::Promo::Test:
-      return "promos_manager::Promo::Test";
+      return "Test";
     case promos_manager::Promo::DefaultBrowser:
-      return "promos_manager::Promo::DefaultBrowser";
+      return "DefaultBrowser";
     case promos_manager::Promo::AppStoreRating:
-      return "promos_manager::Promo::AppStoreRating";
+      return "AppStoreRating";
     case promos_manager::Promo::CredentialProviderExtension:
-      return "promos_manager::Promo::CredentialProviderExtension";
+      return "CredentialProviderExtension";
     case promos_manager::Promo::PostRestoreSignInFullscreen:
-      return "promos_manager::Promo::PostRestoreSignInFullscreen";
+      return "PostRestoreSignInFullscreen";
     case promos_manager::Promo::PostRestoreSignInAlert:
-      return "promos_manager::Promo::PostRestoreSignInAlert";
+      return "PostRestoreSignInAlert";
     case promos_manager::Promo::WhatsNew:
-      return "promos_manager::Promo::WhatsNew";
+      return "WhatsNew";
   }
 }
 
