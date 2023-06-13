@@ -26,34 +26,31 @@ class BackForwardCacheDisablingFeatureTrackerTest : public testing::Test {
 };
 
 TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddAndRemove) {
-  SchedulingPolicy::Feature feature_socket =
-      SchedulingPolicy::Feature::kWebSocket;
-  SchedulingPolicy::Feature feature_webrtc = SchedulingPolicy::Feature::kWebRTC;
   const String& url = "https://a.com";
-  const String& function = "";
-  unsigned line_number = 1;
-  unsigned column_number = 1;
-
-  std::unique_ptr<SourceLocation> source_location_socket =
-      std::make_unique<SourceLocation>(url, function, line_number,
-                                       column_number, nullptr, 0);
-  std::unique_ptr<SourceLocation> source_location_webrtc =
-      std::make_unique<SourceLocation>(url, function, line_number,
-                                       column_number, nullptr, 0);
-  std::unique_ptr<SourceLocation> source_location_socket_second =
-      std::make_unique<SourceLocation>(url, function, line_number,
-                                       column_number, nullptr, 0);
-
+  const String& function = "foo";
+  const String& function_2 = "bar";
+  const unsigned line_number = 1;
+  const unsigned column_number = 1;
   FeatureAndJSLocationBlockingBFCache feature_and_js_location_socket =
-      FeatureAndJSLocationBlockingBFCache(feature_socket, url, function,
-                                          line_number, column_number);
+      FeatureAndJSLocationBlockingBFCache(SchedulingPolicy::Feature::kWebSocket,
+                                          url, function, line_number,
+                                          column_number);
+  FeatureAndJSLocationBlockingBFCache feature_and_js_location_socket_two =
+      FeatureAndJSLocationBlockingBFCache(SchedulingPolicy::Feature::kWebSocket,
+                                          url, function_2, line_number,
+                                          column_number);
   FeatureAndJSLocationBlockingBFCache feature_and_js_location_webrtc =
-      FeatureAndJSLocationBlockingBFCache(feature_webrtc, url, function,
-                                          line_number, column_number);
-
+      FeatureAndJSLocationBlockingBFCache(SchedulingPolicy::Feature::kWebRTC,
+                                          url, function, line_number,
+                                          column_number);
+  std::unique_ptr<SourceLocation> source_location =
+      std::make_unique<SourceLocation>(url, function, line_number,
+                                       column_number, nullptr, 0);
+  std::unique_ptr<SourceLocation> source_location_2 =
+      std::make_unique<SourceLocation>(url, function_2, line_number,
+                                       column_number, nullptr, 0);
   BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
                                                   nullptr);
-
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
@@ -61,75 +58,71 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddAndRemove) {
 
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle handle_socket =
       FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(
-          feature_socket, SchedulingPolicy(), source_location_socket->Clone(),
-          nullptr);
+          SchedulingPolicy::Feature::kWebSocket, SchedulingPolicy(),
+          source_location->Clone(), nullptr);
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle handle_webrtc =
       FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(
-          feature_webrtc, SchedulingPolicy(), source_location_webrtc->Clone(),
-          nullptr);
+          SchedulingPolicy::Feature::kWebRTC, SchedulingPolicy(),
+          source_location->Clone(), nullptr);
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       handle_socket_second =
           FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(
-              feature_socket, SchedulingPolicy(),
-              source_location_socket_second->Clone(), nullptr);
+              SchedulingPolicy::Feature::kWebSocket, SchedulingPolicy(),
+              source_location_2->Clone(), nullptr);
 
   BFCacheBlockingFeatureAndLocations& stored_feature_and_js_location =
       tracker.GetActiveNonStickyFeaturesTrackedForBackForwardCache();
 
   // Add kWebSocket.
-  tracker.AddNonStickyFeature(feature_socket, std::move(source_location_socket),
-                              &handle_socket);
-  EXPECT_NE(stored_feature_and_js_location.Find(feature_and_js_location_socket),
-            kNotFound);
+  tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebSocket,
+                              source_location->Clone(), &handle_socket);
+  EXPECT_TRUE(stored_feature_and_js_location.details_list.Contains(
+      feature_and_js_location_socket));
 
   // Add kWebRTC.
-  tracker.AddNonStickyFeature(feature_webrtc, std::move(source_location_webrtc),
-                              &handle_webrtc);
-  EXPECT_NE(stored_feature_and_js_location.Find(feature_and_js_location_webrtc),
-            kNotFound);
+  tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebRTC,
+                              source_location->Clone(), &handle_webrtc);
+  EXPECT_TRUE(stored_feature_and_js_location.details_list.Contains(
+      feature_and_js_location_webrtc));
 
-  // Add kWebSocket again.
-  tracker.AddNonStickyFeature(feature_socket,
-                              std::move(source_location_socket_second),
+  // Add kWebSocket again with different source location.
+  tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebSocket,
+                              source_location_2->Clone(),
                               &handle_socket_second);
-  EXPECT_NE(stored_feature_and_js_location.Find(feature_and_js_location_socket),
-            kNotFound);
+  EXPECT_TRUE(stored_feature_and_js_location.details_list.Contains(
+      feature_and_js_location_socket_two));
 
   // Remove kWebSocket.
   tracker.Remove(feature_and_js_location_socket);
-  EXPECT_TRUE(
-      stored_feature_and_js_location.Contains(feature_and_js_location_socket));
-  EXPECT_EQ(stored_feature_and_js_location.size(), 2u);
+  EXPECT_TRUE(stored_feature_and_js_location.details_list.Contains(
+      feature_and_js_location_socket_two));
+  EXPECT_EQ(stored_feature_and_js_location.details_list.size(), 2u);
 
   // Remove kWebRTC.
   tracker.Remove(feature_and_js_location_webrtc);
-  EXPECT_FALSE(
-      stored_feature_and_js_location.Contains(feature_and_js_location_webrtc));
-  EXPECT_EQ(stored_feature_and_js_location.size(), 1u);
+  EXPECT_FALSE(stored_feature_and_js_location.details_list.Contains(
+      feature_and_js_location_webrtc));
+  EXPECT_EQ(stored_feature_and_js_location.details_list.size(), 1u);
 
   // Remove kWebSocket again.
-  tracker.Remove(feature_and_js_location_socket);
-  EXPECT_FALSE(
-      stored_feature_and_js_location.Contains(feature_and_js_location_socket));
-  EXPECT_TRUE(stored_feature_and_js_location.empty());
+  tracker.Remove(feature_and_js_location_socket_two);
+  EXPECT_FALSE(stored_feature_and_js_location.details_list.Contains(
+      feature_and_js_location_socket_two));
+  EXPECT_TRUE(stored_feature_and_js_location.details_list.empty());
 }
 
 TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddStickyFeature) {
-  SchedulingPolicy::Feature feature =
-      SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache;
   const String& url = "https://a.com";
-  const String& function = "";
-  unsigned line_number = 1;
-  unsigned column_number = 1;
-
+  const String& function = "foo";
+  const unsigned line_number = 1;
+  const unsigned column_number = 1;
   std::unique_ptr<SourceLocation> source_location =
       std::make_unique<SourceLocation>(url, function, line_number,
                                        column_number, nullptr, 0);
-
-  FeatureAndJSLocationBlockingBFCache feature_and_js_location =
-      FeatureAndJSLocationBlockingBFCache(feature, url, function, line_number,
-                                          column_number);
-
+  FeatureAndJSLocationBlockingBFCache feature_and_js_location_socket =
+      FeatureAndJSLocationBlockingBFCache(
+          SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore, url,
+          function, line_number, column_number);
   BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
                                                   nullptr);
 
@@ -138,11 +131,101 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddStickyFeature) {
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
               0);
 
-  // Add kWebSocket.
-  tracker.AddStickyFeature(feature, std::move(source_location));
-  EXPECT_TRUE(
-      tracker.GetActiveStickyFeaturesTrackedForBackForwardCache().Contains(
-          feature_and_js_location));
+  // Add kMainResourceHasCacheControlNoStore.
+  tracker.AddStickyFeature(
+      SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
+      source_location->Clone());
+  EXPECT_TRUE(tracker.GetActiveStickyFeaturesTrackedForBackForwardCache()
+                  .details_list.Contains(feature_and_js_location_socket));
 }
+
+TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddDuplicateFeature) {
+  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
+                                                  nullptr);
+  const String& url = "https://a.com";
+  const String& function = "foo";
+  const String& function_two = "bar";
+  const unsigned line_number = 1;
+  const unsigned column_number = 1;
+  std::unique_ptr<SourceLocation> source_location =
+      std::make_unique<SourceLocation>(url, function, line_number,
+                                       column_number, nullptr, 0);
+  std::unique_ptr<SourceLocation> source_location_2 =
+      std::make_unique<SourceLocation>(url, function_two, line_number,
+                                       column_number, nullptr, 0);
+  FeatureAndJSLocationBlockingBFCache feature_and_js_location_socket =
+      FeatureAndJSLocationBlockingBFCache(SchedulingPolicy::Feature::kWebSocket,
+                                          url, function, line_number,
+                                          column_number);
+  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle handle_socket =
+      FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(
+          SchedulingPolicy::Feature::kWebSocket, SchedulingPolicy(),
+          source_location->Clone(), nullptr);
+  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
+      handle_socket_second =
+          FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(
+              SchedulingPolicy::Feature::kWebSocket, SchedulingPolicy(),
+              source_location_2->Clone(), nullptr);
+
+  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
+              testing::UnorderedElementsAre());
+  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
+              0);
+
+  // Add kWebSocket.
+  tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebSocket,
+                              source_location->Clone(), &handle_socket);
+  EXPECT_TRUE(tracker.GetActiveNonStickyFeaturesTrackedForBackForwardCache()
+                  .details_list.Contains(feature_and_js_location_socket));
+  EXPECT_EQ(tracker.GetActiveNonStickyFeaturesTrackedForBackForwardCache()
+                .details_list.size(),
+            1u);
+
+  // Try to add the same kWebSocket location, but it should not add a duplicate.
+  tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebSocket,
+                              source_location->Clone(), &handle_socket);
+  EXPECT_EQ(tracker.GetActiveNonStickyFeaturesTrackedForBackForwardCache()
+                .details_list.size(),
+            1u);
+
+  // Add kWebSocket but from a different location.
+  tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebSocket,
+                              source_location_2->Clone(),
+                              &handle_socket_second);
+  EXPECT_EQ(tracker.GetActiveNonStickyFeaturesTrackedForBackForwardCache()
+                .details_list.size(),
+            2u);
+}
+
+TEST_F(BackForwardCacheDisablingFeatureTrackerTest,
+       AddFeatureMoreThanTenTimes) {
+  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
+                                                  nullptr);
+  const String& url = "https://a.com";
+  const String& function = "foo";
+  const String& function_two = "bar";
+  const unsigned column_number = 1;
+
+  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
+              testing::UnorderedElementsAre());
+  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
+              0);
+
+  // Add kMainResourceHasCacheControlNoStore with different line numbers 20
+  // times.
+  for (int i = 0; i < 20; i++) {
+    std::unique_ptr<SourceLocation> source_location =
+        std::make_unique<SourceLocation>(url, function, i, column_number,
+                                         nullptr, 0);
+    tracker.AddStickyFeature(
+        SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
+        std::move(source_location));
+  }
+  // Make sure that only 10 details are added.
+  EXPECT_EQ(tracker.GetActiveStickyFeaturesTrackedForBackForwardCache()
+                .details_list.size(),
+            10u);
+}
+
 }  // namespace scheduler
 }  // namespace blink
