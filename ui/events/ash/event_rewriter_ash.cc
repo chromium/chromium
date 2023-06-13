@@ -907,7 +907,7 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   // Implement the Caps Lock modifier here, rather than in the
   // AcceleratorController, so that the event is visible to apps (see
   // crbug.com/775743).
-  if (key_event.type() == ET_KEY_RELEASED && state->key_code == VKEY_CAPITAL) {
+  if (key_event.type() == ET_KEY_PRESSED && state->key_code == VKEY_CAPITAL) {
     ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->CapsLockIsEnabled());
   }
   return exact_event;
