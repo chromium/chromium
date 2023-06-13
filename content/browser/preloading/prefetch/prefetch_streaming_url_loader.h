@@ -37,7 +37,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // how the redirect should be handled.
   using OnPrefetchRedirectCallback = base::RepeatingCallback<void(
       const net::RedirectInfo& redirect_info,
-      const network::mojom::URLResponseHead& response_head)>;
+      network::mojom::URLResponseHeadPtr response_head)>;
 
   PrefetchStreamingURLLoader(
       network::mojom::URLLoaderFactory* url_loader_factory,
@@ -63,7 +63,9 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   //   network context.
   // - |kFailedInvalidRedirect|, if the redirect should not be followed by
   //   |this|.
-  void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status);
+  void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status,
+                      const net::RedirectInfo& redirect_info,
+                      network::mojom::URLResponseHeadPtr redirect_head);
 
   // Registers a callback that is called once the head of the response is
   // received via either |OnReceiveResponse| or |OnReceiveRedirect|. The
@@ -199,12 +201,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   bool servable_{false};
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
-
-  // These store the most recent redirect in the event that |this| needs to wait
-  // for the prefetch eligibility check to complete before deciding whether to
-  // follow the redirect or not.
-  net::RedirectInfo redirect_info_;
-  network::mojom::URLResponseHeadPtr redirect_head_;
 
   // The URL Loader events that occur before serving the prefetch are queued up
   // until the prefetch is served. The first value is the closure to run the

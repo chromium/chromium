@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -326,7 +327,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -437,7 +438,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -562,7 +563,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -623,7 +624,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
               }),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -684,7 +685,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -746,7 +747,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -806,7 +807,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -907,6 +908,9 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHeadPtr redirect_head;
+
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
@@ -926,13 +930,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
                 on_response_complete_loop->Quit();
               },
               &on_response_complete_loop),
-          base::BindRepeating(
-              [](base::RunLoop* on_receive_redirect_loop,
-                 const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
-                on_receive_redirect_loop->Quit();
-              },
-              &on_receive_redirect_loop));
+          CreatePrefetchRedirectCallbackForTest(
+              &on_receive_redirect_loop, &redirect_info, &redirect_head));
 
   if (GetParam()) {
     streaming_loader->SetOnReceivedHeadCallback(
@@ -949,7 +948,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   on_receive_redirect_loop.Run();
 
   streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect);
+      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
+      std::move(redirect_head));
   on_follow_redirect_loop.Run();
 
   // Simulates receiving the prefetch after the redirect
@@ -1055,6 +1055,9 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   base::RunLoop on_receive_redirect_loop;
   base::RunLoop on_head_received_loop;
 
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHeadPtr redirect_head;
+
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
@@ -1068,13 +1071,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
               [](const network::URLLoaderCompletionStatus& completion_status) {
                 NOTREACHED();
               }),
-          base::BindRepeating(
-              [](base::RunLoop* on_receive_redirect_loop,
-                 const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
-                on_receive_redirect_loop->Quit();
-              },
-              &on_receive_redirect_loop));
+          CreatePrefetchRedirectCallbackForTest(
+              &on_receive_redirect_loop, &redirect_info, &redirect_head));
 
   if (GetParam()) {
     streaming_loader->SetOnReceivedHeadCallback(
@@ -1087,7 +1085,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   on_receive_redirect_loop.Run();
 
   streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect);
+      PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, redirect_info,
+      std::move(redirect_head));
   if (GetParam()) {
     on_head_received_loop.Run();
   }
@@ -1113,6 +1112,9 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
 
   base::RunLoop on_receive_redirect_loop;
 
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHeadPtr redirect_head;
+
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
@@ -1126,13 +1128,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
               [](const network::URLLoaderCompletionStatus& completion_status) {
                 NOTREACHED();
               }),
-          base::BindRepeating(
-              [](base::RunLoop* on_receive_redirect_loop,
-                 const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
-                on_receive_redirect_loop->Quit();
-              },
-              &on_receive_redirect_loop));
+          CreatePrefetchRedirectCallbackForTest(
+              &on_receive_redirect_loop, &redirect_info, &redirect_head));
 
   if (GetParam()) {
     // When a redirect causes a change in network context, the
@@ -1152,7 +1149,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   // context. When this happens the streaming_loader will stop the fetch, and a
   // new streaming URL loader would start to fetch the redirect URL.
   streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect);
+      PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect,
+      redirect_info, std::move(redirect_head));
 
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(test_url_loader_factory()->IsURLLoaderClientConnected());
@@ -1215,6 +1213,9 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   base::RunLoop on_receive_redirect_loop;
   base::RunLoop on_head_received_loop;
 
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHeadPtr redirect_head;
+
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
@@ -1228,13 +1229,8 @@ TEST_P(PrefetchStreamingURLLoaderTest,
               [](const network::URLLoaderCompletionStatus& completion_status) {
                 NOTREACHED();
               }),
-          base::BindRepeating(
-              [](base::RunLoop* on_receive_redirect_loop,
-                 const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
-                on_receive_redirect_loop->Quit();
-              },
-              &on_receive_redirect_loop));
+          CreatePrefetchRedirectCallbackForTest(
+              &on_receive_redirect_loop, &redirect_info, &redirect_head));
 
   if (GetParam()) {
     streaming_loader->SetOnReceivedHeadCallback(
@@ -1253,7 +1249,8 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   task_environment()->RunUntilIdle();
 
   streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect);
+      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
+      std::move(redirect_head));
   if (GetParam()) {
     on_head_received_loop.Run();
   }
@@ -1303,7 +1300,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -1368,7 +1365,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -1427,7 +1424,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -1528,7 +1525,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -1596,7 +1593,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 

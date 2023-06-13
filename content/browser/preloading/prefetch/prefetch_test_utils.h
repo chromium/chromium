@@ -8,16 +8,25 @@
 #include <memory>
 #include <string>
 
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace base {
+class RunLoop;
+}  // namespace base
 
-class PrefetchStreamingURLLoader;
+namespace content {
 
 std::unique_ptr<PrefetchStreamingURLLoader>
 MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
                                       const std::string body);
+
+PrefetchStreamingURLLoader::OnPrefetchRedirectCallback
+CreatePrefetchRedirectCallbackForTest(
+    base::RunLoop* on_receive_redirect_loop,
+    net::RedirectInfo* out_redirect_info,
+    network::mojom::URLResponseHeadPtr* out_redirect_head);
 
 std::unique_ptr<PrefetchStreamingURLLoader>
 MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,

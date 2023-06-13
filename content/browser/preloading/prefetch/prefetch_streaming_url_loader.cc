@@ -223,19 +223,16 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr redirect_head) {
   DCHECK(on_prefetch_redirect_callback_);
-  DCHECK(!redirect_head_);
-
-  redirect_info_ = redirect_info;
-  redirect_head_ = std::move(head);
-
-  on_prefetch_redirect_callback_.Run(redirect_info, *redirect_head_.get());
+  on_prefetch_redirect_callback_.Run(redirect_info, std::move(redirect_head));
 }
 
 void PrefetchStreamingURLLoader::HandleRedirect(
-    PrefetchStreamingURLLoaderStatus new_status) {
-  DCHECK(redirect_head_);
+    PrefetchStreamingURLLoaderStatus new_status,
+    const net::RedirectInfo& redirect_info,
+    network::mojom::URLResponseHeadPtr redirect_head) {
+  DCHECK(redirect_head);
 
   // If the prefetch_url_loader_ is no longer connected, mark this as failed.
   if (!prefetch_url_loader_) {
@@ -255,8 +252,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
       AddEventToQueue(
           base::BindOnce(&PrefetchStreamingURLLoader::ForwardRedirect,
-                         base::Unretained(this), redirect_info_,
-                         std::move(redirect_head_)),
+                         base::Unretained(this), redirect_info,
+                         std::move(redirect_head)),
           /*pause_after_event=*/true);
       break;
     case PrefetchStreamingURLLoaderStatus::
@@ -272,8 +269,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
       AddEventToQueue(
           base::BindOnce(&PrefetchStreamingURLLoader::ForwardRedirect,
-                         base::Unretained(this), redirect_info_,
-                         std::move(redirect_head_)),
+                         base::Unretained(this), redirect_info,
+                         std::move(redirect_head)),
           /*pause_after_event=*/false);
       break;
     case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:

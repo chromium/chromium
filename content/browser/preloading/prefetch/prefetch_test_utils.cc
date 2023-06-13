@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -48,7 +47,7 @@ MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
+                 network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }));
 
@@ -65,6 +64,24 @@ MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
   return streaming_loader;
 }
 
+PrefetchStreamingURLLoader::OnPrefetchRedirectCallback
+CreatePrefetchRedirectCallbackForTest(
+    base::RunLoop* on_receive_redirect_loop,
+    net::RedirectInfo* out_redirect_info,
+    network::mojom::URLResponseHeadPtr* out_redirect_head) {
+  return base::BindRepeating(
+      [](base::RunLoop* on_receive_redirect_loop,
+         net::RedirectInfo* out_redirect_info,
+         network::mojom::URLResponseHeadPtr* out_redirect_head,
+         const net::RedirectInfo& redirect_info,
+         network::mojom::URLResponseHeadPtr redirect_head) {
+        *out_redirect_info = redirect_info;
+        *out_redirect_head = std::move(redirect_head);
+        on_receive_redirect_loop->Quit();
+      },
+      on_receive_redirect_loop, out_redirect_info, out_redirect_head);
+}
+
 std::unique_ptr<PrefetchStreamingURLLoader>
 MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
                                                   const GURL& redirect_url) {
@@ -77,6 +94,9 @@ MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
   base::RunLoop on_receive_redirect_loop;
   base::RunLoop on_response_received_loop;
   base::RunLoop on_response_complete_loop;
+
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHeadPtr redirect_head;
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
@@ -96,28 +116,25 @@ MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
                 on_response_complete_loop->Quit();
               },
               &on_response_complete_loop),
-          base::BindRepeating(
-              [](base::RunLoop* on_receive_redirect_loop,
-                 const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head) {
-                on_receive_redirect_loop->Quit();
-              },
-              &on_receive_redirect_loop));
+          CreatePrefetchRedirectCallbackForTest(
+              &on_receive_redirect_loop, &redirect_info, &redirect_head));
 
   network::URLLoaderCompletionStatus status(net::OK);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_url = redirect_url;
+  net::RedirectInfo original_redirect_info;
+  original_redirect_info.new_url = redirect_url;
 
   network::TestURLLoaderFactory::Redirects redirects;
-  redirects.emplace_back(redirect_info, network::mojom::URLResponseHead::New());
+  redirects.emplace_back(original_redirect_info,
+                         network::mojom::URLResponseHead::New());
 
   test_url_loader_factory.AddResponse(
       original_url, network::mojom::URLResponseHead::New(), "test body", status,
       std::move(redirects), network::TestURLLoaderFactory::kResponseDefault);
   on_receive_redirect_loop.Run();
   streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect);
+      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
+      std::move(redirect_head));
   on_response_received_loop.Run();
   on_response_complete_loop.Run();
 
@@ -139,6 +156,9 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
 
   base::RunLoop on_receive_redirect_loop;
 
+  net::RedirectInfo redirect_info;
+  network::mojom::URLResponseHeadPtr redirect_head;
+
   // Simulate a PrefetchStreamingURLLoader that receives a redirect that
   // requires a change in a network context. When this happens, it will stop its
   // request, but can be used to serve the redirect. A new
@@ -155,19 +175,15 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
           [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
           }),
-      base::BindRepeating(
-          [](base::RunLoop* on_receive_redirect_loop,
-             const net::RedirectInfo& redirect_info,
-             const network::mojom::URLResponseHead& response_head) {
-            on_receive_redirect_loop->Quit();
-          },
-          &on_receive_redirect_loop)));
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
+                                            &redirect_info, &redirect_head)));
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_url = redirect_url;
+  net::RedirectInfo original_redirect_info;
+  original_redirect_info.new_url = redirect_url;
 
   network::TestURLLoaderFactory::Redirects redirects;
-  redirects.emplace_back(redirect_info, network::mojom::URLResponseHead::New());
+  redirects.emplace_back(original_redirect_info,
+                         network::mojom::URLResponseHead::New());
 
   test_url_loader_factory.AddResponse(
       original_url, nullptr, "", network::URLLoaderCompletionStatus(),
@@ -175,7 +191,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       network::TestURLLoaderFactory::kResponseOnlyRedirectsNoDestination);
   on_receive_redirect_loop.Run();
   streaming_loaders[0]->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect);
+      PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect,
+      redirect_info, std::move(redirect_head));
 
   std::unique_ptr<network::ResourceRequest> redirect_request =
       std::make_unique<network::ResourceRequest>();
@@ -202,11 +219,10 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
             on_response_complete_loop->Quit();
           },
           &on_response_complete_loop),
-      base::BindRepeating(
-          [](const net::RedirectInfo& redirect_info,
-             const network::mojom::URLResponseHead& response_head) {
-            NOTREACHED();
-          })));
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      })));
 
   network::URLLoaderCompletionStatus status(net::OK);
   test_url_loader_factory.AddResponse(
