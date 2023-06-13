@@ -106,6 +106,12 @@ enum {
   kPrefTranslateRecentTarget = 61,
   kPrefDogfoodGroups = 62,
   kSyncableMergeableDictPrefForTesting = 63,  // For tests.
+  // See components/sync_preferences/README.md about adding new entries here.
+  // vvvvv IMPORTANT! vvvvv
+  // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
+  // prefs follow privacy guidelines! See the readme file linked above for
+  // guidance and escalation path in case anything is unclear.
+  // ^^^^^ IMPORTANT! ^^^^^
 };
 }  // namespace syncable_prefs_ids
 

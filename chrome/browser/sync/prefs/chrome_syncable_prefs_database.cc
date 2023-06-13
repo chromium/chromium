@@ -253,6 +253,12 @@ enum {
   kAccessibilityColorVisionCorrectionAmount = 100201,
   kAccessibilityColorVisionDeficiencyType = 100202,
   kShowDeskButtonInShelf = 100203,
+  // See components/sync_preferences/README.md about adding new entries here.
+  // vvvvv IMPORTANT! vvvvv
+  // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
+  // prefs follow privacy guidelines! See the readme file linked above for
+  // guidance and escalation path in case anything is unclear.
+  // ^^^^^ IMPORTANT! ^^^^^
 };
 }  // namespace syncable_prefs_ids
 
