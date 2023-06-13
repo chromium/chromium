@@ -59,7 +59,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -534,13 +533,12 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1420233")
     public void testToolbarMenuItem_GroupActionAndUndo() throws Exception {
         prepareBlankTabWithThumbnail(2, false);
         prepareBlankTabGroup(3, false);
         prepareBlankTabGroup(1, false);
         prepareBlankTabGroup(2, false);
-        prepareBlankTabWithThumbnail(1, false);
+        TabUiTestHelper.createTabsWithThumbnail(sActivityTestRule, 1, "about:blank", false);
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
         List<Tab> beforeTabOrder = getTabsInCurrentTabModel();
 
@@ -570,13 +568,14 @@ public class TabSelectionEditorTest {
                 .clickItemAtAdapterPosition(1)
                 .clickItemAtAdapterPosition(2)
                 .clickItemAtAdapterPosition(3)
-                .clickItemAtAdapterPosition(4);
+                .clickItemAtAdapterPosition(4)
+                .clickItemAtAdapterPosition(5);
 
         mRobot.resultRobot.verifyToolbarActionViewEnabled(groupId).verifyToolbarSelectionText(
-                "8 tabs");
+                "9 tabs");
 
         View group = mTabSelectionEditorLayout.getToolbar().findViewById(groupId);
-        assertEquals("Group 8 selected tabs", group.getContentDescription());
+        assertEquals("Group 9 selected tabs", group.getContentDescription());
 
         // Force the position to something fixed to 100% avoid flakes here.
         TabListRecyclerView tabListRecyclerView =
@@ -590,7 +589,7 @@ public class TabSelectionEditorTest {
 
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo_scrolled");
 
         mRobot.actionRobot.clickToolbarActionView(groupId);
 
@@ -598,7 +597,7 @@ public class TabSelectionEditorTest {
         TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 1);
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
-        TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 5);
+        TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 6);
 
         assertEquals(selectedTab, mTabModelSelector.getCurrentTab());
         List<Tab> finalTabs = getTabsInCurrentTabModel();

@@ -510,7 +510,7 @@ public class TabUiTestHelper {
      *            be saved.
      * @param isIncognito Whether the tab is incognito tab.
      */
-    private static void createTabsWithThumbnail(ChromeTabbedActivityTestRule rule, int numTabs,
+    public static void createTabsWithThumbnail(ChromeTabbedActivityTestRule rule, int numTabs,
             @Nullable String url, boolean isIncognito) {
         assertTrue(numTabs >= 1);
 
