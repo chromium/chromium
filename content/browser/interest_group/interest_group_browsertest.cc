@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -6531,8 +6532,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), 50);
 }
 
+// TODO(crbug.com/1439980): Fix flaky test.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_RunAdAuctionWithAdComponentWithSize \
+  DISABLED_RunAdAuctionWithAdComponentWithSize
+#else
+#define MAYBE_RunAdAuctionWithAdComponentWithSize \
+  RunAdAuctionWithAdComponentWithSize
+#endif
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
-                       RunAdAuctionWithAdComponentWithSize) {
+                       MAYBE_RunAdAuctionWithAdComponentWithSize) {
   GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   GURL ad_component_url = https_server_->GetURL(
