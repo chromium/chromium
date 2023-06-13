@@ -6785,6 +6785,13 @@
                     "enable_features": [
                         "HttpsUpgrades"
                     ]
+                },
+                {
+                    "name": "EnabledWithHttpsFirstModeForEngagedSites",
+                    "enable_features": [
+                        "HttpsFirstModeV2ForEngagedSites",
+                        "HttpsUpgrades"
+                    ]
                 }
             ]
         }
