@@ -60229,6 +60229,7 @@ from previous Chrome versions.
   <int value="-1439701253"
       label="EnableExternalKeyboardsInDiagnosticsApp:enabled"/>
   <int value="-1438279809" label="GamepadExtensions:disabled"/>
+  <int value="-1437913839" label="AndroidAppIntegrationSafeSearch:disabled"/>
   <int value="-1437526584" label="HelpAppReleaseNotes:enabled"/>
   <int value="-1437091873" label="ArcInputOverlayAlphaV2:disabled"/>
   <int value="-1436892902" label="FastPairSavedDevices:disabled"/>
@@ -64491,6 +64492,7 @@ from previous Chrome versions.
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
+  <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"
       label="EcheSWAProcessAndroidAccessibilityTree:disabled"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>

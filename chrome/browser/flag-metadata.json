@@ -155,6 +155,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "android-app-inintegration-safesearch",
+    "owners": [ "thaothao", "public-content-toast@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "android-extended-keyboard-shortcuts",
     "owners": [ "wbjacksonjr@google.com"],
     "expiry_milestone": 119

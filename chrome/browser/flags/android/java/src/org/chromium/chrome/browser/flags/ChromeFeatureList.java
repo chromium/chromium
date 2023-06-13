@@ -108,6 +108,8 @@ public abstract class ChromeFeatureList {
     public static final String ADD_TO_HOMESCREEN_IPH = "AddToHomescreenIPH";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
+    public static final String ANDROID_APP_INTEGRATION_SAFE_SEARCH =
+            "AndroidAppIntegrationSafeSearch";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
