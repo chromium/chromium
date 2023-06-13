@@ -222,7 +222,6 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "https://crbug.com/1287296")
     public void testHttpGetDownload() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
@@ -231,13 +230,12 @@ public class DownloadTest implements CustomMainActivityStart {
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownload(FILENAME_GZIP, null));
+        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_GZIP, null));
     }
 
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "https://crbug.com/1287296")
     public void testHttpPostDownload() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
         waitForFocus();
@@ -246,7 +244,7 @@ public class DownloadTest implements CustomMainActivityStart {
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownload(FILENAME_TEXT, SUPERBO_CONTENTS));
+        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_TEXT, SUPERBO_CONTENTS));
     }
 
     @Test
@@ -287,7 +285,6 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "https://crbug.com/1287296")
     public void testUrlEscaping() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "urlescaping.html"));
         waitForFocus();
@@ -296,7 +293,7 @@ public class DownloadTest implements CustomMainActivityStart {
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownload(FILENAME_WALLPAPER, null));
+        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_WALLPAPER, null));
     }
 
     @Test

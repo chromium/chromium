@@ -60,6 +60,26 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
+     * Checks if a file has downloaded. Is agnostic to the mechanism by which the file
+     * has downloaded.
+     * @param fileName Expected file name. Path is built by appending filename to
+     * the system downloads path.
+     * @param expectedContents Expected contents of the file, or null if the contents should not be
+     * checked.
+     * @throws IOException if there is a problem accessing the file.
+     */
+    public boolean hasDownloaded(String fileName, String expectedContents) throws IOException {
+        File downloadedFile = getDownloadedPath(fileName);
+        if (!downloadedFile.exists()) {
+            return false;
+        }
+        if (expectedContents != null) {
+            checkFileContents(downloadedFile.getAbsolutePath(), expectedContents);
+        }
+        return true;
+    }
+
+    /**
      * Check the download exists in DownloadManager by matching the local file
      * path.
      *
@@ -70,13 +90,10 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
      * checked.
      */
     public boolean hasDownload(String fileName, String expectedContents) throws IOException {
-        File downloadedFile = new File(DOWNLOAD_DIRECTORY, fileName);
+        File downloadedFile = getDownloadedPath(fileName);
         if (!downloadedFile.exists()) {
-            Log.d(TAG, "The file " + fileName + " does not exist");
             return false;
         }
-
-        String fullPath = downloadedFile.getAbsolutePath();
 
         DownloadManager manager =
                 (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
@@ -87,16 +104,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         while (!cursor.isAfterLast()) {
             if (fileName.equals(getTitleFromCursor(cursor))) {
                 if (expectedContents != null) {
-                    FileInputStream stream = new FileInputStream(new File(fullPath));
-                    byte[] data =
-                            new byte[ApiCompatibilityUtils.getBytesUtf8(expectedContents).length];
-                    try {
-                        Assert.assertEquals(stream.read(data), data.length);
-                        String contents = new String(data);
-                        Assert.assertEquals(expectedContents, contents);
-                    } finally {
-                        stream.close();
-                    }
+                    checkFileContents(downloadedFile.getAbsolutePath(), expectedContents);
                 }
                 result = true;
                 break;
@@ -105,6 +113,27 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         }
         cursor.close();
         return result;
+    }
+
+    private static File getDownloadedPath(String fileName) {
+        File downloadedFile = new File(DOWNLOAD_DIRECTORY, fileName);
+        if (!downloadedFile.exists()) {
+            Log.d(TAG, "The file " + fileName + " does not exist");
+        }
+        return downloadedFile;
+    }
+
+    private static void checkFileContents(String fullPath, String expectedContents)
+            throws IOException {
+        FileInputStream stream = new FileInputStream(new File(fullPath));
+        byte[] data = new byte[ApiCompatibilityUtils.getBytesUtf8(expectedContents).length];
+        try {
+            Assert.assertEquals(stream.read(data), data.length);
+            String contents = new String(data);
+            Assert.assertEquals(expectedContents, contents);
+        } finally {
+            stream.close();
+        }
     }
 
     /**
