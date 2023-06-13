@@ -23,7 +23,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -414,10 +413,6 @@ public class AwContentsClientBridge {
         WebResourceResponseInfo response = new WebResourceResponseInfo(
                 mimeType, encoding, null, statusCode, reasonPhrase, responseHeaders);
         mClient.getCallbackHelper().postOnReceivedHttpError(request, response);
-
-        // Record UMA on http response status.
-        RecordHistogram.recordSparseHistogram(
-                "Android.WebView.onReceivedHttpError.StatusCode", statusCode);
     }
 
     @CalledByNativeUnchecked

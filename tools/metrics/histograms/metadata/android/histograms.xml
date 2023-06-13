@@ -4536,17 +4536,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.onReceivedHttpError.StatusCode"
-    enum="HttpResponseCode" expires_after="2023-04-19">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    The WebViewClient HTTP response status code as returned by the
-    onReceivedHttpError callback. This callback is only called for HTTP errors,
-    so this does not include any successful HTTP responses (code 200).
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.OnRenderProcessGoneResult"
     enum="AndroidWebViewRenderProcessGoneResult" expires_after="2023-06-30">
   <owner>ntfschr@chromium.org</owner>
