@@ -164,6 +164,12 @@ void VideoCaptureDeviceMac::AllocateAndStart(
 
   [capture_device_ setFrameReceiver:this];
 
+  if (params.buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer) {
+    [capture_device_ setUseGPUMemoryBuffer:true];
+  } else if (params.buffer_type == VideoCaptureBufferType::kSharedMemory) {
+    [capture_device_ setUseGPUMemoryBuffer:false];
+  }
+
   NSString* errorMessage = nil;
   if (![capture_device_ setCaptureDevice:deviceId errorMessage:&errorMessage]) {
     SetErrorState(VideoCaptureError::kMacSetCaptureDeviceFailed, FROM_HERE,

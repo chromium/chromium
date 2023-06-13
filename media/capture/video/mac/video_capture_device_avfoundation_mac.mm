@@ -159,6 +159,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // The following attributes are set via -setCaptureHeight:width:frameRate:.
   float _frameRate;
 
+  // Usage of GPU memory buffer is controlled by
+  // `--disable-video-capture-use-gpu-memory-buffer` and
+  // `--video-capture-use-gpu-memory-buffer` commandline switches. This flag
+  // handles whether to use a GPU memoery for a video frame or not.
+  bool _useGPUMemoryBuffer;
+
   // The capture format that best matches the above attributes.
   AVCaptureDeviceFormat* __strong _bestCaptureFormat;
 
@@ -245,6 +251,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                               "SampleDeliveryDispatchQueue",
                               DISPATCH_QUEUE_SERIAL);
     DCHECK(frameReceiver);
+    _useGPUMemoryBuffer = true;
     _capturedFirstFrame = false;
     _weakPtrHolderForStallCheck.the_self = self;
     _weakPtrHolderForTakePhoto.the_self = self;
@@ -284,6 +291,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver {
   base::AutoLock lock(_lock);
   _frameReceiver = frameReceiver;
+}
+
+- (void)setUseGPUMemoryBuffer:(bool)useGPUMemoryBuffer {
+  _useGPUMemoryBuffer = useGPUMemoryBuffer;
 }
 
 - (BOOL)setCaptureDevice:(NSString*)deviceId
@@ -1026,7 +1037,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // formats to an IOSurface-backed NV12 pixel buffer.
   // TODO(https://crbug.com/1175142): Refactor to not hijack the code paths
   // below the transformer code.
-  if (sampleHasPixelBufferOrIsMjpeg) {
+  if (_useGPUMemoryBuffer && sampleHasPixelBufferOrIsMjpeg) {
     _sampleBufferTransformer->Reconfigure(
         media::SampleBufferTransformer::GetBestTransformerForNv12Output(
             sampleBuffer),
@@ -1088,15 +1099,16 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     DCHECK_EQ(pixelBufferPixelFormat, sampleBufferPixelFormat);
 
     // First preference is to use an NV12 IOSurface as a GpuMemoryBuffer.
-    if (CVPixelBufferGetIOSurface(pixelBuffer) &&
-        videoPixelFormat == media::PIXEL_FORMAT_NV12) {
-      [self processPixelBufferNV12IOSurface:pixelBuffer
-                              captureFormat:captureFormat
-                                 colorSpace:colorSpace
-                                  timestamp:timestamp];
-      return;
+    if (_useGPUMemoryBuffer) {
+      if (CVPixelBufferGetIOSurface(pixelBuffer) &&
+          videoPixelFormat == media::PIXEL_FORMAT_NV12) {
+        [self processPixelBufferNV12IOSurface:pixelBuffer
+                                captureFormat:captureFormat
+                                   colorSpace:colorSpace
+                                    timestamp:timestamp];
+        return;
+      }
     }
-
     // Second preference is to read the CVPixelBuffer's planes.
     if ([self processPixelBufferPlanes:pixelBuffer
                          captureFormat:captureFormat

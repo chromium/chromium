@@ -54,6 +54,9 @@ CAPTURE_EXPORT
 - (void)setFrameReceiver:
     (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver;
 
+// Whether to use a GPU memory for video frames or not.
+- (void)setUseGPUMemoryBuffer:(bool)useGPUMemoryBuffer;
+
 // Sets which capture device to use by name, retrieved via |deviceNames|.
 // Method -setCaptureDevice: must be called at least once with a device
 // identifier from GetVideoCaptureDeviceNames(). It creates all the necessary
