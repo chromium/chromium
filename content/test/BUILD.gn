@@ -2838,6 +2838,8 @@ test("content_unittests") {
     bundle_deps = [
       ":content_shell_pak_bundle_data",
       ":content_test_bundle_data",
+      ":content_test_perfetto_bundle_data",
+      ":content_test_proto_bundle_data",
       "//media/test:media_bundle_data",
     ]
   }
@@ -3001,16 +3003,20 @@ test("content_unittests") {
   ]
 
   data_deps = [
-    ":test_proto_descriptor",
     "//testing/buildbot/filters:content_unittests_filters",
     "//third_party/mesa_headers",
-    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
   ]
 
-  data += [
-    "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
-    "$root_gen_dir/content/test/test_proto.descriptor",
-  ]
+  if (!is_ios) {
+    data_deps += [
+      ":test_proto_descriptor",
+      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+    ]
+    data += [
+      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
+      "$root_gen_dir/content/test/test_proto.descriptor",
+    ]
+  }
 
   # Platforms where sqlite_dev_shell is defined.
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -3305,6 +3311,23 @@ if (is_ios) {
     public_deps = [ "//content/shell:pak" ]
     sources = [ "$root_out_dir/content_shell.pak" ]
     outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
+  }
+
+  bundle_data("content_test_proto_bundle_data") {
+    testonly = true
+    public_deps = [ ":test_proto_descriptor" ]
+    sources = [ "$root_gen_dir/content/test/test_proto.descriptor" ]
+    outputs =
+        [ "{{bundle_resources_dir}}/gen/content/test/{{source_file_part}}" ]
+  }
+
+  bundle_data("content_test_perfetto_bundle_data") {
+    testonly = true
+    _relative_path = "third_party/perfetto/protos/perfetto/config/chrome"
+    public_deps = [ "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor" ]
+    sources = [ "$root_gen_dir/$_relative_path/scenario_config.descriptor" ]
+    outputs =
+        [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
   }
 
   bundle_data_from_filelist("content_test_bundle_data") {
