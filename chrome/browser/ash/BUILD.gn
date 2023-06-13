@@ -4795,6 +4795,7 @@ source_set("unit_tests") {
     "app_list/app_list_test_util.cc",
     "app_list/app_list_test_util.h",
     "app_list/app_service/app_service_app_model_builder_unittest.cc",
+    "app_list/app_service/app_service_promise_app_model_builder_unittest.cc",
     "app_list/arc/arc_app_metrics_data_unittest.cc",
     "app_list/arc/arc_app_metrics_util_unittest.cc",
     "app_list/arc/arc_app_sync_metrics_helper_unittest.cc",
