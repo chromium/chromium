@@ -19,6 +19,10 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_constants.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface NSApplication (Private)
 // (Apparently) forces the application to activate itself.
 - (void)_handleActivatedEvent:(id)arg1;
@@ -175,15 +179,15 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   // We used to call [NSApp activateIgnoringOtherApps:YES] but this
   // would not reliably activate the app, causing the window to never
   // become key. This bit of private API appears to be the secret
-  // incantation that gets us what we want. See crbug.com/1215570 .
-  [[NSApplication sharedApplication] _handleActivatedEvent:nil];
+  // incantation that gets us what we want. See https://crbug.com/1215570.
+  [NSApplication.sharedApplication _handleActivatedEvent:nil];
 
-  base::scoped_nsobject<WindowedNSNotificationObserver> async_waiter;
-  if (![window isKeyWindow]) {
+  WindowedNSNotificationObserver* async_waiter;
+  if (!window.keyWindow) {
     // Only wait when expecting a change to actually occur.
-    async_waiter.reset([[WindowedNSNotificationObserver alloc]
+    async_waiter = [[WindowedNSNotificationObserver alloc]
         initForNotification:NSWindowDidBecomeKeyNotification
-                     object:window]);
+                     object:window];
   }
   [window makeKeyAndOrderFront:nil];
 
@@ -193,8 +197,8 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   // events are sent via ui_test_utils::SendKeyPressSync.
   BOOL notification_observed = [async_waiter wait];
   base::RunLoop().RunUntilIdle();  // There may be other events queued. Flush.
-  NSMenu* file_menu = [[[NSApp mainMenu] itemWithTag:IDC_FILE_MENU] submenu];
-  [[file_menu delegate] menuNeedsUpdate:file_menu];
+  NSMenu* file_menu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
+  [file_menu.delegate menuNeedsUpdate:file_menu];
 
   return !async_waiter || notification_observed;
 }

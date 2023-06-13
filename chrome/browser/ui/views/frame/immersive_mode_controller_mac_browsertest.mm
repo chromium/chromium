@@ -17,6 +17,10 @@
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 class ImmersiveModeControllerMacBrowserTest : public InProcessBrowserTest {
  public:
   ImmersiveModeControllerMacBrowserTest() {
@@ -29,7 +33,7 @@ class ImmersiveModeControllerMacBrowserTest : public InProcessBrowserTest {
       const ImmersiveModeControllerMacBrowserTest&) = delete;
 
   NSView* GetMovedContentViewForWidget(views::Widget* overlay_widget) {
-    return (NSView*)overlay_widget->GetNativeWindowProperty(
+    return (__bridge NSView*)overlay_widget->GetNativeWindowProperty(
         views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
   }
 

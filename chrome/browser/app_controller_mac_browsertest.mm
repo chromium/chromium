@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -15,8 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/mac/scoped_objc_class_swizzler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -96,6 +94,10 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -448,10 +450,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // in the menu.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
-  base::scoped_nsobject<NSMenuItem> about_menu_item(
-      [[[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu]
-          itemWithTag:IDC_ABOUT],
-      base::scoped_policy::RETAIN);
+  NSMenuItem* about_menu_item = [[[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU]
+      submenu] itemWithTag:IDC_ABOUT];
   EXPECT_FALSE([AppController.sharedController
       validateUserInterfaceItem:about_menu_item]);
 }
@@ -523,11 +523,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   Browser* browser = active_browser_list()->get(0);
   EXPECT_FALSE(browser->profile()->IsGuestSession());
   // "About Chrome" is not available in the menu.
-  base::scoped_nsobject<NSMenu> chrome_submenu(
-      [[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU] submenu],
-      base::scoped_policy::RETAIN);
-  base::scoped_nsobject<NSMenuItem> about_menu_item(
-      [chrome_submenu itemWithTag:IDC_ABOUT], base::scoped_policy::RETAIN);
+  NSMenu* chrome_submenu =
+      [[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU] submenu];
+  NSMenuItem* about_menu_item = [chrome_submenu itemWithTag:IDC_ABOUT];
   EXPECT_FALSE([app_controller validateUserInterfaceItem:about_menu_item]);
   [chrome_submenu update];
   EXPECT_FALSE([about_menu_item isEnabled]);
@@ -588,18 +586,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
   AppController* app_controller = AppController.sharedController;
 
   // Unhandled menu items are disabled.
-  base::scoped_nsobject<NSMenu> file_submenu(
-      [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu],
-      base::scoped_policy::RETAIN);
-  base::scoped_nsobject<NSMenuItem> close_tab_menu_item(
-      [file_submenu itemWithTag:IDC_CLOSE_TAB], base::scoped_policy::RETAIN);
+  NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
+  NSMenuItem* close_tab_menu_item = [file_submenu itemWithTag:IDC_CLOSE_TAB];
   EXPECT_FALSE([app_controller validateUserInterfaceItem:close_tab_menu_item]);
   [file_submenu update];
   EXPECT_FALSE([close_tab_menu_item isEnabled]);
 
   // Enabled menu items work.
-  base::scoped_nsobject<NSMenuItem> new_window_menu_item(
-      [file_submenu itemWithTag:IDC_NEW_WINDOW], base::scoped_policy::RETAIN);
+  NSMenuItem* new_window_menu_item = [file_submenu itemWithTag:IDC_NEW_WINDOW];
   EXPECT_TRUE([new_window_menu_item isEnabled]);
   EXPECT_TRUE([app_controller validateUserInterfaceItem:new_window_menu_item]);
   // Click on the item and checks that a new browser is opened.

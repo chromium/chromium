@@ -6,10 +6,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace test {
 
 float GetNativeWindowAlphaValue(gfx::NativeWindow window) {
-  return [window.GetNativeNSWindow() alphaValue];
+  return window.GetNativeNSWindow().alphaValue;
 }
 
 }  // namespace test

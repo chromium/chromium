@@ -13,9 +13,13 @@
 #include "content/public/test/test_utils.h"
 #import "testing/gtest_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
  public:
-  RenderViewContextMenuMacCocoaBrowserTest() {}
+  RenderViewContextMenuMacCocoaBrowserTest() = default;
 
   RenderViewContextMenuMacCocoaBrowserTest(
       const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
@@ -24,29 +28,29 @@ class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    filteredItems_.reset([[NSMutableArray alloc] init]);
+    filtered_items_ = [[NSMutableArray alloc] init];
     [ChromeSwizzleServicesMenuUpdater
-        storeFilteredEntriesForTestingInArray:filteredItems_];
+        storeFilteredEntriesForTestingInArray:filtered_items_];
 
     // Add a textfield, which we'll use to present a contextual menu for
     // testing. Fill it with a URL, as the services that need to be filtered
     // primarily appear for URLs.
-    textField_.reset(
-        [[NSTextField alloc] initWithFrame:NSMakeRect(20, 20, 100, 20)]);
-    [textField_ setStringValue:@"http://someurl.com/"];
+    text_field_ =
+        [[NSTextField alloc] initWithFrame:NSMakeRect(20, 20, 100, 20)];
+    [text_field_ setStringValue:@"http://someurl.com/"];
     NSWindow* window =
         browser()->window()->GetNativeWindow().GetNativeNSWindow();
-    [[window contentView] addSubview:textField_];
+    [[window contentView] addSubview:text_field_];
   }
 
   void TearDownOnMainThread() override {
-    [textField_ removeFromSuperview];
+    [text_field_ removeFromSuperview];
     [ChromeSwizzleServicesMenuUpdater
         storeFilteredEntriesForTestingInArray:nil];
   }
 
-  base::scoped_nsobject<NSMutableArray> filteredItems_;
-  base::scoped_nsobject<NSTextField> textField_;
+  NSMutableArray* __strong filtered_items_;
+  NSTextField* __strong text_field_;
 };
 
 // Confirm that the private classes used to filter Safari's redundant Services
@@ -75,13 +79,12 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacCocoaBrowserTest,
   // the application Services menu). So to test, we just need a control with a
   // bit of selected text.
   NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
-  [window makeFirstResponder:textField_];
-  [textField_ selectText:nil];
+  [window makeFirstResponder:text_field_];
+  [text_field_ selectText:nil];
 
   // Create a contextual menu.
-  base::scoped_nsobject<NSMenu> popupMenu(
-      [[NSMenu alloc] initWithTitle:@"menu"]);
-  [popupMenu addItemWithTitle:@"Menu Item" action:0 keyEquivalent:@""];
+  NSMenu* popupMenu = [[NSMenu alloc] initWithTitle:@"menu"];
+  [popupMenu addItemWithTitle:@"Menu Item" action:nullptr keyEquivalent:@""];
 
   // Arrange to dismiss the contextual menu in the future (to break out of the
   // upcoming modal loop).
@@ -101,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacCocoaBrowserTest,
   bool was_safari_item_removed = false;
   bool was_open_url_item_removed = false;
 
-  for (id item in filteredItems_.get()) {
+  for (id item in filtered_items_) {
     if ([[item valueForKey:@"bundleIdentifier"]
             isEqualToString:@"com.apple.Safari"]) {
       was_safari_item_removed = true;

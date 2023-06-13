@@ -15,13 +15,17 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using AcceleratorsCocoaBrowserTest = InProcessBrowserTest;
 
 namespace {
 
 // Adds all NSMenuItems with an accelerator to the array.
 void AddAcceleratorItemsToArray(NSMenu* menu, NSMutableArray* array) {
-  for (NSMenuItem* item in [menu itemArray]) {
+  for (NSMenuItem* item in menu.itemArray) {
     NSMenu* submenu = item.submenu;
     if (submenu)
       AddAcceleratorItemsToArray(submenu, array);
@@ -53,7 +57,7 @@ inline bool MenuItemHasModifierMask(NSMenuItem* item, NSUInteger modifierMask) {
 NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
                                     NSString* key_equivalent,
                                     NSUInteger modifier_mask) {
-  for (NSMenuItem* item in [menu itemArray]) {
+  for (NSMenuItem* item in menu.itemArray) {
     NSMenu* submenu = item.submenu;
     if (submenu) {
       NSMenuItem* result =

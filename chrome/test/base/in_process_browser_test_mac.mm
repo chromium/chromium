@@ -13,6 +13,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/test/test_navigation_observer.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 void InProcessBrowserTest::OpenDevToolsWindow(
     content::WebContents* web_contents) {
   // Opening a Devtools Window can cause AppKit to throw objects into the
@@ -84,7 +88,8 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     Browser* browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        app_name, false /* trusted_source */, gfx::Rect(), profile, true));
+        app_name, /*trusted_source=*/false, gfx::Rect(), profile,
+        /*user_gesture=*/true));
     AddBlankTabAndShow(browser);
     return browser;
   }

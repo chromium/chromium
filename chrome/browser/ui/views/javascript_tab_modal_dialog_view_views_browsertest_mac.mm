@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <Accessibility/Accessibility.h>
+
 #include <string>
 
 #include "base/functional/bind.h"
@@ -13,6 +14,10 @@
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using JavaScriptTabModalDialogViewViewsBrowserTestMac = InProcessBrowserTest;
 
