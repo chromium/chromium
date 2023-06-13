@@ -673,26 +673,27 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
 
   // Copy the sets geometry and adjust its offsets to accommodate the subgrid's
   // margin, border, scrollbar, padding, and gutter size.
+  const auto subgrid_gutter_size_delta = subgrid_gutter_size - gutter_size_;
+
+  const bool is_for_columns = subgrid_track_direction == kForColumns;
+  const auto subgrid_margin_start =
+      is_for_columns ? subgrid_margin.inline_start : subgrid_margin.block_start;
+
+  const auto subgrid_border_scrollbar_padding_start =
+      is_for_columns ? subgrid_border_scrollbar_padding.inline_start
+                     : subgrid_border_scrollbar_padding.block_start;
+
+  const auto subgrid_margin_border_scrollbar_padding_start =
+      subgrid_margin_start + subgrid_border_scrollbar_padding_start;
+  const auto subgrid_margin_border_scrollbar_padding_end =
+      is_for_columns ? subgrid_margin.inline_end +
+                           subgrid_border_scrollbar_padding.inline_end
+                     : subgrid_margin.block_end +
+                           subgrid_border_scrollbar_padding.block_end;
+
+  // Accumulate the extra margin from the spanned sets in the parent track
+  // collection and this subgrid's margins and gutter size delta.
   {
-    const auto subgrid_gutter_size_delta = subgrid_gutter_size - gutter_size_;
-
-    const bool is_for_columns = subgrid_track_direction == kForColumns;
-    const auto subgrid_margin_start = is_for_columns
-                                          ? subgrid_margin.inline_start
-                                          : subgrid_margin.block_start;
-
-    const auto subgrid_border_scrollbar_padding_start =
-        is_for_columns ? subgrid_border_scrollbar_padding.inline_start
-                       : subgrid_border_scrollbar_padding.block_start;
-
-    const auto subgrid_margin_border_scrollbar_padding_end =
-        is_for_columns ? subgrid_margin.inline_end +
-                             subgrid_border_scrollbar_padding.inline_end
-                       : subgrid_margin.block_end +
-                             subgrid_border_scrollbar_padding.block_end;
-
-    // Accumulate the extra margin from the spanned sets in the parent track
-    // collection and this subgrid's margins and gutter size delta.
     subgrid_track_collection.accumulated_gutter_size_delta_ =
         subgrid_gutter_size_delta + accumulated_gutter_size_delta_;
 
@@ -703,7 +704,7 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
 
     // Opposite direction subgrids adjust extra margin from the opposite side.
     subgrid_track_collection.accumulated_start_extra_margin_ =
-        subgrid_margin_start + subgrid_border_scrollbar_padding_start +
+        subgrid_margin_border_scrollbar_padding_start +
         (is_opposite_direction_in_root_grid
              ? EndExtraMargin(end_set_index)
              : StartExtraMargin(begin_set_index));
@@ -801,12 +802,28 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     subgrid_baselines.major.ReserveInitialCapacity(set_span_size);
     subgrid_baselines.minor.ReserveInitialCapacity(set_span_size);
 
+    // Adjust the baselines to accommodate the subgrid extra margins.
     for (wtf_size_t i = 0; i < set_span_size; ++i) {
+      LayoutUnit major_adjust =
+          (i == 0) ? subgrid_margin_border_scrollbar_padding_start
+                   : subgrid_gutter_size_delta / 2;
+      LayoutUnit minor_adjust =
+          (i == set_span_size - 1) ? subgrid_margin_border_scrollbar_padding_end
+                                   : subgrid_gutter_size_delta / 2;
+      if (is_opposite_direction_in_root_grid) {
+        std::swap(major_adjust, minor_adjust);
+      }
       const wtf_size_t current_index = is_opposite_direction_in_root_grid
-                                           ? end_set_index - i + 1
+                                           ? end_set_index - i - 1
                                            : begin_set_index + i;
-      subgrid_baselines.major.emplace_back(baselines_->major[current_index]);
-      subgrid_baselines.minor.emplace_back(baselines_->minor[current_index]);
+      subgrid_baselines.major.emplace_back(baselines_->major[current_index] -
+                                           major_adjust);
+      subgrid_baselines.minor.emplace_back(baselines_->minor[current_index] -
+                                           minor_adjust);
+    }
+
+    if (is_opposite_direction_in_root_grid) {
+      std::swap(subgrid_baselines.major, subgrid_baselines.minor);
     }
 
     subgrid_track_collection.baselines_ = std::move(subgrid_baselines);

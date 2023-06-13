@@ -56,38 +56,37 @@ struct CORE_EXPORT GridItemData {
         is_block_axis_overflow_safe);
   }
 
-  bool IsBaselineAlignedForDirection(
-      GridTrackSizingDirection track_direction) const {
-    // TODO(ethavar): Baseline alignment for subgrids is dependent on
-    // accumulating the baseline in `ComputeSubgridContributionSize`.
-    if (has_subgridded_columns || has_subgridded_rows ||
-        is_subgridded_to_parent_grid) {
+  bool IsBaselineAligned(GridTrackSizingDirection track_direction) const {
+    const bool is_for_columns = track_direction == kForColumns;
+    const bool has_subgridded_axis =
+        is_for_columns ? has_subgridded_columns : has_subgridded_rows;
+
+    if (has_subgridded_axis) {
       return false;
     }
-    return (track_direction == kForColumns)
-               ? (InlineAxisAlignment() == AxisEdge::kFirstBaseline ||
-                  InlineAxisAlignment() == AxisEdge::kLastBaseline)
-               : (BlockAxisAlignment() == AxisEdge::kFirstBaseline ||
-                  BlockAxisAlignment() == AxisEdge::kLastBaseline);
+
+    const auto axis_alignment =
+        is_for_columns ? InlineAxisAlignment() : BlockAxisAlignment();
+    return (axis_alignment == AxisEdge::kFirstBaseline ||
+            axis_alignment == AxisEdge::kLastBaseline);
   }
 
-  bool IsBaselineSpecifiedForDirection(
-      GridTrackSizingDirection track_direction) const {
-    // TODO(ethavar): Baseline alignment for subgrids is dependent on
-    // accumulating the baseline in `ComputeSubgridContributionSize`.
-    if (has_subgridded_columns || has_subgridded_rows ||
-        is_subgridded_to_parent_grid) {
+  bool IsBaselineSpecified(GridTrackSizingDirection track_direction) const {
+    const bool is_for_columns = track_direction == kForColumns;
+    const bool has_subgridded_axis =
+        is_for_columns ? has_subgridded_columns : has_subgridded_rows;
+
+    if (has_subgridded_axis) {
       return false;
     }
-    return (track_direction == kForColumns)
-               ? (inline_axis_alignment == AxisEdge::kFirstBaseline ||
-                  inline_axis_alignment == AxisEdge::kLastBaseline)
-               : (block_axis_alignment == AxisEdge::kFirstBaseline ||
-                  block_axis_alignment == AxisEdge::kLastBaseline);
+
+    const auto axis_alignment =
+        is_for_columns ? inline_axis_alignment : block_axis_alignment;
+    return (axis_alignment == AxisEdge::kFirstBaseline ||
+            axis_alignment == AxisEdge::kLastBaseline);
   }
 
-  bool IsLastBaselineSpecifiedForDirection(
-      GridTrackSizingDirection track_direction) const {
+  bool IsLastBaselineSpecified(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
                ? inline_axis_alignment == AxisEdge::kLastBaseline
                : block_axis_alignment == AxisEdge::kLastBaseline;

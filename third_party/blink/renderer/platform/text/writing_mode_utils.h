@@ -173,8 +173,9 @@ class LogicalToLogical {
                                                   block_end)) {}
 
   Value InlineStart() const { return logical_.InlineStart(); }
-
   Value BlockStart() const { return logical_.BlockStart(); }
+  Value InlineEnd() const { return logical_.InlineEnd(); }
+  Value BlockEnd() const { return logical_.BlockEnd(); }
 
  private:
   LogicalToLogical(WritingDirectionMode to_writing_direction,

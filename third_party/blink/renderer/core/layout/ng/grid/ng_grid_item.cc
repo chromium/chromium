@@ -227,8 +227,9 @@ void GridItemData::SetAlignmentFallback(
     GridTrackSizingDirection track_direction,
     bool has_synthesized_baseline) {
   // Alignment fallback is only possible when baseline alignment is specified.
-  if (!IsBaselineSpecifiedForDirection(track_direction))
+  if (!IsBaselineSpecified(track_direction)) {
     return;
+  }
 
   auto CanParticipateInBaselineAlignment = [&]() -> bool {
     // "If baseline alignment is specified on a grid item whose size in that

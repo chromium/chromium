@@ -64,6 +64,11 @@ class NGSubgriddedItemData {
                : parent_layout_data_->Columns();
   }
 
+  const NGGridLayoutData& ParentLayoutData() const {
+    DCHECK(parent_layout_data_);
+    return *parent_layout_data_;
+  }
+
  private:
   const GridItemData* item_data_in_parent_{nullptr};
   const NGGridLayoutData* parent_layout_data_{nullptr};
