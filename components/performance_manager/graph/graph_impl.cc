@@ -174,6 +174,8 @@ void GraphImpl::SetUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateSystemNode();
 
+  AddFrameNodeObserver(&initializing_frame_node_observer_manager_);
+
   CHECK_EQ(lifecycle_state_, LifecycleState::kBeforeSetUp);
   lifecycle_state_ = LifecycleState::kSetUpCalled;
 }
@@ -188,6 +190,8 @@ void GraphImpl::TearDown() {
   // Clean up graph owned objects. This causes their TakeFromGraph callbacks to
   // be invoked, and ideally they clean up any observers they may have, etc.
   graph_owned_.ReleaseObjects(this);
+
+  RemoveFrameNodeObserver(&initializing_frame_node_observer_manager_);
 
   // At this point, all typed observers should be empty.
   DCHECK(graph_observers_.empty());
@@ -339,6 +343,16 @@ bool GraphImpl::IsOnGraphSequence() const {
 }
 #endif
 
+void GraphImpl::AddInitializingFrameNodeObserver(
+    InitializingFrameNodeObserver* frame_node_observer) {
+  initializing_frame_node_observer_manager_.AddObserver(frame_node_observer);
+}
+
+void GraphImpl::RemoveInitializingFrameNodeObserver(
+    InitializingFrameNodeObserver* frame_node_observer) {
+  initializing_frame_node_observer_manager_.RemoveObserver(frame_node_observer);
+}
+
 GraphRegistered* GraphImpl::GetRegisteredObject(uintptr_t type_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return registered_objects_.GetRegisteredObject(type_id);
@@ -453,6 +467,16 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   // Remove the node itself.
   size_t erased = nodes_.erase(node);
   DCHECK_EQ(1u, erased);
+}
+
+void GraphImpl::NotifyFrameNodeInitializing(const FrameNode* frame_node) {
+  initializing_frame_node_observer_manager_.NotifyFrameNodeInitializing(
+      frame_node);
+}
+
+void GraphImpl::NotifyFrameNodeTearingDown(const FrameNode* frame_node) {
+  initializing_frame_node_observer_manager_.NotifyFrameNodeTearingDown(
+      frame_node);
 }
 
 size_t GraphImpl::NodeDataDescriberCountForTesting() const {

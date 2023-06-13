@@ -117,6 +117,7 @@ class FrameNodeImpl
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetViewportIntersection(const gfx::Rect& viewport_intersection);
+  void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
@@ -261,10 +262,6 @@ class FrameNodeImpl
   bool HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInTree(FrameNodeImpl* frame_node) const;
 
-  // Returns the initial visibility of this frame. Should only be called when
-  // the frame node joins the graph.
-  Visibility GetInitialFrameVisibility() const;
-
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
   const raw_ptr<FrameNodeImpl, DanglingUntriaged> parent_frame_node_;
@@ -364,8 +361,7 @@ class FrameNodeImpl
       &FrameNodeObserver::OnViewportIntersectionChanged>
       viewport_intersection_;
 
-  // Indicates if the frame is visible. This is initialized in
-  // FrameNodeImpl::OnJoiningGraph() and then maintained by
+  // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       Visibility,

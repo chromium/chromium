@@ -53,11 +53,11 @@ FrameVisibilityDecorator::~FrameVisibilityDecorator() = default;
 void FrameVisibilityDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
   graph->AddPageNodeObserver(this);
-  graph->AddFrameNodeObserver(this);
+  graph->AddInitializingFrameNodeObserver(this);
 }
 
 void FrameVisibilityDecorator::OnTakenFromGraph(Graph* graph) {
-  graph->RemoveFrameNodeObserver(this);
+  graph->RemoveInitializingFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
 }
 
@@ -70,6 +70,13 @@ void FrameVisibilityDecorator::OnIsVisibleChanged(const PageNode* page_node) {
     return;
 
   UpdateFrameVisibility(main_frame_node, page_node_impl->is_visible());
+}
+
+void FrameVisibilityDecorator::OnFrameNodeInitializing(
+    const FrameNode* frame_node) {
+  FrameNodeImpl* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
+  frame_node_impl->SetInitialVisibility(GetFrameNodeVisibility(
+      frame_node_impl, frame_node_impl->page_node()->is_visible()));
 }
 
 void FrameVisibilityDecorator::OnViewportIntersectionChanged(

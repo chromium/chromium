@@ -23,6 +23,7 @@ class GraphOwned;
 class GraphRegistered;
 class FrameNode;
 class FrameNodeObserver;
+class InitializingFrameNodeObserver;
 class NodeDataDescriberRegistry;
 class PageNode;
 class PageNodeObserver;
@@ -140,6 +141,14 @@ class Graph {
 #if DCHECK_IS_ON()
   virtual bool IsOnGraphSequence() const = 0;
 #endif
+
+  // Adds/removes a special type of FrameNodeObserver that needs to initialize
+  // a property on frame nodes before other observers are notified of their
+  // existence. This should be used sparingly.
+  virtual void AddInitializingFrameNodeObserver(
+      InitializingFrameNodeObserver* frame_node_observer) = 0;
+  virtual void RemoveInitializingFrameNodeObserver(
+      InitializingFrameNodeObserver* frame_node_observer) = 0;
 
  private:
   // Retrieves the object with the given |type_id|, returning nullptr if none

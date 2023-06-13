@@ -69,6 +69,8 @@ static_library("performance_manager") {
     "graph/graph_impl_util.h",
     "graph/graph_operations.cc",
     "graph/graph_registered.cc",
+    "graph/initializing_frame_node_observer.cc",
+    "graph/initializing_frame_node_observer.h",
     "graph/node.cc",
     "graph/node_attached_data.cc",
     "graph/node_attached_data.h",
