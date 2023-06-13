@@ -19,6 +19,8 @@
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "gpu/config/gpu_finch_features.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
@@ -40,6 +42,12 @@ gfx::BufferUsage GetBufferUsage(uint32_t usage) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
     return gfx::BufferUsage::SCANOUT;
   } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+    if (base::FeatureList::IsEnabled(features::kOzoneFrontBufferUsage) &&
+        usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+      // Example usage here is low latency (desynchronized) 2d canvas. Note that
+      // this does not imply CPU read/write.
+      return gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
+    }
     return gfx::BufferUsage::SCANOUT;
   } else {
     return gfx::BufferUsage::GPU_READ;

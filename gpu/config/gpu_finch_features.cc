@@ -154,6 +154,14 @@ BASE_FEATURE(kCanvasOopRasterization,
 #endif
 );
 
+#if BUILDFLAG(IS_OZONE)
+// Detect front buffering condition and set buffer usage as such.
+// This is a killswitch to be removed once launched.
+BASE_FEATURE(kOzoneFrontBufferUsage,
+             "OzoneFrontBufferUsage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_OZONE)
+
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
              "EnableMSAAOnNewIntelGPUs",
