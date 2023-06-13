@@ -608,9 +608,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Called when a site instance is first associated with a process.
   virtual void SiteInstanceGotProcess(SiteInstance* site_instance) {}
 
-  // Called from a site instance's destructor.
-  virtual void SiteInstanceDeleting(SiteInstance* site_instance) {}
-
   // Returns true if for the navigation from |current_effective_url| to
   // |destination_effective_url| in |site_instance|, a new SiteInstance and
   // BrowsingInstance should be created (even if we are in a process model that
