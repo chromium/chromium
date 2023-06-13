@@ -700,6 +700,28 @@ export class EmojiPicker extends PolymerElement {
     }
   }
 
+  private onRightChevronKeyDown(event: KeyboardEvent) {
+    // Moves focus to the first button under the group of current category if
+    // user tries to move to the next element from right chevron button in a11y
+    // mode.
+    if (event.code === 'Tab' && !event.shiftKey) {
+      const currentGroups = this.shadowRoot!
+        .querySelectorAll<EmojiGroupComponent>(
+          `emoji-group[category='${this.category}'`);
+
+      // The first group might be a history group. If the user has no history
+      // item, we should continue to check the second group.
+      for (const group of currentGroups) {
+        const button = group.firstEmojiButton();
+        if (button) {
+          button.focus();
+          event.preventDefault();
+          return;
+        }
+      }
+    }
+  }
+
   private onLeftChevronClick() {
     this.pagination = Math.max(this.pagination - 1, 1);
     this.updateCurrentGroupTabs();
