@@ -46,12 +46,12 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
 
   // Informs system that some page wants to use geolocation. This function may
   // be implemented if the OS specific implementation requires it.
-  virtual void AppAttemptsToUseGeolocation() {}
+  virtual void TrackGeolocationAttempted(const std::string& app_name) {}
   // Informs that some page does not need to use geolocation any more. This
   // function should be called only if the intention to use geolocation was
-  // signalled for the same page using AppAttemptsToUseGeolocation(). This
+  // signalled for the same page using TrackGeolocationAttempted(). This
   // function may be implemented if the OS specific implementation requires it.
-  virtual void AppCeasesToUseGeolocation() {}
+  virtual void TrackGeolocationRelinquished(const std::string& app_name) {}
 
 #if BUILDFLAG(IS_APPLE)
   // This method accepts a callback. The callback is to be called always when

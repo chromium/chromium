@@ -48,15 +48,15 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
   // TODO(zauri): Set 0-state
 }
 
-void GeolocationPrivacySwitchController::OnAppStartsUsingGeolocation(
-    const std::u16string& app_name) {
+void GeolocationPrivacySwitchController::TrackGeolocationAttempted(
+    const std::string& app_name) {
   ++usage_per_app_[app_name];
   ++usage_cnt_;
   UpdateNotification();
 }
 
-void GeolocationPrivacySwitchController::OnAppStopsUsingGeolocation(
-    const std::u16string& app_name) {
+void GeolocationPrivacySwitchController::TrackGeolocationRelinquished(
+    const std::string& app_name) {
   --usage_per_app_[app_name];
   --usage_cnt_;
   if (usage_per_app_[app_name] < 0 || usage_cnt_ < 0) {
@@ -74,13 +74,12 @@ std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
   std::vector<std::u16string> apps;
   for (const auto& [name, cnt] : usage_per_app_) {
     if (cnt > 0) {
-      apps.push_back(name);
+      apps.push_back(base::UTF8ToUTF16(name));
       if (apps.size() == max_count) {
         break;
       }
     }
   }
-
   return apps;
 }
 

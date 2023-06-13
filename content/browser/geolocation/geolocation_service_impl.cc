@@ -64,7 +64,7 @@ GeolocationServiceImpl::~GeolocationServiceImpl() {
           device::GeolocationManager::GetInstance();
       geolocation_manager) {
     // One call here is enough as the calls are grouped by app name
-    geolocation_manager->AppCeasesToUseGeolocation();
+    geolocation_manager->TrackGeolocationRelinquished();
   }
 }
 
@@ -75,7 +75,7 @@ void GeolocationServiceImpl::Bind(
   if (device::GeolocationManager* geolocation_manager =
           device::GeolocationManager::GetInstance();
       geolocation_manager) {
-    geolocation_manager->AppAttemptsToUseGeolocation();
+    geolocation_manager->TrackGeolocationAttempted();
   }
 }
 

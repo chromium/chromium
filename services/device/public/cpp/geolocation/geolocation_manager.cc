@@ -46,15 +46,6 @@ void GeolocationManager::SetInstance(
 }
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-
-void GeolocationManager::AppAttemptsToUseGeolocation() {
-  system_geolocation_source_->AppAttemptsToUseGeolocation();
-}
-
-void GeolocationManager::AppCeasesToUseGeolocation() {
-  system_geolocation_source_->AppCeasesToUseGeolocation();
-}
-
 GeolocationManager::GeolocationManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
     : system_geolocation_source_(std::move(system_geolocation_source)),
@@ -109,12 +100,20 @@ SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
   return *system_geolocation_source_;
 }
 
-#else
-
-void GeolocationManager::AppAttemptsToUseGeolocation() {}
-
-void GeolocationManager::AppCeasesToUseGeolocation() {}
-
 #endif
+
+void GeolocationManager::TrackGeolocationAttempted(
+    const std::string& app_name) {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+  system_geolocation_source_->TrackGeolocationAttempted(app_name);
+#endif
+}
+
+void GeolocationManager::TrackGeolocationRelinquished(
+    const std::string& app_name) {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+  system_geolocation_source_->TrackGeolocationRelinquished(app_name);
+#endif
+}
 
 }  // namespace device

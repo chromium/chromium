@@ -77,47 +77,48 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
 };
 
 TEST_F(PrivacyHubGeolocationControllerTest, GetActiveAppsTest) {
-  const std::vector<std::u16string> app_names{u"App1", u"App2", u"App3"};
+  const std::vector<std::string> app_names{"App1", "App2", "App3"};
+  const std::vector<std::u16string> app_names_u16{u"App1", u"App2", u"App3"};
   EXPECT_EQ(controller_->GetActiveApps(3), (std::vector<std::u16string>{}));
-  controller_->OnAppStartsUsingGeolocation(app_names[0]);
+  controller_->TrackGeolocationAttempted(app_names[0]);
   EXPECT_EQ(controller_->GetActiveApps(3),
-            (std::vector<std::u16string>{app_names[0]}));
-  controller_->OnAppStartsUsingGeolocation(app_names[1]);
+            (std::vector<std::u16string>{app_names_u16[0]}));
+  controller_->TrackGeolocationAttempted(app_names[1]);
   EXPECT_EQ(controller_->GetActiveApps(3),
-            (std::vector<std::u16string>{app_names[0], app_names[1]}));
-  controller_->OnAppStartsUsingGeolocation(app_names[1]);
+            (std::vector<std::u16string>{app_names_u16[0], app_names_u16[1]}));
+  controller_->TrackGeolocationAttempted(app_names[1]);
   EXPECT_EQ(controller_->GetActiveApps(3),
-            (std::vector<std::u16string>{app_names[0], app_names[1]}));
-  controller_->OnAppStartsUsingGeolocation(app_names[2]);
-  EXPECT_EQ(controller_->GetActiveApps(3), app_names);
-  controller_->OnAppStopsUsingGeolocation(app_names[2]);
+            (std::vector<std::u16string>{app_names_u16[0], app_names_u16[1]}));
+  controller_->TrackGeolocationAttempted(app_names[2]);
+  EXPECT_EQ(controller_->GetActiveApps(3), app_names_u16);
+  controller_->TrackGeolocationRelinquished(app_names[2]);
   EXPECT_EQ(controller_->GetActiveApps(3),
-            (std::vector<std::u16string>{app_names[0], app_names[1]}));
-  controller_->OnAppStopsUsingGeolocation(app_names[1]);
+            (std::vector<std::u16string>{app_names_u16[0], app_names_u16[1]}));
+  controller_->TrackGeolocationRelinquished(app_names[1]);
   EXPECT_EQ(controller_->GetActiveApps(3),
-            (std::vector<std::u16string>{app_names[0], app_names[1]}));
-  controller_->OnAppStopsUsingGeolocation(app_names[1]);
+            (std::vector<std::u16string>{app_names_u16[0], app_names_u16[1]}));
+  controller_->TrackGeolocationRelinquished(app_names[1]);
   EXPECT_EQ(controller_->GetActiveApps(3),
-            (std::vector<std::u16string>{app_names[0]}));
-  controller_->OnAppStopsUsingGeolocation(app_names[0]);
+            (std::vector<std::u16string>{app_names_u16[0]}));
+  controller_->TrackGeolocationRelinquished(app_names[0]);
   EXPECT_EQ(controller_->GetActiveApps(3), (std::vector<std::u16string>{}));
 }
 
 TEST_F(PrivacyHubGeolocationControllerTest, NotificationOnActivityChangeTest) {
-  const std::u16string app_name = u"app";
+  const std::string app_name = "app";
   SetUserPref(false);
   EXPECT_FALSE(FindNotification());
-  controller_->OnAppStartsUsingGeolocation(app_name);
+  controller_->TrackGeolocationAttempted(app_name);
   EXPECT_TRUE(FindNotification());
-  controller_->OnAppStopsUsingGeolocation(app_name);
+  controller_->TrackGeolocationRelinquished(app_name);
   EXPECT_FALSE(FindNotification());
 }
 
 TEST_F(PrivacyHubGeolocationControllerTest,
        NotificationOnPreferenceChangeTest) {
-  const std::u16string app_name = u"app";
+  const std::string app_name = "app";
   SetUserPref(true);
-  controller_->OnAppStartsUsingGeolocation(app_name);
+  controller_->TrackGeolocationAttempted(app_name);
   EXPECT_FALSE(FindNotification());
   SetUserPref(false);
   EXPECT_TRUE(FindNotification());
@@ -126,9 +127,9 @@ TEST_F(PrivacyHubGeolocationControllerTest,
 }
 
 TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
-  const std::u16string app_name = u"app";
+  const std::string app_name = "app";
   SetUserPref(false);
-  controller_->OnAppStartsUsingGeolocation(app_name);
+  controller_->TrackGeolocationAttempted(app_name);
   // We didn't log any notification clicks so far.
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::

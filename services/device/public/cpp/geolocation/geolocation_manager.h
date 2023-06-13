@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/component_export.h"
 #include "build/build_config.h"
@@ -33,8 +34,8 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Sets the global instance of the Geolocation Manager.
   static void SetInstance(std::unique_ptr<GeolocationManager> manager);
 
-  void AppAttemptsToUseGeolocation();
-  void AppCeasesToUseGeolocation();
+  void TrackGeolocationAttempted(const std::string& app_name = "");
+  void TrackGeolocationRelinquished(const std::string& app_name = "");
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
 // Default empty implementation of Geolocation Manager. It is used on operation

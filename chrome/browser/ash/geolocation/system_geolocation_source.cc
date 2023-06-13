@@ -50,17 +50,29 @@ void SystemGeolocationSource::RegisterPermissionUpdateCallback(
   }
 }
 
-void SystemGeolocationSource::AppAttemptsToUseGeolocation() {
+void SystemGeolocationSource::TrackGeolocationAttempted(
+    const std::string& app_name) {
   if (auto* controller = GeolocationPrivacySwitchController::Get()) {
-    controller->OnAppStartsUsingGeolocation(
-        l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
+    if (!app_name.empty()) {
+      controller->TrackGeolocationAttempted(app_name);
+    } else {
+      // Use the default name for this app.
+      controller->TrackGeolocationAttempted(
+          l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
+    }
   }
 }
 
-void SystemGeolocationSource::AppCeasesToUseGeolocation() {
+void SystemGeolocationSource::TrackGeolocationRelinquished(
+    const std::string& app_name) {
   if (auto* controller = GeolocationPrivacySwitchController::Get()) {
-    controller->OnAppStopsUsingGeolocation(
-        l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
+    if (!app_name.empty()) {
+      controller->TrackGeolocationRelinquished(app_name);
+    } else {
+      // Use the default id for this app.
+      controller->TrackGeolocationAttempted(
+          l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
+    }
   }
 }
 
