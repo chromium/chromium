@@ -154,7 +154,7 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 

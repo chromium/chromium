@@ -1177,7 +1177,8 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
 
 void LayerTreeTest::RequestNewLayerTreeFrameSink() {
   scoped_refptr<viz::TestContextProvider> shared_context_provider =
-      use_software_renderer() ? nullptr : viz::TestContextProvider::Create();
+      use_software_renderer() ? nullptr
+                              : viz::TestContextProvider::CreateRaster();
   scoped_refptr<viz::TestContextProvider> worker_context_provider =
       use_software_renderer() ? nullptr
                               : viz::TestContextProvider::CreateWorker();

@@ -87,7 +87,7 @@ std::unique_ptr<TestFrameSinkImpl> TestFrameSinkImpl::Create() {
   mojo::PendingAssociatedReceiver<viz::mojom::CompositorFrameSink>
       sink_receiver = sink_remote.InitWithNewEndpointAndPassReceiver();
   mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> client;
-  auto context_provider = viz::TestContextProvider::Create();
+  auto context_provider = viz::TestContextProvider::CreateRaster();
 
   return base::WrapUnique(new TestFrameSinkImpl(
       std::move(task_runner), std::move(sink_remote), std::move(client),

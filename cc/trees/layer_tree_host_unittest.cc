@@ -596,7 +596,7 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
     auto main_support = std::make_unique<MockContextSupport>();
     mock_main_context_support_ = main_support.get();
     auto test_main_context_provider =
-        viz::TestContextProvider::Create(std::move(main_support));
+        viz::TestContextProvider::CreateRaster(std::move(main_support));
 
     // Create the main viz::RasterContextProvider with a MockContextSupport.
     auto worker_support = std::make_unique<MockContextSupport>();
@@ -2575,7 +2575,7 @@ class LayerTreeHostTestGpuRasterDeviceSizeChanged : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -6632,7 +6632,7 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
       viz::TestContextProvider* worker_provider) override {
     // The test contexts have gpu raster disabled by default.
     gpu::Capabilities caps =
-        context_provider->UnboundTestContextGL()->test_capabilities();
+        context_provider->UnboundTestRasterInterface()->capabilities();
     EXPECT_FALSE(caps.gpu_rasterization);
     gpu::Capabilities worker_caps =
         worker_provider->UnboundTestRasterInterface()->capabilities();
@@ -6684,7 +6684,7 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -6735,7 +6735,7 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -6784,9 +6784,9 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    viz::TestGLES2Interface* gl = context_provider->UnboundTestContextGL();
-    gl->set_gpu_rasterization(true);
-    gl->set_support_multisample_compatibility(false);
+    auto* compositor = context_provider->UnboundTestRasterInterface();
+    compositor->set_gpu_rasterization(true);
+    compositor->set_multisample_compatibility(false);
     auto* worker = worker_provider->UnboundTestRasterInterface();
     worker->set_gpu_rasterization(true);
     worker->set_multisample_compatibility(false);
@@ -7449,7 +7449,7 @@ class RasterizeWithGpuRasterizationCreatesResources : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -7495,7 +7495,7 @@ class GpuRasterizationRasterizesBorderTiles : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -8146,7 +8146,7 @@ class GpuRasterizationSucceedsWithLargeImage : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -8190,9 +8190,8 @@ class GpuRasterizationSucceedsWithLargeImage : public LayerTreeHostTest {
         host_impl->layer_tree_frame_sink()->context_provider();
     ASSERT_TRUE(context_provider);
 
-    auto* gr_context = context_provider->GrContext();
-    ASSERT_TRUE(gr_context);
-    const uint32_t max_texture_size = gr_context->maxTextureSize();
+    const uint32_t max_texture_size =
+        context_provider->ContextCapabilities().max_texture_size;
     ASSERT_GT(static_cast<uint32_t>(large_image_size_.width()),
               max_texture_size);
   }

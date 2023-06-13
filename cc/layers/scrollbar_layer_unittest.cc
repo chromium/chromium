@@ -40,6 +40,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1421,14 +1422,13 @@ TEST_F(ScaledScrollbarLayerTestResourceCreation, ScaledResourceUpload) {
   // Try something extreme to be larger than max texture size, and make it a
   // non-integer for funsies.
   scoped_refptr<viz::TestContextProvider> context =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   // Keep the max texture size reasonable so we don't OOM on low end devices
   // (crbug.com/642333).
-  context->UnboundTestContextGL()->set_max_texture_size(512);
+  constexpr int max_texture_size = 512;
+
+  context->UnboundTestRasterInterface()->set_max_texture_size(max_texture_size);
   context->BindToCurrentSequence();
-  int max_texture_size = 0;
-  context->ContextGL()->GetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  EXPECT_EQ(512, max_texture_size);
   TestResourceUpload(max_texture_size / 9.9f);
 }
 

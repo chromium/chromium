@@ -52,7 +52,7 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
 
 TEST(LayerTreeFrameSinkTest, ContextLossInformsClient) {
   scoped_refptr<viz::TestContextProvider> provider =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   scoped_refptr<viz::TestContextProvider> worker_provider =
       viz::TestContextProvider::CreateWorker();
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -76,12 +76,12 @@ TEST(LayerTreeFrameSinkTest, ContextLossInformsClient) {
 
 TEST(LayerTreeFrameSinkTest, ContextLossFailsBind) {
   scoped_refptr<viz::TestContextProvider> context_provider =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   scoped_refptr<viz::TestContextProvider> worker_provider =
       viz::TestContextProvider::CreateWorker();
 
   // Lose the context so BindToClient fails.
-  context_provider->UnboundTestContextGL()->set_context_lost(true);
+  context_provider->UnboundTestRasterInterface()->set_context_lost(true);
 
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   StubLayerTreeFrameSink layer_tree_frame_sink(context_provider,
@@ -95,7 +95,7 @@ TEST(LayerTreeFrameSinkTest, ContextLossFailsBind) {
 
 TEST(LayerTreeFrameSinkTest, WorkerContextLossInformsClient) {
   scoped_refptr<viz::TestContextProvider> provider =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   scoped_refptr<viz::TestContextProvider> worker_provider =
       viz::TestContextProvider::CreateWorker();
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -122,7 +122,7 @@ TEST(LayerTreeFrameSinkTest, WorkerContextLossInformsClient) {
 
 TEST(LayerTreeFrameSinkTest, WorkerContextLossFailsBind) {
   scoped_refptr<viz::TestContextProvider> context_provider =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   scoped_refptr<viz::TestContextProvider> worker_provider =
       viz::TestContextProvider::CreateWorker();
 

@@ -817,7 +817,7 @@ class LayerTreeHostContextTestDontUseLostResources
   LayerTreeHostContextTestDontUseLostResources() : lost_context_(false) {
     context_should_support_io_surface_ = true;
 
-    child_context_provider_ = viz::TestContextProvider::Create();
+    child_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto result = child_context_provider_->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
     shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();

@@ -243,7 +243,7 @@ class PictureLayerTilingSetTestWithResources : public testing::Test {
                float ideal_contents_scale,
                float expected_scale) {
     scoped_refptr<viz::TestContextProvider> context_provider =
-        viz::TestContextProvider::Create();
+        viz::TestContextProvider::CreateRaster();
     ASSERT_EQ(context_provider->BindToCurrentSequence(),
               gpu::ContextResult::kSuccess);
     std::unique_ptr<viz::ClientResourceProvider> resource_provider =

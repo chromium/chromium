@@ -1490,8 +1490,9 @@ TEST_F(LegacySWPictureLayerImplTest, ClampTilesToMaxTileSize) {
     worker_context_provider->GetTestRasterInterface()->set_max_texture_size(
         140);
   }
-  ResetLayerTreeFrameSink(FakeLayerTreeFrameSink::Create3d(
-      viz::TestContextProvider::Create(), std::move(worker_context_provider)));
+  ResetLayerTreeFrameSink(
+      FakeLayerTreeFrameSink::Create3d(viz::TestContextProvider::CreateRaster(),
+                                       std::move(worker_context_provider)));
 
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
@@ -1529,8 +1530,9 @@ TEST_F(LegacySWPictureLayerImplTest, ClampSingleTileToToMaxTileSize) {
     worker_context_provider->GetTestRasterInterface()->set_max_texture_size(
         140);
   }
-  ResetLayerTreeFrameSink(FakeLayerTreeFrameSink::Create3d(
-      viz::TestContextProvider::Create(), std::move(worker_context_provider)));
+  ResetLayerTreeFrameSink(
+      FakeLayerTreeFrameSink::Create3d(viz::TestContextProvider::CreateRaster(),
+                                       std::move(worker_context_provider)));
 
   SetupDrawPropertiesAndUpdateTiles(active_layer(), 1.f, 1.f, 1.f);
   ASSERT_LE(1u, active_layer()->tilings()->num_tilings());

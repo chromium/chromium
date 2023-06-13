@@ -11922,7 +11922,7 @@ TEST_F(LayerTreeHostImplTestPrepareTiles, PrepareTilesWhenInvisible) {
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, UIResourceManagement) {
-  auto test_context_provider = viz::TestContextProvider::Create();
+  auto test_context_provider = viz::TestContextProvider::CreateRaster();
   viz::TestSharedImageInterface* sii =
       test_context_provider->SharedImageInterface();
   CreateHostImpl(DefaultSettings(), FakeLayerTreeFrameSink::Create3d(
@@ -11966,7 +11966,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UIResourceManagement) {
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, CreateETC1UIResource) {
-  auto test_context_provider = viz::TestContextProvider::Create();
+  auto test_context_provider = viz::TestContextProvider::CreateRaster();
   viz::TestSharedImageInterface* sii =
       test_context_provider->SharedImageInterface();
   CreateHostImpl(DefaultSettings(), FakeLayerTreeFrameSink::Create3d(
@@ -16029,13 +16029,10 @@ class MsaaIsSlowLayerTreeHostImplTest : public LayerTreeHostImplTest {
     settings.gpu_rasterization_msaa_sample_count = 4;
     auto frame_sink =
         FakeLayerTreeFrameSink::Builder()
-            .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow,
-                         &viz::TestRasterInterface::set_msaa_is_slow,
+            .AllContexts(&viz::TestRasterInterface::set_msaa_is_slow,
                          msaa_is_slow)
-            .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization,
-                         &viz::TestRasterInterface::set_gpu_rasterization, true)
-            .AllContexts(&viz::TestGLES2Interface::set_avoid_stencil_buffers,
-                         &viz::TestRasterInterface::set_avoid_stencil_buffers,
+            .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
+            .AllContexts(&viz::TestRasterInterface::set_avoid_stencil_buffers,
                          avoid_stencil_buffers)
             .Build();
     EXPECT_TRUE(CreateHostImpl(settings, std::move(frame_sink)));
@@ -16080,11 +16077,9 @@ class MsaaCompatibilityLayerTreeHostImplTest : public LayerTreeHostImplTest {
     auto frame_sink =
         FakeLayerTreeFrameSink::Builder()
             .AllContexts(
-                &viz::TestGLES2Interface::set_support_multisample_compatibility,
                 &viz::TestRasterInterface::set_multisample_compatibility,
                 support_multisample_compatibility)
-            .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization,
-                         &viz::TestRasterInterface::set_gpu_rasterization, true)
+            .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
             .Build();
     EXPECT_TRUE(CreateHostImpl(settings, std::move(frame_sink)));
   }

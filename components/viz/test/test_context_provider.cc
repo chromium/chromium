@@ -299,6 +299,20 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
 }
 
 // static
+scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster() {
+  return CreateRaster(std::make_unique<TestContextSupport>());
+}
+
+// static
+scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster(
+    std::unique_ptr<TestContextSupport> context_support) {
+  CHECK(context_support);
+  return base::MakeRefCounted<TestContextProvider>(
+      std::move(context_support), std::make_unique<TestRasterInterface>(),
+      /*support_locking=*/false);
+}
+
+// static
 scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker() {
   return CreateWorker(std::make_unique<TestContextSupport>());
 }
