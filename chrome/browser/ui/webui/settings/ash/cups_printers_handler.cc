@@ -1501,6 +1501,10 @@ void CupsPrintersHandler::HandleRequestPrinterStatus(
 void CupsPrintersHandler::OnPrinterStatusReceived(
     const std::string& callback_id,
     const chromeos::CupsPrinterStatus& printer_status) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+
   ResolveJavascriptCallback(base::Value(callback_id),
                             printer_status.ConvertToValue());
 }
