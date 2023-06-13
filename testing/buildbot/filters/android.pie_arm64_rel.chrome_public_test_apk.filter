@@ -6,9 +6,6 @@
 -org.chromium.chrome.browser.dom_distiller.DistilledPagePrefsTest.testSingleObserverFontScaling
 -org.chromium.chrome.browser.dom_distiller.DistilledPagePrefsTest.testSingleObserverTheme
 
-# crbug.com/963898
--org.chromium.chrome.browser.download.DownloadMediaParserTest.testParseVideoH264
-
 # crbug.com/1018181
 -org.chromium.chrome.browser.download.home.DownloadActivityV2Test.testLaunchingActivity
 
