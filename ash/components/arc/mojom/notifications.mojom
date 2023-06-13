@@ -127,10 +127,11 @@ struct ArcNotificationData {
   ArcNotificationPriority priority;
   // Timestamp related to the notification
   int64 time;
-  // DEPRECATED: The current value of progress, must be [0, progress_max].
-  int32 deprecated_progress_current;
-  // DEPRECATED: The maximum value of progress.
-  int32 deprecated_progress_max;
+  // The current value of progress. If in progress, the value must be in
+  // [0, progress_max]. Otherwise set to -1.
+  int32 progress_current;
+  // The maximum value of progress.
+  int32 progress_max;
   // Action buttons, provided when the notification is action enabled and
   // rendered on Chrome.
   array<ArcNotificationButton>? buttons;
