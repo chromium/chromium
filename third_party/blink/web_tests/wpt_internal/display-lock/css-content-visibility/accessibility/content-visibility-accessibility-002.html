@@ -45,18 +45,13 @@ async_test((t) => {
   requestAnimationFrame(() => requestAnimationFrame(() => {
     // The ax object for #target got replaced since the layout object changed, so use the new ax object.
     axTarget = axElementById("target");
-    // It's still the same 5 children, but the non-whitespace nodes became unignored.
-    // Note whitespace nodes would not be there if the subtree was not hidden in first place, the total would be 3 children.
-    t.step(() => { assert_equals(axTarget.childrenCount, 5); });
+    // There are now 3 children, as the whitespace nodes are no longer included in the tree.
+    // This is the same as it would be if content-visibility had never been used.
+    t.step(() => { assert_equals(axTarget.childrenCount, 3); });
     t.step(() => { assert_equals(axTarget.name, "Label"); });
     for (let i = 0; i < axTarget.childrenCount; ++i) {
       const axChild = axTarget.childAtIndex(i);
-      if (i == 0 || axChild == axElementById("child") || axChild == axElementById("target_label")) {
-        t.step(() => { assert_false(axChild.isIgnored, "After update, isIgnored is false on non-whitespace child #" + i); });
-      } else {
-        // These are the whitespace nodes
-        t.step(() => { assert_true(axChild.isIgnored, "After update, isIgnored is true on whitespace child #" + i); });
-      }
+      t.step(() => { assert_false(axChild.isIgnored, "After update, isIgnored is false on child #" + i); });
     }
     t.done();
   }));

@@ -1638,6 +1638,13 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
     if (node->IsPseudoElement()) {
       DeferTreeUpdate(&AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout, node);
     }
+    if (layout_object->Style() &&
+        !layout_object->Style()->IsContentVisibilityVisible()) {
+      // If a content-visibility: auto/hidden node is removed, remove the entire
+      // subtree because any AXObject descendants are now invalid, and there
+      // will not be any other signals to hook for invalidation or removal.
+      RemoveSubtreeWhenSafe(node);
+    }
     if (IsA<HTMLImageElement>(node)) {
       // If an image is removed, ensure its entire subtree is deleted as there
       // may have been children supplied via a map.
@@ -2181,6 +2188,17 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
     // Fire children changed on the focused element that owns this popup.
     ChildrenChanged(GetDocument().FocusedElement());
     return;
+  }
+
+  // If the node is the root of a display locked subtree, and it already had an
+  // AXObject, its entire subtree needs to be invalidated. Now that it has
+  // layout, its subtree will be rebuilt using AXLayoutObject rather than
+  // AXNodeObject.
+  if (node->GetLayoutObject() && node->GetLayoutObject()->Style() &&
+      !node->GetLayoutObject()->Style()->IsContentVisibilityVisible() &&
+      node_object_mapping_.Contains(node)) {
+    RemoveSubtreeWithFlatTraversal(node, /* remove_root */ false,
+                                   /* notify_parent */ false);
   }
 
   DeferTreeUpdate(

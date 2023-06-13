@@ -31,9 +31,9 @@ async_test((t) => {
   const listener = (e) => {
     if (!e.skipped) {
       let axHidden = axElementById("hidden");
-      t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count after activation"); });
-      const axChild = axHidden.childAtIndex(2);
-      t.step(() => { assert_true(axChild.isIgnored, "After update, isIgnored is true on whitespace node"); });
+      // Now #target is not locked, expect 2 children (no whitespace node).
+      // This is the same as it would be if content-visibility had never been used.
+      t.step(() => { assert_equals(axHidden.childrenCount, 2, "Children count after activation"); });
       t.done();
     }
   };
