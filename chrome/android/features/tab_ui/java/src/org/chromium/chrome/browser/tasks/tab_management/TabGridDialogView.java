@@ -40,7 +40,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -198,14 +197,14 @@ public class TabGridDialogView extends FrameLayout {
         ObjectAnimator dialogFadeInAnimator =
                 ObjectAnimator.ofFloat(mDialogContainerView, View.ALPHA, 0f, 1f);
         mBasicFadeInAnimation.play(dialogFadeInAnimator);
-        mBasicFadeInAnimation.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        mBasicFadeInAnimation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         mBasicFadeInAnimation.setDuration(DIALOG_ANIMATION_DURATION);
 
         mBasicFadeOutAnimation = new AnimatorSet();
         ObjectAnimator dialogFadeOutAnimator =
                 ObjectAnimator.ofFloat(mDialogContainerView, View.ALPHA, 1f, 0f);
         mBasicFadeOutAnimation.play(dialogFadeOutAnimator);
-        mBasicFadeOutAnimation.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        mBasicFadeOutAnimation.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mBasicFadeOutAnimation.setDuration(DIALOG_ANIMATION_DURATION);
         mBasicFadeOutAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -361,7 +360,7 @@ public class TabGridDialogView extends FrameLayout {
         Rect parentRect = new Rect();
         mParent.getGlobalVisibleRect(parentRect);
         rect.offset(0, -parentRect.top);
-        // Setup a dummy animation card that looks the same as the original tab grid card for
+        // Setup a stand-in animation card that looks the same as the original tab grid card for
         // animation.
         updateAnimationCardView(mItemView);
 
@@ -677,7 +676,7 @@ public class TabGridDialogView extends FrameLayout {
             return;
         }
 
-        // Update the dummy animation card view with the actual item view from grid tab switcher
+        // Update the stand-in animation card view with the actual item view from grid tab switcher
         // recyclerView.
         FrameLayout.LayoutParams params =
                 (FrameLayout.LayoutParams) mAnimationCardView.getLayoutParams();
