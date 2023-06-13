@@ -18,6 +18,10 @@
 #include "media/capture/video/mac/gpu_memory_buffer_tracker_mac.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
+#endif
+
 namespace media {
 
 std::unique_ptr<VideoCaptureBufferTracker>
@@ -29,6 +33,8 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
       return std::make_unique<GpuMemoryBufferTracker>();
 #elif BUILDFLAG(IS_MAC)
       return std::make_unique<GpuMemoryBufferTrackerMac>();
+#elif BUILDFLAG(IS_LINUX)
+      return std::make_unique<V4L2GpuMemoryBufferTracker>();
 #else
       return nullptr;
 #endif
