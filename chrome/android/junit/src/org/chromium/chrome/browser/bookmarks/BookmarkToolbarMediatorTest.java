@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -54,7 +55,9 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,6 +98,9 @@ public class BookmarkToolbarMediatorTest {
     private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock
     private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
+    @Mock
+    private PropertyObserver<PropertyKey> mPropertyObserver;
+
     @Spy
     private Context mContext;
 
@@ -188,12 +194,29 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void selectionStateChangeHidesKeyboard() {
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals(true, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
 
         mMediator.onSelectionStateChange(null);
         assertEquals(false, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void selectionStateChangeHidesKeyboard_improvedBookmarks() {
+        mModel.addObserver(mPropertyObserver);
+
+        mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
+        verify(mPropertyObserver, never())
+                .onPropertyChanged(any(), eq(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
+
+        mMediator.onUiModeChanged(BookmarkUiMode.FOLDER);
+        verify(mPropertyObserver, never())
+                .onPropertyChanged(any(), eq(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
+
+        mModel.removeObserver(mPropertyObserver);
     }
 
     @Test

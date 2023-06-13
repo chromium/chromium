@@ -207,8 +207,13 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     @Override
     public void onUiModeChanged(@BookmarkUiMode int mode) {
-        mModel.set(
-                BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE, mode == BookmarkUiMode.SEARCHING);
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            // TODO(https://crbug.com/1439583): Update title and buttons.
+        } else {
+            mModel.set(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE,
+                    mode == BookmarkUiMode.SEARCHING);
+        }
+
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, mode);
         if (mode == BookmarkUiMode.LOADING) {
             mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.NONE);

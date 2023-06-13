@@ -88,10 +88,12 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             showNormalView();
         }
 
-        if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
-            showSearchView(mSoftKeyboardVisible);
-        } else {
-            hideSearchView(/*notify=*/false);
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
+                showSearchView(mSoftKeyboardVisible);
+            } else {
+                hideSearchView(/*notify=*/false);
+            }
         }
     }
 

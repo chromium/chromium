@@ -1035,11 +1035,9 @@ class BookmarkManagerMediator
     }
 
     private ListItem buildSearchBoxRow() {
-        // TODO(https://crbug.com/1439583): On search, also hide back button, update title, toolbar
-        // menu buttons.
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                        .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, this::search)
+                        .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, this::onQueryCallback)
                         .build();
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
@@ -1295,6 +1293,17 @@ class BookmarkManagerMediator
             openFolder(id);
         } else {
             openBookmark(id);
+        }
+    }
+
+    private void onQueryCallback(String text) {
+        final @BookmarkUiMode int currentUiMode = getCurrentUiMode();
+        if (!TextUtils.isEmpty(text)) {
+            // #setState will no-op if we're already in a search state.
+            setState(BookmarkUiState.createSearchState());
+            search(text);
+        } else if (currentUiMode == BookmarkUiMode.SEARCHING) {
+            onEndSearch();
         }
     }
 

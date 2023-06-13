@@ -1026,4 +1026,27 @@ public class BookmarkManagerMediatorTest {
         // Mostly just verifying that #syncAdapterAndSelectionDelegate() doesn't crash.
         assertEquals(2, mModelList.size());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testQueryCallback() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertEquals(3, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel propertyModel = mModelList.get(0).model;
+        Callback<String> queryCallback =
+                propertyModel.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK);
+        assertNotNull(queryCallback);
+
+        queryCallback.onResult("foo");
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        verify(mBookmarkModel).searchBookmarks(eq("foo"), anyInt());
+
+        queryCallback.onResult("");
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        verify(mBookmarkModel, never()).searchBookmarks(eq(""), anyInt());
+        verify(mBookmarkModel, never()).searchBookmarks(eq(null), anyInt());
+    }
 }
