@@ -197,6 +197,8 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
 
   io_callback_ = base::BindRepeating(&Transaction::OnIOComplete,
                                      weak_factory_.GetWeakPtr());
+  cache_io_callback_ = base::BindRepeating(&Transaction::OnCacheIOComplete,
+                                           weak_factory_.GetWeakPtr());
 }
 
 HttpCache::Transaction::~Transaction() {
@@ -1398,7 +1400,7 @@ int HttpCache::Transaction::DoAddToEntry() {
   new_entry_->opened = true;
 
   int rv = cache_->AddTransactionToEntry(new_entry_, this);
-  DCHECK_EQ(rv, ERR_IO_PENDING);
+  CHECK_EQ(rv, ERR_IO_PENDING);
 
   // If headers phase is already done then we are here because of validation not
   // matching and creating a new entry. This transaction should be the
@@ -1412,14 +1414,25 @@ int HttpCache::Transaction::DoAddToEntry() {
 
   TransitionToState(STATE_ADD_TO_ENTRY_COMPLETE);
 
+  // For a very-select case of creating a new non-range request entry, run the
+  // AddTransactionToEntry in parallel with sending the network request to
+  // hide the latency. This will run until the next ERR_IO_PENDING (or
+  // failure).
+  if (!partial_ && mode_ == WRITE &&
+      base::FeatureList::IsEnabled(features::kAsyncCacheLock)) {
+    CHECK(!waiting_for_cache_io_);
+    waiting_for_cache_io_ = true;
+    rv = OK;
+  }
+
   entry_lock_waiting_since_ = TimeTicks::Now();
   AddCacheLockTimeoutHandler(new_entry_);
   return rv;
 }
 
 void HttpCache::Transaction::AddCacheLockTimeoutHandler(ActiveEntry* entry) {
-  DCHECK(next_state_ == STATE_ADD_TO_ENTRY_COMPLETE ||
-         next_state_ == STATE_FINISH_HEADERS_COMPLETE);
+  CHECK(next_state_ == STATE_ADD_TO_ENTRY_COMPLETE ||
+        next_state_ == STATE_FINISH_HEADERS_COMPLETE);
   if ((bypass_lock_for_test_ && next_state_ == STATE_ADD_TO_ENTRY_COMPLETE) ||
       (bypass_lock_after_headers_for_test_ &&
        next_state_ == STATE_FINISH_HEADERS_COMPLETE)) {
@@ -1470,15 +1483,19 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
     base::UmaHistogramTimes("HttpCache.AddTransactionToEntry", entry_lock_wait);
   }
 
-  entry_lock_waiting_since_ = TimeTicks();
   DCHECK(new_entry_);
-  cache_pending_ = false;
 
-  if (result == OK)
-    entry_ = new_entry_;
+  if (!waiting_for_cache_io_) {
+    entry_lock_waiting_since_ = TimeTicks();
+    cache_pending_ = false;
 
-  // If there is a failure, the cache should have taken care of new_entry_.
-  new_entry_ = nullptr;
+    if (result == OK) {
+      entry_ = new_entry_;
+    }
+
+    // If there is a failure, the cache should have taken care of new_entry_.
+    new_entry_ = nullptr;
+  }
 
   if (result == ERR_CACHE_RACE) {
     TransitionToState(STATE_HEADERS_PHASE_CANNOT_PROCEED);
@@ -1504,8 +1521,9 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
   // TODO(crbug.com/713354) Access timestamp for histograms only if entry is
   // already written, to avoid data race since cache thread can also access
   // this.
-  if (!cache_->IsWritingInProgress(entry()))
+  if (entry_ && !cache_->IsWritingInProgress(entry())) {
     open_entry_last_used_ = entry_->GetEntry()->GetLastUsed();
+  }
 
   // TODO(jkarlin): We should either handle the case or DCHECK.
   if (result != OK) {
@@ -1864,6 +1882,12 @@ int HttpCache::Transaction::DoSendRequest() {
 
   TransitionToState(STATE_SEND_REQUEST_COMPLETE);
   rv = network_trans_->Start(request_, io_callback_, net_log_);
+  if (rv != ERR_IO_PENDING && waiting_for_cache_io_) {
+    // queue the state transition until the HttpCache transaction completes
+    DCHECK(!pending_io_result_);
+    pending_io_result_ = rv;
+    rv = ERR_IO_PENDING;
+  }
   return rv;
 }
 
@@ -2324,7 +2348,7 @@ int HttpCache::Transaction::DoFinishHeaders(int result) {
 
   // If the transaction needs to wait because another transaction is still
   // writing the response body, it will return ERR_IO_PENDING now and the
-  // io_callback_ will be invoked when the wait is done.
+  // cache_io_callback_ will be invoked when the wait is done.
   int rv = cache_->DoneWithResponseHeaders(entry_, this, partial_ != nullptr);
   DCHECK(!reading_ || rv == OK) << "Expected OK, but got " << rv;
 
@@ -3644,16 +3668,17 @@ void HttpCache::Transaction::OnCacheLockTimeout(base::TimeTicks start_time) {
     return;
 
   DCHECK(next_state_ == STATE_ADD_TO_ENTRY_COMPLETE ||
-         next_state_ == STATE_FINISH_HEADERS_COMPLETE);
+         next_state_ == STATE_FINISH_HEADERS_COMPLETE || waiting_for_cache_io_);
 
   if (!cache_)
     return;
 
-  if (next_state_ == STATE_ADD_TO_ENTRY_COMPLETE)
+  if (next_state_ == STATE_ADD_TO_ENTRY_COMPLETE || waiting_for_cache_io_) {
     cache_->RemovePendingTransaction(this);
-  else
+  } else {
     DoneWithEntry(false /* entry_is_complete */);
-  OnIOComplete(ERR_CACHE_LOCK_TIMEOUT);
+  }
+  OnCacheIOComplete(ERR_CACHE_LOCK_TIMEOUT);
 }
 
 void HttpCache::Transaction::DoomPartialEntry(bool delete_object) {
@@ -4000,7 +4025,46 @@ void HttpCache::Transaction::SaveNetworkTransactionInfo(
 }
 
 void HttpCache::Transaction::OnIOComplete(int result) {
-  DoLoop(result);
+  if (waiting_for_cache_io_) {
+    CHECK_NE(result, ERR_CACHE_RACE);
+    // If the HttpCache IO hasn't completed yet, queue the IO result
+    // to be processed when the HttpCache IO completes (or times out).
+    pending_io_result_ = result;
+  } else {
+    DoLoop(result);
+  }
+}
+
+void HttpCache::Transaction::OnCacheIOComplete(int result) {
+  if (waiting_for_cache_io_) {
+    // Handle the case of parallel HttpCache transactions being run against
+    // network IO.
+    waiting_for_cache_io_ = false;
+    cache_pending_ = false;
+    entry_lock_waiting_since_ = TimeTicks();
+
+    if (result == OK) {
+      entry_ = new_entry_;
+      if (!cache_->IsWritingInProgress(entry())) {
+        open_entry_last_used_ = entry_->GetEntry()->GetLastUsed();
+      }
+    } else {
+      // The HttpCache transaction failed or timed out. Bypass the cache in
+      // this case independent of the state of the network IO callback.
+      mode_ = NONE;
+    }
+    new_entry_ = nullptr;
+
+    // See if there is a pending IO result that completed while the HttpCache
+    // transaction was being processed that now needs to be processed.
+    if (pending_io_result_) {
+      int stored_result = pending_io_result_.value();
+      pending_io_result_ = absl::nullopt;
+      OnIOComplete(stored_result);
+    }
+  } else {
+    DoLoop(result);
+  }
 }
 
 void HttpCache::Transaction::TransitionToState(State state) {

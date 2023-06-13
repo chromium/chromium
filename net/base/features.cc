@@ -375,4 +375,10 @@ BASE_FEATURE(kForceThirdPartyCookieBlocking,
              "ForceThirdPartyCookieBlockingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the HTTP Cache Transaction write lock should be acquired async with
+// sending the HTTP request.
+BASE_FEATURE(kAsyncCacheLock,
+             "AsyncCacheLock",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

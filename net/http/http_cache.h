@@ -227,6 +227,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     bypass_lock_after_headers_for_test_ = true;
   }
 
+  void DelayAddTransactionToEntryForTesting() {
+    delay_add_transaction_to_entry_for_test_ = true;
+  }
+
   // Causes all transactions created after this point to generate a failure
   // when attempting to conditionalize a network request.
   void FailConditionalizationForTest() {
@@ -421,9 +425,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Makes sure that the backend creation is complete before allowing the
   // provided transaction to use the object. Returns an error code.
-  // |transaction| will be notified via its IO callback if this method returns
-  // ERR_IO_PENDING. The transaction is free to use the backend directly at any
-  // time after receiving the notification.
+  // |transaction| will be notified via its Cache IO callback if this method
+  // returns ERR_IO_PENDING. The transaction is free to use the backend
+  // directly at any time after receiving the notification.
   int GetBackendForTransaction(Transaction* transaction);
 
   // Dooms the entry selected by |key|, if it is currently in the list of active
@@ -431,15 +435,15 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void DoomActiveEntry(const std::string& key);
 
   // Dooms the entry selected by |key|. |transaction| will be notified via its
-  // IO callback if this method returns ERR_IO_PENDING. The entry can be
-  // currently in use or not. If entry is in use and the invoking transaction is
-  // associated with this entry and this entry is already doomed, this API
+  // Cache IO callback if this method returns ERR_IO_PENDING. The entry can be
+  // currently in use or not. If entry is in use and the invoking transaction
+  // is associated with this entry and this entry is already doomed, this API
   // should not be invoked.
   int DoomEntry(const std::string& key, Transaction* transaction);
 
   // Dooms the entry selected by |key|. |transaction| will be notified via its
-  // IO callback if this method returns ERR_IO_PENDING. The entry should not be
-  // currently in use.
+  // Cache IO callback if this method returns ERR_IO_PENDING. The entry should
+  // not be currently in use.
   int AsyncDoomEntry(const std::string& key, Transaction* transaction);
 
   // Dooms the entry associated with a GET for a given url and network
@@ -473,25 +477,25 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Opens the disk cache entry associated with |key|, creating the entry if it
   // does not already exist, returning an ActiveEntry in |*entry|. |transaction|
-  // will be notified via its IO callback if this method returns ERR_IO_PENDING.
-  // This should not be called if there already is an active entry associated
-  // with |key|, e.g. you should call FindActiveEntry first.
+  // will be notified via its Cache IO callback if this method returns
+  // ERR_IO_PENDING. This should not be called if there already is an active
+  // entry associated with |key|, e.g. you should call FindActiveEntry first.
   int OpenOrCreateEntry(const std::string& key,
                         ActiveEntry** entry,
                         Transaction* transaction);
 
   // Opens the disk cache entry associated with |key|, returning an ActiveEntry
-  // in |*entry|. |transaction| will be notified via its IO callback if this
-  // method returns ERR_IO_PENDING. This should not be called if there already
-  // is an active entry associated with |key|, e.g. you should call
+  // in |*entry|. |transaction| will be notified via its Cache IO callback if
+  // this method returns ERR_IO_PENDING. This should not be called if there
+  // already is an active entry associated with |key|, e.g. you should call
   // FindActiveEntry first.
   int OpenEntry(const std::string& key,
                 ActiveEntry** entry,
                 Transaction* transaction);
 
   // Creates the disk cache entry associated with |key|, returning an
-  // ActiveEntry in |*entry|. |transaction| will be notified via its IO callback
-  // if this method returns ERR_IO_PENDING.
+  // ActiveEntry in |*entry|. |transaction| will be notified via its Cache IO
+  // callback if this method returns ERR_IO_PENDING.
   int CreateEntry(const std::string& key,
                   ActiveEntry** entry,
                   Transaction* transaction);
@@ -501,7 +505,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void DestroyEntry(ActiveEntry* entry);
 
   // Adds a transaction to an ActiveEntry. This method returns ERR_IO_PENDING
-  // and the transaction will be notified about completion via its IO callback.
+  // and the transaction will be notified about completion via a callback to
+  // cache_io_callback().
   // In a failure case, the callback will be invoked with ERR_CACHE_RACE.
   int AddTransactionToEntry(ActiveEntry* entry, Transaction* transaction);
 
@@ -509,7 +514,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // If the transaction is responsible for writing the response body,
   // it becomes the writer and returns OK. In other cases ERR_IO_PENDING is
   // returned and the transaction will be notified about completion via its
-  // IO callback. In a failure case, the callback will be invoked with
+  // Cache IO callback. In a failure case, the callback will be invoked with
   // ERR_CACHE_RACE.
   int DoneWithResponseHeaders(ActiveEntry* entry,
                               Transaction* transaction,
@@ -559,18 +564,22 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Restarts the headers_transaction by setting its state. Since the
   // headers_transaction is awaiting an asynchronous operation completion,
-  // it will be restarted when it's IO callback is invoked.
+  // it will be restarted when it's Cache IO callback is invoked.
   void RestartHeadersTransaction(ActiveEntry* entry);
 
   // Resumes processing the queued transactions of |entry|.
   void ProcessQueuedTransactions(ActiveEntry* entry);
 
   // Checks if a transaction can be added to the entry. If yes, it will
-  // invoke the IO callback of the transaction. This is a helper function for
-  // OnProcessQueuedTransactions. It will take a transaction from
+  // invoke the Cache IO callback of the transaction. This is a helper function
+  // for OnProcessQueuedTransactions. It will take a transaction from
   // add_to_entry_queue and make it a headers_transaction, if one doesn't exist
   // already.
   void ProcessAddToEntryQueue(ActiveEntry* entry);
+
+  // The implementation is split into a separate function so that it can be
+  // called with a delay for testing.
+  void ProcessAddToEntryQueueImpl(ActiveEntry* entry);
 
   // Returns if the transaction can join other transactions for writing to
   // the cache simultaneously. It is only supported for non-Read only,
@@ -665,6 +674,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   bool building_backend_ = false;
   bool bypass_lock_for_test_ = false;
   bool bypass_lock_after_headers_for_test_ = false;
+  bool delay_add_transaction_to_entry_for_test_ = false;
   bool fail_conditionalization_for_test_ = false;
 
   Mode mode_ = NORMAL;

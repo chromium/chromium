@@ -194,7 +194,7 @@ class HttpCache::WorkItem {
     if (entry_)
       *entry_ = entry;
     if (transaction_)
-      transaction_->io_callback().Run(result);
+      transaction_->cache_io_callback().Run(result);
   }
 
   // Notifies the caller about the operation completion. Returns true if the
@@ -890,7 +890,10 @@ int HttpCache::AddTransactionToEntry(ActiveEntry* entry,
   DCHECK(entry->GetEntry());
   // Always add a new transaction to the queue to maintain FIFO order.
   entry->add_to_entry_queue.push_back(transaction);
-  ProcessQueuedTransactions(entry);
+  // Don't process the transaction if the lock timeout handling is being tested.
+  if (!bypass_lock_for_test_) {
+    ProcessQueuedTransactions(entry);
+  }
   return ERR_IO_PENDING;
 }
 
@@ -1045,7 +1048,7 @@ void HttpCache::DoomEntryValidationNoMatch(ActiveEntry* entry) {
     transaction->ResetCachePendingState();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(transaction->io_callback(), net::ERR_CACHE_RACE));
+        base::BindOnce(transaction->cache_io_callback(), net::ERR_CACHE_RACE));
   }
   entry->add_to_entry_queue.clear();
 }
@@ -1082,7 +1085,7 @@ void HttpCache::ProcessEntryFailure(ActiveEntry* entry) {
   }
   // ERR_CACHE_RACE causes the transaction to restart the whole process.
   for (auto* queued_transaction : list)
-    queued_transaction->io_callback().Run(net::ERR_CACHE_RACE);
+    queued_transaction->cache_io_callback().Run(net::ERR_CACHE_RACE);
 }
 
 void HttpCache::RestartHeadersPhaseTransactions(ActiveEntry* entry) {
@@ -1093,7 +1096,7 @@ void HttpCache::RestartHeadersPhaseTransactions(ActiveEntry* entry) {
   while (it != entry->done_headers_queue.end()) {
     Transaction* done_headers_transaction = *it;
     it = entry->done_headers_queue.erase(it);
-    done_headers_transaction->io_callback().Run(net::ERR_CACHE_RACE);
+    done_headers_transaction->cache_io_callback().Run(net::ERR_CACHE_RACE);
   }
 }
 
@@ -1120,6 +1123,20 @@ void HttpCache::ProcessQueuedTransactions(ActiveEntry* entry) {
 }
 
 void HttpCache::ProcessAddToEntryQueue(ActiveEntry* entry) {
+  if (delay_add_transaction_to_entry_for_test_) {
+    // Post a task to put the AddTransactionToEntry handling at the back of
+    // the task queue. This allows other tasks (like network IO) to jump
+    // ahead and simulate different callback ordering for testing.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpCache::ProcessAddToEntryQueueImpl, GetWeakPtr(),
+                       base::UnsafeDanglingUntriaged(entry)));
+  } else {
+    ProcessAddToEntryQueueImpl(entry);
+  }
+}
+
+void HttpCache::ProcessAddToEntryQueueImpl(ActiveEntry* entry) {
   DCHECK(!entry->add_to_entry_queue.empty());
 
   // Note the entry may be new or may already have a response body written to
@@ -1132,7 +1149,7 @@ void HttpCache::ProcessAddToEntryQueue(ActiveEntry* entry) {
   entry->add_to_entry_queue.erase(entry->add_to_entry_queue.begin());
   entry->headers_transaction = transaction;
 
-  transaction->io_callback().Run(OK);
+  transaction->cache_io_callback().Run(OK);
 }
 
 HttpCache::ParallelWritingPattern HttpCache::CanTransactionJoinExistingWriters(
@@ -1198,7 +1215,7 @@ void HttpCache::ProcessDoneHeadersQueue(ActiveEntry* entry) {
   ProcessQueuedTransactions(entry);
 
   entry->done_headers_queue.erase(entry->done_headers_queue.begin());
-  transaction->io_callback().Run(OK);
+  transaction->cache_io_callback().Run(OK);
 }
 
 void HttpCache::AddTransactionToWriters(
