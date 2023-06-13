@@ -46,11 +46,20 @@ bool IsSearchInCompanionSidePanelSupported(const Browser* browser) {
   if (!browser) {
     return false;
   }
-  auto* profile = browser->profile();
-  DCHECK(profile);
-  return search::DefaultSearchProviderIsGoogle(profile) &&
-         !profile->IsOffTheRecord() && browser->is_type_normal() &&
-         IsCompanionFeatureEnabled() &&
+  if (!browser->is_type_normal()) {
+    return false;
+  }
+  return IsSearchInCompanionSidePanelSupportedForProfile(browser->profile());
+}
+
+bool IsSearchInCompanionSidePanelSupportedForProfile(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  return !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
+         search::DefaultSearchProviderIsGoogle(profile) &&
+         !profile->IsOffTheRecord() && IsCompanionFeatureEnabled() &&
          IsCompanionFeatureEnabledByPolicy(profile->GetPrefs());
 }
 
