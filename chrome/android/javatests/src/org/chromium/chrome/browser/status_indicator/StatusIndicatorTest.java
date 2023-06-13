@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -153,7 +152,6 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1188377")
     public void testShowAfterHide() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
