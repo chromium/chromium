@@ -30,13 +30,14 @@ class GtestFilter extends Filter {
     private static final Pattern OPEN_BRACKET = Pattern.compile("\\[");
     private static final Pattern CLOSED_BRACKET = Pattern.compile("\\]");
 
+    // Matches a test that can have an SDK version in the name: org.class.testInvalidMinidump[28]
+    private static final Pattern GTEST_NAME_REGEX = Pattern.compile("(.*)?\\[\\d+\\]$");
     /**
      *  Creates the filter and converts the provided googletest-style filter
      *  string into positive and negative regexes.
      */
     public GtestFilter(String filterString) {
         mFilterString = filterString;
-
         String[] filterStrings = DASH.split(filterString, 2);
         mPositiveRegexes = generatePatternSet(filterStrings[0]);
         if (filterStrings.length == 2) {
@@ -78,10 +79,14 @@ class GtestFilter extends Filter {
     public boolean shouldRun(Description description) {
         if (description.getMethodName() == null) return true;
 
+        String gtestSdkName = description.getClassName() + "." + description.getMethodName();
         String gtestName = description.getClassName() + "." + description.getMethodName();
-        // getDisplayName includes the SDK version when robolectric property
-        // alwaysIncludeVariantMarkersInTestName is set.
-        String gtestSdkName = description.getClassName() + "." + description.getDisplayName();
+        // Use regex to get test name without sdk appended to make filtering more intuitive.
+        // Some tests may not have an sdk version.
+        Matcher gtestNameMatcher = GTEST_NAME_REGEX.matcher(gtestName);
+        if (gtestNameMatcher.find()) {
+            gtestName = gtestNameMatcher.group(1);
+        }
 
         for (Pattern p : mNegativeRegexes) {
             if (p.matcher(gtestName).matches() || p.matcher(gtestSdkName).matches()) return false;
