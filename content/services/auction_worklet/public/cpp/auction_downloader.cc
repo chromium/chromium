@@ -153,6 +153,7 @@ void WriteTraceTiming(const net::LoadTimingInfo& timing,
 AuctionDownloader::AuctionDownloader(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& source_url,
+    DownloadMode download_mode,
     MimeType mime_type,
     AuctionDownloaderCallback auction_downloader_callback)
     : source_url_(source_url),
@@ -194,12 +195,29 @@ AuctionDownloader::AuctionDownloader(
   simple_url_loader_->SetTimeoutDuration(base::Seconds(30));
 
   // TODO(mmenke): Consider limiting the size of response bodies.
-  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, base::BindOnce(&AuctionDownloader::OnBodyReceived,
-                                         base::Unretained(this)));
+  if (download_mode == DownloadMode::kActualDownload) {
+    simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        url_loader_factory, base::BindOnce(&AuctionDownloader::OnBodyReceived,
+                                           base::Unretained(this)));
+  } else {
+    simple_url_loader_->DownloadHeadersOnly(
+        url_loader_factory,
+        base::BindOnce(&AuctionDownloader::OnHeadersOnlyReceived,
+                       base::Unretained(this)));
+  }
 }
 
 AuctionDownloader::~AuctionDownloader() = default;
+
+void AuctionDownloader::OnHeadersOnlyReceived(
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  // Pretend to have a response with empty body on success, so we can share the
+  // code with the actually-downloading path.
+  // (It will get the headers out of SimpleUrlLoader)
+  OnBodyReceived(headers && simple_url_loader_->NetError() == net::OK
+                     ? std::make_unique<std::string>()
+                     : nullptr);
+}
 
 void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   DCHECK(auction_downloader_callback_);

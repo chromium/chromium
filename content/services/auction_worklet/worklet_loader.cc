@@ -83,7 +83,8 @@ WorkletLoaderBase::WorkletLoaderBase(
          mime_type == AuctionDownloader::MimeType::kWebAssembly);
 
   auction_downloader_ = std::make_unique<AuctionDownloader>(
-      url_loader_factory, source_url, mime_type,
+      url_loader_factory, source_url,
+      AuctionDownloader::DownloadMode::kActualDownload, mime_type,
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)));
 }

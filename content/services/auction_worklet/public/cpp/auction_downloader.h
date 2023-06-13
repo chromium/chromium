@@ -36,6 +36,16 @@ class CONTENT_EXPORT AuctionDownloader {
     kWebAssembly,
   };
 
+  // This determines how the downloaded data is handled.
+  enum class DownloadMode {
+    // The data is collected in memory and passed to the callback.
+    kActualDownload,
+
+    // The data is discarded as it comes in and the callback is invoked with an
+    // empty string.
+    kSimulatedDownload
+  };
+
   // Passes in nullptr on failure. Always invoked asynchronously. Will not be
   // invoked after the AuctionDownloader is destroyed.
   using AuctionDownloaderCallback =
@@ -47,6 +57,7 @@ class CONTENT_EXPORT AuctionDownloader {
   // asynchronously once the data has been fetched or an error has occurred.
   AuctionDownloader(network::mojom::URLLoaderFactory* url_loader_factory,
                     const GURL& source_url,
+                    DownloadMode download_mode,
                     MimeType mime_type,
                     AuctionDownloaderCallback auction_downloader_callback);
   explicit AuctionDownloader(const AuctionDownloader&) = delete;
@@ -56,6 +67,8 @@ class CONTENT_EXPORT AuctionDownloader {
   const GURL& source_url() const { return source_url_; }
 
  private:
+  void OnHeadersOnlyReceived(scoped_refptr<net::HttpResponseHeaders> headers);
+
   void OnBodyReceived(std::unique_ptr<std::string> body);
 
   void OnRedirect(const GURL& url_before_redirect,

@@ -130,11 +130,11 @@ source_set("tests") {
   }
 
   sources = [
-    "public/cpp/auction_downloader_unittest.cc",
     "auction_v8_inspector_util_unittest.cc",
     "context_recycler_unittest.cc",
     "debug_command_queue_unittest.cc",
     "direct_from_seller_signals_requester_unittest.cc",
+    "public/cpp/auction_downloader_unittest.cc",
     "seller_worklet_unittest.cc",
     "trusted_signals_request_manager_unittest.cc",
     "trusted_signals_unittest.cc",

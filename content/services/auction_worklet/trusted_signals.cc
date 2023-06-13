@@ -445,7 +445,9 @@ void TrustedSignals::StartDownload(
     const GURL& full_signals_url) {
   download_start_time_ = base::TimeTicks::Now();
   auction_downloader_ = std::make_unique<AuctionDownloader>(
-      url_loader_factory, full_signals_url, AuctionDownloader::MimeType::kJson,
+      url_loader_factory, full_signals_url,
+      AuctionDownloader::DownloadMode::kActualDownload,
+      AuctionDownloader::MimeType::kJson,
       base::BindOnce(&TrustedSignals::OnDownloadComplete,
                      base::Unretained(this)));
 }

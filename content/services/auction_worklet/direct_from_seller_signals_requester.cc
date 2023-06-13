@@ -229,6 +229,7 @@ DirectFromSellerSignalsRequester::LoadSignals(
         signals_url,
         CoalescedDownload(std::make_unique<AuctionDownloader>(
             &url_loader_factory, signals_url,
+            AuctionDownloader::DownloadMode::kActualDownload,
             AuctionDownloader::MimeType::kJson,
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,
