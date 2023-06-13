@@ -168,6 +168,7 @@
     "android-bfcache-rel": "Ubuntu-22.04",
     "android-binary-size-generator": "Ubuntu-22.04",
     "android-build-perf-developer": "Ubuntu-22.04",
+    "android-chrome-pie-x86-wpt-fyi-rel": "Ubuntu-22.04",
     "android-code-coverage": "Ubuntu-22.04",
     "android-code-coverage-native": "Ubuntu-22.04",
     "android-cronet-arm-rel": "Ubuntu-22.04",
