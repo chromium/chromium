@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 
+#include <math.h>
+
 #include <vector>
 
 #include "base/feature_list.h"
@@ -109,6 +111,7 @@ void TabHandleLayer::SetProperties(
     height = margin_height;
   }
   height -= top_margin;
+  height = ceil(height);
   gfx::Size tab_bounds(width, height - bottom_margin);
 
   layer_->SetPosition(gfx::PointF(x, y));
