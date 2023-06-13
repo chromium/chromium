@@ -3965,19 +3965,9 @@ deps = {
   # Dependencies from src_internal
   'src/chromeos/assistant/internal': {
       'url': Var('chrome_git') + '/chrome/assistant.git' + '@' +
-        '9c3775a18cfdb63fa605f4568690885cb02aa9dc',
+        'ecafc1ad7b48348f55a68d53f1913cb554220de2',
       'condition': 'checkout_src_internal and checkout_chromeos',
     },
-
-  'src/chromeos/assistant/libassistant/src': {
-      'url': Var('chrome_git') + '/external/gob/libassistant-internal/standalone/src.git' + '@' + 'e38dcf1c89c9a6b3e1d3e6745985564598a5bce4',
-      'condition': 'checkout_src_internal and checkout_chromeos',
-  },
-
-  'src/libassistant': {
-      'url': Var('chrome_git') + '/chrome/libassistant.git' + '@' + '4d223a10506e6439d9c0fc734a54b049827a5d29',
-      'condition': 'checkout_src_internal and checkout_chromeos',
-  },
 
   'src/ui/gl/resources/angle-metal': {
     'packages': [{
@@ -5653,8 +5643,6 @@ recursedeps = [
   # since the roller does not run tests.
   'src/clank',
   'src/chromeos/assistant/internal',
-  'src/chromeos/assistant/libassistant/src',
-  'src/libassistant',
   'src/chrome/chrome_cleaner/internal',
   'src/components/optimization_guide/internal',
   'src/ios_internal',
