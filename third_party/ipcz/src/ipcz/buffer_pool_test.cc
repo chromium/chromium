@@ -194,9 +194,11 @@ TEST_F(BufferPoolTest, BasicBlockAllocation) {
             pool.GetTotalBlockCapacity(kBlockSize));
 
   // We can't free something that isn't a valid allocation.
-  EXPECT_FALSE(pool.FreeBlock(Fragment{{}, nullptr}));
-  EXPECT_FALSE(pool.FreeBlock(Fragment{{BufferId{1000}, 0, 1}, nullptr}));
-  EXPECT_FALSE(pool.FreeBlock(Fragment{{BufferId{0}, 0, 1}, bytes0.data()}));
+  EXPECT_FALSE(pool.FreeBlock(Fragment::FromDescriptorUnsafe({}, nullptr)));
+  EXPECT_FALSE(pool.FreeBlock(
+      Fragment::FromDescriptorUnsafe({BufferId{1000}, 0, 1}, nullptr)));
+  EXPECT_FALSE(pool.FreeBlock(
+      Fragment::FromDescriptorUnsafe({BufferId{0}, 0, 1}, bytes0.data())));
 
   // Allocate all available capacity.
   std::vector<Fragment> fragments;
