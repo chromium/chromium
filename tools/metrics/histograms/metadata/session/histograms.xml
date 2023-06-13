@@ -765,7 +765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
-    expires_after="2023-10-08">
+    expires_after="2023-12-10">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

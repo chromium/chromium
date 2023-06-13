@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.NewBrowserWindow" enum="KioskBrowserWindowType"
-    expires_after="2023-10-07">
+    expires_after="2023-12-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Session.CountPerDay" units="sessions"
-    expires_after="2023-10-08">
+    expires_after="2023-12-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
