@@ -1060,6 +1060,9 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kFloatingWorkspaceV2, "PeriodicJobIntervalInSeconds",
         base::Seconds(30)};
 
+// Enables or disables Focus Mode feature on ChromeOS.
+BASE_FEATURE(kFocusMode, "FocusMode", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, makes the Projector app use server side speech
 // recognition instead of on-device speech recognition.
 BASE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev,
@@ -2920,6 +2923,10 @@ bool IsFloatingWorkspaceEnabled() {
 
 bool IsFloatingWorkspaceV2Enabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
+}
+
+bool IsFocusModeEnabled() {
+  return base::FeatureList::IsEnabled(kFocusMode);
 }
 
 bool ShouldForceEnableServerSideSpeechRecognitionForDev() {
