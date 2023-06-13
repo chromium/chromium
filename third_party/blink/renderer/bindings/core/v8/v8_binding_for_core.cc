@@ -664,19 +664,15 @@ LocalDOMWindow* CurrentDOMWindow(v8::Isolate* isolate) {
 }
 
 ExecutionContext* ToExecutionContext(v8::Local<v8::Context> context) {
-  // TODO(jgruber,crbug.com/v8/10460): Change this back to a DCHECK once the
-  // crash has been flushed out.
-  CHECK(!context.IsEmpty());
+  DCHECK(!context.IsEmpty());
 
   RUNTIME_CALL_TIMER_SCOPE(context->GetIsolate(),
                            RuntimeCallStats::CounterId::kToExecutionContext);
 
   v8::Local<v8::Object> global_proxy = context->Global();
 
-  // TODO(jgruber,crbug.com/v8/10460): Change these back to a DCHECK once the
-  // crash has been flushed out.
-  CHECK(!global_proxy.IsEmpty());
-  CHECK(global_proxy->IsObject());
+  DCHECK(!global_proxy.IsEmpty());
+  DCHECK(global_proxy->IsObject());
 
   // There are several global objects that are not ScriptWrappable, and
   // therefore are definitely not an ExecutionContext (GC context, DevTools'
