@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -220,11 +221,14 @@ public class SignOutDialogTest {
     @MediumTest
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataNotChecked() {
         mockAllowDeletingBrowserHistoryPref(true);
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.UserRequestedWipeDataOnSignout", false);
         showSignOutDialog();
         onView(withId(R.id.remove_local_data)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
+        histogramWatcher.assertExpected();
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
@@ -235,11 +239,14 @@ public class SignOutDialogTest {
     @MediumTest
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataChecked() {
         mockAllowDeletingBrowserHistoryPref(true);
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.UserRequestedWipeDataOnSignout", true);
         showSignOutDialog();
 
         onView(withId(R.id.remove_local_data)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
+        histogramWatcher.assertExpected();
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);

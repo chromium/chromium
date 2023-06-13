@@ -15,6 +15,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
@@ -173,6 +174,10 @@ public class SignOutDialogCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ButtonType.POSITIVE) {
+                    if (mCheckBox.getVisibility() == View.VISIBLE) {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Signin.UserRequestedWipeDataOnSignout", mCheckBox.isChecked());
+                    }
                     mListener.onSignOutClicked(
                             mCheckBox.getVisibility() == View.VISIBLE && mCheckBox.isChecked());
                     mDialogManager.dismissDialog(
