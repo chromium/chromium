@@ -699,4 +699,84 @@ TEST_F(BackgroundTracingConfigTest, TimerRuleTriggersAfterDelay) {
   rule->Uninstall();
 }
 
+TEST_F(BackgroundTracingConfigTest, RepeatingIntervalRuleFromValidProto) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(
+      R"pb(
+        name: "test_rule"
+        trigger_chance: 0.5
+        delay_ms: 500
+        repeating_interval: { period_ms: 1000 randomized: true }
+      )pb",
+      config);
+  auto rule = BackgroundTracingRule::Create(config);
+  auto result = rule->ToProtoForTesting();
+  EXPECT_EQ("test_rule", result.name());
+  EXPECT_EQ(0.5, result.trigger_chance());
+  EXPECT_EQ(500U, result.delay_ms());
+  EXPECT_TRUE(result.has_repeating_interval());
+  EXPECT_EQ(1000U, result.repeating_interval().period_ms());
+  EXPECT_TRUE(result.repeating_interval().randomized());
+}
+
+TEST_F(BackgroundTracingConfigTest, RepeatingIntervalRuleTriggersAfterDelay) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(R"pb(
+                     name: "test_rule"
+                     repeating_interval: { period_ms: 2000 }
+                   )pb",
+                   config);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  auto rule = BackgroundTracingRule::Create(config);
+  std::vector<base::TimeTicks> trigger_times;
+  auto callback = base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    trigger_times.push_back(base::TimeTicks::Now());
+    return true;
+  });
+  rule->Install(callback);
+  task_environment_.FastForwardBy(base::Seconds(2));  // Triggers at 2s
+  rule->Uninstall();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  rule->Install(callback);
+  task_environment_.FastForwardBy(base::Seconds(2));  // Triggers at 4s
+  rule->Uninstall();
+  task_environment_.FastForwardBy(base::Seconds(2));  // Skips 6s
+  rule->Install(callback);
+  task_environment_.FastForwardBy(base::Seconds(1));  // Triggers at 8s
+
+  EXPECT_EQ(std::vector<base::TimeTicks>({
+                start + base::Seconds(2),
+                start + base::Seconds(4),
+                start + base::Seconds(8),
+            }),
+            trigger_times);
+  rule->Uninstall();
+}
+
+TEST_F(BackgroundTracingConfigTest, RepeatingIntervalRuleTriggersRandomized) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(
+      R"pb(
+        name: "test_rule"
+        repeating_interval: { period_ms: 2000 randomized: true }
+      )pb",
+      config);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  auto rule = BackgroundTracingRule::Create(config);
+  std::vector<base::TimeTicks> trigger_times;
+  auto callback = base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    trigger_times.push_back(base::TimeTicks::Now());
+    return true;
+  });
+  rule->Install(callback);
+  task_environment_.FastForwardBy(base::Seconds(4));  // Triggers twice
+  ASSERT_EQ(2U, trigger_times.size());
+  EXPECT_GE(trigger_times[0], start);
+  EXPECT_LT(trigger_times[0], trigger_times[1]);
+  EXPECT_GE(trigger_times[1], start + base::Seconds(2));
+  rule->Uninstall();
+}
+
 }  // namespace content

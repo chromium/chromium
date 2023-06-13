@@ -454,6 +454,107 @@ class TimerRule : public BackgroundTracingRule {
   }
 };
 
+class RepeatingIntervalRule : public BackgroundTracingRule {
+ private:
+  RepeatingIntervalRule(base::TimeDelta period, bool randomized)
+      : period_(period),
+        randomized_(randomized),
+        interval_phase_(base::TimeTicks::Now()) {}
+
+ public:
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    DCHECK(config.has_repeating_interval());
+
+    const auto& interval = config.repeating_interval();
+    if (!interval.has_period_ms()) {
+      return nullptr;
+    }
+    return base::WrapUnique<RepeatingIntervalRule>(new RepeatingIntervalRule(
+        base::Milliseconds(interval.period_ms()), interval.randomized()));
+  }
+
+  void DoInstall() override { ScheduleNextTick(); }
+  void DoUninstall() override { timer_.Stop(); }
+
+  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+    perfetto::protos::gen::TriggerRule config =
+        BackgroundTracingRule::ToProtoForTesting();
+    auto* histogram = config.mutable_repeating_interval();
+    histogram->set_period_ms(period_.InMilliseconds());
+    histogram->set_randomized(randomized_);
+    return config;
+  }
+
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(MetadataProto::TRIGGER_UNSPECIFIED);
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return "org.chromium.background_tracing.repeating_interval";
+  }
+
+ private:
+  base::TimeTicks GetFireTimeForInterval(base::TimeTicks interval_start) const {
+    if (randomized_) {
+      return interval_start +
+             base::Microseconds(base::RandInt(0, period_.InMicroseconds() - 1));
+    }
+    return interval_start;
+  }
+  base::TimeTicks GetNextIntervalStart(base::TimeTicks now) const {
+    base::TimeTicks next_interval_start =
+        now.SnappedToNextTick(interval_phase_, period_);
+    if (next_interval_start == now) {
+      return next_interval_start + period_;
+    }
+    return next_interval_start;
+  }
+  void UpdateNextFireTime(base::TimeTicks now) {
+    base::TimeTicks next_interval_start = GetNextIntervalStart(now);
+    base::TimeTicks prev_interval_start = next_interval_start - period_;
+    // If the previously scheduled fire time is in a past interval, the current
+    // interval can still fire. Compute a new fire time for the current
+    // interval and keep it if it hasn't passed, otherwise move on to the next
+    // interval.
+    if (randomized_ && (scheduled_fire_time_ < prev_interval_start)) {
+      scheduled_fire_time_ = GetFireTimeForInterval(prev_interval_start);
+      if (scheduled_fire_time_ >= now) {
+        return;
+      }
+    }
+    scheduled_fire_time_ = GetFireTimeForInterval(next_interval_start);
+  }
+
+  void ScheduleNextTick() {
+    base::TimeTicks now = base::TimeTicks::Now();
+    // Update the next fire time only if it's in the past.
+    if (scheduled_fire_time_ <= now) {
+      UpdateNextFireTime(now);
+    }
+
+    timer_.Start(
+        FROM_HERE, scheduled_fire_time_,
+        base::BindOnce(&RepeatingIntervalRule::OnTick, base::Unretained(this)),
+        base::subtle::DelayPolicy::kFlexibleNoSooner);
+  }
+
+  void OnTick() {
+    OnRuleTriggered();
+    ScheduleNextTick();
+  }
+
+  const base::TimeDelta period_;
+  const bool randomized_;
+  const base::TimeTicks interval_phase_;
+  base::TimeTicks scheduled_fire_time_;
+  base::DeadlineTimer timer_;
+};
+
 }  // namespace
 
 std::unique_ptr<BackgroundTracingRule>
@@ -481,6 +582,8 @@ std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
     tracing_rule = NamedTriggerRule::Create(config);
   } else if (config.has_histogram()) {
     tracing_rule = HistogramRule::Create(config);
+  } else if (config.has_repeating_interval()) {
+    tracing_rule = RepeatingIntervalRule::Create(config);
   } else {
     tracing_rule = TimerRule::Create(config);
   }
