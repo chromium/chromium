@@ -32,15 +32,15 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   // TrayBubbleView:
   bool CanActivate() const override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Stand-in title label for glanceables_view_.
   // TODO(b:277268122): Remove and replace with actual glanceable content.
   raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+
+  // A scrollable view which contains the individual glanceables.
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
   // Child bubble view for the tasks glanceable. Owned by bubble_view_.
   raw_ptr<TasksBubbleView, ExperimentalAsh> tasks_bubble_view_ = nullptr;

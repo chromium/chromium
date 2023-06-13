@@ -23,16 +23,15 @@ constexpr int bubble_corner_radius = 24;
 GlanceableTrayChildBubble::GlanceableTrayChildBubble() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetIsFastRoundedCorner(true);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{static_cast<float>(bubble_corner_radius)});
-  layer()->SetIsFastRoundedCorner(true);
+  // TODO(b:286941809): Setting blur here, can break the rounded corners
+  // applied to the parent scroll view.
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80,
-      bubble_corner_radius));
+  SetBackground(views::CreateThemedSolidBackground(
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)));
   SetBorder(std::make_unique<views::HighlightBorder>(
       bubble_corner_radius,
       chromeos::features::IsJellyrollEnabled()

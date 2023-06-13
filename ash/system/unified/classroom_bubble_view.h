@@ -23,6 +23,7 @@ class ASH_EXPORT ClassroomBubbleView : public GlanceableTrayChildBubble {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size CalculatePreferredSize() const override;
 };
 
 }  // namespace ash
