@@ -220,22 +220,22 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   switch (vpx_format) {
     case VPX_IMG_FMT_I420:
       vpx_image.planes[VPX_PLANE_Y] =
-          video_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
       vpx_image.planes[VPX_PLANE_U] =
-          video_frame->GetWritableVisibleData(VideoFrame::kUPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUPlane));
       vpx_image.planes[VPX_PLANE_V] =
-          video_frame->GetWritableVisibleData(VideoFrame::kVPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kVPlane));
       vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
       vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
       vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);
       break;
     case VPX_IMG_FMT_NV12:
       vpx_image.planes[VPX_PLANE_Y] =
-          video_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
       // In libvpx, the UV plane of NV12 frames is represented by two planes
       // with the same stride, shifted by one byte.
       vpx_image.planes[VPX_PLANE_U] =
-          video_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUVPlane));
       vpx_image.planes[VPX_PLANE_V] = vpx_image.planes[VPX_PLANE_U] + 1;
       vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
       vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUVPlane);
