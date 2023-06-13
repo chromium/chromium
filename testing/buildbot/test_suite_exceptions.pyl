@@ -4083,6 +4083,24 @@
       'linux-code-coverage',
     ],
   },
+  'trace_test': {
+    'modifications': {
+      # The browser is restarted after every test in this suite, which includes
+      # re-applying permissions. Nexus 5Xs are very slow to apply permissions
+      # compared to other devices, so increase sharding to offset the increased
+      # runtime.
+      'Android FYI Release (Nexus 5X)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'Android Release (Nexus 5X)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+  },
   'unit_tests': {
     'remove_from': [
       'android-pie-arm64-rel',  # https://crbug.com/1010211

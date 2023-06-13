@@ -988,7 +988,8 @@
             }
           ],
           "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
       },
