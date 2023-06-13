@@ -45,7 +45,8 @@ def assert_images_equal(img1: Image, img2: Image):
 def save_png(png_bytes_or_str: bytes | str, output_file: str):
     """Save the given PNG (bytes or base64 string representation) to the given output file."""
     png_bytes = png_bytes_or_str if isinstance(
-        png_bytes_or_str, bytes) else base64.b64decode(png_bytes_or_str)
+        png_bytes_or_str, bytes) else base64.b64decode(png_bytes_or_str,
+                                                       validate=True)
     Image.open(io.BytesIO(png_bytes)).save(output_file, 'PNG')
 
 
@@ -57,7 +58,8 @@ def save_png(png_bytes_or_str: bytes | str, output_file: str):
     ],
     ids=["gradient with alpha channel", "gradient without alpha channel"])
 async def test_screenshot(websocket, context_id, png_filename):
-    with open(Path(__file__).parent / png_filename, 'rb') as image_file:
+    with open(Path(__file__).parent.resolve() / png_filename,
+              'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
         await goto_url(websocket, context_id,
@@ -151,7 +153,8 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
     assert resp["result"] == {'data': ANY_STR}
 
     png_filename = "oopif.png"
-    with open(Path(__file__).parent / png_filename, 'rb') as image_file:
+    with open(Path(__file__).parent.resolve() / png_filename,
+              'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
         img1 = Image.open(io.BytesIO(base64.b64decode(resp["result"]["data"])))

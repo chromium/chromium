@@ -13,9 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
+
 import pytest
 from anys import ANY_INT, ANY_STR
 from test_helpers import goto_url, read_JSON_message, send_JSON_command
+
+
+def save_pdf(pdf_bytes_or_str: bytes | str, output_file: str):
+    pdf_bytes = pdf_bytes_or_str if isinstance(
+        pdf_bytes_or_str, bytes) else base64.b64decode(pdf_bytes_or_str,
+                                                       validate=True)
+    if pdf_bytes[0:4] != b'%PDF':
+        raise ValueError('Missing the PDF file signature')
+
+    with open(output_file, 'wb') as f:
+        f.write(pdf_bytes)
 
 
 @pytest.mark.asyncio
