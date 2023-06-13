@@ -30,7 +30,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -82,8 +82,6 @@ namespace {
 
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
-
-using ::aggregation_service::mojom::AggregationCoordinator;
 
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
@@ -311,11 +309,11 @@ std::string SerializeReportMetadata(
 void SerializeCommonAggregatableData(
     const AttributionReport::CommonAggregatableData& data,
     proto::AttributionCommonAggregatableMetadata& msg) {
-  switch (data.aggregation_coordinator) {
-    case AggregationCoordinator::kAwsCloud:
-      msg.set_coordinator(
-          proto::AttributionCommonAggregatableMetadata::AWS_CLOUD);
-      break;
+  if (base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders) &&
+      data.aggregation_coordinator_origin.has_value()) {
+    msg.set_coordinator_origin(
+        data.aggregation_coordinator_origin->Serialize());
   }
 
   if (const auto& verification_token = data.verification_token;
@@ -338,16 +336,20 @@ void SerializeCommonAggregatableData(
 [[nodiscard]] bool DeserializeCommonAggregatableData(
     const proto::AttributionCommonAggregatableMetadata& msg,
     AttributionReport::CommonAggregatableData& data) {
-  if (!msg.has_coordinator() || !msg.has_source_registration_time_config()) {
+  if (!msg.has_source_registration_time_config()) {
     return false;
   }
 
-  switch (msg.coordinator()) {
-    case proto::AttributionCommonAggregatableMetadata::AWS_CLOUD:
-      data.aggregation_coordinator = AggregationCoordinator::kAwsCloud;
-      break;
-    default:
+  if (base::FeatureList::IsEnabled(
+          ::aggregation_service::kAggregationServiceMultipleCloudProviders) &&
+      msg.has_coordinator_origin()) {
+    absl::optional<SuitableOrigin> aggregation_coordinator_origin =
+        SuitableOrigin::Deserialize(msg.coordinator_origin());
+    if (!aggregation_coordinator_origin.has_value()) {
       return false;
+    }
+    data.aggregation_coordinator_origin =
+        std::move(aggregation_coordinator_origin);
   }
 
   switch (msg.source_registration_time_config()) {
@@ -2830,7 +2832,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(
-              trigger_registration.aggregation_coordinator,
+              trigger_registration.aggregation_coordinator_origin,
               /*verification_token=*/absl::nullopt,
               trigger_registration.source_registration_time_config),
           std::move(contributions), source));
@@ -2978,7 +2980,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
           /*failed_send_attempts=*/0,
           AttributionReport::NullAggregatableData(
               AttributionReport::CommonAggregatableData(
-                  trigger.registration().aggregation_coordinator,
+                  trigger.registration().aggregation_coordinator_origin,
                   /*verification_token=*/absl::nullopt,
                   trigger.registration().source_registration_time_config),
               trigger.reporting_origin(),

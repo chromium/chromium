@@ -58,14 +58,27 @@ component("attribution_reporting") {
     ":source_type_mojom",
     "//base",
     "//components/aggregation_service",
-    "//components/aggregation_service:mojom",
     "//net",
     "//url",
   ]
 
-  deps = [ "//services/network/public/cpp" ]
+  deps = [ ":is_origin_suitable" ]
 
   defines = [ "IS_ATTRIBUTION_REPORTING_IMPL" ]
+}
+
+component("is_origin_suitable") {
+  sources = [
+    "is_origin_suitable.cc",
+    "is_origin_suitable.h",
+  ]
+
+  deps = [
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  defines = [ "IS_ATTRIBUTION_REPORTING_IS_ORIGIN_SUITABLE_IMPL" ]
 }
 
 source_set("unit_tests") {
@@ -163,7 +176,6 @@ mojom("registration_mojom") {
 
   deps = [
     ":mojom",
-    "//components/aggregation_service:mojom",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_schemeful_site",
     "//url/mojom:url_mojom_gurl",
@@ -287,7 +299,6 @@ component("registration_mojom_traits") {
     ":attribution_reporting",
     ":registration_mojom_shared",
     "//base",
-    "//components/aggregation_service:mojom_shared",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//net",
     "//services/network/public/mojom",

@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom-shared.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -285,10 +284,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.debug_reporting;
   }
 
-  static aggregation_service::mojom::AggregationCoordinator
-  aggregation_coordinator(
+  static const absl::optional<attribution_reporting::SuitableOrigin>&
+  aggregation_coordinator_origin(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.aggregation_coordinator;
+    return trigger.aggregation_coordinator_origin;
   }
 
   static attribution_reporting::mojom::SourceRegistrationTimeConfig

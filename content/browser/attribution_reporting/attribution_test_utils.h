@@ -16,7 +16,6 @@
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -209,8 +208,8 @@ class TriggerBuilder {
 
   TriggerBuilder& SetDebugReporting(bool debug_reporting);
 
-  TriggerBuilder& SetAggregationCoordinator(
-      ::aggregation_service::mojom::AggregationCoordinator);
+  TriggerBuilder& SetAggregationCoordinatorOrigin(
+      attribution_reporting::SuitableOrigin);
 
   TriggerBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
@@ -234,9 +233,8 @@ class TriggerBuilder {
   absl::optional<uint64_t> aggregatable_dedup_key_;
   bool is_within_fenced_frame_ = false;
   bool debug_reporting_ = false;
-  ::aggregation_service::mojom::AggregationCoordinator
-      aggregation_coordinator_ =
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault;
+  absl::optional<attribution_reporting::SuitableOrigin>
+      aggregation_coordinator_origin_;
   std::vector<network::TriggerVerification> verifications_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
@@ -287,8 +285,8 @@ class ReportBuilder {
   ReportBuilder& SetAggregatableHistogramContributions(
       std::vector<AggregatableHistogramContribution> contributions);
 
-  ReportBuilder& SetAggregationCoordinator(
-      ::aggregation_service::mojom::AggregationCoordinator);
+  ReportBuilder& SetAggregationCoordinatorOrigin(
+      attribution_reporting::SuitableOrigin);
 
   ReportBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
@@ -312,9 +310,8 @@ class ReportBuilder {
   double randomized_trigger_rate_ = 0;
   AttributionReport::Id report_id_{0};
   std::vector<AggregatableHistogramContribution> contributions_;
-  ::aggregation_service::mojom::AggregationCoordinator
-      aggregation_coordinator_ =
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault;
+  absl::optional<attribution_reporting::SuitableOrigin>
+      aggregation_coordinator_origin_;
 
   absl::optional<std::string> verification_token_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
@@ -550,9 +547,9 @@ MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.contributions, result_listener);
 }
 
-MATCHER_P(AggregationCoordinatorIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_data.aggregation_coordinator,
-                            result_listener);
+MATCHER_P(AggregationCoordinatorOriginIs, matcher, "") {
+  return ExplainMatchResult(
+      matcher, arg.common_data.aggregation_coordinator_origin, result_listener);
 }
 
 MATCHER_P(SourceRegistrationTimeConfigIs, matcher, "") {
@@ -658,8 +655,9 @@ struct TriggerRegistrationMatcherConfig {
       aggregatable_trigger_data = ::testing::_;
   ::testing::Matcher<const attribution_reporting::AggregatableValues&>
       aggregatable_values = ::testing::_;
-  ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
-      aggregation_coordinator = ::testing::_;
+  ::testing::Matcher<
+      const absl::optional<attribution_reporting::SuitableOrigin>&>
+      aggregation_coordinator_origin = ::testing::_;
   ::testing::Matcher<attribution_reporting::mojom::SourceRegistrationTimeConfig>
       source_registration_time_config = ::testing::_;
 
@@ -680,8 +678,9 @@ struct TriggerRegistrationMatcherConfig {
           aggregatable_trigger_data = ::testing::_,
       ::testing::Matcher<const attribution_reporting::AggregatableValues&>
           aggregatable_values = ::testing::_,
-      ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
-          aggregation_coordinator = ::testing::_,
+      ::testing::Matcher<
+          const absl::optional<attribution_reporting::SuitableOrigin>&>
+          aggregation_coordinator_origin = ::testing::_,
       ::testing::Matcher<
           attribution_reporting::mojom::SourceRegistrationTimeConfig>
           source_registration_time_config = ::testing::_);

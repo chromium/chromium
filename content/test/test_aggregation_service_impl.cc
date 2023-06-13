@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
@@ -129,7 +128,7 @@ void TestAggregationServiceImpl::AssembleReport(
       {blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/request.bucket, /*value=*/request.value)},
       ConvertToAggregationMode(request.aggregation_mode),
-      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+      /*aggregation_coordinator_origin=*/absl::nullopt);
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),

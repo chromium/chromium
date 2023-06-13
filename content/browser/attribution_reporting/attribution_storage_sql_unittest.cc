@@ -27,7 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -59,6 +59,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -100,10 +102,8 @@ struct AttributionAggregatableMetadataRecord {
     absl::optional<uint64_t> low_bits;
     absl::optional<uint32_t> value;
   };
-  absl::optional<::aggregation_service::mojom::AggregationCoordinator>
-      coordinator =
-          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
   std::vector<Contribution> contributions;
+  absl::optional<url::Origin> coordinator_origin;
   absl::optional<
       proto::AttributionCommonAggregatableMetadata_SourceRegistrationTimeConfig>
       source_registration_time_config =
@@ -111,10 +111,8 @@ struct AttributionAggregatableMetadataRecord {
 };
 
 struct AttributionNullAggregatableMetadataRecord {
-  absl::optional<::aggregation_service::mojom::AggregationCoordinator>
-      coordinator =
-          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
   absl::optional<int64_t> fake_source_time;
+  absl::optional<url::Origin> coordinator_origin;
   absl::optional<
       proto::AttributionCommonAggregatableMetadata_SourceRegistrationTimeConfig>
       source_registration_time_config =
@@ -160,12 +158,6 @@ std::string SerializeReportMetadata(
     const AttributionAggregatableMetadataRecord& record) {
   proto::AttributionAggregatableMetadata msg;
 
-  if (record.coordinator) {
-    msg.mutable_common_data()->set_coordinator(
-        static_cast<proto::AttributionCommonAggregatableMetadata_Coordinator>(
-            *record.coordinator));
-  }
-
   for (const auto& contribution : record.contributions) {
     proto::AttributionAggregatableMetadata_Contribution* contribution_msg =
         msg.add_contributions();
@@ -178,6 +170,11 @@ std::string SerializeReportMetadata(
     if (contribution.value) {
       contribution_msg->set_value(*contribution.value);
     }
+  }
+
+  if (record.coordinator_origin.has_value()) {
+    msg.mutable_common_data()->set_coordinator_origin(
+        record.coordinator_origin->Serialize());
   }
 
   if (record.source_registration_time_config) {
@@ -195,14 +192,13 @@ std::string SerializeReportMetadata(
     const AttributionNullAggregatableMetadataRecord& record) {
   proto::AttributionNullAggregatableMetadata msg;
 
-  if (record.coordinator) {
-    msg.mutable_common_data()->set_coordinator(
-        static_cast<proto::AttributionCommonAggregatableMetadata_Coordinator>(
-            *record.coordinator));
-  }
-
   if (record.fake_source_time) {
     msg.set_fake_source_time(*record.fake_source_time);
+  }
+
+  if (record.coordinator_origin.has_value()) {
+    msg.mutable_common_data()->set_coordinator_origin(
+        record.coordinator_origin->Serialize());
   }
 
   if (record.source_registration_time_config) {
@@ -1920,22 +1916,6 @@ TEST_P(AttributionStorageSqlTest,
           .valid = false,
       },
       {
-          .desc = "missing_coordinator",
-          .record =
-              AttributionAggregatableMetadataRecord{
-                  .coordinator = absl::nullopt,
-                  .contributions =
-                      {
-                          AttributionAggregatableMetadataRecord::Contribution{
-                              .high_bits = 1,
-                              .low_bits = 2,
-                              .value = 3,
-                          },
-                      },
-              },
-          .valid = false,
-      },
-      {
           .desc = "missing_source_registration_time_config",
           .record =
               AttributionAggregatableMetadataRecord{
@@ -1951,7 +1931,27 @@ TEST_P(AttributionStorageSqlTest,
               },
           .valid = false,
       },
+      {
+          .desc = "invalid_coordinator_origin",
+          .record =
+              AttributionAggregatableMetadataRecord{
+                  .contributions =
+                      {
+                          AttributionAggregatableMetadataRecord::Contribution{
+                              .high_bits = 1,
+                              .low_bits = 2,
+                              .value = 3,
+                          },
+                      },
+                  .coordinator_origin =
+                      url::Origin::Create(GURL("http://a.test")),
+              },
+          .valid = false,
+      },
   };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
 
   for (auto test_case : kTestCases) {
     OpenDatabase();
@@ -2014,15 +2014,6 @@ TEST_P(AttributionStorageSqlTest,
           .valid = false,
       },
       {
-          .desc = "missing_coordinator",
-          .record =
-              AttributionNullAggregatableMetadataRecord{
-                  .coordinator = absl::nullopt,
-                  .fake_source_time = 12345678900,
-              },
-          .valid = false,
-      },
-      {
           .desc = "missing_source_registration_time_config",
           .record =
               AttributionNullAggregatableMetadataRecord{
@@ -2039,7 +2030,20 @@ TEST_P(AttributionStorageSqlTest,
               },
           .valid = true,
       },
+      {
+          .desc = "invalid_coordinator_origin",
+          .record =
+              AttributionNullAggregatableMetadataRecord{
+                  .fake_source_time = 12345678900,
+                  .coordinator_origin =
+                      url::Origin::Create(GURL("http://a.test")),
+              },
+          .valid = false,
+      },
   };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
 
   for (auto test_case : kTestCases) {
     OpenDatabase();

@@ -83,12 +83,12 @@ AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::CommonAggregatableData::CommonAggregatableData(
-    ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator,
+    absl::optional<attribution_reporting::SuitableOrigin>
+        aggregation_coordinator_origin,
     absl::optional<std::string> verification_token,
     attribution_reporting::mojom::SourceRegistrationTimeConfig
         source_registration_time_config)
-    : aggregation_coordinator(aggregation_coordinator),
+    : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
       verification_token(std::move(verification_token)),
       source_registration_time_config(source_registration_time_config) {}
 

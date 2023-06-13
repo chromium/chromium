@@ -5,7 +5,6 @@
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/aggregation_service/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -14,41 +13,30 @@
 namespace aggregation_service {
 namespace {
 
-TEST(AggregationCoordinatorUtilsTest,
-     GetAggregationCoordinatorFromFeatureParam) {
+TEST(AggregationCoordinatorUtilsTest, GetDefaultAggregationCoordinatorOrigin) {
   const struct {
     const char* desc;
-    const char* feature_param_name;
     const char* feature_param;
-    mojom::AggregationCoordinator coordinator;
     url::Origin expected;
   } kTestCases[] = {
       {
           "aws-valid",
-          "aws_cloud",
           "https://a.test",
-          mojom::AggregationCoordinator::kAwsCloud,
           url::Origin::Create(GURL("https://a.test")),
       },
       {
           "aws-valid-non-empty-path",
-          "aws_cloud",
           "https://a.test/foo",
-          mojom::AggregationCoordinator::kAwsCloud,
           url::Origin::Create(GURL("https://a.test")),
       },
       {
           "aws-valid-subdomain",
-          "aws_cloud",
           "https://a.b.test",
-          mojom::AggregationCoordinator::kAwsCloud,
           url::Origin::Create(GURL("https://a.b.test")),
       },
       {
           "aws-non-trustworthy",
-          "aws_cloud",
           "http://a.test",
-          mojom::AggregationCoordinator::kAwsCloud,
           url::Origin::Create(GURL(kDefaultAggregationCoordinatorAwsCloud)),
       },
   };
@@ -57,11 +45,37 @@ TEST(AggregationCoordinatorUtilsTest,
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-        {{test_case.feature_param_name, test_case.feature_param}});
+        {{"aws_cloud", test_case.feature_param}});
 
-    EXPECT_EQ(GetAggregationCoordinatorOrigin(test_case.coordinator),
-              test_case.expected)
+    EXPECT_EQ(GetDefaultAggregationCoordinatorOrigin(), test_case.expected)
         << test_case.desc;
+  }
+}
+
+TEST(AggregationCoordinatorUtilsTest, IsAggregationCoordinatorOriginAllowed) {
+  const struct {
+    url::Origin origin;
+    bool expected;
+  } kTestCases[] = {
+      {
+          .origin = url::Origin::Create(GURL("https://aws.example.test")),
+          .expected = true,
+      },
+      {
+          .origin = url::Origin::Create(GURL("https://a.test")),
+          .expected = false,
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(IsAggregationCoordinatorOriginAllowed(test_case.origin),
+              test_case.expected)
+        << test_case.origin;
   }
 }
 

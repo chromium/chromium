@@ -11,7 +11,6 @@
 
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/aggregation_service/aggregation_service.mojom-shared.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -265,8 +264,12 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
+  if (!data.ReadAggregationCoordinatorOrigin(
+          &out->aggregation_coordinator_origin)) {
+    return false;
+  }
+
   out->debug_reporting = data.debug_reporting();
-  out->aggregation_coordinator = data.aggregation_coordinator();
   out->source_registration_time_config = data.source_registration_time_config();
   return true;
 }

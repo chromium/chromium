@@ -53,9 +53,6 @@ mojom("internals_mojo_bindings") {
 
         # //content/common/aggregatable_report.mojom is transitively included.
         "//content/common:mojo_bindings",
-
-        # //components/aggregation_service/aggregation_service.mojom is transitively included.
-        "//components/aggregation_service:mojom",
       ]
     },
   ]

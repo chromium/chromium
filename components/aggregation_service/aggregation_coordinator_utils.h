@@ -6,7 +6,6 @@
 #define COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
 
 #include "base/component_export.h"
-#include "components/aggregation_service/aggregation_service.mojom-forward.h"
 
 namespace url {
 class Origin;
@@ -18,7 +17,10 @@ constexpr char kDefaultAggregationCoordinatorAwsCloud[] =
     "https://publickeyservice.aws.privacysandboxservices.com";
 
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
-url::Origin GetAggregationCoordinatorOrigin(mojom::AggregationCoordinator);
+url::Origin GetDefaultAggregationCoordinatorOrigin();
+
+COMPONENT_EXPORT(AGGREGATION_SERVICE)
+bool IsAggregationCoordinatorOriginAllowed(const url::Origin&);
 
 }  // namespace aggregation_service
 

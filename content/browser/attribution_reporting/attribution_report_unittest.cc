@@ -280,15 +280,15 @@ TEST(AttributionReportTest, NullAggregatableReport) {
 
   auto& data =
       absl::get<AttributionReport::NullAggregatableData>(report.data());
-  data.common_data.assembled_report = AggregatableReport(
-      {AggregatableReport::AggregationServicePayload(
-          /*payload=*/kABCD1234AsBytes,
-          /*key_id=*/"key",
-          /*debug_cleartext_payload=*/absl::nullopt)},
-      "example_shared_info",
-      /*debug_key=*/absl::nullopt,
-      /*additional_fields=*/{},
-      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+  data.common_data.assembled_report =
+      AggregatableReport({AggregatableReport::AggregationServicePayload(
+                             /*payload=*/kABCD1234AsBytes,
+                             /*key_id=*/"key",
+                             /*debug_cleartext_payload=*/absl::nullopt)},
+                         "example_shared_info",
+                         /*debug_key=*/absl::nullopt,
+                         /*additional_fields=*/{},
+                         /*aggregation_coordinator_origin=*/absl::nullopt);
 
   EXPECT_THAT(report.ReportBody(), IsJson(expected));
 }

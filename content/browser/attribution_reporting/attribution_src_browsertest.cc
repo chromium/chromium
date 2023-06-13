@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -708,7 +707,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
           std::vector<attribution_reporting::AggregatableTriggerData>(),
           /*aggregatable_values=*/
           attribution_reporting::AggregatableValues(),
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          /*aggregation_coordinator_origin=*/Eq(absl::nullopt),
           attribution_reporting::mojom::SourceRegistrationTimeConfig::
               kExclude))));
 }

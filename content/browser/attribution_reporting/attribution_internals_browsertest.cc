@@ -14,10 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
-#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -107,11 +104,7 @@ AttributionReport IrreleventAggregatableReport() {
 
 class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
  public:
-  AttributionInternalsWebUiBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-        {{"aws_cloud", "https://aws.example.test"}});
-  }
+  AttributionInternalsWebUiBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -172,9 +165,6 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
 
     return static_cast<MockAttributionManager*>(manager);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
@@ -1068,6 +1058,8 @@ IN_PROC_BROWSER_TEST_F(
                             .BuildStored())
               .SetReportTime(now)
               .SetAggregatableHistogramContributions(contributions)
+              .SetAggregationCoordinatorOrigin(
+                  *SuitableOrigin::Deserialize("https://aws.example.test"))
               .BuildAggregatableAttribution()}));
 
   {
@@ -1150,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                 *attribution_reporting::AggregatableValues::Create(
                     {{"a", 123}, {"b", 456}}),
                 /*debug_reporting=*/false,
-                ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+                /*aggregation_coordinator_origin=*/absl::nullopt,
                 attribution_reporting::mojom::SourceRegistrationTimeConfig::
                     kInclude),
             *SuitableOrigin::Deserialize("https://d.test"),

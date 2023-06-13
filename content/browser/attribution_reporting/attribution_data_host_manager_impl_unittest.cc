@@ -24,7 +24,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -251,6 +250,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       aggregatable_dedup_keys = {attribution_reporting::AggregatableDedupKey(
           /*dedup_key=*/123, FilterPair())};
 
+  auto aggregation_coordinator_origin =
+      SuitableOrigin::Deserialize("https://coordinator.test");
+
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(
@@ -268,8 +270,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                   /*debug_reporting=*/true,
                   std::vector<attribution_reporting::AggregatableTriggerData>(),
                   attribution_reporting::AggregatableValues(),
-                  ::aggregation_service::mojom::AggregationCoordinator::
-                      kDefault,
+                  aggregation_coordinator_origin,
                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
                       kExclude)),
               destination_origin)),
@@ -297,6 +298,8 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
     trigger_data.aggregatable_dedup_keys = aggregatable_dedup_keys;
     trigger_data.debug_reporting = true;
+    trigger_data.aggregation_coordinator_origin =
+        aggregation_coordinator_origin;
 
     data_host_remote.data_host->TriggerDataAvailable(reporting_origin,
                                                      std::move(trigger_data),

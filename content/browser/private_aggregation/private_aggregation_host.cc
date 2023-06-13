@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
@@ -225,7 +224,7 @@ PrivateAggregationHost::GenerateReportRequest(
   AggregationServicePayloadContents payload_contents(
       AggregationServicePayloadContents::Operation::kHistogram,
       std::move(contributions), aggregation_mode,
-      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+      /*aggregation_coordinator_origin=*/absl::nullopt);
 
   AggregatableReportSharedInfo shared_info(
       scheduled_report_time, std::move(report_id), reporting_origin,

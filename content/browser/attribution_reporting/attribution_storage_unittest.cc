@@ -24,9 +24,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -2217,7 +2218,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
               /*dedup_key=*/123, FilterPair())},
           /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          /*aggregation_coordinator_origin=*/absl::nullopt,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
@@ -2288,7 +2289,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
             /*event_triggers=*/{}, aggregatable_trigger_data,
             aggregatable_values,
             /*debug_reporting=*/false,
-            ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+            /*aggregation_coordinator_origin=*/absl::nullopt,
             attribution_reporting::mojom::SourceRegistrationTimeConfig::
                 kInclude),
         /*destination_origin=*/origin, /*verifications=*/{},
@@ -3034,7 +3035,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               /*aggregatable_values=*/
               attribution_reporting::AggregatableValues(),
               /*debug_reporting=*/false,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+              /*aggregation_coordinator_origin=*/absl::nullopt,
               attribution_reporting::mojom::SourceRegistrationTimeConfig::
                   kInclude),
           /*destination_origin=*/origin,
@@ -3105,24 +3106,23 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
                      }})),
   };
 
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kSuccess,
-      MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-          /*reporting_origin=*/origin,
-          attribution_reporting::TriggerRegistration(
-              FilterPair(),
-              /*debug_key=*/absl::nullopt,
-              /*aggregatable_dedup_keys=*/{}, event_triggers,
-              /*aggregatable_trigger_data=*/{},
-              /*aggregatable_values=*/
-              attribution_reporting::AggregatableValues(),
-              /*debug_reporting=*/false,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault,
-              attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                  kInclude),
-          /*destination_origin=*/origin,
-          /*verifications=*/{},
-          /*is_within_fenced_frame=*/false)));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+                /*reporting_origin=*/origin,
+                attribution_reporting::TriggerRegistration(
+                    FilterPair(),
+                    /*debug_key=*/absl::nullopt,
+                    /*aggregatable_dedup_keys=*/{}, event_triggers,
+                    /*aggregatable_trigger_data=*/{},
+                    /*aggregatable_values=*/
+                    attribution_reporting::AggregatableValues(),
+                    /*debug_reporting=*/false,
+                    /*aggregation_coordinator_origin=*/absl::nullopt,
+                    attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                        kInclude),
+                /*destination_origin=*/origin,
+                /*verifications=*/{},
+                /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(
@@ -3170,7 +3170,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          /*aggregation_coordinator_origin=*/absl::nullopt,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
@@ -3186,7 +3186,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          /*aggregation_coordinator_origin=*/absl::nullopt,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
@@ -3201,7 +3201,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          /*aggregation_coordinator_origin=*/absl::nullopt,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin,
       /*verifications=*/{},
@@ -3420,29 +3420,26 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, AggregationCoordinator_RoundTrip) {
-  for (auto aggregation_coordinator :
-       {::aggregation_service::mojom::AggregationCoordinator::kAwsCloud}) {
-    storage()->StoreSource(
-        TestAggregatableSourceProvider().GetBuilder().Build());
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
 
-    EXPECT_THAT(
-        storage()->MaybeCreateAndStoreReport(
-            DefaultAggregatableTriggerBuilder()
-                .SetAggregationCoordinator(aggregation_coordinator)
-                .Build(/*generate_event_trigger_data=*/false)),
-        AllOf(CreateReportAggregatableStatusIs(
-                  AttributionTrigger::AggregatableResult::kSuccess),
-              NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
-                  AggregationCoordinatorIs(aggregation_coordinator))))));
-    EXPECT_THAT(
-        storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
-        ElementsAre(AggregatableAttributionDataIs(
-            AggregationCoordinatorIs(aggregation_coordinator))));
+  auto coordinator_origin = SuitableOrigin::Deserialize("https://a.test");
 
-    storage()->ClearData(/*delete_begin=*/base::Time::Min(),
-                         /*delete_end=*/base::Time::Max(),
-                         /*filter=*/base::NullCallback());
-  }
+  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder()
+              .SetAggregationCoordinatorOrigin(*coordinator_origin)
+              .Build(/*generate_event_trigger_data=*/false)),
+      AllOf(CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kSuccess),
+            NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+                AggregationCoordinatorOriginIs(coordinator_origin))))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+      ElementsAre(AggregatableAttributionDataIs(
+          AggregationCoordinatorOriginIs(coordinator_origin))));
 }
 
 TEST_F(AttributionStorageTest, MaxAttributions_BoundedBySourceTimeWindow) {

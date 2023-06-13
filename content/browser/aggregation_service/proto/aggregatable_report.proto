@@ -23,12 +23,6 @@ message AggregatableReportHistogramContribution {
   int32 value = 3;
 }
 
-// Proto equivalent of
-// `aggregation_service::mojom::AggregationCoordinator`
-enum AggregationCoordinator {
-  AWS_CLOUD = 0;
-}
-
 // Proto equivalent of `content::AggregationServicePayloadContents`
 message AggregationServicePayloadContents {
   enum Operation {
@@ -38,7 +32,11 @@ message AggregationServicePayloadContents {
   Operation operation = 1;
   repeated AggregatableReportHistogramContribution contributions = 2;
   AggregationServiceMode aggregation_mode = 3;
-  AggregationCoordinator aggregation_coordinator = 4;
+
+  // aggregation_coordinator_origin is assumed to be the default (for now).
+
+  reserved 4;
+  reserved "aggregation_coordinator";
 }
 
 // Proto equivalent of `content::AggregatableReportSharedInfo`

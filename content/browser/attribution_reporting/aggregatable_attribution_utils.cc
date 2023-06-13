@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -25,6 +24,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -182,7 +182,10 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           AggregationServicePayloadContents::Operation::kHistogram,
           std::move(contributions),
           blink::mojom::AggregationServiceMode::kDefault,
-          common_aggregatable_data->aggregation_coordinator),
+          common_aggregatable_data->aggregation_coordinator_origin
+              ? absl::make_optional(
+                    **common_aggregatable_data->aggregation_coordinator_origin)
+              : absl::nullopt),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),

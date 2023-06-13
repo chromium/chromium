@@ -4,11 +4,13 @@
 
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 
+#include <string>
+
 #include "base/check.h"
+#include "base/containers/enum_set.h"
 #include "base/strings/string_piece.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/aggregation_service/features.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "components/attribution_reporting/is_origin_suitable.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -16,29 +18,53 @@ namespace aggregation_service {
 
 namespace {
 
+// An identifier to specify the deployment option for the aggregation service.
+enum AggregationCoordinator {
+  kAwsCloud,
+
+  kMinValue = kAwsCloud,
+  kMaxValue = kAwsCloud,
+  kDefault = kAwsCloud,
+};
+
 url::Origin GetAggregationCoordinatorOriginFromString(
     base::StringPiece origin_str,
     base::StringPiece default_origin_str) {
   // Uses default origin in case of erroneous Finch params.
   auto origin = url::Origin::Create(GURL(origin_str));
-  if (network::IsOriginPotentiallyTrustworthy(origin)) {
+  if (attribution_reporting::IsOriginSuitable(origin)) {
     return origin;
   }
   return url::Origin::Create(GURL(default_origin_str));
 }
 
-}  // namespace
-
 url::Origin GetAggregationCoordinatorOrigin(
-    mojom::AggregationCoordinator aggregation_coordinator) {
+    AggregationCoordinator aggregation_coordinator) {
   switch (aggregation_coordinator) {
-    case mojom::AggregationCoordinator::kAwsCloud:
+    case AggregationCoordinator::kAwsCloud:
       url::Origin origin = GetAggregationCoordinatorOriginFromString(
           kAggregationServiceCoordinatorAwsCloud.Get(),
           kDefaultAggregationCoordinatorAwsCloud);
-      CHECK(network::IsOriginPotentiallyTrustworthy(origin));
+      CHECK(attribution_reporting::IsOriginSuitable(origin));
       return origin;
   }
+}
+
+}  // namespace
+
+url::Origin GetDefaultAggregationCoordinatorOrigin() {
+  return GetAggregationCoordinatorOrigin(AggregationCoordinator::kDefault);
+}
+
+bool IsAggregationCoordinatorOriginAllowed(const url::Origin& origin) {
+  for (auto coordinator :
+       base::EnumSet<AggregationCoordinator, AggregationCoordinator::kMinValue,
+                     AggregationCoordinator::kMaxValue>::All()) {
+    if (origin == GetAggregationCoordinatorOrigin(coordinator)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace aggregation_service

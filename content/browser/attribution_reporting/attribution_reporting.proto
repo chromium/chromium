@@ -32,18 +32,17 @@ message AttributionEventLevelMetadata {
 }
 
 message AttributionCommonAggregatableMetadata {
-  enum Coordinator {
-    AWS_CLOUD = 0;
-  }
-
   enum SourceRegistrationTimeConfig {
     INCLUDE = 0;
     EXCLUDE = 1;
   }
 
-  optional Coordinator coordinator = 1;
   optional string verification_token = 2;
   optional SourceRegistrationTimeConfig source_registration_time_config = 3;
+  optional string coordinator_origin = 4;
+
+  reserved 1;
+  reserved "coordinator";
 }
 
 message AttributionAggregatableMetadata {

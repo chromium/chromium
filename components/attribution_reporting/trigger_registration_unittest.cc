@@ -14,7 +14,6 @@
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -22,12 +21,15 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace attribution_reporting {
 namespace {
@@ -349,8 +351,8 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
           "aggregation_coordinator_origin_valid",
           R"json({"aggregation_coordinator_origin":"https://aws.example.test"})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregation_coordinator =
-                aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
+            r.aggregation_coordinator_origin =
+                SuitableOrigin::Create(GURL("https://aws.example.test"));
           }),
       },
       {
@@ -399,16 +401,24 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
           TriggerRegistration(),
           R"json({
             "aggregatable_source_registration_time": "exclude",
+            "debug_reporting": false
+          })json",
+      },
+      {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.aggregation_coordinator_origin =
+                SuitableOrigin::Create(GURL("https://aws.example.test"));
+          }),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
             "aggregation_coordinator_origin": "https://aws.example.test",
             "debug_reporting": false
           })json",
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"}});
+  base::test::ScopedFeatureList scoped_feature_list(
+      aggregation_service::kAggregationServiceMultipleCloudProviders);
 
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(test_case.input.ToJson(),

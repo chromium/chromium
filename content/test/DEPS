@@ -63,7 +63,4 @@ specific_include_rules = {
   "content_browser_test_test.cc": [
     "+ui/ozone/public/ozone_switches.h",
   ],
-  "test_aggregation_service_impl.cc": [
-    "+components/aggregation_service",
-  ],
 }

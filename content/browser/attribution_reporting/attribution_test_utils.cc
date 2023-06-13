@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/aggregation_service.mojom-forward.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -350,10 +349,9 @@ TriggerBuilder& TriggerBuilder::SetDebugReporting(bool debug_reporting) {
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetAggregationCoordinator(
-    ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator) {
-  aggregation_coordinator_ = aggregation_coordinator;
+TriggerBuilder& TriggerBuilder::SetAggregationCoordinatorOrigin(
+    SuitableOrigin aggregation_coordinator_origin) {
+  aggregation_coordinator_origin_ = std::move(aggregation_coordinator_origin);
   return *this;
 }
 
@@ -396,8 +394,8 @@ AttributionTrigger TriggerBuilder::Build(
           {attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/aggregatable_dedup_key_, FilterPair())},
           std::move(event_triggers), aggregatable_trigger_data_,
-          aggregatable_values_, debug_reporting_, aggregation_coordinator_,
-          source_registration_time_config_),
+          aggregatable_values_, debug_reporting_,
+          aggregation_coordinator_origin_, source_registration_time_config_),
       destination_origin_, verifications_, is_within_fenced_frame_);
 }
 
@@ -468,10 +466,9 @@ ReportBuilder& ReportBuilder::SetAggregatableHistogramContributions(
   return *this;
 }
 
-ReportBuilder& ReportBuilder::SetAggregationCoordinator(
-    ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator) {
-  aggregation_coordinator_ = aggregation_coordinator;
+ReportBuilder& ReportBuilder::SetAggregationCoordinatorOrigin(
+    SuitableOrigin aggregation_coordinator_origin) {
+  aggregation_coordinator_origin_ = std::move(aggregation_coordinator_origin);
   return *this;
 }
 
@@ -504,7 +501,7 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
       /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(
-              aggregation_coordinator_, verification_token_,
+              aggregation_coordinator_origin_, verification_token_,
               source_registration_time_config_),
           contributions_, source_));
 }
@@ -516,7 +513,7 @@ AttributionReport ReportBuilder::BuildNullAggregatable() const {
       /*failed_send_attempts=*/0,
       AttributionReport::NullAggregatableData(
           AttributionReport::CommonAggregatableData(
-              aggregation_coordinator_, verification_token_,
+              aggregation_coordinator_origin_, verification_token_,
               source_registration_time_config_),
           source_.common_info().reporting_origin(), source_.source_time()));
 }
@@ -609,7 +606,7 @@ bool operator==(const AttributionReport::CommonAggregatableData& a,
                 const AttributionReport::CommonAggregatableData& b) {
   const auto tie = [](const AttributionReport::CommonAggregatableData& data) {
     return std::make_tuple(data.verification_token,
-                           data.aggregation_coordinator,
+                           data.aggregation_coordinator_origin,
                            data.source_registration_time_config);
   };
   return tie(a) == tie(b);
@@ -865,7 +862,10 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(
     std::ostream& out,
     const AttributionReport::CommonAggregatableData& data) {
-  out << "{aggregation_coordinator=" << data.aggregation_coordinator
+  out << "{aggregation_coordinator_origin="
+      << (data.aggregation_coordinator_origin.has_value()
+              ? data.aggregation_coordinator_origin->Serialize()
+              : "null")
       << ",verification_token=";
 
   if (const auto& verification_token = data.verification_token;
@@ -1026,8 +1026,8 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
         aggregatable_trigger_data,
     ::testing::Matcher<const attribution_reporting::AggregatableValues&>
         aggregatable_values,
-    ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
-        aggregation_coordinator,
+    ::testing::Matcher<const absl::optional<SuitableOrigin>&>
+        aggregation_coordinator_origin,
     ::testing::Matcher<
         attribution_reporting::mojom::SourceRegistrationTimeConfig>
         source_registration_time_config)
@@ -1038,6 +1038,7 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
       debug_reporting(std::move(debug_reporting)),
       aggregatable_trigger_data(std::move(aggregatable_trigger_data)),
       aggregatable_values(std::move(aggregatable_values)),
+      aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
       source_registration_time_config(
           std::move(source_registration_time_config)) {}
 
@@ -1067,10 +1068,10 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
       Field("aggregatable_values",
             &attribution_reporting::TriggerRegistration::aggregatable_values,
             cfg.aggregatable_values),
-      Field(
-          "aggregation_coordinator",
-          &attribution_reporting::TriggerRegistration::aggregation_coordinator,
-          cfg.aggregation_coordinator),
+      Field("aggregation_coordinator_origin",
+            &attribution_reporting::TriggerRegistration::
+                aggregation_coordinator_origin,
+            cfg.aggregation_coordinator_origin),
       Field("source_registration_time_config",
             &attribution_reporting::TriggerRegistration::
                 source_registration_time_config,

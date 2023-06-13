@@ -23,7 +23,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -174,8 +173,10 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
                     aggregatable_data.common_data.verification_token,
-                    aggregation_service::SerializeAggregationCoordinator(
-                        aggregatable_data.common_data.aggregation_coordinator),
+                    aggregatable_data.common_data.aggregation_coordinator_origin
+                        ? aggregatable_data.common_data
+                              .aggregation_coordinator_origin->Serialize()
+                        : "",
                     /*is_null_report=*/false));
           },
 
@@ -191,8 +192,10 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
                     null_data.common_data.verification_token,
-                    aggregation_service::SerializeAggregationCoordinator(
-                        null_data.common_data.aggregation_coordinator),
+                    null_data.common_data.aggregation_coordinator_origin
+                        ? null_data.common_data.aggregation_coordinator_origin
+                              ->Serialize()
+                        : "",
                     /*is_null_report=*/true));
           },
       },
