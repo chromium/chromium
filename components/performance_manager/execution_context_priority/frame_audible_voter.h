@@ -5,15 +5,17 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_AUDIBLE_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_AUDIBLE_VOTER_H_
 
+#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
-#include "components/performance_manager/public/graph/frame_node.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
 
 // This voter casts a TaskPriority::USER_VISIBLE vote to all audible frames, and
 // a TaskPriority::LOWEST vote to non-audible frames.
-class FrameAudibleVoter : public FrameNode::ObserverDefaultImpl {
+// Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
+// priority of a frame.
+class FrameAudibleVoter : public InitializingFrameNodeObserver {
  public:
   static const char kFrameAudibleReason[];
 
@@ -26,9 +28,9 @@ class FrameAudibleVoter : public FrameNode::ObserverDefaultImpl {
   // Sets the voting channel where the votes will be cast.
   void SetVotingChannel(VotingChannel voting_channel);
 
-  // FrameNodeObserver:
-  void OnFrameNodeAdded(const FrameNode* frame_node) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  // InitializingFrameNodeObserver:
+  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
+  void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
 
  private:

@@ -190,7 +190,6 @@ class FrameNodeImpl
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
   bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const override;
-  const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
@@ -198,6 +197,7 @@ class FrameNodeImpl
   Visibility GetVisibility() const override;
   uint64_t GetResidentSetKbEstimate() const override;
   uint64_t GetPrivateFootprintKbEstimate() const override;
+  const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.

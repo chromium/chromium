@@ -383,6 +383,14 @@ void FrameNodeImpl::RemoveChildWorker(WorkerNodeImpl* worker_node) {
 void FrameNodeImpl::SetPriorityAndReason(
     const PriorityAndReason& priority_and_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This is also called during initialization to set the initial value. In this
+  // case, do not notify the observers as they aren't even aware of this frame
+  // node anyways.
+  if (CanSetProperty()) {
+    priority_and_reason_.Set(this, priority_and_reason);
+    return;
+  }
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
@@ -583,11 +591,6 @@ bool FrameNodeImpl::VisitChildDedicatedWorkers(
   return true;
 }
 
-const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason();
-}
-
 bool FrameNodeImpl::HadFormInteraction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return had_form_interaction();
@@ -622,6 +625,11 @@ uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
 uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_footprint_kb_estimate();
+}
+
+const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_and_reason();
 }
 
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {

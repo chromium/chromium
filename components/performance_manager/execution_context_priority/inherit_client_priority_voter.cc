@@ -71,13 +71,7 @@ void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
   // priority.
 
   auto it = voting_channels_.find(GetExecutionContext(frame_node));
-
-  // Unknown |frame_node|. Just ignore it until we get notified of its existence
-  // via OnFrameNodeAdded(). This can happen because another voter received the
-  // OnFrameNodeAdded() call first and thus was able to change its priority very
-  // early.
-  if (it == voting_channels_.end())
-    return;
+  DCHECK(it != voting_channels_.end());
 
   auto& voting_channel = it->second;
 

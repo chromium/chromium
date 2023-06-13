@@ -54,9 +54,9 @@ ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
 
 void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
   // Subscribe voters to the graph.
-  graph->AddFrameNodeObserver(&ad_frame_voter_);
-  graph->AddFrameNodeObserver(&frame_visibility_voter_);
-  graph->AddFrameNodeObserver(&frame_audible_voter_);
+  graph->AddInitializingFrameNodeObserver(&ad_frame_voter_);
+  graph->AddInitializingFrameNodeObserver(&frame_visibility_voter_);
+  graph->AddInitializingFrameNodeObserver(&frame_audible_voter_);
   graph->AddFrameNodeObserver(&inherit_client_priority_voter_);
   graph->AddWorkerNodeObserver(&inherit_client_priority_voter_);
 }
@@ -65,9 +65,9 @@ void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
   // Unsubscribe voters from the graph.
   graph->RemoveWorkerNodeObserver(&inherit_client_priority_voter_);
   graph->RemoveFrameNodeObserver(&inherit_client_priority_voter_);
-  graph->RemoveFrameNodeObserver(&frame_audible_voter_);
-  graph->RemoveFrameNodeObserver(&frame_visibility_voter_);
-  graph->RemoveFrameNodeObserver(&ad_frame_voter_);
+  graph->RemoveInitializingFrameNodeObserver(&frame_audible_voter_);
+  graph->RemoveInitializingFrameNodeObserver(&frame_visibility_voter_);
+  graph->RemoveInitializingFrameNodeObserver(&ad_frame_voter_);
 }
 
 }  // namespace execution_context_priority

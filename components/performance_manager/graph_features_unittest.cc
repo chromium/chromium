@@ -53,7 +53,7 @@ TEST(GraphFeaturesTest, EnableDefault) {
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
   EXPECT_FALSE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
 
-  size_t graph_owned_count = 11;
+  size_t graph_owned_count = 12;
 #if !BUILDFLAG(IS_ANDROID)
   // The SiteDataRecorder is not available on Android.
   graph_owned_count++;
