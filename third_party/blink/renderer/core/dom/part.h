@@ -25,9 +25,8 @@ class CORE_EXPORT Part : public ScriptWrappable {
   ~Part() override = default;
 
   // Part API
+  virtual PartRoot* root() const = 0;
 
-  // TODO(crbug.com/1453291) Implement this method.
-  PartRoot* root() const { return nullptr; }
   // TODO(crbug.com/1453291) Implement this method.
   HeapVector<String> metadata() const { return HeapVector<String>(); }
 

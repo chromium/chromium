@@ -13,6 +13,8 @@
 
 namespace blink {
 
+class PartRoot;
+
 // Implementation of the NodePart class, which is part of the DOM Parts API.
 // A NodePart stores a reference to a single |Node| in the DOM tree.
 class CORE_EXPORT NodePart : public Part {
@@ -34,6 +36,8 @@ class CORE_EXPORT NodePart : public Part {
 
   // NodePart API
   Node* node() const { return node_; }
+  // TODO(crbug.com/1453291) Implement this method.
+  PartRoot* root() const override { return nullptr; }
 
  private:
   Member<Node> node_;

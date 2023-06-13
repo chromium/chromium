@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -15,10 +16,11 @@ namespace blink {
 
 class Document;
 class DocumentFragment;
+class Part;
 class V8UnionDocumentOrDocumentFragment;
 
 // Implementation of the DocumentPart class, which is part of the DOM Parts API.
-// A DocumentPart represents the PartRoot for a |Document| object.
+// A DocumentPart holds the parts for a Document or DocumentFragment object.
 class CORE_EXPORT DocumentPart : public PartRoot {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -38,7 +40,13 @@ class CORE_EXPORT DocumentPart : public PartRoot {
   void Trace(Visitor*) const override;
 
   // DocumentPart API
+  // TODO(crbug.com/1453291) Implement this method.
+  PartRoot* root() const override { return nullptr; }
   DocumentPart* clone() const;
+  // TODO(crbug.com/1453291) Implement this method.
+  HeapVector<Member<Part>> getParts() override {
+    return HeapVector<Member<Part>>();
+  }
 
  private:
   Member<Document> document_;

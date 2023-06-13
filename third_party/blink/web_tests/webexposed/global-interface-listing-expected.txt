@@ -1260,14 +1260,12 @@ interface CharacterData : Node
     method replaceWith
     method substringData
     setter data
-interface ChildNodePart : Part
+interface ChildNodePart : PartRoot
     attribute @@toStringTag
     getter children
     getter nextSibling
     getter previousSibling
-    method clone
     method constructor
-    method getParts
     method replaceChildren
 interface Clipboard : EventTarget
     attribute @@toStringTag
@@ -6760,7 +6758,7 @@ interface Part
     getter root
     method constructor
     method disconnect
-interface PartRoot
+interface PartRoot : Part
     attribute @@toStringTag
     method constructor
     method getParts

@@ -22,7 +22,7 @@ namespace blink {
 // Implementation of the ChildNodePart class, which is part of the DOM Parts
 // API. A ChildNodePart stores a reference to a range of nodes within the
 // children of a single parent |Node| in the DOM tree.
-class CORE_EXPORT ChildNodePart : public Part {
+class CORE_EXPORT ChildNodePart : public PartRoot {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -54,11 +54,12 @@ class CORE_EXPORT ChildNodePart : public Part {
     return HeapVector<Member<Node>>();
   }
   // TODO(crbug.com/1453291) Implement this method.
-  HeapVector<Member<Part>> getParts() const {
+  HeapVector<Member<Part>> getParts() override {
     return HeapVector<Member<Part>>();
   }
+
   // TODO(crbug.com/1453291) Implement this method.
-  DocumentPart* clone() const { return nullptr; }
+  PartRoot* root() const override { return nullptr; }
   // TODO(crbug.com/1453291) Implement this method.
   void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
 
