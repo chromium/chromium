@@ -38,6 +38,13 @@ struct ChromeRootStoreDebugInfo {
   int64 chrome_root_store_version;
 };
 
+struct AiaFetchDebugInfo {
+  // Count of Authority Information Access(AIA) fetches that failed.
+  int32 aia_fetch_failure;
+  // Count of AIA fetches that succeeded.
+  int32 aia_fetch_success;
+};
+
 // Contains additional debugging data about the verification. This information
 // does not change the meaning of the results.
 struct CertVerifierDebugInfo {
@@ -76,6 +83,10 @@ struct CertVerifierDebugInfo {
   // exploded & encoded GeneralizedTime string.
   mojo_base.mojom.Time trial_verification_time;
   string trial_der_verification_time;
+
+  // Any Authority Information Access(AIA) fetch debug information.
+  AiaFetchDebugInfo? primary_aia_fetch_debug_info;
+  AiaFetchDebugInfo? trial_aia_fetch_debug_info;
 };
 
 // Sends reports of differences found in the cert verifier trial.

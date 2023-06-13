@@ -400,6 +400,15 @@ TEST(ErrorReportTest, TrialDebugInfo) {
       kTestChromeRootVersion;
 #endif
 
+  debug_info->primary_aia_fetch_debug_info =
+      cert_verifier::mojom::AiaFetchDebugInfo::New();
+  debug_info->primary_aia_fetch_debug_info->aia_fetch_failure = 1;
+  debug_info->primary_aia_fetch_debug_info->aia_fetch_success = 2;
+  debug_info->trial_aia_fetch_debug_info =
+      cert_verifier::mojom::AiaFetchDebugInfo::New();
+  debug_info->trial_aia_fetch_debug_info->aia_fetch_failure = 3;
+  debug_info->trial_aia_fetch_debug_info->aia_fetch_success = 4;
+
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
   debug_info->trial_der_verification_time = "it's just a string";
@@ -482,6 +491,13 @@ TEST(ErrorReportTest, TrialDebugInfo) {
             trial_info.trial_verification_time_usec());
   ASSERT_TRUE(trial_info.has_trial_der_verification_time());
   EXPECT_EQ("it's just a string", trial_info.trial_der_verification_time());
+
+  ASSERT_TRUE(trial_info.has_primary_aia_fetch_debug_info());
+  EXPECT_EQ(trial_info.primary_aia_fetch_debug_info().aia_fetch_failure(), 1);
+  EXPECT_EQ(trial_info.primary_aia_fetch_debug_info().aia_fetch_success(), 2);
+  ASSERT_TRUE(trial_info.has_trial_aia_fetch_debug_info());
+  EXPECT_EQ(trial_info.trial_aia_fetch_debug_info().aia_fetch_failure(), 3);
+  EXPECT_EQ(trial_info.trial_aia_fetch_debug_info().aia_fetch_success(), 4);
 }
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 

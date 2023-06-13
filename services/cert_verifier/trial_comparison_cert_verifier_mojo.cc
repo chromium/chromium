@@ -11,6 +11,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/internal/cert_issuer_source_aia.h"
 #include "net/cert/trial_comparison_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
@@ -67,6 +68,15 @@ SlotFilterTypeToMojom(
   }
 }
 #endif
+
+cert_verifier::mojom::AiaFetchDebugInfoPtr FillAiaFetchDebugInfo(
+    const net::CertIssuerSourceAia::AiaDebugData& debug_data) {
+  cert_verifier::mojom::AiaFetchDebugInfoPtr debug_info =
+      cert_verifier::mojom::AiaFetchDebugInfo::New();
+  debug_info->aia_fetch_failure = debug_data.aia_fetch_fail();
+  debug_info->aia_fetch_success = debug_data.aia_fetch_success();
+  return debug_info;
+}
 
 }  // namespace
 
@@ -200,6 +210,18 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
               .value();
     }
 #endif
+  }
+
+  if (const net::CertIssuerSourceAia::AiaDebugData*
+          primary_aia_fetch_debug_data =
+              net::CertIssuerSourceAia::AiaDebugData::Get(&primary_result)) {
+    debug_info->primary_aia_fetch_debug_info =
+        FillAiaFetchDebugInfo(*primary_aia_fetch_debug_data);
+  }
+  if (auto* trial_aia_fetch_debug_data =
+          net::CertIssuerSourceAia::AiaDebugData::Get(&trial_result)) {
+    debug_info->trial_aia_fetch_debug_info =
+        FillAiaFetchDebugInfo(*trial_aia_fetch_debug_data);
   }
 
   report_client_->SendTrialReport(
