@@ -414,6 +414,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Service which implements the adapter interface.
   std::string service_name_;
 
+  // Object path for exported callbacks registered to this client.
+  std::string exported_callback_path_;
+
   // Cached discoverable timeout value (updates on init and on discoverable
   // state changes).
   uint32_t discoverable_timeout_ = 0;
