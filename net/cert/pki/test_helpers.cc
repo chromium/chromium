@@ -4,6 +4,9 @@
 
 #include "net/cert/pki/test_helpers.h"
 
+#include <sstream>
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -18,8 +21,6 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-
-#include <sstream>
 
 namespace net {
 
