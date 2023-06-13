@@ -116,6 +116,29 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreak) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-size: 10px;
+      width: 10ch;
+      white-space: pre;
+    }
+    </style>
+    <div id="target">1234 6789
+1234
+    </div>
+  )HTML");
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  Element* target_node = To<Element>(target.GetDOMNode());
+  target_node->AppendChild(GetDocument().createTextNode(" 6789"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target.IsBisectLineBreakDisabled());
+  EXPECT_FALSE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(AttemptParagraphBalancing(target));
+}
+
 TEST_F(NGParagraphLineBreakerTest, IsDisabledByInitialLetter) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>

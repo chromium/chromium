@@ -224,6 +224,9 @@ class NGInlineItemsBuilderTemplate {
   void ExitAndEnterSvgTextChunk(LayoutText& layout_text);
   void EnterSvgTextChunk(const ComputedStyle* style);
 
+  void DidAppendTextReusing(const NGInlineItem& item);
+  void DidAppendForcedBreak();
+
   void RemoveTrailingCollapsibleSpaceIfExists();
   void RemoveTrailingCollapsibleSpace(NGInlineItem*);
 
