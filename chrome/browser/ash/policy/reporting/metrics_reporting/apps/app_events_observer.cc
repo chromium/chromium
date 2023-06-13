@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -53,11 +55,50 @@ std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForTest(
       reporting_settings));
 }
 
+AppEventsObserver::AppInstallTracker::AppInstallTracker(
+    base::WeakPtr<Profile> profile)
+    : profile_(profile) {}
+
+AppEventsObserver::AppInstallTracker::~AppInstallTracker() = default;
+
+void AppEventsObserver::AppInstallTracker::Add(base::StringPiece app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!profile_) {
+    // Profile destroyed. Skip.
+    return;
+  }
+  DCHECK(!Contains(app_id)) << "App already being tracked";
+  ScopedListPrefUpdate apps_installed_pref(profile_->GetPrefs(),
+                                           ::ash::reporting::kAppsInstalled);
+  apps_installed_pref->Append(app_id);
+}
+
+void AppEventsObserver::AppInstallTracker::Remove(base::StringPiece app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!profile_) {
+    // Profile destroyed. Skip.
+    return;
+  }
+  DCHECK(Contains(app_id)) << "App not being tracked";
+  ScopedListPrefUpdate apps_installed_pref(profile_->GetPrefs(),
+                                           ::ash::reporting::kAppsInstalled);
+  apps_installed_pref->EraseValue(base::Value(app_id));
+}
+
+bool AppEventsObserver::AppInstallTracker::Contains(
+    base::StringPiece app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(profile_);
+  return base::Contains(
+      profile_->GetPrefs()->GetList(::ash::reporting::kAppsInstalled), app_id);
+}
+
 AppEventsObserver::AppEventsObserver(
     base::WeakPtr<Profile> profile,
     std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever,
     const ReportingSettings* reporting_settings)
     : profile_(profile),
+      app_install_tracker_(std::make_unique<AppInstallTracker>(profile)),
       app_platform_metrics_retriever_(
           std::move(app_platform_metrics_retriever)),
       reporting_settings_(reporting_settings) {
@@ -100,9 +141,17 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
                                        ::apps::InstallTime app_install_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(reporting_settings_);
-  if (!profile_ || !::ash::reporting::IsAppTypeAllowed(
-                       app_type, reporting_settings_.get(),
-                       ::ash::reporting::kReportAppInventory)) {
+  if (!profile_ || app_install_tracker_->Contains(app_id)) {
+    // Either the profile was destroyed or the app was already installed
+    // (likely in a prior session). Skip.
+    return;
+  }
+
+  // Track app install to prevent future install event reports.
+  app_install_tracker_->Add(app_id);
+  if (!::ash::reporting::IsAppTypeAllowed(
+          app_type, reporting_settings_.get(),
+          ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -173,9 +222,17 @@ void AppEventsObserver::OnAppUninstalled(
     ::apps::UninstallSource app_uninstall_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(reporting_settings_);
-  if (!profile_ || !::ash::reporting::IsAppTypeAllowed(
-                       app_type, reporting_settings_.get(),
-                       ::ash::reporting::kReportAppInventory)) {
+  if (!profile_) {
+    // Profile destroyed. Return.
+    return;
+  }
+  if (app_install_tracker_->Contains(app_id)) {
+    // Stop tracking app install if it is being tracked.
+    app_install_tracker_->Remove(app_id);
+  }
+  if (!::ash::reporting::IsAppTypeAllowed(
+          app_type, reporting_settings_.get(),
+          ::ash::reporting::kReportAppInventory)) {
     return;
   }
 

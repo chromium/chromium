@@ -77,6 +77,11 @@ constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
 
 }  // namespace
 
+// static
+BASE_FEATURE(kEnableAppEventsObserver,
+             "EnableAppEventsObserver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) const {
   const user_manager::User* const user =
       ::ash::ProfileHelper::Get()->GetUserByProfile(profile);
@@ -519,14 +524,16 @@ void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK(user_reporting_settings_);
   DCHECK(user_telemetry_report_queue_);
   // App events.
-  auto app_events_observer = AppEventsObserver::CreateForProfile(
-      profile, user_reporting_settings_.get());
-  InitEventObserverManager(
-      std::move(app_events_observer), user_event_report_queue_.get(),
-      user_reporting_settings_.get(),
-      /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
-      metrics::kReportAppInventoryEnabledDefaultValue,
-      /*init_delay=*/base::TimeDelta());
+  if (base::FeatureList::IsEnabled(kEnableAppEventsObserver)) {
+    auto app_events_observer = AppEventsObserver::CreateForProfile(
+        profile, user_reporting_settings_.get());
+    InitEventObserverManager(
+        std::move(app_events_observer), user_event_report_queue_.get(),
+        user_reporting_settings_.get(),
+        /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
+        metrics::kReportAppInventoryEnabledDefaultValue,
+        /*init_delay=*/base::TimeDelta());
+  }
 
   // App telemetry.
   app_usage_observer_ =

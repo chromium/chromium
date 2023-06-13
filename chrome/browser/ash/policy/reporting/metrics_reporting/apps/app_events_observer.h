@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
@@ -53,6 +54,39 @@ class AppEventsObserver : public MetricEventObserver,
   void SetReportingEnabled(bool is_enabled) override;
 
  private:
+  // Tracker that tracks app installs in the user pref store and helps
+  // determine if the app was already installed. The `AppRegistryCache` attempts
+  // to notify observers of app updates that facilitate tracking new installs,
+  // but only if the component is initialized before app is actually installed.
+  // It normally reports a list of apps registered on the device on init once
+  // app publishers report them, and the tracker helps identify apps that were
+  // newly installed so we can ignore the ones that were previously installed.
+  // TODO (go/add-app-storage-in-app-service): This will be deprecated in favor
+  // of the unified app storage setup in the app service once it is implemented.
+  class AppInstallTracker {
+   public:
+    explicit AppInstallTracker(base::WeakPtr<Profile> profile);
+    AppInstallTracker(const AppInstallTracker& other) = delete;
+    AppInstallTracker& operator=(const AppInstallTracker& other) = delete;
+    ~AppInstallTracker();
+
+    // Adds the specified app id for tracking purposes.
+    void Add(base::StringPiece app_id);
+
+    // Removes the specified app id.
+    void Remove(base::StringPiece app_id);
+
+    // Returns true if the specified app is being tracked in the user pref
+    // store. False otherwise.
+    bool Contains(base::StringPiece app_id) const;
+
+   private:
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    // Weak pointer to the user profile. Needed to access the user pref store.
+    const base::WeakPtr<Profile> profile_;
+  };
+
   AppEventsObserver(base::WeakPtr<Profile> profile,
                     std::unique_ptr<AppPlatformMetricsRetriever>
                         app_platform_metrics_retriever,
@@ -88,15 +122,21 @@ class AppEventsObserver : public MetricEventObserver,
   // for reporting purposes.
   base::WeakPtr<Profile> profile_;
 
+  // App install tracker used by the event observer to filter out install event
+  // notifications that include pre-installed apps.
+  const std::unique_ptr<AppInstallTracker> app_install_tracker_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Retriever that retrieves the `AppPlatformMetrics` component so the
   // `AppEventsObserver` can start observing app events.
   const std::unique_ptr<AppPlatformMetricsRetriever>
-      app_platform_metrics_retriever_;
+      app_platform_metrics_retriever_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Pointer to the reporting settings that controls app inventory event
   // reporting. Guaranteed to outlive the observer because it is managed by the
   // `MetricReportingManager`.
-  const raw_ptr<const ReportingSettings> reporting_settings_;
+  const raw_ptr<const ReportingSettings> reporting_settings_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Observer for tracking app events. Will be reset if the `AppPlatformMetrics`
   // component gets destructed before the event observer.

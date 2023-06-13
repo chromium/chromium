@@ -37,6 +37,8 @@ class MetricReportQueue;
 class CollectorBase;
 class Sampler;
 
+BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
+
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
 class MetricReportingManager : public policy::ManagedSessionService::Observer,
