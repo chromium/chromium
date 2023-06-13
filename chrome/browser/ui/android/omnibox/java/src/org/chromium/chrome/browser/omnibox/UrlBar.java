@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputType;
@@ -39,8 +40,11 @@ import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -61,6 +65,9 @@ public abstract class UrlBar extends AutocompleteEditText {
     // of what is displayed to the user, see limitDisplayableLength().
     private static final int MAX_DISPLAYABLE_LENGTH = 4000;
     private static final int MAX_DISPLAYABLE_LENGTH_LOW_END = 1000;
+
+    private static final MutableFlagWithSafeDefault sScrollToTLDOptimizationsFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.SCROLL_TO_TLD_OPTIMIZATION, false);
 
     // Stylus handwriting: Setting this ime option instructs stylus writing service to restrict
     // capturing writing events slightly outside the Url bar area. This is needed to prevent stylus
@@ -685,6 +692,18 @@ public abstract class UrlBar extends AutocompleteEditText {
         scrollDisplayTextInternal(mScrollType);
     }
 
+    private boolean isVisibleTextTheSame(Editable text) {
+        if (text == null) {
+            return false;
+        }
+
+        if (mVisibleTextPrefixHint != null) {
+            return TextUtils.indexOf(text, mVisibleTextPrefixHint) == 0;
+        }
+
+        return TextUtils.equals(text, mPreviousScrollText);
+    }
+
     /**
      * Scrolls the omnibox text to the position specified, based on the {@link ScrollType}.
      *
@@ -708,19 +727,23 @@ public abstract class UrlBar extends AutocompleteEditText {
         boolean currentIsRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
 
         int measuredWidth = getVisibleMeasuredViewportWidth();
-        if (scrollType == mPreviousScrollType && TextUtils.equals(text, mPreviousScrollText)
+
+        if (scrollType == mPreviousScrollType
                 && measuredWidth == mPreviousScrollViewWidth
                 // Font size is float but it changes in discrete range (eg small font, big font),
                 // therefore false negative using regular equality is unlikely.
                 && currentTextSize == mPreviousScrollFontSize
-                && currentIsRtl == mPreviousScrollWasRtl) {
+                && currentIsRtl == mPreviousScrollWasRtl && isVisibleTextTheSame(text)) {
             scrollTo(mPreviousScrollResultXPosition, getScrollY());
             return;
         }
 
         switch (scrollType) {
             case ScrollType.SCROLL_TO_TLD:
+                final long startTime = SystemClock.elapsedRealtime();
                 scrollToTLD();
+                RecordHistogram.recordTimesHistogram(
+                        "Omnibox.ScrollToTLD.Duration", SystemClock.elapsedRealtime() - startTime);
                 break;
             case ScrollType.SCROLL_TO_BEGINNING:
                 scrollToBeginning();
@@ -809,10 +832,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                 mVisibleTextPrefixHint =
                         url.subSequence(0, Math.min(originEndIndex + 1, urlTextLength));
             } else {
-                int finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
-                if (finalVisibleCharIndex == urlTextLength
-                        && textLayout.getPrimaryHorizontal(finalVisibleCharIndex)
-                                <= measuredWidth) {
+                if (textLayout.getPrimaryHorizontal(urlTextLength) <= measuredWidth) {
                     // Only store the visibility hint if the text is wider than the viewport. Text
                     // narrower than the viewport is not a useful hint because a consumer would not
                     // understand if a subsequent character would be visible on screen or not.
@@ -823,6 +843,18 @@ public abstract class UrlBar extends AutocompleteEditText {
                     // padding.
                     mVisibleTextPrefixHint = null;
                 } else {
+                    int finalVisibleCharIndex;
+                    if (sScrollToTLDOptimizationsFlag.isEnabled()) {
+                        // getOffsetForHorizontal is very slow. getOffsetForAdvance is much faster.
+                        finalVisibleCharIndex = textLayout.getPaint().getOffsetForAdvance(
+                                url, 0, urlTextLength, 0, urlTextLength, false, measuredWidth);
+                        assert finalVisibleCharIndex
+                                == textLayout.getOffsetForHorizontal(0, measuredWidth)
+                            : "scrollToTLD incorrect optimized finalVisibleCharIndex";
+                    } else {
+                        finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
+                    }
+
                     // To avoid issues where a small portion of the character following
                     // finalVisibleCharIndex is visible on screen, be more conservative and extend
                     // the visual hint by an additional character. In testing,

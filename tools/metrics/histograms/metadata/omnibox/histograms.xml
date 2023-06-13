@@ -1515,6 +1515,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ScrollToTLD.Duration" units="ms"
+    expires_after="2023-08-12">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Measures the amount of time it takes to call UrlBar.scrollToTLD(). Logged
+    once per call.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Search.OffTheRecord" enum="BooleanOffTheRecord"
     expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>

@@ -283,6 +283,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
+    &kScrollToTLDOptimization,
     &kShareSheetMigrationAndroid,
     &kShareSheetCustomActionsPolish,
     &kShouldIgnoreIntentSkipInternalCheck,
@@ -931,6 +932,10 @@ BASE_FEATURE(kRequestDesktopSitePerSiteIph,
 BASE_FEATURE(kSafeModeForCachedFlags,
              "SafeModeForCachedFlags",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kScrollToTLDOptimization,
+             "ScrollToTLDOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,
              "ShowScrollableMVTOnNTPAndroid",
