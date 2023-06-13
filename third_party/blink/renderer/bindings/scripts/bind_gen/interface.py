@@ -960,6 +960,42 @@ def make_check_constructor_call(cg_context):
     return node
 
 
+def make_check_coop_restrict_properties_access(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    T = TextNode
+
+    if cg_context.class_like.identifier != "Window":
+        return None
+
+    ext_attrs = cg_context.member_like.extended_attributes
+    if "CrossOrigin" not in ext_attrs:
+        return None
+
+    # COOP: restrict-properties never restricts postMessage() and closed
+    # accesses, which should still be possible across browsing context groups.
+    if cg_context.property_.identifier in ("postMessage", "closed"):
+        return None
+
+    values = ext_attrs.values_of("CrossOrigin")
+    if cg_context.attribute_get and not (not values or "Getter" in values):
+        return None
+    elif cg_context.attribute_set and not ("Setter" in values):
+        return None
+
+    return CxxUnlikelyIfNode(
+        cond=("UNLIKELY(${blink_receiver}->"
+              "IsAccessBlockedByCoopRestrictProperties(${isolate}))"),
+        body=[
+            T("""\
+${exception_state}.ThrowSecurityError(
+"Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
+"Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.");\
+"""),
+            T("return;"),
+        ])
+
+
 def make_check_receiver(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -1850,6 +1886,8 @@ def make_attribute_get_callback_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
+        make_check_coop_restrict_properties_access(cg_context),
+        EmptyNode(),
     ])
 
     if "Getter" in cg_context.property_.extended_attributes.values_of(
@@ -2660,6 +2698,8 @@ def make_operation_function_def(cg_context, function_name):
         make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
+        EmptyNode(),
+        make_check_coop_restrict_properties_access(cg_context),
         EmptyNode(),
     ])
 
@@ -4063,6 +4103,13 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
         return func_def
 
     bind_return_value(body, cg_context, overriding_args=["${index}"])
+
+    # Do this before the index verification below, because we do not want to
+    # reveal any information about the number of frames in this window.
+    body.extend([
+        make_check_coop_restrict_properties_access(cg_context),
+        EmptyNode(),
+    ])
 
     body.extend([
         TextNode("""\

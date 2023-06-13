@@ -195,6 +195,33 @@ void V8Window::NamedPropertyGetterCustom(
   if (!frame)
     return;
 
+  // Verify that COOP: restrict-properties does not prevent this access.
+  // TODO(https://crbug.com/1370351): This will block all same-origin only
+  // properties accesses with a "Named property" access failure, because the
+  // properties will be tried here as part of the algorithm. See if we need to
+  // have a custom message in that case, possibly by actually printing the
+  // passed name.
+  if (UNLIKELY(
+          window->IsAccessBlockedByCoopRestrictProperties(info.GetIsolate()))) {
+    // We need to not throw an exception if we're dealing with the special
+    // "then" property but return undefined instead. See
+    // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This
+    // makes sure WindowProxy is thenable, see the original discussion here:
+    // https://github.com/whatwg/dom/issues/536.
+    if (name == "then") {
+      return info.GetReturnValue().SetUndefined();
+    }
+
+    ExceptionState exception_state(info.GetIsolate(),
+                                   ExceptionState::kNamedGetterContext,
+                                   "Window", name.Utf8().c_str());
+    exception_state.ThrowSecurityError(
+        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
+        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
+        "access.");
+    return info.GetReturnValue().SetNull();
+  }
+
   // Note that named access on WindowProxy is allowed in the cross-origin case.
   // 7.4.5 [[GetOwnProperty]] (P), step 6.
   // https://html.spec.whatwg.org/C/#windowproxy-getownproperty

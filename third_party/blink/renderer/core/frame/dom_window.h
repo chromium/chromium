@@ -163,6 +163,13 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
       mojom::blink::WebFeature property_access,
       mojom::blink::WebFeature property_access_from_other_page) const;
 
+  // Returns whether access should be limited by Cross-Origin-Opener-Policy:
+  // restrict-properties. This is the case for pages in the same
+  // CoopRelatedGroup that can reach each other WindowProxies but do not belong
+  // to the same browsing context group. `isolate` represents the isolate in
+  // which the Window access is taking place.
+  bool IsAccessBlockedByCoopRestrictProperties(v8::Isolate* isolate) const;
+
  protected:
   explicit DOMWindow(Frame&);
 

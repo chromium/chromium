@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Cross-origin popup with empty coop
+PASS Cross-origin popup with coop unsafe-none
+PASS Cross-origin popup with coop same-origin
+PASS Cross-origin popup with coop same-origin-allow-popups
+PASS Cross-origin popup with coop restrict-properties
+Harness: the test ran to completion.
+
