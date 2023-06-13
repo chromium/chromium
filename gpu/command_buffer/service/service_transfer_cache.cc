@@ -256,10 +256,17 @@ cc::ServiceTransferCacheEntry* ServiceTransferCache::GetEntry(
   if (!found) {
     return nullptr;
   }
-  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.TimeSinceLastUse",
-                           base::TimeTicks::Now() - entry->second.last_use);
-  entry->second.last_use = base::TimeTicks::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta last_use_delta = now - entry->second.last_use;
+  if (last_use_delta > entry->second.max_last_use_delta) {
+    entry->second.max_last_use_delta = last_use_delta;
+  }
+  entry->second.last_use = now;
   entry->second.num_reuse++;
+  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.TimeSinceLastUse",
+                           last_use_delta);
+  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.MaxHistoricalTimeSinceLastUse",
+                           entry->second.max_last_use_delta);
   return entry->second.entry.get();
 }
 
