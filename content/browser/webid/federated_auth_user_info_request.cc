@@ -44,7 +44,7 @@ std::string GetConsoleErrorMessage(FederatedAuthUserInfoRequestResult error) {
     }
     case FederatedAuthUserInfoRequestResult::kInvalidConfigOrWellKnown: {
       return "getUserInfo() failed because the config and well-known files "
-             "resulted were invalid.";
+             "were invalid.";
     }
     case FederatedAuthUserInfoRequestResult::kInvalidAccountsResponse: {
       return "getUserInfo() failed because of an invalid accounts response.";

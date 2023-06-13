@@ -438,8 +438,8 @@ TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
 
   ExpectConsoleMessage(
-      "getUserInfo() failed because the config and well-known files resulted "
-      "were invalid.");
+      "getUserInfo() failed because the config and well-known files were "
+      "invalid.");
   ExpectUniqueIssue(
       FederatedAuthUserInfoRequestResult::kInvalidConfigOrWellKnown);
 }
