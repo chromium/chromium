@@ -39,11 +39,6 @@ crbug.com/24182 fast/canvas/canvas-toBlob-toDataURL-race-imageEncoder-png.html [
 crbug.com/24182 fast/canvas/canvas-toBlob-toDataURL-race-imageEncoder-webp.html [ Slow ]
 crbug.com/24182 fast/dom/SelectorAPI/resig-SelectorsAPI-test.xhtml [ Slow ]
 crbug.com/24182 fast/frames/cached-frame-counter.html [ Slow ]
-crbug.com/24182 [ Linux ] fast/frames/frame-limit.html [ Slow ]
-crbug.com/24182 [ Mac10.15 Release ] fast/frames/frame-limit.html [ Slow ]
-crbug.com/24182 [ Mac11 Release ] fast/frames/frame-limit.html [ Slow ]
-crbug.com/24182 [ Mac12 ] fast/frames/frame-limit.html [ Slow ]
-crbug.com/24182 [ Release Win ] fast/frames/frame-limit.html [ Slow ]
 crbug.com/24182 fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ] # Particularly slow in Debug: >12x slower!
 crbug.com/24182 http/tests/accessibility/slow-document-load.html [ Slow ]
 crbug.com/24182 [ Debug Linux ] http/tests/cache/subresource-expiration-1.html [ Slow ]
@@ -1466,3 +1461,5 @@ crbug.com/626703 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll
 crbug.com/1376679 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
 
 crbug.com/1271091 http/tests/security/frameNavigation/xss-ALLOWED-same-etld-plus-1-top-navigation-without-user-gesture.html [ Slow ]
+
+crbug.com/1453341 fast/frames/frame-limit.html [ Slow ]
