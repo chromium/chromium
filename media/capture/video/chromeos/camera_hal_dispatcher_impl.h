@@ -23,6 +23,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "media/capture/capture_export.h"
@@ -168,7 +169,8 @@ class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
 // See https://crbug.com/891961.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
-      public cros::mojom::CameraHalServerCallbacks {
+      public cros::mojom::CameraHalServerCallbacks,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
   using CameraEffectsControllerCallback =
       base::RepeatingCallback<void(cros::mojom::EffectsConfigPtr,
@@ -328,12 +330,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void SetCameraSWPrivacySwitchStateOnProxyThread(
       cros::mojom::CameraPrivacySwitchState state);
 
-  void RegisterClientWithTokenOnProxyThread(
-      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
-      cros::mojom::CameraClientType type,
-      base::UnguessableToken token,
-      RegisterClientWithTokenCallback callback);
-
   void AddClientObserverOnProxyThread(
       CameraClientObserver* observer,
       base::OnceCallback<void(int32_t)> result_callback,
@@ -353,6 +349,22 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void RemoveClientObserversOnProxyThread(
       std::vector<CameraClientObserver*> client_observers,
       base::WaitableEvent* removed);
+
+  void RegisterServerWithTokenOnProxyThread(
+      mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
+      const base::UnguessableToken& token,
+      RegisterServerWithTokenCallback callback);
+
+  void RegisterClientWithTokenOnProxyThread(
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+      cros::mojom::CameraClientType type,
+      base::UnguessableToken token,
+      RegisterClientWithTokenCallback callback);
+
+  void RegisterSensorClientWithTokenOnProxyThread(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
+      const base::UnguessableToken& auth_token,
+      RegisterSensorClientWithTokenCallback callback);
 
   void RegisterSensorClientWithTokenOnUIThread(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
@@ -381,6 +393,11 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Called when new camera effects observer is added.
   void OnCameraEffectsObserverAddOnProxyThread(
       CameraEffectObserverCallback camera_effect_observer_callback);
+
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
 
   std::string GetDeviceIdFromCameraId(int32_t camera_id);
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
@@ -462,6 +479,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::Lock camera_id_to_device_id_lock_;
   base::flat_map<int32_t, std::string> camera_id_to_device_id_
       GUARDED_BY(camera_id_to_device_id_lock_);
+
+  // Receiver for mojo service manager service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };

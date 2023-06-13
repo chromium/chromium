@@ -29,7 +29,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
@@ -42,6 +41,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace media {
 
@@ -270,7 +270,16 @@ bool CameraHalDispatcherImpl::Start(
     LOG(ERROR) << "Failed to generate authentication token for server as a "
                   "sensor client";
   }
-
+  // CameraHalDispatcher registers itself to Mojo Service Manager.
+  // TODO(b/258095854): Survey what we can do if mojo_service_manager is down.
+  if (ash::mojo_service_manager::IsServiceManagerBound()) {
+    auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
+    proxy->Register(
+        /*service_name=*/chromeos::mojo_services::kCrosCameraHalDispatcher,
+        provider_receiver_.BindNewPipeAndPassRemote());
+  } else {
+    LOG(ERROR) << "Mojo Service Manager is not bound.";
+  }
   blocking_io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImpl::CreateSocket,
@@ -440,6 +449,24 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
     mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
     const base::UnguessableToken& token,
     RegisterServerWithTokenCallback callback) {
+  base::UnguessableToken server_token = token;
+  // Unretained reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
+  // This function should be run on the thread which MojoServiceManagerProxy
+  // is bound on. Currently it is main thread.
+  proxy_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::RegisterServerWithTokenOnProxyThread,
+          base::Unretained(this), std::move(camera_hal_server),
+          std::move(server_token),
+          base::BindPostTaskToCurrentDefault(std::move(callback))));
+}
+
+void CameraHalDispatcherImpl::RegisterServerWithTokenOnProxyThread(
+    mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
+    const base::UnguessableToken& token,
+    RegisterServerWithTokenCallback callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
 
   if (camera_hal_server_) {
@@ -524,6 +551,22 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithToken(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
     const base::UnguessableToken& auth_token,
     RegisterSensorClientWithTokenCallback callback) {
+  base::UnguessableToken client_auth_token = auth_token;
+  // Unretained reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
+  proxy_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnProxyThread,
+          base::Unretained(this), std::move(client),
+          std::move(client_auth_token),
+          base::BindPostTaskToCurrentDefault(std::move(callback))));
+}
+
+void CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnProxyThread(
+    mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
+    const base::UnguessableToken& auth_token,
+    RegisterSensorClientWithTokenCallback callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
 
   if (!sensor_enabled_) {
@@ -536,7 +579,7 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithToken(
       base::BindOnce(
           &CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnUIThread,
           weak_factory_.GetWeakPtr(), std::move(client), auth_token,
-          base::BindPostTaskToCurrentDefault(std::move(callback))));
+          std::move(callback)));
 }
 
 void CameraHalDispatcherImpl::BindServiceToMojoServiceManager(
@@ -1146,6 +1189,15 @@ void CameraHalDispatcherImpl::BindToMojoServiceManagerOnUIThread(
   CHECK(ash::mojo_service_manager::IsServiceManagerBound());
   ash::mojo_service_manager::GetServiceManagerProxy()->Request(
       service_name, /*timeout=*/absl::nullopt, std::move(receiver));
+}
+
+void CameraHalDispatcherImpl::Request(
+    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+    mojo::ScopedMessagePipeHandle receiver) {
+  receiver_set_.Add(this,
+                    mojo::PendingReceiver<cros::mojom::CameraHalDispatcher>(
+                        std::move(receiver)));
+  VLOG(1) << "New CameraHalDispatcher binding added from Mojo Service Manager.";
 }
 
 }  // namespace media

@@ -356,6 +356,7 @@ component("capture_lib") {
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//third_party/libsync",
     ]
+    data_deps = [ ":mojo_service_manager_policy" ]
   }
 
   if (is_fuchsia) {
@@ -579,4 +580,9 @@ test("capture_unittests") {
       "//third_party/minigbm",
     ]
   }
+}
+
+copy("mojo_service_manager_policy") {
+  sources = [ "video/chromeos/camera_hal_dispatcher_mojo_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }
