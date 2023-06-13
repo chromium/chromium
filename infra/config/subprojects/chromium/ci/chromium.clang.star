@@ -65,7 +65,7 @@ consoles.console_view(
     ("clang-tot-device", "iOS|internal", "dev"),
 )]
 
-def clang_mac_builder(*, name, cores = 24, **kwargs):
+def clang_mac_builder(*, name, cores = 12, **kwargs):
     return ci.builder(
         name = name,
         cores = cores,
@@ -417,7 +417,6 @@ ci.builder(
 
 clang_mac_builder(
     name = "ToTMac",
-    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "rel",
@@ -427,7 +426,6 @@ clang_mac_builder(
 
 clang_mac_builder(
     name = "ToTMac (dbg)",
-    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "dbg",
@@ -437,7 +435,6 @@ clang_mac_builder(
 
 clang_mac_builder(
     name = "ToTMacASan",
-    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "asn",
@@ -448,7 +445,6 @@ clang_mac_builder(
 clang_mac_builder(
     name = "ToTMacCoverage",
     executable = "recipe:chromium_clang_coverage_tot",
-    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "mac",
