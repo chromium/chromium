@@ -350,10 +350,17 @@ void SessionRestorationBrowserAgent::WebStateListChanged(
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateDetachedAt() to here.
       break;
-    case WebStateListChange::Type::kMove:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateMoved() to here.
+    case WebStateListChange::Type::kMove: {
+      const WebStateListChangeMove& move_change =
+          change.As<WebStateListChangeMove>();
+      if (move_change.moved_web_state()->IsLoading()) {
+        return;
+      }
+
+      // Persist the session state if the new web state is not loading.
+      SaveSession(/*immediately=*/false);
       break;
+    }
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
@@ -401,17 +408,6 @@ void SessionRestorationBrowserAgent::WebStateDetachedAt(
   // Persist the session state after CloseAllWebStates. SaveSession will discard
   // calls when the web_state_list is not empty and the active WebState is null,
   // which is the order CloseAllWebStates uses.
-  SaveSession(/*immediately=*/false);
-}
-
-void SessionRestorationBrowserAgent::WebStateMoved(WebStateList* web_state_list,
-                                                   web::WebState* web_state,
-                                                   int from_index,
-                                                   int to_index) {
-  if (web_state->IsLoading())
-    return;
-
-  // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
 }
 

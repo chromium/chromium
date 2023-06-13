@@ -53,7 +53,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   // Returns whether the insertion operation was invoked.
   bool web_state_inserted_called() const { return web_state_inserted_called_; }
 
-  // Returns whether WebStateMoved was invoked.
+  // Returns whether the move operation was invoked.
   bool web_state_moved_called() const { return web_state_moved_called_; }
 
   // Returns whether the replacement operation was invoked.
@@ -91,8 +91,8 @@ class WebStateListTestObserver : public WebStateListObserver {
         // WebStateDetachedAt() to here.
         break;
       case WebStateListChange::Type::kMove:
-        // TODO(crbug.com/1442546): Move the implementation from
-        // WebStateMoved() to here.
+        EXPECT_TRUE(web_state_list->IsMutating());
+        web_state_moved_called_ = true;
         break;
       case WebStateListChange::Type::kReplace:
         EXPECT_TRUE(web_state_list->IsMutating());
@@ -103,14 +103,6 @@ class WebStateListTestObserver : public WebStateListObserver {
         web_state_inserted_called_ = true;
         break;
     }
-  }
-
-  void WebStateMoved(WebStateList* web_state_list,
-                     web::WebState* web_state,
-                     int from_index,
-                     int to_index) override {
-    EXPECT_TRUE(web_state_list->IsMutating());
-    web_state_moved_called_ = true;
   }
 
   void WebStateDetachedAt(WebStateList* web_state_list,

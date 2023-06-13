@@ -12,6 +12,15 @@
 #error "This file requires ARC support."
 #endif
 
+WebStateListChangeMove::WebStateListChangeMove(
+    raw_ptr<web::WebState> moved_web_state,
+    int moved_from_index)
+    : moved_web_state_(moved_web_state), moved_from_index_(moved_from_index) {}
+
+WebStateListChange::Type WebStateListChangeMove::type() const {
+  return kType;
+}
+
 WebStateListChangeReplace::WebStateListChangeReplace(
     raw_ptr<web::WebState> replaced_web_state,
     raw_ptr<web::WebState> inserted_web_state)
@@ -42,11 +51,6 @@ void WebStateListObserver::WebStateListChanged(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {}
-
-void WebStateListObserver::WebStateMoved(WebStateList* web_state_list,
-                                         web::WebState* web_state,
-                                         int from_index,
-                                         int to_index) {}
 
 void WebStateListObserver::WillDetachWebStateAt(WebStateList* web_state_list,
                                                 web::WebState* web_state,

@@ -18,30 +18,45 @@ void WebStateListObserverBridge::WebStateListChanged(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {
-  const SEL selector = @selector(didChangeWebStateList:change:selection:);
-  if (![observer_ respondsToSelector:selector]) {
-    return;
+  switch (change.type()) {
+    case WebStateListChange::Type::kDestroy:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateListDestroyed: to here.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateList:didDetachWebState:atIndex: to here.
+      break;
+    case WebStateListChange::Type::kMove: {
+      const SEL selector = @selector(webStateList:
+                                  didMoveWebState:fromIndex:toIndex:);
+      if (![observer_ respondsToSelector:selector]) {
+        return;
+      }
+
+      // TODO(crbug.com/1442546): Replace this with
+      // -didChangeWebStateList:change:selection:.
+      const WebStateListChangeMove& move_change =
+          change.As<WebStateListChangeMove>();
+      [observer_ webStateList:web_state_list
+              didMoveWebState:move_change.moved_web_state()
+                    fromIndex:move_change.moved_from_index()
+                      toIndex:selection.index];
+      break;
+    }
+    case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kInsert: {
+      const SEL selector = @selector(didChangeWebStateList:change:selection:);
+      if (![observer_ respondsToSelector:selector]) {
+        return;
+      }
+
+      [observer_ didChangeWebStateList:web_state_list
+                                change:change
+                             selection:selection];
+      break;
+    }
   }
-
-  [observer_ didChangeWebStateList:web_state_list
-                            change:change
-                         selection:selection];
-}
-
-void WebStateListObserverBridge::WebStateMoved(WebStateList* web_state_list,
-                                               web::WebState* web_state,
-                                               int from_index,
-                                               int to_index) {
-  const SEL selector = @selector(webStateList:
-                              didMoveWebState:fromIndex:toIndex:);
-  if (![observer_ respondsToSelector:selector]) {
-    return;
-  }
-
-  [observer_ webStateList:web_state_list
-          didMoveWebState:web_state
-                fromIndex:from_index
-                  toIndex:to_index];
 }
 
 void WebStateListObserverBridge::WillDetachWebStateAt(

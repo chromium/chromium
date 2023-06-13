@@ -78,10 +78,13 @@ void BreadcrumbManagerBrowserAgent::WebStateListChanged(
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
       break;
-    case WebStateListChange::Type::kMove:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateMoved() to here.
+    case WebStateListChange::Type::kMove: {
+      const WebStateListChangeMove& move_change =
+          change.As<WebStateListChangeMove>();
+      LogTabMoved(GetTabId(move_change.moved_web_state()),
+                  move_change.moved_from_index(), selection.index);
       break;
+    }
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
@@ -102,13 +105,6 @@ void BreadcrumbManagerBrowserAgent::WebStateListChanged(
       break;
     }
   }
-}
-
-void BreadcrumbManagerBrowserAgent::WebStateMoved(WebStateList* web_state_list,
-                                                  web::WebState* web_state,
-                                                  int from_index,
-                                                  int to_index) {
-  LogTabMoved(GetTabId(web_state), from_index, to_index);
 }
 
 void BreadcrumbManagerBrowserAgent::WillCloseWebStateAt(

@@ -13,8 +13,8 @@ namespace web {
 class WebState;
 }
 
-// Represent a generic change to the WebStateList. Use `type()` to determine its
-// type, then access the correct sub-class using `As()<...>` method.
+// Represents a generic change to the WebStateList. Use `type()` to determine
+// its type, then access the correct sub-class using `As()<...>` method.
 class WebStateListChange {
  public:
   enum class Type {
@@ -49,7 +49,34 @@ class WebStateListChange {
   WebStateListChange() = default;
 };
 
-// Represent a change that corresponds to replacing one WebState by another
+// Represents a change that corresponds to moving one WebState to a new index in
+// WebStateList. There is no change in the number of WebStates.
+class WebStateListChangeMove final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kMove;
+
+  WebStateListChangeMove(raw_ptr<web::WebState> moved_web_state,
+                         int moved_from_index);
+  ~WebStateListChangeMove() final = default;
+
+  Type type() const final;
+
+  // The WebState that is moved from the position of `moved_from_index` in
+  // WebStateListChangeMove to the position of `index` in WebStateSelection.
+  raw_ptr<web::WebState> moved_web_state() const {
+    CHECK(moved_web_state_);
+    return moved_web_state_;
+  }
+
+  // The index of the previous position of a WebState.
+  int moved_from_index() const { return moved_from_index_; }
+
+ private:
+  raw_ptr<web::WebState> moved_web_state_;
+  const int moved_from_index_;
+};
+
+// Represents a change that corresponds to replacing one WebState by another
 // WebState in-place. There is no change in the number of WebStates.
 class WebStateListChangeReplace final : public WebStateListChange {
  public:
@@ -80,7 +107,8 @@ class WebStateListChangeReplace final : public WebStateListChange {
   raw_ptr<web::WebState> inserted_web_state_;
 };
 
-// Represent a change that correspond to inserting one WebState to WebStateList.
+// Represents a change that corresponds to inserting one WebState to
+// WebStateList.
 class WebStateListChangeInsert final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kInsert;
@@ -144,13 +172,6 @@ class WebStateListObserver : public base::CheckedObserver {
   virtual void WebStateListChanged(WebStateList* web_state_list,
                                    const WebStateListChange& change,
                                    const WebStateSelection& selection);
-
-  // Invoked after the WebState at the specified index is moved to another
-  // index.
-  virtual void WebStateMoved(WebStateList* web_state_list,
-                             web::WebState* web_state,
-                             int from_index,
-                             int to_index);
 
   // Invoked before the specified WebState is detached from the WebStateList.
   // The WebState is still valid and still in the WebStateList.

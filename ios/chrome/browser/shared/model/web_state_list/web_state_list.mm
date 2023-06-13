@@ -403,8 +403,10 @@ void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
     }
   }
 
+  const WebStateListChangeMove move_change(web_state, from_index);
+  const WebStateSelection selection = {.index = to_index, .activating = false};
   for (auto& observer : observers_) {
-    observer.WebStateMoved(this, web_state, from_index, to_index);
+    observer.WebStateListChanged(this, move_change, selection);
   }
 }
 
