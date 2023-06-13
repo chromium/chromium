@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/prefs/pref_service.h"
+
 class WebStateList;
 
 /// Delegate for events in `ToolbarMediator`.
@@ -19,7 +21,10 @@ class WebStateList;
 
 @interface ToolbarMediator : NSObject
 
+/// Delegate for events in `ToolbarMediator`.
 @property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
+/// Observe user preference changes for preferred omnibox position.
+@property(nonatomic, assign) PrefService* prefService;
 
 /// Creates an instance of the mediator. Observers will be installed into all
 /// existing web states in `webStateList`. While the mediator is alive,

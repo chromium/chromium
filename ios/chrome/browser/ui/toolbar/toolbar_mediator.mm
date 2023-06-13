@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -15,7 +18,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ToolbarMediator () <CRWWebStateObserver>
+@interface ToolbarMediator () <BooleanObserver, CRWWebStateObserver>
 
 @end
 
@@ -29,6 +32,9 @@
       _activeWebStateObservationForwarder;
 
   WebStateList* _webStateList;
+
+  /// Pref tracking if bottom omnibox is enabled.
+  PrefBackedBoolean* _bottomOmniboxEnabled;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
@@ -49,6 +55,24 @@
   _webStateObserverBridge = nullptr;
 
   _webStateList = nullptr;
+}
+
+- (void)setPrefService:(PrefService*)prefService {
+  _prefService = prefService;
+  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+    _bottomOmniboxEnabled =
+        [[PrefBackedBoolean alloc] initWithPrefService:_prefService
+                                              prefName:prefs::kBottomOmnibox];
+    [_bottomOmniboxEnabled setObserver:self];
+  }
+}
+
+#pragma mark - Boolean Observer
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _bottomOmniboxEnabled) {
+    // TODO(crbug.com/1453279): Do something here.
+  }
 }
 
 #pragma mark - CRWWebStateObserver methods.
