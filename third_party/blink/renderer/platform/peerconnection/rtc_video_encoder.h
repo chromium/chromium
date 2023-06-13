@@ -36,6 +36,7 @@ namespace blink {
 
 namespace features {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcScreenshareSwEncoding);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kForcingSoftwareIncludes360);
 }
 
 // RTCVideoEncoder uses a media::VideoEncodeAccelerator to implement a

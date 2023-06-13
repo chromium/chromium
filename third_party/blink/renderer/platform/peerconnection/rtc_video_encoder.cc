@@ -325,6 +325,16 @@ struct CrossThreadCopier<SignaledValue> {
 
 namespace blink {
 
+namespace features {
+
+// When disabled, SW is forced at <360p. When enabled, SW is forced at <=360p.
+// Only applicable if `kForceSoftwareForLowResolutions` has not been disabled.
+BASE_FEATURE(kForcingSoftwareIncludes360,
+             "kForcingSoftwareIncludes360",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
+
 namespace {
 media::VideoEncodeAccelerator::Config::InterLayerPredMode
 CopyFromWebRtcInterLayerPredMode(
@@ -1724,8 +1734,12 @@ int32_t RTCVideoEncoder::InitEncode(
   // problem but some HW encoders already fallback for resolutions not divisible
   // by 4.) At 360p, manual testing suggests HW and SW are roughly on par in
   // terms of quality.
+  uint16_t force_sw_height = 359;
+  if (base::FeatureList::IsEnabled(features::kForcingSoftwareIncludes360)) {
+    force_sw_height = 360;
+  }
   if (base::FeatureList::IsEnabled(kForceSoftwareForLowResolutions) &&
-      codec_settings->height < 360) {
+      codec_settings->height <= force_sw_height) {
     LOG(WARNING)
         << "Fallback to SW due to low resolution being less than 360p ("
         << codec_settings->width << "x" << codec_settings->height << ")";
