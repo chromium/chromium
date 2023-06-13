@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
 #include <cstdint>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
@@ -208,8 +209,12 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
               segment.first);
         } else if (feature.type() == proto::SignalType::HISTOGRAM_VALUE ||
                    feature.type() == proto::SignalType::HISTOGRAM_ENUM) {
+          std::vector<int> enum_ids;
+          for (int j = 0; j < feature.enum_ids_size(); j++) {
+            enum_ids.emplace_back(feature.enum_ids(j));
+          }
           immediate_trigger_histograms_[feature.name_hash()].emplace(
-              segment.first);
+              std::make_pair(segment.first, enum_ids));
         }
       }
     }
@@ -233,12 +238,20 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
     param->output_metric_hash = hash;
     param->output_value = static_cast<float>(sample);
     for (auto segment : segments) {
-      // TODO (ritikagup@) : Add handling for default models, if required.
-      segment_info_database_->GetSegmentInfo(
-          segment, proto::ModelSource::SERVER_MODEL_SOURCE,
-          base::BindOnce(
-              &TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo,
-              weak_ptr_factory_.GetWeakPtr(), param));
+      auto segment_id = segment.first;
+      auto accepted_enum_ids = segment.second;
+
+      // Process both enum histograms with their corresponding accepted enum ids
+      // and value histograms with no enum ids.
+      if (accepted_enum_ids.empty() ||
+          base::Contains(accepted_enum_ids, sample)) {
+        // TODO (ritikagup@) : Add handling for default models, if required.
+        segment_info_database_->GetSegmentInfo(
+            segment_id, proto::ModelSource::SERVER_MODEL_SOURCE,
+            base::BindOnce(
+                &TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo,
+                weak_ptr_factory_.GetWeakPtr(), param));
+      }
     }
   }
 }

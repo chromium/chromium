@@ -169,8 +169,10 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
       immediate_collection_histograms_;
 
-  // Hash of histograms for trigger based training data collection.
-  base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
+  // Hash of histograms and their corresponding accepted enum ids for trigger
+  // based training data collection.
+  base::flat_map<uint64_t,
+                 base::flat_set<std::pair<proto::SegmentId, std::vector<int>>>>
       immediate_trigger_histograms_;
 
   // Hash of user actions for trigger based training data collection.
