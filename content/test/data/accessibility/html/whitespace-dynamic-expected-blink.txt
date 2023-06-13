@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer name='Done'
+++++++paragraph ignored invisible
+++++++++staticText ignored invisible name='Should end up with a trailing whitespace '
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible name='link'

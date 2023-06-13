@@ -1,0 +1,19 @@
+<!--
+@WAIT-FOR:Done
+-->
+
+<!doctype HTML>
+<div tabindex="0" id="status" aria-label="Working"></div>
+<p id=p style="visibility:hidden">
+Should end up with a trailing whitespace 
+</p>
+<script>
+setTimeout(() => {
+  let a = document.createElement("a");
+  a.innerText = "link";
+  p.appendChild(a);
+  setTimeout(() => {
+    document.getElementById('status').setAttribute('aria-label', 'Done');
+  }, 0);
+}, 1000);
+</script>

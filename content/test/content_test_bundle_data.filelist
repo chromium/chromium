@@ -4641,6 +4641,8 @@ data/accessibility/html/wbr-expected-mac.txt
 data/accessibility/html/wbr-expected-uia-win.txt
 data/accessibility/html/wbr-expected-win.txt
 data/accessibility/html/wbr.html
+data/accessibility/html/whitespace-dynamic-expected-blink.txt
+data/accessibility/html/whitespace-dynamic.html
 data/accessibility/html/window-crops-items-expected-blink.txt
 data/accessibility/html/window-crops-items.html
 data/accessibility/language-detection/dynamic-basic-expected-blink.txt
