@@ -203,14 +203,18 @@ function registerFocusEvents(el: HTMLElement) {
 function highlightReferencedFlag() {
   if (window.location.hash) {
     const el = document.body.querySelector(window.location.hash);
-    if (el && !el.classList.contains('referenced')) {
+    if (!el) {
+      return;
+    }
+    const experiment = el.querySelector('flags-experiment');
+    if (experiment && !experiment.classList.contains('referenced')) {
       // Unhighlight whatever's highlighted.
       if (document.body.querySelector('.referenced')) {
         document.body.querySelector('.referenced')!.classList.remove(
             'referenced');
       }
       // Highlight the referenced element.
-      el.classList.add('referenced');
+      experiment.classList.add('referenced');
 
       // <if expr="not is_ios">
       // Switch to unavailable tab if the flag is in this section.
