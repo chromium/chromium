@@ -4,6 +4,7 @@
 
 #include "net/cert/pki/path_builder.h"
 
+#include <cassert>
 #include <memory>
 #include <set>
 #include <unordered_set>
@@ -154,6 +155,8 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
       }
       break;
   }
+  assert(0);  // NOTREACHED
+  return -1;
 }
 
 // CertIssuersIter iterates through the intermediates from |cert_issuer_sources|

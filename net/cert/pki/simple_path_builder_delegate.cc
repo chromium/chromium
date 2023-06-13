@@ -80,6 +80,7 @@ bool SimplePathBuilderDelegate::IsSignatureAlgorithmAcceptable(
     case SignatureAlgorithm::kRsaPssSha512:
       return true;
   }
+  return false;
 }
 
 bool SimplePathBuilderDelegate::IsPublicKeyAcceptable(EVP_PKEY* public_key,
