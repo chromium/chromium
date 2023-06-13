@@ -1035,15 +1035,6 @@ namespace {
 const char kShelfShutdownConfirmationActionHistogramName[] =
     "Ash.Shelf.ShutdownConfirmationBubble.Action";
 
-const char kCancelActionDurationHistogramName[] =
-    "Ash.Shelf.ShutdownConfirmationBubble.ActionDuration.Cancel";
-
-const char kConfirmActionDurationHistogramName[] =
-    "Ash.Shelf.ShutdownConfirmationBubble.ActionDuration.Confirm";
-
-const char kDismissActionDurationHistogramName[] =
-    "Ash.Shelf.ShutdownConfirmationBubble.ActionDuration.Dismiss";
-
 }  // namespace
 
 class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
@@ -1136,9 +1127,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 }
 
 // Checks that shutdown confirmation bubble appears after pressing the
@@ -1161,9 +1149,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 }
 
 // Checks that shutdown confirmation bubble disappears after pressing the
@@ -1194,9 +1179,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kCancelled, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 
   // Shutdown confirmation could be shown again.
   Click(LoginShelfView::kShutdown);
@@ -1207,9 +1189,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 2);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 3);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 }
 
 // Checks that shutdown confirmation bubble disappears after pressing the
@@ -1241,9 +1220,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kConfirmed, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 1);
 }
 
 // Checks that shutdown confirmation bubble disappears after inactive.
@@ -1273,9 +1249,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
       ShelfShutdownConfirmationBubble::BubbleAction::kDismissed, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 1);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 }
 
 // Checks that shutdown confirmation was first cancelled, then confirmed
@@ -1305,9 +1278,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kCancelled, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 
   // Shutdown confirmation could be shown again.
   Click(LoginShelfView::kShutdown);
@@ -1318,9 +1288,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 2);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 3);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
 
   // Shutdown confirmation is confirmed and disappeared.
   ConfirmShutdown();
@@ -1331,9 +1298,6 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
       ShelfShutdownConfirmationBubble::BubbleAction::kConfirmed, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 4);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 1);
 }
 
 // When display is on Shutdown button clicks should not be blocked.
