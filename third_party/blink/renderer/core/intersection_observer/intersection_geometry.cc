@@ -333,7 +333,8 @@ IntersectionGeometry::PrepareComputeGeometry(const Node* root_node,
   RootAndTarget root_and_target(root_node, target_element);
 
   if (ShouldUseCachedRects()) {
-    CHECK(!RootIsImplicit());
+    CHECK(!RootIsImplicit() ||
+          RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
     // Cached rects can only be used if there are no scrollable objects in the
     // hierarchy between target and root (a scrollable root is ok). The reason
     // is that a scroll change in an intermediate scroller would change the
