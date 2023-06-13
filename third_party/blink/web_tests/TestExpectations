@@ -500,7 +500,6 @@ crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/
 crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure Pass Timeout ]
 
 # Flaky virtual/threaded-prefer-compositing tests
-crbug.com/1180479 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-smooth.html [ Failure Pass Timeout ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-animates.html [ Crash Failure Pass Timeout ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Crash Failure Pass Timeout ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/horizontal-smooth-scroll-in-rtl.html [ Crash Failure Pass Timeout ]
@@ -4771,7 +4770,7 @@ crbug.com/1196620 [ Mac10.15 ] external/wpt/css/compositing/mix-blend-mode/mix-b
 crbug.com/1196620 [ Mac11 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac12 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 crbug.com/1196620 [ Mac12-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
-crbug.com/1196620 [ Mac13-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
+crbug.com/1196620 [ Debug Mac13-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 
@@ -5160,7 +5159,6 @@ crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-font-8px.html [
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac13-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
@@ -5180,7 +5178,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/scalefactor200/external/wpt/largest-co
 crbug.com/1249176 [ Mac12-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
 crbug.com/1249176 [ Mac13-arm64 ] virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 
@@ -6419,7 +6416,6 @@ crbug.com/1393056 [ Mac11-arm64 Release ] inspector-protocol/debugger/debugger-e
 
 # Sheriff 2022-11-28
 crbug.com/1393567 external/wpt/screen-orientation/hidden_document.html [ Failure Pass Timeout ]
-crbug.com/1290077 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]
 crbug.com/1290077 [ Mac11-arm64 ] fast/canvas/canvas-drawImage-live-video.html [ Pass Timeout ]
 crbug.com/1393995 fast/dom/shadow/import-rule-in-shadow-tree-needs-document-style-recalc.html [ Failure Pass ]
 crbug.com/1379180 fast/events/event-hit-testing-fallback-to-iframe.html [ Failure Pass ]
