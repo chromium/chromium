@@ -4,33 +4,17 @@
 
 package org.chromium.components.messages;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-
 /**
- * Provides an API for querying the status of Message features.
+ * Lists base::Features that can be accessed through {@link MessageFeatureMap}.
+ *
+ * Should be kept in sync with |kFeaturesExposedToJava| in
+ * //components/messages/android/messages_feature.cc
  */
-@JNINamespace("messages")
-public class MessageFeatureList {
+public abstract class MessageFeatureList {
     public static final String MESSAGES_FOR_ANDROID_STACKING_ANIMATION =
             "MessagesForAndroidStackingAnimation";
 
-    private MessageFeatureList() {}
-
-    public static boolean isEnabled(String featureName) {
-        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
-        if (testValue != null) return testValue;
-        assert FeatureList.isNativeInitialized();
-        return MessageFeatureListJni.get().isEnabled(featureName);
-    }
-
     public static boolean isStackAnimationEnabled() {
-        return isEnabled(MESSAGES_FOR_ANDROID_STACKING_ANIMATION);
-    }
-
-    @NativeMethods
-    interface Natives {
-        boolean isEnabled(String featureName);
+        return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_STACKING_ANIMATION);
     }
 }
