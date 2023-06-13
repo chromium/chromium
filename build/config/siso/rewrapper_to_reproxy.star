@@ -52,7 +52,7 @@ def __rewrite_rewrapper(ctx, cmd):
             reproxy_config["exec_timeout"] = line.removeprefix("exec_timeout=")
 
         if line.startswith("inputs="):
-            reproxy_config["inputs"] = line.removeprefix("inputs").split(",")
+            reproxy_config["inputs"] = line.removeprefix("inputs=").split(",")
 
         if line.startswith("labels="):
             if "labels" not in reproxy_config:
