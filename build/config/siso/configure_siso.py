@@ -12,25 +12,26 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 def main():
-  parser = argparse.ArgumentParser(description='configure siso')
-  parser.add_argument('--rbe_instance', help='RBE instance to use for Siso')
+  parser = argparse.ArgumentParser(description="configure siso")
+  parser.add_argument("--rbe_instance", help="RBE instance to use for Siso")
   args = parser.parse_args()
 
   project = None
-  if not args.rbe_instance:
-    return 0
   rbe_instance = args.rbe_instance
-  elems = rbe_instance.split('/')
-  if len(elems) == 4 and elems[0] == 'projects':
-    project = elems[1]
-    rbe_instance = elems[-1]
-  siso_env_path = os.path.join(THIS_DIR, '.sisoenv')
-  with open(siso_env_path, 'w') as f:
+  if rbe_instance:
+    elems = rbe_instance.split("/")
+    if len(elems) == 4 and elems[0] == "projects":
+      project = elems[1]
+      rbe_instance = elems[-1]
+
+  siso_env_path = os.path.join(THIS_DIR, ".sisoenv")
+  with open(siso_env_path, "w") as f:
     if project:
-      f.write('SISO_PROJECT=%s\n' % project)
-    f.write('SISO_REAPI_INSTANCE=%s\n' % rbe_instance)
+      f.write("SISO_PROJECT=%s\n" % project)
+    if rbe_instance:
+      f.write("SISO_REAPI_INSTANCE=%s\n" % rbe_instance)
   return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   sys.exit(main())
