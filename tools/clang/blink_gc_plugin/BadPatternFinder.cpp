@@ -21,9 +21,7 @@ namespace {
 
 TypeMatcher GarbageCollectedType() {
   auto has_gc_base = hasCanonicalType(hasDeclaration(
-      cxxRecordDecl(isDerivedFrom(hasAnyName("::blink::GarbageCollected",
-                                             "::blink::GarbageCollectedMixin",
-                                             "::cppgc::GarbageCollected",
+      cxxRecordDecl(isDerivedFrom(hasAnyName("::cppgc::GarbageCollected",
                                              "::cppgc::GarbageCollectedMixin")))
           .bind("gctype")));
   return anyOf(has_gc_base,
@@ -31,10 +29,8 @@ TypeMatcher GarbageCollectedType() {
 }
 
 auto MemberType() {
-  auto has_member_name = hasAnyName("::blink::Member", "::blink::WeakMember",
-                                    "::cppgc::internal::BasicMember");
-  return anyOf(hasType(recordDecl(has_member_name)),
-               hasType(typeAliasTemplateDecl(has_member_name)));
+  return hasType(hasCanonicalType(hasDeclaration(cxxRecordDecl(
+      isSameOrDerivedFrom(hasName("::cppgc::internal::BasicMember"))))));
 }
 
 class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {

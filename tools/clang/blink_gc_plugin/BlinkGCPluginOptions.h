@@ -62,8 +62,6 @@ struct BlinkGCPluginOptions {
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;
   std::vector<std::string> ignored_directories;
-  // |allowed_directories| overrides |ignored_directories|.
-  std::vector<std::string> allowed_directories;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_OPTIONS_H_

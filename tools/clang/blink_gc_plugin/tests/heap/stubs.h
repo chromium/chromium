@@ -167,8 +167,6 @@ class variant {};
 
 }  // namespace absl
 
-#if defined(USE_V8_OILPAN)
-
 namespace cppgc {
 
 class Visitor {
@@ -181,13 +179,23 @@ class Visitor {
 };
 
 namespace internal {
+class WriteBarrierPolicyImpl;
+class CheckingPolicyImpl;
+class StorateTypeImpl;
+class LocationPolicyImpl;
+
 class StrongMemberTag;
 class WeakMemberTag;
 
+template <typename StorageType>
 class MemberBase {};
 
-template <typename T, typename Tag>
-class BasicMember : public MemberBase {
+template <typename T,
+          typename WeaknessTag,
+          typename WriteBarrierPolicy,
+          typename CheckingPolicy,
+          typename StorageType>
+class BasicMember : public MemberBase<StorageType> {
  public:
   operator T*() const { return 0; }
   T* operator->() const { return 0; }
@@ -199,7 +207,10 @@ class WeakPersistentPolicy;
 
 class PersistentBase {};
 
-template <typename T, typename Tag>
+template <typename T,
+          typename WeaknessPolicy,
+          typename LocationPolicy,
+          typename CheckingPolicy>
 class BasicPersistent : public PersistentBase {
  public:
   operator T*() const { return 0; }
@@ -210,8 +221,13 @@ class BasicPersistent : public PersistentBase {
 class StrongCrossThreadPersistentPolicy;
 class WeakCrossThreadPersistentPolicy;
 
-template <typename T, typename Tag>
-class BasicCrossThreadPersistent : public PersistentBase {
+class CrossThreadPersistentBase : public PersistentBase {};
+
+template <typename T,
+          typename WeaknessPolicy,
+          typename LocationPolicy,
+          typename CheckingPolicy>
+class BasicCrossThreadPersistent : public CrossThreadPersistentBase {
  public:
   operator T*() const { return 0; }
   T* operator->() const { return 0; }
@@ -243,25 +259,43 @@ class GarbageCollectedMixin {
 };
 
 template <typename T>
-using Member = internal::BasicMember<T, internal::StrongMemberTag>;
+using Member = internal::BasicMember<T,
+                                     internal::StrongMemberTag,
+                                     internal::WriteBarrierPolicyImpl,
+                                     internal::CheckingPolicyImpl,
+                                     internal::StorateTypeImpl>;
 template <typename T>
-using WeakMember = internal::BasicMember<T, internal::WeakMemberTag>;
+using WeakMember = internal::BasicMember<T,
+                                         internal::WeakMemberTag,
+                                         internal::WriteBarrierPolicyImpl,
+                                         internal::CheckingPolicyImpl,
+                                         internal::StorateTypeImpl>;
 
 template <typename T>
-using Persistent =
-    internal::BasicPersistent<T, internal::StrongPersistentPolicy>;
+using Persistent = internal::BasicPersistent<T,
+                                             internal::StrongPersistentPolicy,
+                                             internal::LocationPolicyImpl,
+                                             internal::CheckingPolicyImpl>;
 template <typename T>
-using WeakPersistent =
-    internal::BasicPersistent<T, internal::WeakPersistentPolicy>;
+using WeakPersistent = internal::BasicPersistent<T,
+                                                 internal::WeakPersistentPolicy,
+                                                 internal::LocationPolicyImpl,
+                                                 internal::CheckingPolicyImpl>;
 
 namespace subtle {
 
 template <typename T>
-using CrossThreadPersistent = internal::
-    BasicCrossThreadPersistent<T, internal::StrongCrossThreadPersistentPolicy>;
+using CrossThreadPersistent = internal::BasicCrossThreadPersistent<
+    T,
+    internal::StrongCrossThreadPersistentPolicy,
+    internal::LocationPolicyImpl,
+    internal::CheckingPolicyImpl>;
 template <typename T>
-using CrossThreadWeakPersistent = internal::
-    BasicCrossThreadPersistent<T, internal::WeakCrossThreadPersistentPolicy>;
+using CrossThreadWeakPersistent = internal::BasicCrossThreadPersistent<
+    T,
+    internal::WeakCrossThreadPersistentPolicy,
+    internal::LocationPolicyImpl,
+    internal::CheckingPolicyImpl>;
 
 }  // namespace subtle
 
@@ -292,88 +326,6 @@ template <typename T>
 using CrossThreadPersistent = cppgc::subtle::CrossThreadPersistent<T>;
 template <typename T>
 using CrossThreadWeakPersistent = cppgc::subtle::CrossThreadWeakPersistent<T>;
-
-#else  // !defined(USE_V8_OILPAN)
-
-namespace blink {
-
-class Visitor {
- public:
-  template <typename T, void (T::*method)(Visitor*)>
-  void RegisterWeakMembers(const T* obj);
-
-  template <typename T>
-  void Trace(const T&);
-};
-
-template <typename T>
-class GarbageCollected {
- public:
-  void* operator new(size_t, void* location) { return location; }
-
- private:
-  void* operator new(size_t) = delete;
-  void* operator new[](size_t) = delete;
-};
-
-template <typename T, typename... Args>
-T* MakeGarbageCollected(Args&&... args) {
-  return new (reinterpret_cast<void*>(0x87654321)) T(args...);
-}
-
-class GarbageCollectedMixin {
- public:
-  virtual void AdjustAndMark(Visitor*) const = 0;
-  virtual bool IsHeapObjectAlive(Visitor*) const = 0;
-  virtual void Trace(Visitor*) const {}
-};
-
-template<typename T> class Member {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
-    bool operator!() const { return false; }
-
-   private:
-    uint32_t compressed;
-};
-
-template<typename T> class WeakMember {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
-    bool operator!() const { return false; }
-};
-
-template<typename T> class Persistent {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
-    bool operator!() const { return false; }
-};
-
-template<typename T> class WeakPersistent {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
-    bool operator!() const { return false; }
-};
-
-template<typename T> class CrossThreadPersistent {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
-    bool operator!() const { return false; }
-};
-
-template<typename T> class CrossThreadWeakPersistent {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
-    bool operator!() const { return false; }
-};
-
-#endif  // !defined(USE_V8_OILPAN)
 
 using namespace WTF;
 
