@@ -16,6 +16,7 @@
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 
@@ -94,6 +95,22 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   // Activates the subscription so we start receiving video frames.
   void StartHandlingFrames();
 
+  // Suspends the camera video stream subscription and immediately rejects any
+  // new frames received at `OnFrameReadyInBuffer()`. The callback is invoked
+  // once the mojo call to suspend the subscription is complete, at which point
+  // it is guaranteed that no more frames will be pushed to
+  //`OnFrameReadyInBuffer()` or `OnFrameDropped()`. Other calls, such as
+  //`OnNewBuffer()` and `OnBufferRetired()` will continue to be received.
+  //
+  // The intended usage of this method is for the caller to guarantee that the
+  // instance of `VideoFrameHandler` lives until the `Suspend()` call is
+  // complete by binding it to the `suspend_complete_callback`. This ensures
+  // that any buffers allocated between calling `Suspend()` and having the mojo
+  // serviced can be appropriately released. If the caller doesn't take this
+  // step and just deletes the `VideoFrameHandler` then it's possible buffers to
+  // be allocated and held in limbo until the video stream is stopped.
+  void Suspend(base::OnceClosure suspend_complete_callback);
+
   // video_capture::mojom::VideoFrameHandler:
   void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int buffer_id,
@@ -135,6 +152,10 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
 
   const raw_ptr<ui::ContextFactory> context_factory_;
 
+  // Determines if new buffers should be processed. If false, any newly received
+  // buffers are immediately released.
+  bool active_ = false;
+
   mojo::Receiver<video_capture::mojom::VideoFrameHandler>
       video_frame_handler_receiver_{this};
 
@@ -150,8 +171,11 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
 
   // A remote bound to the `VideoFrameAccessHandler` implementation in the video
   // capture service, which is used to signal that we're done consuming a buffer
-  // so that the buffer can be reused by the frames producer.
-  mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>
+  // so that the buffer can be reused by the frames producer. This is stored as
+  // a SharedRemote so that frames deleted after destruction of this class can
+  // still be released by the instance of the SharedRemote captured in the frame
+  // destruction callback.
+  mojo::SharedRemote<video_capture::mojom::VideoFrameAccessHandler>
       video_frame_access_handler_remote_;
 
   // Maps the `BufferHandleHolder`s by the `buffer_id`. An entry is inserted
