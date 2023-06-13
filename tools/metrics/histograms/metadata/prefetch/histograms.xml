@@ -384,18 +384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrefetchProxy.Prefetch.Mainframe.TotalRedirects" units="count"
-    expires_after="2023-06-25">
-  <owner>curranmax@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <summary>
-    Records the total number of redirects encountered while doing all the
-    prefetches on an eligible Google Search Result page. Only recorded when at
-    least one prefetch was attempted.
-  </summary>
-</histogram>
-
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
     expires_after="2023-11-05">
   <owner>curranmax@chromium.org</owner>
