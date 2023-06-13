@@ -452,9 +452,10 @@ bool WindowState::CanSnap() {
 }
 
 bool WindowState::CanSnapOnDisplay(display::Display display) const {
-  const bool can_resizable_snap = !IsPip() && CanResize() && CanMaximize();
+  const bool can_resize = CanResize();
+  const bool can_resizable_snap = !IsPip() && can_resize && CanMaximize();
   return can_resizable_snap ||
-         (!CanResize() && CanUnresizableSnapOnDisplay(display));
+         (!can_resize && CanUnresizableSnapOnDisplay(display));
 }
 
 bool WindowState::HasRestoreBounds() const {
