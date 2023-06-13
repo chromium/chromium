@@ -56,12 +56,9 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       return;
     }
 
-    // Called when the last tab in the groups is removed.
-    case TabGroupChange::kClosed: {
-      model_->OnGroupClosedInTabStrip(change.group);
-      return;
-    }
-
+    // Ignored because closing empty groups is handled when the last tab is
+    // removed in TabGroupedStateChanged.
+    case TabGroupChange::kClosed:
     // Ignored because contents changes are handled in TabGroupedStateChanged.
     case TabGroupChange::kContentsChanged:
     // Ignored because we explicitly add the TabGroupId to the saved tab group
@@ -187,6 +184,7 @@ void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
 
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
     tab_groups::TabGroupId tab_group_id) {
+  model_->OnGroupClosedInTabStrip(tab_group_id);
   local_tab_group_listeners_.erase(tab_group_id);
 }
 

@@ -75,7 +75,9 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
     return;
   }
 
-  model_->UpdateVisualData(local_id_, visual_change->new_visuals);
+  if (*(visual_change->old_visuals) != *(visual_change->new_visuals)) {
+    model_->UpdateVisualData(local_id_, visual_change->new_visuals);
+  }
 }
 
 void LocalTabGroupListener::AddWebContentsFromLocal(
