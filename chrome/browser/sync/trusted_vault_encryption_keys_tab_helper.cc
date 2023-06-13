@@ -12,12 +12,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/google_accounts_private_api_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -46,10 +48,12 @@ class EncryptionKeyApi
   }
 
   // chrome::mojom::TrustedVaultEncryptionKeysExtension:
+#if !BUILDFLAG(IS_ANDROID)
   void SetEncryptionKeys(
       const std::string& gaia_id,
-      const std::vector<std::vector<uint8_t>>& encryption_keys,
-      int last_key_version,
+      base::flat_map<std::string,
+                     std::vector<chrome::mojom::TrustedVaultKeyPtr>>
+          trusted_vault_keys,
       SetEncryptionKeysCallback callback) override {
     // Extra safeguard.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
@@ -57,18 +61,13 @@ class EncryptionKeyApi
       return;
     }
 
-    base::UmaHistogramBoolean(
-        "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
-        sync_service_ == nullptr);
-
-    // Guard against incognito (where `sync_service_` is null).
-    if (sync_service_) {
-      sync_service_->AddTrustedVaultDecryptionKeysFromWeb(
-          gaia_id, encryption_keys, last_key_version);
+    for (const auto& [vault_name, keys] : trusted_vault_keys) {
+      AddKeysToTrustedVault(gaia_id, vault_name, keys);
     }
 
     std::move(callback).Run();
   }
+#endif
 
   void AddTrustedRecoveryMethod(
       const std::string& gaia_id,
@@ -102,6 +101,46 @@ class EncryptionKeyApi
       : DocumentUserData<EncryptionKeyApi>(rfh),
         sync_service_(sync_service),
         receivers_(content::WebContents::FromRenderFrameHost(rfh), this) {}
+
+#if !BUILDFLAG(IS_ANDROID)
+  void AddKeysToTrustedVault(
+      const std::string& gaia_id,
+      const std::string& vault_name,
+      const std::vector<chrome::mojom::TrustedVaultKeyPtr>& keys) {
+    if (keys.empty()) {
+      // The renderer enforces this.
+      return;
+    }
+    const absl::optional<trusted_vault::SecurityDomainId> security_domain =
+        trusted_vault::GetSecurityDomainByName(vault_name);
+    if (!security_domain) {
+      // TODO(https://crbug.com/1223853): Add a UMA metric for this case.
+      DLOG(ERROR) << "Unknown vault type " << vault_name;
+      return;
+    }
+    switch (*security_domain) {
+      case trusted_vault::SecurityDomainId::kChromeSync: {
+        base::UmaHistogramBoolean(
+            "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
+            sync_service_ == nullptr);
+
+        // Guard against incognito (where `sync_service_` is null).
+        if (!sync_service_) {
+          return;
+        }
+        std::vector<std::vector<uint8_t>> keys_as_bytes(keys.size());
+        std::transform(keys.begin(), keys.end(), keys_as_bytes.begin(),
+                       [](const chrome::mojom::TrustedVaultKeyPtr& key) {
+                         return key->bytes;
+                       });
+        DCHECK(!keys.empty());  // Checked above.
+        const int32_t version = keys.back()->version;
+        sync_service_->AddTrustedVaultDecryptionKeysFromWeb(
+            gaia_id, keys_as_bytes, version);
+      }
+    }
+  }
+#endif
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();

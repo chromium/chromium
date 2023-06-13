@@ -208,6 +208,10 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // Feature flag to replace all sync-related UI with sign-in ones.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables the chrome.setClientEncryptionKeys() JS API.
+BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);
+#endif
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

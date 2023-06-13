@@ -171,4 +171,10 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
              "ReplaceSyncPromosWithSignInPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1223853): Move to //components/trusted_vault.
+BASE_FEATURE(kSetClientEncryptionKeysJsApi,
+             "SetClientEncryptionKeysJsApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace syncer

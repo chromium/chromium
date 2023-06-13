@@ -18,7 +18,8 @@ namespace gin {
 class Arguments;
 }  // namespace gin
 
-// This class adds a function chrome.setSyncEncryptionKeys().
+// This class installs private APIs on Google Accounts origins that configure
+// on-device encryption keys for //components/trusted_vault.
 class TrustedVaultEncryptionKeysExtension
     : public content::RenderFrameObserver {
  public:
@@ -41,7 +42,10 @@ class TrustedVaultEncryptionKeysExtension
   explicit TrustedVaultEncryptionKeysExtension(content::RenderFrame* frame);
 
   void Install();
+#if !BUILDFLAG(IS_ANDROID)
   void SetSyncEncryptionKeys(gin::Arguments* args);
+  void SetClientEncryptionKeys(gin::Arguments* args);
+#endif
   void AddTrustedSyncEncryptionRecoveryMethod(gin::Arguments* args);
   void RunCompletionCallback(
       std::unique_ptr<v8::Global<v8::Function>> callback);
