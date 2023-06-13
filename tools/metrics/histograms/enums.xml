@@ -59230,6 +59230,8 @@ from previous Chrome versions.
   <int value="-1954246274"
       label="enable-experimental-accessibility-switch-access"/>
   <int value="-1954122445" label="PrintManagementSetupAssistance:disabled"/>
+  <int value="-1953840665"
+      label="SearchCustomizableShortcutsInLauncher:enabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
@@ -63500,6 +63502,8 @@ from previous Chrome versions.
   <int value="282692100" label="SubframeShutdownDelay:disabled"/>
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
+  <int value="284756778"
+      label="SearchCustomizableShortcutsInLauncher:disabled"/>
   <int value="285387302" label="AvatarToolbarButton:enabled"/>
   <int value="286001833" label="TabGroupsNewBadgePromo:enabled"/>
   <int value="286621673" label="FedCmIframeSupport:enabled"/>

@@ -1166,6 +1166,11 @@ extern const char kEnableShortcutCustomizationName[] =
 extern const char kEnableShortcutCustomizationDescription[] =
     "Enable customization of shortcuts in the new shortcuts app.";
 
+extern const char kEnableSearchCustomizableShortcutsInLauncherName[] =
+    "Enable search for customizable shortcuts in launcher";
+extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =
+    "Enable searching for customizable shortcuts in launcher.";
+
 extern const char kEnableSearchInShortcutsAppName[] =
     "Enable search in new shortcuts app";
 extern const char kEnableSearchInShortcutsAppDescription[] =

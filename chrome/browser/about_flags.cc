@@ -7372,6 +7372,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableShortcutCustomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kShortcutCustomization)},
 
+    {"enable-search-customizable-shortcuts-in-launcher",
+     flag_descriptions::kEnableSearchCustomizableShortcutsInLauncherName,
+     flag_descriptions::kEnableSearchCustomizableShortcutsInLauncherDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSearchCustomizableShortcutsInLauncher)},
+
     {"enable-search-in-shortcuts-app",
      flag_descriptions::kEnableSearchInShortcutsAppName,
      flag_descriptions::kEnableSearchInShortcutsAppDescription, kOsCrOS,

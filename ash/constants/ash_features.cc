@@ -1702,6 +1702,11 @@ BASE_FEATURE(kOnlyShowNewShortcutsApp,
              "OnlyShowNewShortcutsApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables search customizable shortcuts in launcher.
+BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
+             "SearchCustomizableShortcutsInLauncher",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSearchInShortcutsApp,
              "SearchInShortcutsApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3698,6 +3703,10 @@ bool ShouldArcFileTasksUseAppService() {
 
 bool ShouldOnlyShowNewShortcutApp() {
   return base::FeatureList::IsEnabled(kOnlyShowNewShortcutsApp);
+}
+
+bool isSearchCustomizableShortcutsInLauncherEnabled() {
+  return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
 }
 
 bool IsSearchInShortcutsAppEnabled() {

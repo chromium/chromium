@@ -764,6 +764,9 @@ extern const char kEnableShortcutCustomizationAppDescription[];
 extern const char kEnableShortcutCustomizationName[];
 extern const char kEnableShortcutCustomizationDescription[];
 
+extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
+extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
+
 extern const char kEnableSearchInShortcutsAppName[];
 extern const char kEnableSearchInShortcutsAppDescription[];
 
