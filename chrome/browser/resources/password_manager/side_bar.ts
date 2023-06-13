@@ -124,6 +124,8 @@ export class PasswordManagerSideBarElement extends
           'PasswordManager.BulkCheck.PasswordCheckReferrer',
           PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.COUNT);
     }
+    this.dispatchEvent(
+        new CustomEvent('close-drawer', {bubbles: true, composed: true}));
   }
 
   private getSelectedPage_(): string {

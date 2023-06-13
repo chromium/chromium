@@ -146,6 +146,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     });
 
     this.addEventListener('cr-toolbar-menu-click', this.onMenuButtonClick_);
+    this.addEventListener('close-drawer', this.closeDrawer_);
   }
 
   override currentRouteChanged(route: Route): void {
@@ -182,6 +183,12 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   private onMenuButtonClick_() {
     this.$.drawer.toggle();
+  }
+
+  private closeDrawer_() {
+    if (this.$.drawer && this.$.drawer.open) {
+      this.$.drawer.close();
+    }
   }
 
   setNarrowForTesting(state: boolean) {
