@@ -1853,6 +1853,8 @@ static_library("blind_sign_auth_test_support") {
   visibility = [ ":quiche_tests" ]
   testonly = true
   sources = [
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/proto_utils.cc",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/proto_utils.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/utils.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/utils.h",
     "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_auth_interface.h",
