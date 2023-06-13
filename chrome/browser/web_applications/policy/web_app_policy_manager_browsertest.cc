@@ -172,6 +172,35 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
   EXPECT_EQ(0u, manifest->icons.size());
 }
 
+// Ensure the manifest start_url is used as the manifest id when the manifest id
+// is not present.
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
+  WebAppProvider& provider = *WebAppProvider::GetForTest(profile());
+
+  base::test::TestFuture<void> future;
+  provider.policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+      future.GetCallback());
+  const GURL install_url =
+      https_server()->GetURL("/web_apps/get_manifest.html?no_manifest_id.json");
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppInstallForceList,
+      base::Value::List().Append(
+          base::Value::Dict().Set(kUrlKey, install_url.spec())));
+  future.Get();
+
+  const GURL start_url = https_server()->GetURL("/web_apps/basic.html");
+  const AppId app_id = GenerateAppIdFromManifestId(
+      GenerateManifestIdFromStartUrlOnly(start_url));
+  const WebApp* app = provider.registrar_unsafe().GetAppById(app_id);
+
+  ASSERT_TRUE(app);
+  EXPECT_EQ(app->management_to_external_config_map(),
+            (WebApp::ExternalConfigMap{{WebAppManagement::Type::kPolicy,
+                                        {/*is_placeholder=*/false,
+                                         /*install_urls=*/{install_url},
+                                         /*additional_policy_ids=*/{}}}}));
+}
+
 // Scenario: App with install_url kInstallUrl has a start_url kStartUrl
 // specified in manifest. Next time we navigate to kStartUrl, but we still
 // need to override the manifest even though the policy key is kInstallUrl.
