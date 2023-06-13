@@ -46,6 +46,7 @@ mojom("mojom") {
     "video_decoder.mojom",
     "video_encode_accelerator.mojom",
     "video_encoder_info.mojom",
+    "video_encoder_metrics_provider.mojom",
     "watch_time_recorder.mojom",
     "webrtc_video_perf.mojom",
   ]

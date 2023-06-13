@@ -100947,6 +100947,43 @@ would be helpful to identify which type is being sent.
   <int value="4" label="The trigger is in monitor mode"/>
 </enum>
 
+<enum name="SVCScalabilityMode">
+  <int value="0" label="L1T1"/>
+  <int value="1" label="L1T2"/>
+  <int value="2" label="L1T3"/>
+  <int value="3" label="L2T1"/>
+  <int value="4" label="L2T2"/>
+  <int value="5" label="L2T3"/>
+  <int value="6" label="L3T1"/>
+  <int value="7" label="L3T2"/>
+  <int value="8" label="L3T3"/>
+  <int value="9" label="L2T1h"/>
+  <int value="10" label="L2T2h"/>
+  <int value="11" label="L2T3h"/>
+  <int value="12" label="S2T1"/>
+  <int value="13" label="S2T2"/>
+  <int value="14" label="S2T3"/>
+  <int value="15" label="S2T1h"/>
+  <int value="16" label="S2T2h"/>
+  <int value="17" label="S2T3h"/>
+  <int value="18" label="S3T1"/>
+  <int value="19" label="S3T2"/>
+  <int value="20" label="S3T3"/>
+  <int value="21" label="S3T1h"/>
+  <int value="22" label="S3T2h"/>
+  <int value="23" label="S3T3h"/>
+  <int value="24" label="L2T1Key"/>
+  <int value="25" label="L2T2Key"/>
+  <int value="26" label="L2T2KeyShift"/>
+  <int value="27" label="L2T3Key"/>
+  <int value="28" label="L2T3KeyShift"/>
+  <int value="29" label="L3T1Key"/>
+  <int value="30" label="L3T2Key"/>
+  <int value="31" label="L3T2KeyShift"/>
+  <int value="32" label="L3T3Key"/>
+  <int value="33" label="L3T3KeyShift"/>
+</enum>
+
 <enum name="SwapchainFormat">
   <int value="0" label="B8G8R8A8"/>
   <int value="1" label="YUY2"/>
@@ -108362,6 +108399,13 @@ Full version information for the fingerprint enum values:
   <int value="14" label="VDA Video Decoder"/>
   <int value="16" label="V4l2 Video Decoder"/>
   <int value="18" label="OOP Video Decoder"/>
+</enum>
+
+<enum name="VideoEncoderUseCase">
+  <int value="0" label="CastMirroring"/>
+  <int value="1" label="MediaRecorder"/>
+  <int value="2" label="WebCodecs"/>
+  <int value="3" label="WebRTC"/>
 </enum>
 
 <enum name="VideoFormat">

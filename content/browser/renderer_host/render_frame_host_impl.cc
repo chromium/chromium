@@ -11293,6 +11293,12 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       std::move(is_shutting_down_cb), std::move(receiver));
 }
 
+void RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver(
+    mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver) {
+  media::VideoEncoderMetricsProvider::Create(GetPageUkmSourceId(),
+                                             std::move(receiver));
+}
+
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 void RenderFrameHostImpl::BindMediaRemoterFactoryReceiver(
     mojo::PendingReceiver<media::mojom::RemoterFactory> receiver) {

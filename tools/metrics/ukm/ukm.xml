@@ -13515,6 +13515,113 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Media.VideoEncoderMetrics">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    A record of encoding usage metrics in chrome, for example, for cast
+    mirroring and webcodecs. This is recorded in the end of each video encoding
+    session.
+  </summary>
+  <metric name="Height">
+    <summary>
+      Integer value indicating the height of the encoded stream. This is
+      bucketed per 100 and capped by 8200.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsHardware" enum="Boolean">
+    <summary>
+      Boolean value indicating whether the encoder implementation is hardware
+      accelerated one or not.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="NumEncodedFrames">
+    <summary>
+      Integer value indicating the number of the successfully encoded frames.
+      This is bucketed per 100.
+    </summary>
+  </metric>
+  <metric name="Profile" enum="VideoCodecProfile">
+    <summary>
+      media::VideoCodecProfile enum value. The codec profile configured to
+      encode the video.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Status" enum="EncoderStatus">
+    <summary>
+      media::EncoderStatus::Codes enum value. The first error status code on
+      error, otherwise media::EncoderStatus::Codes::kOk.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SVCMode" enum="SVCScalabilityMode">
+    <summary>
+      Integer value indicating the SVC configuration of the encoding. The value
+      corresponds to media::SVCScalabilityMode.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UseCase" enum="VideoEncoderUseCase">
+    <summary>
+      Integer value indicating the video encoder use case. The value corresponds
+      to media:::mojom::VideoEncoderUseCase.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Width">
+    <summary>
+      Integer value indicating the width of the encoded stream. This is bucketed
+      per 100 and capped by 8200.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Media.WatchTime">
   <obsolete>
     Deprecated 8/2017 in favor Media.BasicPlayback

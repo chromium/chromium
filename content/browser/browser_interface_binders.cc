@@ -90,7 +90,9 @@
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
+#include "media/mojo/mojom/video_encoder_metrics_provider.mojom.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom.h"
+#include "media/mojo/services/video_encoder_metrics_provider.h"
 #include "media/mojo/services/webrtc_video_perf_recorder.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -986,6 +988,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<media::mojom::MediaMetricsProvider>(base::BindRepeating(
       &RenderFrameHostImpl::BindMediaMetricsProviderReceiver,
+      base::Unretained(host)));
+
+  map->Add<media::mojom::VideoEncoderMetricsProvider>(base::BindRepeating(
+      &RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver,
       base::Unretained(host)));
 
   map->Add<media::mojom::WebrtcVideoPerfRecorder>(base::BindRepeating(
