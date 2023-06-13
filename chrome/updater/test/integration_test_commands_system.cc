@@ -88,11 +88,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
-                     const GURL& device_management_url) const override {
+                     const GURL& device_management_url,
+                     const base::TimeDelta& idle_timeout) const override {
     RunCommand("enter_test_mode",
                {Param("update_url", update_url.spec()),
                 Param("crash_upload_url", crash_upload_url.spec()),
-                Param("device_management_url", device_management_url.spec())});
+                Param("device_management_url", device_management_url.spec()),
+                Param("idle_timeout",
+                      base::NumberToString(idle_timeout.InSeconds()))});
   }
 
   void ExitTestMode() const override { RunCommand("exit_test_mode"); }

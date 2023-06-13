@@ -30,7 +30,8 @@ class IntegrationTestCommands
  public:
   virtual void EnterTestMode(const GURL& update_url,
                              const GURL& crash_upload_url,
-                             const GURL& device_management_url) const = 0;
+                             const GURL& device_management_url,
+                             const base::TimeDelta& idle_timeout) const = 0;
   virtual void ExitTestMode() const = 0;
   virtual void SetGroupPolicies(const base::Value::Dict& values) const = 0;
   virtual void Clean() const = 0;

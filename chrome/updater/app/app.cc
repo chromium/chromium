@@ -38,10 +38,14 @@ int App::Run() {
 }
 
 void App::Shutdown(int exit_code) {
-  CHECK(!quit_.is_null()) << "App was shutdown previously.";
+  if (quit_.is_null()) {
+    // It's possible for shutdown to be called twice, since the runloop exits
+    // only when idle. The exit code of the first shutdown will be used.
+    return;
+  }
 
   // TODO(crbug.com/1422360): for non-silent scenarios where UI is not
-  // otherwise shown, some UI is needed here.
+  // otherwise shown, some UI is needed here if exit_code indicates a failure.
   std::move(quit_).Run(exit_code);
 }
 

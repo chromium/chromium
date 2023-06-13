@@ -66,7 +66,8 @@ void ExpectClean(UpdaterScope scope);
 // Places the updater into test mode (redirect server URLs and disable CUP).
 void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
-                   const GURL& device_management_url);
+                   const GURL& device_management_url,
+                   const base::TimeDelta& idle_timeout);
 
 // Takes the updater our of the test mode by deleting the external constants
 // JSON file.

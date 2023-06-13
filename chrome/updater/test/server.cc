@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -59,7 +60,8 @@ ScopedServer::ScopedServer(
   EXPECT_TRUE((test_server_handle_ = test_server_->StartAndReturnHandle()));
 
   integration_test_commands_->EnterTestMode(update_url(), crash_upload_url(),
-                                            device_management_url());
+                                            device_management_url(),
+                                            base::Minutes(5));
 }
 
 ScopedServer::~ScopedServer() {

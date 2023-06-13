@@ -78,7 +78,8 @@ base::FilePath GetSetupExecutablePath() {
 
 void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
-                   const GURL& device_management_url) {
+                   const GURL& device_management_url,
+                   const base::TimeDelta& idle_timeout) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL(std::vector<std::string>{update_url.spec()})
                   .SetCrashUploadURL(crash_upload_url.spec())
@@ -88,7 +89,7 @@ void EnterTestMode(const GURL& update_url,
                   .SetServerKeepAliveTime(base::Seconds(1))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(base::Seconds(5))
-                  .SetIdleCheckPeriod(base::Seconds(10))
+                  .SetIdleCheckPeriod(idle_timeout)
                   .Modify());
 }
 

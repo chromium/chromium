@@ -148,6 +148,22 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
+// Overload for TimeDelta switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::TimeDelta&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        int flag_value;
+        if (base::StringToInt(flag, &flag_value)) {
+          return callback.Run(base::Seconds(flag_value), std::move(args)...);
+        }
+        return false;
+      }));
+}
+
 // Overload for base::Value::Dict switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
@@ -255,9 +271,11 @@ void AppTestHelper::FirstTaskRun() {
     // then use the With* helper functions to provide its arguments.
     {"clean", WithSystemScope(Wrap(&Clean))},
     {"enter_test_mode",
-     WithSwitch("device_management_url",
-                WithSwitch("crash_upload_url",
-                           WithSwitch("update_url", Wrap(&EnterTestMode))))},
+     WithSwitch("idle_timeout",
+                WithSwitch("device_management_url",
+                           WithSwitch("crash_upload_url",
+                                      WithSwitch("update_url",
+                                                 Wrap(&EnterTestMode)))))},
     {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
     {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
     {"fill_log", WithSystemScope(Wrap(&FillLog))},
