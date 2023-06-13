@@ -18,6 +18,7 @@
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/gfx/linux/gbm_defines.h"
 #include "ui/gfx/linux/gbm_device.h"
 #include "ui/gfx/linux/gbm_util.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -65,8 +66,14 @@ bool GbmPixmapWayland::InitializeBuffer(
     // When buffer |usage| implies on GBM_BO_USE_LINEAR, pass in
     // DRM_FORMAT_MOD_LINEAR, i.e: no tiling, when creating gbm buffers,
     // otherwise it fails to create BOs.
-    if (gbm_flags & GBM_BO_USE_LINEAR)
+    // As suggested in the comments the usage |GBM_BO_USE_FRONT_RENDERING|
+    // should not be mixed with frame buffer compression. Until we have a
+    // mechanism for determine which modifiers produce artifacts we should
+    // default |DRM_FORMAT_MOD_LINEAR| here.
+    if (gbm_flags & GBM_BO_USE_LINEAR ||
+        gbm_flags & GBM_BO_USE_FRONT_RENDERING) {
       modifiers = {DRM_FORMAT_MOD_LINEAR};
+    }
     gbm_bo_ = gbm_device->CreateBufferWithModifiers(fourcc_format, size,
                                                     gbm_flags, modifiers);
   }
