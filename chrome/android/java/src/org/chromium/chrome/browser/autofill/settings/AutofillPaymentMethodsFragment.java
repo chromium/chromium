@@ -294,13 +294,21 @@ public class AutofillPaymentMethodsFragment
     /** Handle preference changes from mandatory reauth toggle */
     private boolean onMandatoryReauthSwitchToggled(Preference preference, Object newValue) {
         assert preference.getKey().equals(PREF_MANDATORY_REAUTH);
-        // We require user authentication every time user trys to change this
+
+        ChromeSwitchPreference mandatoryReauthSwitch = (ChromeSwitchPreference) preference;
+        // If the user preference update is successful, toggle the switch to the success state.
+        boolean userIntendedState = !mandatoryReauthSwitch.isChecked();
+        // We require user authentication every time user tries to change this
         // preference. Set useLastValidAuth=false to skip the grace period.
         mReauthenticatorBridge.reauthenticate(success -> {
             if (success) {
                 // Only set the preference to new value when user passes the
                 // authentication.
                 PersonalDataManager.setAutofillPaymentMethodsMandatoryReauth((boolean) newValue);
+
+                // When the preference is updated, the page is expected to refresh and show the
+                // updated preference. Fallback if the page does not load.
+                mandatoryReauthSwitch.setChecked(userIntendedState);
             }
         }, /*useLastValidAuth=*/false);
         // Returning false here holds the toggle to still display the old value while
