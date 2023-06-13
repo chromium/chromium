@@ -6699,3 +6699,4 @@ crbug.com/1453272 http/tests/devtools/indexeddb/database-refresh-view.js [ Failu
 # Gardener 2023-06-13
 crbug.com/1453982 [ Mac11-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
 crbug.com/1453982 [ Mac12-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
+crbug.com/1450287 [ Mac13-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
