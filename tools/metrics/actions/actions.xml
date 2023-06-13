@@ -11634,12 +11634,21 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="IOS.DefaultBrowserFullscreenPromo.Cancel">
+  <owner>gayane@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user dismissed the default browser fullscreen promo by pressing on
+    secondary button. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserFullscreenPromo.Dismissed">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <description>
-    The user dismissed the default browser fullscreen promo modal without any
-    action. iOS only.
+    The user dismissed the default browser fullscreen promo by swipe down. iOS
+    only.
   </description>
 </action>
 

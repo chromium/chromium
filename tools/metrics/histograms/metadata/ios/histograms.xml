@@ -581,8 +581,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.Shown"
+    enum="IOSDefaultBrowserPromoType" expires_after="2023-12-01">
+  <owner>gayane@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>The default browser promo type shown to the user.</summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
-    enum="IOSDefaultBrowserTailoredPromoType" expires_after="2023-12-01">
+    enum="IOSDefaultBrowserPromoType" expires_after="2023-12-01">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>

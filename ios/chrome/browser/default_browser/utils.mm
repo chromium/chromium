@@ -489,12 +489,19 @@ NSInteger UserInteractionWithNonModalPromoCount() {
   return number.integerValue;
 }
 
-void LogUserInteractionWithFullscreenPromo() {
+void LogDefaultBrowserPromoDisplayed() {
   const NSInteger displayed_promo_count = DisplayedPromoCount();
+  NSDictionary<NSString*, NSObject*>* update = @{
+    kDisplayedPromoCount : @(displayed_promo_count + 1),
+  };
+
+  UpdateStorageWithDictionary(update);
+}
+
+void LogUserInteractionWithFullscreenPromo() {
   NSDictionary<NSString*, NSObject*>* update = @{
     kUserHasInteractedWithFullscreenPromo : @YES,
     kLastTimeUserInteractedWithPromo : [NSDate date],
-    kDisplayedPromoCount : @(displayed_promo_count + 1),
   };
 
   UpdateStorageWithDictionary(update);
@@ -711,4 +718,19 @@ void CleanupUnusedStorage() {
   [defaults removeObjectForKey:kOpenSettingsActionInteraction];
   // TODO(crbug.com/1445218): Remove in M116+.
   [defaults removeObjectForKey:kRemindMeLaterPromoActionInteraction];
+}
+
+DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type) {
+  switch (type) {
+    case DefaultPromoTypeGeneral:
+      return DefaultPromoTypeForUMA::kGeneral;
+    case DefaultPromoTypeMadeForIOS:
+      return DefaultPromoTypeForUMA::kMadeForIOS;
+    case DefaultPromoTypeStaySafe:
+      return DefaultPromoTypeForUMA::kStaySafe;
+    case DefaultPromoTypeAllTabs:
+      return DefaultPromoTypeForUMA::kAllTabs;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }

@@ -32,7 +32,19 @@ enum class IOSDefaultBrowserFullscreenPromoAction {
   kActionButton = 0,
   kCancel = 1,
   kRemindMeLater = 2,
-  kMaxValue = kRemindMeLater,
+  kDismiss = 3,
+  kMaxValue = kDismiss,
+};
+
+// Enum for the tailored promo UMA histograms. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class DefaultPromoTypeForUMA {
+  kGeneral = 0,
+  kMadeForIOS = 1,
+  kStaySafe = 2,
+  kAllTabs = 3,
+  kMaxValue = kAllTabs,
 };
 
 // The feature parameter to activate the remind me later button.
@@ -122,6 +134,9 @@ bool HasUserInteractedWithTailoredFullscreenPromoBefore();
 // non-modal promo before.
 NSInteger UserInteractionWithNonModalPromoCount();
 
+// Logs that one of default browser promos was displayed.
+void LogDefaultBrowserPromoDisplayed();
+
 // Logs that the user has interacted with the Fullscreen Promo.
 void LogUserInteractionWithFullscreenPromo();
 
@@ -197,5 +212,9 @@ bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker);
 // Removes unused data from NSUserDefaults. This method should be periodically
 // pruned of cleanups that have been present for multiple milestones.
 void CleanupUnusedStorage();
+
+// Converts Default browser promo type NSEnum to an enum that can be used by
+// UMA.
+DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

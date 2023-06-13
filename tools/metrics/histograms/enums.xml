@@ -54302,6 +54302,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Action Button"/>
   <int value="1" label="Cancel"/>
   <int value="2" label="Remind Me Later"/>
+  <int value="3" label="Dismiss"/>
 </enum>
 
 <enum name="IOSDefaultBrowserPromoNonModalAction">
@@ -54319,8 +54320,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="Set Up List"/>
 </enum>
 
-<enum name="IOSDefaultBrowserTailoredPromoType">
-  <int value="0" label="Unkown"/>
+<enum name="IOSDefaultBrowserPromoType">
+  <int value="0" label="General"/>
   <int value="1" label="Made for iOS"/>
   <int value="2" label="Stay Safe"/>
   <int value="3" label="All Tabs"/>

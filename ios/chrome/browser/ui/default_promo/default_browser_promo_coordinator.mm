@@ -43,8 +43,7 @@
 
 - (void)start {
   [super start];
-  base::RecordAction(
-      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Impression"));
+  [self recordDefaultBrowserPromoShown];
   self.defaultBrowerPromoViewController =
       [[DefaultBrowserPromoViewController alloc] init];
   self.defaultBrowerPromoViewController.actionHandler = self;
@@ -74,9 +73,10 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
+  [self logDefaultBrowserFullscreenPromoHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::kDismiss];
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithFullscreenPromo();
-  [self recordDefaultBrowserPromoShown];
 
   [self.handler hidePromo];
 }
@@ -90,7 +90,6 @@
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped"));
   LogUserInteractionWithFullscreenPromo();
-  [self recordDefaultBrowserPromoShown];
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
@@ -104,15 +103,13 @@
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserFullscreenPromoAction::kCancel];
   base::RecordAction(
-      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-  [self recordDefaultBrowserPromoShown];
+      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Cancel"));
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertLearnMoreAction {
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreenPromo.MoreInfoTapped"));
-  [self recordDefaultBrowserPromoShown];
   NSString* message = GetDefaultBrowserLearnMoreText();
   self.learnMoreViewController =
       [[PopoverLabelViewController alloc] initWithMessage:message];
@@ -137,6 +134,12 @@
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Impression"));
+  base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
+                                DefaultPromoTypeForUMA::kGeneral);
+  LogDefaultBrowserPromoDisplayed();
+
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   LogToFETDefaultBrowserPromoShown(
       feature_engagement::TrackerFactory::GetForBrowserState(browserState));
