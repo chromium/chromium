@@ -1749,14 +1749,12 @@ class IntersectingVideoQuadPixelTest : public IntersectingQuadPixelTest {
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        nullptr,
-        /*raster_context_provider=*/this->child_context_provider_.get(),
-        nullptr, this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
+        this->child_context_provider_.get(), nullptr,
+        this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
-        nullptr,
-        /*raster_context_provider=*/this->child_context_provider_.get(),
-        nullptr, this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
+        this->child_context_provider_.get(), nullptr,
+        this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
   }
 
@@ -2166,9 +2164,9 @@ class VideoRendererPixelTestBase : public VizPixelTest {
     constexpr bool kUseR16Texture = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        nullptr, child_context_provider_.get(), nullptr,
-        child_resource_provider_.get(), kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
+        child_context_provider_.get(), nullptr, child_resource_provider_.get(),
+        kUseStreamVideoDrawQuad, kUseGpuMemoryBufferResources, kUseR16Texture,
+        kMaxResourceSize);
   }
 
   void TearDown() override {

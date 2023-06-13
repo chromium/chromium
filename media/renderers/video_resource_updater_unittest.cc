@@ -93,16 +93,16 @@ class VideoResourceUpdaterTest : public testing::Test {
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware(
       bool use_stream_video_draw_quad = false) {
     return std::make_unique<VideoResourceUpdater>(
-        context_provider_.get(), /*raster_context_provider=*/nullptr, nullptr,
-        resource_provider_.get(), use_stream_video_draw_quad,
+        context_provider_.get(), nullptr, resource_provider_.get(),
+        use_stream_video_draw_quad,
         /*use_gpu_memory_buffer_resources=*/false,
         /*use_r16_texture=*/use_r16_texture_, /*max_resource_size=*/10000);
   }
 
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForSoftware() {
     return std::make_unique<VideoResourceUpdater>(
-        /*context_provider=*/nullptr, /*raster_context_provider=*/nullptr,
-        &shared_bitmap_reporter_, resource_provider_.get(),
+        /*context_provider=*/nullptr, &shared_bitmap_reporter_,
+        resource_provider_.get(),
         /*use_stream_video_draw_quad=*/false,
         /*use_gpu_memory_buffer_resources=*/false,
         /*use_r16_texture=*/false,

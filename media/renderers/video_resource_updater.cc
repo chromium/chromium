@@ -28,7 +28,6 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -481,16 +480,11 @@ class VideoResourceUpdater::HardwarePlaneResource
                         viz::SharedImageFormat format,
                         const gfx::ColorSpace& color_space,
                         bool use_gpu_memory_buffer_resources,
-                        viz::ContextProvider* context_provider,
-                        viz::RasterContextProvider* raster_context_provider)
+                        viz::RasterContextProvider* context_provider)
       : PlaneResource(plane_resource_id, size, format, /*is_software=*/false),
-        context_provider_(context_provider),
-        raster_context_provider_(raster_context_provider) {
-    DCHECK(context_provider_ || raster_context_provider_);
-    const gpu::Capabilities& caps =
-        raster_context_provider_
-            ? raster_context_provider_->ContextCapabilities()
-            : context_provider_->ContextCapabilities();
+        context_provider_(context_provider) {
+    DCHECK(context_provider_);
+    const gpu::Capabilities& caps = context_provider_->ContextCapabilities();
     DCHECK(format.is_single_plane());
     // TODO(hitawala): Add multiplanar support for software decode.
     overlay_candidate_ =
@@ -530,22 +524,18 @@ class VideoResourceUpdater::HardwarePlaneResource
 
  private:
   gpu::SharedImageInterface* SharedImageInterface() {
-    auto* sii = raster_context_provider_
-                    ? raster_context_provider_->SharedImageInterface()
-                    : context_provider_->SharedImageInterface();
+    auto* sii = context_provider_->SharedImageInterface();
     DCHECK(sii);
     return sii;
   }
 
   gpu::gles2::GLES2Interface* ContextGL() {
-    auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                        : context_provider_->ContextGL();
+    auto* gl = context_provider_->ContextGL();
     DCHECK(gl);
     return gl;
   }
 
-  const raw_ptr<viz::ContextProvider> context_provider_;
-  const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
+  const raw_ptr<viz::RasterContextProvider> context_provider_;
   gpu::Mailbox mailbox_;
   GLenum texture_target_ = GL_TEXTURE_2D;
   bool overlay_candidate_ = false;
@@ -564,8 +554,7 @@ VideoResourceUpdater::PlaneResource::AsHardware() {
 }
 
 VideoResourceUpdater::VideoResourceUpdater(
-    viz::ContextProvider* context_provider,
-    viz::RasterContextProvider* raster_context_provider,
+    viz::RasterContextProvider* context_provider,
     viz::SharedBitmapReporter* shared_bitmap_reporter,
     viz::ClientResourceProvider* resource_provider,
     bool use_stream_video_draw_quad,
@@ -573,7 +562,6 @@ VideoResourceUpdater::VideoResourceUpdater(
     bool use_r16_texture,
     int max_resource_size)
     : context_provider_(context_provider),
-      raster_context_provider_(raster_context_provider),
       shared_bitmap_reporter_(shared_bitmap_reporter),
       resource_provider_(resource_provider),
       use_stream_video_draw_quad_(use_stream_video_draw_quad),
@@ -581,8 +569,7 @@ VideoResourceUpdater::VideoResourceUpdater(
       use_r16_texture_(use_r16_texture),
       max_resource_size_(max_resource_size),
       tracing_id_(g_next_video_resource_updater_id.GetNext()) {
-  DCHECK(context_provider_ || raster_context_provider_ ||
-         shared_bitmap_reporter_);
+  DCHECK(context_provider_ || shared_bitmap_reporter_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "media::VideoResourceUpdater",
@@ -776,10 +763,8 @@ VideoResourceUpdater::CreateExternalResourcesFromVideoFrame(
 
 viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
     int bits_per_channel) {
-  DCHECK(raster_context_provider_ || context_provider_);
-  const auto& caps = raster_context_provider_
-                         ? raster_context_provider_->ContextCapabilities()
-                         : context_provider_->ContextCapabilities();
+  DCHECK(context_provider_);
+  const auto& caps = context_provider_->ContextCapabilities();
   if (caps.disable_one_component_textures)
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   if (bits_per_channel <= 8)
@@ -861,8 +846,7 @@ VideoResourceUpdater::PlaneResource* VideoResourceUpdater::AllocateResource(
   } else {
     all_resources_.push_back(std::make_unique<HardwarePlaneResource>(
         plane_resource_id, plane_size, format, color_space,
-        use_gpu_memory_buffer_resources_, context_provider_,
-        raster_context_provider_));
+        use_gpu_memory_buffer_resources_, context_provider_));
   }
   return all_resources_.back().get();
 }
@@ -936,8 +920,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
     scoped_refptr<VideoFrame> video_frame) {
   TRACE_EVENT0("cc", "VideoResourceUpdater::CreateForHardwarePlanes");
   DCHECK(video_frame->HasTextures());
-  if (!context_provider_ && !raster_context_provider_)
+  if (!context_provider_) {
     return VideoFrameExternalResources();
+  }
 
   VideoFrameExternalResources external_resources;
   gfx::ColorSpace resource_color_space = video_frame->ColorSpace();
@@ -1456,8 +1441,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 }
 
 gpu::gles2::GLES2Interface* VideoResourceUpdater::ContextGL() {
-  auto* gl = raster_context_provider_ ? raster_context_provider_->ContextGL()
-                                      : context_provider_->ContextGL();
+  auto* gl = context_provider_->ContextGL();
   DCHECK(gl);
   return gl;
 }
@@ -1491,7 +1475,7 @@ void VideoResourceUpdater::RecycleResource(uint32_t plane_resource_id,
   if (resource_it == all_resources_.end())
     return;
 
-  if ((raster_context_provider_ || context_provider_) && sync_token.HasData()) {
+  if (context_provider_ && sync_token.HasData()) {
     ContextGL()->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
