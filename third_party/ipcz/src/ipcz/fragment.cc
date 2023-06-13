@@ -6,9 +6,37 @@
 
 #include <cstdint>
 
+#include "ipcz/driver_memory_mapping.h"
+#include "ipcz/fragment_descriptor.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "util/safe_math.h"
 
 namespace ipcz {
+
+// static
+Fragment Fragment::MappedFromDescriptor(const FragmentDescriptor& descriptor,
+                                        DriverMemoryMapping& mapping) {
+  if (descriptor.is_null()) {
+    return {};
+  }
+
+  const uint32_t end = SaturatedAdd(descriptor.offset(), descriptor.size());
+  if (end > mapping.bytes().size()) {
+    return {};
+  }
+  return Fragment{descriptor, mapping.address_at(descriptor.offset())};
+}
+
+// static
+Fragment Fragment::PendingFromDescriptor(const FragmentDescriptor& descriptor) {
+  return Fragment{descriptor, nullptr};
+}
+
+// static
+Fragment Fragment::FromDescriptorUnsafe(const FragmentDescriptor& descriptor,
+                                        void* base_address) {
+  return Fragment{descriptor, base_address};
+}
 
 Fragment::Fragment(const FragmentDescriptor& descriptor, void* address)
     : descriptor_(descriptor), address_(address) {
