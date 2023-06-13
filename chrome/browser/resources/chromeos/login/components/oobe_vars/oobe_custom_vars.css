@@ -65,6 +65,14 @@
       --oobe-modal-dialog-content-font-weight: var(--oobe-default-font-weight);
       --oobe-modal-dialog-content-line-height: var(--oobe-default-line-height);
 
+      --oobe-sync-consent-list-item-title-font-size: 14px;
+      --oobe-sync-consent-list-item-title-font-weight: 500;
+      --oobe-sync-consent-list-item-title-line-height: 24px;
+
+      --oobe-sync-consent-card-title-font: var(--cros-headline-1-font);
+      --oobe-sync-consent-card-subtitle-font: var(--cros-body-1-font);
+      --oobe-sync-consent-tooltip-text-font: var(--cros-body-2-font);
+
       /* Select */
       --oobe-select-height: 32px;
 
@@ -83,8 +91,8 @@
       /* Fonts */
       --oobe-default-font-family: var(--cros-body-2-font-family);
       --oobe-default-font-size: var(--cros-body-2-font-size);
-      --oobe-default-line-height: var(--cros-body-2-line-height);
       --oobe-default-font-weight: var(--cros-body-2-font-weight);
+      --oobe-default-line-height: var(--cros-body-2-line-height);
 
       --oobe-header-font-size: var(--cros-display-3_regular-font-size);
       --oobe-header-line-height: var(--cros-display-3_regular-line-height);
@@ -110,6 +118,17 @@
       --oobe-modal-dialog-content-font-size: var(--cros-body-1-font-size);
       --oobe-modal-dialog-content-font-weight: var(--cros-body-1-font-weight);
       --oobe-modal-dialog-content-line-height: var(--cros-body-1-line-height);
+
+      --oobe-sync-consent-list-item-title-font-size:
+          var(--oobe-default-font-size);
+      --oobe-sync-consent-list-item-title-font-weight:
+          var(--oobe-default-font-weight);
+      --oobe-sync-consent-list-item-title-line-height:
+          var(--oobe-default-line-height);
+
+      --oobe-sync-consent-card-title-font: var(--cros-button-1-font);
+      --oobe-sync-consent-card-subtitle-font: var(--cros-annotation-1-font);
+      --oobe-sync-consent-tooltip-text-font: var(--cros-body-2-font);
     }
 
     html.simon-enabled {
