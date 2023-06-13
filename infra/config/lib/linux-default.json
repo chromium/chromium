@@ -83,6 +83,7 @@
     "Libfuzzer Upload Linux ASan Debug": "Ubuntu-22.04",
     "Libfuzzer Upload Linux32 V8-ARM ASan Debug": "Ubuntu-22.04",
     "Linux ASan LSan Builder": "Ubuntu-22.04",
+    "Linux ASan LSan Tests (1)": "Ubuntu-22.04",
     "Linux Builder": "Ubuntu-22.04",
     "Linux Builder (Wayland)": "Ubuntu-22.04",
     "Linux Builder (dbg)": "Ubuntu-22.04",
