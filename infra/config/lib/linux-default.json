@@ -274,6 +274,7 @@
     "mac-angle-chromium-intel": "Ubuntu-22.04",
     "mac10.15-updater-tester-rel": "Ubuntu-22.04",
     "mac12-arm64-updater-tester-rel": "Ubuntu-22.04",
+    "mac12-x64-updater-tester-asan-dbg": "Ubuntu-22.04",
     "rts-model-packager": "Ubuntu-22.04",
     "win-annotator-rel": "Ubuntu-22.04",
     "win-cr23-rel": "Ubuntu-22.04",
