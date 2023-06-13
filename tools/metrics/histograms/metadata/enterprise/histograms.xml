@@ -744,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.CrowdStrike.Error"
-    enum="DeviceSignalsParsingError" expires_after="2023-12-01">
+    enum="DeviceSignalsParsingError" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -755,7 +755,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceSignals.Collection.Failure.{Signal}.{ErrorType}Error"
-    enum="DeviceSignalsSignalCollectionError" expires_after="2023-12-01">
+    enum="DeviceSignalsSignalCollectionError" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.Request.{Signal}.Items"
-    units="items" expires_after="2023-12-01">
+    units="items" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.Success.{Signal}.Items"
-    units="items" expires_after="2023-12-01">
+    units="items" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -808,7 +808,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceSignals.Collection.{Outcome}.{Signal}.Latency"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -828,7 +828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.{Signal}.Delta"
-    units="items" expires_after="2023-12-01">
+    units="items" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -843,7 +843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.{Variant}"
-    enum="DeviceSignalsSignalName" expires_after="2023-12-01">
+    enum="DeviceSignalsSignalName" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -858,7 +858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.UserPermission"
-    enum="DeviceSignalsUserPermission" expires_after="2023-12-01">
+    enum="DeviceSignalsUserPermission" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -868,7 +868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
-    enum="DTAttestationFunnelStep" expires_after="2023-12-01">
+    enum="DTAttestationFunnelStep" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -879,7 +879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Result"
-    enum="DTAttestationResult" expires_after="2023-12-01">
+    enum="DTAttestationResult" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -908,7 +908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.EnrollmentStatus"
-    enum="DTEnrollmentStatus" expires_after="2023-12-01">
+    enum="DTEnrollmentStatus" expires_after="2024-06-01">
   <owner>lmasopust@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
@@ -920,7 +920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Handshake.Result"
-    enum="DTHandshakeResult" expires_after="2023-12-01">
+    enum="DTHandshakeResult" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Inline.Attestation.PolicyLevel"
-    enum="DTAttestationPolicyLevel" expires_after="2024-05-11">
+    enum="DTAttestationPolicyLevel" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -942,8 +942,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Key.Signing.Latency.{Variant}"
+    units="ms" expires_after="2024-06-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded every time a Device Trust {Variant} key is successfully used to
+    sign a payload. Measures the signing latency in milliseconds.
+  </summary>
+  <token key="Variant">
+    <variant name="Hardware" summary="hardware-backed"/>
+    <variant name="OS" summary="OS-backed"/>
+    <variant name="Unknown" summary="unknown"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Key.TrustLevel" enum="DTKeyTrustLevel"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -955,7 +970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Key.Type" enum="DTKeyType"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -966,7 +981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Key.{Variant}Result"
-    enum="DTKeyRotationResult" expires_after="2023-12-01">
+    enum="DTKeyRotationResult" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -981,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.KeyRotationCommand.Error"
-    enum="DTKeyRotationCommandError" expires_after="2023-12-01">
+    enum="DTKeyRotationCommandError" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -992,7 +1007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.KeyRotationCommand.Error.Hresult"
-    enum="Hresult" expires_after="2023-12-01">
+    enum="Hresult" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1003,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.KeyRotationCommand.ExitCode"
-    units="exit_code" expires_after="2023-12-01">
+    units="exit_code" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1014,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Mac.SecureEnclaveOperation.{KeyType}"
-    enum="DTSecureEnclaveOperationStatus" expires_after="2023-12-01">
+    enum="DTSecureEnclaveOperationStatus" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1029,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.ManagementService.Error"
-    enum="DTManagementServiceError" expires_after="2023-12-18">
+    enum="DTManagementServiceError" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1040,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Origin" enum="DTOrigin"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>lmasopust@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
@@ -1052,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Persistence.{Operation}.Error"
-    enum="DTKeyPersistenceError" expires_after="2023-12-17">
+    enum="DTKeyPersistenceError" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1075,7 +1090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1087,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.Status"
-    enum="DeviceTrustKeyRotationStatus" expires_after="2023-12-01">
+    enum="DeviceTrustKeyRotationStatus" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1105,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.UploadCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1123,7 +1138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.SignalsDecorator.Latency.{Variant}"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1144,7 +1159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.SyncSigningKey.ClientError"
-    enum="DTSynchronizationError" expires_after="2023-12-01">
+    enum="DTSynchronizationError" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1154,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.SyncSigningKey.UploadCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>

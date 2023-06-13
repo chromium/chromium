@@ -18,6 +18,8 @@
 #include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
+
 namespace enterprise_connectors {
 
 using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
@@ -36,6 +38,15 @@ absl::optional<std::vector<uint8_t>> SignString(
     return absl::nullopt;
   }
   return key->SignSlowly(base::as_bytes(base::make_span(str)));
+}
+
+void OnSignatureGenerated(
+    BPKUR::KeyTrustLevel trust_level,
+    base::TimeTicks start_time,
+    DeviceTrustKeyManagerImpl::SignStringCallback callback,
+    absl::optional<std::vector<uint8_t>> signature) {
+  LogSignatureLatency(trust_level, start_time);
+  std::move(callback).Run(std::move(signature));
 }
 
 absl::optional<DeviceTrustKeyManager::PermanentFailure>
@@ -169,7 +180,8 @@ void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
   if (IsFullyInitialized()) {
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(&SignString, str, key_pair_->key()),
-        std::move(callback));
+        base::BindOnce(&OnSignatureGenerated, key_pair_->trust_level(),
+                       base::TimeTicks::Now(), std::move(callback)));
     return;
   }
 

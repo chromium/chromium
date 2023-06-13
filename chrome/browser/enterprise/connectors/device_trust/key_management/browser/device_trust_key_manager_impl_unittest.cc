@@ -187,6 +187,22 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_WithPersistedKey) {
   EXPECT_FALSE(key_manager()->HasPermanentFailure());
 }
 
+// Tests that StartInitialization will load a key and not trigger key creation
+// if key loading was successful.
+TEST_F(DeviceTrustKeyManagerImplTest, SignString_HardwareKey) {
+  InitializeWithKey();
+  EXPECT_FALSE(key_manager()->HasPermanentFailure());
+
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
+  key_manager()->SignStringAsync("test string", sign_future.GetCallback());
+
+  EXPECT_TRUE(sign_future.Get());
+
+  static constexpr char kSignatureHistogramHw[] =
+      "Enterprise.DeviceTrust.Key.Signing.Latency.Hardware";
+  histogram_tester_->ExpectTotalCount(kSignatureHistogramHw, 1);
+}
+
 // Tests that:
 // - StartInitialization will trigger key creation if key loading was not
 //   successful.

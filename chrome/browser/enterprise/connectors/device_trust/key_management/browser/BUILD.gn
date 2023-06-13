@@ -22,6 +22,7 @@ source_set("browser") {
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
     "//components/enterprise",
+    "//components/policy/proto",
     "//third_party/abseil-cpp:absl",
   ]
 
