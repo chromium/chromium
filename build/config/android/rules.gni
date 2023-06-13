@@ -4367,6 +4367,13 @@ if (enable_java_templates && is_android) {
 
     _use_scanned_assets = !_ignore_assets && _scanned_files.assets != []
     _has_resources = _scanned_files.resources != []
+    _common_deps = [ ":$_unpack_target_name" ]
+    if (defined(invoker.deps)) {
+      _common_deps += invoker.deps
+    }
+    if (defined(invoker.public_deps)) {
+      _common_deps += invoker.public_deps
+    }
 
     assert(_ignore_aidl || _scanned_files.aidl == [],
            "android_aar_prebuilt() aidl not yet supported." +
@@ -4443,7 +4450,7 @@ if (enable_java_templates && is_android) {
                                  "testonly",
                                  "strip_drawables",
                                ])
-        public_deps = [ ":$_unpack_target_name" ]
+        deps = _common_deps
         if (_should_process_manifest) {
           android_manifest_dep = ":$_unpack_target_name"
           android_manifest = "${_output_path}/AndroidManifest.xml"
@@ -4513,7 +4520,7 @@ if (enable_java_templates && is_android) {
         _subjar_targets += [ ":$_current_target" ]
         java_prebuilt(_current_target) {
           forward_variables_from(invoker, _java_library_vars)
-          deps = [ ":$_unpack_target_name" ]
+          deps = _common_deps
           if (!defined(requires_android)) {
             requires_android = true
           }
@@ -4530,15 +4537,11 @@ if (enable_java_templates && is_android) {
         forward_variables_from(invoker, _java_library_vars)
         forward_variables_from(invoker,
                                [
-                                 "deps",
                                  "input_jars_paths",
                                  "mergeable_android_manifests",
                                  "proguard_configs",
                                ])
-        if (!defined(deps)) {
-          deps = []
-        }
-        deps += _subjar_targets + [ ":$_unpack_target_name" ]
+        deps = _common_deps + _subjar_targets
         if (defined(_res_target_name)) {
           deps += [ ":$_res_target_name" ]
         }
