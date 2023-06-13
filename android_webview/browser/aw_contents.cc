@@ -59,6 +59,8 @@
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -225,6 +227,8 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
     : content::WebContentsObserver(web_contents.get()),
       browser_view_renderer_(this, content::GetUIThreadTaskRunner({})),
       web_contents_(std::move(web_contents)) {
+  TRACE_EVENT_BEGIN("android_webview.timeline", "WebView Instance",
+                    perfetto::Track::FromPointer(this));
   base::subtle::NoBarrier_AtomicIncrement(&g_instance_count, 1);
   icon_helper_ = std::make_unique<IconHelper>(web_contents_.get());
   icon_helper_->SetListener(this);
@@ -368,6 +372,9 @@ AwContents::~AwContents() {
   WebContentsObserver::Observe(nullptr);
   AwBrowserProcess::GetInstance()->visibility_metrics_logger()->RemoveClient(
       this);
+  // Corresponds to "WebView Instance" in AwContents's constructor.
+  TRACE_EVENT_END("android_webview.timeline",
+                  perfetto::Track::FromPointer(this));
 }
 
 base::android::ScopedJavaLocalRef<jobject> AwContents::GetWebContents(
