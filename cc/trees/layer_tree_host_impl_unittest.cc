@@ -16068,23 +16068,6 @@ TEST_F(MsaaIsSlowLayerTreeHostImplTest, GpuRasterizationStatusMsaaIsSlow) {
   EXPECT_FALSE(host_impl_->can_use_msaa());
 }
 
-class MsaaCompatibilityLayerTreeHostImplTest : public LayerTreeHostImplTest {
- public:
-  void CreateHostImplWithMultisampleCompatibility(
-      bool support_multisample_compatibility) {
-    LayerTreeSettings settings = DefaultSettings();
-    settings.gpu_rasterization_msaa_sample_count = 4;
-    auto frame_sink =
-        FakeLayerTreeFrameSink::Builder()
-            .AllContexts(
-                &viz::TestRasterInterface::set_multisample_compatibility,
-                support_multisample_compatibility)
-            .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
-            .Build();
-    EXPECT_TRUE(CreateHostImpl(settings, std::move(frame_sink)));
-  }
-};
-
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
   // Check page scale factor updates the property trees when an update is made
   // on the active tree.

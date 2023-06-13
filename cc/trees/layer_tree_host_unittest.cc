@@ -6786,10 +6786,8 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
       viz::TestContextProvider* worker_provider) override {
     auto* compositor = context_provider->UnboundTestRasterInterface();
     compositor->set_gpu_rasterization(true);
-    compositor->set_multisample_compatibility(false);
     auto* worker = worker_provider->UnboundTestRasterInterface();
     worker->set_gpu_rasterization(true);
-    worker->set_multisample_compatibility(false);
   }
 
   void InitializeSettings(LayerTreeSettings* settings) override {

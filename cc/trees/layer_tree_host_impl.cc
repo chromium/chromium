@@ -1993,12 +1993,7 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
   }
 
   if (display_list->HasNonAAPaint()) {
-    UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDisableMsaa",
-                          raster_caps().supports_disable_msaa);
-    if (!raster_caps().supports_disable_msaa ||
-        raster_caps().use_dmsaa_for_tiles) {
-      return 0;
-    }
+    return 0;
   }
 
   return RequestedMSAASampleCount();
@@ -2903,7 +2898,6 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
 
     DCHECK(caps.supports_oop_raster);
     gpu_caps.can_use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-    gpu_caps.supports_disable_msaa = caps.multisample_compatibility;
   }(new_raster_caps);
 
   // Changes in MSAA settings require that we re-raster resources for the
@@ -2912,15 +2906,12 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   // changed. In this case we already re-allocate and re-raster all resources.
   if (new_raster_caps.use_gpu_rasterization ==
           raster_caps().use_gpu_rasterization &&
-      new_raster_caps.can_use_msaa == raster_caps().can_use_msaa &&
-      new_raster_caps.supports_disable_msaa ==
-          raster_caps().supports_disable_msaa) {
+      new_raster_caps.can_use_msaa == raster_caps().can_use_msaa) {
     return false;
   }
 
   raster_caps_.use_gpu_rasterization = new_raster_caps.use_gpu_rasterization;
   raster_caps_.can_use_msaa = new_raster_caps.can_use_msaa;
-  raster_caps_.supports_disable_msaa = new_raster_caps.supports_disable_msaa;
   return true;
 }
 

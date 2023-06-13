@@ -19,7 +19,6 @@ struct CC_EXPORT RasterCapabilities {
   bool use_gpu_rasterization = false;
 
   bool can_use_msaa = false;
-  bool supports_disable_msaa = false;
   bool use_dmsaa_for_tiles = false;
 
   // The maximum size (either width or height) that any texture can be. Also
