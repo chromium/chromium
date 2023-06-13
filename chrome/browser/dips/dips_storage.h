@@ -77,6 +77,9 @@ class DIPSStorage {
   std::vector<std::string> GetSitesToClear(
       absl::optional<base::TimeDelta> grace_period) const;
 
+  // Returns true if `url`'s site has had user interaction since `bound`.
+  bool DidSiteHaveInteractionSince(const GURL& url, base::Time bound);
+
   // Utility Methods -----------------------------------------------------------
 
   static void DeleteDatabaseFiles(base::FilePath path,

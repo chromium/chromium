@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +46,8 @@ namespace {
 
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
 constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
+constexpr base::TimeDelta kTopLevelUserInteractionHeuristicBound =
+    base::Days(30);
 
 // Returns true iff the request was answered implicitly (assuming it met some
 // other baseline prerequisites).
@@ -97,6 +100,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByPrerequisites:
     case RequestOutcome::kReusedPreviousDecision:
+    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
@@ -283,6 +287,43 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
                                 std::move(callback),
                                 /*persist=*/true, CONTENT_SETTING_ALLOW,
                                 RequestOutcome::kGrantedByAllowance);
+    return;
+  }
+
+  // We haven't found a reason to auto-grant permission, but before we prompt
+  // there's one more hurdle: the user must have interacted with the requesting
+  // site in a top-level context recently.
+  DIPSService* dips_service = DIPSService::Get(browser_context());
+  if (dips_service) {
+    dips_service->DidSiteHaveInteractionSince(
+        requesting_origin,
+        base::Time::Now() - kTopLevelUserInteractionHeuristicBound,
+        base::BindOnce(&StorageAccessGrantPermissionContext::
+                           OnCheckedUserInteractionHeuristic,
+                       weak_factory_.GetWeakPtr(), id, requesting_origin,
+                       embedding_origin, user_gesture, std::move(callback)));
+    return;
+  }
+
+  // If we don't have access to this kind of historical info, we waive the
+  // requirement, and show the prompt.
+  PermissionContextBase::DecidePermission(id, requesting_origin,
+                                          embedding_origin, user_gesture,
+                                          std::move(callback));
+}
+
+void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    bool user_gesture,
+    permissions::BrowserPermissionCallback callback,
+    bool had_top_level_user_interaction) {
+  if (!had_top_level_user_interaction) {
+    NotifyPermissionSetInternal(
+        id, requesting_origin, embedding_origin, std::move(callback),
+        /*persist=*/false, CONTENT_SETTING_BLOCK,
+        RequestOutcome::kDeniedByTopLevelInteractionHeuristic);
     return;
   }
 

@@ -42,7 +42,10 @@ enum class RequestOutcome {
   // The user has already been asked and made a choice (and was not asked
   // again).
   kReusedPreviousDecision = 7,
-  kMaxValue = kReusedPreviousDecision,
+  // The request was denied because the most recent top-level interaction on
+  // the embedded site was too long ago, or there is no such interaction.
+  kDeniedByTopLevelInteractionHeuristic = 8,
+  kMaxValue = kDeniedByTopLevelInteractionHeuristic,
 };
 
 class StorageAccessGrantPermissionContext
@@ -103,7 +106,7 @@ class StorageAccessGrantPermissionContext
 
   // Checks First-Party Sets metadata to determine if auto-grants or
   // auto-denials are applicable. If no autogrant or autodenial is applicable,
-  // this tries to to use an implicit grant, and finally prompts the user if
+  // this tries to to use an implicit grant, and finally may prompt the user if
   // necessary.
   void CheckForAutoGrantOrAutoDenial(
       const permissions::PermissionRequestID& id,
@@ -113,7 +116,7 @@ class StorageAccessGrantPermissionContext
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
 
-  // Determines whether an implicit grant is available, and otherwise prompts
+  // Determines whether an implicit grant is available, and otherwise may prompt
   // the user.
   void UseImplicitGrantOrPrompt(
       const permissions::PermissionRequestID& id,
@@ -121,6 +124,16 @@ class StorageAccessGrantPermissionContext
       const GURL& embedding_origin,
       bool user_gesture,
       permissions::BrowserPermissionCallback callback);
+
+  // Determines whether the top-level user-interaction heuristic was satisfied,
+  // and if so, prompts the user.
+  void OnCheckedUserInteractionHeuristic(
+      const permissions::PermissionRequestID& id,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      bool user_gesture,
+      permissions::BrowserPermissionCallback callback,
+      bool had_top_level_user_interaction);
 
   base::WeakPtrFactory<StorageAccessGrantPermissionContext> weak_factory_{this};
 };

@@ -326,6 +326,15 @@ void DIPSService::HandleRedirectChain(
                            content_settings_callback));
 }
 
+void DIPSService::DidSiteHaveInteractionSince(
+    const GURL& url,
+    base::Time bound,
+    CheckInteractionCallback callback) const {
+  storage_.AsyncCall(&DIPSStorage::DidSiteHaveInteractionSince)
+      .WithArgs(url, bound)
+      .Then(std::move(callback));
+}
+
 void DIPSService::GotState(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain,

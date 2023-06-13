@@ -274,6 +274,13 @@ std::vector<std::string> DIPSStorage::GetSitesToClear(
   return sites_to_clear;
 }
 
+bool DIPSStorage::DidSiteHaveInteractionSince(const GURL& url,
+                                              base::Time bound) {
+  const DIPSState state = Read(url);
+  return state.user_interaction_times().has_value() &&
+         state.user_interaction_times()->second >= bound;
+}
+
 /* static */
 void DIPSStorage::DeleteDatabaseFiles(base::FilePath path,
                                       base::OnceClosure on_complete) {

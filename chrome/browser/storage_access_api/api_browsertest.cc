@@ -220,6 +220,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     // assumption by setting up the auto-response themselves.
     prompt_factory_->set_response_type(
         permissions::PermissionRequestManager::NONE);
+
+    // Most of these tests invoke document.requestStorageAccess from a kHostB
+    // iframe. We pre-seed that site with user interaction, to avoid being
+    // blocked by the top-level user interaction heuristic.
+    EnsureUserInteractionOn(kHostB);
   }
 
   void TearDownOnMainThread() override { prompt_factory_.reset(); }
@@ -407,6 +412,15 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return ChildFrameAt(GetPrimaryMainFrame(), 1);
   }
 
+  void EnsureUserInteractionOn(base::StringPiece host) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL(host, "/empty.html")));
+    // ExecJs runs with a synthetic user interaction (by default), which is all
+    // we need, so our script is a no-op.
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(), ""));
+  }
+
   net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
 
   bool IsStoragePartitioned() const { return is_storage_partitioned_; }
@@ -481,6 +495,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryGranted) {
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
   SetBlockThirdPartyCookies(true);
+
+  EnsureUserInteractionOn(kHostA);
 
   NavigateToPageWithFrame(kHostB);
   NavigateFrameTo(kHostA, "/echoheader?cookie");
@@ -646,6 +662,7 @@ IN_PROC_BROWSER_TEST_F(
     StorageAccessAPIBrowserTest,
     ThirdPartyCookiesIFrameRequestsAccess_NestedCrossSiteIframe_DistinctSites) {
   SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostC);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
@@ -668,6 +685,8 @@ IN_PROC_BROWSER_TEST_F(
 // other's granted permission.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesCrossSiteSiblingIFrameRequestsAccess) {
+  EnsureUserInteractionOn(kHostC);
+
   NavigateToPageWithTwoFrames(kHostA);
   NavigateFirstFrameTo(EchoCookiesURL(kHostB));
   NavigateSecondFrameTo(EchoCookiesURL(kHostC));
@@ -763,6 +782,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     StorageAccessAPIBrowserTest,
     ThirdPartyCookiesIFrameThirdPartyExceptions_NestedCrossSite) {
+  EnsureUserInteractionOn(kHostC);
+
   SetBlockThirdPartyCookies(true);
   BlockAllCookiesOnHost(kHostC);
 
@@ -1383,6 +1404,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
                        NestedThirdPartyIFrameStorage) {
+  EnsureUserInteractionOn(kHostC);
+
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
@@ -1835,6 +1858,37 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
     EXPECT_TRUE(observer.request_shown());
     EXPECT_EQ(prompt_factory()->TotalRequestCount(), 2);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       TopLevelUserInteractionRequired) {
+  SetBlockThirdPartyCookies(true);
+
+  // The test fixture pre-seeds kHostB with top-level user interaction, but not
+  // the other hosts. We intentionally use kHostA as the embed, since it has not
+  // been seeded with a top-level user interaction.
+
+  NavigateToPageWithFrame(kHostB);
+  NavigateFrameTo(EchoCookiesURL(kHostA));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostA), NoCookies());
+
+  // If kHostA has a top-level interaction, it can request storage access. The
+  // user interaction should be tracked by site, not origin.
+  EnsureUserInteractionOn(kHostASubdomain);
+  NavigateToPageWithFrame(kHostB);
+  NavigateFrameTo(EchoCookiesURL(kHostA));
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostA), CookieBundle("cross-site=a.test"));
 }
 
 class StorageAccessAPIWithImplicitGrantsBrowserTest

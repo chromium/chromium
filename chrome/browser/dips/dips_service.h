@@ -46,6 +46,7 @@ class DIPSService : public KeyedService {
       base::RepeatingCallback<void(const GURL&)> content_settings_callback)>;
   using DeletedSitesCallback =
       base::OnceCallback<void(const std::vector<std::string>& sites)>;
+  using CheckInteractionCallback = base::OnceCallback<void(bool)>;
 
   ~DIPSService() override;
 
@@ -83,6 +84,10 @@ class DIPSService : public KeyedService {
       std::vector<DIPSRedirectInfoPtr> redirects,
       DIPSRedirectChainInfoPtr chain,
       base::RepeatingCallback<void(const GURL&)> content_settings_callback);
+
+  void DidSiteHaveInteractionSince(const GURL& url,
+                                   base::Time bound,
+                                   CheckInteractionCallback callback) const;
 
   // This allows unit-testing the metrics emitted by HandleRedirect() without
   // instantiating DIPSService.

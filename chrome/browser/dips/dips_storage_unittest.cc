@@ -677,6 +677,34 @@ TEST_F(DIPSStorageTest, RemoveRows) {
   EXPECT_FALSE(storage_.Read(url2).was_loaded());
 }
 
+TEST_F(DIPSStorageTest, DidSiteHaveInteractionSince) {
+  GURL url1("https://example1.com");
+
+  EXPECT_FALSE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(0)));
+
+  storage_.WriteForTesting(
+      url1, StateValue{.site_storage_times{{base::Time::FromDoubleT(1),
+                                            base::Time::FromDoubleT(1)}},
+                       .user_interaction_times{{base::Time::FromDoubleT(2),
+                                                base::Time::FromDoubleT(2)}},
+                       .stateful_bounce_times{{base::Time::FromDoubleT(3),
+                                               base::Time::FromDoubleT(3)}},
+                       .bounce_times{{base::Time::FromDoubleT(3),
+                                      base::Time::FromDoubleT(4)}}});
+
+  EXPECT_TRUE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(0)));
+  EXPECT_TRUE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(1)));
+  EXPECT_TRUE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(2)));
+  EXPECT_FALSE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(3)));
+  EXPECT_FALSE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(4)));
+}
+
 class DIPSStoragePrepopulateTest : public testing::Test {
  public:
   DIPSStoragePrepopulateTest()
