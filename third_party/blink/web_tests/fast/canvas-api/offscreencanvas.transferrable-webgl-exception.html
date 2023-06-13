@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+
+<script id="myWorker" type="text/worker">
+
+function test1(offscreenCanvas)
+{
+    return offscreenCanvas.width == 10 && offscreenCanvas.height == 10;
+}
+
+self.onmessage = function(e) {
+    switch(e.data.msg) {
+        case 'test1':
+            self.postMessage(test1(e.data.data));
+            break;
+    }
+};
+
+</script>
+<script>
+function makeWorker(script)
+{
+    var blob = new Blob([script]);
+    return new Worker(URL.createObjectURL(blob));
+}
+
+test(function() {
+    function testException(contextType) {
+        var worker = makeWorker(document.getElementById("myWorker").textContent);
+        var offscreenCanvas = new OffscreenCanvas(10, 10);
+        var ctx = offscreenCanvas.getContext(contextType);
+        assert_throws_dom("InvalidStateError", function() {
+            worker.postMessage({offscreenCanvas}, [offscreenCanvas]);
+        });
+    }
+    testException('webgl');
+}, "Test that transfer an OffscreenCanvas that has a context throws exception.");
+
+</script>
+</body>
+</html>
