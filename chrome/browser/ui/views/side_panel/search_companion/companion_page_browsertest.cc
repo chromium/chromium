@@ -72,6 +72,7 @@ const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
 const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
 const char kPhReportingUrl[] = "https://foobar.com/";
+const char kExpsRegistrationSuccessUrl[] = "https://foobar.com/experiments";
 
 }  // namespace
 
@@ -370,8 +371,21 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     params["companion-image-upload-url"] =
         companion_server_.GetURL("/upload").spec();
     params["open-links-in-current-tab"] = ShouldOpenLinkInCurrentTab();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        companion::features::kSidePanelCompanion, params);
+    base::FieldTrialParams params2;
+    params2["exps-registration-success-page-urls"] =
+        kExpsRegistrationSuccessUrl;
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    if (enable_feature_side_panel_companion_) {
+      enabled_features.emplace_back(companion::features::kSidePanelCompanion,
+                                    params);
+    }
+    enabled_features.emplace_back(
+        companion::features::kCompanionEnabledByObservingExpsNavigations,
+        params2);
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                /*disabled_features=*/{});
   }
 
   virtual std::string ShouldOpenLinkInCurrentTab() { return "false"; }
@@ -445,6 +459,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   size_t requests_received_on_server_ = 0;
   std::string last_sourcelang_;
   std::string last_targetlang_;
+  bool enable_feature_side_panel_companion_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -1226,6 +1241,29 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ExpectUkmEntry(
       &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
       static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
+}
+
+class CompanionPageDisabledBrowserTest : public CompanionPageBrowserTest {
+ public:
+  CompanionPageDisabledBrowserTest() : CompanionPageBrowserTest() {
+    enable_feature_side_panel_companion_ = false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
+                       ObservesExpsRegistrationSuccessURL) {
+  // Navigate to a random page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      companion::kHasNavigatedToExpsSuccessPage));
+
+  // Navigate to exps registration success page. It should enable the pref.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(kExpsRegistrationSuccessUrl)));
+  // Verify that the pref.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      companion::kHasNavigatedToExpsSuccessPage));
 }
 
 class CompanionPagePolicyBrowserTest : public CompanionPageBrowserTest {
