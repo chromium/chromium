@@ -104,6 +104,11 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
   // Pixel upload path only supports single-planar formats.
   DCHECK(format.is_single_plane());
   DCHECK(gpu::IsValidClientUsage(usage));
+
+  // EstimatedSizeInBytes() returns the minimum size in bytes needed to store
+  // `format` at `size` so if span is smaller there is a problem.
+  CHECK_GE(pixel_data.size(), format.EstimatedSizeInBytes(size));
+
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
                                               debug_label, pixel_data));

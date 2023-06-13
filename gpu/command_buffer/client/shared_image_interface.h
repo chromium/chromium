@@ -73,6 +73,9 @@ class GPU_EXPORT SharedImageInterface {
   // which is used to populate the SharedImage.  |pixel_data| should have the
   // same format which would be passed to glTexImage2D to populate a similarly
   // specified texture.
+  // TODO(crbug.com/1447106): Have the caller specify a row span for
+  // |pixel_data| explicitly. Some backings have different row alignment
+  // requirements which the caller has to match exactly or it won't work.
   virtual Mailbox CreateSharedImage(viz::SharedImageFormat format,
                                     const gfx::Size& size,
                                     const gfx::ColorSpace& color_space,
