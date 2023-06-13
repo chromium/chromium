@@ -309,6 +309,32 @@ mojom::blink::BlockingDetailsPtr CreateBlockingDetailsMojom(
   return feature_location_to_report;
 }
 
+bool IsNavigationBlockedByCoopRestrictProperties(
+    const LocalFrame& accessing_frame,
+    const Frame& target_frame) {
+  // If the two windows are not in the same CoopRelatedGroup, we should not
+  // block one window from navigating the other. This prevents restricting
+  // things that were not meant to. These are the cross browsing context group
+  // accesses that already existed before COOP: restrict-properties.
+  // TODO(https://crbug.com/1221127): Is there actually any scenario where cross
+  // browsing context group was allowed before COOP: restrict-properties? Verify
+  // that we need to have this check.
+  if (accessing_frame.GetPage()->CoopRelatedGroupToken() !=
+      target_frame.GetPage()->CoopRelatedGroupToken()) {
+    return false;
+  }
+
+  // If we're dealing with an actual COOP: restrict-properties case, then
+  // compare the browsing context group tokens. If they are different, the
+  // navigation should not be permitted.
+  if (accessing_frame.GetPage()->BrowsingContextGroupToken() !=
+      target_frame.GetPage()->BrowsingContextGroupToken()) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -1769,6 +1795,12 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
           SecurityOrigin::Create(destination_url).get())) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kOpenerNavigationWithoutGesture);
+  }
+
+  // Frames from different browsing context groups in the same CoopRelatedGroup
+  // should not be able navigate one another.
+  if (IsNavigationBlockedByCoopRestrictProperties(*this, target_frame)) {
+    return false;
   }
 
   if (destination_url.ProtocolIsJavaScript() &&

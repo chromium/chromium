@@ -7540,16 +7540,11 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 
 // This test verifies that named targeting does not resolve across
 // BrowsingInstances.
-// TODO(https://crbug.com/1370350): The only way to test that named targeting
-// has not resolved is to wait for the creation of a popup. This will hang until
-// named targeting is properly restricted. Re-Enable this test when that is the
-// case.
 // TODO(https://crbug.com/1370357): Named targeting will evolve in the future,
 // when we're able to have per-BrowsingInstance names. For now, we're simply
 // blocking all named targeting.
-IN_PROC_BROWSER_TEST_P(
-    CoopRestrictPropertiesBrowserTest,
-    DISABLED_NamedTargetingIsBlockedAcrossBrowsingInstances) {
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
+                       NamedTargetingIsBlockedAcrossBrowsingInstances) {
   GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
@@ -7583,9 +7578,13 @@ IN_PROC_BROWSER_TEST_P(
   // update to happen before the script execution below.
   frame_name_changed.Wait();
 
-  ShellAddedObserver shell_observer;
+  ShellAddedObserver main_page_targeting_observer;
   ASSERT_TRUE(ExecJs(current_frame_host(), "window.open('', 'name2')"));
-  shell_observer.GetShell();
+  main_page_targeting_observer.GetShell();
+
+  // We should have 3 different windows: the main page, the first popup and the
+  // second popup that was just opened because named targeting did not resolve.
+  EXPECT_EQ(3u, Shell::windows().size());
 
   // 3. Verify that a named subframe is similarly not targetable by the opening
   // context.
@@ -7598,9 +7597,15 @@ IN_PROC_BROWSER_TEST_P(
                                           regular_page_2)));
   ASSERT_TRUE(WaitForLoadStop(popup_window));
 
-  ShellAddedObserver shell_observer_2;
+  // The iframe should not even have a proxy in the main page's process, and no
+  // matching frame should be returned. A new popup is created instead.
+  ShellAddedObserver iframe_targeting_observer;
   ASSERT_TRUE(ExecJs(current_frame_host(), "window.open('', 'name3')"));
-  shell_observer_2.GetShell();
+  iframe_targeting_observer.GetShell();
+
+  // We should have all 3 preceding windows, and another one that was opened
+  // because the subframe targeting did not resolve.
+  EXPECT_EQ(4u, Shell::windows().size());
 }
 
 // Smoke test with kNewBrowsingContextStateOnBrowsingContextGroupSwap enabled.
