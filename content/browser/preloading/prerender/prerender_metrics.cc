@@ -451,4 +451,15 @@ void RecordPrerenderActivationCommitDeferTime(
       time_delta);
 }
 
+void RecordBlockedByClientResourceType(
+    network::mojom::RequestDestination request_destination,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName(
+          "Prerender.Experimental.ResourceLoadingBlockedByClientByType",
+          trigger_type, embedder_histogram_suffix),
+      request_destination);
+}
+
 }  // namespace content
