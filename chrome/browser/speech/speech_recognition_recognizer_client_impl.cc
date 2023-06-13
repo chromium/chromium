@@ -164,6 +164,7 @@ SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
           "fr-CA",           // French (Canada)
           "fr-CH",           // French (Switzerland)
           "fr-FR",           // French (France)
+          "id",              // Indonesian
           "it",              // Italian
           "it-CH",           // Italian (Switzerland)
           "it-IT",           // Italian (Italy)
@@ -172,6 +173,7 @@ SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
           "pt",              // Portuguese
           "pt-BR",           // Portuguese (Brazil)
           "pt-PT",           // Portuguese (Portugal)
+          "ru",              // Russian
           "sv",              // Swedish
           "tr",              // Turkish
       });
