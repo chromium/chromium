@@ -7,7 +7,6 @@ package org.chromium.net.test;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 
 import android.content.Context;
 
@@ -79,13 +78,10 @@ public class FakeCronetEngineTest {
     public void testShutdownEngineThrowsExceptionWhenApiCalled() {
         mFakeCronetEngine.shutdown();
 
-        try {
-            mFakeCronetEngine.newUrlRequestBuilder("", mCallback, mExecutor).build();
-            fail("newUrlRequestBuilder API not checked for shutdown engine.");
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "This instance of CronetEngine has been shutdown and can no longer be used.");
-        }
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> mFakeCronetEngine.newUrlRequestBuilder("", mCallback, mExecutor).build());
+        assertThat(e).hasMessageThat().isEqualTo(
+                "This instance of CronetEngine has been shutdown and can no longer be used.");
     }
 
     @Test
@@ -93,65 +89,49 @@ public class FakeCronetEngineTest {
     public void testShutdownEngineThrowsExceptionWhenBidirectionalStreamApiCalled() {
         mFakeCronetEngine.shutdown();
 
-        try {
-            mFakeCronetEngine.newBidirectionalStreamBuilder("", null, null);
-            fail("newBidirectionalStreamBuilder API not checked for shutdown engine.");
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "This instance of CronetEngine has been shutdown and can no longer be used.");
-        }
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> mFakeCronetEngine.newBidirectionalStreamBuilder("", null, null));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "This instance of CronetEngine has been shutdown and can no longer be used.");
     }
 
     @Test
     @SmallTest
     public void testExceptionForNewBidirectionalStreamApi() {
-        try {
-            mFakeCronetEngine.newBidirectionalStreamBuilder("", null, null);
-            fail("newBidirectionalStreamBuilder API should not be available.");
-        } catch (UnsupportedOperationException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "The bidirectional stream API is not supported by the Fake implementation "
-                    + "of CronetEngine.");
-        }
+        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
+                () -> mFakeCronetEngine.newBidirectionalStreamBuilder("", null, null));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "The bidirectional stream API is not supported by the Fake implementation "
+                + "of CronetEngine.");
     }
 
     @Test
     @SmallTest
     public void testExceptionForOpenConnectionApi() {
-        try {
-            mFakeCronetEngine.openConnection(null);
-            fail("openConnection API should not be available.");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "The openConnection API is not supported by the Fake implementation of "
-                    + "CronetEngine.");
-        }
+        Exception e = assertThrows(Exception.class, () -> mFakeCronetEngine.openConnection(null));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "The openConnection API is not supported by the Fake implementation of "
+                + "CronetEngine.");
     }
 
     @Test
     @SmallTest
     public void testExceptionForOpenConnectionApiWithProxy() {
-        try {
-            mFakeCronetEngine.openConnection(null, Proxy.NO_PROXY);
-            fail("openConnection API  should not be available.");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "The openConnection API is not supported by the Fake implementation of "
-                    + "CronetEngine.");
-        }
+        Exception e = assertThrows(
+                Exception.class, () -> mFakeCronetEngine.openConnection(null, Proxy.NO_PROXY));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "The openConnection API is not supported by the Fake implementation of "
+                + "CronetEngine.");
     }
 
     @Test
     @SmallTest
     public void testExceptionForCreateStreamHandlerFactoryApi() {
-        try {
-            mFakeCronetEngine.createURLStreamHandlerFactory();
-            fail("createURLStreamHandlerFactory API  should not be available.");
-        } catch (UnsupportedOperationException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "The URLStreamHandlerFactory API is not supported by the Fake implementation of"
-                    + " CronetEngine.");
-        }
+        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
+                () -> mFakeCronetEngine.createURLStreamHandlerFactory());
+        assertThat(e).hasMessageThat().isEqualTo(
+                "The URLStreamHandlerFactory API is not supported by the Fake implementation of"
+                + " CronetEngine.");
     }
 
     @Test
@@ -248,12 +228,9 @@ public class FakeCronetEngineTest {
     public void testShutdownBlockedWhenRequestCountNotZero() {
         // Start a request and verify the engine can't be shutdown.
         assertThat(mFakeCronetEngine.startRequest()).isTrue();
-        try {
-            mFakeCronetEngine.shutdown();
-            fail("Shutdown not checked for running requests.");
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
-        }
+        IllegalStateException e =
+                assertThrows(IllegalStateException.class, () -> mFakeCronetEngine.shutdown());
+        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
 
         // Finish the request and verify the engine can be shutdown.
         mFakeCronetEngine.onRequestDestroyed();
@@ -355,13 +332,10 @@ public class FakeCronetEngineTest {
     public void testCantDecrementOnceShutdown() {
         mFakeCronetEngine.shutdown();
 
-        try {
-            mFakeCronetEngine.onRequestDestroyed();
-            fail("onRequestDestroyed not checked for shutdown engine");
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "This instance of CronetEngine was shutdown. All requests must have been "
-                    + "complete.");
-        }
+        IllegalStateException e = assertThrows(
+                IllegalStateException.class, () -> mFakeCronetEngine.onRequestDestroyed());
+        assertThat(e).hasMessageThat().isEqualTo(
+                "This instance of CronetEngine was shutdown. All requests must have been "
+                + "complete.");
     }
 }

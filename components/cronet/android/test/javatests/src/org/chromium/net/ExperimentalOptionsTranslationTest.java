@@ -7,6 +7,7 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -162,14 +163,10 @@ public class ExperimentalOptionsTranslationTest {
                                                       .enablePathDegradationMigration(false)
                                                       .allowNonDefaultNetworkUsage(true));
 
-        try {
-            builder.build();
-            fail();
-        } catch (IllegalArgumentException expected) {
-            assertTrue(expected.getMessage().contains(
-                    "Unable to turn on non-default network usage without path degradation"
-                    + " migration"));
-        }
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertTrue(e.getMessage().contains(
+                "Unable to turn on non-default network usage without path degradation"
+                + " migration"));
     }
 
     @Test

@@ -6,7 +6,7 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import android.content.Context;
 
@@ -102,13 +102,10 @@ public class FakeCronetControllerTest {
     public void testAddNonFakeCronetEngineNotAllowed() {
         CronetEngine javaEngine = new JavaCronetEngineBuilderImpl(mContext).build();
 
-        try {
-            FakeCronetController.getControllerForFakeEngine(javaEngine);
-            fail("Should not be able to get a controller for a non-fake CronetEngine.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "Provided CronetEngine is not a fake CronetEngine");
-        }
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> FakeCronetController.getControllerForFakeEngine(javaEngine));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "Provided CronetEngine is not a fake CronetEngine");
     }
 
     @Test
@@ -135,8 +132,7 @@ public class FakeCronetControllerTest {
         mFakeCronetController.addResponseMatcher(matcher);
         mFakeCronetController.addSuccessResponse(url, "different text".getBytes());
 
-        FakeUrlResponse foundResponse =
-                mFakeCronetController.getResponse(new String(url), null, null, null);
+        FakeUrlResponse foundResponse = mFakeCronetController.getResponse(url, null, null, null);
 
         assertThat(foundResponse).isEqualTo(response);
     }
@@ -224,13 +220,10 @@ public class FakeCronetControllerTest {
     @SmallTest
     public void testAddErrorResponseWithNonErrorCodeThrowsException() {
         int nonErrorCode = 200;
-        try {
-            mFakeCronetController.addHttpErrorResponse(nonErrorCode, "url");
-            fail("Should not be able to add an error response with a non-error code.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "Expected HTTP error code (code >= 400), but was: " + nonErrorCode);
-        }
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> mFakeCronetController.addHttpErrorResponse(nonErrorCode, "url"));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "Expected HTTP error code (code >= 400), but was: " + nonErrorCode);
     }
 
     @Test

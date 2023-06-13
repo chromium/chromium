@@ -6,7 +6,7 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -22,24 +22,17 @@ public class UrlResponseMatcherTest {
     @Test
     @SmallTest
     public void testCheckUrlNotNull() {
-        try {
-            UrlResponseMatcher matcher =
-                    new UrlResponseMatcher(null, new FakeUrlResponse.Builder().build());
-            fail("URL not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("URL is required.");
-        }
+        NullPointerException e = assertThrows(NullPointerException.class,
+                () -> new UrlResponseMatcher(null, new FakeUrlResponse.Builder().build()));
+        assertThat(e).hasMessageThat().isEqualTo("URL is required.");
     }
 
     @Test
     @SmallTest
     public void testCheckResponseNotNull() {
-        try {
-            UrlResponseMatcher matcher = new UrlResponseMatcher("url", null);
-            fail("Response not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Response is required.");
-        }
+        NullPointerException e =
+                assertThrows(NullPointerException.class, () -> new UrlResponseMatcher("url", null));
+        assertThat(e).hasMessageThat().isEqualTo("Response is required.");
     }
 
     @Test
