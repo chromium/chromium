@@ -9,7 +9,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/sandbox_internals_resources.h"
+#include "chrome/grit/sandbox_internals_resources_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -68,8 +69,9 @@ static void SetSandboxStatusData(content::WebUIDataSource* source) {
 void CreateAndAddDataSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISandboxHost);
-  source->SetDefaultResource(IDR_SANDBOX_INTERNALS_HTML);
-  source->AddResourcePath("sandbox_internals.js", IDR_SANDBOX_INTERNALS_JS);
+  source->AddResourcePaths(base::make_span(kSandboxInternalsResources,
+                                           kSandboxInternalsResourcesSize));
+  source->SetDefaultResource(IDR_SANDBOX_INTERNALS_SANDBOX_INTERNALS_HTML);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   SetSandboxStatusData(source);

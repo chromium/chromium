@@ -254,6 +254,10 @@ group("dev_ui_resources") {
       "//chrome/browser/resources/webapks:resources",
     ]
   }
+
+  if (is_android || is_linux || is_chromeos || is_win) {
+    public_deps += [ "//chrome/browser/resources/sandbox_internals:resources" ]
+  }
 }
 
 repack("dev_ui_paks") {
@@ -296,6 +300,10 @@ repack("dev_ui_paks") {
       "$root_gen_dir/chrome/feed_internals_resources.pak",
       "$root_gen_dir/chrome/webapks_resources.pak",
     ]
+  }
+
+  if (is_android || is_linux || is_chromeos || is_win) {
+    sources += [ "$root_gen_dir/chrome/sandbox_internals_resources.pak" ]
   }
 
   deps = [ ":dev_ui_resources" ]

@@ -41,7 +41,12 @@
       }
 </if>
     </style>
+<if expr="not is_win">
     <script type="module" src="sandbox_internals.js"></script>
+</if>
+<if expr="is_win">
+    <script type="module" src="sandbox_internals_win.js"></script>
+</if>
   </head>
   <body>
     <h1>Sandbox Status</h1>

@@ -326,6 +326,10 @@
     "META": {"sizes": {"includes": [30],}},
     "includes": [3320],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/sandbox_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [3330],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/segmentation_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3340],

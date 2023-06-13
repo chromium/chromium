@@ -22,15 +22,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_DEVICE_LOG_UI_JS" file="resources\device_log_ui\device_log_ui.js" preprocess="true" type="BINDATA" />
       <include name="IDR_DEVICE_LOG_UI_CSS" file="resources\device_log_ui\device_log_ui.css" type="BINDATA" />
 
-      <if expr="is_android or is_linux or is_chromeos">
-        <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
-        <include name="IDR_SANDBOX_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\sandbox_internals\tsc\sandbox_internals.js" use_base_dir="false" type="BINDATA" />
-      </if>
-      <if expr="is_win">
-        <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
-        <include name="IDR_SANDBOX_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\sandbox_internals\tsc\sandbox_internals_win.js" use_base_dir="false" type="BINDATA" />
-      </if>
-
       <if expr="is_android">
         <include name="IDR_QUERY_TILES_INTERNALS_HTML" file="resources\internals\query_tiles\query_tiles_internals.html" type="BINDATA" />
         <include name="IDR_QUERY_TILES_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\internals\query_tiles\tsc\query_tiles_internals.js" use_base_dir="false" type="BINDATA" />
