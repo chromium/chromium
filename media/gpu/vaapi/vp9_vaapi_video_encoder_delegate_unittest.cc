@@ -25,9 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libvpx/source/libvpx/vp9/common/vp9_blockd.h"
-
-// Some macro in the libvpx headers conflicts with a macro in Chrome headers, so
-// we always need to include this file last.
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 using ::testing::_;

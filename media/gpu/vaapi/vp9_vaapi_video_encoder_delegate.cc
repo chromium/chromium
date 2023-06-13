@@ -19,9 +19,6 @@
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vp9_svc_layers.h"
-
-// TODO(b/286163500): Some macro in the libvpx headers conflicts with a macro in
-// Chrome headers, so we always need to include this file last.
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {
