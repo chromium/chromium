@@ -633,6 +633,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         }
                     }
 
+                    // Incognito tabs can't be restored, so don't finish the Activity if there are
+                    // still Incognito tabs existing.
+                    if (mTabModelSelector.getModel(true).getCount() > 0) {
+                        return;
+                    }
+
                     boolean gridTabSwitcherEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                             ChromeTabbedActivity.this);
                     boolean overviewVisible = isLayoutManagerCreated()
