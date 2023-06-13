@@ -1631,7 +1631,7 @@ are declared in tools/grit/grit_rule.gni.
           Sear&amp;ch this Page with Google...
         </message>
         <message name="IDS_SHOW_TRANSLATE" desc="In Title Case: The text label of the Translate menu item">
-          T&amp;ranslate
+          T&amp;ranslate...
         </message>
         <message name="IDS_SETTINGS" desc="In Title Case: The text label of the Settings menu item">
           &amp;Settings
