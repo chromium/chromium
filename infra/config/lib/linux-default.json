@@ -179,6 +179,7 @@
     "android-perfetto-rel": "Ubuntu-22.04",
     "android-pie-x86-rel": "Ubuntu-22.04",
     "android-rust-arm32-rel": "Ubuntu-22.04",
+    "android-rust-arm64-dbg": "Ubuntu-22.04",
     "android-rust-arm64-rel": "Ubuntu-22.04",
     "android-x86-code-coverage": "Ubuntu-22.04",
     "build-perf-android": "Ubuntu-22.04",
