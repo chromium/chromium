@@ -80,6 +80,7 @@ public class StartSurfaceOnTabletTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     private static final String TAB_URL = "https://foo.com/";
+    private static final String TAB_URL_1 = "https://bar.com/";
 
     @Test
     @MediumTest
@@ -211,22 +212,35 @@ public class StartSurfaceOnTabletTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testSingleTabCardGoneAfterTabClosed() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+                new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+                cta, 3, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
 
+        // Verifies that closing the tracking Tab will remove the "continue browsing" card from
+        // the NTP.
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.getCurrentTabModel().closeTab(lastActiveTab); });
+        Assert.assertEquals(2, cta.getCurrentTabModel().getCount());
+        Assert.assertFalse(ntp.isSingleTabCardVisibleForTesting());
+
+        // Tests to set another tracking Tab on the NTP.
+        Tab newTrackingTab = cta.getCurrentTabModel().getTabAt(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { ntp.showHomeSurfaceUi(newTrackingTab); });
+        Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getCurrentTabModel().closeTab(newTrackingTab); });
         Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
         Assert.assertFalse(ntp.isSingleTabCardVisibleForTesting());
     }
