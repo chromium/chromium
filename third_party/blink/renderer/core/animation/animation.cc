@@ -959,26 +959,23 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
   }
 
   if (timeline && !timeline->IsMonotonicallyIncreasing()) {
-    ApplyPendingPlaybackRate();
-    AnimationTimeDelta boundary_time =
-        (playback_rate_ > 0) ? AnimationTimeDelta() : EffectEnd();
     switch (old_play_state) {
       case kIdle:
         break;
 
       case kRunning:
       case kFinished:
-        // A non-monotonic timeline has a fixed start time at the beginning or
-        // end of the timeline.
-        start_time_ = boundary_time;
-        break;
+        if (old_current_time) {
+          start_time_ = absl::nullopt;
+          hold_time_ = progress * EffectEnd();
+        }
+        PlayInternal(AutoRewind::kEnabled, ASSERT_NO_EXCEPTION);
+        return;
 
       case kPaused:
         if (old_current_time) {
           start_time_ = absl::nullopt;
           hold_time_ = progress * EffectEnd();
-        } else if (PendingInternal()) {
-          start_time_ = boundary_time;
         }
         break;
 
@@ -1557,7 +1554,7 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   // start time.
   if (has_finite_timeline && auto_rewind == AutoRewind::kEnabled) {
     auto_align_start_time_ = true;
-    hold_time_ = CalculateCurrentTime();
+    hold_time_ = CurrentTimeInternal();
   }
 
   // 9. If animation’s hold time is resolved, let its start time be unresolved.
