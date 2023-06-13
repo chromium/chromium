@@ -548,7 +548,14 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
   auto compare_promo = [&impression_history](
                            std::pair<promos_manager::Promo, PromoContext> lhs,
                            std::pair<promos_manager::Promo, PromoContext> rhs) {
-    // PostRestoreSignIn types are to be displayed first.
+    // Choice types are to be displayed first.
+    if (lhs.first == Promo::Choice) {
+      return true;
+    }
+    if (rhs.first == Promo::Choice) {
+      return false;
+    }
+    // PostRestoreSignIn types come next.
     if (lhs.first == Promo::PostRestoreSignInFullscreen ||
         lhs.first == Promo::PostRestoreSignInAlert) {
       return true;
