@@ -1426,11 +1426,6 @@ enum class ToolbarKind {
 }
 
 - (void)showReadingList {
-  // TODO(crbug.com/1434711) Convert the DCHECK to CHECK and remove the if block
-  // below when the DCHECK will be fixed. The coordinator should be nil at this
-  // point.
-  DCHECK(!self.readingListCoordinator)
-      << base::SysNSStringToUTF8(self.readingListCoordinator.description);
   if (self.readingListCoordinator) {
     [self closeReadingList];
   }
