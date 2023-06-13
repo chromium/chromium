@@ -6339,6 +6339,8 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
+crbug.com/1453691 external/wpt/credential-management/fedcm-context.https.html [ Failure ]
+
 # WebAssembly ESM integration is not yet implemented.
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Crash Failure Pass Timeout ]
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Crash Failure Pass Timeout ]
