@@ -192,48 +192,44 @@ typedef uintptr_t IpczDriverHandle;
 
 #define IPCZ_INVALID_DRIVER_HANDLE ((IpczDriverHandle)0)
 
-// Flags given to the ipcz activity handler by a driver transport to notify ipcz
-// about incoming data or state changes.
+// Flags which may be passed by a driver to an IpczTransportActivityHandler when
+// notifying ipcz about transport activity.
 typedef uint32_t IpczTransportActivityFlags;
 
-// If set, the driver encountered an unrecoverable error using the transport and
-// ipcz should discard it. Note that the driver is free to issue such
-// notifications many times as long as it remains active, but ipcz will generally
-// request deactivation ASAP once an error is signaled.
+// Indicates that the driver encountered an unrecoverable error while using the
+// transport. This generally results in ipcz deactivating the transport via the
+// driver's DeactivateTransport().
 #define IPCZ_TRANSPORT_ACTIVITY_ERROR IPCZ_FLAG_BIT(0)
 
-// When ipcz wants to deactivate a transport, it invokes the driver's
-// DeactivateTransport() function. Once the driver has finished any clean up and
-// can ensure that the transport's activity handler will no longer be invoked,
-// it must then invoke the activity handler one final time with this flag set.
-// This finalizes deactivation and allows ipcz to free any associated resources.
+// Informs ipcz that the driver will no longer invoke the activity handler for
+// a given listener, as the driver is no longer listening for activity on the
+// corresponding transport.
 #define IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED IPCZ_FLAG_BIT(1)
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-// Notifies ipcz of activity on a transport. `transport` must be a handle to a
-// transport which is currently activated. The `transport` handle is acquired
-// exclusively by the driver transport via an ipcz call to the driver's
-// ActivateTransport(), which also provides the handle to the driver.
+// Notifies ipcz of activity on a transport. `listener` must be a handle to an
+// active transport's listener, as provided to the driver by ipcz via
+// ActivateTransport().
 //
-// The driver must use this function to feed incoming data and driver handles
-// from the transport to ipcz, or to inform ipcz of any error conditions
-// resulting in unexpected and irrecoverable dysfunction of the transport.
+// Drivers use this function to feed incoming data and driver handles from a
+// transport to ipcz, or to inform ipcz of any unrecoverable dysfunction of the
+// transport. In the latter case, drivers specify IPCZ_TRANSPORT_ACTIVITY_ERROR
+// in `flags` to instigate deactivation and disposal of the transport by ipcz.
 //
-// If the driver encounters an unrecoverable error while performing I/O on the
-// transport, it should invoke this with the IPCZ_TRANSPORT_ACTIVITY_ERROR flag
-// to instigate deactivation of the transport by ipcz via a subsequent
-// DeactivateTransport() call.
+// If IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED is set in `flags`, this must be the
+// last call made by the driver for the given `listener`. See also
+// DeactivateTransport() defined on IpczDriver below.
 //
 // `options` is currently unused and must be null.
 //
-// NOTE: It is the driver's responsibility to ensure that calls to this function
-// for the same value of `transport` are mutually exclusive. Overlapping calls
-// are unsafe and will result in undefined behavior.
+// IMPORTANT: Drivers must ensure that all calls to this handler for the same
+// `listener` are mutually exclusive. Overlapping calls are unsafe and will
+// result in undefined behavior.
 typedef IpczResult(IPCZ_API* IpczTransportActivityHandler)(
-    IpczHandle transport,                    // in
+    IpczHandle listener,                     // in
     const void* data,                        // in
     size_t num_bytes,                        // in
     const IpczDriverHandle* driver_handles,  // in
@@ -259,11 +255,6 @@ struct IPCZ_ALIGN(8) IpczSharedMemoryInfo {
 // I/O operations to facilitate communication between nodes, giving embedding
 // systems full control over choice of OS-specific transport mechanisms and I/O
 // scheduling decisions.
-//
-// The driver API is meant to be used by both the application embedding ipcz,
-// particularly for creating transports to make initial contact between nodes,
-// as well as by ipcz itself to delegate creation and management of new
-// transports which ipcz brokers between nodes.
 struct IPCZ_ALIGN(8) IpczDriver {
   // The exact size of this structure in bytes. Must be set accurately by the
   // application before passing this structure to any ipcz API functions.
@@ -284,12 +275,12 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // Serializes a driver object identified by `handle` into a collection of
   // bytes and readily transmissible driver objects, for eventual transmission
   // over `transport`. At a minimum this must support serialization of transport
-  // and memory objects allocated by ipcz through the driver. Any other driver
-  // objects intended for applications to box and transmit through portals must
-  // also be serializable here.
+  // and memory objects created by the same driver. Any other driver objects
+  // intended for applications to box and transmit through portals must also be
+  // serializable here.
   //
-  // If the specified object is invalid or unserializable, the driver must
-  // ignore all other arguments (including `transport`) and return
+  // If the object identified by `handle` is invalid or unserializable, the
+  // driver must ignore all other arguments (including `transport`) and return
   // IPCZ_RESULT_INVALID_ARGUMENT.
   //
   // If the object can be serialized but success may depend on the value of
@@ -307,27 +298,27 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // object through a more capable broker node.
   //
   // For all other outcomes, the object identified by `handle` is considered to
-  // be serializable and ultimately transmissible.
+  // be serializable.
   //
   // `num_bytes` and `num_handles` on input point to the capacities of the
-  // respective output buffers provided by ipcz. If either capacity pointer is
-  // null, a capacity of zero is implied; and if either input capacity is zero,
-  // the corresponding input buffer may be null.
+  // respective output buffers provided by `data` and `handles`. If either
+  // capacity pointer is null, a capacity of zero is implied; and if either
+  // input capacity is zero, the corresponding output buffer may be null.
   //
   // Except in the failure modes described above, the driver must update any
   // non-null capacity input to reflect the exact capacity required to serialize
   // the object. For example if `num_bytes` is non-null and the object
   // serializes to 8 bytes of data, `*num_bytes` must be set to 8 upon return.
   //
-  // If the required data or handle capacity is larger than the respective input
-  // capacity, the driver must return IPCZ_RESULT_RESUORCE_EXHAUSTED without
-  // modifying the contents of either `data` or `handles` buffers.
+  // If serializing the object requires more data or handle capacity than ipcz
+  // provided, the driver must return IPCZ_RESULT_RESUORCE_EXHAUSTED after
+  // updating the capacity values as described above. In this case the driver
+  // must not touch `data` or `handles`.
   //
   // Finally, if the input capacities were both sufficient, the driver must fill
   // `data` and `handles` with a serialized representation of the object and
   // return IPCZ_RESULT_OK. In this case ipcz relinquishes `handle` and will no
-  // longer refer to it unless the driver outputs it back in `handles`, implying
-  // that it was already transmissible as-is.
+  // longer refer to it.
   IpczResult(IPCZ_API* Serialize)(IpczDriverHandle handle,     // in
                                   IpczDriverHandle transport,  // in
                                   uint32_t flags,              // in
@@ -341,12 +332,12 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // =============
   //
   // Deserializes a driver object from a collection of bytes and transmissible
-  // driver objects which was originally produced by Serialize() and received on
-  // the calling node via `transport`.
+  // driver handles that was originally produced by Serialize() and received by
+  // activity on `transport`.
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error and implies
-  // that `handle` is unmodified. Otherwise `handle` must contain a valid driver
-  // handle to the deserialized object.
+  // that `handle` is unmodified. Otherwise `*handle` must be set to a valid
+  // driver handle which identifies the deserialized object upon return.
   IpczResult(IPCZ_API* Deserialize)(
       const volatile void* data,               // in
       size_t num_bytes,                        // in
@@ -372,6 +363,9 @@ struct IPCZ_ALIGN(8) IpczDriver {
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error and implies
   // that `new_transport0` and `new_transport1` are unmodified.
+  //
+  // Returned transports may be used immediately by ipcz for Transmit(), even
+  // if the transports are not yet activated.
   IpczResult(IPCZ_API* CreateTransports)(
       IpczDriverHandle transport0,        // in
       IpczDriverHandle transport1,        // in
@@ -383,34 +377,33 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // ActivateTransport()
   // ===================
   //
-  // Called by ipcz to activate a transport. `driver_transport` is the
-  // driver-side handle assigned to the transport by the driver, either as given
-  // to ipcz via ConnectNode(), or as returned by the driver from an ipcz call
-  // out to CreateTransports().
+  // Called by ipcz to activate a given `transport`, either as given to ipcz via
+  // ConnectNode(), or as returned by the driver from CreateTransports().
   //
-  // `transport` is a handle the driver can use when calling `activity_handler`
-  // to update ipcz regarding any incoming data or state changes from the
+  // `listener` is a handle the driver must use when calling `activity_handler`
+  // to notify ipcz about any incoming data or state changes on the identified
   // transport.
   //
   // Before this returns, the driver should establish any I/O monitoring or
-  // scheduling state necessary to support operation of the endpoint, and once
-  // it returns ipcz may immediately begin making Transmit() calls on
-  // `driver_transport`.
+  // scheduling state necessary to support operation of the endpoint.
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error, and the
-  // endpoint will be dropped by ipcz. Otherwise the endpoint may be used
-  // immediately to accept or submit data, and it should continue to operate
-  // until ipcz calls Close() on `driver_transport`.
+  // transport will be closed by ipcz. Otherwise the transport may immediately
+  // begin to invoke `activity_handler` and may continue to do so until
+  // deactivated via DeactivateTransport().
   //
-  // Note that `activity_handler` invocations MUST be mutually exclusive,
-  // because transmissions from ipcz are expected to arrive and be processed
-  // strictly in-order.
+  // Note that while `activity_handler` may be invoked by the driver from any
+  // thread, invocations MUST be mutually exclusive for a given `listener`.
+  // Overlapping invocations are unsafe and will result in undefined behavior.
   //
-  // The driver may elicit forced destruction of itself by calling
-  // `activity_handler` with the flag IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED.
+  // The driver may elicit forced deactivation and destruction of an active
+  // transport by calling `activity_handler` with the
+  // IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED flag. Otherwise ipcz will eventually
+  // deactivate `transport` when it's no longer in use by calling
+  // DeactivateTransport().
   IpczResult(IPCZ_API* ActivateTransport)(
-      IpczDriverHandle driver_transport,              // in
-      IpczHandle transport,                           // in
+      IpczDriverHandle transport,                     // in
+      IpczHandle listener,                            // in
       IpczTransportActivityHandler activity_handler,  // in
       uint32_t flags,                                 // in
       const void* options);                           // in
@@ -418,19 +411,20 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // DeactivateTransport()
   // =====================
   //
-  // Called by ipcz to deactivate a transport. The driver does not need to
-  // complete deactivation synchronously, but it must begin to deactivate the
-  // transport and must invoke the transport's activity handler one final time
-  // with IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED once finished. Beyond that point,
-  // the activity handler must no longer be invoked for that transport.
+  // Called by ipcz to deactivate a transport that is no longer needed.
   //
-  // Note that even after deactivation, ipcz may continue to call into the
-  // transport until it's closed with an explicit call to the driver's Close()
-  // by ipcz.
-  IpczResult(IPCZ_API* DeactivateTransport)(
-      IpczDriverHandle driver_transport,  // in
-      uint32_t flags,                     // in
-      const void* options);               // in
+  // The driver does not need to complete deactivation synchronously, but it
+  // must eventually (soon) cease operation of the transport and finalize the
+  // deactivation by invoking activity handler one final time with
+  // IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED. Failure to do this will result in
+  // resource leaks.
+  //
+  // Note that even after deactivation, ipcz may continue to call into
+  // `transport` for other operations (e.g. Serialize() or Transmit()) until
+  // it's closed by ipcz with an explicit call to the driver's Close().
+  IpczResult(IPCZ_API* DeactivateTransport)(IpczDriverHandle transport,  // in
+                                            uint32_t flags,              // in
+                                            const void* options);        // in
 
   // Transmit()
   // ==========
@@ -440,21 +434,19 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // it must return a result other than IPCZ_RESULT_OK, and this will cause the
   // transport's connection to be severed.
   //
-  // Note that any driver handles in `driver_handles` were obtained by ipcz from
-  // the driver itself, by some prior call to the driver's own Serialize()
+  // Note that all handles in `driver_handles` were obtained by ipcz from the
+  // driver itself, as returned by a prior call to the driver's own Serialize()
   // function. These handles are therefore expected to be directly transmissible
   // by the driver alongside any data in `data`.
   //
-  // The net result of this transmission should be an activity handler
-  // invocation on the corresponding remote transport by the driver on its node.
-  // It is the driver's responsibility to get any data and handles to the other
-  // transport, and to ensure that all transmissions from transport end up
-  // invoking the activity handler on the peer transport in the same order they
-  // were transmitted.
+  // The driver is responsible for ensuring that every Transmit() on a transport
+  // results in a corresponding activity handler invocation on the remote peer's
+  // transport, even if `num_bytes` and `num_driver_handles` are both zero.
   //
-  // If ipcz only wants to wake the peer node rather than transmit data or
-  // handles, `num_bytes` and `num_driver_handles` may both be zero.
-  IpczResult(IPCZ_API* Transmit)(IpczDriverHandle driver_transport,       // in
+  // IMPORTANT: For any sequence of Transmit() calls from the same thread, the
+  // corresponding activity handler invocations on the peer transport must
+  // occur in the same order.
+  IpczResult(IPCZ_API* Transmit)(IpczDriverHandle transport,              // in
                                  const void* data,                        // in
                                  size_t num_bytes,                        // in
                                  const IpczDriverHandle* driver_handles,  // in
@@ -468,7 +460,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // The ipcz Reject() API can be used by an application to reject a specific
   // parcel received from a portal. If the parcel in question came from a
   // remote node, ipcz invokes ReportBadTransportActivity() to notify the driver
-  // about the `transport` which delivered the rejected parcel.
+  // about the `transport` which received the rejected parcel.
   //
   // `context` is an opaque value passed by the application to the Reject() call
   // which elicited this invocation.
@@ -1006,9 +998,10 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // =============
   //
   // Connects `node` to another node in the system using an application-provided
-  // driver transport handle in `driver_transport` for communication. If this
-  // call will succeed, ipcz will call back into the driver to activate this
-  // transport via ActivateTransport() before returning.
+  // driver transport handle in `transport` for communication. If this call will
+  // succeed, ipcz will call back into the driver to activate the transport via
+  // ActivateTransport() before returning, and may call Transmit() before or
+  // after that as well.
   //
   // The application is responsible for delivering the other endpoint of the
   // transport to whatever other node will use it with its own corresponding
@@ -1069,12 +1062,12 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //    IPCZ_RESULT_OUT_OF_RANGE if `num_initial_portals` is larger than the
   //        ipcz implementation allows. There is no hard limit specified, but
   //        any ipcz implementation must support at least 8 initial portals.
-  IpczResult(IPCZ_API* ConnectNode)(IpczHandle node,                    // in
-                                    IpczDriverHandle driver_transport,  // in
-                                    size_t num_initial_portals,         // in
-                                    IpczConnectNodeFlags flags,         // in
-                                    const void* options,                // in
-                                    IpczHandle* initial_portals);       // out
+  IpczResult(IPCZ_API* ConnectNode)(IpczHandle node,               // in
+                                    IpczDriverHandle transport,    // in
+                                    size_t num_initial_portals,    // in
+                                    IpczConnectNodeFlags flags,    // in
+                                    const void* options,           // in
+                                    IpczHandle* initial_portals);  // out
 
   // OpenPortals()
   // =============

@@ -26,7 +26,7 @@ class Message;
 // on the transport, and ipcz calls into this object to submit outgoing messages
 // for transmission by the driver.
 class DriverTransport
-    : public APIObjectImpl<DriverTransport, APIObject::kTransport> {
+    : public APIObjectImpl<DriverTransport, APIObject::kTransportListener> {
  public:
   using Pair = std::pair<Ref<DriverTransport>, Ref<DriverTransport>>;
 

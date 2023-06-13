@@ -170,7 +170,7 @@ CreateTransports(IpczDriverHandle existing_transport_from_here_to_a,
 
 IpczResult IPCZ_API
 ActivateTransport(IpczDriverHandle transport_handle,
-                  IpczHandle ipcz_transport,
+                  IpczHandle listener,
                   IpczTransportActivityHandler activity_handler,
                   uint32_t flags,
                   const void* options) {
@@ -179,7 +179,7 @@ ActivateTransport(IpczDriverHandle transport_handle,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  transport->Activate(ipcz_transport, activity_handler);
+  transport->Activate(listener, activity_handler);
   return IPCZ_RESULT_OK;
 }
 

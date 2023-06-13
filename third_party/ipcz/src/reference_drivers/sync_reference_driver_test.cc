@@ -35,7 +35,7 @@ struct TransportHandlers {
 // This is used by tests to conveniently handle driver transport notifications
 // with lambdas.
 class TransportReceiver
-    : public APIObjectImpl<TransportReceiver, APIObject::kTransport> {
+    : public APIObjectImpl<TransportReceiver, APIObject::kTransportListener> {
  public:
   explicit TransportReceiver(TransportHandlers handlers)
       : handlers_(std::move(handlers)) {}

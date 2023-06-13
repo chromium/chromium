@@ -340,32 +340,31 @@ IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API ActivateTransport(IpczDriverHandle driver_transport,
-                                      IpczHandle transport,
+IpczResult IPCZ_API ActivateTransport(IpczDriverHandle transport,
+                                      IpczHandle listener,
                                       IpczTransportActivityHandler handler,
                                       uint32_t flags,
                                       const void* options) {
-  return InProcessTransport::FromHandle(driver_transport)
-      ->Activate(transport, handler);
+  return InProcessTransport::FromHandle(transport)->Activate(listener, handler);
 }
 
-IpczResult IPCZ_API DeactivateTransport(IpczDriverHandle driver_transport,
+IpczResult IPCZ_API DeactivateTransport(IpczDriverHandle transport,
                                         uint32_t flags,
                                         const void* options) {
-  InProcessTransport::FromHandle(driver_transport)->Deactivate();
+  InProcessTransport::FromHandle(transport)->Deactivate();
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API Transmit(IpczDriverHandle driver_transport,
+IpczResult IPCZ_API Transmit(IpczDriverHandle transport,
                              const void* data,
                              size_t num_bytes,
                              const IpczDriverHandle* handles,
                              size_t num_handles,
                              uint32_t flags,
                              const void* options) {
-  return InProcessTransport::FromHandle(driver_transport)
-      ->Transmit(absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
-                 absl::MakeSpan(handles, num_handles));
+  return InProcessTransport::FromHandle(transport)->Transmit(
+      absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
+      absl::MakeSpan(handles, num_handles));
 }
 
 }  // namespace

@@ -211,11 +211,11 @@ IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
 }
 
 IpczResult IPCZ_API ActivateTransport(IpczDriverHandle transport,
-                                      IpczHandle ipcz_transport,
+                                      IpczHandle listener,
                                       IpczTransportActivityHandler handler,
                                       uint32_t,
                                       const void*) {
-  AsyncTransport::FromHandle(transport)->Activate(ipcz_transport, handler);
+  AsyncTransport::FromHandle(transport)->Activate(listener, handler);
   return IPCZ_RESULT_OK;
 }
 

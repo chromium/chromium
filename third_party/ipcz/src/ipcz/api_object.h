@@ -23,7 +23,7 @@ class APIObject : public RefCounted {
     kNode,
     kPortal,
     kBox,
-    kTransport,
+    kTransportListener,
     kParcel,
   };
 
