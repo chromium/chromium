@@ -608,7 +608,9 @@ enum class PasswordViewPageInteractions {
   kPasskeyDisplayNameCopyButtonClicked = 12,
   // The delete button in a passkey view page is clicked.
   kPasskeyDeleteButtonClicked = 13,
-  kMaxValue = kPasskeyDeleteButtonClicked,
+  // The edit button in a passkey view page is clicked.
+  kPasskeyEditButtonClicked = 14,
+  kMaxValue = kPasskeyEditButtonClicked,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../shared_style.css.js';
 import './credential_details_card.css.js';
+import '../dialogs/edit_passkey_dialog.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -50,10 +51,12 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
         type: Object,
         value: PasswordViewPageInteractions,
       },
+      showEditPasskeyDialog_: Boolean,
     };
   }
 
   passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  private showEditPasskeyDialog_: boolean;
 
   private getPasskeyUsageInfoString_(): string {
     const website = this.passkey.affiliatedDomains?.[0]?.name;
@@ -83,6 +86,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
 
   private onDeleteClick_() {
     // TODO(crbug.com/1432717): show a modal dialog instead.
+    PasswordManagerImpl.getInstance().extendAuthValidity();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSKEY_DELETE_BUTTON_CLICKED);
     PasswordManagerImpl.getInstance().removeCredential(
@@ -90,7 +94,15 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   }
 
   private onEditClicked_() {
-    // TODO(crbug.com/1432717): fill this in.
+    this.showEditPasskeyDialog_ = true;
+    PasswordManagerImpl.getInstance().extendAuthValidity();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSKEY_EDIT_BUTTON_CLICKED);
+  }
+
+  private onEditPasskeyDialogClosed_() {
+    this.showEditPasskeyDialog_ = false;
+    PasswordManagerImpl.getInstance().extendAuthValidity();
   }
 }
 

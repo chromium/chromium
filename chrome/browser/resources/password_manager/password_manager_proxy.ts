@@ -66,8 +66,9 @@ export enum PasswordViewPageInteractions {
   CREDENTIAL_REQUESTED_BY_URL = 11,
   PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED = 12,
   PASSKEY_DELETE_BUTTON_CLICKED = 13,
+  PASSKEY_EDIT_BUTTON_CLICKED = 14,
   // Must be last.
-  COUNT = 14,
+  COUNT = 15,
 }
 
 /**

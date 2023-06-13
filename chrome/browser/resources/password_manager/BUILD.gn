@@ -41,6 +41,7 @@ build_webui("build") {
     "dialogs/add_password_dialog.ts",
     "dialogs/auth_timed_out_dialog.ts",
     "dialogs/delete_password_disclaimer_dialog.ts",
+    "dialogs/edit_passkey_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",
     "dialogs/multi_store_delete_password_dialog.ts",

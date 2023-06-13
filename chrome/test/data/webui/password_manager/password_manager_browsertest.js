@@ -31,6 +31,7 @@ const PasswordManagerBrowserTest = class extends PolymerTest {
  ['CheckupDetails', 'checkup_details_section_test.js'],
  ['CredentialField', 'credential_field_test.js'],
  ['CredentialNote', 'credential_note_test.js'],
+ ['EditPasskey', 'edit_passkey_dialog_test.js'],
  ['EditPassword', 'edit_password_dialog_test.js'],
  ['MovePasswordsDialog', 'move_passwords_dialog_test.js'],
  ['PasskeyCard', 'passkey_details_card_test.js'],

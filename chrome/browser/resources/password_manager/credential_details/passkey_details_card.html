@@ -50,10 +50,15 @@
   </div>
   <div class="button-container">
     <cr-button id="editButton" class="edit-button" on-click="onEditClicked_">
-      $i18n{editPassword}
+      $i18n{edit}
     </cr-button>
     <cr-button id="deleteButton" on-click="onDeleteClick_">
-      $i18n{deletePassword}
+      $i18n{delete}
     </cr-button>
   </div>
 </div>
+<template is="dom-if" if="[[showEditPasskeyDialog_]]" restamp>
+  <edit-passkey-dialog on-close="onEditPasskeyDialogClosed_"
+      id="editPasskeyDialog" passkey="{{passkey}}">
+  </edit-passkey-dialog>
+</template>
