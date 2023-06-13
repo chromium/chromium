@@ -313,24 +313,6 @@ class ScopedTextureBinder {
   GLenum target_;
 };
 
-// Temporarily changes a decoder's bound render buffer and restore it when this
-// object goes out of scope.
-class ScopedRenderBufferBinder {
- public:
-  explicit ScopedRenderBufferBinder(ContextState* state,
-                                    ErrorState* error_state,
-                                    GLuint id);
-
-  ScopedRenderBufferBinder(const ScopedRenderBufferBinder&) = delete;
-  ScopedRenderBufferBinder& operator=(const ScopedRenderBufferBinder&) = delete;
-
-  ~ScopedRenderBufferBinder();
-
- private:
-  raw_ptr<ContextState> state_;
-  raw_ptr<ErrorState> error_state_;
-};
-
 // Temporarily changes a decoder's bound frame buffer and restore it when this
 // object goes out of scope.
 class ScopedFramebufferBinder {
@@ -437,43 +419,6 @@ class BackTexture {
   scoped_refptr<TextureRef> texture_ref_;
 };
 
-// Encapsulates an OpenGL render buffer of any format.
-class BackRenderbuffer {
- public:
-  explicit BackRenderbuffer(GLES2DecoderImpl* decoder);
-
-  BackRenderbuffer(const BackRenderbuffer&) = delete;
-  BackRenderbuffer& operator=(const BackRenderbuffer&) = delete;
-
-  ~BackRenderbuffer();
-
-  // Create a new render buffer.
-  void Create();
-
-  // Set the initial size and format of a render buffer or resize it.
-  bool AllocateStorage(const gfx::Size& size, GLenum format);
-
-  // Destroy the render buffer. This must be explicitly called before destroying
-  // this object.
-  void Destroy();
-
-  // Invalidate the render buffer. This can be used when a context is lost and
-  // it is not possible to make it current in order to free the resource.
-  void Invalidate();
-
-  GLuint id() const {
-    return id_;
-  }
-
-  gl::GLApi* api() const;
-
- private:
-  raw_ptr<GLES2DecoderImpl> decoder_;
-  MemoryTypeTracker memory_tracker_;
-  size_t bytes_allocated_;
-  GLuint id_;
-};
-
 // Encapsulates an OpenGL frame buffer.
 class BackFramebuffer {
  public:
@@ -489,10 +434,6 @@ class BackFramebuffer {
 
   // Attach a color render buffer to a frame buffer.
   void AttachRenderTexture(BackTexture* texture);
-
-  // Attach a render buffer to a frame buffer. Note that this unbinds any
-  // currently bound frame buffer.
-  void AttachRenderBuffer(GLenum target, BackRenderbuffer* render_buffer);
 
   // Destroy the frame buffer. This must be explicitly called before destroying
   // this object.
@@ -815,7 +756,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   friend class ScopedResolvedFramebufferBinder;
   friend class ScopedFramebufferCopyBinder;
   friend class BackFramebuffer;
-  friend class BackRenderbuffer;
   friend class BackTexture;
 
   enum FramebufferOperation {
@@ -2562,23 +2502,15 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // The size of fiixed attrib buffer.
   GLsizei fixed_attrib_buffer_size_;
 
-  // The offscreen frame buffer that the client renders to. With EGL, the
-  // depth and stencil buffers are separate. With regular GL there is a single
-  // packed depth stencil buffer in offscreen_target_depth_render_buffer_.
-  // offscreen_target_stencil_render_buffer_ is unused.
+  // The offscreen frame buffer that the client renders to.
   std::unique_ptr<BackFramebuffer> offscreen_target_frame_buffer_;
   std::unique_ptr<BackTexture> offscreen_target_color_texture_;
-  std::unique_ptr<BackRenderbuffer> offscreen_target_depth_render_buffer_;
-  std::unique_ptr<BackRenderbuffer> offscreen_target_stencil_render_buffer_;
 
   std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // The format of the texture or renderbuffer backing the offscreen
   // framebuffer.
   GLenum offscreen_target_color_format_;
-
-  GLenum offscreen_target_depth_format_;
-  GLenum offscreen_target_stencil_format_;
 
   GLint max_offscreen_framebuffer_size_;
 
@@ -2797,21 +2729,6 @@ ScopedTextureBinder::~ScopedTextureBinder() {
   state_->RestoreActiveTexture();
 }
 
-ScopedRenderBufferBinder::ScopedRenderBufferBinder(ContextState* state,
-                                                   ErrorState* error_state,
-                                                   GLuint id)
-    : state_(state), error_state_(error_state) {
-  ScopedGLErrorSuppressor suppressor("ScopedRenderBufferBinder::ctor",
-                                     error_state_);
-  state->api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER, id);
-}
-
-ScopedRenderBufferBinder::~ScopedRenderBufferBinder() {
-  ScopedGLErrorSuppressor suppressor("ScopedRenderBufferBinder::dtor",
-                                     error_state_);
-  state_->RestoreRenderbufferBindings();
-}
-
 ScopedFramebufferBinder::ScopedFramebufferBinder(GLES2DecoderImpl* decoder,
                                                  GLuint id)
     : decoder_(decoder) {
@@ -3006,102 +2923,6 @@ GLenum BackTexture::Target() {
   return GL_TEXTURE_2D;
 }
 
-BackRenderbuffer::BackRenderbuffer(GLES2DecoderImpl* decoder)
-    : decoder_(decoder),
-      memory_tracker_(decoder->memory_tracker()),
-      bytes_allocated_(0),
-      id_(0) {}
-
-BackRenderbuffer::~BackRenderbuffer() {
-  // This does not destroy the render buffer because that would require that
-  // the associated GL context was current. Just check that it was explicitly
-  // destroyed.
-  DCHECK_EQ(id_, 0u);
-}
-
-inline gl::GLApi* BackRenderbuffer::api() const {
-  return decoder_->api();
-}
-
-void BackRenderbuffer::Create() {
-  ScopedGLErrorSuppressor suppressor("BackRenderbuffer::Create",
-                                     decoder_->error_state_.get());
-  Destroy();
-  api()->glGenRenderbuffersEXTFn(1, &id_);
-}
-
-bool BackRenderbuffer::AllocateStorage(const gfx::Size& size, GLenum format) {
-  ScopedGLErrorSuppressor suppressor("BackRenderbuffer::AllocateStorage",
-                                     decoder_->error_state_.get());
-  ScopedRenderBufferBinder binder(&decoder_->state_,
-                                  decoder_->error_state_.get(), id_);
-
-  uint32_t estimated_size = 0;
-  if (!decoder_->renderbuffer_manager()->ComputeEstimatedRenderbufferSize(
-          size.width(), size.height(), /*samples=*/0, format,
-          &estimated_size)) {
-    return false;
-  }
-
-  // TODO(kainino): This path will not perform RegenerateRenderbufferIfNeeded on
-  // devices where multisample_renderbuffer_resize_emulation or
-  // depth_stencil_renderbuffer_resize_emulation is needed.  Thus any code using
-  // this path (nacl/ppapi?) could encounter issues on those
-  // devices. RenderbufferStorageMultisampleWithWorkaround should be used
-  // instead, but can only be used if BackRenderbuffer tracks its renderbuffers
-  // in the renderbuffer manager instead of manually.  http://crbug.com/731287
-  decoder_->RenderbufferStorageMultisampleHelper(GL_RENDERBUFFER, /*samples=*/0,
-                                                 format, size.width(),
-                                                 size.height(), kDoNotForce);
-
-  bool alpha_channel_needs_clear =
-      (format == GL_RGBA || format == GL_RGBA8) &&
-      !decoder_->offscreen_buffer_should_have_alpha_;
-  if (alpha_channel_needs_clear) {
-    GLuint fbo;
-    api()->glGenFramebuffersEXTFn(1, &fbo);
-    {
-      ScopedFramebufferBinder frame_binder(decoder_, fbo);
-      api()->glFramebufferRenderbufferEXTFn(
-          GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, id_);
-      api()->glClearColorFn(0, 0, 0, decoder_->BackBufferAlphaClearColor());
-      decoder_->state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-      decoder_->state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
-      decoder_->ClearDeviceWindowRectangles();
-      api()->glClearFn(GL_COLOR_BUFFER_BIT);
-      decoder_->RestoreClearState();
-    }
-    api()->glDeleteFramebuffersEXTFn(1, &fbo);
-  }
-
-  bool success = api()->glGetErrorFn() == GL_NO_ERROR;
-  if (success) {
-    // Mark the previously allocated bytes as free.
-    memory_tracker_.TrackMemFree(bytes_allocated_);
-    bytes_allocated_ = estimated_size;
-    // Track the newly allocated bytes.
-    memory_tracker_.TrackMemAlloc(bytes_allocated_);
-  }
-  return success;
-}
-
-void BackRenderbuffer::Destroy() {
-  if (id_ != 0) {
-    ScopedGLErrorSuppressor suppressor("BackRenderbuffer::Destroy",
-                                       decoder_->error_state_.get());
-    api()->glDeleteRenderbuffersEXTFn(1, &id_);
-    id_ = 0;
-  }
-  memory_tracker_.TrackMemFree(bytes_allocated_);
-  bytes_allocated_ = 0;
-}
-
-void BackRenderbuffer::Invalidate() {
-  id_ = 0;
-  memory_tracker_.TrackMemFree(bytes_allocated_);
-  bytes_allocated_ = 0;
-}
-
 BackFramebuffer::BackFramebuffer(GLES2DecoderImpl* decoder)
     : decoder_(decoder),
       id_(0) {
@@ -3133,17 +2954,6 @@ void BackFramebuffer::AttachRenderTexture(BackTexture* texture) {
   GLuint attach_id = texture ? texture->id() : 0;
   api()->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                      texture->Target(), attach_id, 0);
-}
-
-void BackFramebuffer::AttachRenderBuffer(GLenum target,
-                                         BackRenderbuffer* render_buffer) {
-  DCHECK_NE(id_, 0u);
-  ScopedGLErrorSuppressor suppressor("BackFramebuffer::AttachRenderBuffer",
-                                     decoder_->error_state_.get());
-  ScopedFramebufferBinder binder(decoder_, id_);
-  GLuint attach_id = render_buffer ? render_buffer->id() : 0;
-  api()->glFramebufferRenderbufferEXTFn(GL_FRAMEBUFFER, target, GL_RENDERBUFFER,
-                                        attach_id);
 }
 
 void BackFramebuffer::Destroy() {
@@ -3206,8 +3016,6 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       fixed_attrib_buffer_id_(0),
       fixed_attrib_buffer_size_(0),
       offscreen_target_color_format_(0),
-      offscreen_target_depth_format_(0),
-      offscreen_target_stencil_format_(0),
       max_offscreen_framebuffer_size_(0),
       offscreen_buffer_should_have_alpha_(false),
       back_buffer_color_format_(0),
@@ -3464,40 +3272,10 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 #else
     offscreen_buffer_should_have_alpha_ = false;
 #endif
-    if (gl_version_info().is_es) {
-      offscreen_target_color_format_ =
-          offscreen_buffer_should_have_alpha_ ||
-                  workarounds().disable_gl_rgb_format
-              ? GL_RGBA
-              : GL_RGB;
-
-      // ANGLE only supports packed depth/stencil formats, so use it if it is
-      // available.
-      const bool depth24_stencil8_supported =
-          feature_info_->feature_flags().packed_depth24_stencil8;
-      VLOG(1) << "GL_OES_packed_depth_stencil "
-              << (depth24_stencil8_supported ? "" : "not ") << "supported.";
-
-      offscreen_target_depth_format_ = 0;
-      offscreen_target_stencil_format_ = 0;
-    } else {
-      offscreen_target_color_format_ =
-          offscreen_buffer_should_have_alpha_ ||
-                  workarounds().disable_gl_rgb_format
-              ? GL_RGBA
-              : GL_RGB;
-
-      // If depth is requested at all, use the packed depth stencil format if
-      // it's available, as some desktop GL drivers don't support any non-packed
-      // formats for depth attachments.
-      const bool depth24_stencil8_supported =
-          feature_info_->feature_flags().packed_depth24_stencil8;
-      VLOG(1) << "GL_EXT_packed_depth_stencil "
-              << (depth24_stencil8_supported ? "" : "not ") << "supported.";
-
-      offscreen_target_depth_format_ = 0;
-      offscreen_target_stencil_format_ = 0;
-    }
+    offscreen_target_color_format_ = offscreen_buffer_should_have_alpha_ ||
+                                             workarounds().disable_gl_rgb_format
+                                         ? GL_RGBA
+                                         : GL_RGB;
 
     max_offscreen_framebuffer_size_ =
         std::min(renderbuffer_manager()->max_renderbuffer_size(),
@@ -3621,12 +3399,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     offscreen_target_frame_buffer_->Create();
     offscreen_target_color_texture_ = std::make_unique<BackTexture>(this);
     offscreen_target_color_texture_->Create();
-    offscreen_target_depth_render_buffer_ =
-        std::make_unique<BackRenderbuffer>(this);
-    offscreen_target_depth_render_buffer_->Create();
-    offscreen_target_stencil_render_buffer_ =
-        std::make_unique<BackRenderbuffer>(this);
-    offscreen_target_stencil_render_buffer_->Create();
 
     // Allocate the render buffers at their initial size and check the status
     // of the frame buffers is okay.
@@ -4805,7 +4577,7 @@ GLenum GLES2DecoderImpl::GetBoundFramebufferDepthFormat(
       return external_default_framebuffer_->GetDepthFormat();
     }
     if (offscreen_target_frame_buffer_.get()) {
-      return offscreen_target_depth_format_;
+      return 0;
     }
     if (back_buffer_has_depth_)
       return GL_DEPTH;
@@ -4826,7 +4598,7 @@ GLenum GLES2DecoderImpl::GetBoundFramebufferStencilFormat(
       return external_default_framebuffer_->GetStencilFormat();
     }
     if (offscreen_target_frame_buffer_.get()) {
-      return offscreen_target_stencil_format_;
+      return 0;
     }
     if (back_buffer_has_stencil_)
       return GL_STENCIL;
@@ -4990,19 +4762,11 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
       offscreen_target_frame_buffer_->Destroy();
     if (offscreen_target_color_texture_.get())
       offscreen_target_color_texture_->Destroy();
-    if (offscreen_target_depth_render_buffer_.get())
-      offscreen_target_depth_render_buffer_->Destroy();
-    if (offscreen_target_stencil_render_buffer_.get())
-      offscreen_target_stencil_render_buffer_->Destroy();
   } else {
     if (offscreen_target_frame_buffer_.get())
       offscreen_target_frame_buffer_->Invalidate();
     if (offscreen_target_color_texture_.get())
       offscreen_target_color_texture_->Invalidate();
-    if (offscreen_target_depth_render_buffer_.get())
-      offscreen_target_depth_render_buffer_->Invalidate();
-    if (offscreen_target_stencil_render_buffer_.get())
-      offscreen_target_stencil_render_buffer_->Invalidate();
     for (auto& fence : deschedule_until_finished_fences_) {
       fence->Invalidate();
     }
@@ -5086,8 +4850,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
 
   offscreen_target_frame_buffer_.reset();
   offscreen_target_color_texture_.reset();
-  offscreen_target_depth_render_buffer_.reset();
-  offscreen_target_stencil_render_buffer_.reset();
 
   // Release all fences now, because some fence types need the context to be
   // current on destruction.
@@ -5231,40 +4993,10 @@ bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {
                << "to allocate storage for offscreen target color texture.";
     return false;
   }
-  if (offscreen_target_depth_format_ &&
-      !offscreen_target_depth_render_buffer_->AllocateStorage(
-          offscreen_size_, offscreen_target_depth_format_)) {
-    LOG(ERROR) << "GLES2DecoderImpl::ResizeOffscreenFramebuffer failed "
-               << "to allocate storage for offscreen target depth buffer.";
-    return false;
-  }
-  if (offscreen_target_stencil_format_ &&
-      !offscreen_target_stencil_render_buffer_->AllocateStorage(
-          offscreen_size_, offscreen_target_stencil_format_)) {
-    LOG(ERROR) << "GLES2DecoderImpl::ResizeOffscreenFramebuffer failed "
-               << "to allocate storage for offscreen target stencil buffer.";
-    return false;
-  }
 
   // Attach the offscreen target buffers to the target frame buffer.
   offscreen_target_frame_buffer_->AttachRenderTexture(
       offscreen_target_color_texture_.get());
-  if (offscreen_target_depth_format_) {
-    offscreen_target_frame_buffer_->AttachRenderBuffer(
-        GL_DEPTH_ATTACHMENT,
-        offscreen_target_depth_render_buffer_.get());
-  }
-  const bool packed_depth_stencil =
-      offscreen_target_depth_format_ == GL_DEPTH24_STENCIL8;
-  if (packed_depth_stencil) {
-    offscreen_target_frame_buffer_->AttachRenderBuffer(
-        GL_STENCIL_ATTACHMENT,
-        offscreen_target_depth_render_buffer_.get());
-  } else if (offscreen_target_stencil_format_) {
-    offscreen_target_frame_buffer_->AttachRenderBuffer(
-        GL_STENCIL_ATTACHMENT,
-        offscreen_target_stencil_render_buffer_.get());
-  }
 
   if (offscreen_target_frame_buffer_->CheckStatus() !=
       GL_FRAMEBUFFER_COMPLETE) {
@@ -5699,7 +5431,7 @@ bool GLES2DecoderImpl::BoundFramebufferHasDepthAttachment() {
     return external_default_framebuffer_->HasDepth();
   }
   if (offscreen_target_frame_buffer_.get()) {
-    return offscreen_target_depth_format_ != 0;
+    return false;
   }
   return back_buffer_has_depth_;
 }
@@ -5714,8 +5446,7 @@ bool GLES2DecoderImpl::BoundFramebufferHasStencilAttachment() {
     return external_default_framebuffer_->HasStencil();
   }
   if (offscreen_target_frame_buffer_.get()) {
-    return offscreen_target_stencil_format_ != 0 ||
-           offscreen_target_depth_format_ == GL_DEPTH24_STENCIL8;
+    return false;
   }
   return back_buffer_has_stencil_;
 }
