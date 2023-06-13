@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/ash/printing/test_cups_printers_manager.h"
-#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -214,11 +213,6 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
   ~TestLocalPrinterAshWithPrinterConfigurer() override = default;
 
  private:
-  std::unique_ptr<ash::PrinterConfigurer> CreatePrinterConfigurer(
-      Profile* profile) override {
-    return std::make_unique<ash::TestPrinterConfigurer>(manager_);
-  }
-
   const raw_ptr<ash::TestCupsPrintersManager, ExperimentalAsh> manager_;
 };
 

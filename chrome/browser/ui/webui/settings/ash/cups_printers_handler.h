@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
-#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -56,7 +55,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   static std::unique_ptr<CupsPrintersHandler> CreateForTesting(
       Profile* profile,
       scoped_refptr<chromeos::PpdProvider> ppd_provider,
-      std::unique_ptr<PrinterConfigurer> printer_configurer,
       CupsPrintersManager* printers_manager);
 
   CupsPrintersHandler(Profile* profile, CupsPrintersManager* printers_manager);
@@ -76,7 +74,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
  private:
   CupsPrintersHandler(Profile* profile,
                       scoped_refptr<chromeos::PpdProvider> ppd_provider,
-                      std::unique_ptr<PrinterConfigurer> printer_configurer,
                       CupsPrintersManager* printers_manager);
 
   // Gets all CUPS printers and return it to WebUI.
@@ -285,7 +282,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   //
   // TODO(crbug/757887) - Remove this subtle initialization constraint.
   scoped_refptr<chromeos::PpdProvider> ppd_provider_;
-  std::unique_ptr<PrinterConfigurer> printer_configurer_;
 
   // Cached list of {printer name, PpdReference} pairs for each manufacturer
   // that has been resolved in the lifetime of this object.

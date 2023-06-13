@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
@@ -31,7 +32,6 @@ class PrefRegistrySyncable;
 namespace ash {
 
 class EnterprisePrintersProvider;
-class PrinterConfigurer;
 class PrinterDetector;
 class PrinterEventTracker;
 class SyncedPrintersManager;
@@ -73,7 +73,6 @@ class CupsPrintersManager : public PrinterInstallationManager,
       std::unique_ptr<PrinterDetector> usb_printer_detector,
       std::unique_ptr<PrinterDetector> zeroconf_printer_detector,
       scoped_refptr<chromeos::PpdProvider> ppd_provider,
-      std::unique_ptr<PrinterConfigurer> printer_configurer,
       std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,
@@ -113,6 +112,9 @@ class CupsPrintersManager : public PrinterInstallationManager,
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override = 0;
   void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override =
       0;
+  void SetUpPrinter(const chromeos::Printer& printer,
+                    PrinterSetupCallback callback) override = 0;
+  void UninstallPrinter(const std::string& printer_id) override = 0;
 
   // Look for a printer with the given id in any class.  Returns a copy of the
   // printer if found, absl::nullopt if not found.

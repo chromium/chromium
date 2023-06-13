@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,7 +19,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/printing_stubs.h"
-#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
@@ -70,8 +70,11 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
   absl::optional<Printer> GetPrinter(const std::string& id) const override {
     return printer_;
   }
+  void RemoveSavedPrinter(const std::string& id) override {
+    UninstallPrinter(id);
+  }
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override {
-    return printer_installed_;
+    return printers_installed_.count(printer.id());
   }
 
   std::vector<chromeos::Printer> GetPrinters(
@@ -79,13 +82,22 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
     return {Printer(), Printer()};
   }
 
+  void SetUpPrinter(const chromeos::Printer& printer,
+                    PrinterSetupCallback callback) override {
+    printers_installed_.insert(printer.id());
+    std::move(callback).Run(PrinterSetupResult::kSuccess);
+  }
+
+  void UninstallPrinter(const std::string& printer_id) override {
+    printers_installed_.erase(printer_id);
+  }
+
   // Used to configured our test manager for specific tests.
   void SetPrinter(absl::optional<Printer> printer) { printer_ = printer; }
-  void SetPrinterInstalled(bool installed) { printer_installed_ = installed; }
 
  private:
   absl::optional<Printer> printer_ = Printer();
-  bool printer_installed_ = true;
+  base::flat_set<std::string> printers_installed_;
 };
 
 class FakePpdProvider : public chromeos::PpdProvider {
@@ -229,7 +241,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   void SetUp() override {
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
         profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
-        std::make_unique<TestPrinterConfigurer>(), &printers_manager_);
+        &printers_manager_);
     printers_handler_->SetWebUIForTest(&web_ui_);
     printers_handler_->RegisterMessages();
     printers_handler_->AllowJavascriptForTesting();
@@ -317,29 +329,21 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   ConciergeClient::InitializeFake(
       /*fake_cicerone_client=*/nullptr);
 
-  DebugDaemonClient* client = DebugDaemonClient::Get();
-  client->CupsAddAutoConfiguredPrinter("testprinter1", "fakeuri",
-                                       base::BindOnce(&AddedPrinter));
+  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
+  ASSERT_TRUE(printer);
+
+  printers_manager_.SetUpPrinter(*printer, base::DoNothing());
 
   const std::string remove_list = R"(
-    ["testprinter1", "Test Printer 1"]
+    [")" + printer->id() + R"(", "Test Printer 1"]
   )";
   std::string error;
   base::Value remove_printers = base::test::ParseJson(remove_list);
   ASSERT_TRUE(remove_printers.is_list());
 
+  EXPECT_TRUE(printers_manager_.IsPrinterInstalled(*printer));
   web_ui_.HandleReceivedMessage("removeCupsPrinter", remove_printers.GetList());
-
-  // We expect this printer removal to fail since the printer should have
-  // already been removed by the previous call to 'removeCupsPrinter'.
-  base::RunLoop run_loop;
-  bool expected = true;
-  client->CupsRemovePrinter(
-      "testprinter1",
-      base::BindOnce(&RemovedPrinter, run_loop.QuitClosure(), &expected),
-      base::DoNothing());
-  run_loop.Run();
-  EXPECT_FALSE(expected);
+  EXPECT_FALSE(printers_manager_.IsPrinterInstalled(*printer));
 
   profile_.reset();
   ConciergeClient::Shutdown();
@@ -477,9 +481,6 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
   print_backend_->AddValidPrinter(
       printer->id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
-
-  // This will cause our printer to get set up.
-  printers_manager_.SetPrinterInstalled(false);
 
   EXPECT_CALL(*new_window_delegate_primary_,
               OpenUrl(testing::Property(&GURL::ExtractFileName,

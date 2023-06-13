@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
-#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,12 +38,6 @@ class StubCupsPrintersManager : public CupsPrintersManager {
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {}
   void RecordNearbyNetworkPrinterCounts() const override {}
-};
-
-class StubPrinterConfigurer : public PrinterConfigurer {
- public:
-  void SetUpPrinter(const chromeos::Printer& printer,
-                    PrinterSetupCallback callback) override {}
 };
 
 }  // namespace ash

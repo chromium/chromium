@@ -101,12 +101,7 @@ void CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread(
     cups_proxy::SetupPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Lazily grab the configurer while on the UI thread.
-  if (!printer_configurer_) {
-    printer_configurer_ = PrinterConfigurer::Create(profile_);
-  }
-
-  printer_configurer_->SetUpPrinter(
+  printers_manager_->SetUpPrinter(
       printer, base::BindOnce(&CupsProxyServiceDelegateImpl::OnSetupPrinter,
                               weak_factory_.GetWeakPtr(), std::move(cb)));
 }

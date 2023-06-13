@@ -4551,8 +4551,6 @@ static_library("test_support") {
     "printing/test_cups_print_job_manager.h",
     "printing/test_cups_printers_manager.cc",
     "printing/test_cups_printers_manager.h",
-    "printing/test_printer_configurer.cc",
-    "printing/test_printer_configurer.h",
     "scanning/fake_lorgnette_scanner_manager.cc",
     "scanning/fake_lorgnette_scanner_manager.h",
     "secure_channel/fake_nearby_connection_broker.cc",

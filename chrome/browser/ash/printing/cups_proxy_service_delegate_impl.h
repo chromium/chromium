@@ -71,10 +71,6 @@ class CupsProxyServiceDelegateImpl
   // Handle to a CupsPrintersManager associated with profile_. Not owned.
   CupsPrintersManager* const printers_manager_;
 
-  // Handle to the PrinterConfigurer associated with profile_.
-  // Must be created/accessed on the UI thread.
-  std::unique_ptr<PrinterConfigurer> printer_configurer_;
-
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CupsProxyServiceDelegateImpl> weak_factory_{this};
 };

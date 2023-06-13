@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 
 namespace ash {
@@ -27,11 +28,9 @@ bool IsPrinterIdInList(const std::string& printer_id,
 }  // namespace
 
 AutomaticUsbPrinterConfigurer::AutomaticUsbPrinterConfigurer(
-    std::unique_ptr<PrinterConfigurer> printer_configurer,
     PrinterInstallationManager* installation_manager,
     UsbPrinterNotificationController* notification_controller)
-    : printer_configurer_(std::move(printer_configurer)),
-      installation_manager_(installation_manager),
+    : installation_manager_(installation_manager),
       notification_controller_(notification_controller) {
   DCHECK(installation_manager);
 }
@@ -81,7 +80,7 @@ void AutomaticUsbPrinterConfigurer::SetupPrinter(
     CompleteConfiguration(printer);
   }
 
-  printer_configurer_->SetUpPrinter(
+  installation_manager_->SetUpPrinter(
       printer, base::BindOnce(&AutomaticUsbPrinterConfigurer::OnSetupComplete,
                               weak_factory_.GetWeakPtr(), printer));
 }
@@ -132,6 +131,7 @@ void AutomaticUsbPrinterConfigurer::PruneRemovedPrinters(
   for (auto it = printers.begin(); it != printers.end();) {
     if (!IsPrinterIdInList(*it, current_printers)) {
       notification_controller_->RemoveNotification(*it);
+      installation_manager_->UninstallPrinter(*it);
       it = printers.erase(it);
     } else {
       ++it;

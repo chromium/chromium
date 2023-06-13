@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printing_constants.h"
 #include "chromeos/printing/uri.h"
@@ -79,6 +80,17 @@ using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
 using ::printing::PrinterQueryResult;
 
+void OnRemovedPrinter(const Printer::PrinterProtocol& protocol, bool success) {
+  if (success) {
+    PRINTER_LOG(DEBUG) << "Printer removal succeeded.";
+  } else {
+    PRINTER_LOG(DEBUG) << "Printer removal failed.";
+  }
+
+  base::UmaHistogramEnumeration("Printing.CUPS.PrinterRemoved", protocol,
+                                Printer::PrinterProtocol::kProtocolMax);
+}
+
 class CupsPrintersManagerImpl
     : public CupsPrintersManager,
       public EnterprisePrintersProvider::Observer,
@@ -95,7 +107,6 @@ class CupsPrintersManagerImpl
       std::unique_ptr<PrinterDetector> usb_detector,
       std::unique_ptr<PrinterDetector> zeroconf_detector,
       scoped_refptr<PpdProvider> ppd_provider,
-      std::unique_ptr<PrinterConfigurer> printer_configurer,
       std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,
@@ -107,9 +118,7 @@ class CupsPrintersManagerImpl
         zeroconf_detector_(std::move(zeroconf_detector)),
         ppd_provider_(std::move(ppd_provider)),
         usb_notification_controller_(std::move(usb_notification_controller)),
-        auto_usb_printer_configurer_(std::move(printer_configurer),
-                                     this,
-                                     usb_notification_controller_.get()),
+        auto_usb_printer_configurer_(this, usb_notification_controller_.get()),
         print_servers_manager_(std::move(print_servers_manager)),
         enterprise_printers_provider_(std::move(enterprise_printers_provider)),
         event_tracker_(event_tracker) {
@@ -193,7 +202,7 @@ class CupsPrintersManagerImpl
   // Public API function.
   void RemoveSavedPrinter(const std::string& printer_id) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    installed_printer_fingerprints_.erase(printer_id);
+    UninstallPrinter(printer_id);
     auto existing = synced_printers_manager_->GetPrinter(printer_id);
     if (existing) {
       event_tracker_->RecordPrinterRemoved(*existing);
@@ -227,7 +236,6 @@ class CupsPrintersManagerImpl
       return;
     }
     MaybeRecordInstallation(printer, is_automatic);
-    MarkPrinterInstalledWithCups(printer);
   }
 
   // Public API function.
@@ -330,6 +338,61 @@ class CupsPrintersManagerImpl
   void OnServerPrintersChanged(
       const std::vector<PrinterDetector::DetectedPrinter>& printers) override {
     OnPrintersFound(kPrintServerDetector, printers);
+  }
+
+  void SetUpPrinter(const chromeos::Printer& printer,
+                    PrinterSetupCallback callback) override {
+    // Check if the printer is currently set up.
+    if (IsPrinterInstalled(printer)) {
+      std::move(callback).Run(PrinterSetupResult::kSuccess);
+      return;
+    }
+
+    const std::string id = printer.id();
+    const std::string fingerprint =
+        PrinterConfigurer::SetupFingerprint(printer);
+
+    // Add `callback` to an existing record or creates a new record with
+    // an empty fingerprint and a single callback.
+    printers_being_setup_[id].callbacks.push_back(std::move(callback));
+
+    // If the record was just created or the fingerprint does not match the
+    // previous one, we have to initialize/overwrite the rest of the fields and
+    // start/restart the setup process.
+    if (printers_being_setup_[id].fingerprint != fingerprint) {
+      printers_being_setup_[id].configurer =
+          PrinterConfigurer::Create(ppd_provider_);
+      printers_being_setup_[id].fingerprint = fingerprint;
+      printers_being_setup_[id].configurer->SetUpPrinterInCups(
+          printer,
+          base::BindOnce(&CupsPrintersManagerImpl::OnPrinterSetupResult,
+                         weak_ptr_factory_.GetWeakPtr(), id));
+    }
+  }
+
+  void UninstallPrinter(const std::string& printer_id) override {
+    // Uninstall printer if installed completely.
+    if (installed_printer_fingerprints_.erase(printer_id)) {
+      // The printer was present in `installed_printer_fingerprints_`.
+      absl::optional<chromeos::Printer> printer = GetPrinter(printer_id);
+      if (printer) {
+        const Printer::PrinterProtocol protocol = printer->GetProtocol();
+        DebugDaemonClient::Get()->CupsRemovePrinter(
+            printer_id, base::BindOnce(&OnRemovedPrinter, protocol),
+            base::DoNothing());
+      }
+      return;
+    }
+
+    // If the printer is being installed now, stop the process.
+    std::vector<PrinterSetupCallback> callbacks;
+    if (printers_being_setup_.contains(printer_id)) {
+      callbacks = std::move(printers_being_setup_[printer_id].callbacks);
+      printers_being_setup_.erase(printer_id);
+    }
+    for (auto& callback : callbacks) {
+      std::move(callback).Run(PrinterSetupResult::kPrinterRemoved);
+    }
   }
 
   void FetchPrinterStatus(const std::string& printer_id,
@@ -719,11 +782,26 @@ class CupsPrintersManagerImpl
     RebuildDetectedLists();
   }
 
-  // Records that |printer| has been installed in CUPS.
-  void MarkPrinterInstalledWithCups(const Printer& printer) {
+  // Callback for `SetUpPrinterInCups`.
+  void OnPrinterSetupResult(const std::string& printer_id,
+                            PrinterSetupResult result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    installed_printer_fingerprints_[printer.id()] =
-        PrinterConfigurer::SetupFingerprint(printer);
+
+    std::map<std::string, PrinterSetupTracker>::iterator it =
+        printers_being_setup_.find(printer_id);
+    DCHECK(it != printers_being_setup_.end());
+
+    if (result == PrinterSetupResult::kSuccess) {
+      installed_printer_fingerprints_[printer_id] = it->second.fingerprint;
+    }
+
+    std::vector<PrinterSetupCallback> callbacks =
+        std::move(it->second.callbacks);
+    printers_being_setup_.erase(it);
+
+    for (auto& callback : callbacks) {
+      std::move(callback).Run(result);
+    }
   }
 
   // Resets all network detected printer lists.
@@ -791,6 +869,14 @@ class CupsPrintersManagerImpl
   // the printers was last installed with CUPS.
   std::map<std::string, std::string> installed_printer_fingerprints_;
 
+  // List of printers being currently setup in CUPS.
+  struct PrinterSetupTracker {
+    std::unique_ptr<PrinterConfigurer> configurer;
+    std::string fingerprint;
+    std::vector<PrinterSetupCallback> callbacks;
+  };
+  std::map<std::string, PrinterSetupTracker> printers_being_setup_;
+
   base::ObserverList<CupsPrintersManager::Observer>::Unchecked observer_list_;
 
   // Holds the current value of the pref |UserPrintersAllowed|.
@@ -808,7 +894,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
       SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
           profile),
       UsbPrinterDetector::Create(), ZeroconfPrinterDetector::Create(),
-      CreatePpdProvider(profile), PrinterConfigurer::Create(profile),
+      CreatePpdProvider(profile),
       UsbPrinterNotificationController::Create(profile),
       PrintServersManager::Create(profile),
       EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),
@@ -822,7 +908,6 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
     std::unique_ptr<PrinterDetector> usb_detector,
     std::unique_ptr<PrinterDetector> zeroconf_detector,
     scoped_refptr<PpdProvider> ppd_provider,
-    std::unique_ptr<PrinterConfigurer> printer_configurer,
     std::unique_ptr<UsbPrinterNotificationController>
         usb_notification_controller,
     std::unique_ptr<PrintServersManager> print_servers_manager,
@@ -832,9 +917,8 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
   return std::make_unique<CupsPrintersManagerImpl>(
       synced_printers_manager, std::move(usb_detector),
       std::move(zeroconf_detector), std::move(ppd_provider),
-      std::move(printer_configurer), std::move(usb_notification_controller),
-      std::move(print_servers_manager), std::move(enterprise_printers_provider),
-      event_tracker, pref_service);
+      std::move(usb_notification_controller), std::move(print_servers_manager),
+      std::move(enterprise_printers_provider), event_tracker, pref_service);
 }
 
 // static

@@ -17,7 +17,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -27,11 +29,11 @@
 #include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/server_printers_provider.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
-#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -275,9 +277,12 @@ class FakePpdProvider : public PpdProvider {
     usb_manufacturer_ = manufacturer;
   }
 
-  // These methods are not used by CupsPrintersManager.
   void ResolvePpd(const Printer::PpdReference& reference,
-                  ResolvePpdCallback cb) override {}
+                  ResolvePpdCallback cb) override {
+    std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, "ppd content");
+  }
+
+  // These methods are not used by CupsPrintersManager.
   void ResolveManufacturers(ResolveManufacturersCallback cb) override {}
   void ResolvePrinters(const std::string& manufacturer,
                        ResolvePrintersCallback cb) override {}
@@ -312,7 +317,7 @@ class FakeUsbPrinterNotificationController
   ~FakeUsbPrinterNotificationController() override = default;
 
   void ShowEphemeralNotification(const Printer& printer) override {
-    NOTIMPLEMENTED();
+    // Do nothing.
   }
   void ShowConfigurationNotification(const Printer& printer) override {
     configuration_notifications_.insert(printer.id());
@@ -374,8 +379,6 @@ class CupsPrintersManagerTest : public testing::Test,
     zeroconf_detector_ = zeroconf_detector.get();
     auto usb_detector = std::make_unique<FakePrinterDetector>();
     usb_detector_ = usb_detector.get();
-    auto printer_configurer = std::make_unique<TestPrinterConfigurer>();
-    printer_configurer_ = printer_configurer.get();
     auto usb_notif_controller =
         std::make_unique<FakeUsbPrinterNotificationController>();
     usb_notif_controller_ = usb_notif_controller.get();
@@ -391,8 +394,7 @@ class CupsPrintersManagerTest : public testing::Test,
     manager_ = CupsPrintersManager::CreateForTesting(
         &synced_printers_manager_, std::move(usb_detector),
         std::move(zeroconf_detector), ppd_provider_,
-        std::move(printer_configurer), std::move(usb_notif_controller),
-        std::move(print_servers_manager),
+        std::move(usb_notif_controller), std::move(print_servers_manager),
         std::move(enterprise_printers_provider), &event_tracker_,
         &pref_service_);
     manager_->AddObserver(this);
@@ -403,6 +405,10 @@ class CupsPrintersManagerTest : public testing::Test,
     // run and not leak memory in unused callbacks.
     task_environment_.FastForwardUntilNoTasksRemain();
   }
+
+  void SetUp() override { DebugDaemonClient::InitializeFake(); }
+
+  void TearDown() override { DebugDaemonClient::Shutdown(); }
 
   // CupsPrintersManager::Observer implementation
   void OnPrintersChanged(PrinterClass printer_class,
@@ -455,8 +461,6 @@ class CupsPrintersManagerTest : public testing::Test,
   raw_ptr<FakePrinterDetector, ExperimentalAsh> usb_detector_;  // Not owned.
   raw_ptr<FakePrinterDetector, ExperimentalAsh>
       zeroconf_detector_;  // Not owned.
-  raw_ptr<TestPrinterConfigurer, ExperimentalAsh>
-      printer_configurer_;  // Not owned.
   raw_ptr<FakeUsbPrinterNotificationController, ExperimentalAsh>
       usb_notif_controller_;  // Not owned.
   raw_ptr<FakePrintServersManager, ExperimentalAsh>
@@ -509,6 +513,11 @@ PrinterDetector::DetectedPrinter MakeAutomaticPrinter(const std::string& id) {
   ret.printer.set_id(id);
   ret.ppd_search_data.make_and_model.push_back("make and model string");
   return ret;
+}
+
+PrinterSetupCallback CallQuitOnRunLoop(base::RunLoop* run_loop) {
+  return base::BindLambdaForTesting(
+      [run_loop](PrinterSetupResult result) { run_loop->Quit(); });
 }
 
 // Test that Enterprise printers from SyncedPrinterManager are
@@ -791,7 +800,10 @@ TEST_F(CupsPrintersManagerTest, PrinterNotInstalled) {
 
 TEST_F(CupsPrintersManagerTest, PrinterIsInstalled) {
   Printer printer(kPrinterId);
-  manager_->PrinterInstalled(printer, /*is_automatic=*/false);
+  printer.SetUri("ipp://manual.uri");
+  base::RunLoop run_loop;
+  manager_->SetUpPrinter(printer, CallQuitOnRunLoop(&run_loop));
+  run_loop.Run();
   EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
 }
 
@@ -799,7 +811,10 @@ TEST_F(CupsPrintersManagerTest, PrinterIsInstalled) {
 // relevant fields change.
 TEST_F(CupsPrintersManagerTest, UpdatedPrinterConfiguration) {
   Printer printer(kPrinterId);
-  manager_->PrinterInstalled(printer, /*is_automatic=*/false);
+  printer.SetUri("ipp://manual.uri");
+  base::RunLoop run_loop;
+  manager_->SetUpPrinter(printer, CallQuitOnRunLoop(&run_loop));
+  run_loop.Run();
 
   Printer updated(printer);
   updated.SetUri("ipp://different.value");
@@ -850,7 +865,11 @@ TEST_F(CupsPrintersManagerTest, PrinterInstalledDoesNotSavePrinter) {
 // the saved printer but does not install the updated printer.
 TEST_F(CupsPrintersManagerTest, SavePrinterUpdatesPreviouslyInstalledPrinter) {
   Printer printer(kPrinterId);
-  manager_->PrinterInstalled(printer, /*is_automatic=*/false);
+  printer.SetUri("http://ble");
+  base::RunLoop run_loop;
+  manager_->SetUpPrinter(printer, CallQuitOnRunLoop(&run_loop));
+  run_loop.Run();
+
   manager_->SavePrinter(printer);
   EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
 
@@ -877,7 +896,10 @@ TEST_F(CupsPrintersManagerTest, AutomaticUsbPrinterIsInstalledAutomatically) {
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(printer_configurer_->IsConfigured(kPrinterId));
+  absl::optional<chromeos::Printer> printer =
+      manager_->GetPrinter(automatic_printer.printer.id());
+  ASSERT_TRUE(printer);
+  EXPECT_TRUE(manager_->IsPrinterInstalled(*printer));
 }
 
 // Automatic USB Printer is *not* configured if |UserPrintersAllowed|
@@ -910,8 +932,8 @@ TEST_F(CupsPrintersManagerTest, OtherNearbyPrintersNotInstalledAutomatically) {
 
   ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
   ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
-  EXPECT_FALSE(printer_configurer_->IsConfigured("Discovered"));
-  EXPECT_FALSE(printer_configurer_->IsConfigured("Automatic"));
+  EXPECT_FALSE(manager_->IsPrinterInstalled(discovered_printer.printer));
+  EXPECT_FALSE(manager_->IsPrinterInstalled(automatic_printer.printer));
 }
 
 TEST_F(CupsPrintersManagerTest, DetectedUsbPrinterConfigurationNotification) {

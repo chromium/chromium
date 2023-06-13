@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/printing_stubs.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -36,11 +37,24 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
   void InstallPrinter(const std::string& id);
   void SetPrinterStatus(const chromeos::CupsPrinterStatus& status);
 
+  void SetUpPrinter(const chromeos::Printer& printer,
+                    PrinterSetupCallback callback) override;
+  void UninstallPrinter(const std::string& printer_id) override;
+  // Returns true if the printer with given |printer_id| was set up or
+  // explicitly marked as configured before.
+  bool IsConfigured(const std::string& printer_id) const;
+  void MarkConfigured(const std::string& printer_id);
+  void SetPrinterSetupResult(const std::string& printer_id,
+                             PrinterSetupResult result);
+
  private:
   // Map printer id to CupsPrinterStatus object.
   base::flat_map<std::string, chromeos::CupsPrinterStatus> printer_status_map_;
   PrintersMap printers_;
   base::flat_set<std::string> installed_;
+
+  base::flat_set<std::string> configured_printers_;
+  base::flat_map<std::string, PrinterSetupResult> assigned_results_;
 };
 
 }  // namespace ash
