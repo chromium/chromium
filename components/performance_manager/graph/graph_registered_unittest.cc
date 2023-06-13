@@ -121,6 +121,7 @@ TEST_F(GraphAndPerformanceManagerRegisteredTest, GraphAndPMRegistered) {
   // Create a stand-alone graph that is bound to this sequence so we can test
   // both the PM and a graph on the same sequence.
   std::unique_ptr<GraphImpl> graph(new GraphImpl());
+  graph->SetUp();
 
   PerformanceManagerRegistryImpl* registry =
       PerformanceManagerRegistryImpl::GetInstance();

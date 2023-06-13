@@ -122,6 +122,7 @@ using testing::Invoke;
 
 TEST_F(GraphImplTest, ObserverWorks) {
   std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
+  graph->SetUp();
   Graph* raw_graph = graph.get();
 
   MockObserver obs;
@@ -171,6 +172,7 @@ TEST_F(GraphImplTest, GraphOwned) {
 
   // Pass both objects to the graph.
   std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
+  graph->SetUp();
   EXPECT_EQ(0u, graph->GraphOwnedCountForTesting());
   EXPECT_FALSE(raw1->passed_to_called());
   graph->PassToGraph(std::move(foo1));

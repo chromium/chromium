@@ -149,6 +149,7 @@ GraphImpl::GraphImpl() {
 
 GraphImpl::~GraphImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(lifecycle_state_, LifecycleState::kTearDownCalled);
 
   // All graph registered and owned objects should have been cleaned up.
   DCHECK(graph_owned_.empty());
@@ -172,6 +173,9 @@ GraphImpl::~GraphImpl() {
 void GraphImpl::SetUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateSystemNode();
+
+  CHECK_EQ(lifecycle_state_, LifecycleState::kBeforeSetUp);
+  lifecycle_state_ = LifecycleState::kSetUpCalled;
 }
 
 void GraphImpl::TearDown() {
@@ -196,6 +200,9 @@ void GraphImpl::TearDown() {
   ReleaseSystemNode();
 
   DCHECK(nodes_.empty());
+
+  CHECK_EQ(lifecycle_state_, LifecycleState::kSetUpCalled);
+  lifecycle_state_ = LifecycleState::kTearDownCalled;
 }
 
 void GraphImpl::AddGraphObserver(GraphObserver* observer) {
@@ -640,7 +647,7 @@ std::vector<ReturnNodeType> GraphImpl::GetAllNodesOfType() const {
 }
 
 void GraphImpl::CreateSystemNode() {
-  DCHECK(!system_node_);
+  CHECK(!system_node_);
   // Create the singleton system node instance. Ownership is taken by the
   // graph.
   system_node_ = std::make_unique<SystemNodeImpl>();
@@ -648,8 +655,7 @@ void GraphImpl::CreateSystemNode() {
 }
 
 void GraphImpl::ReleaseSystemNode() {
-  if (!system_node_.get())
-    return;
+  CHECK(system_node_);
   RemoveNode(system_node_.get());
   system_node_.reset();
 }

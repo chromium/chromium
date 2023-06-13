@@ -138,6 +138,7 @@ class TestChangeStream : public discards::mojom::GraphChangeStream {
 
 class DiscardsGraphDumpImplTest : public testing::Test {
  public:
+  void SetUp() override { graph_.SetUp(); }
   void TearDown() override { graph_.TearDown(); }
 
  protected:

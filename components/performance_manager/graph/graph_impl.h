@@ -211,6 +211,16 @@ class GraphImpl : public Graph {
   void CreateSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ReleaseSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  enum class LifecycleState {
+    kBeforeSetUp,
+    kSetUpCalled,
+    kTearDownCalled,
+  };
+
+  // Tracks the lifecycle state of this instance to enforce calls to `SetUp()`
+  // and `TearDown()`.
+  LifecycleState lifecycle_state_ = LifecycleState::kBeforeSetUp;
+
   std::unique_ptr<SystemNodeImpl> system_node_
       GUARDED_BY_CONTEXT(sequence_checker_);
   NodeSet nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
