@@ -32,15 +32,13 @@ class AnchoredNudgeManagerImplTest : public AshTestBase {
     return Shell::Get()->anchored_nudge_manager();
   }
 
-  void ShowNudge(const std::string& id,
-                 views::View* anchor_view,
-                 const std::u16string& text = std::u16string(),
-                 bool has_infinite_duration = false) {
-    AnchoredNudgeData nudge_data(id, AnchoredNudgeCatalogName::kTest, text,
-                                 anchor_view);
-    nudge_data.has_infinite_duration = has_infinite_duration;
-
-    anchored_nudge_manager()->Show(nudge_data);
+  // Creates an `AnchoredNudgeData` object with only the required elements.
+  AnchoredNudgeData CreateBaseNudgeData(
+      const std::string& id,
+      views::View* anchor_view,
+      const std::u16string& body_text = std::u16string()) {
+    return AnchoredNudgeData(id, AnchoredNudgeCatalogName::kTest, body_text,
+                             anchor_view);
   }
 
   void CancelNudge(const std::string& id) {
@@ -63,9 +61,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   const std::string id = "id";
   const std::u16string text = u"text";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view, text);
 
   // Show a nudge.
-  ShowNudge(id, anchor_view, text);
+  anchored_nudge_manager()->Show(nudge_data);
 
   // Ensure the nudge is visible and has set the provided contents.
   auto nudge = GetShownNudges()[id];
@@ -89,18 +88,20 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_TwoNudges) {
   const std::string id = "id";
   auto* anchor_view =
       contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   const std::string id_2 = "id_2";
   auto* anchor_view_2 =
       contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data_2 = CreateBaseNudgeData(id_2, anchor_view_2);
 
   // Show the first nudge, expect the first nudge shown.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
   EXPECT_FALSE(GetShownNudges()[id_2]);
 
   // Show the second nudge, expect both nudges shown.
-  ShowNudge(id_2, anchor_view_2);
+  anchored_nudge_manager()->Show(nudge_data_2);
   EXPECT_TRUE(GetShownNudges()[id]);
   EXPECT_TRUE(GetShownNudges()[id_2]);
 
@@ -122,13 +123,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
 
   // Set up nudge data contents.
   const std::string id = "id";
-  const std::u16string text = u"text";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
   const std::u16string dismiss_text = u"dismiss";
   const std::u16string second_button_text = u"second";
-
-  AnchoredNudgeData nudge_data(id, AnchoredNudgeCatalogName::kTest, text,
-                               anchor_view);
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Add a dismiss button with no callbacks.
   nudge_data.dismiss_text = dismiss_text;
@@ -210,19 +208,21 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
   const std::u16string text = u"text";
   auto* anchor_view =
       contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view, text);
 
   const std::u16string text_2 = u"text_2";
   auto* anchor_view_2 =
       contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data_2 = CreateBaseNudgeData(id, anchor_view_2, text_2);
 
   // Show a nudge with some initial contents.
-  ShowNudge(id, anchor_view, text);
+  anchored_nudge_manager()->Show(nudge_data);
   auto nudge = GetShownNudges()[id];
   EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Attempt to show a nudge with different contents but with the same id.
-  ShowNudge(id, anchor_view_2, text_2);
+  anchored_nudge_manager()->Show(nudge_data_2);
 
   // Previously shown nudge should be cancelled and replaced with new nudge.
   nudge = GetShownNudges()[id];
@@ -240,12 +240,13 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_InvisibleAnchorView) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Set anchor view visibility to false.
   anchor_view->SetVisible(false);
 
   // Attempt to show nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
 
   // Anchor view is not visible, the nudge should not be created.
   EXPECT_FALSE(GetShownNudges()[id]);
@@ -258,9 +259,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_AnchorViewWithoutWidget) {
   auto contents_view = std::make_unique<views::View>();
   auto* anchor_view =
       contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Attempt to show nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
 
   // Anchor view does not have a widget, the nudge should not be created.
   EXPECT_FALSE(GetShownNudges()[id]);
@@ -273,9 +275,10 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsHiding) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Set the anchor view visibility to false, the nudge should have closed.
@@ -298,9 +301,10 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsDeleting) {
       widget->SetContentsView(std::make_unique<views::View>());
   auto* anchor_view =
       contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Delete the anchor view, the nudge should have closed.
@@ -317,17 +321,16 @@ TEST_F(AnchoredNudgeManagerImplTest,
   RootWindowController* const secondary_root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id());
 
-  // Set up nudge data contents.
+  // Set up nudge data contents. The anchor view is a child of the secondary
+  // root window controller, so it will be deleted if the display is removed.
   const std::string id = "id";
-  // The anchor view is a child of the secondary root window controller, so it
-  // will be deleted if the display is removed.
-  auto* secondary_unified_system_tray =
-      secondary_root_window_controller->shelf()
-          ->status_area_widget()
-          ->unified_system_tray();
+  auto* anchor_view = secondary_root_window_controller->shelf()
+                          ->status_area_widget()
+                          ->unified_system_tray();
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show the nudge in the secondary display.
-  ShowNudge(id, secondary_unified_system_tray);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Remove the secondary display, which deletes the anchor view.
@@ -344,9 +347,10 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Nudge is left open, no crash.
@@ -360,9 +364,10 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Fast forward `kNudgeDefaultDuration` plus one second, the nudge should have
@@ -380,11 +385,11 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeWithInfiniteDuration) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
-  const std::u16string text = u"text";
-  bool has_infinite_duration = true;
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+  nudge_data.has_infinite_duration = true;
 
   // Show a nudge.
-  ShowNudge(id, anchor_view, text, has_infinite_duration);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Fast forward `kNudgeDefaultDuration` plus one second, the nudge should not
@@ -405,9 +410,10 @@ TEST_F(AnchoredNudgeManagerImplTest, CancelNudgeWhichDoesNotExist) {
   const std::string id = "id";
   const std::string id_2 = "id_2";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  ShowNudge(id, anchor_view);
+  anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Attempt to cancel nudge with an `id` that does not exist. Should not have
