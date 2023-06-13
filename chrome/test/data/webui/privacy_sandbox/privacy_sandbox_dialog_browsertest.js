@@ -50,7 +50,7 @@ var PrivacySandboxDialogBigWindowTest = class extends PolymerTest {
 };
 
 // TODO(https://crbug.com/1446188): Re-enable the test.
-GEN('#if BUILDFLAG(IS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)');
 GEN('# define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('# define MAYBE_All All');

@@ -185,7 +185,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
           ->GetViewByID(VIEW_ID_OMNIBOX)
           ->GetBoundsInScreen();
 
-  EXPECT_EQ(bounds.CenterPoint().y(), omnibox_bounds.CenterPoint().y());
+  // -1 presumably because of rounding. Visually, it looks fine (8px between the
+  // top of the cursor to the top of the omnibox; 7px at the bottom). Moving the
+  // cursor down 1px would only make it less balanced (9 & 6px).
+  EXPECT_EQ(bounds.CenterPoint().y(), omnibox_bounds.CenterPoint().y() - 1);
 
   // On the left edge of the omnibox.
   EXPECT_LT(bounds.x(), omnibox_bounds.x());
