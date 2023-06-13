@@ -594,8 +594,19 @@ void AdAuctionServiceImpl::OnAuctionComplete(
                                          winning_group_key->name};
   FencedFrameURLMapping& current_fenced_frame_urls_map =
       GetFrame()->GetPage().fenced_frame_urls_map();
-  // The auction must operate on the same fenced frame mapping.
-  CHECK_EQ(fenced_frame_urls_map_id, current_fenced_frame_urls_map.unique_id());
+  // TODO(crbug.com/1422301): The auction must operate on the same fenced frame
+  // mapping that was used at the beginning of the auction. If not, we fail the
+  // auction and dump without crashing the browser. Once the root cause is known
+  // and the issue fixed, convert it back to a CHECK.
+  if (fenced_frame_urls_map_id != current_fenced_frame_urls_map.unique_id()) {
+    base::debug::DumpWithoutCrashing();
+    if (auction_result_metrics) {
+      auction_result_metrics->ReportAuctionResult(
+          AdAuctionResultMetrics::AuctionResult::kFailed);
+    }
+    std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
+    return;
+  }
 
   // Set up reporting for any fenced frame that's navigated to the winning bid's
   // URL. Use a URLLoaderFactory that will automatically reconnect on network
