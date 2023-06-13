@@ -241,6 +241,7 @@ LocalDeskDataManager::DeleteTaskResult::~DeleteTaskResult() = default;
 DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
   std::vector<const ash::DeskTemplate*> entries;
   if (cache_status_ != CacheStatus::kOk) {
+    LOG(WARNING) << "Unable to get all entries: Cache failure";
     return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
                                std::move(entries));
   }
@@ -261,11 +262,13 @@ DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
 DeskModel::GetEntryByUuidResult LocalDeskDataManager::GetEntryByUUID(
     const base::Uuid& uuid) {
   if (cache_status_ != LocalDeskDataManager::CacheStatus::kOk) {
+    LOG(WARNING) << "Unable to get entry by UUID: Cache failure";
     return DeskModel::GetEntryByUuidResult(
         DeskModel::GetEntryByUuidStatus::kFailure, nullptr);
   }
 
   if (!uuid.is_valid()) {
+    LOG(WARNING) << "Unable to get entry by UUID: Invalid UUID";
     return DeskModel::GetEntryByUuidResult(
         DeskModel::GetEntryByUuidStatus::kInvalidUuid, nullptr);
   }
@@ -282,6 +285,7 @@ DeskModel::GetEntryByUuidResult LocalDeskDataManager::GetEntryByUUID(
       return DeskModel::GetEntryByUuidResult(
           DeskModel::GetEntryByUuidStatus::kOk, std::move(policy_entry));
     } else {
+      LOG(WARNING) << "Unable to get entry by UUID: Entry not found";
       return DeskModel::GetEntryByUuidResult(
           DeskModel::GetEntryByUuidStatus::kNotFound, nullptr);
     }
@@ -295,6 +299,7 @@ void LocalDeskDataManager::AddOrUpdateEntry(
     std::unique_ptr<ash::DeskTemplate> new_entry,
     AddOrUpdateEntryCallback callback) {
   if (cache_status_ != CacheStatus::kOk) {
+    LOG(WARNING) << "Unable to add or update entry: Cache failure";
     std::move(callback).Run(AddOrUpdateEntryStatus::kFailure,
                             std::move(new_entry));
     return;
@@ -303,6 +308,7 @@ void LocalDeskDataManager::AddOrUpdateEntry(
   const ash::DeskTemplateType desk_type = new_entry->type();
   const base::Uuid uuid = new_entry->uuid();
   if (!uuid.is_valid() || desk_type == ash::DeskTemplateType::kUnknown) {
+    LOG(WARNING) << "Unable to add or update entry: Invalid UUID or Desk Type";
     std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
                             std::move(new_entry));
     return;
@@ -310,6 +316,7 @@ void LocalDeskDataManager::AddOrUpdateEntry(
   size_t template_type_max_size = GetMaxEntryCountByDeskType(desk_type);
   if (!g_disable_max_template_limit &&
       saved_desks_list_[desk_type].size() >= template_type_max_size) {
+    LOG(WARNING) << "Unable to add entry: Maximum Desk Limit Reached";
     std::move(callback).Run(AddOrUpdateEntryStatus::kHitMaximumLimit,
                             std::move(new_entry));
     return;
@@ -352,6 +359,7 @@ void LocalDeskDataManager::AddOrUpdateEntry(
 void LocalDeskDataManager::DeleteEntry(const base::Uuid& uuid,
                                        DeleteEntryCallback callback) {
   if (cache_status_ != CacheStatus::kOk) {
+    LOG(WARNING) << "Unable to delete entry: Cache failure";
     std::move(callback).Run(DeleteEntryStatus::kFailure);
     return;
   }
@@ -388,6 +396,7 @@ void LocalDeskDataManager::DeleteEntry(const base::Uuid& uuid,
 
 void LocalDeskDataManager::DeleteAllEntries(DeleteEntryCallback callback) {
   if (cache_status_ != CacheStatus::kOk) {
+    LOG(WARNING) << "Unable to delete entry: Cache failure";
     std::move(callback).Run(DeleteEntryStatus::kFailure);
     return;
   }
@@ -571,6 +580,7 @@ DeskModel::AddOrUpdateEntryStatus LocalDeskDataManager::AddOrUpdateEntryTask(
     RecordSavedDeskTemplateSizeHistogram(desk_type, file_size);
     return AddOrUpdateEntryStatus::kOk;
   }
+  LOG(WARNING) << "Unable to add or update entry: Unable to write template file";
   return AddOrUpdateEntryStatus::kFailure;
 }
 
@@ -605,6 +615,7 @@ LocalDeskDataManager::DeleteTaskResult LocalDeskDataManager::DeleteEntryTask(
   if (base::DeleteFile(fully_qualified_path)) {
     return {DeleteEntryStatus::kOk, std::move(roll_back_entry)};
   }
+  LOG(WARNING) << "Unable to delete entry: File is not a qualified path";
   return {DeleteEntryStatus::kFailure, std::move(roll_back_entry)};
 }
 
@@ -615,6 +626,7 @@ LocalDeskDataManager::DeleteAllEntriesTask(
     std::vector<std::unique_ptr<ash::DeskTemplate>> entries) {
   if (!base::DirReaderPosix(local_saved_desk_path.AsUTF8Unsafe().c_str())
            .IsValid()) {
+    LOG(WARNING) << "Unable to delete all entries: Path is invalid";
     return {DeleteEntryStatus::kFailure, std::move(entries)};
   }
   DeleteEntryStatus overall_delete_successes = DeleteEntryStatus::kOk;
@@ -631,6 +643,7 @@ LocalDeskDataManager::DeleteAllEntriesTask(
       *it = std::move(entries.back());
       entries.pop_back();
     } else {
+      LOG(WARNING) << "Unable to delete entry: File not successfully deleted.";
       overall_delete_successes = DeleteEntryStatus::kFailure;
       ++it;
     }

@@ -289,6 +289,7 @@ std::string DeskSyncBridge::GetStorageKey(
 
 DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
   if (!IsReady()) {
+    LOG(WARNING) << "Unable to get all entries: Not Ready";
     return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
                                std::vector<const DeskTemplate*>());
   }
@@ -309,10 +310,12 @@ DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
 DeskModel::GetEntryByUuidResult DeskSyncBridge::GetEntryByUUID(
     const base::Uuid& uuid) {
   if (!IsReady()) {
+    LOG(WARNING) << "Unable to get entry by UUID: Not Ready";
     return GetEntryByUuidResult(GetEntryByUuidStatus::kFailure, nullptr);
   }
 
   if (!uuid.is_valid()) {
+    LOG(WARNING) << "Unable to get entry by UUID: Invalid UUID";
     return GetEntryByUuidResult(GetEntryByUuidStatus::kInvalidUuid, nullptr);
   }
 
@@ -325,6 +328,7 @@ DeskModel::GetEntryByUuidResult DeskSyncBridge::GetEntryByUUID(
       return GetEntryByUuidResult(GetEntryByUuidStatus::kOk,
                                   std::move(policy_entry));
     } else {
+      LOG(WARNING) << "Unable to get entry by UUID: Entry not found";
       return GetEntryByUuidResult(GetEntryByUuidStatus::kNotFound, nullptr);
     }
   } else {
@@ -338,12 +342,14 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   if (!IsReady()) {
     // This sync bridge has not finished initializing. Do not save the new entry
     // yet.
+    LOG(WARNING) << "Unable to add or update entry: Not Ready";
     std::move(callback).Run(AddOrUpdateEntryStatus::kFailure,
                             std::move(new_entry));
     return;
   }
 
   if (!new_entry) {
+    LOG(WARNING) << "Unable to add or update entry: No new entry";
     std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
                             std::move(new_entry));
     return;
@@ -351,6 +357,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
 
   base::Uuid uuid = new_entry->uuid();
   if (!uuid.is_valid()) {
+    LOG(WARNING) << "Unable to add or update entry: Invalid UUID";
     std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
                             std::move(new_entry));
     return;
@@ -374,6 +381,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   RecordSavedDeskTemplateSizeHistogram(new_entry->type(),
                                        sync_proto.ByteSizeLong());
   if (sync_proto.ByteSizeLong() > kMaxTemplateSize) {
+    LOG(WARNING) << "Unable to add or update entry: Entry is too large";
     std::move(callback).Run(AddOrUpdateEntryStatus::kEntryTooLarge,
                             std::move(new_entry));
     return;
@@ -405,6 +413,7 @@ void DeskSyncBridge::DeleteEntry(const base::Uuid& uuid,
   if (!IsReady()) {
     // This sync bridge has not finished initializing.
     // Cannot delete anything.
+    LOG(WARNING) << "Unable to delete entry: Not Ready";
     std::move(callback).Run(DeleteEntryStatus::kFailure);
     return;
   }
@@ -439,6 +448,7 @@ DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntriesSync() {
   if (!IsReady()) {
     // This sync bridge has not finished initializing.
     // Cannot delete anything.
+    LOG(WARNING) << "Unable to delete entries: Not Ready";
     return DeleteEntryStatus::kFailure;
   }
 
