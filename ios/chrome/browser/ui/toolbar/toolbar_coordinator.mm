@@ -356,8 +356,8 @@
   if (webState == self.browser->GetWebStateList()->GetActiveWebState() &&
       !isNTP) {
     [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
-    self.primaryToolbarViewController.view.hidden = NO;
   } else {
+    self.primaryToolbarViewController.view.hidden = NO;
     [self.locationBarCoordinator.locationBarViewController.view setHidden:YES];
   }
 }
