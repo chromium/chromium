@@ -101,6 +101,33 @@ struct ASH_EXPORT GlanceablesClassroomStudentSubmission {
   const State state;
 };
 
+// Represents a single classroom assignment for students (contains data from
+// `GlanceablesClassroomCourse` and `GlanceablesClassroomCourseWorkItem`).
+struct ASH_EXPORT GlanceablesClassroomStudentAssignment {
+ public:
+  GlanceablesClassroomStudentAssignment(const std::string& course_title,
+                                        const std::string& course_work_title,
+                                        const GURL& link,
+                                        const absl::optional<base::Time>& due);
+  GlanceablesClassroomStudentAssignment(
+      const GlanceablesClassroomStudentAssignment&) = delete;
+  GlanceablesClassroomStudentAssignment& operator=(
+      const GlanceablesClassroomStudentAssignment&) = delete;
+  ~GlanceablesClassroomStudentAssignment() = default;
+
+  // Title of the course this assignment belongs to.
+  const std::string course_title;
+
+  // Title of the course work item this assignment belongs to.
+  const std::string course_work_title;
+
+  // Absolute link for redirects to Classroom web UI.
+  const GURL link;
+
+  // Due date and time in UTC of this course work item.
+  const absl::optional<base::Time> due;
+};
+
 }  // namespace ash
 
 #endif  // ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_TYPES_H_

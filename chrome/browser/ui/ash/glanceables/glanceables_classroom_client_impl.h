@@ -10,13 +10,15 @@
 #include <vector>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
-#include "ui/base/models/list_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::classroom {
 class Courses;
@@ -30,10 +32,6 @@ struct NetworkTrafficAnnotationTag;
 
 namespace ash {
 
-struct GlanceablesClassroomCourse;
-struct GlanceablesClassroomCourseWorkItem;
-struct GlanceablesClassroomStudentSubmission;
-
 // Provides implementation for `GlanceablesClassroomClient`. Responsible for
 // communication with Google Classroom API.
 class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
@@ -44,26 +42,58 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           const std::vector<std::string>& scopes,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
-  // Done callback for fetching all courses for student or teacher roles.
-  using FetchCoursesCallback = base::OnceCallback<void(
-      ui::ListModel<GlanceablesClassroomCourse>* courses)>;
-
-  // Done callback for fetching all course work items in a course.
-  using FetchCourseWorkCallback = base::OnceCallback<void(
-      ui::ListModel<GlanceablesClassroomCourseWorkItem>* course_work)>;
-
-  // Done callback for fetching all student submissions in a course.
-  using FetchStudentSubmissionsCallback = base::OnceCallback<void(
-      ui::ListModel<GlanceablesClassroomStudentSubmission>*
-          student_submissions)>;
-
   explicit GlanceablesClassroomClientImpl(
       const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
       delete;
   GlanceablesClassroomClientImpl& operator=(
       const GlanceablesClassroomClientImpl&) = delete;
-  ~GlanceablesClassroomClientImpl();
+  ~GlanceablesClassroomClientImpl() override;
+
+  // GlanceablesClassroomClient:
+  void IsStudentRoleActive(IsRoleEnabledCallback callback) override;
+  void GetCompletedStudentAssignments(
+      GetStudentAssignmentsCallback callback) override;
+  void GetStudentAssignmentsWithApproachingDueDate(
+      GetStudentAssignmentsCallback callback) override;
+  void GetStudentAssignmentsWithMissedDueDate(
+      GetStudentAssignmentsCallback callback) override;
+  void GetStudentAssignmentsWithoutDueDate(
+      GetStudentAssignmentsCallback callback) override;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchCoursesOnHttpError);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchCoursesMultiplePages);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourseWork);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchCourseWorkOnHttpError);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchCourseWorkMultiplePages);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchStudentSubmissions);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchStudentSubmissionsOnHttpError);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchStudentSubmissionsMultiplePages);
+
+  // Done callback for fetching all courses for student or teacher roles.
+  using FetchCoursesCallback = base::OnceCallback<void(
+      const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>& courses)>;
+
+  // Done callback for fetching all course work items in a course.
+  using FetchCourseWorkCallback = base::OnceCallback<void(
+      const std::vector<std::unique_ptr<GlanceablesClassroomCourseWorkItem>>&
+          course_work)>;
+
+  // Done callback for fetching all student submissions in a course.
+  using FetchStudentSubmissionsCallback = base::OnceCallback<void(
+      const std::vector<std::unique_ptr<GlanceablesClassroomStudentSubmission>>&
+          student_submissions)>;
+
+  enum class FetchStatus { kNotFetched, kFetching, kFetched };
 
   // Fetches all courses for student and teacher roles and invokes `callback`
   // when done.
@@ -80,7 +110,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void FetchStudentSubmissions(const std::string& course_id,
                                FetchStudentSubmissionsCallback callback);
 
- private:
+  // Delays executing `callback` until all student data are fetched.
+  void InvokeOnceStudentDataFetched(base::OnceClosure callback);
+
   // Fetches one page of courses.
   // `student_id`        - restricts returned courses to those having a student
   //                       with the specified identifier. Use an empty string
@@ -101,7 +133,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const std::string& student_id,
       const std::string& teacher_id,
       const std::string& page_token,
-      ui::ListModel<GlanceablesClassroomCourse>* courses_container,
+      std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+          courses_container,
       FetchCoursesCallback callback);
 
   // Callback for `FetchCoursesPage()`. If `next_page_token()` in the `result`
@@ -110,10 +143,18 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void OnCoursesPageFetched(
       const std::string& student_id,
       const std::string& teacher_id,
-      ui::ListModel<GlanceablesClassroomCourse>* courses_container,
+      std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+          courses_container,
       FetchCoursesCallback callback,
       base::expected<std::unique_ptr<google_apis::classroom::Courses>,
                      google_apis::ApiErrorCode> result);
+
+  // Callback for `FetchStudentCourses()` or `FetchTeacherCourses()`. Triggers
+  // fetching course work and student submissions for fetched `courses` and
+  // invokes `on_course_work_and_student_submissions_fetched` when done.
+  void OnCoursesFetched(
+      base::OnceClosure on_course_work_and_student_submissions_fetched,
+      const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>& courses);
 
   // Fetches one page of course work items.
   // `course_id`  - identifier of the course.
@@ -160,6 +201,25 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           std::unique_ptr<google_apis::classroom::StudentSubmissions>,
           google_apis::ApiErrorCode> result);
 
+  // Invokes all pending callbacks from `callbacks_waiting_for_student_data_`
+  // once all student data are fetched (courses + course work + student
+  // submissions).
+  void OnStudentDataFetched();
+
+  // Selects student assignments that satisfy both filtering predicates below.
+  // `due_predicate`              - returns `true` if passed due date/time
+  //                                satisfies filtering requirements.
+  // `submission_state_predicate` - returns `true` if passed submission state
+  //                                satisfies filtering requirements.
+  // `callback`                   - invoked with filtered results.
+  void GetFilteredStudentAssignments(
+      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+          due_predicate,
+      base::RepeatingCallback<
+          bool(GlanceablesClassroomStudentSubmission::State)>
+          submission_state_predicate,
+      GetStudentAssignmentsCallback callback);
+
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
@@ -170,23 +230,27 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
 
-  // Available courses for student and teacher roles. Initialized after the
-  // first fetch request to distinguish between "not fetched yet" vs. "fetched,
-  // but has no items".
-  std::unique_ptr<ui::ListModel<GlanceablesClassroomCourse>> student_courses_;
-  std::unique_ptr<ui::ListModel<GlanceablesClassroomCourse>> teacher_courses_;
+  // Available courses for student and teacher roles.
+  std::vector<std::unique_ptr<GlanceablesClassroomCourse>> student_courses_;
+  std::vector<std::unique_ptr<GlanceablesClassroomCourse>> teacher_courses_;
 
   // All course work items grouped by course id.
   base::flat_map<
       std::string,
-      std::unique_ptr<ui::ListModel<GlanceablesClassroomCourseWorkItem>>>
+      std::vector<std::unique_ptr<GlanceablesClassroomCourseWorkItem>>>
       course_work_;
 
   // All student submissions grouped by course id.
   base::flat_map<
       std::string,
-      std::unique_ptr<ui::ListModel<GlanceablesClassroomStudentSubmission>>>
+      std::vector<std::unique_ptr<GlanceablesClassroomStudentSubmission>>>
       student_submissions_;
+
+  // Fetch status of all student data.
+  FetchStatus student_data_fetch_status_ = FetchStatus::kNotFetched;
+
+  // Pending callbacks awaiting all student data.
+  std::vector<base::OnceClosure> callbacks_waiting_for_student_data_;
 
   base::WeakPtrFactory<GlanceablesClassroomClientImpl> weak_factory_{this};
 };

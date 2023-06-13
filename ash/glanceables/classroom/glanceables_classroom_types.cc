@@ -38,4 +38,17 @@ GlanceablesClassroomStudentSubmission::GlanceablesClassroomStudentSubmission(
     State state)
     : id(id), course_work_id(course_work_id), state(state) {}
 
+// ----------------------------------------------------------------------------
+// GlanceablesClassroomStudentAssignment:
+
+GlanceablesClassroomStudentAssignment::GlanceablesClassroomStudentAssignment(
+    const std::string& course_title,
+    const std::string& course_work_title,
+    const GURL& link,
+    const absl::optional<base::Time>& due)
+    : course_title(course_title),
+      course_work_title(course_work_title),
+      link(link),
+      due(due) {}
+
 }  // namespace ash
