@@ -5,8 +5,6 @@
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 
 #include "base/barrier_callback.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -128,13 +126,13 @@ class StorageAccessGrantPermissionContextTest
 
     DIPSService* dips_service = DIPSService::Get(browser_context());
     CHECK(dips_service);
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     dips_service->storage()
         ->AsyncCall(&DIPSStorage::RecordInteraction)
         .WithArgs(GetRequesterURL(), base::Time::Now(),
                   DIPSCookieMode::kBlock3PC)
-        .Then(run_loop.QuitClosure());
-    run_loop.Run();
+        .Then(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   void TearDown() override {
@@ -405,19 +403,15 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
 
     const int implicit_grant_limit =
         blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
-    base::RunLoop run_loop;
-    auto barrier = base::BarrierCallback<ContentSetting>(
-        implicit_grant_limit,
-        base::BindLambdaForTesting(
-            [&](const std::vector<ContentSetting> results) {
-              run_loop.Quit();
-            }));
+    base::test::TestFuture<const std::vector<ContentSetting>> future;
+    auto barrier = base::BarrierCallback<ContentSetting>(implicit_grant_limit,
+                                                         future.GetCallback());
     for (int grant_id = 0; grant_id < implicit_grant_limit; grant_id++) {
       permission_context.DecidePermissionForTesting(
           fake_id, requesting_origin, GetDummyEmbeddingUrl(grant_id),
           /*user_gesture=*/true, barrier);
     }
-    run_loop.Run();
+    ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(request_manager()->IsRequestInProgress());
   }
 
