@@ -64,11 +64,10 @@ namespace perfetto {
 template <typename>
 class TracedProto;
 
-namespace protos {
-namespace pbzero {
+namespace protos::pbzero {
 class ChromeBrowserContext;
-}
-}  // namespace protos
+}  // namespace protos::pbzero
+
 }  // namespace perfetto
 
 namespace content {
