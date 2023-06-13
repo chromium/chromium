@@ -297,6 +297,7 @@
     "win-perfetto-rel": "Ubuntu-22.04",
     "win-upload-perfetto": "Ubuntu-22.04",
     "win10-32-on-64-updater-tester-dbg": "Ubuntu-22.04",
+    "win10-32-on-64-updater-tester-rel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-intel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-nvidia": "Ubuntu-22.04",
     "win10-updater-tester-dbg": "Ubuntu-22.04",
