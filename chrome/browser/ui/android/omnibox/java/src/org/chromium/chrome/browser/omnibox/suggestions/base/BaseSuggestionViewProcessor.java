@@ -223,7 +223,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param url Target URL the suggestion points to.
      */
     protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
-        assert mFaviconFetcher != null : "You must supply the FaviconFetcher in order to use it";
+        if (mFaviconFetcher == null) return;
+
         mFaviconFetcher.fetchFaviconWithBackoff(url, false, (icon, type) -> {
             if (icon != null) {
                 setSuggestionDrawableState(

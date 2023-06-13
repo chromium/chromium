@@ -53,7 +53,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
-    private final @NonNull FaviconFetcher mFaviconFetcher;
+    private final @Nullable FaviconFetcher mFaviconFetcher;
     private final int mMinCarouselItemViewHeight;
     private @Nullable RecycledViewPool mMostVisitedTilesRecycledViewPool;
     private boolean mEnableOrganicRepeatableQueries;
@@ -66,7 +66,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
      * @param faviconFetcher Class retrieving favicons for the MV Tiles.
      */
     public MostVisitedTilesProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @NonNull FaviconFetcher faviconFetcher) {
+            @Nullable FaviconFetcher faviconFetcher) {
         super(context);
         mContext = context;
         mSuggestionHost = host;
@@ -142,13 +142,13 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 return true;
             });
 
+            tileModel.set(TileViewProperties.ICON_TINT,
+                    ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
             if (isSearch) {
                 // Note: we should never show most visited tiles in incognito mode. Catch this early
                 // if we ever do.
                 assert model.get(SuggestionCommonProperties.COLOR_SCHEME)
                         != BrandedColorScheme.INCOGNITO;
-                tileModel.set(TileViewProperties.ICON_TINT,
-                        ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
                 tileModel.set(TileViewProperties.ICON,
                         OmniboxResourceProvider.getDrawable(
                                 mContext, R.drawable.ic_suggestion_magnifier));
@@ -156,7 +156,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         OmniboxResourceProvider.getString(mContext,
                                 R.string.accessibility_omnibox_most_visited_tile_search, title));
             } else {
-                tileModel.set(TileViewProperties.ICON_TINT, null);
+                tileModel.set(TileViewProperties.ICON,
+                        OmniboxResourceProvider.getDrawable(mContext, R.drawable.ic_globe_24dp));
                 tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
                         OmniboxResourceProvider.getString(mContext,
                                 R.string.accessibility_omnibox_most_visited_tile_navigate, title,
@@ -165,9 +166,12 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
                         mContext.getResources().getDimensionPixelSize(
                                 R.dimen.omnibox_carousel_icon_rounding_radius));
-                mFaviconFetcher.fetchFaviconWithBackoff(url, true, (icon, type) -> {
-                    tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
-                });
+                if (mFaviconFetcher != null) {
+                    mFaviconFetcher.fetchFaviconWithBackoff(url, true, (icon, type) -> {
+                        tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
+                        tileModel.set(TileViewProperties.ICON_TINT, null);
+                    });
+                }
             }
 
             tileList.add(new ListItem(

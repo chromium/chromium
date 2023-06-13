@@ -91,7 +91,9 @@ class DropdownItemViewInfoListBuilder {
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
-        mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
+        if (!OmniboxFeatures.isLowMemoryDevice()) {
+            mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
+        }
 
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
@@ -177,10 +179,14 @@ class DropdownItemViewInfoListBuilder {
             mFaviconFetcher.clearCache();
         }
 
-        mIconBridge = new LargeIconBridge(profile);
-        mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
-                profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool(),
-                MAX_IMAGE_CACHE_SIZE);
+        if (!OmniboxFeatures.isLowMemoryDevice()) {
+            mIconBridge = new LargeIconBridge(profile);
+            mIconBridge.createCache(MAX_IMAGE_CACHE_SIZE);
+
+            mImageFetcher = ImageFetcherFactory.createImageFetcher(
+                    ImageFetcherConfig.IN_MEMORY_ONLY, profile.getProfileKey(),
+                    GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
+        }
     }
 
     /**
