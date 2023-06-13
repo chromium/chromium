@@ -1183,20 +1183,6 @@ BASE_FEATURE(kSignedHTTPExchange,
              "SignedHTTPExchange",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Delays RenderProcessHost shutdown by a few seconds to allow the subframe's
-// process to be potentially reused. This aims to reduce process churn in
-// navigations where the source and destination share subframes.
-// This is enabled only on platforms where the behavior leads to performance
-// gains, i.e., those where process startup is expensive.
-BASE_FEATURE(kSubframeShutdownDelay,
-             "SubframeShutdownDelay",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-);
-
 // If enabled, GetUserMedia API will only work when the concerned tab is in
 // focus
 BASE_FEATURE(kUserMediaCaptureOnFocus,

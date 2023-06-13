@@ -2372,8 +2372,7 @@ void RenderProcessHostImpl::DelayProcessShutdown(
   shutdown_delay_ref_count_++;
 
   // Add to the delayed-shutdown tracker with the site that triggered the delay.
-  if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
-      ShouldTrackProcessForSite(site_info)) {
+  if (ShouldDelayProcessShutdown() && ShouldTrackProcessForSite(site_info)) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
         SiteProcessCountTracker::GetInstance(
             GetBrowserContext(),
@@ -4635,6 +4634,15 @@ bool RenderProcessHostImpl::MayReuseAndIsSuitable(
 }
 
 // static
+bool RenderProcessHostImpl::ShouldDelayProcessShutdown() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  return true;
+#else
+  return false;
+#endif
+}
+
+// static
 void RenderProcessHost::WarmupSpareRenderProcessHost(
     content::BrowserContext* browser_context) {
   SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
@@ -5509,11 +5517,11 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
     }
   }
 
-  // If there are no eligible existing RenderProcessHosts,
-  // experimentally add RenderProcessHosts whose shutdown is pending that
-  // previously hosted a frame for |site_url|.
+  // If there are no eligible existing RenderProcessHosts, add
+  // RenderProcessHosts whose shutdown is pending that previously hosted a frame
+  // for `site_url`.
   if (eligible_foreground_hosts.empty() && eligible_background_hosts.empty() &&
-      base::FeatureList::IsEnabled(features::kSubframeShutdownDelay)) {
+      ShouldDelayProcessShutdown()) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
         static_cast<SiteProcessCountTracker*>(browser_context->GetUserData(
             kDelayedShutdownSiteProcessCountTrackerKey));
@@ -5588,8 +5596,7 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
   // Remove from the delayed-shutdown tracker. This may have already been done
   // in StopTrackingProcessForShutdownDelay() if the process was reused before
   // this task executed.
-  if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
-      ShouldTrackProcessForSite(site_info)) {
+  if (ShouldDelayProcessShutdown() && ShouldTrackProcessForSite(site_info)) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
         SiteProcessCountTracker::GetInstance(
             GetBrowserContext(),
@@ -5607,8 +5614,9 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
 }
 
 void RenderProcessHostImpl::StopTrackingProcessForShutdownDelay() {
-  if (!base::FeatureList::IsEnabled(features::kSubframeShutdownDelay))
+  if (!ShouldDelayProcessShutdown()) {
     return;
+  }
   SiteProcessCountTracker* delayed_shutdown_tracker =
       SiteProcessCountTracker::GetInstance(
           GetBrowserContext(),

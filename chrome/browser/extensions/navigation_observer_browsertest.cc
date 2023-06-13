@@ -225,22 +225,22 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // The SiteInstance of the disabled extension frame should be different from
   // the SiteInstance of the enabled extension subframe. It should reference the
   // invalid extension ID or the error page URL.
-  // TODO(crbug.com/1234637): remove the exception for the
-  // SubframeShutdownDelay experiment below. It is temporary, intended to allow
-  // the experiment to proceed while the reason for it causing
-  // |extension_site_instance| to be reused is addressed separately.
-  if (!base::FeatureList::IsEnabled(features::kSubframeShutdownDelay)) {
-    EXPECT_NE(subframe->GetSiteInstance(), extension_site_instance);
-    if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
-      EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
-                GURL(content::kUnreachableWebDataURL));
-    } else {
-      EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
-                GURL(chrome::kExtensionInvalidRequestURL));
-      // The disabled extension process should be locked.
-      EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
-    }
+  // TODO(crbug.com/1234637): remove the exceptions for Mac and Windows below
+  // once renderer-process shutdown delay causing `extension_site_instance` to
+  // be reused is addressed (see
+  // RendererProcessHostImpl::ShouldDelayProcessShutdown() for details).
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  EXPECT_NE(subframe->GetSiteInstance(), extension_site_instance);
+  if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
+    EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
+              GURL(content::kUnreachableWebDataURL));
+  } else {
+    EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
+              GURL(chrome::kExtensionInvalidRequestURL));
+    // The disabled extension process should be locked.
+    EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
   }
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
   // Re-enable the extension.
   extension_service()->EnableExtension(extension->id());

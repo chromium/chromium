@@ -412,6 +412,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static bool MayReuseAndIsSuitable(RenderProcessHost* host,
                                     SiteInstanceImpl* site_instance);
 
+  // Returns true if RenderProcessHost shutdown should be delayed by a few
+  // seconds to allow the subframe's process to be potentially reused. This aims
+  // to reduce process churn in navigations where the source and destination
+  // share subframes. Only returns true on platforms where process startup is
+  // expensive.
+  static bool ShouldDelayProcessShutdown();
+
   // Returns an existing RenderProcessHost for |site_info| in
   // |isolation_context|, if one exists.  Otherwise a new RenderProcessHost
   // should be created and registered using RegisterProcessHostForSite(). This
