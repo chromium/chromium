@@ -22,6 +22,7 @@
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -800,6 +801,7 @@ void DriveIntegrationService::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
+  bulk_pinning_pref_sampling_ = false;
 
   RemoveDriveMountPoint();
 
@@ -1004,6 +1006,7 @@ void DriveIntegrationService::AddDriveMountPoint() {
   DCHECK(enabled_);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
+  bulk_pinning_pref_sampling_ = false;
 
   if (GetDriveFsHost()->IsMounted()) {
     AddDriveMountPointAfterMounted();
@@ -1212,7 +1215,27 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     }
 
     ToggleBulkPinning();
+
+    if (!bulk_pinning_pref_sampling_) {
+      bulk_pinning_pref_sampling_ = true;
+      SampleBulkPinningPref();
+    }
   }
+}
+
+void DriveIntegrationService::SampleBulkPinningPref() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(bulk_pinning_pref_sampling_);
+  const bool enabled = GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled);
+  VLOG(1) << "Bulk-pinning is currently " << (enabled ? "en" : "dis")
+          << "abled";
+  base::UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.Enabled",
+                            enabled);
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DriveIntegrationService::SampleBulkPinningPref,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Hours(1));
 }
 
 void DriveIntegrationService::OnUnmounted(

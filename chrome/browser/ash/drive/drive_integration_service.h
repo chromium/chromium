@@ -408,6 +408,10 @@ class DriveIntegrationService : public KeyedService,
   // Enable or disable DriveFS bulk pinning.
   void ToggleBulkPinning();
 
+  // Regularly samples the bulk-pinning preference and stores the result in a
+  // UMA histogram.
+  void SampleBulkPinningPref();
+
   void OnGetOfflineItemsPage(
       int64_t total_size,
       mojo::Remote<drivefs::mojom::SearchQuery> search_query,
@@ -446,6 +450,10 @@ class DriveIntegrationService : public KeyedService,
   bool enabled_;
   bool mount_failed_ = false;
   bool in_clear_cache_ = false;
+
+  // Is the bulk-pinning preference sampling task currently scheduled?
+  bool bulk_pinning_pref_sampling_ = false;
+
   // Custom mount point name that can be injected for testing in constructor.
   std::string mount_point_name_;
 
