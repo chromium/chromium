@@ -125,7 +125,6 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     return {};
   }
 
-  mode_ = RepresentationAccessMode::kWrite;
   std::vector<skgpu::graphite::BackendTexture> backend_textures =
       CreateBackendTextures(dawn_scoped_access_->texture());
 
@@ -150,6 +149,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     }
     surfaces.push_back(std::move(surface));
   }
+
+  mode_ = RepresentationAccessMode::kWrite;
   return surfaces;
 }
 

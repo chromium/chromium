@@ -83,9 +83,14 @@ sk_sp<SkImage> MakeYUVImageFromUploadedPlanes(
   DCHECK_LE(plane_images.size(),
             base::checked_cast<size_t>(SkYUVAInfo::kMaxPlanes));
 
-  // TODO(crbug.com/1443065): Implement YUV image support.
   if (graphite_recorder) {
-    return plane_images[0];
+    sk_sp<SkImage> image = SkImages::TextureFromYUVAImages(
+        graphite_recorder, yuva_info, plane_images, image_color_space);
+    if (!image) {
+      DLOG(ERROR) << "Could not create YUV image";
+      return nullptr;
+    }
+    return image;
   }
 
   std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> plane_backend_textures;
