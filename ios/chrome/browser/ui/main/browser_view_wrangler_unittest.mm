@@ -268,4 +268,40 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
   browser_list->RemoveObserver(&observer);
 }
 
+TEST_F(BrowserViewWranglerTest, TestIncognitoBrowserSessionRestorationLogic) {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+  TestBrowserListObserver observer;
+  browser_list->AddObserver(&observer);
+
+  BrowserViewWrangler* wrangler = [[BrowserViewWrangler alloc]
+             initWithBrowserState:chrome_browser_state_.get()
+                       sceneState:scene_state_
+       applicationCommandEndpoint:nil
+      browsingDataCommandEndpoint:nil];
+
+  // Creation of the main browser should restore the sessions.
+  [wrangler createMainBrowser];
+  [wrangler createMainCoordinatorAndInterface];
+  EXPECT_EQ(1, test_session_service_.loadSessionCallsCount);
+
+  // Initial creation of incognito browser should restore the sessions.
+  EXPECT_EQ(wrangler.incognitoInterface.browser,
+            observer.GetLastAddedIncognitoBrowser());
+  EXPECT_EQ(2, test_session_service_.loadSessionCallsCount);
+
+  // Destroing and rebuilding the incognito browser should not restore the
+  // sessions.
+  [wrangler willDestroyIncognitoBrowserState];
+  chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
+  chrome_browser_state_->GetOffTheRecordChromeBrowserState();
+  [wrangler incognitoBrowserStateCreated];
+  EXPECT_EQ(2, test_session_service_.loadSessionCallsCount);
+
+  [wrangler createInactiveBrowser];
+  [wrangler shutdown];
+
+  browser_list->RemoveObserver(&observer);
+}
+
 }  // namespace

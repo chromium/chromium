@@ -20,6 +20,8 @@
 
 @property(nonatomic, readonly) int saveSessionCallsCount;
 
+@property(nonatomic, readonly) int loadSessionCallsCount;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_TEST_SESSION_SERVICE_H_

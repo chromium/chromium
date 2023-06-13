@@ -34,4 +34,10 @@
   _saveSessionCallsCount++;
 }
 
+- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                              directory:(const base::FilePath&)directory {
+  _loadSessionCallsCount++;
+  return [super loadSessionWithSessionID:sessionID directory:directory];
+}
+
 @end
