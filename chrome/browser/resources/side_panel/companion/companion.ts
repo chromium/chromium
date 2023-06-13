@@ -8,7 +8,7 @@ import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ImageQuery, MethodType, PromoAction, PromoType} from './companion.mojom-webui.js';
+import {ImageQuery, MethodType, PromoAction, PromoType, VisualSearchResult} from './companion.mojom-webui.js';
 import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
 
 /**
@@ -62,6 +62,9 @@ enum ParamType {
 
   // Arguments for sending text find results from browser to iframe.
   CQ_TEXT_FIND_RESULTS = 'cqTextFindResults',
+
+  // Arguments for sending Visual Search results from browser to iframe.
+  VISUAL_SEARCH_PARAMS = 'visualSearchParams',
 }
 
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
@@ -167,6 +170,21 @@ function initialize() {
 
   companionProxy.handler.showUI();
 }
+
+// POST dataUris from the Visual Search classification results to the iframe
+companionProxy.callbackRouter.onDeviceVisualClassificationResult.addListener(
+    (results: VisualSearchResult[]) => {
+      const dataUris = results.map(result => result.dataUri);
+      const message = {[ParamType.VISUAL_SEARCH_PARAMS]: dataUris};
+
+      const companionOrigin =
+          new URL(loadTimeData.getString('companion_origin')).origin;
+      const frame = document.body.querySelector('iframe');
+      assert(frame);
+      if (frame.contentWindow) {
+        frame.contentWindow.postMessage(message, companionOrigin);
+      }
+    });
 
 // Handler for postMessage() calls from the embedded iframe.
 function onCompanionMessageEvent(event: MessageEvent) {

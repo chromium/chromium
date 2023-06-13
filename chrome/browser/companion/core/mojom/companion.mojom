@@ -131,6 +131,11 @@ enum UiSurface {
   kATX = 9,
 };
 
+struct VisualSearchResult {
+  // Encoded image bytes
+  string data_uri;
+};
+
 // Factory method for creating a new WebUI page handler.
 interface CompanionPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -215,4 +220,7 @@ interface CompanionPage {
   // `text_directives` and `results` have the same length.
   OnCqFindTextResultsAvailable(array<string> text_directives,
     array<bool> results);
+
+  // Pass back results from visual classifier for rendering.
+  OnDeviceVisualClassificationResult(array<VisualSearchResult> results);
 };
