@@ -217,6 +217,7 @@
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-cfm-rel": "Ubuntu-22.04",
     "linux-chromeos-annotator-rel": "Ubuntu-22.04",
+    "linux-chromeos-code-coverage": "Ubuntu-22.04",
     "linux-chromeos-dbg": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-cr23-rel": "Ubuntu-22.04",
