@@ -119,19 +119,9 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
 
-  NSString* skipButtonTitle;
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
-    skipButtonTitle = l10n_util::GetNSString(IDS_CANCEL);
-  } else if (self.accessPoint == signin_metrics::AccessPoint::
-                                     ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
-    skipButtonTitle = l10n_util::GetNSString(IDS_CLOSE);
-  } else {
-    skipButtonTitle = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
-  }
-
   UIButton* skipButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [skipButton setTitle:skipButtonTitle forState:UIControlStateNormal];
+  [skipButton setTitle:l10n_util::GetNSString(IDS_CLOSE)
+              forState:UIControlStateNormal];
   skipButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   [skipButton addTarget:self
