@@ -44,7 +44,7 @@ interface ExtensionInfo {
   canBeDisabled: boolean|undefined;
 }
 
-interface NetworkProxySectionElement {
+export interface NetworkProxySectionElement {
   $: {
     allowShared: SettingsToggleButtonElement,
     confirmAllowSharedDialog: CrDialogElement,
@@ -60,7 +60,7 @@ const NetworkProxySectionElementBase =
     Constructor<PolymerElement&I18nMixinInterface&RouteObserverMixinInterface&
                 PrefsMixinInterface&CrPolicyNetworkBehaviorMojoInterface>;
 
-class NetworkProxySectionElement extends NetworkProxySectionElementBase {
+export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get is() {
     return 'network-proxy-section' as const;
   }
