@@ -302,7 +302,6 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisabledTest(message = "crbug.com/1261941")
     public void testOMADownloadInterception() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         try {
@@ -324,7 +323,7 @@ public class DownloadTest implements CustomMainActivityStart {
             CriteriaHelper.pollUiThread(() -> {
                 Criteria.checkThat(interceptor.mDownloadItem, Matchers.notNullValue());
                 Criteria.checkThat(
-                        interceptor.mDownloadItem.getDownloadInfo().getUrl(), Matchers.is(url));
+                        interceptor.mDownloadItem.getDownloadInfo().getUrl().getSpec(), Matchers.is(url));
             });
         } finally {
             webServer.shutdown();
