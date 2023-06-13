@@ -336,8 +336,9 @@ void TextFragmentAnchor::TryAttachingUnattachedDirectives() {
 
   for (auto& directive_annotation_pair : directive_annotation_pairs_) {
     AnnotationAgentImpl* annotation = directive_annotation_pair.second;
-    if (annotation->IsAttached())
+    if (annotation->IsAttached() || annotation->IsAttachmentPending()) {
       continue;
+    }
 
     annotation->Attach(WTF::BindOnce(&TextFragmentAnchor::DidFinishAttachment,
                                      WrapWeakPersistent(this),

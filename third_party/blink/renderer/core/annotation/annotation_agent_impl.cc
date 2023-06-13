@@ -90,7 +90,11 @@ void AnnotationAgentImpl::Attach() {
   TRACE_EVENT("blink", "AnnotationAgentImpl::Attach");
   CHECK(!IsRemoved());
   CHECK(!IsAttached());
-  CHECK(!IsAttachmentPending());
+  CHECK(!pending_range_);
+
+  // We may still have an old range despite the CHECK above if the range become
+  // collapsed due to DOM changes.
+  attached_range_.Clear();
 
   did_try_attach_ = true;
   Document& document = *owning_container_->GetSupplementable();
@@ -110,7 +114,9 @@ bool AnnotationAgentImpl::IsAttached() const {
 }
 
 bool AnnotationAgentImpl::IsAttachmentPending() const {
-  return IsValidRange(pending_range_);
+  // This can be an invalid range but still returns true because the attachment
+  // is still in progress until the DomMutation task runs in the next rAF.
+  return pending_range_;
 }
 
 bool AnnotationAgentImpl::IsBoundForTesting() const {
@@ -219,7 +225,7 @@ void AnnotationAgentImpl::DidFinishFindRange(const RangeInFlatTree* range) {
 }
 
 bool AnnotationAgentImpl::NeedsDOMMutationToAttach() const {
-  if (!IsAttachmentPending()) {
+  if (!IsValidRange(pending_range_)) {
     return false;
   }
 
@@ -242,7 +248,7 @@ bool AnnotationAgentImpl::NeedsDOMMutationToAttach() const {
 }
 
 void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
-  if (IsAttachmentPending()) {
+  if (IsValidRange(pending_range_)) {
     // TODO(crbug.com/1252872): Only |first_node| is considered for the below
     // ancestor expanding code, but we should be considering the entire range
     // of selected text for ancestor unlocking as well.
@@ -276,7 +282,9 @@ void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
 }
 
 void AnnotationAgentImpl::ProcessAttachmentFinished() {
-  if (IsAttachmentPending()) {
+  CHECK(!attached_range_);
+
+  if (IsValidRange(pending_range_)) {
     attached_range_ = pending_range_;
 
     TRACE_EVENT_INSTANT("blink", "IsAttached");
@@ -309,7 +317,6 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     }
   } else {
     TRACE_EVENT_INSTANT("blink", "NotAttached");
-    CHECK(!attached_range_);
   }
 
   pending_range_.Clear();
