@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -45,9 +46,18 @@ class ScopedActiveInstall;
 
 class WebstorePrivateApi {
  public:
-  // Allows you to override the WebstoreInstaller delegate for testing.
-  static void SetWebstoreInstallerDelegateForTesting(
-      WebstoreInstaller::Delegate* delegate);
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnExtensionInstallSuccess(const std::string& id) {}
+    virtual void OnExtensionInstallFailure(
+        const std::string& id,
+        const std::string& error,
+        WebstoreInstaller::FailureReason reason) {}
+  };
+
+  // Sets a delegate for testing.
+  static base::AutoReset<Delegate*> SetDelegateForTesting(Delegate* delegate);
 
   // Gets the pending approval for the |extension_id| in |profile|. Pending
   // approvals are held between the calls to beginInstallWithManifest and

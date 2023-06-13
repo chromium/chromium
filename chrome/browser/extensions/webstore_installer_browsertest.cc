@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/webstore_installer_callback_delegate.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -41,13 +40,15 @@ const char kCrxWithPermissionsFilename[] =
 class TestWebstoreInstaller : public WebstoreInstaller {
  public:
   TestWebstoreInstaller(Profile* profile,
-                        std::unique_ptr<WebstoreInstaller::Delegate> delegate,
+                        SuccessCallback success_callback,
+                        FailureCallback failure_callback,
                         content::WebContents* web_contents,
                         const std::string& id,
                         std::unique_ptr<Approval> approval,
                         InstallSource source)
       : WebstoreInstaller(profile,
-                          std::move(delegate),
+                          std::move(success_callback),
+                          std::move(failure_callback),
                           web_contents,
                           id,
                           std::move(approval),
@@ -139,13 +140,10 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
   SetDoneClosure(run_loop.QuitClosure());
   TestWebstoreInstaller* installer = new TestWebstoreInstaller(
       browser()->profile(),
-      std::make_unique<WebstoreInstallerCallbackDelegate>(
-          base::BindOnce(
-              &WebstoreInstallerBrowserTest::OnExtensionInstallSuccess,
-              base::Unretained(this)),
-          base::BindOnce(
-              &WebstoreInstallerBrowserTest::OnExtensionInstallFailure,
-              base::Unretained(this))),
+      base::BindOnce(&WebstoreInstallerBrowserTest::OnExtensionInstallSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&WebstoreInstallerBrowserTest::OnExtensionInstallFailure,
+                     base::Unretained(this)),
       active_web_contents, kTestExtensionId, std::move(approval),
       WebstoreInstaller::INSTALL_SOURCE_OTHER);
   installer->Start();
@@ -173,13 +171,10 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
   SetDoneClosure(run_loop.QuitClosure());
   scoped_refptr<TestWebstoreInstaller> installer = new TestWebstoreInstaller(
       browser()->profile(),
-      std::make_unique<WebstoreInstallerCallbackDelegate>(
-          base::BindOnce(
-              &WebstoreInstallerBrowserTest::OnExtensionInstallSuccess,
-              base::Unretained(this)),
-          base::BindOnce(
-              &WebstoreInstallerBrowserTest::OnExtensionInstallFailure,
-              base::Unretained(this))),
+      base::BindOnce(&WebstoreInstallerBrowserTest::OnExtensionInstallSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&WebstoreInstallerBrowserTest::OnExtensionInstallFailure,
+                     base::Unretained(this)),
       active_web_contents, kTestExtensionId, std::move(approval),
       WebstoreInstaller::INSTALL_SOURCE_OTHER);
   installer->Start();
@@ -261,13 +256,10 @@ IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
   SetDoneClosure(run_loop.QuitClosure());
   TestWebstoreInstaller* installer = new TestWebstoreInstaller(
       browser()->profile(),
-      std::make_unique<WebstoreInstallerCallbackDelegate>(
-          base::BindOnce(
-              &WebstoreInstallerBrowserTest::OnExtensionInstallSuccess,
-              base::Unretained(this)),
-          base::BindOnce(
-              &WebstoreInstallerBrowserTest::OnExtensionInstallFailure,
-              base::Unretained(this))),
+      base::BindOnce(&WebstoreInstallerBrowserTest::OnExtensionInstallSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&WebstoreInstallerBrowserTest::OnExtensionInstallFailure,
+                     base::Unretained(this)),
       active_web_contents, kTestExtensionWithPermissionsId, std::move(approval),
       WebstoreInstaller::INSTALL_SOURCE_OTHER);
   installer->Start();

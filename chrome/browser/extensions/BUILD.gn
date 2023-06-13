@@ -716,8 +716,6 @@ static_library("extensions") {
     "webstore_install_with_prompt.h",
     "webstore_installer.cc",
     "webstore_installer.h",
-    "webstore_installer_callback_delegate.cc",
-    "webstore_installer_callback_delegate.h",
     "webstore_reinstaller.cc",
     "webstore_reinstaller.h",
     "webstore_standalone_installer.cc",
