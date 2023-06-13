@@ -130,8 +130,8 @@ TEST_F(DiceTabHelperTest, SigninPageStatus) {
   EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
 }
 
-// Tests DiceTabHelper metrics.
-TEST_F(DiceTabHelperTest, Metrics) {
+// Tests DiceTabHelper metrics with the `kSigninPrimaryAccount` reason.
+TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
   base::UserActionTester ua_tester;
   base::HistogramTester h_tester;
   DiceTabHelper::CreateForWebContents(web_contents());
@@ -162,6 +162,9 @@ TEST_F(DiceTabHelperTest, Metrics) {
   h_tester.ExpectUniqueSample(
       "Signin.SigninStartedAccessPoint.NewAccountNoExistingAccount",
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);
+  h_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);
 
   // First call to did finish load does logs any Signin_SigninPage_Shown user
   // action.
@@ -191,6 +194,44 @@ TEST_F(DiceTabHelperTest, Metrics) {
   h_tester.ExpectUniqueSample(
       "Signin.SigninStartedAccessPoint.WithDefault",
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);
+  h_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 2);
+}
+
+// Tests DiceTabHelper metrics with the `kAddSecondaryAccount` reason.
+TEST_F(DiceTabHelperTest, AddSecondaryAccountMetrics) {
+  base::UserActionTester ua_tester;
+  base::HistogramTester h_tester;
+  DiceTabHelper::CreateForWebContents(web_contents());
+  DiceTabHelper* dice_tab_helper =
+      DiceTabHelper::FromWebContents(web_contents());
+
+  // Check metrics logged when the Dice tab helper is initialized.
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(signin_url_,
+                                                            main_rfh());
+  simulator->Start();
+  dice_tab_helper->InitializeSigninFlow(
+      signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+      signin_metrics::Reason::kAddSecondaryAccount,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      GURL::EmptyGURL());
+  h_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);
+
+  // First call to did finish load does logs any Signin_SigninPage_Shown user
+  // action.
+  simulator->Commit();
+
+  // These metrics are only logged with the `kSigninPrimaryAccount` reason.
+  EXPECT_EQ(0, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
+  EXPECT_EQ(0, ua_tester.GetActionCount("Signin_SigninPage_Loading"));
+  EXPECT_EQ(0, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
+  h_tester.ExpectTotalCount("Signin.SigninStartedAccessPoint", 0);
+  h_tester.ExpectTotalCount(
+      "Signin.SigninStartedAccessPoint.NewAccountNoExistingAccount", 0);
 }
 
 TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {

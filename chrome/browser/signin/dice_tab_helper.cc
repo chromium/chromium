@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -38,7 +39,18 @@ void DiceTabHelper::InitializeSigninFlow(
   redirect_url_ = redirect_url;
   sync_signin_flow_status_ = SyncSigninFlowStatus::kNotStarted;
 
-  if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
+  // Note: if a Dice signin tab is reused, `InitializeSigninFlow()` is not
+  // called again, and the tab reuse does not generate new metrics.
+
+  if (signin_reason_ == signin_metrics::Reason::kSigninPrimaryAccount ||
+      signin_reason_ == signin_metrics::Reason::kAddSecondaryAccount) {
+    // See details at go/chrome-signin-metrics-revamp.
+    base::UmaHistogramEnumeration(
+        "Signin.SignIn.Started", access_point,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  }
+
+  if (signin_reason_ == signin_metrics::Reason::kSigninPrimaryAccount) {
     sync_signin_flow_status_ = SyncSigninFlowStatus::kStarted;
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
@@ -99,7 +111,8 @@ void DiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (!signin_page_load_recorded_) {
+  if (signin_reason_ == signin_metrics::Reason::kSigninPrimaryAccount &&
+      !signin_page_load_recorded_) {
     signin_page_load_recorded_ = true;
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Shown"));
   }
