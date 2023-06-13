@@ -11,7 +11,6 @@
     padding-inline-start: 0;
   }
 
-  .settings-box-row,
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
@@ -27,7 +26,152 @@
   #screenMagnifierZoomHintLabel {
     white-space: pre-line;
   }
+
+  #colorFilteringDeficiencyTypeDropdown {
+    --md-select-width: 300px;
+  }
+
+  .color-item > .settings-box {
+    border-top: none
+  }
+
+  .color-preview-holder {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 8px;
+    gap: 16px;
+    margin-inline-end: 20px;
+    padding: 16px 0;
+    text-align: center;
+  }
+
+  .color-preview-holder table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0 auto;
+  }
+
+  .color-preview-holder th {
+    font-weight: normal;
+    padding-bottom: 4px;
+    padding-top: 16px;
+  }
+
+  .color-preview-holder td {
+    margin: 0;
+    padding: 0;
+  }
+
+  .color-preview {
+    height: 92px;
+    width: calc(524px / 8);
+  }
+
+  .color-preview.red {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-red), transparent);
+  }
+
+  .color-preview.orange {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-orange), transparent);
+  }
+
+  .color-preview.yellow {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-yellow), transparent);
+  }
+
+  .color-preview.green {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-green), transparent);
+  }
+
+  .color-preview.cyan {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-cyan), transparent);
+  }
+
+  .color-preview.blue {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-blue), transparent);
+  }
+
+  .color-preview.purple {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-purple), transparent);
+  }
+
+  .color-preview.gray {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-grey), transparent);
+  }
 </style>
+<template is="dom-if" if="[[experimentalColorEnhancementSettingsEnabled_]]">
+  <settings-toggle-button
+    id="enableColorFiltering"
+    class="hr"
+    icon="os-settings:color-correction"
+    pref="{{prefs.settings.a11y.color_filtering.enabled}}"
+    label="$i18n{colorFilteringLabel}"
+    sub-label="$i18n{colorFilteringDescription}">
+  </settings-toggle-button>
+  <template is="dom-if"
+      if="[[prefs.settings.a11y.color_filtering.enabled.value]]">
+    <div class="sub-item color-item">
+      <div class="settings-box">
+        <div class="start settings-box-text">
+          <div class="label" aria-hidden="true">
+            $i18n{colorVisionDeficiencyTypeLabel}
+          </div>
+        </div>
+        <settings-dropdown-menu
+            id="colorFilteringDeficiencyTypeDropdown"
+            label="$i18n{colorVisionDeficiencyTypeLabel}"
+            pref="{{prefs.settings.a11y.color_filtering.color_vision_deficiency_type}}"
+            menu-options="[[colorVisionDeficiencyTypeOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="settings-box">
+        <div class="start settings-box-text" aria-hidden="true">
+          $i18n{colorVisionFilterIntensityLabel}
+        </div>
+        <settings-slider
+          id="colorFilteringIntensitySlider"
+          pref="{{prefs.settings.a11y.color_filtering.color_vision_correction_amount}}"
+          min="0" max="100"
+          label-aria="$i18n{colorVisionFilterIntensityLabel}"
+          label-min="$i18n{colorFilterMinLabel}"
+          label-max="$i18n{colorFilterMaxLabel}">
+        </settings-slider>
+      </div>
+      <div class="color-preview-holder">
+        <div>$i18n{colorFilteringPreviewInstructions}</div>
+        <table>
+          <tr>
+            <th>$i18n{colorFilteringPreviewColorRed}</th>
+            <th>$i18n{colorFilteringPreviewColorOrange}</th>
+            <th>$i18n{colorFilteringPreviewColorYellow}</th>
+            <th>$i18n{colorFilteringPreviewColorGreen}</th>
+            <th>$i18n{colorFilteringPreviewColorCyan}</th>
+            <th>$i18n{colorFilteringPreviewColorBlue}</th>
+            <th>$i18n{colorFilteringPreviewColorPurple}</th>
+            <th>$i18n{colorFilteringPreviewColorGray}</th>
+          </tr>
+          <tr>
+            <td><div class="color-preview red"></div></td>
+            <td><div class="color-preview orange"></div></td>
+            <td><div class="color-preview yellow"></div></td>
+            <td><div class="color-preview green"></div></td>
+            <td><div class="color-preview cyan"></div></td>
+            <td><div class="color-preview blue"></div></td>
+            <td><div class="color-preview purple"></div></td>
+            <td><div class="color-preview gray"></div></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </template>
+</template>
 <settings-toggle-button
     icon="os-settings:contrast"
     pref="{{prefs.settings.a11y.high_contrast_enabled}}"
@@ -115,43 +259,6 @@
       </settings-dropdown-menu>
     </div>
   </div>
-</template>
-<template is="dom-if" if="[[experimentalColorEnhancementSettingsEnabled_]]">
-  <settings-toggle-button
-    class="hr"
-    pref="{{prefs.settings.a11y.color_filtering.enabled}}"
-    label="$i18n{colorFilteringLabel}"
-    sub-label="$i18n{colorFilteringDescription}"
-    id="enableColorFiltering">
-  </settings-toggle-button>
-  <template is="dom-if"
-      if="[[prefs.settings.a11y.color_filtering.enabled.value]]">
-    <div class="settings-box settings-box-row">
-      <div class="start settings-box-text">
-        <div class="label" aria-hidden="true">
-          $i18n{colorVisionDeficiencyTypeLabel}
-        </div>
-      </div>
-      <settings-dropdown-menu label="$i18n{colorVisionDeficiencyTypeLabel}"
-          pref="{{prefs.settings.a11y.color_filtering.color_vision_deficiency_type}}"
-          menu-options="[[colorVisionDeficiencyTypeOptions_]]"
-          id="colorFilteringDeficiencyTypeDropdown">
-      </settings-dropdown-menu>
-    </div>
-    <div class="settings-box settings-box-row">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{colorVisionFilterIntensityLabel}
-      </div>
-      <settings-slider
-        pref="{{prefs.settings.a11y.color_filtering.color_vision_correction_amount}}"
-        min="0" max="100"
-        label-aria="$i18n{colorVisionFilterIntensityLabel}"
-        label-min="$i18n{colorFilterMinLabel}"
-        label-max="$i18n{colorFilterMaxLabel}"
-        id="colorFilteringIntensitySlider">
-      </settings-slider>
-    </div>
-  </template>
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="displaySubpageButton" class="hr"
