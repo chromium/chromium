@@ -38,6 +38,9 @@
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
 // Layout Guide Center.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// View controller for the location bar containing the omnibox. Nil when the
+// toolbar doesn't have the omnibox.
+@property(nonatomic, weak) UIViewController* locationBarViewController;
 // Omnibox commands handler for the ViewController.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 // Popup menu commands handler for the ViewController.

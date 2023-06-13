@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
-// View controller for the secondary part of the adaptive toolbar. It is the
-// part containing the controls displayed only on specific size classes.
+// View controller for the secondary part of the adaptive toolbar. It is the one
+// at the bottom of the screen. Displayed only on specific size classes.
 @interface SecondaryToolbarViewController : AdaptiveToolbarViewController
 @end
 

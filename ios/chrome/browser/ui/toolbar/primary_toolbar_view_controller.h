@@ -14,8 +14,8 @@
 @protocol PrimaryToolbarViewControllerDelegate;
 @class ViewRevealingVerticalPanHandler;
 
-// ViewController for the primary toobar part of the adaptive toolbar. It is the
-// part always displayed and containing the location bar.
+// ViewController for the primary toobar part of the adaptive toolbar. The one
+// at the top of the screen.
 @interface PrimaryToolbarViewController
     : AdaptiveToolbarViewController <SharingPositioner,
                                      KeyCommandActions,
@@ -29,9 +29,6 @@
 
 // Pan gesture handler for the toolbar.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
-
-// Sets the location bar view controller, containing the omnibox.
-- (void)setLocationBarViewController:(UIViewController*)locationBarView;
 
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;

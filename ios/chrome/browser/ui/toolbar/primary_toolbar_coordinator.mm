@@ -108,12 +108,6 @@
   [self.viewController showPrerenderingAnimation];
 }
 
-- (void)setLocationBarViewController:
-    (UIViewController*)locationBarViewController {
-  CHECK(self.started);
-  [self.viewController setLocationBarViewController:locationBarViewController];
-}
-
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolbarSlideInAnimation {

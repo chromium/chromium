@@ -52,11 +52,6 @@ class WebState;
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;
 
-// Sets the location bar view controller, containing the omnibox. Should be
-// called after start.
-- (void)setLocationBarViewController:
-    (UIViewController*)locationBarViewController;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_COORDINATOR_H_

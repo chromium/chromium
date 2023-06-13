@@ -29,6 +29,11 @@ class Browser;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Sets the location bar view controller, containing the omnibox. Should be
+// called after start.
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ADAPTIVE_TOOLBAR_COORDINATOR_H_

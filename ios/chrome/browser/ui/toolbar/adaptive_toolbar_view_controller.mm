@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -196,6 +197,21 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
   if (self.isViewLoaded) {
     [self addLayoutGuideCenterToButtons];
+  }
+}
+
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController {
+  _locationBarViewController = locationBarViewController;
+  if (locationBarViewController) {
+    [self addChildViewController:locationBarViewController];
+    [locationBarViewController didMoveToParentViewController:self];
+    [self.view setLocationBarView:locationBarViewController.view];
+    self.view.locationBarContainer.hidden = NO;
+  } else {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    [self.view setLocationBarView:nil];
+    self.view.locationBarContainer.hidden = YES;
   }
 }
 

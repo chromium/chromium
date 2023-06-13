@@ -204,13 +204,6 @@
 
 #pragma mark - Property accessors
 
-- (void)setLocationBarViewController:
-    (UIViewController*)locationBarViewController {
-  [self addChildViewController:locationBarViewController];
-  [locationBarViewController didMoveToParentViewController:self];
-  [self.view setLocationBarView:locationBarViewController.view];
-}
-
 - (void)setIsNTP:(BOOL)isNTP {
   if (isNTP == _isNTP)
     return;

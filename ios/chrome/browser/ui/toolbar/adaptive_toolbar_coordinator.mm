@@ -58,11 +58,12 @@
 }
 
 - (void)start {
-  if (self.started)
+  if (_started) {
     return;
+  }
   Browser* browser = self.browser;
 
-  self.started = YES;
+  _started = YES;
 
   self.viewController.overrideUserInterfaceStyle =
       browser->GetBrowserState()->IsOffTheRecord()
@@ -93,6 +94,15 @@
   [super stop];
   [self.mediator disconnect];
   self.mediator = nil;
+  _started = NO;
+}
+
+#pragma mark - Public
+
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController {
+  CHECK(_started);
+  self.viewController.locationBarViewController = locationBarViewController;
 }
 
 #pragma mark - AdaptiveToolbarViewControllerDelegate
