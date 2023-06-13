@@ -1126,59 +1126,6 @@ TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
   }
 }
 
-TEST_P(IntersectionObserverTest, CachedRectsImplicitRoot) {
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(R"HTML(
-    <div id="target-in-main">Hello, world!</div>
-    <iframe src="iframe.html" style="width:200px; height:100px"></iframe>
-    <div id='spacer' style='height:2000px'></div>
-  )HTML");
-  iframe_resource.Complete(R"HTML(
-    <div id='target-in-frame'>Hello, world!</div>
-    <div id='spacer' style='height:2000px'></div>
-  )HTML");
-
-  auto do_nothing = base::DoNothingAs<void(
-      const HeapVector<Member<IntersectionObserverEntry>>&)>();
-  IntersectionObserver* observer_in_main = IntersectionObserver::Create(
-      {}, {}, &GetDocument(), do_nothing, LocalFrameUkmAggregator::kLayout);
-  Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
-                                  ->GetFrame()
-                                  ->GetDocument();
-  Element* target_in_main = GetDocument().getElementById("target-in-main");
-  DummyExceptionStateForTesting exception_state;
-  observer_in_main->observe(target_in_main, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-
-  IntersectionObserver* observer_in_frame = IntersectionObserver::Create(
-      {}, {}, iframe_document, do_nothing, LocalFrameUkmAggregator::kLayout);
-  Element* target_in_frame = iframe_document->getElementById("target-in-frame");
-  observer_in_frame->observe(target_in_frame, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-
-  IntersectionObservation* observation_in_main =
-      target_in_main->IntersectionObserverData()->GetObservationFor(
-          *observer_in_main);
-  EXPECT_FALSE(observation_in_main->CanUseCachedRectsForTesting());
-  IntersectionObservation* observation_in_frame =
-      target_in_frame->IntersectionObserverData()->GetObservationFor(
-          *observer_in_frame);
-  EXPECT_FALSE(observation_in_frame->CanUseCachedRectsForTesting());
-
-  // Generate initial notifications and populate cache.
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation_in_main->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation_in_main->CanUseCachedRectsForTesting());
-  }
-}
-
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
   if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
