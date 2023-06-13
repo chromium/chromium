@@ -10,7 +10,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -120,13 +120,13 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 
 void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  CookieControlsBubbleView::ShowBubble(
+  OldCookieControlsBubbleView::ShowBubble(
       this, this, delegate()->GetWebContentsForPageActionIconView(),
       controller_.get(), status_);
 }
 
 views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
-  return CookieControlsBubbleView::GetCookieBubble();
+  return OldCookieControlsBubbleView::GetCookieBubble();
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {

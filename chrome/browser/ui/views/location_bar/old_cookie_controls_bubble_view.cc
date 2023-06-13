@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 
 #include <memory>
 #include <string>
@@ -37,7 +37,7 @@ namespace {
 // Singleton instance of the cookie bubble. The cookie bubble can only be
 // shown on the active browser window, so there is no case in which it will be
 // shown twice at the same time.
-static CookieControlsBubbleView* g_instance;
+static OldCookieControlsBubbleView* g_instance;
 
 std::unique_ptr<views::TooltipIcon> CreateInfoIcon() {
   auto explanation_tooltip = std::make_unique<views::TooltipIcon>(
@@ -53,7 +53,7 @@ std::unique_ptr<views::TooltipIcon> CreateInfoIcon() {
 }  // namespace
 
 // static
-void CookieControlsBubbleView::ShowBubble(
+void OldCookieControlsBubbleView::ShowBubble(
     views::View* anchor_view,
     views::Button* highlighted_button,
     content::WebContents* web_contents,
@@ -70,7 +70,7 @@ void CookieControlsBubbleView::ShowBubble(
   profile->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened, true);
 
   g_instance =
-      new CookieControlsBubbleView(anchor_view, web_contents, controller);
+      new OldCookieControlsBubbleView(anchor_view, web_contents, controller);
   g_instance->SetHighlightedButton(highlighted_button);
   views::Widget* bubble_widget =
       views::BubbleDialogDelegateView::CreateBubble(g_instance);
@@ -79,11 +79,11 @@ void CookieControlsBubbleView::ShowBubble(
 }
 
 // static
-CookieControlsBubbleView* CookieControlsBubbleView::GetCookieBubble() {
+OldCookieControlsBubbleView* OldCookieControlsBubbleView::GetCookieBubble() {
   return g_instance;
 }
 
-void CookieControlsBubbleView::OnStatusChanged(
+void OldCookieControlsBubbleView::OnStatusChanged(
     CookieControlsStatus new_status,
     CookieControlsEnforcement new_enforcement,
     int allowed_cookies,
@@ -101,8 +101,8 @@ void CookieControlsBubbleView::OnStatusChanged(
   UpdateUi();
 }
 
-void CookieControlsBubbleView::OnCookiesCountChanged(int allowed_cookies,
-                                                     int blocked_cookies) {
+void OldCookieControlsBubbleView::OnCookiesCountChanged(int allowed_cookies,
+                                                        int blocked_cookies) {
   // The blocked cookie count changes quite frequently, so avoid unnecessary
   // UI updates if possible.
   if (blocked_cookies_ == blocked_cookies) {
@@ -113,12 +113,13 @@ void CookieControlsBubbleView::OnCookiesCountChanged(int allowed_cookies,
   GetBubbleFrameView()->UpdateWindowTitle();
 }
 
-void CookieControlsBubbleView::OnStatefulBounceCountChanged(int bounce_count) {
+void OldCookieControlsBubbleView::OnStatefulBounceCountChanged(
+    int bounce_count) {
   stateful_bounces_ = bounce_count;
   GetBubbleFrameView()->UpdateWindowTitle();
 }
 
-CookieControlsBubbleView::CookieControlsBubbleView(
+OldCookieControlsBubbleView::OldCookieControlsBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     content_settings::CookieControlsController* controller)
@@ -130,9 +131,9 @@ CookieControlsBubbleView::CookieControlsBubbleView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
 }
 
-CookieControlsBubbleView::~CookieControlsBubbleView() = default;
+OldCookieControlsBubbleView::~OldCookieControlsBubbleView() = default;
 
-void CookieControlsBubbleView::UpdateUi() {
+void OldCookieControlsBubbleView::UpdateUi() {
   if (status_ == CookieControlsStatus::kDisabled) {
     CloseBubble();
     return;
@@ -162,9 +163,9 @@ void CookieControlsBubbleView::UpdateUi() {
     auto link = std::make_unique<views::Link>(
         l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_NOT_WORKING_TITLE));
     link->SetID(VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK);
-    link->SetCallback(
-        base::BindRepeating(&CookieControlsBubbleView::OnNotWorkingLinkClicked,
-                            base::Unretained(this)));
+    link->SetCallback(base::BindRepeating(
+        &OldCookieControlsBubbleView::OnNotWorkingLinkClicked,
+        base::Unretained(this)));
     extra_view_ = SetExtraView(std::move(link));
     blocked_cookies_.reset();
     stateful_bounces_.reset();
@@ -189,8 +190,8 @@ void CookieControlsBubbleView::UpdateUi() {
                enforcement_ == CookieControlsEnforcement::kNoEnforcement))
                  ? ui::DIALOG_BUTTON_OK
                  : ui::DIALOG_BUTTON_NONE);
-  SetAcceptCallback(base::BindOnce(&CookieControlsBubbleView::OnDialogAccepted,
-                                   base::Unretained(this)));
+  SetAcceptCallback(base::BindOnce(
+      &OldCookieControlsBubbleView::OnDialogAccepted, base::Unretained(this)));
 
   DialogModelChanged();
   Layout();
@@ -203,14 +204,14 @@ void CookieControlsBubbleView::UpdateUi() {
   }
 }
 
-void CookieControlsBubbleView::CloseBubble() {
+void OldCookieControlsBubbleView::CloseBubble() {
   // Widget's Close() is async, but we don't want to use cookie_bubble_ after
   // this. Additionally web_contents() may have been destroyed.
   g_instance = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
 }
 
-void CookieControlsBubbleView::Init() {
+void OldCookieControlsBubbleView::Init() {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -226,9 +227,9 @@ void CookieControlsBubbleView::Init() {
   auto cookie_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_BLOCKED_COOKIES_INFO));
   cookie_link->SetMultiLine(true);
-  cookie_link->SetCallback(
-      base::BindRepeating(&CookieControlsBubbleView::OnShowCookiesLinkClicked,
-                          base::Unretained(this)));
+  cookie_link->SetCallback(base::BindRepeating(
+      &OldCookieControlsBubbleView::OnShowCookiesLinkClicked,
+      base::Unretained(this)));
   cookie_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   show_cookies_link_ = AddChildView(std::move(cookie_link));
 
@@ -240,7 +241,7 @@ void CookieControlsBubbleView::Init() {
       gfx::Insets::TLBR(0, insets.left(), 0, insets.right())));
 }
 
-void CookieControlsBubbleView::AddedToWidget() {
+void OldCookieControlsBubbleView::AddedToWidget() {
   auto header_view = std::make_unique<NonAccessibleImageView>();
   header_view_ = header_view.get();
   header_view_->SetBackground(
@@ -248,7 +249,7 @@ void CookieControlsBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 }
 
-gfx::Size CookieControlsBubbleView::CalculatePreferredSize() const {
+gfx::Size OldCookieControlsBubbleView::CalculatePreferredSize() const {
   // The total width of this view should always be identical to the width
   // of the header images.
   int width = ui::ResourceBundle::GetSharedInstance()
@@ -257,7 +258,7 @@ gfx::Size CookieControlsBubbleView::CalculatePreferredSize() const {
   return gfx::Size{width, GetHeightForWidth(width)};
 }
 
-std::u16string CookieControlsBubbleView::GetWindowTitle() const {
+std::u16string OldCookieControlsBubbleView::GetWindowTitle() const {
   switch (intermediate_step_) {
     case IntermediateStep::kTurnOffButton:
       return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_NOT_WORKING_TITLE);
@@ -284,7 +285,7 @@ std::u16string CookieControlsBubbleView::GetWindowTitle() const {
   }
 }
 
-void CookieControlsBubbleView::WindowClosing() {
+void OldCookieControlsBubbleView::WindowClosing() {
   // |cookie_bubble_| can be a new bubble by this point (as Close(); doesn't
   // call this right away). Only set to nullptr when it's this bubble.
   bool this_bubble = g_instance == this;
@@ -297,7 +298,7 @@ void CookieControlsBubbleView::WindowClosing() {
   }
 }
 
-void CookieControlsBubbleView::OnDialogAccepted() {
+void OldCookieControlsBubbleView::OnDialogAccepted() {
   if (!controller_) {
     return;
   }
@@ -311,13 +312,13 @@ void CookieControlsBubbleView::OnDialogAccepted() {
   }
 }
 
-void CookieControlsBubbleView::OnShowCookiesLinkClicked() {
+void OldCookieControlsBubbleView::OnShowCookiesLinkClicked() {
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.CookiesInUse"));
   TabDialogs::FromWebContents(web_contents())->ShowCollectedCookies();
   GetWidget()->Close();
 }
 
-void CookieControlsBubbleView::OnNotWorkingLinkClicked() {
+void OldCookieControlsBubbleView::OnNotWorkingLinkClicked() {
   DCHECK_EQ(status_, CookieControlsStatus::kEnabled);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.NotWorking"));
   // Don't go through the controller as this is an intermediary state that
@@ -326,11 +327,12 @@ void CookieControlsBubbleView::OnNotWorkingLinkClicked() {
   UpdateUi();
 }
 
-void CookieControlsBubbleView::OnTooltipBubbleShown(views::TooltipIcon* icon) {
+void OldCookieControlsBubbleView::OnTooltipBubbleShown(
+    views::TooltipIcon* icon) {
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TooltipShown"));
 }
 
-void CookieControlsBubbleView::OnTooltipIconDestroying(
+void OldCookieControlsBubbleView::OnTooltipIconDestroying(
     views::TooltipIcon* icon) {
   DCHECK(tooltip_observation_.IsObservingSource(icon));
   tooltip_observation_.Reset();

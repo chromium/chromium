@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OLD_COOKIE_CONTROLS_BUBBLE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OLD_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,8 +27,9 @@ class ImageView;
 class Label;
 }  // namespace views
 
-// View used to display the cookie controls ui.
-class CookieControlsBubbleView
+// Old view used to display the cookie controls ui.
+// TODO(crbug.com/1446230): Clean up this old view once the feature is launched.
+class OldCookieControlsBubbleView
     : public LocationBarBubbleDelegateView,
       public views::TooltipIcon::Observer,
       public content_settings::OldCookieControlsObserver {
@@ -38,8 +39,9 @@ class CookieControlsBubbleView
     VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK,
   };
 
-  CookieControlsBubbleView(const CookieControlsBubbleView&) = delete;
-  CookieControlsBubbleView& operator=(const CookieControlsBubbleView&) = delete;
+  OldCookieControlsBubbleView(const OldCookieControlsBubbleView&) = delete;
+  OldCookieControlsBubbleView& operator=(const OldCookieControlsBubbleView&) =
+      delete;
 
   static void ShowBubble(views::View* anchor_view,
                          views::Button* highlighted_button,
@@ -47,7 +49,7 @@ class CookieControlsBubbleView
                          content_settings::CookieControlsController* controller,
                          CookieControlsStatus status);
 
-  static CookieControlsBubbleView* GetCookieBubble();
+  static OldCookieControlsBubbleView* GetCookieBubble();
 
   // content_settings::OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
@@ -64,11 +66,11 @@ class CookieControlsBubbleView
     kTurnOffButton,
   };
 
-  CookieControlsBubbleView(
+  OldCookieControlsBubbleView(
       views::View* anchor_view,
       content::WebContents* web_contents,
       content_settings::CookieControlsController* cookie_contols);
-  ~CookieControlsBubbleView() override;
+  ~OldCookieControlsBubbleView() override;
 
   void UpdateUi();
 
@@ -112,4 +114,4 @@ class CookieControlsBubbleView
       tooltip_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OLD_COOKIE_CONTROLS_BUBBLE_VIEW_H_

@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -68,12 +68,13 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
     ASSERT_TRUE(cookie_controls_icon()->GetVisible());
     cookie_controls_icon_->ExecuteForTesting();
 
-    auto* bubble = static_cast<CookieControlsBubbleView*>(
+    auto* bubble = static_cast<OldCookieControlsBubbleView*>(
         cookie_controls_icon_->GetBubble());
 
     if (name == "NotWorkingClicked") {
       views::View* link = bubble->parent()->GetViewByID(
-          CookieControlsBubbleView::VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK);
+          OldCookieControlsBubbleView::
+              VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK);
       ASSERT_TRUE(link);
       link->OnKeyPressed(
           ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
@@ -81,7 +82,7 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
   }
 
   void AcceptBubble() {
-    auto* bubble = static_cast<CookieControlsBubbleView*>(
+    auto* bubble = static_cast<OldCookieControlsBubbleView*>(
         cookie_controls_icon_->GetBubble());
     ASSERT_TRUE(bubble);
     bubble->Accept();
