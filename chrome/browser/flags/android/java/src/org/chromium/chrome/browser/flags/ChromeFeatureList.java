@@ -129,6 +129,10 @@ public abstract class ChromeFeatureList {
             "AutofillEnableNewCardArtAndNetworkImages";
     public static final String AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH =
             "AutofillEnablePaymentsMandatoryReauth";
+    public static final String AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES =
+            "AutofillEnableRankingFormulaAddressProfiles";
+    public static final String AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS =
+            "AutofillEnableRankingFormulaCreditCards";
     public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES =
             "AutofillEnableSupportForHonorificPrefixes";
     public static final String AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT =
