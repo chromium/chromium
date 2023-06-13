@@ -1802,6 +1802,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Jank.FrameDuration" units="ms"
+    expires_after="2024-04-30">
+  <owner>oksamyt@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Amount of time it takes to draw Android UI frames as measured by Android's
+    FrameMetrics API. Each frame's draw duration is stored individually.
+
+    The samples for this metric (along with Android.Jank.JankyFrames) are
+    manually passed from Java to C++ to be recorded. This is done instead of
+    recording in real time from Java due to the large number of generated
+    samples (potentially ~60 per second). Recording them directly from Java
+    would result in a JNI call for each sample which could cause performance
+    issues.
+
+    FrameMetrics only reports frames with Android UI updates. An idle input
+    field would report only 2 frames per second due to the cursor blink
+    animation. Scrolling through a web page may record no frames if no Android
+    UI (like the address bar) updates.
+  </summary>
+</histogram>
+
+<histogram name="Android.Jank.FrameJankStatus" enum="FrameJankStatus"
+    expires_after="2024-04-30">
+  <owner>oksamyt@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Jankiness of frames according to the Android's FrameMetrics API. Samples are
+    recorded into the Janky bucket for frames for which their total duration
+    exceeded the given deadline and into the NonJanky bucket for all other
+    frames. This metric is recorded at the same time as
+    Android.Jank.FrameDuration histogram.
+  </summary>
+</histogram>
+
 <histogram name="Android.KernelVersion" enum="AndroidKernelVersion"
     expires_after="2023-11-12">
   <owner>rsesek@chromium.org</owner>

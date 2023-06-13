@@ -34,6 +34,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &metrics::kAndroidMetricsAsyncMetricLogging,
     &features::kWebViewZoomKeyboardShortcuts,
     &features::kWebViewClearFunctorInBackground,
+    &features::kWebViewReportFrameMetrics,
 };
 
 // static

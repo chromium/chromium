@@ -45542,6 +45542,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Allowed navigation, user gesture, ad frame"/>
 </enum>
 
+<enum name="FrameJankStatus">
+  <int value="0" label="Janky"/>
+  <int value="1" label="NonJanky"/>
+</enum>
+
 <enum name="FramePrioritiesSeen">
   <obsolete>
     Obsoleted on 2021-01-22 as corresponding experiment code was removed and the

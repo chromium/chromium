@@ -105,6 +105,12 @@ BASE_FEATURE(kWebViewRecordAppDataDirectorySize,
              "WebViewRecordAppDataDirectorySize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to report frame metrics to the Android.Jank.FrameDuration and
+// Android.Jank.FrameJankStatus histograms.
+BASE_FEATURE(kWebViewReportFrameMetrics,
+             "WebViewReportFrameMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Flag to restrict main frame Web Content to verified web content. Verification
 // happens via Digital Asset Links.
 BASE_FEATURE(kWebViewRestrictSensitiveContent,

@@ -36,6 +36,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.Window;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.AnimationUtils;
 import android.view.autofill.AutofillValue;
@@ -74,6 +75,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.jank_tracker.FrameMetricsListener;
+import org.chromium.base.jank_tracker.FrameMetricsStore;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.AsyncTask;
@@ -486,6 +489,8 @@ public class AwContents implements SmartClipProvider {
     // The current AwWindowCoverageTracker, if any. This will be non-null when the AwContents is
     // attached to the Window and size tracking is enabled. It will be null otherwise.
     private AwWindowCoverageTracker mAwWindowCoverageTracker;
+
+    private AwFrameMetricsListener mAwFrameMetricsListener;
 
     private AwDarkMode mAwDarkMode;
     private AwWebContentsMetricsRecorder mAwWebContentsMetricsRecorder;
@@ -1002,6 +1007,34 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
+    private class AwFrameMetricsListener {
+        private FrameMetricsListener mFrameMetricsListener;
+        private boolean mAttached;
+
+        public AwFrameMetricsListener() {
+            FrameMetricsStore metricsStore = new FrameMetricsStore();
+            mFrameMetricsListener = new FrameMetricsListener(metricsStore);
+            mAttached = false;
+        }
+
+        public void attachListener(Window window) {
+            if (mAttached) return;
+            final Handler handler = new Handler();
+            window.addOnFrameMetricsAvailableListener(mFrameMetricsListener, handler);
+            mAttached = true;
+        }
+
+        public void detachListener(Window window) {
+            if (!mAttached) return;
+            window.removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
+            mAttached = false;
+        }
+
+        public FrameMetricsListener getFrameMetricsListener() {
+            return mFrameMetricsListener;
+        }
+    }
+
     //--------------------------------------------------------------------------------------------
     /**
      * @param browserContext the browsing context to associate this view contents with.
@@ -1130,6 +1163,10 @@ public class AwContents implements SmartClipProvider {
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
 
             onContainerViewChanged();
+        }
+
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_REPORT_FRAME_METRICS)) {
+            mAwFrameMetricsListener = new AwFrameMetricsListener();
         }
     }
 
@@ -3218,6 +3255,13 @@ public class AwContents implements SmartClipProvider {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
         }
+
+        if (mAwFrameMetricsListener != null) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                mAwFrameMetricsListener.attachListener(activity.getWindow());
+            }
+        }
     }
 
     private void detachWindowCoverageTracker() {
@@ -3235,6 +3279,13 @@ public class AwContents implements SmartClipProvider {
         detachWindowCoverageTracker();
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
+
+        if (mAwFrameMetricsListener != null) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                mAwFrameMetricsListener.detachListener(activity.getWindow());
+            }
+        }
     }
 
     /**
@@ -3303,6 +3354,14 @@ public class AwContents implements SmartClipProvider {
         mIsWindowVisible = visible;
         if (!isDestroyed(NO_WARN)) {
             AwContentsJni.get().setWindowVisibility(mNativeAwContents, mIsWindowVisible);
+
+            if (mAwFrameMetricsListener != null) {
+                if (mIsWindowVisible) {
+                    mAwFrameMetricsListener.getFrameMetricsListener().setIsListenerRecording(true);
+                } else {
+                    mAwFrameMetricsListener.getFrameMetricsListener().setIsListenerRecording(false);
+                }
+            }
         }
         // Using TimeUtils to allow it being overridden in tests.
         mLastWindowVisibleTime = visible ? CURRENTLY_VISIBLE : TimeUtils.uptimeMillis();
@@ -4047,6 +4106,11 @@ public class AwContents implements SmartClipProvider {
                 AwContentsJni.get().trimMemory(mNativeAwContents, level, visible);
             });
         }
+    }
+
+    private Activity getActivity() {
+        Context context = mWindowAndroid.getWindowAndroid().getContext().get();
+        return ContextUtils.activityFromContext(context);
     }
 
     // --------------------------------------------------------------------------------------------
