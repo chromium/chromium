@@ -205,7 +205,7 @@ Tab::Tab(TabSlotController* controller)
 
   // This will cause calls to GetContentsBounds to return only the rectangle
   // inside the tab shape, rather than to its extents.
-  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetBorderInsets()));
+  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
 
   title_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_->SetElideBehavior(gfx::FADE_TAIL);
@@ -305,11 +305,8 @@ void Tab::Layout() {
   if (showing_icon_) {
     // Height should go to the bottom of the tab for the crashed tab animation
     // to pop out of the bottom.
-    favicon_bounds.set_y(
-        contents_rect.y() +
-        tab_style_views_->tab_style()
-            ->GetContentsInsets(contents_rect, gfx::kFaviconSize)
-            .top());
+    favicon_bounds.set_y(contents_rect.y() +
+                         Center(contents_rect.height(), gfx::kFaviconSize));
     if (center_icon_) {
       // When centering the favicon, the favicon is allowed to escape the normal
       // contents rect.
@@ -341,9 +338,8 @@ void Tab::Layout() {
     // TODO(pkasting): The padding should maybe be removed, see comments in
     // TabCloseButton::TargetForRect().
     const int close_button_size = TabCloseButton::GetGlyphSize();
-    const int top = tab_style_views_->tab_style()
-                        ->GetContentsInsets(contents_rect, close_button_size)
-                        .top();
+    const int top =
+        contents_rect.y() + Center(contents_rect.height(), close_button_size);
     // Clamp the close button position to "centered within the tab"; this should
     // only have an effect when animating in a new active tab, which might start
     // out narrower than the minimum active tab width.
@@ -367,11 +363,10 @@ void Tab::Layout() {
         right -= ui::TouchUiController::Get()->touch_ui() ? 8 : 6;
     }
     const gfx::Size image_size = alert_indicator_button_->GetPreferredSize();
-    gfx::Rect bounds(std::max(contents_rect.x(), right - image_size.width()),
-                     tab_style_views_->tab_style()
-                         ->GetContentsInsets(contents_rect, image_size.height())
-                         .top(),
-                     image_size.width(), image_size.height());
+    gfx::Rect bounds(
+        std::max(contents_rect.x(), right - image_size.width()),
+        contents_rect.y() + Center(contents_rect.height(), image_size.height()),
+        image_size.width(), image_size.height());
     if (center_icon_) {
       // When centering the alert icon, it is allowed to escape the normal
       // contents rect.
@@ -407,8 +402,8 @@ void Tab::Layout() {
     const int title_width = std::max(title_right - title_left, 0);
     // The Label will automatically center the font's cap height within the
     // provided vertical space.
-    const gfx::Rect title_bounds(title_left, favicon_bounds.y(), title_width,
-                                 gfx::kFaviconSize);
+    const gfx::Rect title_bounds(title_left, contents_rect.y(), title_width,
+                                 contents_rect.height());
     show_title = title_width > 0;
 
     if (title_bounds != target_title_bounds_) {

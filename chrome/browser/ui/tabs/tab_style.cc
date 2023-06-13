@@ -10,23 +10,6 @@
 
 namespace {
 
-// A copy of the center function for calculating insets. Returns the coordinate
-// for an object of size |item_size| centered in a region of size |size|,
-// biasing towards placing any extra space ahead of the object.
-int Center(int size, int item_size) {
-  int extra_space = size - item_size;
-  // Integer division below truncates, thus effectively "rounding toward zero";
-  // to always place extra space ahead of the object, we want to round towards
-  // positive infinity, which means we need to bias the division only when the
-  // size difference is positive.  (Adding one unconditionally will stack with
-  // the truncation if |extra_space| is negative, resulting in off-by-one
-  // errors.)
-  if (extra_space > 0) {
-    ++extra_space;
-  }
-  return extra_space / 2;
-}
-
 // Thickness in DIPs of the separator painted on the left and right edges of
 // the tab.
 constexpr int kGM2SeparatorThickness = 1;
@@ -46,8 +29,6 @@ class GM2TabStyle : public TabStyle {
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
   float GetSelectedTabOpacity() const override;
-  gfx::Insets GetContentsInsets(const gfx::Rect& contents_rect,
-                                int centered_content_height) const override;
 };
 class ChromeRefresh2023TabStyle : public GM2TabStyle {
  public:
@@ -56,8 +37,6 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetBottomCornerRadius() const override;
   gfx::Size GetSeparatorSize() const override;
   int GetContentsHorizontalInsetSize() const override;
-  gfx::Insets GetContentsInsets(const gfx::Rect& contents_rect,
-                                int centered_content_height) const override;
 };
 
 }  // namespace
@@ -113,13 +92,6 @@ float GM2TabStyle::GetSelectedTabOpacity() const {
   return kDefaultSelectedTabOpacity;
 }
 
-gfx::Insets GM2TabStyle::GetContentsInsets(const gfx::Rect& contents_rect,
-                                           int centered_content_height) const {
-  int horizontal = GetBottomCornerRadius() * 2;
-  int vertical = Center(contents_rect.height(), centered_content_height);
-  return gfx::Insets::TLBR(vertical, horizontal, vertical, horizontal);
-}
-
 int ChromeRefresh2023TabStyle::GetTopCornerRadius() const {
   return 10;
 }
@@ -135,13 +107,6 @@ gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
 
 int ChromeRefresh2023TabStyle::GetContentsHorizontalInsetSize() const {
   return GetBottomCornerRadius() + 8;
-}
-
-gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets(
-    const gfx::Rect& contents_rect,
-    int centered_content_height) const {
-  int horizontal = GetBottomCornerRadius() + 8;
-  return gfx::Insets::TLBR(6, horizontal, 12, horizontal);
 }
 
 // static

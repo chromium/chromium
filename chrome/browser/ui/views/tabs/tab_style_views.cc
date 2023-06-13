@@ -75,7 +75,7 @@ class GM2TabStyleViews : public TabStyleViews {
                  bool force_active = false,
                  TabStyle::RenderUnits render_units =
                      TabStyle::RenderUnits::kPixels) const override;
-  gfx::Insets GetBorderInsets() const override;
+  gfx::Insets GetContentsInsets() const override;
   float GetZValue() const override;
   float GetActiveOpacity() const override;
   TabActive GetApparentActiveState() const override;
@@ -397,7 +397,7 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
   return path;
 }
 
-gfx::Insets GM2TabStyleViews::GetBorderInsets() const {
+gfx::Insets GM2TabStyleViews::GetContentsInsets() const {
   const int stroke_thickness = GetStrokeThickness();
   const int horizontal_inset = tab_style()->GetContentsHorizontalInsetSize();
   return gfx::Insets::TLBR(

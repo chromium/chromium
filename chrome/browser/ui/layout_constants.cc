@@ -91,7 +91,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       // constant.
       return touch_ui ? 24 : 20;
     case TAB_PRE_TITLE_PADDING:
-      return base::FeatureList::IsEnabled(features::kChromeRefresh2023) ? 6 : 8;
+      return 8;
     case TAB_STACK_DISTANCE:
       return touch_ui ? 4 : 6;
     case TABSTRIP_REGION_VIEW_CONTROL_PADDING:

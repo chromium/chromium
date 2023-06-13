@@ -535,7 +535,7 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
-  const int width = tab->tab_style_views()->GetBorderInsets().width() +
+  const int width = tab->tab_style_views()->GetContentsInsets().width() +
                     Tab::kMinimumContentsWidthForCloseButtons;
   tab->SetBounds(0, 0, width, 50);
   const views::View* close = GetCloseButton(tab);

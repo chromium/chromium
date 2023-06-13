@@ -14,7 +14,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -135,12 +134,8 @@ class TabStyle {
   virtual float GetSelectedTabOpacity() const = 0;
 
   // Returns how far from the leading and trailing edges of a tab the contents
-  // should actually be laid out. This also includes the corner radius.
+  // should actually be laid out.
   virtual int GetContentsHorizontalInsetSize() const;
-
-  // Returns the internal bounds for content in the tab.
-  virtual gfx::Insets GetContentsInsets(const gfx::Rect& contents_rect,
-                                        int centered_content_height) const = 0;
 
   // The largest valid value of TabStyle::GetZValue(). Currently,
   // GM2TabStyle::GetZValue is the only implementation, and it can't return

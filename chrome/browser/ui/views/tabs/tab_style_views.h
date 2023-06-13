@@ -53,7 +53,7 @@ class TabStyleViews {
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
 
   // Returns the insets to use for laying out tab contents.
-  virtual gfx::Insets GetBorderInsets() const = 0;
+  virtual gfx::Insets GetContentsInsets() const = 0;
 
   // Returns the z-value of the tab, which should be used to paint them in
   // ascending order. Return values are in the range (0,

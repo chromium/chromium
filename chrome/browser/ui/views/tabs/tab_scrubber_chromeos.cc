@@ -49,9 +49,9 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
 
   // Start the swipe where the tab contents start/end.  This provides a small
   // amount of slop inside the tab before a swipe will change tabs.
-  gfx::Insets border_insets = tab->tab_style_views()->GetBorderInsets();
-  int left = border_insets.left();
-  int right = border_insets.right();
+  auto contents_insets = tab->tab_style_views()->GetContentsInsets();
+  int left = contents_insets.left();
+  int right = contents_insets.right();
 
   // The contents insets are logical rather than physical, so reverse them for
   // RTL.
