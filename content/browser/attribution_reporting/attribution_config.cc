@@ -78,6 +78,10 @@ bool AttributionConfig::RateLimitConfig::Validate() const {
     return false;
   }
 
+  if (!origins_per_site_window.is_positive()) {
+    return false;
+  }
+
   return true;
 }
 
