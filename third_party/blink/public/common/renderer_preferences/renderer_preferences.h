@@ -63,6 +63,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool webrtc_allow_legacy_tls_protocols{false};
   UserAgentOverride user_agent_override;
   std::string accept_languages;
+  bool send_subresource_notification{false};
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::string system_font_family_name;
 #endif

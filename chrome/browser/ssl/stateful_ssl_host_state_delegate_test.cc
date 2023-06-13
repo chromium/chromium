@@ -129,6 +129,34 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, QueryPolicy) {
                                storage_partition));
 }
 
+// Tests the expected behavior of calling HasAllowExceptionForAnyHost on the
+// SSLHostStateDelegate class after setting website settings for
+// different ContentSettingsType.
+IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
+                       HasAllowExceptionForAnyHost) {
+  scoped_refptr<net::X509Certificate> cert = GetOkCert();
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+  auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  GURL url = GURL("https://example1.com/");
+
+  EXPECT_EQ(false, state->HasAllowExceptionForAnyHost(storage_partition));
+
+  host_content_settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(false, state->HasAllowExceptionForAnyHost(storage_partition));
+
+  // Simulate a user decision to allow an invalid certificate exception for
+  // kWWWGoogleHost.
+  state->AllowCert(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID,
+                   storage_partition);
+  EXPECT_EQ(true, state->HasAllowExceptionForAnyHost(storage_partition));
+}
+
 // Tests the expected behavior of calling IsHttpAllowedForHost on the
 // SSLHostStateDelegate class after various HTTP decisions have been made.
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, HttpAllowlisting) {

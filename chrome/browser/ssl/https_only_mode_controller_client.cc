@@ -52,6 +52,10 @@ void HttpsOnlyModeControllerClient::Proceed() {
           profile->GetSSLHostStateDelegate());
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state) {
+    // Notifies the browser process when a HTTP exception is allowed in
+    // HTTPS-First Mode.
+    web_contents_->SetAlwaysSendSubresourceNotifications();
+
     state->AllowHttpForHost(
         request_url_.host(),
         web_contents_->GetPrimaryMainFrame()->GetStoragePartition());

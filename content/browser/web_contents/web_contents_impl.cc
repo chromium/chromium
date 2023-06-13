@@ -1888,6 +1888,30 @@ WebUI* WebContentsImpl::GetWebUI() {
   return primary_frame_tree_.root()->current_frame_host()->web_ui();
 }
 
+void WebContentsImpl::SetAlwaysSendSubresourceNotifications() {
+  if (!base::FeatureList::IsEnabled(
+          features::kReduceSubresourceResponseStartedIPC)) {
+    return;
+  }
+
+  if (GetSendSubresourceNotification()) {
+    return;
+  }
+
+  // Updates all the renderers if the user allows certificate error or HTTP
+  // exception, but doesn't update renderers when all exceptions are revoked
+  // from all hosts since this causes superfluous IPCs.
+  for (WebContentsImpl* web_contents : GetAllWebContents()) {
+    DCHECK(!web_contents->GetSendSubresourceNotification());
+    web_contents->renderer_preferences_.send_subresource_notification = true;
+    web_contents->SyncRendererPrefs();
+  }
+}
+
+bool WebContentsImpl::GetSendSubresourceNotification() {
+  return GetRendererPrefs().send_subresource_notification;
+}
+
 void WebContentsImpl::SetUserAgentOverride(
     const blink::UserAgentOverride& ua_override,
     bool override_in_new_tabs) {
@@ -3281,6 +3305,15 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   // happens after RenderFrameHostManager::Init.
   NotifySwappedFromRenderManager(nullptr,
                                  GetRenderManager()->current_frame_host());
+
+  // Checks whether the associated ssl_manager has any certificate error or HTTP
+  // exceptions for any host and updates the renderer preferences.
+  if (base::FeatureList::IsEnabled(
+          features::kReduceSubresourceResponseStartedIPC) &&
+      GetController().ssl_manager()->HasAllowExceptionForAnyHost()) {
+    renderer_preferences_.send_subresource_notification = true;
+    SyncRendererPrefs();
+  }
 }
 
 void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {

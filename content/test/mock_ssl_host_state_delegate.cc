@@ -102,4 +102,9 @@ bool MockSSLHostStateDelegate::HasAllowException(
   return exceptions_.find(host) != exceptions_.end();
 }
 
+bool MockSSLHostStateDelegate::HasAllowExceptionForAnyHost(
+    StoragePartition* storage_partition) {
+  return !exceptions_.empty();
+}
+
 }  // namespace content

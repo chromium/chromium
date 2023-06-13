@@ -8,6 +8,7 @@
 #include "base/json/values_util.h"
 #include "base/time/clock.h"
 #include "base/values.h"
+#include "components/content_settings/core/browser/content_settings_pref_provider.h"
 
 namespace {
 
@@ -56,6 +57,18 @@ void HttpsOnlyModeAllowlist::AllowHttpForHost(const std::string& host,
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::HTTP_ALLOWED,
       base::Value(std::move(dict)));
+}
+
+bool HttpsOnlyModeAllowlist::IsHttpAllowedForAnyHost(
+    bool is_nondefault_storage) const {
+  if (is_nondefault_storage) {
+    return !allowed_http_hosts_for_non_default_storage_partitions_.empty();
+  }
+
+  ContentSettingsForOneType content_settings_list;
+  host_content_settings_map_->GetSettingsForOneType(
+      ContentSettingsType::HTTP_ALLOWED, &content_settings_list);
+  return !content_settings_list.empty();
 }
 
 bool HttpsOnlyModeAllowlist::IsHttpAllowedForHost(

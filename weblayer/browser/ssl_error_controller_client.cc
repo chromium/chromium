@@ -48,6 +48,9 @@ void SSLErrorControllerClient::GoBack() {
 }
 
 void SSLErrorControllerClient::Proceed() {
+  // Notifies the browser process when a certificate exception is allowed.
+  web_contents_->SetAlwaysSendSubresourceNotifications();
+
   web_contents_->GetBrowserContext()->GetSSLHostStateDelegate()->AllowCert(
       request_url_.host(), *ssl_info_.cert.get(), cert_error_,
       web_contents_->GetPrimaryMainFrame()->GetStoragePartition());

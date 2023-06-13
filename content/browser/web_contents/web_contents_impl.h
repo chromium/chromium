@@ -368,6 +368,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       NavigationController::UserAgentOverrideOption option) override;
   const blink::UserAgentOverride& GetUserAgentOverride() override;
   bool ShouldOverrideUserAgentForRendererInitiatedNavigation() override;
+  void SetAlwaysSendSubresourceNotifications() override;
+  bool GetSendSubresourceNotification() override;
   void EnableWebContentsOnlyAccessibilityMode() override;
   bool IsWebContentsOnlyAccessibilityModeForTesting() override;
   bool IsFullAccessibilityModeForTesting() override;

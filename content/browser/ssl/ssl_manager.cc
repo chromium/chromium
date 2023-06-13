@@ -317,6 +317,14 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
   OnCertErrorInternal(std::move(handler));
 }
 
+bool SSLManager::HasAllowExceptionForAnyHost() {
+  if (!ssl_host_state_delegate_) {
+    return false;
+  }
+  return ssl_host_state_delegate_->HasAllowExceptionForAnyHost(
+      controller_->frame_tree().GetMainFrame()->GetStoragePartition());
+}
+
 bool SSLManager::DidStartResourceResponse(
     const url::SchemeHostPort& final_response_url,
     bool has_certificate_errors) {

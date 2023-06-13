@@ -105,6 +105,13 @@ struct RendererPreferences {
   // The accept-languages of the browser, comma-separated.
   string accept_languages;
 
+  // Whether renderers need to send SubresourceResponseStarted IPC to
+  // the browser. Renderers send the IPC if user has allowed any certificate or HTTP
+  // exceptions and we keep sending subresource notifications to the browser
+  // until all HTTPS-related warning exceptions have been revoked and the
+  // browser is restarted.
+  bool send_subresource_notification = false;
+
   // Determines whether plugins are allowed to enter fullscreen mode.
   bool plugin_fullscreen_allowed = true;
 

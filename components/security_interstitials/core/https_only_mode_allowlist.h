@@ -41,6 +41,7 @@ class HttpsOnlyModeAllowlist {
   // attempt to upgrade it to HTTPS.
   bool IsHttpAllowedForHost(const std::string& host,
                             bool is_nondefault_storage) const;
+  bool IsHttpAllowedForAnyHost(bool is_nondefault_storage) const;
 
   // Revokes all HTTP exceptions made by the user for host.
   void RevokeUserAllowExceptions(const std::string& host);

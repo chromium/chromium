@@ -64,6 +64,8 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadAcceptLanguages(&out->accept_languages))
     return false;
 
+  out->send_subresource_notification = data.send_subresource_notification();
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (!data.ReadSystemFontFamilyName(&out->system_font_family_name))
     return false;

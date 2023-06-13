@@ -100,6 +100,11 @@ class SSLHostStateDelegate {
   virtual bool HasAllowException(const std::string& host,
                                  StoragePartition* storage_partition) = 0;
 
+  // Returns true if the user has allowed a certificate error exception or HTTP
+  // exception for any host.
+  virtual bool HasAllowExceptionForAnyHost(
+      StoragePartition* storage_partition) = 0;
+
  protected:
   virtual ~SSLHostStateDelegate() {}
 };

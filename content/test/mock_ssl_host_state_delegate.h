@@ -54,6 +54,9 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
   bool HasAllowException(const std::string& host,
                          StoragePartition* storage_partition) override;
 
+  bool HasAllowExceptionForAnyHost(
+      StoragePartition* storage_partition) override;
+
  private:
   std::set<std::string> exceptions_;
   std::set<std::string> hosts_ran_insecure_content_;

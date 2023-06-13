@@ -935,6 +935,18 @@ BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              "QueueNavigationsWhileWaitingForCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, sends SubresourceResponseStarted IPC only when the user has
+// allowed any HTTPS-related warning exceptions. From field data, (see
+// `SSL.Experimental.SubresourceResponse`), ~100% of subresource notifications
+// are not required, since allowing certificate exceptions by users is a rare
+// event. Hence, if user has never allowed any certificate or HTTP exceptions,
+// notifications are not sent to the browser. Once we start sending these
+// messages, we keep sending them until all exceptions are revoked and browser
+// restart occurs.
+BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
+             "ReduceSubresourceResponseStartedIPC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

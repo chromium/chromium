@@ -28,6 +28,7 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -1179,4 +1180,82 @@ IN_PROC_BROWSER_TEST_P(HttpsOnlyModeForAdvancedProtectionBrowserTest,
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
   }
+}
+
+class HttpsOnlyModeTestSubresourceNotifications
+    : public HttpsOnlyModeBrowserTest {
+ public:
+  HttpsOnlyModeTestSubresourceNotifications() = default;
+  ~HttpsOnlyModeTestSubresourceNotifications() override = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kHttpsOnlyMode,
+                              features::kReduceSubresourceResponseStartedIPC},
+        /*disabled_features=*/{features::kHttpsFirstModeV2,
+                               features::kHttpsUpgrades});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that if the user bypasses the HTTPS-First Mode interstitial, and then
+// later the server fixes their HTTPS support and the user successfully connects
+// over HTTPS, the allowlist entry is cleared. Once
+// `renderer_preferences_.send_subresource_notification_` is set, we keep on
+// sending subresource notification until we have cleared all exceptions and the
+// browser is restarted.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeTestSubresourceNotifications,
+                       PRE_BadHttpsFollowedByGoodHttpsFollowedByRestart) {
+  GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
+  GURL bad_https_url = https_server()->GetURL("foo.test", "/close-socket");
+  GURL good_https_url = https_server()->GetURL("foo.test", "/ssl/google.html");
+
+  ASSERT_EQ(http_url.host(), bad_https_url.host());
+  ASSERT_EQ(bad_https_url.host(), good_https_url.host());
+
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  auto* state = static_cast<StatefulSSLHostStateDelegate*>(
+      profile->GetSSLHostStateDelegate());
+
+  ASSERT_FALSE(tab->GetSendSubresourceNotification());
+
+  // Main frame requests revoke the decision.
+
+  // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
+  EXPECT_FALSE(content::NavigateToURL(tab, http_url));
+
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
+  ProceedThroughInterstitial(tab);
+
+  EXPECT_TRUE(state->HasAllowExceptionForAnyHost(
+      tab->GetPrimaryMainFrame()->GetStoragePartition()));
+  EXPECT_TRUE(tab->GetSendSubresourceNotification());
+
+  EXPECT_TRUE(content::NavigateToURL(tab, good_https_url));
+  EXPECT_FALSE(state->HasAllowExceptionForAnyHost(
+      tab->GetPrimaryMainFrame()->GetStoragePartition()));
+  // Revoking decisions does not change `send_subresource_notifications_` in the
+  // same browsing session. This is because allowing and revoking exceptions
+  // happens rarely. So we continue sending subresource notifications to the
+  // browser.
+  EXPECT_TRUE(tab->GetSendSubresourceNotification());
+}
+
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeTestSubresourceNotifications,
+                       BadHttpsFollowedByGoodHttpsFollowedByRestart) {
+  // Verifies `renderer_preferences_.send_subresource_notification_` is updated
+  // w.r.t. the state of allowed exceptions when the browser restarts.
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  auto* state = static_cast<StatefulSSLHostStateDelegate*>(
+      profile->GetSSLHostStateDelegate());
+
+  EXPECT_FALSE(state->HasAllowExceptionForAnyHost(
+      tab->GetPrimaryMainFrame()->GetStoragePartition()));
+  EXPECT_FALSE(tab->GetSendSubresourceNotification());
 }

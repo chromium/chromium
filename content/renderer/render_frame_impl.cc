@@ -149,6 +149,7 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
@@ -1178,6 +1179,14 @@ WindowOpenDisposition NavigationPolicyToDisposition(
   }
   NOTREACHED() << "Unexpected WebNavigationPolicy";
   return WindowOpenDisposition::IGNORE_ACTION;
+}
+
+bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
+  if (!base::FeatureList::IsEnabled(
+          features::kReduceSubresourceResponseStartedIPC)) {
+    return true;
+  }
+  return pref.send_subresource_notification;
 }
 
 }  // namespace
@@ -2399,7 +2408,9 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     const url::SchemeHostPort& final_response_url,
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination) {
-  if (!blink::IsRequestDestinationFrame(request_destination)) {
+  if (!blink::IsRequestDestinationFrame(request_destination) &&
+      ShouldNotifySubresourceResponseStarted(
+          GetWebView()->GetRendererPreferences())) {
     GetFrameHost()->SubresourceResponseStarted(final_response_url,
                                                response_head->cert_status);
   }

@@ -157,6 +157,11 @@ struct BLINK_COMMON_EXPORT
     return data.accept_languages;
   }
 
+  static const bool& send_subresource_notification(
+      const ::blink::RendererPreferences& data) {
+    return data.send_subresource_notification;
+  }
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   static const std::string& system_font_family_name(
       const ::blink::RendererPreferences& data) {

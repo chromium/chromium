@@ -555,6 +555,11 @@ class WebContents : public PageNavigator,
 
   virtual const blink::UserAgentOverride& GetUserAgentOverride() = 0;
 
+  // Updates all renderers to start sending subresource notifications since a
+  // certificate error or HTTP exception has been allowed by the user.
+  virtual void SetAlwaysSendSubresourceNotifications() = 0;
+  virtual bool GetSendSubresourceNotification() = 0;
+
   // Set the accessibility mode so that accessibility events are forwarded
   // to each WebContentsObserver.
   virtual void EnableWebContentsOnlyAccessibilityMode() = 0;
