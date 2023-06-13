@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/proxy_config_mojom_traits.h"
 
+#include "base/debug/dump_without_crashing.h"
+#include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "net/base/proxy_string_util.h"
 #include "url/gurl.h"
 
@@ -27,8 +29,12 @@ bool StructTraits<network::mojom::ProxyBypassRulesDataView,
   if (!data.ReadRules(&rules))
     return false;
   for (const auto& rule : rules) {
-    if (!out_proxy_bypass_rules->AddRuleFromString(rule))
+    if (!out_proxy_bypass_rules->AddRuleFromString(rule)) {
+      mojo::debug::ScopedMessageErrorCrashKey crash_key_value(
+          "AddRuleFromString fault");
+      base::debug::DumpWithoutCrashing();
       return false;
+    }
   }
   return true;
 }
@@ -51,8 +57,12 @@ bool StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::Read(
     return false;
   for (const auto& proxy : proxies) {
     net::ProxyServer proxy_server = net::PacResultElementToProxyServer(proxy);
-    if (!proxy_server.is_valid())
+    if (!proxy_server.is_valid()) {
+      mojo::debug::ScopedMessageErrorCrashKey crash_key_value(
+          "!proxy_server.is_valid()");
+      base::debug::DumpWithoutCrashing();
       return false;
+    }
     out_proxy_list->AddProxyServer(proxy_server);
   }
   return true;
