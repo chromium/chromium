@@ -97,9 +97,13 @@ android_library("unit_device_javatests") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsUmaUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizationsRoboUnitTest.java",
+    "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsUmaUnitTest.java",
+  ]
 
   deps = [
+    ":delegate_public_impl_java",
     ":java",
     ":uma_java",
     "//base:base_java",
@@ -107,6 +111,12 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_shadows",
+    "//url:gurl_junit_test_support",
   ]
 }
