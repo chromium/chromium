@@ -4515,6 +4515,14 @@
     There isn't enough space on this device to complete this update. Clear up <ph name="NECESSARY_SPACE">$1<ex>10 MB</ex></ph> on your device and try again.
   </message>
 
+  <!-- Lacros data backward migration screen. -->
+  <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_SUBTITLE" desc="Shown if Lacros data backward migration fails.">
+    If you click “Cancel”, it may affect your browser data and you may need to perform a factory reset.
+  </message>
+  <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_RETRY_BUTTON" desc="Shown if Lacros data backward migration fails.">
+    Retry
+  </message>
+
   <!-- Print Job Notification -->
   <message name="IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE" desc="The context title of printing notification.">
     Print
