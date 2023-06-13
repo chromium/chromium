@@ -473,7 +473,7 @@ if (is_android) {
 
   android_library("bluetooth_test_java") {
     testonly = true
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
     sources = bluetooth_java_sources_needing_jni
     deps = [
       "//base:base_java",
@@ -484,7 +484,10 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
-    srcjar_deps = [ ":bluetooth_test_javagen" ]
+    srcjar_deps = [
+      ":bluetooth_test_javagen",
+      ":bluetooth_test_jni_headers",
+    ]
   }
 
   robolectric_binary("device_junit_tests") {

@@ -16,6 +16,7 @@ generate_jni("nonembedded_jni_headers") {
 # Contains classes needed by the webview apk, but not used when loading the apk
 # as a library.
 android_library("nonembedded_java") {
+  srcjar_deps = [ ":nonembedded_jni_headers" ]
   sources = [
     "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/AwNonembeddedUmaRecorder.java",
@@ -50,8 +51,6 @@ android_library("nonembedded_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("devui_java") {

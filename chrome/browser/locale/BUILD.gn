@@ -72,6 +72,7 @@ android_library("delegate_public_impl_java") {
 }
 
 android_library("util_java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/locale/LocaleTemplateUrlLoader.java",
   ]
@@ -79,7 +80,7 @@ android_library("util_java") {
     "//base:jni_java",
     "//build/android:build_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.locale"
 }
 

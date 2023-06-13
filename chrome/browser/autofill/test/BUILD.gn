@@ -31,13 +31,13 @@ android_library("test_support_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.autofill"
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
 
   deps = [
     ":jni_headers",
     "//base:jni_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   public_deps = [
     "//base:base_java_test_support",

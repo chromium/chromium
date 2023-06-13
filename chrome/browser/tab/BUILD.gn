@@ -59,6 +59,8 @@ android_library("java") {
   ]
 
   srcjar_deps = [
+    ":jni_headers",
+
     # TabSelectionType, TabLaunchType
     "//chrome/browser/ui:tab_model_enums_java",
 
@@ -111,7 +113,6 @@ android_library("java") {
     "//url:origin_java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.tab"
 }
 

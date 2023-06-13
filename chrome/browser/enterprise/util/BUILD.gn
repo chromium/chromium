@@ -10,6 +10,7 @@ _jni_sources = [
 ]
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = _jni_sources
   sources += [ "android/java/src/org/chromium/chrome/browser/enterprise/util/EnterpriseInfoImpl.java" ]
 
@@ -21,7 +22,6 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
