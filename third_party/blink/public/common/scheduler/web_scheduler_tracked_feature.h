@@ -134,7 +134,6 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
   kMaxValue = kWebSerial,
 };
 
@@ -142,10 +141,6 @@ using WebSchedulerTrackedFeatures =
     base::EnumSet<WebSchedulerTrackedFeature,
                   WebSchedulerTrackedFeature::kMinValue,
                   WebSchedulerTrackedFeature::kMaxValue>;
-
-static_assert(static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue) < 64,
-              "This enum is used in a bitmask, so the values should fit into a"
-              "64-bit integer");
 
 BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
     WebSchedulerTrackedFeature feature);
@@ -159,18 +154,18 @@ BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
 // in order to stop warnings at startup. See https://crbug.com/1363846.
 BLINK_COMMON_EXPORT bool IsRemovedFeature(const std::string& feature);
 
-// Converts a WebSchedulerTrackedFeature to a bit for use in a bitmask.
-BLINK_COMMON_EXPORT constexpr uint64_t FeatureToBit(
-    WebSchedulerTrackedFeature feature) {
-  return 1ull << static_cast<uint32_t>(feature);
-}
-
 // Sticky features can't be unregistered and remain active for the rest of the
 // lifetime of the page.
 BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
 
 // All the sticky features.
 BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
+
+// Generates a list of uint64_t bit masks for the `WebSchedulerTrackedFeatures`
+// in the following order:
+// [<bit mask for 0-63>, <bit mask for 64-127>, ...]
+BLINK_COMMON_EXPORT std::vector<uint64_t> ToEnumBitMasks(
+    WebSchedulerTrackedFeatures features);
 
 }  // namespace scheduler
 }  // namespace blink

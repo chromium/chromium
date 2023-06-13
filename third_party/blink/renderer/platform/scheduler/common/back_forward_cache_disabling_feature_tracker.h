@@ -49,13 +49,6 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   void Reset();
 
   // Called when a usage of |feature| is added.
-  // TODO(crbug.com/1366675): Remove this function and replace the bitmask and a
-  // vector to count blocking features with
-  // |non_sticky_features_and_js_locations_| and
-  // |sticky_features_and_js_locations_|.
-  void AddFeatureInternal(SchedulingPolicy::Feature feature);
-
-  // Called when a usage of |feature| is added.
   // |feature| should be a non-sticky feature.
   void AddNonStickyFeature(
       SchedulingPolicy::Feature feature,
@@ -75,9 +68,6 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // Gets a hash set of feature usages for metrics.
   WTF::HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics();
-
-  // Gets a hash set of feature usages for metrics as a bitmap.
-  uint64_t GetActiveFeaturesTrackedForBackForwardCacheMetricsMask() const;
 
   // Gets a list of non sticky features and their JS locations.
   BFCacheBlockingFeatureAndLocations&
@@ -105,6 +95,9 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   void NotifyDelegateAboutFeaturesAfterCurrentTask(
       TracingType tracing_type,
       SchedulingPolicy::Feature traced_feature);
+
+  // Called when a usage of |feature| is added.
+  void AddFeatureInternal(SchedulingPolicy::Feature feature);
 
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};

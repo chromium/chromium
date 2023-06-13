@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
+#include <initializer_list>
 #include <memory>
 #include <set>
 #include <string>
@@ -326,7 +327,7 @@ using BlocklistedFeatures = blink::scheduler::WebSchedulerTrackedFeatures;
 // Helper function to create a vector which contains the mojom feature
 // information.
 BackForwardCacheBlockingDetails CreateBlockingDetails(
-    BlocklistedFeatures features) {
+    std::initializer_list<BlocklistedFeature> features) {
   BackForwardCacheBlockingDetails feature_vector;
   for (auto feature : features) {
     auto feature_info = BlockingDetails::New();

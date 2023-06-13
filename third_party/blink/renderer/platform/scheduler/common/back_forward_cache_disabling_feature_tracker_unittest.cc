@@ -53,8 +53,6 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddAndRemove) {
                                                   nullptr);
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
-  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
-              0);
 
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle handle_socket =
       FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(
@@ -128,8 +126,6 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddStickyFeature) {
 
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
-  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
-              0);
 
   // Add kMainResourceHasCacheControlNoStore.
   tracker.AddStickyFeature(
@@ -169,8 +165,6 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddDuplicateFeature) {
 
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
-  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
-              0);
 
   // Add kWebSocket.
   tracker.AddNonStickyFeature(SchedulingPolicy::Feature::kWebSocket,
@@ -208,8 +202,6 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest,
 
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
-  EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(),
-              0);
 
   // Add kMainResourceHasCacheControlNoStore with different line numbers 20
   // times.

@@ -187,70 +187,76 @@ bool ShouldIgnoreBlocklists() {
 // cache. Some of these features are listed as blocking back/forward cache
 // when actually the blocking is flag controlled and they are not registered
 // as being used if we don't want them to block.
-constexpr WebSchedulerTrackedFeatures kDisallowedFeatures = {
-    WebSchedulerTrackedFeature::kBroadcastChannel,
-    WebSchedulerTrackedFeature::kContainsPlugins,
-    WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
-    WebSchedulerTrackedFeature::kDummy,
-    WebSchedulerTrackedFeature::kIdleManager,
-    WebSchedulerTrackedFeature::kIndexedDBConnection,
-    WebSchedulerTrackedFeature::kIndexedDBEvent,
-    WebSchedulerTrackedFeature::kKeyboardLock,
-    WebSchedulerTrackedFeature::kKeepaliveRequest,
-    WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction,
-    WebSchedulerTrackedFeature::kPaymentManager,
-    WebSchedulerTrackedFeature::kPictureInPicture,
-    WebSchedulerTrackedFeature::kPortal,
-    WebSchedulerTrackedFeature::kPrinting,
-    WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
-    WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
-    WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
-    WebSchedulerTrackedFeature::kRequestedMIDIPermission,
-    WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
-    WebSchedulerTrackedFeature::kSharedWorker,
-    WebSchedulerTrackedFeature::kSpeechRecognizer,
-    WebSchedulerTrackedFeature::kSpeechSynthesis,
-    WebSchedulerTrackedFeature::kWebDatabase,
-    WebSchedulerTrackedFeature::kWebHID,
-    WebSchedulerTrackedFeature::kWebLocks,
-    WebSchedulerTrackedFeature::kWebOTPService,
-    WebSchedulerTrackedFeature::kWebRTC,
-    WebSchedulerTrackedFeature::kWebShare,
-    WebSchedulerTrackedFeature::kWebSocket,
-    WebSchedulerTrackedFeature::kWebTransport,
-    WebSchedulerTrackedFeature::kWebXR};
-constexpr WebSchedulerTrackedFeatures kInjectionFeatures = {
-    WebSchedulerTrackedFeature::kInjectedJavascript,
-    WebSchedulerTrackedFeature::kInjectedStyleSheet};
-constexpr WebSchedulerTrackedFeatures kNetworkFeatures = {
-    WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers,
-    WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch,
-    WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR};
+WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
+  return {WebSchedulerTrackedFeature::kBroadcastChannel,
+          WebSchedulerTrackedFeature::kContainsPlugins,
+          WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
+          WebSchedulerTrackedFeature::kDummy,
+          WebSchedulerTrackedFeature::kIdleManager,
+          WebSchedulerTrackedFeature::kIndexedDBConnection,
+          WebSchedulerTrackedFeature::kIndexedDBEvent,
+          WebSchedulerTrackedFeature::kKeyboardLock,
+          WebSchedulerTrackedFeature::kKeepaliveRequest,
+          WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction,
+          WebSchedulerTrackedFeature::kPaymentManager,
+          WebSchedulerTrackedFeature::kPictureInPicture,
+          WebSchedulerTrackedFeature::kPortal,
+          WebSchedulerTrackedFeature::kPrinting,
+          WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
+          WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
+          WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
+          WebSchedulerTrackedFeature::kRequestedMIDIPermission,
+          WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
+          WebSchedulerTrackedFeature::kSharedWorker,
+          WebSchedulerTrackedFeature::kSpeechRecognizer,
+          WebSchedulerTrackedFeature::kSpeechSynthesis,
+          WebSchedulerTrackedFeature::kWebDatabase,
+          WebSchedulerTrackedFeature::kWebHID,
+          WebSchedulerTrackedFeature::kWebLocks,
+          WebSchedulerTrackedFeature::kWebOTPService,
+          WebSchedulerTrackedFeature::kWebRTC,
+          WebSchedulerTrackedFeature::kWebShare,
+          WebSchedulerTrackedFeature::kWebSocket,
+          WebSchedulerTrackedFeature::kWebTransport,
+          WebSchedulerTrackedFeature::kWebXR};
+}
+WebSchedulerTrackedFeatures GetInjectionWebSchedulerTrackedFeatures() {
+  return {WebSchedulerTrackedFeature::kInjectedJavascript,
+          WebSchedulerTrackedFeature::kInjectedStyleSheet};
+}
+WebSchedulerTrackedFeatures GetNetworkWebSchedulerTrackedFeatures() {
+  return {WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers,
+          WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch,
+          WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR};
+}
 // A list of WebSchedulerTrackedFeatures that should never block back/forward
 // cache.
-constexpr WebSchedulerTrackedFeatures kAllowedFeatures = {
-    WebSchedulerTrackedFeature::kDocumentLoaded,
-    WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
-    // This is handled in |UpdateCanStoreToIncludeCacheControlNoStore()|, and no
-    // need to include in |GetDisallowedFeatures()|.
-    WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
-    // TODO(crbug.com/1357482): Figure out if these two should be allowed.
-    WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket,
-    WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
-    // We don't block on subresource cache-control:no-store or no-cache.
-    WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
-    WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
-    // We only record this if "Cache-Control: no-store" header is present on the
-    // main frame.
-    WebSchedulerTrackedFeature::
-        kJsNetworkRequestReceivedCacheControlNoStoreResource,
-    // TODO(crbug.com/1357482): Figure out if this should be allowed.
-    WebSchedulerTrackedFeature::kWebNfc};
+WebSchedulerTrackedFeatures GetAllowedWebSchedulerTrackedFeatures() {
+  return {WebSchedulerTrackedFeature::kDocumentLoaded,
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
+          // This is handled in |UpdateCanStoreToIncludeCacheControlNoStore()|,
+          // and no need to include in |GetDisallowedFeatures()|.
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
+          // TODO(crbug.com/1357482): Figure out if these two should be allowed.
+          WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket,
+          WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
+          // We don't block on subresource cache-control:no-store or no-cache.
+          WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
+          WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
+          // We only record this if "Cache-Control: no-store" header is present
+          // on the main frame.
+          WebSchedulerTrackedFeature::
+              kJsNetworkRequestReceivedCacheControlNoStoreResource,
+          // TODO(crbug.com/1357482): Figure out if this should be allowed.
+          WebSchedulerTrackedFeature::kWebNfc};
+}
 
 // WebSchedulerTrackedFeatures that do not affect back/forward cache, but
 // affects other scheduling policies (e.g. aggressive throttling).
-constexpr WebSchedulerTrackedFeatures kNonBackForwardCacheAffectingFeatures = {
-    WebSchedulerTrackedFeature::kWebSerial};
+WebSchedulerTrackedFeatures
+GetNonBackForwardCacheAffectingWebSchedulerTrackedFeatures() {
+  return {WebSchedulerTrackedFeature::kWebSerial};
+}
 
 // The BackForwardCache feature is controlled via an experiment. This function
 // returns the allowed URL list where it is enabled.
@@ -412,8 +418,9 @@ bool IsSameOriginForTreeResult(RenderFrameHostImpl* rfh,
                                const url::Origin& main_document_origin) {
   // Treat any frame inside a fenced frame as cross origin so we don't leak
   // any information.
-  if (rfh->IsNestedWithinFencedFrame())
+  if (rfh->IsNestedWithinFencedFrame()) {
     return false;
+  }
   return url::Origin::Create(url).IsSameOriginWith(main_document_origin);
 }
 
@@ -423,25 +430,27 @@ bool IsSameOriginForTreeResult(RenderFrameHostImpl* rfh,
 BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
     RequestedFeatures requested_features) {
   WebSchedulerTrackedFeatures result =
-      Union(kAllowedFeatures, kNonBackForwardCacheAffectingFeatures);
+      Union(GetAllowedWebSchedulerTrackedFeatures(),
+            GetNonBackForwardCacheAffectingWebSchedulerTrackedFeatures());
   if (IsContentInjectionSupported()) {
-    result.PutAll(kInjectionFeatures);
+    result.PutAll(GetInjectionWebSchedulerTrackedFeatures());
   }
   if (IgnoresOutstandingNetworkRequestForTesting()) {
-    result.PutAll(kNetworkFeatures);
+    result.PutAll(GetNetworkWebSchedulerTrackedFeatures());
   }
   result.PutAll(SupportedFeatures());
   if (requested_features == RequestedFeatures::kOnlySticky) {
     // Add non-sticky disallowed features.
     WebSchedulerTrackedFeatures non_sticky =
-        Difference(kDisallowedFeatures, blink::scheduler::StickyFeatures());
+        Difference(GetDisallowedWebSchedulerTrackedFeatures(),
+                   blink::scheduler::StickyFeatures());
     if (!IsContentInjectionSupported()) {
-      non_sticky.PutAll(
-          Difference(kInjectionFeatures, blink::scheduler::StickyFeatures()));
+      non_sticky.PutAll(Difference(GetInjectionWebSchedulerTrackedFeatures(),
+                                   blink::scheduler::StickyFeatures()));
     }
     if (!IgnoresOutstandingNetworkRequestForTesting()) {
-      non_sticky.PutAll(
-          Difference(kNetworkFeatures, blink::scheduler::StickyFeatures()));
+      non_sticky.PutAll(Difference(GetNetworkWebSchedulerTrackedFeatures(),
+                                   blink::scheduler::StickyFeatures()));
     }
     result.PutAll(non_sticky);
   }
@@ -451,12 +460,13 @@ BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
 // static
 BlockListedFeatures BackForwardCacheImpl::GetDisallowedFeatures(
     RequestedFeatures requested_features) {
-  WebSchedulerTrackedFeatures result = kDisallowedFeatures;
+  WebSchedulerTrackedFeatures result =
+      GetDisallowedWebSchedulerTrackedFeatures();
   if (!IsContentInjectionSupported()) {
-    result.PutAll(kInjectionFeatures);
+    result.PutAll(GetInjectionWebSchedulerTrackedFeatures());
   }
   if (!IgnoresOutstandingNetworkRequestForTesting()) {
-    result.PutAll(kNetworkFeatures);
+    result.PutAll(GetNetworkWebSchedulerTrackedFeatures());
   }
   result.RemoveAll(SupportedFeatures());
   if (requested_features == RequestedFeatures::kOnlySticky) {

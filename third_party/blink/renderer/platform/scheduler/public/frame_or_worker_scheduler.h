@@ -134,17 +134,13 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
         FrameOrWorkerScheduler::BFCacheBlockingFeatureAndLocations;
 
     struct BlockingDetails {
-      // TODO(crbug.com/1366675): Remove features_mask.
-      uint64_t feature_mask;
       const BFCacheBlockingFeatureAndLocations&
           non_sticky_features_and_js_locations;
       const BFCacheBlockingFeatureAndLocations&
           sticky_features_and_js_locations;
-      BlockingDetails(uint64_t mask,
-                      BFCacheBlockingFeatureAndLocations& non_sticky,
+      BlockingDetails(BFCacheBlockingFeatureAndLocations& non_sticky,
                       BFCacheBlockingFeatureAndLocations& sticky)
-          : feature_mask(mask),
-            non_sticky_features_and_js_locations(non_sticky),
+          : non_sticky_features_and_js_locations(non_sticky),
             sticky_features_and_js_locations(sticky) {}
     };
     virtual ~Delegate() = default;

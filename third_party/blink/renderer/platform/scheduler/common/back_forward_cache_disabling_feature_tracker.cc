@@ -112,16 +112,6 @@ BackForwardCacheDisablingFeatureTracker::
   return result;
 }
 
-uint64_t BackForwardCacheDisablingFeatureTracker::
-    GetActiveFeaturesTrackedForBackForwardCacheMetricsMask() const {
-  auto result = back_forward_cache_disabling_features_.to_ullong();
-  static_assert(static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) <
-                    sizeof(result) * 8,
-                "Number of the features should allow a bitmask to fit into "
-                "64-bit integer");
-  return result;
-}
-
 BFCacheBlockingFeatureAndLocations& BackForwardCacheDisablingFeatureTracker::
     GetActiveNonStickyFeaturesTrackedForBackForwardCache() {
   return non_sticky_features_and_js_locations_;
@@ -164,18 +154,14 @@ void BackForwardCacheDisablingFeatureTracker::
 void BackForwardCacheDisablingFeatureTracker::ReportFeaturesToDelegate() {
   feature_report_scheduled_ = false;
 
-  uint64_t mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-  if (mask == last_uploaded_bfcache_disabling_features_ &&
-      non_sticky_features_and_js_locations_ == last_reported_non_sticky_ &&
+  if (non_sticky_features_and_js_locations_ == last_reported_non_sticky_ &&
       sticky_features_and_js_locations_ == last_reported_sticky_) {
     return;
   }
-  last_uploaded_bfcache_disabling_features_ = mask;
   last_reported_non_sticky_ = non_sticky_features_and_js_locations_;
   last_reported_sticky_ = sticky_features_and_js_locations_;
   FrameOrWorkerScheduler::Delegate::BlockingDetails details(
-      mask, non_sticky_features_and_js_locations_,
-      sticky_features_and_js_locations_);
+      non_sticky_features_and_js_locations_, sticky_features_and_js_locations_);
   delegate_->UpdateBackForwardCacheDisablingFeatures(details);
 }
 

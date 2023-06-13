@@ -52,13 +52,15 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
 // which are related to the document finishing loading).
 // We ignore them to make tests easier to read and write.
 
-constexpr blink::scheduler::WebSchedulerTrackedFeatures kFeaturesToIgnore = {
-    blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
-    blink::scheduler::WebSchedulerTrackedFeature::
-        kOutstandingNetworkRequestFetch,
-    blink::scheduler::WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR,
-    blink::scheduler::WebSchedulerTrackedFeature::
-        kOutstandingNetworkRequestOthers};
+blink::scheduler::WebSchedulerTrackedFeatures GetFeaturesToIgnore() {
+  return {blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kOutstandingNetworkRequestFetch,
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kOutstandingNetworkRequestXHR,
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kOutstandingNetworkRequestOthers};
+}
 
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
@@ -118,7 +120,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
 
     EXPECT_EQ(base::Difference(
                   current_frame_host()->GetBackForwardCacheDisablingFeatures(),
-                  kFeaturesToIgnore),
+                  GetFeaturesToIgnore()),
               blink::scheduler::WebSchedulerTrackedFeatures({feature}));
 
     // Close the web contents to ensure that no new notifications arrive to the
@@ -482,14 +484,27 @@ std::vector<FeatureUsage> GetFeatureUsageMetrics(
                              "CrossOriginSubframesFeatures"})) {
     FeatureUsage feature_usage;
     feature_usage.source_id = entry.source_id;
-    feature_usage.main_frame_features = entry.metrics.at("MainFrameFeatures") &
-                                        ~kFeaturesToIgnore.ToEnumBitmask();
-    feature_usage.same_origin_subframes_features =
-        entry.metrics.at("SameOriginSubframesFeatures") &
-        ~kFeaturesToIgnore.ToEnumBitmask();
-    feature_usage.cross_origin_subframes_features =
-        entry.metrics.at("CrossOriginSubframesFeatures") &
-        ~kFeaturesToIgnore.ToEnumBitmask();
+    auto remove_ignored_features = [&](uint64_t metric) {
+      for (auto feature : GetFeaturesToIgnore()) {
+        auto feature_value = static_cast<std::underlying_type_t<
+            blink::scheduler::WebSchedulerTrackedFeature>>(feature);
+        // Since we only report the first 64 values from the features enum, we
+        // only need to reset the bit if the ignored feature value is smaller
+        // than 64.
+        // TODO(crbug.com/1446619): handle the other features field after they
+        // are added.
+        if (feature_value < 64) {
+          metric &= ~(1ull << feature_value);
+        }
+      }
+      return metric;
+    };
+    feature_usage.main_frame_features =
+        remove_ignored_features(entry.metrics.at("MainFrameFeatures"));
+    feature_usage.same_origin_subframes_features = remove_ignored_features(
+        entry.metrics.at("SameOriginSubframesFeatures"));
+    feature_usage.cross_origin_subframes_features = remove_ignored_features(
+        entry.metrics.at("CrossOriginSubframesFeatures"));
     result.push_back(feature_usage);
   }
   return result;

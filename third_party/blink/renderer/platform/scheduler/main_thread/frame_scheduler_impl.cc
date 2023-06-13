@@ -1115,13 +1115,6 @@ FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
       .GetActiveFeaturesTrackedForBackForwardCacheMetrics();
 }
 
-uint64_t
-FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetricsMask()
-    const {
-  return back_forward_cache_disabling_feature_tracker_
-      .GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-}
-
 base::WeakPtr<FrameOrWorkerScheduler>
 FrameSchedulerImpl::GetFrameOrWorkerSchedulerWeakPtr() {
   // We reset feature sets upon frame navigation, so having a document-bound

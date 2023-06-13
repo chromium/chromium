@@ -272,10 +272,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // Reset the state which should not persist across navigations.
   void ResetForNavigation();
 
-  // Same as GetActiveFeaturesTrackedForBackForwardCacheMetrics, but returns
-  // a mask instead of a set.
-  uint64_t GetActiveFeaturesTrackedForBackForwardCacheMetricsMask() const;
-
   base::WeakPtr<FrameOrWorkerScheduler> GetFrameOrWorkerSchedulerWeakPtr()
       override;
 
