@@ -89,6 +89,8 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
       const gfx::Rect& viewport_rect,
       const gfx::Transform& transform) override {}
 
+  void ClearPendingBeginFramesForTesting();
+
  private:
   struct PendingBeginFrame {
     viz::BeginFrameAck begin_frame_ack;
@@ -108,7 +110,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   // Discards `cached_frame_`, reclaims resources and returns failure
   // presentation feedback.
-  void DiscardCachedFrame();
+  void DiscardCachedFrame(const viz::CompositorFrame* new_frame);
   void SendDiscardedFrameNotifications(uint32_t frame_token);
 
   void StopProcessingPendingFrames();
@@ -133,6 +135,9 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   std::vector<viz::ResourceId> last_frame_resources_;
 
   absl::optional<viz::CompositorFrame> cached_frame_;
+
+  // Resources that are submitted and still in use by the remote side.
+  std::set<viz::ResourceId> in_use_resources_;
 
   bool is_lost_ = false;
   bool delete_pending_ = false;

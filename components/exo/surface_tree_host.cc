@@ -103,7 +103,10 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name)
     : host_window_(
           std::make_unique<aura::Window>(nullptr,
-                                         aura::client::WINDOW_TYPE_CONTROL)) {
+                                         aura::client::WINDOW_TYPE_CONTROL)),
+      frame_sink_holder_factory_(
+          base::BindRepeating(&SurfaceTreeHost::CreateLayerTreeFrameSinkHolder,
+                              base::Unretained(this))) {
   InitHostWindow(window_name);
   context_provider_ = aura::Env::GetInstance()
                           ->context_factory()
@@ -206,6 +209,14 @@ void SurfaceTreeHost::SetHostWindowForTesting(
     const std::string& window_name) {
   host_window_ = std::move(test_host_window);
   InitHostWindow(window_name);
+}
+
+void SurfaceTreeHost::SetLayerTreeFrameSinkHolderFactoryForTesting(
+    LayerTreeFrameSinkHolderFactory frame_sink_holder_factory) {
+  DCHECK(frame_callbacks_.empty() && active_presentation_callbacks_.empty());
+
+  frame_sink_holder_factory_ = std::move(frame_sink_holder_factory);
+  layer_tree_frame_sink_holder_ = frame_sink_holder_factory_.Run();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -423,8 +434,7 @@ void SurfaceTreeHost::InitHostWindow(const std::string& window_name) {
   host_window_->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kDescendantsOnly);
   host_window_->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
-  layer_tree_frame_sink_holder_ = std::make_unique<LayerTreeFrameSinkHolder>(
-      this, host_window_->CreateLayerTreeFrameSink());
+  layer_tree_frame_sink_holder_ = frame_sink_holder_factory_.Run();
 }
 
 viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
@@ -433,8 +443,7 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   if (layer_tree_frame_sink_holder_->is_lost()) {
     // We can immediately delete the old LayerTreeFrameSinkHolder because all of
     // it's resources are lost anyways.
-    layer_tree_frame_sink_holder_ = std::make_unique<LayerTreeFrameSinkHolder>(
-        this, host_window_->CreateLayerTreeFrameSink());
+    layer_tree_frame_sink_holder_ = frame_sink_holder_factory_.Run();
     CleanUpCallbacks();
   }
 
@@ -524,6 +533,12 @@ void SurfaceTreeHost::CleanUpCallbacks() {
     }
   }
   active_presentation_callbacks_.clear();
+}
+
+std::unique_ptr<LayerTreeFrameSinkHolder>
+SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
+  return std::make_unique<LayerTreeFrameSinkHolder>(
+      this, host_window_->CreateLayerTreeFrameSink());
 }
 
 }  // namespace exo

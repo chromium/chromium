@@ -36,7 +36,7 @@ LayerTreeFrameSinkHolder::LayerTreeFrameSinkHolder(
 }
 
 LayerTreeFrameSinkHolder::~LayerTreeFrameSinkHolder() {
-  DiscardCachedFrame();
+  DiscardCachedFrame(nullptr);
 
   if (frame_sink_)
     frame_sink_->DetachFromClient();
@@ -103,7 +103,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
 
   frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
 
-  DiscardCachedFrame();
+  DiscardCachedFrame(&frame);
 
   if (!ShouldSubmitFrameNow()) {
     cached_frame_ = std::move(frame);
@@ -148,6 +148,17 @@ void LayerTreeFrameSinkHolder::ReclaimResources(
     if (base::Contains(last_frame_resources_, resource.id)) {
       continue;
     }
+    in_use_resources_.erase(resource.id);
+
+    // Skip resources that are also in the cached frame.
+    if (cached_frame_ &&
+        base::Contains(cached_frame_->resource_list, resource.id,
+                       [](const viz::TransferableResource& resource) {
+                         return resource.id;
+                       })) {
+      continue;
+    }
+
     resource_manager_.ReclaimResource(std::move(resource));
   }
 
@@ -204,11 +215,18 @@ void LayerTreeFrameSinkHolder::DidLoseLayerTreeFrameSink() {
   StopProcessingPendingFrames();
 
   last_frame_resources_.clear();
+  in_use_resources_.clear();
   resource_manager_.ClearAllCallbacks();
   is_lost_ = true;
 
   if (lifetime_manager_)
     ScheduleDelete();
+}
+
+void LayerTreeFrameSinkHolder::ClearPendingBeginFramesForTesting() {
+  while (!pending_begin_frames_.empty()) {
+    OnSendDeadlineExpired(/*update_timer=*/false);
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -281,6 +299,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   last_frame_resources_.clear();
   for (auto& resource : frame->resource_list) {
     last_frame_resources_.push_back(resource.id);
+    in_use_resources_.insert(resource.id);
   }
   frame_sink_->SubmitCompositorFrame(std::move(*frame),
                                      /*hit_test_data_changed=*/true);
@@ -288,7 +307,8 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   pending_submit_frames_++;
 }
 
-void LayerTreeFrameSinkHolder::DiscardCachedFrame() {
+void LayerTreeFrameSinkHolder::DiscardCachedFrame(
+    const viz::CompositorFrame* new_frame) {
   if (!cached_frame_) {
     return;
   }
@@ -296,6 +316,19 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame() {
   DCHECK(reactive_frame_submission_);
 
   for (const auto& resource : cached_frame_->resource_list) {
+    // Skip if the resource is still in use by the remote side.
+    if (in_use_resources_.contains(resource.id)) {
+      continue;
+    }
+
+    // Skip if the resource is also in `new_frame`.
+    if (new_frame &&
+        base::Contains(new_frame->resource_list, resource.id,
+                       [](const viz::TransferableResource& resource) {
+                         return resource.id;
+                       })) {
+      continue;
+    }
     resource_manager_.ReclaimResource(resource.ToReturnedResource());
   }
 
@@ -328,7 +361,7 @@ void LayerTreeFrameSinkHolder::SendDiscardedFrameNotifications(
 }
 
 void LayerTreeFrameSinkHolder::StopProcessingPendingFrames() {
-  DiscardCachedFrame();
+  DiscardCachedFrame(nullptr);
   pending_begin_frames_ = {};
   UpdateSubmitFrameTimer();
 }

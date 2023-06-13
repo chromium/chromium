@@ -7,6 +7,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include "base/barrier_closure.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -80,6 +81,29 @@ void VerifySyncTokensInCompositorFrame(viz::CompositorFrame* frame) {
           ->SharedMainThreadRasterContextProvider()
           ->RasterInterface();
   ri->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
+}
+
+viz::CompositorFrame CreateCompositorFrame(
+    SurfaceTreeHost* surface_tree_host,
+    const gfx::Rect& output_rect,
+    const gfx::Rect& damage_rect,
+    std::vector<viz::TransferableResource> resources) {
+  viz::CompositorFrame frame;
+  frame.metadata.begin_frame_ack.frame_id =
+      viz::BeginFrameId(viz::BeginFrameArgs::kManualSourceId,
+                        viz::BeginFrameArgs::kStartingFrameNumber);
+  frame.metadata.begin_frame_ack.has_damage = true;
+  frame.metadata.frame_token = surface_tree_host->GenerateNextFrameToken();
+  frame.metadata.device_scale_factor = 1;
+  auto pass = viz::CompositorRenderPass::Create();
+  pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
+               gfx::Transform());
+  frame.render_pass_list.push_back(std::move(pass));
+  frame.resource_list = std::move(resources);
+  if (!frame.resource_list.empty()) {
+    VerifySyncTokensInCompositorFrame(&frame);
+  }
+  return frame;
 }
 
 // Instantiate the values of disabling/enabling reactive frame submission in the
@@ -311,24 +335,10 @@ TEST_P(BufferTest, SurfaceTreeHostDestruction) {
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
-  {
-    viz::CompositorFrame frame;
-    frame.metadata.begin_frame_ack.frame_id.source_id =
-        viz::BeginFrameArgs::kManualSourceId;
-    frame.metadata.begin_frame_ack.frame_id.sequence_number =
-        viz::BeginFrameArgs::kStartingFrameNumber;
-    frame.metadata.begin_frame_ack.has_damage = true;
-    frame.metadata.frame_token = shell_surface->GenerateNextFrameToken();
-    frame.metadata.device_scale_factor = 1;
-    auto pass = viz::CompositorRenderPass::Create();
-    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
-                 gfx::Rect(buffer_size), gfx::Transform());
-    frame.render_pass_list.push_back(std::move(pass));
-    frame.resource_list.push_back(resource);
-    VerifySyncTokensInCompositorFrame(&frame);
-    shell_surface->SubmitCompositorFrameForTesting(std::move(frame));
-    test::WaitForLastFrameAck(shell_surface.get());
-  }
+  shell_surface->SubmitCompositorFrameForTesting(
+      CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                            gfx::Rect(buffer_size), {resource}));
+  test::WaitForLastFrameAck(shell_surface.get());
 
   buffer->OnDetach();
 
@@ -386,20 +396,9 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
 
   // Submit frame with resource.
   {
-    viz::CompositorFrame frame;
-    frame.metadata.begin_frame_ack.frame_id =
-        viz::BeginFrameId(viz::BeginFrameArgs::kManualSourceId,
-                          viz::BeginFrameArgs::kStartingFrameNumber);
-    frame.metadata.begin_frame_ack.has_damage = true;
-    frame.metadata.frame_token = shell_surface->GenerateNextFrameToken();
-    frame.metadata.device_scale_factor = 1;
-    auto pass = viz::CompositorRenderPass::Create();
-    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
-                 gfx::Rect(buffer_size), gfx::Transform());
-    frame.render_pass_list.push_back(std::move(pass));
-    frame.resource_list.push_back(resource);
-    VerifySyncTokensInCompositorFrame(&frame);
-    shell_surface->SubmitCompositorFrameForTesting(std::move(frame));
+    shell_surface->SubmitCompositorFrameForTesting(
+        CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                              gfx::Rect(buffer_size), {resource}));
     test::WaitForLastFrameAck(shell_surface.get());
 
     // Try to release buffer in last frame. This can happen during a resize
@@ -423,22 +422,326 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
   ASSERT_EQ(release_resource_count, 0);
 
   // Submit frame without resource. This should cause buffer to be released.
-  {
-    viz::CompositorFrame frame;
-    frame.metadata.begin_frame_ack.frame_id =
-        viz::BeginFrameId(viz::BeginFrameArgs::kManualSourceId,
-                          viz::BeginFrameArgs::kStartingFrameNumber);
-    frame.metadata.begin_frame_ack.has_damage = true;
-    frame.metadata.frame_token = shell_surface->GenerateNextFrameToken();
-    frame.metadata.device_scale_factor = 1;
-    auto pass = viz::CompositorRenderPass::Create();
-    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
-                 gfx::Rect(buffer_size), gfx::Transform());
-    frame.render_pass_list.push_back(std::move(pass));
-    shell_surface->SubmitCompositorFrameForTesting(std::move(frame));
-  }
+  shell_surface->SubmitCompositorFrameForTesting(CreateCompositorFrame(
+      shell_surface.get(), gfx::Rect(buffer_size), gfx::Rect(buffer_size), {}));
 
   run_loop.Run();
+  // Release() should have been called exactly once.
+  ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
+}
+
+// Tests that only apply if ExoReactiveFrameSubmission is enabled.
+class ReactiveFrameSubmissionBufferTest : public test::ExoTestBase {
+ public:
+  ReactiveFrameSubmissionBufferTest()
+      : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class TestLayerTreeFrameSinkHolder : public LayerTreeFrameSinkHolder {
+ public:
+  TestLayerTreeFrameSinkHolder(
+      SurfaceTreeHost* surface_tree_host,
+      std::unique_ptr<cc::LayerTreeFrameSink> frame_sink)
+      : LayerTreeFrameSinkHolder(surface_tree_host, std::move(frame_sink)) {}
+  ~TestLayerTreeFrameSinkHolder() override = default;
+
+  using PreReclaimCallback =
+      base::RepeatingCallback<void(const std::vector<viz::ReturnedResource>&)>;
+  void set_pre_reclaim_callback(PreReclaimCallback callback) {
+    pre_reclaim_callback_ = std::move(callback);
+  }
+
+  void set_post_reclaim_callback(base::RepeatingClosure callback) {
+    post_reclaim_callback_ = std::move(callback);
+  }
+
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
+    if (pre_reclaim_callback_) {
+      pre_reclaim_callback_.Run(resources);
+    }
+
+    LayerTreeFrameSinkHolder::ReclaimResources(std::move(resources));
+
+    if (post_reclaim_callback_) {
+      post_reclaim_callback_.Run();
+    }
+  }
+
+ private:
+  PreReclaimCallback pre_reclaim_callback_;
+  base::RepeatingClosure post_reclaim_callback_;
+};
+
+TEST_F(ReactiveFrameSubmissionBufferTest,
+       SurfaceTreeHostNotReclaimCachedFrameResources) {
+  gfx::Size buffer_size(256, 256);
+
+  auto shell_surface =
+      test::ShellSurfaceBuilder(buffer_size).SetNoCommit().BuildShellSurface();
+  test::SetLayerTreeFrameSinkHolderFactory<TestLayerTreeFrameSinkHolder>(
+      shell_surface.get());
+  shell_surface->root_surface()->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  TestLayerTreeFrameSinkHolder* frame_sink_holder =
+      static_cast<TestLayerTreeFrameSinkHolder*>(
+          shell_surface->layer_tree_frame_sink_holder());
+
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+
+  // Remove wait time for efficiency.
+  buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
+
+  int release_call_count = 0;
+
+  base::RunLoop run_loop1;
+  auto combined_quit_closure = BarrierClosure(2, run_loop1.QuitClosure());
+
+  buffer->set_release_callback(
+      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+
+  buffer->OnAttach();
+  viz::TransferableResource resource;
+  // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
+  bool rv = buffer->ProduceTransferableResource(
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
+      CreateExplicitReleaseCallback(&release_resource_count,
+                                    combined_quit_closure));
+  ASSERT_TRUE(rv);
+
+  // Submit frame with `resource`.
+  shell_surface->SubmitCompositorFrameForTesting(
+      CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                            gfx::Rect(buffer_size), {resource}));
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  base::RunLoop run_loop2;
+  // Set a callback that will be called when the remote side notify
+  // ReclaimResources for `resource`.
+  frame_sink_holder->set_pre_reclaim_callback(base::BindLambdaForTesting(
+      [&](const std::vector<viz::ReturnedResource>& resources) {
+        // Skip if it is not a notification for reclaiming `resource`.
+        if (!base::Contains(
+                resources, resource.id,
+                [](const viz::ReturnedResource& r) { return r.id; })) {
+          return;
+        }
+
+        run_loop2.Quit();
+        // Make sure that this callback is only used once.
+        frame_sink_holder->set_pre_reclaim_callback({});
+
+        frame_sink_holder->ClearPendingBeginFramesForTesting();
+        // Cause a frame with `resource` is cached. This should hold off
+        // reclaming `resource`.
+        shell_surface->SubmitCompositorFrameForTesting(
+            CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                                  gfx::Rect(buffer_size), {resource}));
+      }));
+
+  // Submit a new frame without resource to cause the remote side to stop using
+  // `resource` and notify ReclaimResources. The callback set by
+  // set_pre_reclaim_callback() above should be run as a result.
+  shell_surface->SubmitCompositorFrameForTesting(CreateCompositorFrame(
+      shell_surface.get(), gfx::Rect(buffer_size), gfx::Rect(buffer_size), {}));
+  run_loop2.Run();
+
+  // Ensure the cached frame is submitted.
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  // We expect that Release() is not called, no matter whether we have a wait
+  // here or how long the wait is. An arbitrary time period is added here so
+  // that if the event mistakenly happens, it is more likely to find out.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Release() should not have been called.
+  ASSERT_EQ(release_call_count, 0);
+  ASSERT_EQ(release_resource_count, 0);
+
+  buffer->OnDetach();
+
+  // Submit a new frame without resource. This will cause buffer to be released.
+  shell_surface->SubmitCompositorFrameForTesting(CreateCompositorFrame(
+      shell_surface.get(), gfx::Rect(buffer_size), gfx::Rect(buffer_size), {}));
+
+  run_loop1.Run();
+  // Release() should have been called exactly once.
+  ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
+}
+
+TEST_F(ReactiveFrameSubmissionBufferTest,
+       SurfaceTreeHostDiscardFrameNotReclaimNewFrameResources) {
+  gfx::Size buffer_size(256, 256);
+
+  auto shell_surface =
+      test::ShellSurfaceBuilder(buffer_size).BuildShellSurface();
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  LayerTreeFrameSinkHolder* frame_sink_holder =
+      shell_surface->layer_tree_frame_sink_holder();
+
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+
+  // Remove wait time for efficiency.
+  buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
+
+  int release_call_count = 0;
+
+  base::RunLoop run_loop;
+  auto combined_quit_closure = BarrierClosure(2, run_loop.QuitClosure());
+
+  buffer->set_release_callback(
+      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+
+  buffer->OnAttach();
+  viz::TransferableResource resource;
+  // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
+  bool rv = buffer->ProduceTransferableResource(
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
+      CreateExplicitReleaseCallback(&release_resource_count,
+                                    combined_quit_closure));
+  ASSERT_TRUE(rv);
+
+  frame_sink_holder->ClearPendingBeginFramesForTesting();
+
+  // Submit a frame with `resource`, which will be cached.
+  shell_surface->SubmitCompositorFrameForTesting(
+      CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                            gfx::Rect(buffer_size), {resource}));
+
+  // Submit another frame with `resource`. It will cause the previously cached
+  // frame to be evicted.
+  shell_surface->SubmitCompositorFrameForTesting(
+      CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                            gfx::Rect(buffer_size), {resource}));
+
+  buffer->OnDetach();
+
+  // Ensure the cached frame is submitted.
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  // We expect that Release() is not called, no matter whether we have a wait
+  // here or how long the wait is. An arbitrary time period is added here so
+  // that if the event mistakenly happens, it is more likely to find out.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Release() should not have been called.
+  ASSERT_EQ(release_call_count, 0);
+  ASSERT_EQ(release_resource_count, 0);
+
+  // Submit another frame without resource.
+  shell_surface->SubmitCompositorFrameForTesting(CreateCompositorFrame(
+      shell_surface.get(), gfx::Rect(buffer_size), gfx::Rect(buffer_size), {}));
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  run_loop.Run();
+
+  // Release() should have been called exactly once.
+  ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
+}
+
+TEST_F(ReactiveFrameSubmissionBufferTest,
+       SurfaceTreeHostDiscardFrameNotReclaimInUseResources) {
+  gfx::Size buffer_size(256, 256);
+
+  auto shell_surface =
+      test::ShellSurfaceBuilder(buffer_size).SetNoCommit().BuildShellSurface();
+  test::SetLayerTreeFrameSinkHolderFactory<TestLayerTreeFrameSinkHolder>(
+      shell_surface.get());
+  shell_surface->root_surface()->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  TestLayerTreeFrameSinkHolder* frame_sink_holder =
+      static_cast<TestLayerTreeFrameSinkHolder*>(
+          shell_surface->layer_tree_frame_sink_holder());
+
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+
+  // Remove wait time for efficiency.
+  buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
+
+  int release_call_count = 0;
+
+  base::RunLoop run_loop1;
+  auto combined_quit_closure = BarrierClosure(2, run_loop1.QuitClosure());
+
+  buffer->set_release_callback(
+      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+
+  buffer->OnAttach();
+  viz::TransferableResource resource;
+  // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
+  bool rv = buffer->ProduceTransferableResource(
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
+      CreateExplicitReleaseCallback(&release_resource_count,
+                                    combined_quit_closure));
+  ASSERT_TRUE(rv);
+
+  // Submit frame with `resource`.
+  shell_surface->SubmitCompositorFrameForTesting(
+      CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                            gfx::Rect(buffer_size), {resource}));
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  base::RunLoop run_loop2;
+  // Set a callback that will be called when the remote side notify
+  // ReclaimResources for `resource`.
+  frame_sink_holder->set_pre_reclaim_callback(base::BindLambdaForTesting(
+      [&](const std::vector<viz::ReturnedResource>& resources) {
+        // Skip if it is not a notification for reclaiming `resource`.
+        if (!base::Contains(
+                resources, resource.id,
+                [](const viz::ReturnedResource& r) { return r.id; })) {
+          return;
+        }
+
+        run_loop2.Quit();
+        // Make sure that this callback is only used once.
+        frame_sink_holder->set_pre_reclaim_callback({});
+
+        // The evicted cached frame with `resource` shouldn't have caused
+        // Release() to be called.
+        ASSERT_EQ(release_call_count, 0);
+        ASSERT_EQ(release_resource_count, 0);
+      }));
+
+  frame_sink_holder->ClearPendingBeginFramesForTesting();
+
+  // Cause a frame with `resource` is cached.
+  shell_surface->SubmitCompositorFrameForTesting(
+      CreateCompositorFrame(shell_surface.get(), gfx::Rect(buffer_size),
+                            gfx::Rect(buffer_size), {resource}));
+
+  buffer->OnDetach();
+
+  // Submit a new frame without resource to evict the previously cached frame.
+  // It shouldn't cause `resource` to be reclaimed because it is still in use at
+  // the remote side.
+  shell_surface->SubmitCompositorFrameForTesting(CreateCompositorFrame(
+      shell_surface.get(), gfx::Rect(buffer_size), gfx::Rect(buffer_size), {}));
+
+  // Wait for the remote site to notify ReclaimResources for `resource`.
+  run_loop2.Run();
+
+  run_loop1.Run();
+
   // Release() should have been called exactly once.
   ASSERT_EQ(release_call_count, 1);
   ASSERT_EQ(release_resource_count, 1);

@@ -1822,10 +1822,8 @@ TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
 
   surface->Attach(buffer.get());
 
-  // This commit will ensure that if there is already a pending BeginFrame
-  // request, it is responded and cleared.
-  surface->Damage(gfx::Rect(0, 0, 10, 10));
-  surface->Commit();
+  shell_surface->layer_tree_frame_sink_holder()
+      ->ClearPendingBeginFramesForTesting();
 
   // This will result in a cached frame in LayerTreeFrameSinkHolder.
   surface->Damage(gfx::Rect(10, 10, 10, 10));

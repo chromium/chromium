@@ -147,6 +147,14 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetHostWindowForTesting(std::unique_ptr<aura::Window> test_host_window,
                                const std::string& window_name);
 
+  using LayerTreeFrameSinkHolderFactory =
+      base::RepeatingCallback<std::unique_ptr<LayerTreeFrameSinkHolder>()>;
+
+  // It should only be used at initialization time before any frames are
+  // submitted.
+  void SetLayerTreeFrameSinkHolderFactoryForTesting(
+      LayerTreeFrameSinkHolderFactory frame_sink_holder_factory);
+
  protected:
   void UpdateDisplayOnTree();
 
@@ -189,6 +197,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   void CleanUpCallbacks();
 
+  std::unique_ptr<LayerTreeFrameSinkHolder> CreateLayerTreeFrameSinkHolder();
+
   raw_ptr<Surface, ExperimentalAsh> root_surface_ = nullptr;
 
   // Position of root surface relative to topmost, leftmost sub-surface. The
@@ -197,6 +207,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   std::unique_ptr<aura::Window> host_window_;
   std::unique_ptr<LayerTreeFrameSinkHolder> layer_tree_frame_sink_holder_;
+  LayerTreeFrameSinkHolderFactory frame_sink_holder_factory_;
 
   // This queue contains lists the callbacks to notify the client when it is a
   // good time to start producing a new frame. Each list corresponds to a

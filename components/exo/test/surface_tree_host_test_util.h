@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_TEST_SURFACE_TREE_HOST_TEST_UTIL_H_
 #define COMPONENTS_EXO_TEST_SURFACE_TREE_HOST_TEST_UTIL_H_
 
+#include "base/test/bind.h"
 #include "components/exo/surface_tree_host.h"
 
 namespace exo::test {
@@ -16,6 +17,17 @@ void WaitForLastFrameAck(SurfaceTreeHost* surface_tree_host);
 // Waits for the last compositor frame submitted by `surface_tree_host` to be
 // presented.
 void WaitForLastFramePresentation(SurfaceTreeHost* surface_tree_host);
+
+template <class LayerTreeFrameSinkHolderType>
+void SetLayerTreeFrameSinkHolderFactory(SurfaceTreeHost* surface_tree_host) {
+  surface_tree_host->SetLayerTreeFrameSinkHolderFactoryForTesting(
+      base::BindLambdaForTesting(
+          [surface_tree_host]() -> std::unique_ptr<LayerTreeFrameSinkHolder> {
+            return std::make_unique<LayerTreeFrameSinkHolderType>(
+                surface_tree_host,
+                surface_tree_host->host_window()->CreateLayerTreeFrameSink());
+          }));
+}
 
 }  // namespace exo::test
 
