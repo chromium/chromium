@@ -1214,7 +1214,6 @@ http/tests/devtools/sxg/sxg-prefetch.js
 http/tests/devtools/tabbed-pane-closeable-persistence.js
 http/tests/devtools/tracing/anonymous-image-object.js
 http/tests/devtools/tracing/category-filter.js
-http/tests/devtools/tracing/console-timeline.js
 http/tests/devtools/tracing/frame-model-instrumentation.js
 http/tests/devtools/tracing/frame-model.js
 http/tests/devtools/tracing/timeline-js/timeline-has-cpu-profile-events.js
@@ -1234,7 +1233,6 @@ http/tests/devtools/tracing/timeline-script-parse.js
 http/tests/devtools/tracing/timeline-style/timeline-recalculate-styles.js
 http/tests/devtools/tracing/timeline-time/timeline-time-stamp.js
 http/tests/devtools/tracing/tracing-record-input-events.js
-http/tests/devtools/tracing/user-timing.js
 http/tests/devtools/tracing/worker-js-frames.js
 http/tests/devtools/unit/datagrid-editable-longtext.js
 http/tests/devtools/unit/list-control-equal-height.js

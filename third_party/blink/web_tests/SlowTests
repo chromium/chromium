@@ -757,7 +757,6 @@ crbug.com/874695 [ Release ] virtual/stable/media/stable/video-object-fit-stable
 crbug.com/874695 virtual/scalefactor200/css3/filters/effect-reference-zoom-hw.html [ Slow ]
 crbug.com/874695 virtual/threaded/fast/idle-callback/idle_periods.html [ Slow ]
 crbug.com/874695 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Slow ]
-crbug.com/874695 virtual/threaded/http/tests/devtools/tracing/console-timeline.js [ Slow ]
 crbug.com/874695 [ Linux ] virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Slow ]
 crbug.com/874695 [ Mac10.15 Release ] virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Slow ]
 crbug.com/874695 [ Mac11 Release ] virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Slow ]

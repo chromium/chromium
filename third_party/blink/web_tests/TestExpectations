@@ -3961,9 +3961,6 @@ crbug.com/911782 [ Mac ] paint/invalidation/forms/submit-focus-by-mouse-then-key
 # Sheriff 2018-12-06
 crbug.com/912793 crbug.com/899087 virtual/android/fullscreen/full-screen-iframe-allowed-video.html [ Crash Failure Pass Timeout ]
 
-# Sheriff 2018-12-07
-crbug.com/912821 http/tests/devtools/tracing/user-timing.js [ Failure Pass Timeout ]
-
 # Sheriff 2018-12-13
 crbug.com/910452 media/controls/buttons-after-reset.html [ Failure Pass ]
 

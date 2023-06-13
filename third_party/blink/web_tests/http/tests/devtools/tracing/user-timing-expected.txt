@@ -1,7 +1,0 @@
-Tests the instrumentation of a UserTiming events
-
-Expecting three measures with durations (in this order): 100, 200, 0
-Got Async Event. Duration: 100
-Got Async Event. Duration: 200
-Got Async Event. Duration: 0
-
