@@ -590,8 +590,7 @@ std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
       return number_;
 
     case CREDIT_CARD_VERIFICATION_CODE:
-      // Chrome doesn't store credit card verification codes.
-      return std::u16string();
+      return cvc_;
 
     default:
       // ComputeDataPresentForArray will hit this repeatedly.
@@ -654,7 +653,11 @@ void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
     }
 
     case CREDIT_CARD_VERIFICATION_CODE:
-      // Chrome doesn't store the credit card verification code.
+      // network_ is default as kGenericCard, network_ will be set when setting
+      // card number.
+      if (IsValidCreditCardSecurityCode(value, network_)) {
+        cvc_ = value;
+      }
       break;
 
     default:

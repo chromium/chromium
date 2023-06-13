@@ -1535,13 +1535,44 @@ TEST(CreditCardTest, CreditCardType) {
   EXPECT_EQ(u"Visa", card.GetRawInfo(CREDIT_CARD_TYPE));
 }
 
+// Verify that we preserve exactly what the user typed for CVC.
 TEST(CreditCardTest, CreditCardVerificationCode) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
 
-  // The verification code cannot be set, as Chrome does not store this data.
+  // CVC for generic network is 3 digit string with number characters.
   card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
-  EXPECT_EQ(std::u16string(), card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+
+  // These should fail, and preserve the previous value. CVC for generic network
+  // is 3 digit string with number characters.
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"0");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"1");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"9999");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"12345");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"ab15");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+
+  // 15-digit Amex card number.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"378282246310005");
+  // CVC for Amex network is 4 digit string with number characters.
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"9999");
+  EXPECT_EQ(u"9999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"9999", card.cvc());
 }
 
 // Tests that the card in only deletable if it is expired before the threshold.
