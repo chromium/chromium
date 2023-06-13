@@ -45,6 +45,10 @@ export class EmojiGroupButton extends PolymerElement {
   private calculateClassName(active: boolean): string {
     return active ? 'emoji-group-active' : '';
   }
+
+  private getAriaPressedState(active: boolean): string {
+    return active ? 'true' : 'false';
+  }
 }
 
 declare global {

@@ -63,6 +63,10 @@ export class EmojiCategoryButton extends PolymerElement {
 
     return ARIA_LABELS_WITH_GIF_SUPPORT[name] ?? name;
   }
+
+  private getAriaPressedState(active: boolean): string {
+    return active ? 'true' : 'false';
+  }
 }
 
 declare global {
