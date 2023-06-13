@@ -64,6 +64,13 @@ class VisibilityMetricsLogger {
     virtual VisibilityInfo GetVisibilityInfo() = 0;
   };
 
+  enum class ClientAction {
+    kAdded = 0,
+    kRemoved = 1,
+    kVisibilityChanged = 2,
+    kMaxValue = kVisibilityChanged,
+  };
+
   VisibilityMetricsLogger();
   virtual ~VisibilityMetricsLogger();
 
@@ -88,7 +95,9 @@ class VisibilityMetricsLogger {
 
  private:
   void UpdateDurations();
-  void ProcessClientUpdate(Client* client, const VisibilityInfo& info);
+  void ProcessClientUpdate(Client* client,
+                           const VisibilityInfo& info,
+                           ClientAction action);
   void RecordVisibilityMetrics();
   void RecordVisibleSchemeMetrics();
   void RecordScreenCoverageMetrics();

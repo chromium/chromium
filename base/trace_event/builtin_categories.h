@@ -33,6 +33,7 @@
   X("accessibility")                                                     \
   X("AccountFetcherService")                                             \
   X("android_webview")                                                   \
+  X("android_webview.timeline")                                          \
   /* Actions on Google Hardware, used in Google-internal code. */        \
   X("aogh")                                                              \
   X("audio")                                                             \
