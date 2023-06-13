@@ -20,6 +20,8 @@
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_file_check_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "content/public/browser/browser_thread.h"
@@ -175,8 +177,17 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
     return;
   }
 
+  auto* files_policy_manager =
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          profile_);
+  if (!files_policy_manager) {
+    LOG(ERROR) << "Couldn't find FilesPolicyNotificationManager";
+    Complete(State::kError);
+    return;
+  }
+
   if (params.policy_params->type == policy::Policy::kDlp) {
-    // TODO(b/281047180): Start scanning.
+    files_policy_manager->ResumeIOTask(progress_->task_id);
   }
 
   if (params.policy_params->type == policy::Policy::kEnterpriseConnectors) {

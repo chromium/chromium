@@ -63,6 +63,10 @@ class FilesPolicyNotificationManager
   // Returns whether IO task is being tracked.
   bool HasIOTask(file_manager::io_task::IOTaskId task_id) const;
 
+  // Runs warning callback for the corresponding IOTask with should_proceed set
+  // to true.
+  void ResumeIOTask(file_manager::io_task::IOTaskId task_id);
+
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
 
@@ -128,6 +132,9 @@ class FilesPolicyNotificationManager
 
   // Returns whether IO task has any blocked file.
   bool HasBlockedFiles(file_manager::io_task::IOTaskId task_id) const;
+
+  // Returns whether IO task has a warning.
+  bool HasWarning(file_manager::io_task::IOTaskId task_id) const;
 
   // Called when the user clicks on one of the warning dialog's buttons.
   // Resumes/cancels the task with `task_id` based on the value of

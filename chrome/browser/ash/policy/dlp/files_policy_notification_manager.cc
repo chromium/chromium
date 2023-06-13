@@ -182,6 +182,23 @@ bool FilesPolicyNotificationManager::HasIOTask(
   return base::Contains(io_tasks_, task_id);
 }
 
+void FilesPolicyNotificationManager::ResumeIOTask(
+    file_manager::io_task::IOTaskId task_id) {
+  if (!HasIOTask(task_id)) {
+    // Task is already completed or timed out.
+    return;
+  }
+
+  if (!HasWarning(task_id)) {
+    // Warning callback is already run.
+    return;
+  }
+
+  std::move(io_tasks_.at(task_id).warning_info->warning_callback)
+      .Run(/*should_proceed=*/true);
+  io_tasks_.at(task_id).warning_info.reset();
+}
+
 std::map<DlpConfidentialFile, Policy>
 FilesPolicyNotificationManager::GetIOTaskBlockedFilesForTesting(
     file_manager::io_task::IOTaskId task_id) const {
@@ -241,7 +258,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
           /*context=*/nullptr, /*parent=*/modal_parent);
       break;
     case FilesDialogType::kWarning:
-      if (!io_tasks_.at(task_id).warning_info.has_value()) {
+      if (!HasWarning(task_id)) {
         return;
       }
       OnDlpRestrictionCheckedCallback callback = base::BindOnce(
@@ -302,6 +319,14 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
       status.state == file_manager::io_task::State::kQueued) {
     AddIOTask(status.task_id, action);
   } else if (HasIOTask(status.task_id) && status.IsCompleted()) {
+    if (status.state == file_manager::io_task::State::kCancelled &&
+        HasWarning(status.task_id)) {
+      CHECK(!io_tasks_.at(status.task_id)
+                 .warning_info->warning_callback.is_null());
+      std::move(io_tasks_.at(status.task_id).warning_info->warning_callback)
+          .Run(/*should_proceed=*/false);
+      io_tasks_.at(status.task_id).warning_info.reset();
+    }
     // If it's in a terminal state, stop observing.
     io_tasks_.erase(status.task_id);
   }
@@ -312,10 +337,20 @@ bool FilesPolicyNotificationManager::HasBlockedFiles(
   return HasIOTask(task_id) && !io_tasks_.at(task_id).blocked_files.empty();
 }
 
+bool FilesPolicyNotificationManager::HasWarning(
+    file_manager::io_task::IOTaskId task_id) const {
+  return HasIOTask(task_id) && io_tasks_.at(task_id).warning_info.has_value();
+}
+
 void FilesPolicyNotificationManager::OnWarningDialogClicked(
     file_manager::io_task::IOTaskId task_id,
     Policy warning_reason,
     bool should_proceed) {
+  if (!HasIOTask(task_id) || !HasWarning(task_id)) {
+    // Task probably timed out.
+    return;
+  }
+
   auto* io_task_controller = GetIOTaskController(context_);
   if (!io_task_controller) {
     LOG(ERROR) << "FilesPolicyNotificationManager failed to find "
@@ -330,6 +365,10 @@ void FilesPolicyNotificationManager::OnWarningDialogClicked(
   } else {
     io_task_controller->Cancel(task_id);
   }
+  CHECK(!io_tasks_.at(task_id).warning_info->warning_callback.is_null());
+  std::move(io_tasks_.at(task_id).warning_info->warning_callback)
+      .Run(should_proceed);
+  io_tasks_.at(task_id).warning_info.reset();
 }
 
 void FilesPolicyNotificationManager::OnLearnMoreButtonClicked(

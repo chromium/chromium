@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -320,6 +321,123 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
 
   base::RunLoop().RunUntilIdle();
   io_task_controller_->RemoveObserver(&observer);
+}
+
+// Tests that cancelling a paused IO IO task will run the warning callback.
+TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
+  IOTaskStatusObserver observer;
+  io_task_controller_->AddObserver(&observer);
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_TRUE(CreateDummyFile(src_file_path));
+  auto src_url = CreateFileSystemURL(src_file_path.value());
+  ASSERT_TRUE(src_url.is_valid());
+  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
+
+  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+      file_manager::io_task::OperationType::kCopy,
+      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
+      file_system_context_);
+
+  // Task is queued.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kQueued))));
+  io_task_controller_->Add(std::move(task));
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+
+  // Task is paused.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kPaused),
+                Field(&file_manager::io_task::ProgressStatus::pause_params,
+                      pause_params))))
+      .Times(::testing::AtLeast(1));
+  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+      mock_cb;
+  fpnm_->ShowDlpWarning(
+      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+
+  // Task is cancelled.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kCancelled))));
+  // Warning callback is run with should_proceed set to false when the task is
+  // cancelled.
+  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false)).Times(1);
+  io_task_controller_->Cancel(task_id);
+
+  base::RunLoop().RunUntilIdle();
+  io_task_controller_->RemoveObserver(&observer);
+}
+
+// Tests that resuming a paused IO IO task will run the warning callback.
+TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
+  IOTaskStatusObserver observer;
+  io_task_controller_->AddObserver(&observer);
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_TRUE(CreateDummyFile(src_file_path));
+  auto src_url = CreateFileSystemURL(src_file_path.value());
+  ASSERT_TRUE(src_url.is_valid());
+  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
+
+  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+      file_manager::io_task::OperationType::kCopy,
+      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
+      file_system_context_);
+
+  // Task is queued.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kQueued))));
+  io_task_controller_->Add(std::move(task));
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+
+  // Task is paused.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kPaused),
+                Field(&file_manager::io_task::ProgressStatus::pause_params,
+                      pause_params))))
+      .Times(::testing::AtLeast(1));
+
+  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+      mock_cb;
+  fpnm_->ShowDlpWarning(
+      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+
+  // Warning callback is run with should_proceed set to true when the task is
+  // reumed.
+  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/true)).Times(1);
+  fpnm_->ResumeIOTask(task_id);
 }
 
 class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
