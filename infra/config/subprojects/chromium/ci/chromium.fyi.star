@@ -481,7 +481,7 @@ ci.builder(
         build_gs_bucket = "chromium-android-archive",
     ),
     builderless = False,
-    os = os.LINUX_BIONIC,
+    os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
     ),
