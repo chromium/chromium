@@ -238,18 +238,11 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
 
   private onEditClick_() {
     assert(this.computeCanEditPassword_());
-    const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
-      username: this.username_,
-      password: this.password_,
-      note: this.note_,
-    };
+    this.credential.password = this.password_;
+    this.credential.username = this.username_;
+    this.credential.note = this.note_;
     PasswordManagerImpl.getInstance()
-        .changeSavedPassword(this.credential.id, params)
-        .then(() => {
-          this.credential.password = this.password_;
-          this.credential.username = this.username_;
-          this.credential.note = this.note_;
-        })
+        .changeCredential(this.credential)
         .finally(() => {
           this.$.dialog.close();
         });

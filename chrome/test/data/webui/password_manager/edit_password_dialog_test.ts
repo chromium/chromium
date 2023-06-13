@@ -241,12 +241,12 @@ suite('EditPasswordDialogTest', function() {
     assertFalse(dialog.$.saveButton.disabled);
     dialog.$.saveButton.click();
 
-    const {id, params} =
-        await passwordManager.whenCalled('changeSavedPassword');
+    const updatedCredential =
+        await passwordManager.whenCalled('changeCredential');
 
-    assertEquals(password.id, id);
-    assertEquals(dialog.$.usernameInput.value, params.username);
-    assertEquals(dialog.$.passwordInput.value, params.password);
-    assertEquals(dialog.$.passwordNote.value, params.note);
+    assertEquals(password.id, updatedCredential.id);
+    assertEquals(dialog.$.usernameInput.value, updatedCredential.username);
+    assertEquals(dialog.$.passwordInput.value, updatedCredential.password);
+    assertEquals(dialog.$.passwordNote.value, updatedCredential.note);
   });
 });
