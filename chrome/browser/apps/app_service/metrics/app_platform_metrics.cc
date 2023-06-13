@@ -451,7 +451,7 @@ AppPlatformMetrics::AppPlatformMetrics(
     InstanceRegistry& instance_registry)
     : profile_(profile), app_registry_cache_(app_registry_cache) {
   apps::AppRegistryCache::Observer::Observe(&app_registry_cache);
-  apps::InstanceRegistry::Observer::Observe(&instance_registry);
+  instance_registry_observation_.Observe(&instance_registry);
   user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   InitRunningDuration();
   LoadAppsUsageTimeUkmFromPref();
@@ -873,7 +873,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
 void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
 }
 
 void AppPlatformMetrics::GetBrowserInstanceInfo(

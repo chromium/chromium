@@ -49,8 +49,7 @@ void FilesAppLauncher::Launch(base::OnceClosure callback) {
 
 void FilesAppLauncher::LaunchInternal() {
   // Start observing the launching.
-  auto& instance_registry = proxy_->InstanceRegistry();
-  apps::InstanceRegistry::Observer::Observe(&instance_registry);
+  instance_registry_observation_.Observe(&proxy_->InstanceRegistry());
 
   // Launching traditional files.app and launching SWA files.app need quite
   // different procedure.
@@ -83,13 +82,13 @@ void FilesAppLauncher::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   // So launching is progressed. Stop observing and run the callback
   // to notify the caller of Launch().
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
   std::move(callback_).Run();
 }
 
 void FilesAppLauncher::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
 }
 
 }  // namespace crosapi

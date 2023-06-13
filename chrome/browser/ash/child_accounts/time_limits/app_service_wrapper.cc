@@ -72,7 +72,7 @@ apps::PauseData PauseAppInfoToPauseData(const PauseAppInfo& pause_info) {
 
 AppServiceWrapper::AppServiceWrapper(Profile* profile) : profile_(profile) {
   apps::AppRegistryCache::Observer::Observe(&GetAppCache());
-  apps::InstanceRegistry::Observer::Observe(&GetInstanceRegistry());
+  instance_registry_observation_.Observe(&GetInstanceRegistry());
 }
 
 AppServiceWrapper::~AppServiceWrapper() = default;
@@ -294,7 +294,7 @@ void AppServiceWrapper::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
 void AppServiceWrapper::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
 }
 
 apps::AppServiceProxy* AppServiceWrapper::GetAppProxy() const {

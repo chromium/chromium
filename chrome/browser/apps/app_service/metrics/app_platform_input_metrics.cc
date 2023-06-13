@@ -140,7 +140,7 @@ AppPlatformInputMetrics::AppPlatformInputMetrics(
     Profile* profile,
     InstanceRegistry& instance_registry)
     : profile_(profile) {
-  InstanceRegistry::Observer::Observe(&instance_registry);
+  instance_registry_observation_.Observe(&instance_registry);
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->AddPreTargetHandler(this);
   }
@@ -229,7 +229,7 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
 
 void AppPlatformInputMetrics::OnInstanceRegistryWillBeDestroyed(
     InstanceRegistry* cache) {
-  InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
 }
 
 void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(

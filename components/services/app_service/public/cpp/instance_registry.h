@@ -58,9 +58,6 @@ class InstanceRegistry {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
     // Called whenever the InstanceRegistry receives an update for any
     // instance. `update` exposes the latest field values and whether they have
     // changed in this update (as per the docs on `apps::InstanceUpdate`). The
@@ -74,32 +71,7 @@ class InstanceRegistry {
     virtual void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) = 0;
 
    protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // InstanceRegistry for its entire lifetime, or until the observee (the
-    // InstanceRegistry) is destroyed, whichever comes first.
-    //
-    // DEPRECATED: Prefer using a base::ScopedObservation for idiomatic observer
-    // behavior.
-    // TODO(crbug.com/1453127): Remove this method.
-    explicit Observer(InstanceRegistry* cache);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // InstanceRegistry for part of its lifetime. It can then call Observe() to
-    // start and stop observing.
-    Observer();
-
     ~Observer() override;
-
-    // Start observing a different InstanceRegistry. |instance_registry| may be
-    // nullptr, meaning to stop observing.
-    //
-    // DEPRECATED: Prefer using a base::ScopedObservation for idiomatic observer
-    // behavior.
-    // TODO(crbug.com/1453127): Remove this method.
-    void Observe(InstanceRegistry* instance_registry);
-
-   private:
-    raw_ptr<InstanceRegistry, ExperimentalAsh> instance_registry_ = nullptr;
   };
 
   InstanceRegistry();
@@ -108,6 +80,8 @@ class InstanceRegistry {
   InstanceRegistry(const InstanceRegistry&) = delete;
   InstanceRegistry& operator=(const InstanceRegistry&) = delete;
 
+  // Prefer using a base::ScopedObservation to safely manage the observation,
+  // instead of calling these methods directly.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

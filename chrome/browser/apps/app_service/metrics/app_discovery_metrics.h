@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
@@ -106,6 +107,9 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   // Map associating app_ids to instance_ids.
   std::map<std::string, std::set<base::UnguessableToken>>
       app_id_to_instance_ids_;
+
+  base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
+      instance_registry_observation_{this};
 };
 
 }  // namespace apps

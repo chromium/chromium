@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -358,6 +359,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   std::vector<std::unique_ptr<UsageTime>> usage_times_from_pref_;
 
   base::ObserverList<Observer> observers_;
+
+  base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
+      instance_registry_observation_{this};
 };
 
 }  // namespace apps

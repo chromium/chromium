@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
@@ -88,8 +89,9 @@ class InstanceRegistryTest : public testing::Test,
 class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
  public:
   explicit InstanceRecursiveObserver(apps::InstanceRegistry* instance_registry)
-      : apps::InstanceRegistry::Observer(instance_registry),
-        instance_registry_(instance_registry) {}
+      : instance_registry_(instance_registry) {
+    instance_registry_observation_.Observe(instance_registry);
+  }
 
   ~InstanceRecursiveObserver() override = default;
 
@@ -177,7 +179,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
 
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* instance_registry) override {
-    Observe(nullptr);
+    instance_registry_observation_.Reset();
   }
 
   static void ExpectEq(const apps::InstanceUpdate& outer,
@@ -206,6 +208,10 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
   std::vector<std::unique_ptr<apps::InstanceParams>>
       super_recursive_instance_params_;
   std::vector<std::unique_ptr<apps::Instance>> super_recursive_instances_;
+
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      instance_registry_observation_{this};
 };
 
 TEST_F(InstanceRegistryTest, ForEachInstance) {
