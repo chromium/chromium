@@ -572,6 +572,9 @@ void ServiceWorkerRegistry::StoreRegistration(
   for (const blink::mojom::WebFeature feature : version->used_features())
     data->used_features.push_back(feature);
   data->ancestor_frame_type = registration->ancestor_frame_type();
+  if (version->router_evaluator()) {
+    data->router_rules = version->router_evaluator()->rules();
+  }
 
   // The ServiceWorkerVersion's policy container host might be null if it is
   // stored before loading the main script. This happens in many unittests.
@@ -1100,6 +1103,11 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
       version->set_policy_container_host(
           base::MakeRefCounted<PolicyContainerHost>(
               PolicyContainerPolicies(*data.policy_container_policies)));
+    }
+    if (data.router_rules) {
+      bool status = version->SetupRouterEvaluator(*data.router_rules);
+      DCHECK(status) << "Failed to setup RouterEvaluator from the provided "
+                     << "rules. Possibly the database is corrupted.";
     }
   }
   version->set_script_response_time_for_devtools(data.script_response_time);
