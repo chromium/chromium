@@ -400,20 +400,23 @@ bool ComServerApp::SwapInNewVersion() {
     StopProcessesUnderPath(target->DirName(), base::Seconds(45));
   }
 
-  const bool succeeded = list->Do();
-  if (succeeded) {
-    LOG_IF(ERROR,
-           UninstallGoogleUpdate(updater_scope(), temp_dir->GetPath(),
-                                 UpdaterScopeToHKeyRoot(updater_scope())));
-
-    // TODO(crbug.com/1425609) - revert the CL that introduced this logging
-    // after the bug is resolved.
-    for (const auto& clsid : GetServers(false, updater_scope())) {
-      LogClsidEntries(clsid);
-    }
+  if (!list->Do()) {
+    return false;
   }
 
-  return succeeded;
+  LOG_IF(ERROR, UninstallGoogleUpdate(updater_scope(), temp_dir->GetPath(),
+                                      UpdaterScopeToHKeyRoot(updater_scope())));
+  if (!IsSystemInstall(updater_scope())) {
+    LOG_IF(ERROR, DeleteLegacyEntriesPerUser());
+  }
+
+  // TODO(crbug.com/1425609) - revert the CL that introduced this logging
+  // after the bug is resolved.
+  for (const auto& clsid : GetServers(false, updater_scope())) {
+    LogClsidEntries(clsid);
+  }
+
+  return true;
 }
 
 bool ComServerApp::MigrateLegacyUpdaters(
