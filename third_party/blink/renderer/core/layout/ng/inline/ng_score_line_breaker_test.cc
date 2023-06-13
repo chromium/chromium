@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_score_line_breaker.h"
 
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_break_point.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info_list.h"
@@ -125,6 +126,37 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   EXPECT_FALSE(line_info_list.Back().BreakToken());
   constexpr wtf_size_t target_num_lines = 6;
   EXPECT_EQ(count, target_num_lines - NGLineInfoList::kCapacity);
+}
+
+TEST_F(NGScoreLineBreakerTest, BalanceMaxLinesExceeded) {
+  ScopedCSSTextWrapBalanceByScoreForTest balance_by_score(true);
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+      width: 10ch;
+      text-wrap: balance;
+    }
+    </style>
+    <div id="target">
+      123 56 89 123 56 89
+      123 56 89 123 56 89
+      123 56 89 123 56 89
+      123 56 89 123 56 89
+      123 56 89 123 56 89
+      X
+    </div>
+  )HTML");
+  const LayoutBlockFlow* target = GetLayoutBlockFlowByElementId("target");
+  NGInlineCursor cursor(*target);
+  cursor.MoveToLastLine();
+  cursor.MoveToNext();
+  // Neitehr `balance` nor `pretty` should be applied.
+  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kText);
+  EXPECT_EQ(cursor.Current()->TextLength(), 1u);
 }
 
 class BlockInInlineTest : public NGScoreLineBreakerTest,

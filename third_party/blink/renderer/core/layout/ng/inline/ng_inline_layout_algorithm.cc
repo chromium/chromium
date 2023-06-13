@@ -81,9 +81,8 @@ class NGLineBreakStrategy {
                       const NGColumnSpannerPath* column_spanner_path) {
     if (!column_spanner_path) {
       const TextWrap text_wrap = block_style.GetTextWrap();
-      if (UNLIKELY(text_wrap == TextWrap::kPretty ||
-                   text_wrap == TextWrap::kBalance)) {
-        initiate_balancing_ = text_wrap == TextWrap::kBalance && !break_token;
+      initiate_balancing_ = text_wrap == TextWrap::kBalance && !break_token;
+      if (UNLIKELY(initiate_balancing_ || text_wrap == TextWrap::kPretty)) {
         score_line_break_context_ = context->ScoreLineBreakContext();
         use_score_line_break_ =
             score_line_break_context_ && score_line_break_context_->IsActive();
