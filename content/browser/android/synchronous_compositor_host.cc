@@ -337,7 +337,6 @@ bool SynchronousCompositorHost::DemandDrawSwInProc(SkCanvas* canvas) {
       blink::mojom::SyncCompositorDemandDrawSwParams::New();  // Unused.
   uint32_t metadata_version = 0u;
   invalidate_needs_draw_ = false;
-  num_invalidates_since_last_draw_ = 0u;
   if (!IsReadyForSynchronousCall() ||
       !GetSynchronousCompositor()->DemandDrawSw(std::move(params),
                                                 &common_renderer_params,
@@ -377,6 +376,7 @@ struct SynchronousCompositorHost::SharedMemoryWithSize {
 
 bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
                                              bool software_canvas) {
+  num_invalidates_since_last_draw_ = 0u;
   if (use_in_process_zero_copy_software_draw_)
     return DemandDrawSwInProc(canvas);
 
