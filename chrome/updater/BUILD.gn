@@ -714,6 +714,7 @@ if (is_win || is_mac || is_linux) {
     testonly = true
     sources = [
       "app/app_server_unittest.cc",
+      "app/app_uninstall_unittest.cc",
       "constants_unittest.cc",
       "device_management/dm_client_unittest.cc",
       "device_management/dm_message_unittest.cc",

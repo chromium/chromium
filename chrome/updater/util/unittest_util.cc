@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/unittest_util.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,9 +30,11 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/prefs.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -120,6 +123,42 @@ class CustomLogPrinter : public testing::TestEventListener {
  private:
   std::unique_ptr<testing::TestEventListener> impl_;
 };
+
+// Creates Prefs with the fake updater version set as active.
+void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  ASSERT_TRUE(global_prefs) << "No global prefs.";
+  global_prefs->SetActiveVersion(version.GetString());
+  global_prefs->SetSwapping(false);
+  PrefsCommitPendingWrites(global_prefs->GetPrefService());
+  ASSERT_EQ(version.GetString(), global_prefs->GetActiveVersion());
+}
+
+// Creates an install folder on the system with the fake updater version.
+void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
+                                   const base::Version& version,
+                                   bool should_create_updater_executable) {
+  absl::optional<base::FilePath> folder_path =
+      GetVersionedInstallDirectory(scope, version);
+  ASSERT_TRUE(folder_path);
+  const base::FilePath updater_executable_path(
+      folder_path->Append(GetExecutableRelativePath()));
+  ASSERT_TRUE(base::CreateDirectory(updater_executable_path.DirName()));
+
+  if (should_create_updater_executable) {
+    // Create a fake `updater.exe` inside the install folder.
+    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendASCII("prefs.json"),
+                               updater_executable_path));
+  }
+}
+
+void SetupFakeUpdater(UpdaterScope scope,
+                      const base::Version& version,
+                      bool should_create_updater_executable) {
+  SetupFakeUpdaterPrefs(scope, version);
+  SetupFakeUpdaterInstallFolder(scope, version,
+                                should_create_updater_executable);
+}
 
 }  // namespace
 
@@ -427,6 +466,18 @@ base::FilePath GetTestFilePath(const char* file_name) {
       .AppendASCII("test")
       .AppendASCII("data")
       .AppendASCII(file_name);
+}
+
+void SetupFakeUpdaterVersion(UpdaterScope scope,
+                             const base::Version& base_version,
+                             int major_version_offset,
+                             bool should_create_updater_executable) {
+  std::vector<uint32_t> components = base_version.components();
+  base::CheckedNumeric<uint32_t> new_version = components[0];
+  new_version += major_version_offset;
+  ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
+  SetupFakeUpdater(scope, base::Version(std::move(components)),
+                   should_create_updater_executable);
 }
 
 }  // namespace updater::test

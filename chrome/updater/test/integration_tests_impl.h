@@ -147,13 +147,6 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
 // Returns the path of the Updater executable.
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 
-// Creates Prefs with the fake updater version set as active.
-void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version);
-
-// Creates an install folder on the system with the fake updater version.
-void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
-                                   const base::Version& version);
-
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
