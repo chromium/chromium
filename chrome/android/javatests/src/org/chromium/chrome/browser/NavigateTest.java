@@ -57,11 +57,9 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -246,39 +244,6 @@ public class NavigateTest {
         Assert.assertEquals("Desired Link not open", url2,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
-    }
-
-    /**
-     * Test 'Request Desktop Site' option is preserved after navigation to a new entry
-     * through a click on a link.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Navigation"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testRequestDesktopSiteSettingPers() throws Exception {
-        String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
-        String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
-
-        navigateAndObserve(url1);
-        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
-
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> TabUtils.switchUserAgent(tab, /* switchToDesktop */ true,
-                                /* forcedByUser */ true, UseDesktopUserAgentCaller.OTHER));
-        ChromeTabUtils.waitForTabPageLoaded(tab, url1);
-        mActivityTestRule.assertWaitForPageScaleFactorChange(0.5f);
-
-        DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
-        ChromeTabUtils.waitForTabPageLoaded(tab, url2);
-        Assert.assertEquals("Request Desktop site setting should stay turned on", true,
-                mActivityTestRule.getActivity()
-                        .getActivityTab()
-                        .getWebContents()
-                        .getNavigationController()
-                        .getUseDesktopUserAgent());
     }
 
     /**
