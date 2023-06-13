@@ -399,12 +399,13 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
                                                      cros_late_boot_features))
 
         if missing_features:
-          msg =("Study %s contains undeclared features."
-              " Please check the spelling of added features."
-              "\nIf the spelling is correct, please update "
-              "presubmit/find_features.py to include the file where the "
-              "feature(s) are defined.") % study_name
-          messages.append(output_api.PresubmitError(msg, missing_features))
+          msg = ("Presubmit was unable to verify existence of features in "
+                  "study %s.\nThis happens most commonly if the feature is "
+                  "defined by code generation.\n"
+                  "Please verify that the feature names have been spelled "
+                  "correctly before submitting. The affected features are:"
+              ) % study_name
+          messages.append(output_api.PresubmitResult(msg, missing_features))
 
   return messages
 
