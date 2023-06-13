@@ -23,6 +23,7 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,7 +34,6 @@ struct NativePixmapPlane;
 
 namespace media {
 
-class V4L2Device;
 class V4L2Queue;
 class V4L2Buffer;
 class V4L2BufferRefBase;
@@ -359,7 +359,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// Interface representing a specific queue of a |V4L2Device|. It provides free
+// Interface representing a specific V4L2 queue. It provides free
 // and queued buffer management that is commonly required by clients.
 //
 // Buffers managed by this class undergo the following cycle:
@@ -558,11 +558,17 @@ class MEDIA_GPU_EXPORT V4L2Queue
   std::map<gfx::GenericSharedMemoryId, size_t> free_buffers_indexes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  scoped_refptr<V4L2Device> device_;
+  const IoctlAsCallback ioctl_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::RepeatingClosure schedule_poll_cb_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  const MmapAsCallback mmap_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Callback to call in this queue's destructor.
   base::OnceClosure destroy_cb_;
 
-  V4L2Queue(scoped_refptr<V4L2Device> dev,
+  V4L2Queue(const IoctlAsCallback& ioctl_cb,
+            const base::RepeatingClosure& schedule_poll_cb,
+            const MmapAsCallback& mmap_cb,
             enum v4l2_buf_type type,
             base::OnceClosure destroy_cb);
   friend class V4L2QueueFactory;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include <linux/videodev2.h>
+#include <sys/mman.h>
 
 #include "base/functional/callback.h"
 #include "media/base/video_codecs.h"
@@ -18,6 +19,13 @@ class Size;
 namespace media {
 
 using IoctlAsCallback = base::RepeatingCallback<int(int, void*)>;
+
+// Ideally this should be a decltype(mmap) (void *mmap(void *addr, size_t
+// length, int prot, int flags, int fd, off_t offset)), but the types of e.g.
+// V4L2Device::Mmap are wrong.
+// TODO(b/279980150): correct types and argument order and use decltype.
+using MmapAsCallback =
+    base::RepeatingCallback<void*(void*, unsigned int, int, int, unsigned int)>;
 
 // Returns a human readable description of |memory|.
 const char* V4L2MemoryToString(v4l2_memory memory);

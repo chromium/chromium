@@ -191,14 +191,6 @@ class MEDIA_GPU_EXPORT V4L2Device
              unsigned int offset);
   void Munmap(void* addr, unsigned int len);
 
-  // Return a vector of dmabuf file descriptors, exported for V4L2 buffer with
-  // |index|, assuming the buffer contains |num_planes| V4L2 planes and is of
-  // |type|. Return an empty vector on failure.
-  // The caller is responsible for closing the file descriptors after use.
-  std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(int index,
-                                                      size_t num_planes,
-                                                      enum v4l2_buf_type type);
-
   // Return true if the given V4L2 pixfmt can be used in CreateEGLImage()
   // for the current platform.
   bool CanCreateEGLImageFrom(const Fourcc fourcc) const;

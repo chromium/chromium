@@ -93,7 +93,10 @@ class V4L2QueueFactory {
   static scoped_refptr<V4L2Queue> CreateQueue(scoped_refptr<V4L2Device> dev,
                                               enum v4l2_buf_type type,
                                               base::OnceClosure destroy_cb) {
-    return new V4L2Queue(std::move(dev), type, std::move(destroy_cb));
+    return new V4L2Queue(base::BindRepeating(&V4L2Device::Ioctl, dev),
+                         base::BindRepeating(&V4L2Device::SchedulePoll, dev),
+                         base::BindRepeating(&V4L2Device::Mmap, dev), type,
+                         std::move(destroy_cb));
   }
 };
 
@@ -581,32 +584,6 @@ bool V4L2Device::Initialize() {
   }
 
   return true;
-}
-
-std::vector<base::ScopedFD> V4L2Device::GetDmabufsForV4L2Buffer(
-    int index,
-    size_t num_planes,
-    enum v4l2_buf_type buf_type) {
-  DVLOGF(3);
-  DCHECK(V4L2_TYPE_IS_MULTIPLANAR(buf_type));
-
-  std::vector<base::ScopedFD> dmabuf_fds;
-  for (size_t i = 0; i < num_planes; ++i) {
-    struct v4l2_exportbuffer expbuf;
-    memset(&expbuf, 0, sizeof(expbuf));
-    expbuf.type = buf_type;
-    expbuf.index = index;
-    expbuf.plane = i;
-    expbuf.flags = O_CLOEXEC;
-    if (Ioctl(VIDIOC_EXPBUF, &expbuf) != 0) {
-      dmabuf_fds.clear();
-      break;
-    }
-
-    dmabuf_fds.push_back(base::ScopedFD(expbuf.fd));
-  }
-
-  return dmabuf_fds;
 }
 
 bool V4L2Device::CanCreateEGLImageFrom(const Fourcc fourcc) const {
