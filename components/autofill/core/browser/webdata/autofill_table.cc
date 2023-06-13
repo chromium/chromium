@@ -912,52 +912,6 @@ std::u16string Substitute(const std::u16string& s,
   return result;
 }
 
-// All ServerFieldTypes stored for an AutofillProfile in
-// `GetProfileTypeTokensTable(profile-source)`
-// When introducing a new field type, it suffices to add it here. When removing
-// a field type, removing it from the list suffices (no additional clean-up in
-// the table necessary).
-// This is not reusing `AutofillProfile::SupportedTypes()` for three reasons:
-// - Due to the table design, the stored types are already ambiguous, so we
-//   prefer the explicitness here.
-// - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
-// - Some non-supported types are stored (usually types that don't have filling
-//   support yet).
-std::vector<ServerFieldType> GetStoredTypesForAutofillProfile() {
-  return {COMPANY_NAME,
-          NAME_HONORIFIC_PREFIX,
-          NAME_FIRST,
-          NAME_MIDDLE,
-          NAME_LAST_FIRST,
-          NAME_LAST_CONJUNCTION,
-          NAME_LAST_SECOND,
-          NAME_LAST,
-          NAME_FULL,
-          NAME_FULL_WITH_HONORIFIC_PREFIX,
-          ADDRESS_HOME_STREET_ADDRESS,
-          ADDRESS_HOME_STREET_NAME,
-          ADDRESS_HOME_DEPENDENT_STREET_NAME,
-          ADDRESS_HOME_HOUSE_NUMBER,
-          ADDRESS_HOME_SUBPREMISE,
-          ADDRESS_HOME_PREMISE_NAME,
-          ADDRESS_HOME_DEPENDENT_LOCALITY,
-          ADDRESS_HOME_CITY,
-          ADDRESS_HOME_STATE,
-          ADDRESS_HOME_ZIP,
-          ADDRESS_HOME_SORTING_CODE,
-          ADDRESS_HOME_COUNTRY,
-          ADDRESS_HOME_APT_NUM,
-          ADDRESS_HOME_FLOOR,
-          ADDRESS_HOME_LANDMARK,
-          ADDRESS_HOME_BETWEEN_STREETS,
-          ADDRESS_HOME_ADMIN_LEVEL2,
-          EMAIL_ADDRESS,
-          PHONE_HOME_WHOLE_NUMBER,
-          BIRTHDATE_DAY,
-          BIRTHDATE_MONTH,
-          BIRTHDATE_4_DIGIT_YEAR};
-}
-
 // This helper function binds the `profile`s properties to the placeholders in
 // `s`, in the order the columns are defined in the header file.
 // Instead of `profile.modification_date()`, `modification_date` is used. This
@@ -1012,7 +966,8 @@ bool AddAutofillProfileToTable(sql::Database* db,
   BindAutofillProfileToStatement(profile, modification_date, s);
   if (!s.Run())
     return false;
-  for (ServerFieldType type : GetStoredTypesForAutofillProfile()) {
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForLandmark) &&
         type == ADDRESS_HOME_LANDMARK) {
@@ -1053,8 +1008,48 @@ AutofillTable::AutofillTable()
 
 AutofillTable::~AutofillTable() = default;
 
+// static
 AutofillTable* AutofillTable::FromWebDatabase(WebDatabase* db) {
   return static_cast<AutofillTable*>(db->GetTable(GetKey()));
+}
+
+// static
+base::span<const ServerFieldType>
+AutofillTable::GetStoredTypesForAutofillProfile() {
+  static constexpr ServerFieldType stored_types[]{
+      COMPANY_NAME,
+      NAME_HONORIFIC_PREFIX,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST_FIRST,
+      NAME_LAST_CONJUNCTION,
+      NAME_LAST_SECOND,
+      NAME_LAST,
+      NAME_FULL,
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_ADMIN_LEVEL2,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      BIRTHDATE_DAY,
+      BIRTHDATE_MONTH,
+      BIRTHDATE_4_DIGIT_YEAR};
+  return stored_types;
 }
 
 WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
