@@ -860,7 +860,7 @@ Shell::~Shell() {
 
   // As clients of `capture_mode_controller_`, `projector_controller_` and
   // `game_dashboard_controller_` need to be destroyed before
-  // `capture_mode_controller_`
+  // `capture_mode_controller_`.
   projector_controller_.reset();
   game_dashboard_controller_.reset();
 
@@ -1310,16 +1310,18 @@ void Shell::Init(
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();
   AddPreTargetHandler(env_filter_.get());
 
-  if (features::IsSnapGroupEnabled()) {
-    snap_group_controller_ = std::make_unique<SnapGroupController>();
-  }
-
   // FocusController takes ownership of AshFocusRules.
   focus_rules_ = new AshFocusRules();
   focus_controller_ = std::make_unique<::wm::FocusController>(focus_rules_);
   focus_controller_->AddObserver(this);
 
   overview_controller_ = std::make_unique<OverviewController>();
+
+  // `SnapGroupController` has dependencies on `OverviweController` and
+  // `TabletModeController`.
+  if (features::IsSnapGroupEnabled()) {
+    snap_group_controller_ = std::make_unique<SnapGroupController>();
+  }
 
   screen_position_controller_ = std::make_unique<ScreenPositionController>();
 
