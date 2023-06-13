@@ -2106,7 +2106,6 @@ virtual/plz-dedicated-worker/http/tests/devtools/sources/sources-panel-extension
 virtual/plz-dedicated-worker/http/tests/devtools/storage-panel-dom-storage-update.js
 virtual/plz-dedicated-worker/http/tests/devtools/stylesheet-source-mapping.js
 virtual/plz-dedicated-worker/http/tests/devtools/template-content-inspect-crash.js
-virtual/plz-dedicated-worker/http/tests/devtools/tracing-model-storage.js
 virtual/plz-dedicated-worker/http/tests/devtools/tracing-session-id.js
 virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-js/cpu-profile-unsorted-timestamps.js
 virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-misc/timeline-filtering-self-time.js

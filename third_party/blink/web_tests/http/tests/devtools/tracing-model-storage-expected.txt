@@ -1,4 +1,0 @@
-Test that tracing model correctly processes trace events.
-
-DONE
-
