@@ -7930,12 +7930,6 @@ grit("dev_ui_browser_resources") {
     "grit/dev_ui_browser_resources.h",
     "dev_ui_browser_resources.pak",
   ]
-
-  deps = []
-
-  if (is_android) {
-    deps += [ "//chrome/browser/resources/internals/query_tiles:build_ts" ]
-  }
 }
 
 action("expired_flags_list_gen") {
