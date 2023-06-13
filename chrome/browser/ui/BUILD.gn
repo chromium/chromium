@@ -5941,6 +5941,7 @@ static_library("ui") {
       "//extensions/strings",
       "//ui/base/cursor",
       "//ui/color:color",
+      "//ui/color:mixers",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",

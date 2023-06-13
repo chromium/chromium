@@ -3648,6 +3648,14 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   if (force_light) {
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kLight;
+  } else if (url.SchemeIs(content::kChromeUIScheme)) {
+    // If color scheme is not forced, WebUI should track the color mode of the
+    // ColorProvider associated with `web_contents`.
+    web_prefs->preferred_color_scheme =
+        web_contents->GetColorMode() ==
+                ui::ColorProviderManager::ColorMode::kLight
+            ? blink::mojom::PreferredColorScheme::kLight
+            : blink::mojom::PreferredColorScheme::kDark;
   }
 
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;

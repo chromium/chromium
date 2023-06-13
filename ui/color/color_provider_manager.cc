@@ -154,7 +154,7 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
     ++num_providers_initialized_;
 
     iter = color_providers_.emplace(key, std::move(provider)).first;
-    RecordColorProviderCacheSize(color_providers_.size());
+    RecordColorProviderCacheSize(static_cast<int>(color_providers_.size()));
   }
   ColorProvider* provider = iter->second.get();
   DCHECK(provider);

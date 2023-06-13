@@ -54,6 +54,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/test_native_theme.h"
 #include "url/gurl.h"
@@ -329,25 +332,52 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
       opened_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
-class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
-                               public InProcessBrowserTest {
+// Tests for the preferred color scheme for a given WebContents. The first param
+// controls whether the web NativeTheme is light or dark the second controls
+// whether the color mode on the associated color provider is light or dark.
+class PrefersColorSchemeTest
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public InProcessBrowserTest {
  protected:
-  PrefersColorSchemeTest() : theme_client_(&test_theme_) {}
-
+  PrefersColorSchemeTest()
+      : theme_client_(&test_theme_),
+        color_provider_source_(GetIsDarkColorProviderColorMode()) {
+    test_theme_.SetDarkMode(GetIsDarkNativeTheme());
+  }
   ~PrefersColorSchemeTest() override {
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
   }
 
   const char* ExpectedColorScheme() const {
-    return GetParam() ? "dark" : "light";
+    // WebUI's preferred color scheme should reflect the color mode of their
+    // associated ColorProvider, and not the preferred color scheme of the web
+    // NativeTheme.
+    const GURL& last_committed_url = browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetLastCommittedURL();
+    if (last_committed_url.SchemeIs(content::kChromeUIScheme)) {
+      return GetIsDarkColorProviderColorMode() ? "dark" : "light";
+    }
+    return GetIsDarkNativeTheme() ? "dark" : "light";
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&theme_client_);
+    test_theme_.SetDarkMode(GetIsDarkNativeTheme());
+    browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->SetColorProviderSource(&color_provider_source_);
   }
 
  protected:
+  bool GetIsDarkNativeTheme() const { return std::get<0>(GetParam()); }
+  bool GetIsDarkColorProviderColorMode() const {
+    return std::get<1>(GetParam());
+  }
+
   ui::TestNativeTheme test_theme_;
 
  private:
@@ -367,12 +397,36 @@ class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
     const raw_ptr<const ui::NativeTheme> theme_;
   };
 
+  class MockColorProviderSource : public ui::ColorProviderSource {
+   public:
+    explicit MockColorProviderSource(bool is_dark) {
+      key_.color_mode = is_dark ? ui::ColorProviderManager::ColorMode::kDark
+                                : ui::ColorProviderManager::ColorMode::kLight;
+      provider_.GenerateColorMap();
+    }
+    MockColorProviderSource(const MockColorProviderSource&) = delete;
+    MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
+    ~MockColorProviderSource() override = default;
+
+    // ui::ColorProviderSource:
+    const ui::ColorProvider* GetColorProvider() const override {
+      return &provider_;
+    }
+    ui::ColorProviderManager::Key GetColorProviderKey() const override {
+      return key_;
+    }
+
+   private:
+    ui::ColorProvider provider_;
+    ui::ColorProviderManager::Key key_;
+  };
+
   base::test::ScopedFeatureList feature_list_;
   ChromeContentBrowserClientWithWebTheme theme_client_;
+  MockColorProviderSource color_provider_source_;
 };
 
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
-  test_theme_.SetDarkMode(GetParam());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -388,7 +442,6 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
 }
 
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
-  test_theme_.SetDarkMode(GetParam());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -407,7 +460,6 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
-  test_theme_.SetDarkMode(GetParam());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -428,7 +480,9 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
 }
 #endif
 
-INSTANTIATE_TEST_SUITE_P(All, PrefersColorSchemeTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrefersColorSchemeTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 class PrefersContrastTest
     : public testing::WithParamInterface<ui::NativeTheme::PreferredContrast>,

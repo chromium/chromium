@@ -29,4 +29,8 @@ void ColorProviderSource::NotifyColorProviderChanged() {
     observer.OnColorProviderChanged();
 }
 
+ui::ColorProviderManager::ColorMode ColorProviderSource::GetColorMode() const {
+  return GetColorProviderKey().color_mode;
+}
+
 }  // namespace ui

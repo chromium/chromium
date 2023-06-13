@@ -1723,6 +1723,13 @@ void WebContentsImpl::SetColorProviderSource(ui::ColorProviderSource* source) {
   ColorProviderSourceObserver::Observe(source);
 }
 
+ui::ColorProviderManager::ColorMode WebContentsImpl::GetColorMode() const {
+  // A ColorProviderSource should always be set.
+  auto* source = GetColorProviderSource();
+  CHECK(source);
+  return source->GetColorMode();
+}
+
 void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetAccessibilityMode",
                         "mode", mode.ToString(), "previous_mode",

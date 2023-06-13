@@ -27,7 +27,9 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   virtual ~ColorProviderSource();
 
   // Returns the ColorProvider associated with the Key returned by
-  // GetColorProviderKey();
+  // GetColorProviderKey().
+  // TODO(tluk): This shouldn't need to be virtual, most overrides simply pass
+  // the key to the manager.
   virtual const ColorProvider* GetColorProvider() const = 0;
 
   void AddObserver(ColorProviderSourceObserver* observer);
@@ -36,6 +38,9 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   // Should be called by the implementation whenever the ColorProvider supplied
   // in the method `GetColorProvider()` changes.
   void NotifyColorProviderChanged();
+
+  // Gets the ColorMode currently associated with this source.
+  ui::ColorProviderManager::ColorMode GetColorMode() const;
 
   base::ObserverList<ColorProviderSourceObserver>& observers_for_testing() {
     return observers_;
