@@ -432,12 +432,23 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   TRACE_EVENT_INSTANT1("blink", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
 
+  LocalFrameView* frame_view = GetLayoutBox()->GetFrameView();
+  CHECK(frame_view);
+
+  // The ScrollOffsetTranslation paint property depends on the scroll offset.
+  // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
+  // Intersection observation cached rects affected by the scroll are not
+  // invalidated because it's hard to find all of them. Validity of cached
+  // rects is checked in IntersectionGeometry::PrepareComputeGeometry().
+  GetLayoutBox()->SetNeedsPaintPropertyUpdatePreservingCachedRects();
+  frame_view->UpdateIntersectionObservationStateOnScroll(new_offset -
+                                                         scroll_offset_);
+
   scroll_offset_ = new_offset;
 
   LocalFrame* frame = GetLayoutBox()->GetFrame();
   DCHECK(frame);
 
-  LocalFrameView* frame_view = GetLayoutBox()->GetFrameView();
   bool is_root_layer = Layer()->IsRootLayer();
 
   DEVTOOLS_TIMELINE_TRACE_EVENT(
@@ -463,10 +474,6 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
       GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
     }
   }
-
-  // The ScrollOffsetTranslation paint property depends on the scroll offset.
-  // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
-  GetLayoutBox()->SetNeedsPaintPropertyUpdatePreservingCachedRects();
 
   if (scroll_type == mojom::blink::ScrollType::kUser ||
       scroll_type == mojom::blink::ScrollType::kCompositor) {

@@ -64,7 +64,8 @@ class CORE_EXPORT IntersectionObserver final
   // This value can be used to detect transitions between non-intersecting or
   // edge-adjacent (i.e., zero area) state, and intersecting by any non-zero
   // number of pixels.
-  static const float kMinimumThreshold;
+  static constexpr float kMinimumThreshold =
+      IntersectionGeometry::kMinimumThreshold;
 
   // Used to specify when callbacks should be invoked with new notifications.
   // Blink-internal users of IntersectionObserver will have their callbacks
@@ -171,6 +172,7 @@ class CORE_EXPORT IntersectionObserver final
   // Returns the number of IntersectionObservations that recomputed geometry.
   int64_t ComputeIntersections(unsigned flags,
                                absl::optional<base::TimeTicks>& monotonic_time);
+  gfx::Vector2dF MinScrollDeltaToUpdate() const;
 
   bool IsInternal() const;
   LocalFrameUkmAggregator::MetricId GetUkmMetricId() const;

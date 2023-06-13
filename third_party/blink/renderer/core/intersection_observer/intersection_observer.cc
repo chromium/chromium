@@ -177,8 +177,6 @@ void ParseThresholds(
 }  // anonymous namespace
 
 static bool throttle_delay_enabled = true;
-const float IntersectionObserver::kMinimumThreshold =
-    std::numeric_limits<float>::min();
 
 void IntersectionObserver::SetThrottleDelayEnabledForTesting(bool enabled) {
   throttle_delay_enabled = enabled;
@@ -503,6 +501,15 @@ int64_t IntersectionObserver::ComputeIntersections(
   for (auto& observation : observations_to_process) {
     result +=
         observation->ComputeIntersection(root_geometry, flags, monotonic_time);
+  }
+  return result;
+}
+
+gfx::Vector2dF IntersectionObserver::MinScrollDeltaToUpdate() const {
+  gfx::Vector2dF result(std::numeric_limits<float>::max(),
+                        std::numeric_limits<float>::max());
+  for (const auto& observation : observations_) {
+    result.SetToMin(observation->MinScrollDeltaToUpdate());
   }
   return result;
 }

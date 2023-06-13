@@ -3802,8 +3802,12 @@ void LayoutObject::WillBeRemovedFromTree() {
 
 void LayoutObject::SetNeedsPaintPropertyUpdate() {
   NOT_DESTROYED();
+  if (bitfields_.NeedsPaintPropertyUpdate()) {
+    return;
+  }
   SetNeedsPaintPropertyUpdatePreservingCachedRects();
   InvalidateIntersectionObserverCachedRects();
+  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 }
 
 void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
@@ -3811,13 +3815,6 @@ void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
   DCHECK(!GetDocument().InPostLifecycleSteps());
   if (bitfields_.NeedsPaintPropertyUpdate())
     return;
-
-  // Anytime a layout object needs a paint property update, we should also do
-  // intersection observation.
-  // TODO(vmpstr): Figure out if there's a cleaner way to do this outside of
-  // this function, since this is potentially called many times for a single
-  // frame view subtree.
-  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 
   bitfields_.SetNeedsPaintPropertyUpdate(true);
   if (Parent())

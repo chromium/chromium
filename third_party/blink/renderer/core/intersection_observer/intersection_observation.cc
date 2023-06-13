@@ -95,6 +95,13 @@ int64_t IntersectionObservation::ComputeIntersectionInternal(
   return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
+gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
+  if (cached_rects_ && cached_rects_->valid) {
+    return cached_rects_->min_scroll_delta_to_update;
+  }
+  return gfx::Vector2dF();
+}
+
 void IntersectionObservation::TakeRecords(
     HeapVector<Member<IntersectionObserverEntry>>& entries) {
   entries.AppendVector(entries_);

@@ -4197,6 +4197,14 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
             GetFrame().GetDocument()->GetIntersectionObserverController()) {
       needs_occlusion_tracking |= controller->ComputeIntersections(
           flags, GetUkmAggregator(), monotonic_time);
+      if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+        min_scroll_delta_to_update_intersection_ =
+            controller->MinScrollDeltaToUpdate();
+        if (intersection_observation_state_ > kNotNeeded) {
+          accumulated_scroll_delta_since_last_intersection_update_ =
+              gfx::Vector2dF();
+        }
+      }
     }
     intersection_observation_state_ = kNotNeeded;
   }
@@ -4339,6 +4347,21 @@ void LocalFrameView::SetIntersectionObservationState(
       if (parent_local_frame->View())
         parent_local_frame->View()->SetIntersectionObservationState(kRequired);
     }
+  }
+}
+
+void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
+    gfx::Vector2dF scroll_delta) {
+  accumulated_scroll_delta_since_last_intersection_update_ +=
+      gfx::Vector2dF(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
+  if (min_scroll_delta_to_update_intersection_.x() <=
+          accumulated_scroll_delta_since_last_intersection_update_.x() ||
+      min_scroll_delta_to_update_intersection_.y() <=
+          accumulated_scroll_delta_since_last_intersection_update_.y()) {
+    // The accumulated scroll delta from all scrollers in this frame has
+    // exceeded min_scroll_delta_to_update_intersection_ since the last
+    // intersection observer update, which may change intersection status.
+    SetIntersectionObservationState(LocalFrameView::kDesired);
   }
 }
 

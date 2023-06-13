@@ -226,6 +226,7 @@ class CORE_EXPORT LocalFrameView final
   // Sets the internal IntersectionObservationState to the max of the
   // current value and the provided one.
   void SetIntersectionObservationState(IntersectionObservationState);
+  void UpdateIntersectionObservationStateOnScroll(gfx::Vector2dF scroll_delta);
   IntersectionObservationState GetIntersectionObservationStateForTesting()
       const {
     return intersection_observation_state_;
@@ -236,6 +237,10 @@ class CORE_EXPORT LocalFrameView final
   unsigned GetIntersectionObservationFlags(unsigned parent_flags) const;
 
   void ForceUpdateViewportIntersections();
+
+  gfx::Vector2dF MinScrollDeltaToUpdateIntersectionForTesting() const {
+    return min_scroll_delta_to_update_intersection_;
+  }
 
   void SetPaintArtifactCompositorNeedsUpdate();
 
@@ -1112,7 +1117,10 @@ class CORE_EXPORT LocalFrameView final
   // phases past layout to ensure that phases after layout don't dirty layout.
   bool allows_layout_invalidation_after_layout_clean_ = true;
 #endif
+
   IntersectionObservationState intersection_observation_state_;
+  gfx::Vector2dF min_scroll_delta_to_update_intersection_;
+  gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
 
   bool needs_focus_on_fragment_;
 

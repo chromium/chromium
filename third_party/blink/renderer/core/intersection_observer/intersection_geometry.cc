@@ -422,17 +422,23 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       CanUseGeometryMapper(target)
           ? target->GetPropertyContainer(nullptr, &container_properties)
           : nullptr;
+  gfx::Transform target_to_document_transform;
   if (property_container) {
-    gfx::RectF target_rect(target_rect_);
-    target_rect.Offset(gfx::Vector2dF(target->FirstFragment().PaintOffset()));
-    GeometryMapper::SourceToDestinationRect(
-        container_properties.Transform(),
-        target->View()->FirstFragment().LocalBorderBoxProperties().Transform(),
-        target_rect);
-    target_rect_ = PhysicalRect::EnclosingRect(target_rect);
+    target_to_document_transform =
+        GeometryMapper::SourceToDestinationProjection(
+            container_properties.Transform(), target->View()
+                                                  ->FirstFragment()
+                                                  .LocalBorderBoxProperties()
+                                                  .Transform());
+    target_rect_.Move(target->FirstFragment().PaintOffset());
   } else {
-    target_rect_ = target->LocalToAncestorRect(target_rect_, nullptr);
+    TransformState transform_state(TransformState::kApplyTransformDirection);
+    target->MapLocalToAncestor(nullptr, transform_state, 0);
+    target_to_document_transform = transform_state.AccumulatedTransform();
   }
+  target_rect_ = PhysicalRect::EnclosingRect(
+      target_to_document_transform.MapRect(gfx::RectF(target_rect_)));
+
   if (does_intersect) {
     if (RootIsImplicit()) {
       // Generate matrix to transform from the space of the implicit root to
@@ -535,6 +541,10 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     root_rect_ = PhysicalRect::EnclosingRect(root_float_rect);
   }
 
+  ComputeMinScrollDeltaToUpdate(
+      root_and_target.relationship, target_to_document_transform,
+      root_geometry.root_to_document_transform, thresholds, cached_rects);
+
   if (cached_rects)
     cached_rects->valid = true;
 }
@@ -629,6 +639,68 @@ unsigned IntersectionGeometry::FirstThresholdGreaterThan(
   while (result < thresholds.size() && thresholds[result] <= ratio)
     ++result;
   return result;
+}
+
+void IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
+    RootAndTarget::Relationship relationship,
+    const gfx::Transform& target_to_document_transform,
+    const gfx::Transform& root_to_document_transform,
+    const Vector<float>& thresholds,
+    CachedRects* cached_rects) const {
+  if (!cached_rects) {
+    return;
+  }
+  cached_rects->min_scroll_delta_to_update = gfx::Vector2dF();
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+  if (ShouldComputeVisibility()) {
+    // We don't have enough data (e.g. the occluded area of target and the
+    // occluding areas of the covering elements) to calculate the minimum
+    // scroll delta affecting visibility.
+    return;
+  }
+  if (relationship == RootAndTarget::kTargetInSubFrame) {
+    return;
+  }
+  if (relationship == RootAndTarget::kNotScrollable) {
+    // Intersection is not affected by scroll.
+    cached_rects->min_scroll_delta_to_update = gfx::Vector2dF(
+        std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    return;
+  }
+  if (!target_to_document_transform.IsIdentityOr2dTranslation() ||
+      !root_to_document_transform.IsIdentityOr2dTranslation()) {
+    return;
+  }
+  if (thresholds.size() != 1) {
+    return;
+  }
+  if (thresholds[0] <= kMinimumThreshold) {
+    // kMinimumThreshold is equivalent to 0 for minimum scroll delta.
+    cached_rects->min_scroll_delta_to_update =
+        gfx::Vector2dF(std::min((root_rect_.Right() - target_rect_.X()).Abs(),
+                                (target_rect_.Right() - root_rect_.X()).Abs())
+                           .ToFloat(),
+                       std::min((root_rect_.Bottom() - target_rect_.Y()).Abs(),
+                                (target_rect_.Bottom() - root_rect_.Y()).Abs())
+                           .ToFloat());
+  } else if (thresholds[0] == 1) {
+    if (target_rect_.Width() > root_rect_.Width() ||
+        target_rect_.Height() > root_rect_.Height()) {
+      // The target can't be scrolled to be fully visible.
+      cached_rects->min_scroll_delta_to_update = gfx::Vector2dF(
+          std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    } else {
+      cached_rects->min_scroll_delta_to_update = gfx::Vector2dF(
+          std::min((root_rect_.X() - target_rect_.X()).Abs(),
+                   (root_rect_.Right() - target_rect_.Right()).Abs())
+              .ToFloat(),
+          std::min((root_rect_.Y() - target_rect_.Y()).Abs(),
+                   (root_rect_.Bottom() - target_rect_.Bottom()).Abs())
+              .ToFloat());
+    }
+  }
 }
 
 }  // namespace blink

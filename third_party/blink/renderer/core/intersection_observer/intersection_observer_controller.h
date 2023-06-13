@@ -41,6 +41,8 @@ class IntersectionObserverController
                             LocalFrameUkmAggregator* metrics_aggregator,
                             absl::optional<base::TimeTicks>& monotonic_time);
 
+  gfx::Vector2dF MinScrollDeltaToUpdate() const;
+
   // The second argument indicates whether the Element is a target of any
   // observers for which observer->trackVisibility() is true.
   void AddTrackedObserver(IntersectionObserver&);

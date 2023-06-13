@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -27,6 +28,9 @@ class Node;
 // of the target with the top-level frame viewport (AKA the "implicit root").
 class CORE_EXPORT IntersectionGeometry {
  public:
+  // See comment of IntersectionObserver::kMinimumThreshold.
+  static constexpr float kMinimumThreshold = std::numeric_limits<float>::min();
+
   enum Flags {
     // These flags should passed to the constructor
     kShouldReportRootBounds = 1 << 0,
@@ -63,6 +67,9 @@ class CORE_EXPORT IntersectionGeometry {
     // Target rect mapped up to the root's space, with intermediate clips
     // applied, but without applying the root's clip or scroll offset.
     PhysicalRect unscrolled_unclipped_intersection_rect;
+    // We only need to update intersection geometry on future scroll if
+    // the scroll delta >= this value in either direction.
+    gfx::Vector2dF min_scroll_delta_to_update;
     // True iff unscrolled_unclipped_intersection_rect actually intersects the
     // root, as defined by edge-inclusive intersection rules.
     bool does_intersect = false;
@@ -175,6 +182,12 @@ class CORE_EXPORT IntersectionGeometry {
                   CachedRects* cached_rects = nullptr);
   unsigned FirstThresholdGreaterThan(float ratio,
                                      const Vector<float>& thresholds) const;
+  void ComputeMinScrollDeltaToUpdate(
+      RootAndTarget::Relationship relationship,
+      const gfx::Transform& target_to_document_transform,
+      const gfx::Transform& root_to_document_transform,
+      const Vector<float>& thresholds,
+      CachedRects* cached_rects) const;
 
   PhysicalRect target_rect_;
   PhysicalRect intersection_rect_;

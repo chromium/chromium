@@ -72,6 +72,7 @@ class CORE_EXPORT IntersectionObservation final
       const IntersectionGeometry::RootGeometry& root_geometry,
       unsigned flags,
       absl::optional<base::TimeTicks>& monotonic_time);
+  gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
   void InvalidateCachedRects();

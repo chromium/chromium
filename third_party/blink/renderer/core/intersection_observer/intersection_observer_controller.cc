@@ -118,6 +118,19 @@ bool IntersectionObserverController::ComputeIntersections(
   return needs_occlusion_tracking_;
 }
 
+gfx::Vector2dF IntersectionObserverController::MinScrollDeltaToUpdate() const {
+  DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
+  gfx::Vector2dF result(std::numeric_limits<float>::max(),
+                        std::numeric_limits<float>::max());
+  for (const auto& observer : tracked_explicit_root_observers_) {
+    result.SetToMin(observer->MinScrollDeltaToUpdate());
+  }
+  for (const auto& observation : tracked_implicit_root_observations_) {
+    result.SetToMin(observation->MinScrollDeltaToUpdate());
+  }
+  return result;
+}
+
 void IntersectionObserverController::AddTrackedObserver(
     IntersectionObserver& observer) {
   // We only track explicit-root observers that have active observations.
