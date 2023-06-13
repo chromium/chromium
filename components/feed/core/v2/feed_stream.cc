@@ -140,6 +140,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                        ImageFetcher* image_fetcher,
                        FeedStore* feed_store,
                        PersistentKeyValueStoreImpl* persistent_key_value_store,
+                       TemplateURLService* template_url_service,
                        const ChromeInfo& chrome_info)
     : refresh_task_scheduler_(refresh_task_scheduler),
       metrics_reporter_(metrics_reporter),
@@ -149,6 +150,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       image_fetcher_(image_fetcher),
       store_(feed_store),
       persistent_key_value_store_(persistent_key_value_store),
+      template_url_service_(template_url_service),
       chrome_info_(chrome_info),
       task_queue_(this),
       request_throttler_(profile_prefs),
@@ -1009,6 +1011,20 @@ feedwire::ChromeSignInStatus::SignInStatus FeedStream::GetSignInStatus() const {
   return feedwire::ChromeSignInStatus::NOT_SIGNED_IN;
 }
 
+feedwire::DefaultSearchEngine::SearchEngine FeedStream::GetDefaultSearchEngine()
+    const {
+  const TemplateURL* template_url =
+      template_url_service_->GetDefaultSearchProvider();
+  if (template_url) {
+    SearchEngineType engine_type =
+        template_url->GetEngineType(template_url_service_->search_terms_data());
+    if (engine_type == SEARCH_ENGINE_GOOGLE) {
+      return feedwire::DefaultSearchEngine::ENGINE_GOOGLE;
+    }
+  }
+  return feedwire::DefaultSearchEngine::ENGINE_OTHER;
+}
+
 RequestMetadata FeedStream::GetCommonRequestMetadata(
     bool signed_in_request,
     bool allow_expired_session_id) const {
@@ -1075,6 +1091,8 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   }
   // Set sign in status for request metadata
   result.sign_in_status = GetSignInStatus();
+
+  result.default_search_engine = GetDefaultSearchEngine();
 
   return result;
 }

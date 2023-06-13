@@ -16,6 +16,7 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 
@@ -103,7 +104,8 @@ class FeedService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const std::string& api_key,
-      const ChromeInfo& chrome_info);
+      const ChromeInfo& chrome_info,
+      TemplateURLService* template_url_service);
   static std::unique_ptr<FeedService> CreateForTesting(FeedApi* api);
   ~FeedService() override;
   FeedService(const FeedService&) = delete;

@@ -4095,6 +4095,16 @@ TEST_F(FeedApiTest, GetRequestMetadataForSigninDisallowedUserWhenSignedIn) {
             feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC);
 }
 
+TEST_F(FeedApiTest, GetRequestMetadataWithDefaultSearchEngine) {
+  TestForYouSurface surface(stream_.get());
+  RequestMetadata metadata =
+      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
+
+  // Defaults to Google for tests.
+  ASSERT_EQ(metadata.default_search_engine,
+            feedwire::DefaultSearchEngine::ENGINE_GOOGLE);
+}
+
 TEST_F(FeedApiTest, ClearAllOnSigninAllowedPrefChange) {
   CallbackReceiver<> on_clear_all;
   on_clear_all_ = on_clear_all.BindRepeating();

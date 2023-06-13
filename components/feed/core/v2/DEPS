@@ -3,6 +3,7 @@ include_rules = [
   "-components/feed/core/v2/tasks",
   "-components/feed/core/v2/web_feed_subscriptions",
   "+components/reading_list/features",
+  "+components/search_engines",
  ]
 
 specific_include_rules = {

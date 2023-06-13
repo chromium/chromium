@@ -39,6 +39,7 @@
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -541,6 +542,8 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
               leveldb_proto::ProtoDbType::FEED_KEY_VALUE_DATABASE,
               /*db_dir=*/{},
               task_environment_.GetMainThreadTaskRunner()));
+
+  std::unique_ptr<TemplateURLService> template_url_service_;
 
   FakeRefreshTaskScheduler refresh_scheduler_;
   StreamModel::Context stream_model_context_;

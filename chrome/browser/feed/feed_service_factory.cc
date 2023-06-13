@@ -18,6 +18,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_version.h"
@@ -242,7 +243,8 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(),
-      background_task_runner, api_key, chrome_info);
+      background_task_runner, api_key, chrome_info,
+      TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 bool FeedServiceFactory::ServiceIsNULLWhileTesting() const {

@@ -420,5 +420,25 @@ TEST(ProtoUtilTest, WithDocIds) {
       ToTextProto(request.client_user_profiles().view_demotion_profile()));
 }
 
+TEST(ProtoUtilTest, DefaultSearchEngineSetOnRequest) {
+  RequestMetadata request_metadata;
+  request_metadata.default_search_engine =
+      feedwire::DefaultSearchEngine::ENGINE_GOOGLE;
+
+  feedwire::Request request = CreateFeedQueryRefreshRequest(
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+      request_metadata,
+      /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
+      /*doc_view_counts=*/{});
+
+  feedwire::DefaultSearchEngine::SearchEngine search_engine =
+      request.feed_request()
+          .feed_query()
+          .chrome_fulfillment_info()
+          .default_search_engine()
+          .search_engine();
+  ASSERT_EQ(search_engine, request_metadata.default_search_engine);
+}
+
 }  // namespace
 }  // namespace feed
