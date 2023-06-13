@@ -212,6 +212,8 @@ extern const char kAccessibilityAutoclickMenuPosition[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityColorFiltering[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorFilteringHasBeenSetup[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityColorVisionCorrectionAmount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityColorVisionDeficiencyType[];

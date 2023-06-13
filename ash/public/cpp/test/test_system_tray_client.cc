@@ -60,6 +60,10 @@ void TestSystemTrayClient::ShowAccessibilityHelp() {}
 
 void TestSystemTrayClient::ShowAccessibilitySettings() {}
 
+void TestSystemTrayClient::ShowColorCorrectionSettings() {
+  show_color_correction_settings_count_++;
+}
+
 void TestSystemTrayClient::ShowGestureEducationHelp() {}
 
 void TestSystemTrayClient::ShowPaletteHelp() {}

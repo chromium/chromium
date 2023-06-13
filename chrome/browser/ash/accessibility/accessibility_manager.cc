@@ -563,6 +563,11 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
         prefs->GetBoolean(prefs::kDockedMagnifierEnabled)) {
       return true;
     }
+    if (::features::
+            AreExperimentalAccessibilityColorEnhancementSettingsEnabled() &&
+        prefs->GetBoolean(prefs::kAccessibilityColorFiltering)) {
+      return true;
+    }
   }
   return false;
 }

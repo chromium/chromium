@@ -16,6 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
@@ -180,6 +181,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityColorFiltering));
     EXPECT_TRUE(
+        prefs->FindPreference(prefs::kAccessibilityColorFilteringHasBeenSetup));
+    EXPECT_TRUE(
         prefs->FindPreference(prefs::kAccessibilityColorVisionDeficiencyType));
     EXPECT_TRUE(prefs->FindPreference(
         prefs::kAccessibilityColorVisionCorrectionAmount));
@@ -222,6 +225,42 @@ TEST_F(AccessibilityControllerTest, SetCaretHighlightEnabled) {
   controller->caret_highlight().SetEnabled(false);
   EXPECT_FALSE(controller->caret_highlight().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, SetColorCorrectionEnabled) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->color_correction().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  EXPECT_EQ(0, GetSystemTrayClient()->show_color_correction_settings_count());
+
+  controller->color_correction().SetEnabled(true);
+  EXPECT_TRUE(controller->color_correction().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  // The first time we should show the settings for color correction.
+  EXPECT_EQ(1, GetSystemTrayClient()->show_color_correction_settings_count());
+
+  controller->color_correction().SetEnabled(false);
+  EXPECT_FALSE(controller->color_correction().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->color_correction().SetEnabled(true);
+  EXPECT_TRUE(controller->color_correction().enabled());
+  EXPECT_EQ(3, observer.status_changed_count_);
+
+  // The second time, the settings window should not be opened.
+  EXPECT_EQ(1, GetSystemTrayClient()->show_color_correction_settings_count());
+
+  controller->color_correction().SetEnabled(false);
+  EXPECT_FALSE(controller->color_correction().enabled());
+  EXPECT_EQ(4, observer.status_changed_count_);
 
   controller->RemoveObserver(&observer);
 }

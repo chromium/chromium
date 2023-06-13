@@ -34106,6 +34106,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="StatusArea_ColorCorrectionDisabled">
+  <owner>katie@chromium.org</owner>
+  <owner>ash/accessibility/OWNERS</owner>
+  <description>
+    Counts the number of times the user has turned off color correction settings
+    from the system tray.
+  </description>
+</action>
+
+<action name="StatusArea_ColorCorrectionEnabled">
+  <owner>katie@chromium.org</owner>
+  <owner>ash/accessibility/OWNERS</owner>
+  <description>
+    Counts the number of times the user has turned on color correction settings
+    from the system tray.
+  </description>
+</action>
+
 <action name="StatusArea_DictationDisabled">
   <owner>anastasi@google.com</owner>
   <description>Ash system menu: Accessibility: Disable Dictation.</description>

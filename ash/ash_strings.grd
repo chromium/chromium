@@ -1080,6 +1080,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION" desc="The label used in the accessibility menu of the system tray to toggle on/off the speak to type feature.">
         Dictation
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION" desc="The label used in the accessibility menu of the system tray to toggle on/off the color correction feature.">
+        Color correction
+      </message>
       <message name="IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE" desc="The message shown for existing Dictation users when their Dictation language has been upgraded in the background to work offline.">
         <ph name="language">$1<ex>English</ex></ph> speech is now processed locally and works offline. You can change your Dictation language in Settings > Accessibility.
       </message>

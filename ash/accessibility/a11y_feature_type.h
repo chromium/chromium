@@ -29,6 +29,7 @@ enum class A11yFeatureType {
   kStickyKeys,
   kSwitchAccess,
   kVirtualKeyboard,
+  kColorCorrection,
 
   kFeatureCount,
 

@@ -84,6 +84,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "clipboard_launcher.icon",
     "clipboard_launcher_no_assistant.icon",
     "clipboard_search.icon",
+    "color_correction.icon",
     "combine_desks.icon",
     "continue_files_dark.icon",
     "continue_files_light.icon",

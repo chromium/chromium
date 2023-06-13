@@ -210,6 +210,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   Feature& caret_highlight() const;
   Feature& cursor_highlight() const;
   Feature& dictation() const;
+  Feature& color_correction() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   FeatureWithDialog& fullscreen_magnifier() const;
@@ -274,6 +275,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool IsHighContrastSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForHighContrast();
+
+  bool IsColorCorrectionSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForColorCorrection();
 
   bool IsLargeCursorSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForLargeCursor();

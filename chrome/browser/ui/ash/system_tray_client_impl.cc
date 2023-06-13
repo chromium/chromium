@@ -520,6 +520,16 @@ void SystemTrayClientImpl::ShowAccessibilitySettings() {
           : chromeos::settings::mojom::kAccessibilitySectionPath);
 }
 
+void SystemTrayClientImpl::ShowColorCorrectionSettings() {
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+    // TODO(b/259370808): Color correction settings subpage not available in
+    // Kiosk.
+    return;
+  }
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowGestureEducationHelp() {
   base::RecordAction(base::UserMetricsAction("ShowGestureEducationHelp"));
   Profile* profile = ProfileManager::GetActiveUserProfile();

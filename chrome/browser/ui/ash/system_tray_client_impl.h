@@ -83,6 +83,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowAboutChromeOSDetails() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
+  void ShowColorCorrectionSettings() override;
   void ShowGestureEducationHelp() override;
   void ShowPaletteHelp() override;
   void ShowPaletteSettings() override;

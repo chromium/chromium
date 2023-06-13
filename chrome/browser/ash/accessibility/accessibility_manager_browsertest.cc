@@ -217,6 +217,15 @@ bool IsMonoAudioEnabled() {
   return AccessibilityManager::Get()->IsMonoAudioEnabled();
 }
 
+bool IsColorCorrectionEnabled() {
+  return GetActiveUserPrefs()->GetBoolean(prefs::kAccessibilityColorFiltering);
+}
+
+void SetColorCorrectionEnabled(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityColorFiltering,
+                                   enabled);
+}
+
 void SetSelectToSpeakEnabled(bool enabled) {
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(enabled);
 }
@@ -433,7 +442,9 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOnDeviceSpeechRecognition}, {});
+        {features::kOnDeviceSpeechRecognition,
+         ::features::kExperimentalAccessibilityColorEnhancementSettings},
+        {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -772,9 +783,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(ShouldShowAccessibilityMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsColorCorrectionEnabled());
+  EXPECT_FALSE(ShouldShowAccessibilityMenu());
 
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
   SetAlwaysShowMenuEnabledPref(true);
@@ -820,6 +832,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   SetSelectToSpeakEnabled(true);
   EXPECT_TRUE(ShouldShowAccessibilityMenu());
   SetSelectToSpeakEnabled(false);
+  EXPECT_FALSE(ShouldShowAccessibilityMenu());
+
+  SetColorCorrectionEnabled(true);
+  EXPECT_TRUE(ShouldShowAccessibilityMenu());
+  SetColorCorrectionEnabled(false);
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
 }
 

@@ -44,6 +44,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowAboutChromeOSDetails() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
+  void ShowColorCorrectionSettings() override;
   void ShowGestureEducationHelp() override;
   void ShowPaletteHelp() override;
   void ShowPaletteSettings() override;
@@ -177,6 +178,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
 
   int show_eol_info_count() const { return show_eol_info_count_; }
 
+  int show_color_correction_settings_count() const {
+    return show_color_correction_settings_count_;
+  }
+
  private:
   int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;
@@ -207,6 +212,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_audio_settings_count_ = 0;
   bool user_feedback_enabled_ = false;
   int show_eol_info_count_ = 0;
+  int show_color_correction_settings_count_ = 0;
 };
 
 }  // namespace ash

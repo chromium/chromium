@@ -95,6 +95,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows the settings related to accessibility.
   virtual void ShowAccessibilitySettings() = 0;
 
+  // Shows the settings related to color correction.
+  virtual void ShowColorCorrectionSettings() = 0;
+
   // Shows gesture education help.
   virtual void ShowGestureEducationHelp() = 0;
 
