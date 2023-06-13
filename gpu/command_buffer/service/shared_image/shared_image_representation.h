@@ -19,6 +19,7 @@
 #include "gpu/gpu_gles2_export.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
@@ -49,7 +50,6 @@ extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 
 typedef unsigned int GLenum;
 class GrBackendSurfaceMutableState;
-class SkPromiseImageTexture;
 
 namespace cc {
 class PaintOpBuffer;

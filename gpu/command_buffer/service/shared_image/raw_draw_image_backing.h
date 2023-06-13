@@ -12,10 +12,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-
-class SkPromiseImageTexture;
 
 namespace gpu {
 

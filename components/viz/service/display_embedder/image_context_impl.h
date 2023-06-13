@@ -19,6 +19,7 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -26,7 +27,6 @@
 #include "ui/gfx/geometry/size.h"
 
 class SkColorSpace;
-class SkPromiseImageTexture;
 
 namespace gpu {
 class MailboxManager;
