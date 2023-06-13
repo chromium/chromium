@@ -92,11 +92,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_PADDING_DP = 12.f;
     private static final float MODEL_SELECTOR_BUTTON_WIDTH_DP = 24.f;
     private static final float MODEL_SELECTOR_BUTTON_HEIGHT_DP = 24.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP = 0.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO = 36.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_FOLIO = 36.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED = 38.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED = 38.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_FOLIO = 3.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_DETACHED = 5.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR = 32.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_TSR = 32.f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
@@ -267,11 +266,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
         };
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
-                createFolioModelSelectorButton(context, selectorClickHandler);
-            } else {
-                createDetachedModelSelectorButton(context, selectorClickHandler);
-            }
+            createModelSelectorButtonForTsr(context, selectorClickHandler);
 
             // Model selector button background color.
             // Default bg color is surface inverse.
@@ -307,7 +302,16 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             ((TintedCompositorButton) mModelSelectorButton)
                     .setBackgroundTint(backgroundDefaultColor, backgroundDefaultColor,
                             backgroundIncognitoColor, backgroundIncognitoColor);
-            mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
+
+            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
+                // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
+                // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
+                mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_FOLIO);
+            } else if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
+                // y-offset for detached = lowered tab container + (tab container size - bg size)/2
+                // = 2 + (38 - 32)/2 = 5dp
+                mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_DETACHED);
+            }
             mTabStripFadeShort = R.drawable.tab_strip_fade_short_tsr;
             mTabStripFadeLong = R.drawable.tab_strip_fade_long_tsr;
 
@@ -362,30 +366,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 startupInfo.incognitoCount, startupInfo.incognitoActiveIndex);
     }
 
-    private void createFolioModelSelectorButton(
+    // Incognito button for Tab Strip Redesign.
+    private void createModelSelectorButtonForTsr(
             Context context, CompositorOnClickHandler selectorClickHandler) {
         mModelSelectorButton =
-                new TintedCompositorButton(context, MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO,
-                        MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_FOLIO, selectorClickHandler,
+                new TintedCompositorButton(context, MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR,
+                        MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_TSR, selectorClickHandler,
                         R.drawable.ic_incognito);
 
-        // Tab strip redesign folio enabled bg size 36 * 36.
+        // Tab strip redesign button bg size is 32 * 32.
         ((TintedCompositorButton) mModelSelectorButton)
-                .setBackgroundResourceId(R.drawable.bg_circle_new_tab_button_folio);
-        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO;
-    }
-
-    private void createDetachedModelSelectorButton(
-            Context context, CompositorOnClickHandler selectorClickHandler) {
-        mModelSelectorButton = new TintedCompositorButton(context,
-                MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED,
-                MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED, selectorClickHandler,
-                R.drawable.ic_incognito);
-
-        // Tab strip redesign folio enabled bg size 38 * 38.
-        ((TintedCompositorButton) mModelSelectorButton)
-                .setBackgroundResourceId(R.drawable.bg_circle_new_tab_button_detached);
-        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED;
+                .setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
+        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR;
     }
 
     /**
@@ -836,7 +828,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
             float endMargin = isVisible ? getModelSelectorButtonWidthWithPadding() : 0.0f;
 
-            mNormalHelper.setEndMargin(endMargin, false);
+            mNormalHelper.setEndMargin(endMargin, isVisible);
             mIncognitoHelper.setEndMargin(endMargin, true);
         }
     }

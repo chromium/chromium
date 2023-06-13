@@ -129,10 +129,9 @@ public class StripLayoutHelperTest {
     private static final float NEW_TAB_BTN_Y = 1400.f;
     private static final float NEW_TAB_BTN_WIDTH = 100.f;
     private static final float NEW_TAB_BTN_HEIGHT = 100.f;
-    private static final float BUTTON_END_PADDING_FOLIO = 10.f;
-    private static final float BUTTON_END_PADDING_DETACHED = 9.f;
-    private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO = 36.f;
-    private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_DETACHED = 38.f;
+    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
+    private static final float BUTTON_END_PADDING_TSR = 12.f;
+    private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_TSR = 32.f;
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
 
@@ -384,7 +383,7 @@ public class StripLayoutHelperTest {
 
     @Test
     // Test hide selected tab(last tab) close button when RTL.
-    public void testTabSelected_SelectedTab_LastTab_Rtl_HideCloseBtn() {
+    public void testTabSelected_SelectedTab_LastTab_RTL_HideCloseBtn() {
         initializeTest(true, false, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         // Set mWidth value to 800.f
@@ -407,7 +406,7 @@ public class StripLayoutHelperTest {
 
     @Test
     // Test show selected tab(last tab) close button when RTL.
-    public void testTabSelected_SelectedTab_LastTab_Rtl_ShowCloseBtn() {
+    public void testTabSelected_SelectedTab_LastTab_RTL_ShowCloseBtn() {
         initializeTest(true, false, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         // Set mWidth value to 800.f
@@ -432,7 +431,7 @@ public class StripLayoutHelperTest {
 
     @Test
     // Test hide selected tab(non-last tab) close button when RTL.
-    public void testTabSelected_SelectedTab_NonLastTab_Rtl_HideCloseBtn() {
+    public void testTabSelected_SelectedTab_NonLastTab_RTL_HideCloseBtn() {
         initializeTest(true, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
 
@@ -456,7 +455,7 @@ public class StripLayoutHelperTest {
 
     @Test
     // Test show selected tab(non-last tab) close button when RTL.
-    public void testTabSelected_SelectedTab_NonLastTab_Rtl_ShowCloseBtn() {
+    public void testTabSelected_SelectedTab_NonLastTab_RTL_ShowCloseBtn() {
         initializeTest(true, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         // Set mWidth value to 800.f.
@@ -594,7 +593,80 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Folio() {
+    public void testNewTabButtonXPosition_TSR() {
+        // Setup
+        int tabCount = 4;
+        initializeTest(false, false, false, 3, tabCount);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Set New tab button position.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button x-position.
+        // stripWidth(800) - stripEndPadding(12) - NtbWidth(32) = 756
+        assertEquals("New tab button x-position is not as expected", 756.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonXPosition_RTL_TSR() {
+        // Setup
+        int tabCount = 4;
+        initializeTest(true, false, false, 3, tabCount);
+
+        // Set New tab button position.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        assertEquals("New tab button x-position is not as expected", BUTTON_END_PADDING_TSR,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonXPosition_Incognito_TSR() {
+        // Setup
+        int tabCount = 4;
+        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_TSR);
+        initializeTest(false, true, false, 3, tabCount);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Set New tab button position.
+        mStripLayoutHelper.setEndMargin(
+                MODEL_SELECTOR_BUTTON_BG_WIDTH_TSR + BUTTON_END_PADDING_TSR, true);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        // stripWidth(800) - buttonEndPadding(12) - NtbWidth(32) - NTB_With_MSB_Padding(8) -
+        // MSBWidth(32) = 716
+        assertEquals("New tab button x-position is not as expected", 716.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonXPosition_RTL_Incognito_TSR() {
+        // Setup
+        int tabCount = 4;
+        initializeTest(true, true, false, 3, tabCount);
+        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_TSR);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Set New tab button position.
+        mStripLayoutHelper.setEndMargin(
+                MODEL_SELECTOR_BUTTON_BG_WIDTH_TSR + BUTTON_END_PADDING_TSR, true);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        // buttonEndPadding(12) + MsbWidth(32) + NTB_With_MSB_Padding(8) = 52
+        assertEquals("New tab button x-position is not as expected", 52.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonYPosition_Folio() {
         // Setup
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         int tabCount = 4;
@@ -604,15 +676,14 @@ public class StripLayoutHelperTest {
         // Set New tab button position.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify new tab button position.
-        // stripWidth(800) - stripEndPadding(10) - NtbWidth(36) = 754
-        assertEquals("New tab button position is not as expected", 754.f,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+        // Verify new tab button y-position.
+        assertEquals("New tab button y-position is not as expected", 3.f,
+                mStripLayoutHelper.getNewTabButton().getY(), EPSILON);
     }
 
     @Test
     @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Detached() {
+    public void testNewTabButtonYPosition_Detached() {
         // Setup
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         int tabCount = 4;
@@ -622,135 +693,15 @@ public class StripLayoutHelperTest {
         // Set New tab button position.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify new tab button position.
-        // stripWidth(800) - stripEndPadding(9) - NtbWidth(38) = 753
-        assertEquals("New tab button position is not as expected", 753.f,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+        // Verify new tab button y-position.
+        assertEquals("New tab button y-position is not as expected", 5.f,
+                mStripLayoutHelper.getNewTabButton().getY(), EPSILON);
     }
 
     @Test
     @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Rtl_Folio() {
+    public void testNewTabButtonXPosition_NotAnchored() {
         // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-        int tabCount = 4;
-        initializeTest(true, false, false, 3, tabCount);
-
-        // Set New tab button position.
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Verify new tab button position.
-        assertEquals("New tab button position is not as expected", BUTTON_END_PADDING_FOLIO,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Rtl_Detached() {
-        // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        int tabCount = 4;
-        initializeTest(true, false, false, 3, tabCount);
-
-        // Set New tab button position.
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Verify new tab button position.
-        assertEquals("New tab button position is not as expected", BUTTON_END_PADDING_DETACHED,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Incognito_Folio() {
-        // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-        int tabCount = 4;
-        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO);
-        initializeTest(false, true, false, 3, tabCount);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-
-        // Set New tab button position.
-        mStripLayoutHelper.setEndMargin(
-                MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO + BUTTON_END_PADDING_FOLIO, true);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Verify new tab button position.
-        // stripWidth(800) - buttonEndPadding(10) - NtbWidth(36) - NTB_With_MSB_Padding(8) -
-        // MSBWidth(36) = 710
-        assertEquals("New tab button position is not as expected", 710.f,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Incognito_Detached() {
-        // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        int tabCount = 4;
-        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_DETACHED);
-        initializeTest(false, true, false, 3, tabCount);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-
-        // Set New tab button position.
-        mStripLayoutHelper.setEndMargin(
-                MODEL_SELECTOR_BUTTON_BG_WIDTH_DETACHED + BUTTON_END_PADDING_DETACHED, true);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Verify new tab button position.
-        // stripWidth(800) - buttonEndPadding(9) - NtbWidth(38) - NTB_With_MSB_Padding(8) -
-        // MSBWidth(38) = 707
-        assertEquals("New tab button position is not as expected", 707.f,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Rtl_Incognito_Folio() {
-        // Setup
-        int tabCount = 4;
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-        initializeTest(true, true, false, 3, tabCount);
-        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-
-        // Set New tab button position.
-        mStripLayoutHelper.setEndMargin(
-                MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO + BUTTON_END_PADDING_FOLIO, true);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Verify new tab button position.
-        // buttonEndPadding(10) + MsbWidth(36) + NTB_With_MSB_Padding(8) = 54
-        assertEquals("New tab button position is not as expected", 54.f,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_Rtl_Incognito_Detached() {
-        // Setup
-        int tabCount = 4;
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        initializeTest(true, true, false, 3, tabCount);
-        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_DETACHED);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-
-        // Set New tab button position.
-        mStripLayoutHelper.setEndMargin(
-                MODEL_SELECTOR_BUTTON_BG_WIDTH_DETACHED + BUTTON_END_PADDING_DETACHED, true);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Verify new tab button position.
-        // buttonEndPadding(9) + MsbWidth(38) + NTB_With_MSB_Padding(8) = 55
-        assertEquals("New tab button position is not as expected", 55.f,
-                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_NotAnchored() {
-        // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(true);
         int tabCount = 1;
         initializeTest(false, false, false, 0, tabCount);
@@ -759,15 +710,14 @@ public class StripLayoutHelperTest {
 
         // Verify new tab button position.
         // tabWidth(237) + tabOverLapWidth(28) = 265(Same for both TSR arms)
-        assertEquals("New tab button position is not as expected", 265.f,
+        assertEquals("New tab button x-position is not as expected", 265.f,
                 mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
     }
 
     @Test
     @Feature("Tab Strip Redesign")
-    public void testNewTabButtonPosition_NotAnchored_Rtl() {
+    public void testNewTabButtonXPosition_NotAnchored_RTL() {
         // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(true);
         int tabCount = 1;
         initializeTest(true, false, false, 0, tabCount);
@@ -775,8 +725,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
-        // stripWidth(800) - tabWidth(237) - tabOverLapWidth(28) - NtbWidth(36) = 499
-        assertEquals("New tab button position is not as expected", 499,
+        // stripWidth(800) - tabWidth(237) - tabOverLapWidth(28) - NtbWidth(32) = 503
+        assertEquals("New tab button x-position is not as expected", 503,
                 mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
     }
 
@@ -784,7 +734,6 @@ public class StripLayoutHelperTest {
     @Feature("Tab Strip Redesign")
     public void testNewTabButtonStyle_ButtonStyleDisabled() {
         // Setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.setForTesting(true);
         int tabCount = 1;
         initializeTest(false, false, false, 0, tabCount);
@@ -792,8 +741,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
-        // tabWidth(237) + tabOverLapWidth(28) + folioXOffset(6) = 271
-        assertEquals("New tab button position is not as expected", 271.f,
+        // tabWidth(237) + tabOverLapWidth(28) + folioXOffset(8) = 273
+        assertEquals("New tab button position is not as expected", 273.f,
                 mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
 
         assertEquals("Unexpected incognito button color.",
@@ -1332,7 +1281,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
-    public void testTabGroupMargins_BetweenGroups_Rtl() {
+    public void testTabGroupMargins_BetweenGroups_RTL() {
         // Mock a tab group with 2 tabs to the right of a tab group with 3 tabs.
         initializeTest(true, false, true, 0, 5);
         groupTabs(0, 2);
@@ -1855,7 +1804,7 @@ public class StripLayoutHelperTest {
 
         // Assert: Animations completed. The tab width is not resized and drawX does not change.
         float expectedDrawX =
-                -395.f; // Since we are focused on the last tab, start tabs are off screen.
+                -392.f; // Since we are focused on the last tab, start tabs are off screen.
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabs();
         for (StripLayoutTab stripTab : updatedTabs) {
             assertEquals("Unexpected tab width after resize.", 108.f, stripTab.getWidth(), 0);
