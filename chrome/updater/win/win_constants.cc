@@ -48,7 +48,7 @@ const wchar_t kRegValueLastInstallerSuccessLaunchCmdLine[] =
 
 const wchar_t kRegKeyCompanyCloudManagement[] =
     COMPANY_POLICIES_KEY L"CloudManagement\\";
-const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
+const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken";
 
 const wchar_t kRegValueEnrollmentMandatory[] = L"EnrollmentMandatory";
 
