@@ -153,8 +153,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
     gfx::NativeWindow root_window =
         browser()->window()->GetNativeWindow()->GetRootWindow();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
-    helper_ = std::make_unique<TooltipControllerTestHelper>(
-        static_cast<TooltipController*>(wm::GetTooltipClient(root_window)));
+    helper_ = std::make_unique<TooltipControllerTestHelper>(root_window);
     tooltip_monitor_ = std::make_unique<TooltipMonitor>();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     helper()->AddObserver(tooltip_monitor_.get());
