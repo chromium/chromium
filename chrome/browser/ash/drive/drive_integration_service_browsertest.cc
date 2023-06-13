@@ -626,7 +626,10 @@ class DriveIntegrationServiceBrowserTestLacros
  protected:
   DriveIntegrationServiceBrowserTestLacros() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
+        {});
   }
 
   // browser() does not exist in Lacros, so get the profile from ProfileManager.
