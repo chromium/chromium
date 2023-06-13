@@ -71,6 +71,10 @@ void OverviewGridEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
 
+  if (event->type() == ui::ET_MOUSEWHEEL) {
+    grid_->HandleMouseWheelScrollEvent(event->AsMouseWheelEvent()->y_offset());
+  }
+
   if (event->type() == ui::ET_MOUSE_RELEASED)
     HandleClickOrTap(event);
 }

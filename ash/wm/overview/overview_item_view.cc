@@ -305,6 +305,15 @@ bool OverviewItemView::OnMouseDragged(const ui::MouseEvent& event) {
   return true;
 }
 
+bool OverviewItemView::OnMouseWheel(const ui::MouseWheelEvent& event) {
+  if (!overview_item_) {
+    return false;
+  }
+  overview_item_->overview_grid()->HandleMouseWheelScrollEvent(
+      event.y_offset());
+  return true;
+}
+
 void OverviewItemView::OnMouseReleased(const ui::MouseEvent& event) {
   if (!overview_item_) {
     views::View::OnMouseReleased(event);

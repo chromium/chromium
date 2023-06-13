@@ -84,6 +84,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -3680,24 +3681,6 @@ class TabletModeOverviewSessionTest : public OverviewTestBase {
     GetEventGenerator()->GestureScrollSequence(start, end,
                                                base::Milliseconds(100), 1000);
   }
-
-  void DispatchLongPress(OverviewItem* item) {
-    const gfx::Point point =
-        gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
-    ui::GestureEvent long_press(
-        point.x(), point.y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-    GetEventGenerator()->Dispatch(&long_press);
-  }
-
-  // Creates |n| test windows. They are created in reverse order, so that the
-  // first window in the vector is the MRU window.
-  std::vector<std::unique_ptr<aura::Window>> CreateTestWindows(int n) {
-    std::vector<std::unique_ptr<aura::Window>> windows(n);
-    for (int i = n - 1; i >= 0; --i)
-      windows[i] = CreateTestWindow();
-    return windows;
-  }
 };
 
 // Tests that windows are in proper positions in the new overview layout.
@@ -3976,6 +3959,255 @@ TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
   generator->ReleaseLeftButton();
 
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+}
+
+class ClamshellScrollOverviewSessionTest : public OverviewTestBase {
+ public:
+  ClamshellScrollOverviewSessionTest() = default;
+  ClamshellScrollOverviewSessionTest(
+      const ClamshellScrollOverviewSessionTest&) = delete;
+  ClamshellScrollOverviewSessionTest& operator=(
+      const ClamshellScrollOverviewSessionTest&) = delete;
+  ~ClamshellScrollOverviewSessionTest() override = default;
+
+  // OverviewTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOverviewScrollLayoutForClamshell,
+                              chromeos::features::kJelly},
+        /*disabled_features=*/{});
+    OverviewTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when 10 windows are open, the scrolling layout for
+// overview mode in clamshell has some of the windows offscreen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckManyWindowsOffScreen) {
+  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  OverviewItem* item1 = GetOverviewItemForWindow(windows[1].get());
+  OverviewItem* item8 = GetOverviewItemForWindow(windows[8].get());
+  OverviewItem* item9 = GetOverviewItemForWindow(windows[9].get());
+
+  const gfx::RectF screen_bounds(GetGridBounds());
+  const gfx::RectF item0_bounds = item0->target_bounds();
+  const gfx::RectF item1_bounds = item1->target_bounds();
+  const gfx::RectF item8_bounds = item8->target_bounds();
+  const gfx::RectF item9_bounds = item9->target_bounds();
+
+  // `item0` should be within `screen_bounds`.
+  EXPECT_TRUE(screen_bounds.Contains(item0_bounds));
+
+  // `item1` should be within `screen_bounds`.
+  EXPECT_TRUE(screen_bounds.Contains(item1_bounds));
+
+  // `item9` should not be within `screen_bounds` but it should have an
+  // x value within `screen_bounds`.
+  EXPECT_FALSE(screen_bounds.Contains(item8_bounds));
+  EXPECT_GT(item9_bounds.x(), screen_bounds.x());
+  EXPECT_LT(item9_bounds.x(), screen_bounds.x() + screen_bounds.width());
+
+  // `item8` should not be within `screen_bounds` but it should have an
+  // x value within `screen_bounds`.
+  EXPECT_FALSE(screen_bounds.Contains(item9_bounds));
+  EXPECT_GT(item8_bounds.x(), screen_bounds.x());
+  EXPECT_LT(item8_bounds.x(), screen_bounds.x() + screen_bounds.width());
+}
+
+// Tests that when 4 windows are open, the scrolling layout for
+// overview mode in clamshell has all of the windows onscreen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckFewWindowsOnScreen) {
+  auto windows = CreateTestWindows(4);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  OverviewItem* item1 = GetOverviewItemForWindow(windows[1].get());
+  OverviewItem* item2 = GetOverviewItemForWindow(windows[2].get());
+  OverviewItem* item3 = GetOverviewItemForWindow(windows[3].get());
+
+  const gfx::RectF screen_bounds(GetGridBounds());
+  const gfx::RectF item0_bounds = item0->target_bounds();
+  const gfx::RectF item1_bounds = item1->target_bounds();
+  const gfx::RectF item2_bounds = item2->target_bounds();
+  const gfx::RectF item3_bounds = item3->target_bounds();
+
+  // All items should be within `screen_bounds`.
+  EXPECT_TRUE(screen_bounds.Contains(item0_bounds));
+  EXPECT_TRUE(screen_bounds.Contains(item1_bounds));
+  EXPECT_TRUE(screen_bounds.Contains(item2_bounds));
+  EXPECT_TRUE(screen_bounds.Contains(item3_bounds));
+}
+
+// Tests that windows cannot be scrolled if all windows fit on screen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckNoOverviewItemShift) {
+  auto windows = CreateTestWindows(4);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  const gfx::RectF before_shift_bounds = item0->target_bounds();
+
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -200);
+
+  EXPECT_EQ(before_shift_bounds, item0->target_bounds());
+}
+
+// Tests to see that windows can be scrolled if at least one window is
+// partially/completely positioned offscreen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemShift) {
+  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  const gfx::RectF before_shift_bounds = item0->target_bounds();
+
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -200);
+
+  EXPECT_LT(item0->target_bounds().y(), before_shift_bounds.y());
+}
+
+// Tests to see if windows remain in bounds after scrolling extremely far.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemScrollingBounds) {
+  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Scroll an extreme amount to see if windows at the top are still in
+  // bounds. First, align the top window (`windows[0]`) to the top bound
+  // and store the item's location. Then, scroll a far amount and check
+  // to see if the item moved at all.
+  OverviewItem* top_window = GetOverviewItemForWindow(windows[0].get());
+
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -500);
+
+  const gfx::RectF top_bounds = top_window->target_bounds();
+  GetEventGenerator()->MoveMouseWheel(0, -500);
+  EXPECT_EQ(top_bounds, top_window->target_bounds());
+
+  // Scroll an extreme amount to see if windows on the bottom are still in
+  // bounds. First, align the bottom window (`windows[7]`) to the bottom
+  // bound and store the item's location. Then, scroll a far amount and
+  // check to see if the item moved at all.
+  OverviewItem* bottom_window = GetOverviewItemForWindow(windows[7].get());
+  GetEventGenerator()->MoveMouseWheel(0, 500);
+  const gfx::RectF bottom_bounds = bottom_window->target_bounds();
+  GetEventGenerator()->MoveMouseWheel(0, 500);
+  EXPECT_EQ(bottom_bounds, bottom_window->target_bounds());
+}
+
+// Test that overview widgets are stacked underneath the desk bar widget
+// when scrolling vertically in overview mode.
+TEST_F(ClamshellScrollOverviewSessionTest,
+       OverviewWidgetsAreStackedUnderDeskBar) {
+  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  auto* desk_bar_view =
+      GetOverviewGridForRoot(Shell::Get()->GetPrimaryRootWindow())
+          ->desks_bar_view();
+  auto* top_window = GetOverviewItemForWindow(windows[0].get());
+  ASSERT_TRUE(InOverviewSession());
+
+  // Ensure the two windows in question share the same root window.
+  ASSERT_EQ(top_window->root_window(), desk_bar_view->root());
+
+  // Before we start scrolling, the items have not been restacked.
+  // So, check that the overview item is still stacked in front of the desk bar
+  // like the default behavior expects.
+  EXPECT_FALSE(window_util::IsStackedBelow(
+      top_window->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+
+  // Scroll so the overview widget gets restacked.
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -100);
+
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      top_window->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+}
+
+// Test scrolling behavior when floated and minimized windows are present.
+TEST_F(ClamshellScrollOverviewSessionTest,
+       CheckOverviewScrollWithFloatedWindow) {
+  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+
+  // Create a floated, non-floated active, and minimized window.
+  auto active_window = CreateAppWindow();
+  auto minimized_window = CreateAppWindow();
+  auto floated_window = CreateAppWindow();
+
+  // Confirm floated window.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  auto* desk_bar_view =
+      GetOverviewGridForRoot(Shell::Get()->GetPrimaryRootWindow())
+          ->desks_bar_view();
+  OverviewItem* floated_window_item =
+      GetOverviewItemForWindow(floated_window.get());
+  OverviewItem* active_window_item =
+      GetOverviewItemForWindow(active_window.get());
+  OverviewItem* minimized_window_item =
+      GetOverviewItemForWindow(minimized_window.get());
+
+  const gfx::RectF float_before_shift_bounds =
+      floated_window_item->target_bounds();
+  const gfx::RectF active_before_shift_bounds =
+      active_window_item->target_bounds();
+  const gfx::RectF minimized_before_shift_bounds =
+      minimized_window_item->target_bounds();
+
+  // Ensure the non-floated windows share the same root window. Floated windows
+  // are parented to a different container and guaranteed be below the desk bar.
+  ASSERT_EQ(active_window_item->root_window(), desk_bar_view->root());
+  ASSERT_EQ(minimized_window_item->root_window(), desk_bar_view->root());
+
+  // Before we start scrolling, the items have not been restacked.
+  EXPECT_FALSE(window_util::IsStackedBelow(
+      active_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+  EXPECT_FALSE(window_util::IsStackedBelow(
+      minimized_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+
+  // Scroll so the overview widget gets restacked.
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -100);
+
+  // Check windows are stacked below the desk bar.
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      active_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      minimized_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+
+  // Check windows have been re-positioned.
+  EXPECT_LT(floated_window_item->target_bounds().y(),
+            float_before_shift_bounds.y());
+  EXPECT_LT(active_window_item->target_bounds().y(),
+            active_before_shift_bounds.y());
+  EXPECT_LT(minimized_window_item->target_bounds().y(),
+            minimized_before_shift_bounds.y());
 }
 
 // A unique test class for testing flings in overview as those rely on observing
