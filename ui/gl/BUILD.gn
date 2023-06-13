@@ -490,13 +490,6 @@ static_library("test_support") {
     "test/gl_test_support.h",
   ]
 
-  if (!is_android) {
-    sources += [
-      "test/gl_image_test_template.cc",
-      "test/gl_image_test_template.h",
-    ]
-  }
-
   configs += [ "//third_party/khronos:khronos_headers" ]
 
   public_deps = [

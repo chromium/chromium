@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
-#include "ui/gl/test/gl_image_test_template.h"
+#include "ui/ozone/gl/gl_image_test_template.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"

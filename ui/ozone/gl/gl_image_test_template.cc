@@ -5,7 +5,7 @@
 // This file defines tests that implementations of GLImage should pass in order
 // to be conformant.
 
-#include "ui/gl/test/gl_image_test_template.h"
+#include "ui/ozone/gl/gl_image_test_template.h"
 #include "base/strings/stringprintf.h"
 
 namespace gl {

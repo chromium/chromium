@@ -5,8 +5,8 @@
 // This file defines tests that implementations of GLImage should pass in order
 // to be conformant.
 
-#ifndef UI_GL_TEST_GL_IMAGE_TEST_TEMPLATE_H_
-#define UI_GL_TEST_GL_IMAGE_TEST_TEMPLATE_H_
+#ifndef UI_OZONE_GL_GL_IMAGE_TEST_TEMPLATE_H_
+#define UI_OZONE_GL_GL_IMAGE_TEST_TEMPLATE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringize_macros.h"
@@ -95,8 +95,9 @@ class GLImageTest : public testing::Test {
 TYPED_TEST_SUITE_P(GLImageTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
-  if (this->delegate_.SkipTest(this->display_))
+  if (this->delegate_.SkipTest(this->display_)) {
     GTEST_SKIP() << "Skip because GL initialization failed";
+  }
 
   // NOTE: On some drm devices (mediatek) the mininum width/height to add an fb
   // for a bo must be 64, and YVU_420 in i915 requires at least 128 length.
@@ -128,8 +129,9 @@ class GLImageOddSizeTest : public GLImageTest<GLImageTestDelegate> {};
 TYPED_TEST_SUITE_P(GLImageOddSizeTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create) {
-  if (this->delegate_.SkipTest(this->display_))
+  if (this->delegate_.SkipTest(this->display_)) {
     GTEST_SKIP() << "Skip because GL initialization failed";
+  }
 
   const gfx::Size odd_image_size(17, 53);
   const uint8_t* image_color = this->delegate_.GetImageColor();
@@ -152,4 +154,4 @@ REGISTER_TYPED_TEST_SUITE_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create);
 #undef TYPED_TEST_P_WITH_EXPANSION
 #undef REGISTER_TYPED_TEST_SUITE_P_WITH_EXPANSION
 
-#endif  // UI_GL_TEST_GL_IMAGE_TEST_TEMPLATE_H_
+#endif  // UI_OZONE_GL_GL_IMAGE_TEST_TEMPLATE_H_
