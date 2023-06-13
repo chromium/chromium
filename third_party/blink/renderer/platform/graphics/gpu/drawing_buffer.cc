@@ -1892,11 +1892,23 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   } else {
     if (ShouldUseChromiumImage()) {
       auto gmb_si_format = color_buffer_format_;
+
+      // TODO(b/286417069): BGRX has issues when Vulkan is used for raster and
+      // composite. Using BGRX is technically possible but will require a lot
+      // of work given the current state of the codebase. There are projects in
+      // flight that will make using BGRX a lot easier, but until then, simply
+      // use RGBX when Vulkan is enabled.
+      const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
+      const bool allow_bgrx =
+          gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
+          gpu::kGpuFeatureStatusEnabled;
+
       // For Mac, explicitly specify BGRA/X instead of RGBA/X so that IOSurface
       // format matches shared image format. This is necessary for Graphite.
       // For ChromeOS explicitly specify BGRX instead of RGBX since some older
       // Intel GPUs (i8xx) don't support RGBX overlays.
       if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
+          allow_bgrx &&
           gpu::IsImageFromGpuMemoryBufferFormatSupported(
               gfx::BufferFormat::BGRX_8888,
               ContextProvider()->GetCapabilities())) {
