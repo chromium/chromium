@@ -7035,6 +7035,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
 
   const config = {
     seller: $1,
+    // Must have FLEDGE header and JS mime type.
     decisionLogicUrl: $2,
     interestGroupBuyers: [$1]
   };
