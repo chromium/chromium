@@ -10,6 +10,7 @@
     "Android Release (Nexus 5X)": "Ubuntu-22.04",
     "Android arm64 Builder All Targets (dbg)": "Ubuntu-22.04",
     "Android x64 Builder (dbg)": "Ubuntu-22.04",
+    "Android x64 Builder All Targets (dbg)": "Ubuntu-22.04",
     "Android x86 Builder (dbg)": "Ubuntu-22.04",
     "Cast Audio Linux": "Ubuntu-22.04",
     "ChromeOS FYI Release (amd64-generic)": "Ubuntu-22.04",
