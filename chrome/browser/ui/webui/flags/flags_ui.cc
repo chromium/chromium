@@ -65,13 +65,12 @@ namespace {
 content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFlagsHost);
-  source->EnableReplaceI18nInJS();
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate static-types;");
+      "trusted-types jstemplate;");
   source->AddString(flags_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));
 
