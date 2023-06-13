@@ -61,6 +61,8 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   }
 
  private:
+  friend class NGLineWidthsTest;
+
   unsigned PositionLeadingFloats(NGExclusionSpace*, NGPositionedFloatVector*);
   NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
                                   LayoutObject* floating_object,

@@ -1,0 +1,88 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_widths.h"
+
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+
+namespace blink {
+
+bool NGLineWidths::Set(const NGInlineNode& node,
+                       base::span<const NGLayoutOpportunity> opportunities) {
+  // Set the default width if no exclusions.
+  DCHECK_GE(opportunities.size(), 1u);
+  const NGLayoutOpportunity& first_opportunity = opportunities.front();
+  if (opportunities.size() == 1) {
+    DCHECK(!first_opportunity.HasShapeExclusions());
+    default_width_ = first_opportunity.rect.InlineSize();
+    DCHECK(!num_excluded_lines_);
+    return true;
+  }
+
+  // This class supports only single simple exclusion.
+  if (opportunities.size() > 2 || first_opportunity.HasShapeExclusions()) {
+    return false;
+  }
+
+  // Check if all lines have the same line heights.
+  const ComputedStyle& block_style = node.Style();
+  const Font& block_font = block_style.GetFont();
+  const SimpleFontData* primary_font = block_font.PrimaryFont();
+  DCHECK(primary_font);
+  const NGInlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
+  // `::first-line` is not supported.
+  DCHECK_EQ(&items_data, &node.ItemsData(true));
+  const HeapVector<NGInlineItem>& items = items_data.items;
+  for (const NGInlineItem& item : items) {
+    switch (item.Type()) {
+      case NGInlineItem::kText: {
+        const ShapeResult* shape_result = item.TextShapeResult();
+        DCHECK(shape_result);
+        if (shape_result->PrimaryFont() != primary_font ||
+            shape_result->HasFallbackFonts()) {
+          return false;
+        }
+        break;
+      }
+      case NGInlineItem::kOpenTag: {
+        DCHECK(item.Style());
+        const ComputedStyle& style = *item.Style();
+        if (style.GetFont().PrimaryFont() != primary_font ||
+            style.VerticalAlign() != EVerticalAlign::kBaseline) {
+          return false;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  // All lines have the same line height. Compute the line height.
+  const FontBaseline baseline_type = block_style.GetFontBaseline();
+  NGInlineBoxState box;
+  box.ComputeTextMetrics(block_style, block_font, baseline_type);
+  const LayoutUnit line_height = box.metrics.LineHeight();
+  if (line_height <= LayoutUnit()) {
+    return false;
+  }
+
+  // Compute the number of lines that have the exclusion.
+  const NGLayoutOpportunity& last_opportunity = opportunities.back();
+  DCHECK(!last_opportunity.HasShapeExclusions());
+  default_width_ = last_opportunity.rect.InlineSize();
+  const LayoutUnit exclusion_block_size =
+      last_opportunity.rect.BlockStartOffset() -
+      first_opportunity.rect.BlockStartOffset();
+  DCHECK_GT(exclusion_block_size, LayoutUnit());
+  const int num_excluded_lines = (exclusion_block_size / line_height).Ceil();
+  DCHECK_GT(num_excluded_lines, 0);
+  num_excluded_lines_ = num_excluded_lines;
+  excluded_width_ = first_opportunity.rect.InlineSize();
+  return true;
+}
+
+}  // namespace blink

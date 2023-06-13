@@ -654,6 +654,16 @@ float ShapeResult::CaretPositionForOffset(
   return PositionForOffset(offset, adjust_mid_cluster);
 }
 
+bool ShapeResult::HasFallbackFonts() const {
+  const SimpleFontData* primary_font = PrimaryFont();
+  for (const scoped_refptr<RunInfo>& run : runs_) {
+    if (run->font_data_ != primary_font) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ShapeResult::GetRunFontData(Vector<RunFontData>* font_data) const {
   for (const auto& run : runs_) {
     font_data->push_back(
