@@ -6980,6 +6980,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "shopping-list-track-by-default",
+    "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "shortcut-customization-jelly",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com" ],
     "expiry_milestone": 122

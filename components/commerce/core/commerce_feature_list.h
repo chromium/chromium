@@ -93,6 +93,7 @@ BASE_DECLARE_FEATURE(kPriceInsightsRegionLaunched);
 
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
+BASE_DECLARE_FEATURE(kShoppingListTrackByDefault);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 BASE_DECLARE_FEATURE(kRetailCoupons);

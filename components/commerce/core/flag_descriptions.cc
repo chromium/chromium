@@ -18,6 +18,10 @@ const char kCommercePriceTrackingDescription[] =
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 
+const char kShoppingListTrackByDefaultName[] = "Shopping List Track By Default";
+const char kShoppingListTrackByDefaultDescription[] =
+    "Bookmarked product pages are tracked by default if they can be.";
+
 const char kChromeCartDomBasedHeuristicsName[] =
     "ChromeCart DOM-based heuristics";
 const char kChromeCartDomBasedHeuristicsDescription[] =
