@@ -330,6 +330,7 @@
     "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04"
   },
   "reviver": {
+    "android-launcher": "Ubuntu-22.04",
     "fuchsia-coordinator": "Ubuntu-22.04",
     "lacros-coordinator": "Ubuntu-22.04"
   },
