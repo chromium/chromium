@@ -28,7 +28,7 @@ RELEASE=bullseye
 # It should not be incremented when adding packages.
 SYSROOT_RELEASE=1
 
-ARCHIVE_TIMESTAMP=20230329T085712Z
+ARCHIVE_TIMESTAMP=20230611T210420Z
 
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian/$ARCHIVE_TIMESTAMP/"
 APT_SOURCES_LIST=(
@@ -36,11 +36,6 @@ APT_SOURCES_LIST=(
   # so that bullseye takes precedence.
   "${ARCHIVE_URL} bookworm main"
   "${ARCHIVE_URL} bookworm-updates main"
-
-  # Debian 9 (Stretch) is needed for gnome-keyring.  It should be kept before
-  # bullseye so that bullseye takes precedence.
-  "${ARCHIVE_URL} stretch main"
-  "${ARCHIVE_URL} stretch-updates main"
 
   # This mimics a sources.list from bullseye.
   "${ARCHIVE_URL} bullseye main contrib non-free"
@@ -161,8 +156,6 @@ DEBIAN_PACKAGES="\
   libglx-dev
   libglx0
   libgmp10
-  libgnome-keyring-dev
-  libgnome-keyring0
   libgnutls-dane0
   libgnutls-openssl27
   libgnutls28-dev
