@@ -115,6 +115,7 @@ source_set("settings") {
     "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/commerce/push_notification",

@@ -8,9 +8,11 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
@@ -391,6 +394,39 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   // Make sure the cancel button is always present, as the Autofill screen
   // isn't just shown from Settings.
+  [controller navigationItem].leftBarButtonItem =
+      [navigationController cancelButton];
+  return navigationController;
+}
+
++ (instancetype)
+    autofillCreditCardEditControllerForBrowser:(Browser*)browser
+                                      delegate:
+                                          (id<SettingsNavigationControllerDelegate>)
+                                              delegate
+                                    creditCard:(const autofill::CreditCard*)
+                                                   creditCard {
+  DCHECK(browser);
+  ChromeBrowserState* browserState =
+      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  autofill::PersonalDataManager* personalDataManager =
+      autofill::PersonalDataManagerFactory::GetForBrowserState(
+          browserState->GetOriginalChromeBrowserState());
+
+  AutofillCreditCardEditTableViewController* controller =
+      [[AutofillCreditCardEditTableViewController alloc]
+           initWithCreditCard:*creditCard
+          personalDataManager:personalDataManager];
+  controller.dispatcher = [delegate handlerForSettings];
+
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:controller
+                             browser:browser
+                            delegate:delegate];
+
+  // Make sure the cancel button is always present, as the Autofill screen isn't
+  // just shown from Settings.
   [controller navigationItem].leftBarButtonItem =
       [navigationController cancelButton];
   return navigationController;
@@ -952,6 +988,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   AutofillCreditCardTableViewController* controller =
       [[AutofillCreditCardTableViewController alloc]
           initWithBrowser:self.browser];
+  controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
+  [self pushViewController:controller animated:YES];
+}
+
+- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard {
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  autofill::PersonalDataManager* personalDataManager =
+      autofill::PersonalDataManagerFactory::GetForBrowserState(
+          browserState->GetOriginalChromeBrowserState());
+  AutofillCreditCardEditTableViewController* controller =
+      [[AutofillCreditCardEditTableViewController alloc]
+           initWithCreditCard:*creditCard
+          personalDataManager:personalDataManager];
   controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
   [self pushViewController:controller animated:YES];
 }
