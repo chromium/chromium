@@ -1627,9 +1627,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.DotUpgradeSucceeded" enum="Boolean"
-    expires_after="2023-12-10">
+    expires_after="2024-06-12">
   <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH from a DoT hostname was attempted and succeeded.
     False if it was attempted and failed.
@@ -1637,20 +1637,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.HasPublicInsecureNameserver"
-    enum="Boolean" expires_after="2023-04-23">
+    enum="Boolean" expires_after="2024-06-12">
   <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if there was at least one public nameserver during an attempt to
     upgrade to DoH from insecure DNS. False if there were no public nameservers
     during an attempt to upgrade to DoH from insecure DNS.
+
+    Warning: this histogram was expired from 2023-04-23 to 2023-06-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.DohSpecified" enum="Boolean"
-    expires_after="2023-11-12">
+    expires_after="2024-06-12">
   <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH was not attempted because the DoH config was already
     specified. False if upgrade to DoH was not attempted for some other reason.
@@ -1658,9 +1661,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.UnhandledOptions"
-    enum="Boolean" expires_after="2023-06-14">
-  <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+    enum="Boolean" expires_after="2024-06-12">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH was not attempted because of unhandled options in the
     system config. False if upgrade to DoH was not attempted for some other
@@ -1669,9 +1672,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded" enum="Boolean"
-    expires_after="2023-12-04">
+    expires_after="2024-06-12">
   <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH from insecure DNS was attempted and succeeded. False
     if it was attempted and failed.
