@@ -300,6 +300,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.ErrorInitializeDB" enum="SqliteLoggedResultCode"
+    expires_after="2023-11-12">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    The exact database error encountered if initializing the cookies database
+    fails catastrophically. Initializing the cookies database happens once per
+    network context configured with persistent cookies, so this metric could be
+    reported multiple times from the same client. Catastrophic errors are
+    defined in sql::IsErrorCatastrophic.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ExpirationDuration400DaysGT" units="days"
     expires_after="2024-02-20">
   <owner>arichiv@chromium.org</owner>
@@ -907,6 +920,20 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.Type" enum="CookieType" expires_after="2023-11-12">
   <owner>mkwst@chromium.org</owner>
   <summary>For each cookie added to the store, record it's type(s).</summary>
+</histogram>
+
+<histogram name="Cookie.WinGetLastErrorInitializeDB" enum="WinGetLastError"
+    expires_after="2023-11-12">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    The result of calling ::GetLastError if initializing the cookies database
+    fails catastrophically. Initializing the cookies database happens once per
+    network context configured with persistent cookies, so this metric could be
+    reported multiple times from the same client. Catastrophic errors are
+    defined in sql::IsErrorCatastrophic. This metric is only reported on
+    Windows.
+  </summary>
 </histogram>
 
 </histograms>

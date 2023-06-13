@@ -10561,6 +10561,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReportingAndNEL.ErrorInitializeDB"
+    enum="SqliteLoggedResultCode" expires_after="2023-11-12">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The exact database error encountered when initializing the Reporting and NEL
+    database, if initialization fails catastrophically. This is recorded if the
+    database initialization fails catastrophically when the DB initialization
+    attempt is made, which typically occurs upon the first network request after
+    startup. Catastrophic errors are defined in sql::IsErrorCatastrophic.
+  </summary>
+</histogram>
+
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies"
     units="policy count" expires_after="2023-06-25">
   <owner>yhirano@chromium.org</owner>
@@ -10615,6 +10628,19 @@ chromium-metrics-reviews@google.com.
     The time (ms) taken to initialize the Reporting and NEL DB. This is recorded
     when the DB is initialized, which typically occurs upon the first network
     request after startup.
+  </summary>
+</histogram>
+
+<histogram name="ReportingAndNEL.WinGetLastErrorInitializeDB"
+    enum="WinGetLastError" expires_after="2023-11-12">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The result of calling ::GetLastError() if initializing the Reporting and NEL
+    database fails catastrophically. This is recorded, on Windows only, if the
+    database initialization fails when the DB initialization attempt is made,
+    which typically occurs upon the first network request after startup.
+    Catastrophic errors are defined in sql::IsErrorCatastrophic.
   </summary>
 </histogram>
 

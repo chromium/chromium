@@ -18,6 +18,10 @@
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace net {
 
 SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
@@ -261,6 +265,15 @@ void SQLitePersistentStoreBackendBase::DatabaseErrorCallback(
     return;
 
   corruption_detected_ = true;
+
+  if (!initialized_) {
+    sql::UmaHistogramSqliteResult(histogram_tag_ + ".ErrorInitializeDB", error);
+
+#if BUILDFLAG(IS_WIN)
+    base::UmaHistogramSparse(histogram_tag_ + ".WinGetLastErrorInitializeDB",
+                             ::GetLastError());
+#endif  // BUILDFLAG(IS_WIN)
+  }
 
   // Don't just do the close/delete here, as we are being called by |db| and
   // that seems dangerous.

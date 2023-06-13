@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -46,6 +47,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -213,6 +215,10 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override {
+    if (!expect_init_errors_) {
+      EXPECT_THAT(histograms_.GetAllSamples("Cookie.ErrorInitializeDB"),
+                  ::testing::IsEmpty());
+    }
     DestroyStore();
   }
 
@@ -227,6 +233,8 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<SQLitePersistentCookieStore> store_;
   std::unique_ptr<CookieCryptor> cookie_crypto_delegate_;
+  base::HistogramTester histograms_;
+  bool expect_init_errors_ = false;
 };
 
 TEST_F(SQLitePersistentCookieStoreTest, TestInvalidMetaTableRecovery) {
@@ -1484,6 +1492,7 @@ TEST_F(SQLitePersistentCookieStoreTest, OpsIfInitFailed) {
   EXPECT_TRUE(set_cookie_callback.result().status.IsInclude());
 
   // Things should commit once going out of scope.
+  expect_init_errors_ = true;
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, Coalescing) {
@@ -1631,6 +1640,32 @@ TEST_P(SQLitePersistentCookieStoreExclusiveAccessTest, LockedStore) {
   db_thread_event_.Signal();
 }
 
+TEST_P(SQLitePersistentCookieStoreExclusiveAccessTest, LockedStoreAlreadyOpen) {
+  base::HistogramTester histograms;
+  base::File file(
+      temp_dir_.GetPath().Append(kCookieFilename),
+      base::File::Flags::FLAG_CREATE | base::File::Flags::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  Create(false, false, true /* want current thread to invoke the store. */,
+         /* exclusive access */ ShouldBeExclusive());
+
+  base::RunLoop run_loop;
+  store_->Load(base::BindLambdaForTesting(
+                   [&](CanonicalCookieVector cookies) { run_loop.Quit(); }),
+               NetLogWithSource());
+  run_loop.Run();
+
+  // Note: The non-exclusive path is verified in the TearDown for the fixture.
+  if (ShouldBeExclusive()) {
+    expect_init_errors_ = true;
+    histograms.ExpectUniqueSample("Cookie.ErrorInitializeDB",
+                                  sql::SqliteLoggedResultCode::kCantOpen, 1);
+    histograms.ExpectUniqueSample("Cookie.WinGetLastErrorInitializeDB",
+                                  ERROR_SHARING_VIOLATION, 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SQLitePersistentCookieStoreExclusiveAccessTest,
                          ::testing::Bool(),
@@ -1639,6 +1674,25 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(SQLitePersistentCookieStoreTest, CorruptStore) {
+  base::HistogramTester histograms;
+  base::WriteFile(temp_dir_.GetPath().Append(kCookieFilename),
+                  "SQLite format 3 foobarfoobarfoobar");
+
+  Create(false, false, true /* want current thread to invoke the store. */,
+         false);
+
+  base::RunLoop run_loop;
+  store_->Load(base::BindLambdaForTesting(
+                   [&](CanonicalCookieVector cookies) { run_loop.Quit(); }),
+               NetLogWithSource());
+  run_loop.Run();
+
+  expect_init_errors_ = true;
+  histograms.ExpectUniqueSample("Cookie.ErrorInitializeDB",
+                                sql::SqliteLoggedResultCode::kNotADatabase, 1);
+}
 
 bool CreateV10Schema(sql::Database* db) {
   sql::MetaTable meta_table;
