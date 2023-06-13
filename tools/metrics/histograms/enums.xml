@@ -91440,8 +91440,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="kTriggerExtensionRequest">
     A new extension request is added
   </int>
-  <int value="5" label="Obsolete_kExtensionRequestRealTime">
-    (Obsolete) A new extension request is added and uploaded with ERP.
+  <int value="5" label="kExtensionRequestRealTime">
+    A new extension request is added and uploaded with ERP.
   </int>
   <int value="6" label="kTriggerManual">User upload report manually</int>
 </enum>

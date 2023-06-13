@@ -40,10 +40,4 @@ ReportingDelegateFactoryIOS::GetRealTimeReportGeneratorDelegate() {
   return nullptr;
 }
 
-std::unique_ptr<RealTimeReportController::Delegate>
-ReportingDelegateFactoryIOS::GetRealTimeReportControllerDelegate() {
-  // Using nullptr as the new pipeline is not supported on iOS.
-  return nullptr;
-}
-
 }  // namespace enterprise_reporting

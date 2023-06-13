@@ -35,8 +35,6 @@ class ReportingDelegateFactoryAndroid : public ReportingDelegateFactory {
       override;
   std::unique_ptr<RealTimeReportGenerator::Delegate>
   GetRealTimeReportGeneratorDelegate() override;
-  std::unique_ptr<RealTimeReportController::Delegate>
-  GetRealTimeReportControllerDelegate() override;
 
   std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate(
       Profile* profile);
