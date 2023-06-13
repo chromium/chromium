@@ -381,4 +381,8 @@ BASE_FEATURE(kAsyncCacheLock,
              "AsyncCacheLock",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableEarlyHintsOnHttp11,
+             "EnableEarlyHintsOnHttp11",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

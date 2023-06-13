@@ -57,6 +57,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/http/url_security_manager.h"
 #include "net/log/net_log_event_type.h"
+#include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -105,6 +106,23 @@ void SetProxyInfoInReponse(const ProxyInfo& proxy_info,
     response_info->proxy_server = ProxyServer::Direct();
   else
     response_info->proxy_server = ProxyServer();
+}
+
+// Returns true when Early Hints are allowed on the given protocol.
+bool EarlyHintsAreAllowedOn(HttpResponseInfo::ConnectionInfo connection_info) {
+  switch (connection_info) {
+    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP0_9:
+    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP1_0:
+      return false;
+    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP1_1:
+      return base::FeatureList::IsEnabled(features::kEnableEarlyHintsOnHttp11);
+    default:
+      CHECK_NE(connection_info,
+               HttpResponseInfo::ConnectionInfo::NUM_OF_CONNECTION_INFOS);
+      // Implicitly allow CONNECTION_INFO_UNKNOWN because this is the default
+      // value and ConnectionInfo isn't always set.
+      return true;
+  }
 }
 
 }  // namespace
@@ -1151,15 +1169,20 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
         response_.headers.get());
 
     // Early Hints does not make sense for a WebSocket handshake.
-    if (ForWebSocketHandshake())
+    if (ForWebSocketHandshake()) {
       return ERR_FAILED;
+    }
 
-    // TODO(crbug.com/671310): Validate headers? It seems that
-    // "Content-Encoding" etc should not appear.
+    // TODO(https://crbug.com/671310): Validate headers?  "Content-Encoding" etc
+    // should not appear since informational responses can't contain content.
+    // https://www.rfc-editor.org/rfc/rfc9110#name-informational-1xx
 
-    if (early_response_headers_callback_)
+    if (EarlyHintsAreAllowedOn(response_.connection_info) &&
+        early_response_headers_callback_) {
       early_response_headers_callback_.Run(std::move(response_.headers));
+    }
 
+    // Reset response headers for the final response.
     response_.headers =
         base::MakeRefCounted<HttpResponseHeaders>(std::string());
     next_state_ = STATE_READ_HEADERS;

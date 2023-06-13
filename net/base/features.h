@@ -399,6 +399,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kForceThirdPartyCookieBlocking);
 // sending the HTTP request.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncCacheLock);
 
+// Enables Early Hints on HTTP/1.1.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
