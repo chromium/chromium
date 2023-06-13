@@ -23,10 +23,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -186,23 +188,33 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {
     // TODO(b/251686202): Finish Launch App functionality.
-    auto launch_app = absl::nullopt;
-    auto launch_settings =
-        base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
+    auto launch_app_callback = absl::nullopt;
+
+    auto* registry_cache = GetActiveUserAppRegistryCache();
+    if (!registry_cache) {
+      return;
+    }
+
+    auto app_type = registry_cache->GetAppType(app_id);
+    absl::optional<base::RepeatingClosure> launch_settings_callback;
+    if (app_type == apps::AppType::kSystemWeb) {
+      // We don't have the capability to launch privacy settings for system web
+      // app, so we will disable the settings button for this type of app.
+      launch_settings_callback = absl::nullopt;
+    } else {
+      launch_settings_callback =
+          base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
+    }
 
     ash::PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
         app_id, /*app_name=*/GetAppShortNameFromAppId(app_id), is_camera_used,
         is_microphone_used, /*delegate=*/
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
-            launch_app, launch_settings),
+            launch_app_callback, launch_settings_callback),
         ash::PrivacyIndicatorsSource::kApps);
 
-    auto* registry_cache = GetActiveUserAppRegistryCache();
-    if (registry_cache) {
-      base::UmaHistogramEnumeration(
-          "Ash.PrivacyIndicators.AppAccessUpdate.Type",
-          registry_cache->GetAppType(app_id));
-    }
+    base::UmaHistogramEnumeration("Ash.PrivacyIndicators.AppAccessUpdate.Type",
+                                  registry_cache->GetAppType(app_id));
   }
 }
 
@@ -259,14 +271,28 @@ void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
     return;
   }
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
-      app_id);
-
   auto* registry_cache = GetActiveUserAppRegistryCache();
-  if (registry_cache) {
-    base::UmaHistogramEnumeration("Ash.PrivacyIndicators.LaunchSettings",
-                                  registry_cache->GetAppType(app_id));
+  if (!registry_cache) {
+    return;
   }
+
+  auto app_type = registry_cache->GetAppType(app_id);
+
+  // We don't have the capability to launch privacy settings for system web
+  // app, so settings button is disabled for this type of app.
+  DCHECK(app_type != apps::AppType::kSystemWeb);
+
+  if (app_type == apps::AppType::kWeb) {
+    chrome::ShowAppManagementPage(profile, app_id,
+                                  ash::settings::AppManagementEntryPoint::
+                                      kPrivacyIndicatorsNotificationSettings);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
+        app_id);
+  }
+
+  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.LaunchSettings",
+                                registry_cache->GetAppType(app_id));
 }
 
 AccountId AppAccessNotifier::GetActiveUserAccountId() {

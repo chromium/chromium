@@ -697,3 +697,26 @@ TEST_P(AppAccessNotifierPrivacyIndicatorTest, RecordLaunchSettings) {
   histograms.ExpectBucketCount(kPrivacyIndicatorsLaunchSettingsHistogramName,
                                apps::AppType::kChromeApp, 1);
 }
+
+// Tests that the privacy indicators notification of a system web app should not
+// have a launch settings callback (thus it will not have a launch settings
+// button).
+TEST_P(AppAccessNotifierPrivacyIndicatorTest,
+       SystemWebAppWithoutSettingsCallback) {
+  const std::string app_id = "test_app_id";
+  LaunchAppUsingCameraOrMicrophone(app_id, "test_app_name",
+                                   /*use_camera=*/true,
+                                   /*use_microphone=*/false,
+                                   /*app_type=*/apps::AppType::kSystemWeb);
+  const std::string notification_id =
+      ash::GetPrivacyIndicatorsNotificationId(app_id);
+
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  ASSERT_TRUE(notification);
+
+  auto* delegate = static_cast<ash::PrivacyIndicatorsNotificationDelegate*>(
+      notification->delegate());
+  EXPECT_FALSE(delegate->launch_settings_callback());
+}
