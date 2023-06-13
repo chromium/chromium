@@ -197,6 +197,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider_manager.h"
 
 #if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 #include "chrome/browser/component_updater/registration.h"
