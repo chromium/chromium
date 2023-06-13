@@ -12724,25 +12724,14 @@
             ],
             "experiments": [
                 {
-                    "name": "FindRegistrationImprovements_20230222",
+                    "name": "FindReg_20230609",
                     "enable_features": [
+                        "ServiceWorkerFetchResponseCallbackUseHighPriority",
                         "ServiceWorkerMergeFindRegistrationForClientUrl",
+                        "ServiceWorkerRegistrationCache",
                         "ServiceWorkerScopeCache",
                         "ServiceWorkerStorageControlOnThreadPool",
                         "ServiceWorkerStorageControlResponseUseHighPriority"
-                    ],
-                    "disable_features": [
-                        "SpeculativeServiceWorkerStartup"
-                    ]
-                },
-                {
-                    "name": "FindRegistrationImprovements_20221130",
-                    "enable_features": [
-                        "ServiceWorkerStorageControlOnThreadPool",
-                        "ServiceWorkerStorageControlResponseUseHighPriority"
-                    ],
-                    "disable_features": [
-                        "SpeculativeServiceWorkerStartup"
                     ]
                 }
             ]
