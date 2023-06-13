@@ -44,10 +44,10 @@ Exception thrown, execution halted!
 
 5.0 Wrong Type for Callback Test This test sends in incorrect types for the callback parameter of forEach. An exception should be thrown in each case. There should be 6 type errors (and no crashes!):
 
-TypeError: 5 is not a function
-TypeError: wrong is not a function
-TypeError: # is not a function
-TypeError: null is not a function
+TypeError: number 5 is not a function
+TypeError: string "wrong" is not a function
+TypeError: object is not a function
+TypeError: object null is not a function
 TypeError: undefined is not a function
 TypeError: undefined is not a function
 

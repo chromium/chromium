@@ -6672,11 +6672,6 @@ crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Failure Pass ]
 crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
 crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4594631
-fast/js/array-foreach.html [ Failure Pass ]
-fast/js/array-some.html [ Failure Pass ]
-fast/js/iterable-object.html [ Failure Pass ]
-
 # Since HTTPS upgrades run in the //chrome layer, these will fail when ran in content shell.
 external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
 

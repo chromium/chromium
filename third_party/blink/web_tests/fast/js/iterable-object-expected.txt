@@ -28,7 +28,7 @@ entry = 1,1
 entry = 2,4
 entry = 3,9
 entry = 4,16
-PASS internals.forEach("not a function") threw exception TypeError: not a function is not a function.
+PASS internals.forEach("not a function") threw exception TypeError: string "not a function" is not a function.
 callback called
 PASS internals.forEach(function () { debug("callback called"); throw Error("stop!"); }) threw exception Error: stop!.
 thisArg, 0, 0, [object Internals]
