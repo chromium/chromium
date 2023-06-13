@@ -4,6 +4,7 @@
 
 #include "ui/views/bubble/bubble_frame_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -30,6 +31,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
@@ -1468,6 +1470,29 @@ TEST_F(BubbleFrameViewTest, LayoutWithProgressIndicator) {
   EXPECT_EQ(progress_indicator->y(), 0);
   EXPECT_EQ(progress_indicator->width(),
             bubble->GetWindowBoundsInScreen().width());
+}
+
+// Close should be the next element after minimize.
+TEST_F(BubbleFrameViewTest, MinimizeBeforeClose) {
+  auto delegate_unique = std::make_unique<TestBubbleDialogDelegateView>();
+  TestBubbleDialogDelegateView* const delegate = delegate_unique.get();
+  TestAnchor anchor(CreateParams(Widget::InitParams::TYPE_WINDOW));
+  delegate->SetAnchorView(anchor.widget().GetContentsView());
+  delegate->SetShouldShowCloseButton(true);
+  delegate->SetCanMinimize(true);
+  Widget* bubble =
+      BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
+  bubble->Show();
+
+  auto minimze_iter = std::find_if(
+      delegate->GetBubbleFrameView()->children().begin(),
+      delegate->GetBubbleFrameView()->children().end(), [](views::View* child) {
+        return child->GetProperty(views::kElementIdentifierKey) ==
+               BubbleFrameView::kMinimizeButtonElementId;
+      });
+  ASSERT_NE(minimze_iter, delegate->GetBubbleFrameView()->children().end());
+  EXPECT_EQ((*++minimze_iter)->GetProperty(views::kElementIdentifierKey),
+            BubbleFrameView::kCloseButtonElementId);
 }
 
 }  // namespace views

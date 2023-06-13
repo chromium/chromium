@@ -103,6 +103,17 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   main_image_->SetVisible(false);
   subtitle_->SetVisible(false);
 
+  auto minimize = CreateMinimizeButton(base::BindRepeating(
+      [](BubbleFrameView* view, const ui::Event& event) {
+        if (view->input_protector_.IsPossiblyUnintendedInteraction(event))
+          return;
+        view->GetWidget()->Minimize();
+      },
+      this));
+  minimize->SetProperty(views::kElementIdentifierKey, kMinimizeButtonElementId);
+  minimize->SetVisible(false);
+  minimize_ = AddChildView(std::move(minimize));
+
   auto close = CreateCloseButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
         if (view->input_protector_.IsPossiblyUnintendedInteraction(event))
@@ -114,17 +125,6 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   close->SetProperty(views::kElementIdentifierKey, kCloseButtonElementId);
   close->SetVisible(false);
   close_ = AddChildView(std::move(close));
-
-  auto minimize = CreateMinimizeButton(base::BindRepeating(
-      [](BubbleFrameView* view, const ui::Event& event) {
-        if (view->input_protector_.IsPossiblyUnintendedInteraction(event))
-          return;
-        view->GetWidget()->Minimize();
-      },
-      this));
-  minimize->SetProperty(views::kElementIdentifierKey, kMinimizeButtonElementId);
-  minimize->SetVisible(false);
-  minimize_ = AddChildView(std::move(minimize));
 
   auto progress_indicator = std::make_unique<ProgressBar>(
       kProgressIndicatorHeight, /*allow_round_corner=*/false);
