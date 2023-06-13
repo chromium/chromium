@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profile_view_utils.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -1511,6 +1512,10 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(
       IDC_TOGGLE_REQUEST_TABLET_SITE,
       CanRequestTabletSite(current_web_contents));
+
+  command_updater_.UpdateCommandEnabled(
+      IDC_SHOW_SEARCH_COMPANION,
+      companion::IsCompanionAvailableForCurrentActiveTab(browser_));
 
   UpdateCommandsForContentRestrictionState();
   UpdateCommandsForBookmarkEditing();
