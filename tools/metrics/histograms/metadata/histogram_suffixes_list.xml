@@ -4253,6 +4253,16 @@ chromium-metrics-reviews@google.com.
   <suffix name="V8.Main.Heap.ReadOnlySpace.AllocatedObjects"
       label="Only counting objects allocated in the read-only-space of V8
              heap"/>
+  <suffix name="V8.Main.Heap.SharedLargeObjectSpace"
+      label="Only counting memory used by the shared-large-object-space of V8
+             heap"/>
+  <suffix name="V8.Main.Heap.SharedLargeObjectSpace.AllocatedObjects"
+      label="Only counting objects allocated in the shared-large-object-space
+             of V8 heap"/>
+  <suffix name="V8.Main.Heap.SharedSpace"
+      label="Only counting memory used by the shared-space of V8 heap"/>
+  <suffix name="V8.Main.Heap.SharedSpace.AllocatedObjects"
+      label="Only counting objects allocated in the shared-space of V8 heap"/>
   <suffix name="Vulkan"
       label="Total memory allocated by the Vulkan Memory Allocator. Only
              reported when Vulkan is used for rendering."/>

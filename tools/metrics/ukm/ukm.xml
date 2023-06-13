@@ -14449,6 +14449,30 @@ be describing additional metrics about the same event.
       main heap of V8.
     </summary>
   </metric>
+  <metric name="V8.Main.Heap.SharedLargeObjectSpace">
+    <summary>
+      Measure of memory consumed by the shared large object space of the main
+      heap of V8. Measured in bytes.
+    </summary>
+  </metric>
+  <metric name="V8.Main.Heap.SharedLargeObjectSpace.AllocatedObjects">
+    <summary>
+      Measure of memory consumed by live objects in the shared large object
+      space of the main heap of V8. Measured in bytes.
+    </summary>
+  </metric>
+  <metric name="V8.Main.Heap.SharedSpace">
+    <summary>
+      Measure of memory consumed by the shared space of the main heap of V8.
+      Measured in bytes.
+    </summary>
+  </metric>
+  <metric name="V8.Main.Heap.SharedSpace.AllocatedObjects">
+    <summary>
+      Measure of memory consumed by live objects in the shared space of the main
+      heap of V8. Measured in bytes.
+    </summary>
+  </metric>
   <metric name="V8.Main.Malloc">
     <summary>
       Measure of memory allocated by malloc in the main isolate of V8.
