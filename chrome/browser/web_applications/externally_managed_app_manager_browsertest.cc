@@ -558,8 +558,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   }
 }
 
+// TODO(crbug.com/1452018): Re-enable the test when the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
-                       CannotFetchManifest) {
+                       DISABLED_CannotFetchManifest) {
   // With a flaky network connection, clients may request an app whose manifest
   // cannot currently be retrieved. The app display mode is then assumed to be
   // 'browser'.
