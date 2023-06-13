@@ -193,14 +193,16 @@ std::u16string GetIOTaskMessage(Profile* profile,
 }
 }  // namespace
 
-NotificationPtr CreateSystemNotification(const std::string& notification_id,
-                                         const std::u16string& title,
-                                         const std::u16string& message,
-                                         DelegatePtr delegate) {
+NotificationPtr CreateSystemNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    DelegatePtr delegate,
+    message_center::RichNotificationData optional_fields) {
   return ash::CreateSystemNotificationPtr(
       NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(), NotifierId(),
-      RichNotificationData(), std::move(delegate), ash::kFolderIcon,
+      optional_fields, std::move(delegate), ash::kFolderIcon,
       SystemNotificationWarningLevel::NORMAL);
 }
 

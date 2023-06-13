@@ -95,7 +95,9 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
-    scoped_refptr<message_center::NotificationDelegate> delegate);
+    scoped_refptr<message_center::NotificationDelegate> delegate,
+    message_center::RichNotificationData optional_fields =
+        message_center::RichNotificationData());
 
 // Returns an instance of an 'ash' Notification with title and message specified
 // by string ID values (for 110n) with a bound click delegate.

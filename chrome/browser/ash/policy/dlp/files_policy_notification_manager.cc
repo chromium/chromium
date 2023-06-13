@@ -224,11 +224,15 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
                                     HandleFilesPolicyErrorNotificationClick,
                                 weak_factory_.GetWeakPtr(), id,
                                 notification_id);
+  // The notification should stay visible until actioned upon.
+  message_center::RichNotificationData optional_fields;
+  optional_fields.never_timeout = true;
   auto notification = file_manager::CreateSystemNotification(
       notification_id, GetNotificationTitle(status),
       GetNotificationMessage(status),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          std::move(callback)));
+          std::move(callback)),
+      optional_fields);
   notification->set_buttons(
       {message_center::ButtonInfo(GetCancelButton(status)),
        message_center::ButtonInfo(GetOkButton(status))});

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -21,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,6 +103,32 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
         base::FilePath::FromUTF8Unsafe(path));
   }
 
+  // Creates and adds a CopyOrMoveIOTask with `task_id` with type
+  // `OperationType::kCopy` if `is_copy` is true, and `OperationType::kMove` if
+  // false.
+  base::FilePath AddCopyOrMoveIOTask(file_manager::io_task::IOTaskId id,
+                                     bool is_copy) {
+    base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+    if (!CreateDummyFile(src_file_path)) {
+      return base::FilePath();
+    }
+    auto src_url = CreateFileSystemURL(src_file_path.value());
+    if (!src_url.is_valid()) {
+      return base::FilePath();
+    }
+    auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
+
+    auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+        is_copy ? file_manager::io_task::OperationType::kCopy
+                : file_manager::io_task::OperationType::kCopy,
+        std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
+        file_system_context_);
+
+    io_task_controller_->Add(std::move(task));
+
+    return src_file_path;
+  }
+
  protected:
   std::unique_ptr<FilesPolicyNotificationManager> fpnm_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -114,18 +143,8 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
 
 TEST_F(FilesPolicyNotificationManagerTest, AddCopyTask) {
   file_manager::io_task::IOTaskId task_id = 1;
-  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
-  ASSERT_TRUE(CreateDummyFile(src_file_path));
-  auto src_url = CreateFileSystemURL(src_file_path.value());
-  ASSERT_TRUE(src_url.is_valid());
-  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
+  ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, /*is_copy=*/true).empty());
 
-  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-      file_manager::io_task::OperationType::kCopy,
-      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
-      file_system_context_);
-
-  io_task_controller_->Add(std::move(task));
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   // Pause the task. It shouldn't be removed.
@@ -472,6 +491,7 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   EXPECT_EQ(notification->message(), u"File may contain sensitive content");
   EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
   EXPECT_EQ(notification->buttons()[1].title, ok_button);
+  EXPECT_TRUE(notification->never_timeout());
 }
 
 TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
@@ -502,6 +522,7 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   EXPECT_EQ(notification->message(), u"Files may contain sensitive content");
   EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
   EXPECT_EQ(notification->buttons()[1].title, u"Review");
+  EXPECT_TRUE(notification->never_timeout());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -555,6 +576,7 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   EXPECT_EQ(notification->message(), u"File was blocked");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
   EXPECT_EQ(notification->buttons()[1].title, u"Learn more");
+  EXPECT_TRUE(notification->never_timeout());
 }
 
 TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
@@ -584,6 +606,7 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   EXPECT_EQ(notification->message(), u"Review for further details");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
   EXPECT_EQ(notification->buttons()[1].title, u"Review");
+  EXPECT_TRUE(notification->never_timeout());
 }
 
 INSTANTIATE_TEST_SUITE_P(
