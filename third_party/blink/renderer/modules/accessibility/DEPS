@@ -6,8 +6,6 @@ include_rules = [
     "+third_party/blink/renderer/modules/media_controls",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/permissions",
-    "+ui/accessibility/accessibility_features.h",
-    "+ui/accessibility/accessibility_switches.h",
     "+ui/accessibility/ax_action_data.h",
     "+ui/accessibility/ax_common.h",
     "+ui/accessibility/ax_enum_util.h",

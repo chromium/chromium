@@ -12,7 +12,6 @@ include_rules = [
   "+services/device/public",
   "+services/media_session/public",
   "+services/network/public",
-  "+ui/accessibility/accessibility_switches.h",
   "+ui/accessibility/ax_assistant_structure.h",
   "+ui/accessibility/mojom",
   "+ui/base",
