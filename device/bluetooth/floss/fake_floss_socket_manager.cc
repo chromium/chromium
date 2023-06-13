@@ -220,8 +220,7 @@ void FakeFlossSocketManager::SendSocketReady(const SocketId id,
     socket.uuid = uuid;
 
     auto& [state_changed, accepted] = listening_sockets_to_callbacks_[id];
-    state_changed.Run(ServerSocketState::kReady, std::move(socket),
-                      BtifStatus::kSuccess);
+    state_changed.Run(ServerSocketState::kReady, std::move(socket), status);
   }
 }
 
