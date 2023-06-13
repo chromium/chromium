@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
+#include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
