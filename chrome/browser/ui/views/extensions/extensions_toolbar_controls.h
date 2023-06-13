@@ -55,6 +55,15 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       extensions::PermissionsManager::UserSiteSetting site_setting,
       content::WebContents* web_contents);
 
+  // Hides the confirmation message in the request access button.
+  void ResetConfirmation();
+
+  // Returns whether the button is showing a confirmation message.
+  bool IsShowingConfirmation() const;
+
+  // Returns whether the button is showing a confirmation message for `origin`.
+  bool IsShowingConfirmationFor(const url::Origin& origin) const;
+
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
 

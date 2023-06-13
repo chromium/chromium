@@ -167,6 +167,7 @@ class ExtensionsToolbarContainer
   void UpdateToolbarActionHoverCard(
       ToolbarActionView* action_view,
       ToolbarActionHoverCardUpdateType update_type) override;
+  void CollapseConfirmation() override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;
@@ -261,6 +262,9 @@ class ExtensionsToolbarContainer
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(

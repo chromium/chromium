@@ -20,7 +20,16 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
+
+namespace {
+
+// TODO(crbug.com/1452171): Same as permission's ChipController. Pull out to a
+// shared location.
+base::TimeDelta kConfirmationDisplayDuration = base::Seconds(4);
+
+}  // namespace
 
 class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
  public:
@@ -48,7 +57,9 @@ class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
   raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
 };
 
-ExtensionsToolbarControlsUnitTest::ExtensionsToolbarControlsUnitTest() {
+ExtensionsToolbarControlsUnitTest::ExtensionsToolbarControlsUnitTest()
+    : ExtensionsToolbarUnitTest(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
 }
@@ -440,7 +451,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   base::UserActionTester user_action_tester;
   auto* permissions = extensions::PermissionsManager::Get(profile());
 
-  // Request access button is visible because extension A is requesting
+  // Request access button is visible because the extension is requesting
   // access.
   ASSERT_TRUE(request_access_button()->GetVisible());
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
@@ -456,18 +467,86 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   WaitForAnimation();
   LayoutContainerIfNecessary();
 
-  // Verify request access button is hidden since extension executed its
-  // action. Extension's site access should have not changed, since clicking the
-  // button grants one time access.
-  ASSERT_FALSE(request_access_button()->GetVisible());
+  // Verify extension was executed and extensions menu button has "any
+  // extension  has access" state. Extension's site access should have not
+  // changed, since clicking the button grants one time access.
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
+  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+            ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             extensions::PermissionsManager::UserSiteAccess::kOnClick);
 
-  // Verify extensions menu button has "any extension  has access" state, since
-  // the extension executed its action.
-  EXPECT_EQ(extensions_button()->GetStateForTesting(),
-            ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+  // Verify confirmation message appears on the request access button.
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(request_access_button()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
+
+  // Force the confirmation to be collapsed.
+  task_environment()->AdvanceClock(kConfirmationDisplayDuration);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the request access button is hidden.
+  ASSERT_FALSE(request_access_button()->GetVisible());
+}
+
+// Tests that if an update comes in between the request access button is clicked
+// and the confirmation is collapsed, the button is updated afterwards with the
+// correct information.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       RequestAccessButton_UpdateInBetweenClickAndConfirmationCollapse) {
+  auto extension_A =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  auto extension_C =
+      InstallExtensionWithHostPermissions("Extension C", {"<all_urls>"});
+  WithholdHostPermissions(extension_A.get());
+  WithholdHostPermissions(extension_B.get());
+
+  const GURL url("http://www.example.com");
+  NavigateAndCommit(url);
+  LayoutContainerIfNecessary();
+
+  // Request access button is visible because extension A and B are requesting
+  // access.
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id(), extension_B->id()));
+
+  ClickButton(request_access_button());
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+
+  // Verify confirmation message appears on the request access button after
+  // clicking on it
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(request_access_button()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
+
+  // Update a different extension before the confirmation is collapsed.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  UpdateUserSiteAccess(
+      *extension_C, web_contents,
+      extensions::PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Confirmation is still showing since collapse time hasn't elapsed.
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(request_access_button()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
+
+  // Force the confirmation to be collapsed.
+  task_environment()->AdvanceClock(kConfirmationDisplayDuration);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the request access button is visible since extension C is now
+  // requesting access.
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_C->id()));
 }
 
 class ExtensionsToolbarControlsWithPermittedSitesUnitTest

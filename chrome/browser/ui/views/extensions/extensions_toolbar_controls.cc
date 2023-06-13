@@ -81,6 +81,13 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* web_contents) {
+  // Don't update the button if the confirmation message is currently showing;
+  // it'll go away after a few seconds. Once the confirmation is collapsed,
+  // button should be updated again.
+  if (request_access_button_->IsShowingConfirmation()) {
+    return;
+  }
+
   // Extensions are included in the request access button only when the site
   // allows customizing site access by extension, and when the extension
   // itself can show access requests in the toolbar and hasn't been dismissed.
@@ -99,6 +106,19 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
   }
 
   request_access_button_->Update(extensions);
+}
+
+void ExtensionsToolbarControls::ResetConfirmation() {
+  request_access_button_->ResetConfirmation();
+}
+
+bool ExtensionsToolbarControls::IsShowingConfirmation() const {
+  return request_access_button_->IsShowingConfirmation();
+}
+
+bool ExtensionsToolbarControls::IsShowingConfirmationFor(
+    const url::Origin& origin) const {
+  return request_access_button_->IsShowingConfirmationFor(origin);
 }
 
 BEGIN_METADATA(ExtensionsToolbarControls, ToolbarIconContainerView)

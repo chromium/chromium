@@ -41,6 +41,10 @@ base::Value::List ToListValue(const std::vector<std::string>& permissions) {
 
 }  // namespace
 
+ExtensionsToolbarUnitTest::ExtensionsToolbarUnitTest(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : TestWithBrowserView(time_source) {}
+
 void ExtensionsToolbarUnitTest::SetUp() {
   TestWithBrowserView::SetUp();
 
