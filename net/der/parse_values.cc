@@ -115,8 +115,7 @@ bool ValidateGeneralizedTime(const GeneralizedTime& time) {
       }
       break;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
   return true;
 }
