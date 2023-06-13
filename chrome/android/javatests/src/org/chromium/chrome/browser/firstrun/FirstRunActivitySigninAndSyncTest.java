@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -28,7 +29,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
@@ -75,6 +75,8 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Integration tests for the first run experience with sign-in and sync decoupled.
@@ -198,14 +200,15 @@ public class FirstRunActivitySigninAndSyncTest {
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    public void dismissButtonNotShownOnResetForChildAccount() {
+    public void dismissButtonNotShownOnResetForChildAccount() throws ExecutionException {
         mAccountManagerTestRule.addAccount(CHILD_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
 
-        onView((withId(R.id.signin_fre_continue_button))).perform(click());
-        Espresso.pressBack();
+        onView((withId(R.id.signin_fre_continue_button))).perform(scrollTo(), click());
+        completeAutoDeviceLockIfNeeded();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mFirstRunActivity.handleBackPress());
 
         onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
     }
