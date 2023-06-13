@@ -81,7 +81,6 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/condition_variable.cpp",
     "trunk/src/condition_variable_destructor.cpp",
     "trunk/src/exception.cpp",
-    "trunk/src/format.cpp",
     "trunk/src/functional.cpp",
     "trunk/src/future.cpp",
     "trunk/src/hash.cpp",
