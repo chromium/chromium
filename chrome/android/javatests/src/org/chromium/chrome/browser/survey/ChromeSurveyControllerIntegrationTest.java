@@ -20,7 +20,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -103,10 +102,9 @@ public class ChromeSurveyControllerIntegrationTest {
         ChromeSurveyController.resetMessageShownForTesting();
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447519")
     @Test
     @MediumTest
-    public void testMessagePrimaryButtonClicked() throws TimeoutException, ExecutionException {
+    public void testMessagePrimaryButtonClicked() {
         PropertyModel message = getSurveyMessage();
         Assert.assertNotNull("Message should not be null.", message);
 
@@ -121,20 +119,18 @@ public class ChromeSurveyControllerIntegrationTest {
                 mTestSurveyController.showSurveyCallbackHelper.getCallCount());
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447519")
     @Test
     @MediumTest
-    public void testMessageDismissed() throws TimeoutException, ExecutionException {
+    public void testMessageDismissed() {
         PropertyModel message = getSurveyMessage();
         Assert.assertNotNull("Message should not be null.", message);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(message, DismissReason.GESTURE));
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447519")
     @Test
     @MediumTest
-    public void testNoMessageInNewTab() throws InterruptedException, ExecutionException {
+    public void testNoMessageInNewTab() throws InterruptedException {
         // Simulate message visibility for the auto-dismiss duration length of time.
         waitUntilSurveyPromptStateRecorded(MESSAGE_AUTO_DISMISS_DURATION_MS);
 
@@ -149,6 +145,10 @@ public class ChromeSurveyControllerIntegrationTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         waitUntilTabIsReady(tab);
         mTestSurveyController.downloadCallbackHelper.waitForFirst();
+        // After getting the survey response, it might take momentarily longer for the message to be
+        // shown. Wait until the message is shown before proceeding.
+        CriteriaHelper.pollUiThread(
+                () -> getSurveyMessage() != null, "Survey message should be shown.");
         Assert.assertNotNull("Tab should have a message.", getSurveyMessage());
     }
 
