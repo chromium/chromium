@@ -673,26 +673,6 @@ String Example::str(ExecutionContext* context);
 String Example::func(ExecutionContext* context, bool a, bool b);
 ```
 
-_(rare CallWith values)_
-
-#### [CallWith=ThisValue] _(m)_
-
-`[CallWith=ThisValue]` is used in only one place (location.idl).
-
-IDL example:
-
-```webidl
-interface Example {
-    [CallWith=ThisValue] boolean func(boolean a, boolean b);
-};
-```
-
-C++ Blink function signature:
-
-```c++
-bool Example::func(ScriptValue thisValue, bool a, bool b);
-```
-
 *** note
 `[CallWith=...]` arguments are added at the _head_ of `XXX::Create(...)'s` arguments, and ` [RaisesException]`'s `ExceptionState` argument is added at the _tail_ of `XXX::Create(...)`'s arguments.
 ***
