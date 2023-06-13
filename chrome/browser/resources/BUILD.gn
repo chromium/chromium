@@ -18,14 +18,7 @@ import("//tools/grit/repack.gni")
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 group("resources") {
-  public_deps = [
-    "accessibility:resources",
-    "components:resources",
-    "engagement:resources",
-    "memory_internals:resources",
-    "predictors:resources",
-    "segmentation_internals:resources",
-  ]
+  public_deps = [ "segmentation_internals:resources" ]
 
   if (!is_android) {
     public_deps += [
@@ -35,13 +28,13 @@ group("resources") {
       "access_code_cast:resources",
       "app_service_internals:resources",
       "bookmarks:resources",
-      "browsing_topics:resources",
       "commander:resources",
       "downloads:resources",
       "feed:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
       "history:resources",
+      "identity_internals:resources",
       "inline_login:resources",
       "management:resources",
       "new_tab_page:resources",
@@ -126,6 +119,10 @@ group("resources") {
 
   if (enable_waffle_desktop) {
     public_deps += [ "waffle:resources" ]
+  }
+
+  if (enable_webui_tab_strip) {
+    public_deps += [ "tab_strip:resources" ]
   }
 
   if (enable_extensions) {
@@ -218,6 +215,47 @@ if (!is_android) {
   }
 }
 
+group("dev_ui_resources") {
+  public_deps = [
+    "accessibility:resources",
+    "bluetooth_internals:resources",
+    "browsing_topics:resources",
+    "components:resources",
+    "engagement:resources",
+    "internals:resources",
+    "invalidations:resources",
+    "location_internals:resources",
+    "media:resources",
+    "memory_internals:resources",
+    "net_internals:resources",
+    "omnibox:resources",
+    "predictors:resources",
+    "usb_internals:resources",
+    "//chrome/browser:dev_ui_browser_resources",
+    "//components/commerce/core/internals/resources",
+    "//components/download/resources/download_internals:resources",
+    "//components/history_clusters/history_clusters_internals/resources",
+    "//components/metrics/debug:resources",
+    "//components/optimization_guide/optimization_guide_internals/resources",
+    "//components/policy/resources/webui:resources",
+    "//components/resources:dev_ui_components_resources",
+    "//components/sync/service/resources",
+    "//content/browser/resources/gpu:resources",
+    "//content/browser/resources/media:resources",
+    "//content/browser/resources/net:resources",
+    "//content/browser/resources/process:resources",
+    "//content/browser/resources/service_worker:resources",
+    "//content/browser/webrtc/resources",
+  ]
+
+  if (is_android) {
+    public_deps += [
+      "//chrome/browser/resources/feed_internals:resources",
+      "//chrome/browser/resources/webapks:resources",
+    ]
+  }
+}
+
 repack("dev_ui_paks") {
   output = "$root_gen_dir/chrome/dev_ui_resources.pak"
 
@@ -252,46 +290,13 @@ repack("dev_ui_paks") {
     "$root_gen_dir/content/process_resources.pak",
     "$root_gen_dir/content/service_worker_resources.pak",
   ]
-  deps = [
-    "//chrome/browser:dev_ui_browser_resources",
-    "//chrome/browser/resources/accessibility:resources",
-    "//chrome/browser/resources/bluetooth_internals:resources",
-    "//chrome/browser/resources/browsing_topics:resources",
-    "//chrome/browser/resources/components:resources",
-    "//chrome/browser/resources/engagement:resources",
-    "//chrome/browser/resources/internals:resources",
-    "//chrome/browser/resources/invalidations:resources",
-    "//chrome/browser/resources/location_internals:resources",
-    "//chrome/browser/resources/media:resources",
-    "//chrome/browser/resources/memory_internals:resources",
-    "//chrome/browser/resources/net_internals:resources",
-    "//chrome/browser/resources/omnibox:resources",
-    "//chrome/browser/resources/predictors:resources",
-    "//chrome/browser/resources/usb_internals:resources",
-    "//components/commerce/core/internals/resources",
-    "//components/download/resources/download_internals:resources",
-    "//components/history_clusters/history_clusters_internals/resources",
-    "//components/metrics/debug:resources",
-    "//components/optimization_guide/optimization_guide_internals/resources",
-    "//components/policy/resources/webui:resources",
-    "//components/resources:dev_ui_components_resources",
-    "//components/sync/service/resources",
-    "//content/browser/resources/gpu:resources",
-    "//content/browser/resources/media:resources",
-    "//content/browser/resources/net:resources",
-    "//content/browser/resources/process:resources",
-    "//content/browser/resources/service_worker:resources",
-    "//content/browser/webrtc/resources",
-  ]
 
   if (is_android) {
     sources += [
       "$root_gen_dir/chrome/feed_internals_resources.pak",
       "$root_gen_dir/chrome/webapks_resources.pak",
     ]
-    deps += [
-      "//chrome/browser/resources/feed_internals:resources",
-      "//chrome/browser/resources/webapks:resources",
-    ]
   }
+
+  deps = [ ":dev_ui_resources" ]
 }
