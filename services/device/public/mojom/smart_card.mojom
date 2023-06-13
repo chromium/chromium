@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The purpose of these mojo interfaces is to expose the platform's PC/SC
+// implementation (according to "Interoperability Specification for ICCs and
+// Personal Computer Systems; Part 5 ICC Resource Manager Definition") as close
+// as possible, exposing the same concepts and functionality.
+//
+// See https://pcscworkgroup.com/specifications/download/
+// And its authoritative implementation, winscard.h:
+// https://learn.microsoft.com/en-us/windows/win32/api/winscard/
+
 module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -91,6 +100,24 @@ enum SmartCardDisposition {
   kEject
 };
 
+// State of a SmartCardConnection.
+// Note that there's quite some overlap with SmartCardReaderStateFlags.
+// But that's what PC/SC does.
+enum SmartCardConnectionState {
+  // SCARD_ABSENT
+  kAbsent,
+  // SCARD_PRESENT
+  kPresent,
+  // SCARD_SWALLOWED
+  kSwallowed,
+  // SCARD_POWERED
+  kPowered,
+  // SCARD_NEGOTIABLE
+  kNegotiable,
+  // SCARD_SPECIFIC
+  kSpecific
+};
+
 // Flags for describing the state of a smart card reader.
 // Maps to the corresponding SCARD_STATE_* flags in winscard.h
 struct SmartCardReaderStateFlags {
@@ -132,6 +159,14 @@ struct SmartCardProtocols {
   bool raw;
 };
 
+// Status of a SmartCardConnection.
+struct SmartCardStatus {
+  string reader_name;
+  SmartCardConnectionState state;
+  SmartCardProtocol protocol;
+  array<uint8> answer_to_reset;
+};
+
 // The result of a SmartCardContext.GetStatusChange request.
 union SmartCardStatusChangeResult {
   array<SmartCardReaderStateOut> reader_states;
@@ -170,6 +205,12 @@ union SmartCardDataResult {
   SmartCardError error;
 };
 
+// The result of a SmartCardConnection.Status request.
+union SmartCardStatusResult {
+  SmartCardStatus status;
+  SmartCardError error;
+};
+
 // An interface to a valid connection (SCARDHANDLE) within a context
 // in a PC/SC (winscard.h) provider.
 interface SmartCardConnection {
@@ -192,10 +233,12 @@ interface SmartCardConnection {
   // Sets an attribute of the Interface Device Handler.
   SetAttrib(uint32 id, array<uint8> data) => (SmartCardResult result);
 
+  // Returns the status of the connected reader.
+  Status() => (SmartCardStatusResult result);
+
   // TODO(crbug.com/1386175): Add methods:
   // * BeginTransaction()
   // * EndTransaction()
-  // * Status()
 };
 
 // An interface to a valid context in a PC/SC (winscard.h) provider.

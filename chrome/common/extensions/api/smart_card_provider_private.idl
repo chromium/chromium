@@ -72,6 +72,21 @@ namespace smartCardProviderPrivate {
     EJECT_CARD
   };
 
+  enum ConnectionState {
+    // SCARD_ABSENT
+    ABSENT,
+    // SCARD_PRESENT
+    PRESENT,
+    // SCARD_SWALLOWED
+    SWALLOWED,
+    // SCARD_POWERED
+    POWERED,
+    // SCARD_NEGOTIABLE
+    NEGOTIABLE,
+    // SCARD_SPECIFIC
+    SPECIFIC
+  };
+
   // Maps to the SCARD_STATE_* flags defined in the winscard.h API.
   dictionary ReaderStateFlags {
     boolean? unaware;
@@ -188,6 +203,12 @@ namespace smartCardProviderPrivate {
     // reportPlainResult.
     [maxListeners=1] static void onSetAttribRequested(long requestId,
         long scardHandle, long attribId, ArrayBuffer data);
+
+    // Browser requested a SCardStatus call.
+    // Extension must report the result to the browser by calling
+    // reportStatusResult.
+    [maxListeners=1] static void onStatusRequested(long requestId,
+        long scardHandle);
   };
 
   interface Functions {
@@ -218,6 +239,11 @@ namespace smartCardProviderPrivate {
 
       // Reports the result of a call that sends back data on success.
       static void reportDataResult(long requestId, ArrayBuffer data,
+          ResultCode resultCode);
+
+      // Reports the result of a SCardStatus call.
+      static void reportStatusResult(long requestId, DOMString readerName,
+          ConnectionState state, Protocol protocol, ArrayBuffer atr,
           ResultCode resultCode);
   };
 };

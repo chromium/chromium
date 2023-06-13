@@ -30,7 +30,9 @@ using device::mojom::SmartCardError;
 using device::mojom::SmartCardListReadersResult;
 using device::mojom::SmartCardResult;
 using device::mojom::SmartCardResultPtr;
+using device::mojom::SmartCardStatus;
 using device::mojom::SmartCardStatusChangeResult;
+using device::mojom::SmartCardStatusResult;
 using device::mojom::SmartCardSuccess;
 
 namespace {
@@ -242,6 +244,25 @@ device::mojom::SmartCardProtocol ToDeviceMojomSmartCardProtocol(
       return device::mojom::SmartCardProtocol::kT1;
     case scard_api::PROTOCOL_RAW:
       return device::mojom::SmartCardProtocol::kRaw;
+  }
+}
+
+device::mojom::SmartCardConnectionState ToDeviceMojomSmartCardConnectionState(
+    scard_api::ConnectionState state) {
+  switch (state) {
+    case scard_api::CONNECTION_STATE_NONE:
+    case scard_api::CONNECTION_STATE_ABSENT:
+      return device::mojom::SmartCardConnectionState::kAbsent;
+    case scard_api::CONNECTION_STATE_PRESENT:
+      return device::mojom::SmartCardConnectionState::kPresent;
+    case scard_api::CONNECTION_STATE_SWALLOWED:
+      return device::mojom::SmartCardConnectionState::kSwallowed;
+    case scard_api::CONNECTION_STATE_POWERED:
+      return device::mojom::SmartCardConnectionState::kPowered;
+    case scard_api::CONNECTION_STATE_NEGOTIABLE:
+      return device::mojom::SmartCardConnectionState::kNegotiable;
+    case scard_api::CONNECTION_STATE_SPECIFIC:
+      return device::mojom::SmartCardConnectionState::kSpecific;
   }
 }
 
@@ -571,6 +592,22 @@ void SmartCardProviderPrivateAPI::SendSetAttrib(
           .Append(base::Value(data)));
 }
 
+void SmartCardProviderPrivateAPI::SendStatus(ContextId scard_context,
+                                             Handle handle,
+                                             StatusCallback callback) {
+  auto process_result =
+      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessStatusResult,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  DispatchEventWithTimeout(
+      scard_context, scard_api::OnStatusRequested::kEventName,
+      extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_STATUS_REQUESTED,
+      std::move(process_result), std::move(callback),
+      &SmartCardProviderPrivateAPI::OnStatusTimeout,
+      /*event_arguments=*/
+      base::Value::List().Append(handle.GetUnsafeValue()));
+}
+
 void SmartCardProviderPrivateAPI::ReportResult(
     RequestId request_id,
     ResultArgs result_args,
@@ -807,6 +844,22 @@ void SmartCardProviderPrivateAPI::ProcessDataResult(
       .Run(result->is_success()
                ? SmartCardDataResult::NewData(std::move(data))
                : SmartCardDataResult::NewError(result->get_error()));
+}
+
+void SmartCardProviderPrivateAPI::ProcessStatusResult(
+    ResultArgs result_args,
+    device::mojom::SmartCardResultPtr result,
+    SmartCardCallback callback) {
+  CHECK(std::holds_alternative<StatusResultArgs>(result_args));
+
+  auto [reader_name, state, protocol, answer_to_reset] =
+      std::get<StatusResultArgs>(std::move(result_args));
+
+  std::move(std::get<StatusCallback>(callback))
+      .Run(result->is_success()
+               ? SmartCardStatusResult::NewStatus(SmartCardStatus::New(
+                     reader_name, state, protocol, std::move(answer_to_reset)))
+               : SmartCardStatusResult::NewError(result->get_error()));
 }
 
 void SmartCardProviderPrivateAPI::SetResponseTimeLimitForTesting(
@@ -1125,6 +1178,19 @@ void SmartCardProviderPrivateAPI::SetAttrib(uint32_t id,
                                    handle, id, data, std::move(callback)));
 }
 
+void SmartCardProviderPrivateAPI::Status(StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& [context_id, handle] = connection_receivers_.current_context();
+  CHECK(context_id);
+  CHECK(handle);
+
+  RunOrQueueRequest(context_id,
+                    base::BindOnce(&SmartCardProviderPrivateAPI::SendStatus,
+                                   weak_ptr_factory_.GetWeakPtr(), context_id,
+                                   handle, std::move(callback)));
+}
+
 bool SmartCardProviderPrivateAPI::IsContextBusy(ContextId scard_context) const {
   // I expect no more than a dozen contexts in a profile at any given time (in
   // most cases much less than that). Thus the cost traversing the map is
@@ -1201,6 +1267,15 @@ ON_TIMEOUT_IMPL(SetAttrib,
                 std::monostate(),
                 SmartCardResult::NewError(SmartCardError::kNoService))
 
+ON_TIMEOUT_IMPL(
+    Status,
+    ReportResult,
+    std::make_tuple(std::string(),
+                    device::mojom::SmartCardConnectionState::kAbsent,
+                    device::mojom::SmartCardProtocol::kUndefined,
+                    std::vector<uint8_t>()),
+    SmartCardResult::NewError(SmartCardError::kNoService))
+
 #undef ON_TIMEOUT_IMPL
 
 #define REPORT_RESULT_FUNCTION_IMPL(FunctionName, ReportResultName, ...)    \
@@ -1264,6 +1339,15 @@ REPORT_RESULT_FUNCTION_IMPL(
     Data,
     ReportResult,
     std::move(params->data),
+    ProviderResultCodeToSmartCardResult(params->result_code))
+
+REPORT_RESULT_FUNCTION_IMPL(
+    Status,
+    ReportResult,
+    std::make_tuple(std::move(params->reader_name),
+                    ToDeviceMojomSmartCardConnectionState(params->state),
+                    ToDeviceMojomSmartCardProtocol(params->protocol),
+                    std::move(params->atr)),
     ProviderResultCodeToSmartCardResult(params->result_code))
 
 #undef REPORT_RESULT_FUNCTION_IMPL

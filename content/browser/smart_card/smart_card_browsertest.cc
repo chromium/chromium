@@ -81,6 +81,8 @@ class MockSmartCardConnection : public device::mojom::SmartCardConnection {
                const std::vector<uint8_t>& data,
                SetAttribCallback callback),
               (override));
+
+  MOCK_METHOD(void, Status, (StatusCallback callback), (override));
 };
 
 class FakeSmartCardDelegate : public SmartCardDelegate {

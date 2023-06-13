@@ -1314,4 +1314,40 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, SetAttribTimeout) {
   EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Status) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
+                             R"(
+      chrome.smartCardProviderPrivate.onStatusRequested.addListener(
+          status);
+
+      function status(requestId, scardHandle) {
+        if (scardHandle !== validHandle) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_PARAMETER");
+          return;
+        }
+
+        chrome.smartCardProviderPrivate.reportStatusResult(requestId,
+          "FooReader", "SPECIFIC", "T1", new Uint8Array([3, 2, 1]),
+          "SUCCESS");
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardStatusResultPtr> result_future;
+
+  connection->Status(result_future.GetCallback());
+
+  auto result = result_future.Take();
+  ASSERT_TRUE(result->is_status());
+
+  device::mojom::SmartCardStatusPtr& status = result->get_status();
+  EXPECT_EQ(status->reader_name, "FooReader");
+  EXPECT_EQ(status->state, device::mojom::SmartCardConnectionState::kSpecific);
+  EXPECT_EQ(status->protocol, device::mojom::SmartCardProtocol::kT1);
+  EXPECT_EQ(status->answer_to_reset, std::vector<uint8_t>({3u, 2u, 1u}));
+}
+
 }  // namespace extensions
