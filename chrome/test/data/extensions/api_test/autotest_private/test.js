@@ -1612,9 +1612,9 @@ var systemWebAppsTests = [
         chrome.autotestPrivate.getLacrosInfo(
             chrome.test.callbackPass(function(lacrosInfo) {
               chrome.test.assertEq('Unavailable', lacrosInfo['state']);
-              chrome.test.assertTrue(!lacrosInfo['isKeepAlive']);
+              chrome.test.assertTrue(lacrosInfo['isKeepAlive']);
               chrome.test.assertEq('', lacrosInfo['lacrosPath']);
-              chrome.test.assertEq('SideBySide', lacrosInfo['mode']);
+              chrome.test.assertEq('Only', lacrosInfo['mode']);
             }));
       },
     ]

@@ -74,6 +74,7 @@ base::span<const base::StringPiece> ExtensionsRunInOSOnlyAllowlist() {
     extension_misc::kSigninProfileTestExtensionId,
     extension_misc::kGuestModeTestExtensionId,
     extension_misc::kHelpAppExtensionId,
+    extension_misc::kAutotestPrivateTestExtensionId,
     file_manager::kImageLoaderExtensionId,
 #endif
     extension_misc::kKeyboardExtensionId,

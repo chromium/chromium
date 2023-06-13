@@ -93,6 +93,8 @@ const char kAccessibilityCommonManifestFilename[] =
     "accessibility_common_manifest.json";
 const char kAccessibilityCommonGuestManifestFilename[] =
     "accessibility_common_manifest_guest.json";
+const char kAutotestPrivateTestExtensionId[] =
+    "ddammdhioacbehjngdmkjcjbnfginlla";
 const char kChromeVoxExtensionPath[] = "chromeos/accessibility";
 const char kChromeVoxManifestFilename[] = "chromevox_manifest.json";
 const char kChromeVoxGuestManifestFilename[] = "chromevox_manifest_guest.json";
