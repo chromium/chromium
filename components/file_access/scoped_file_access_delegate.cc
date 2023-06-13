@@ -104,4 +104,41 @@ void ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
   original_callback_->Run(path, std::move(callback));
 }
 
+void RequestFilesAccess(
+    const std::vector<base::FilePath>& files,
+    const GURL& destination_url,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+  if (ScopedFileAccessDelegate::HasInstance()) {
+    ScopedFileAccessDelegate::Get()->RequestFilesAccess(files, destination_url,
+                                                        std::move(callback));
+  } else {
+    std::move(callback).Run(ScopedFileAccess::Allowed());
+  }
+}
+
+void RequestFilesAccessForSystem(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+  if (ScopedFileAccessDelegate::HasInstance()) {
+    ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
+        files, std::move(callback));
+  } else {
+    std::move(callback).Run(ScopedFileAccess::Allowed());
+  }
+}
+
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback CreateFileAccessCallback(
+    const GURL& destination) {
+  if (ScopedFileAccessDelegate::HasInstance()) {
+    return ScopedFileAccessDelegate::Get()->CreateFileAccessCallback(
+        destination);
+  }
+  return base::BindRepeating(
+      [](const GURL& destination, const std::vector<base::FilePath>& files,
+         base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+        std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+      },
+      destination);
+}
+
 }  // namespace file_access

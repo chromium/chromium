@@ -151,6 +151,30 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
       request_files_access_for_system_io_callback_;
 };
 
+// Calls ScopedFilesAccessDelegate::RequestFilesAccess if
+// ScopedFilesAccessDelegate::HasInstance returns true, immediately calls the
+// callback with a ScopedFileAccess::Allowed object otherwise.
+COMPONENT_EXPORT(FILE_ACCESS)
+void RequestFilesAccess(
+    const std::vector<base::FilePath>& files,
+    const GURL& destination_url,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+
+// Calls ScopedFilesAccessDelegate::RequestFilesAccessForSystem if
+// ScopedFilesAccessDelegate::HasInstance returns true, immediately calls the
+// callback with a ScopedFileAccess::Allowed object otherwise.
+COMPONENT_EXPORT(FILE_ACCESS)
+void RequestFilesAccessForSystem(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+
+// Calls ScopedFilesAccessDelegate::CreateFileAccessCallback if
+// ScopedFilesAccessDelegate::HasInstance returns true, returns a callback with
+// a ScopedFileAccess::Allowed object otherwise.
+COMPONENT_EXPORT(FILE_ACCESS)
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback CreateFileAccessCallback(
+    const GURL& destination);
+
 }  // namespace file_access
 
 #endif  // COMPONENTS_FILE_ACCESS_SCOPED_FILE_ACCESS_DELEGATE_H_
