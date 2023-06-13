@@ -20,6 +20,7 @@ export const COLORS_CSS_SELECTOR: string = 'link[href*=\'//theme/colors.css\']';
 let documentInstance: ColorChangeUpdater|null = null;
 
 // <if expr="chromeos_ash">
+const COLOR_PROVIDER_CHANGED: string = 'color-provider-changed';
 type ColorChangeListener = () => void;
 // </if>
 
@@ -28,7 +29,7 @@ export class ColorChangeUpdater {
   private root_: Document|ShadowRoot;
 
   // <if expr="chromeos_ash">
-  private listeners_: ColorChangeListener[] = [];
+  eventTarget: EventTarget = new EventTarget();
   // </if>
 
   constructor(root: Document|ShadowRoot) {
@@ -52,9 +53,7 @@ export class ColorChangeUpdater {
   async onColorProviderChanged() {
     await this.refreshColorsCss();
     // <if expr="chromeos_ash">
-    for (const listener of this.listeners_) {
-      listener();
-    }
+    this.eventTarget.dispatchEvent(new CustomEvent(COLOR_PROVIDER_CHANGED));
     // </if>
   }
 
@@ -114,43 +113,17 @@ export class ColorChangeUpdater {
     return documentInstance ||
         (documentInstance = new ColorChangeUpdater(document));
   }
-
-  // <if expr="chromeos_ash">
-  /**
-   * Register a function to be called every time the page's color provider
-   * changes. Note that the listeners will only be invoked AFTER start() is
-   * called, and only after the updated styles have been loaded.
-   */
-  addListener(listener: ColorChangeListener): void {
-    this.listeners_.push(listener);
-  }
-
-  /**
-   * Remove a listener that was previously registered via addListener().
-   * If provided with a listener that was not previously registered does
-   * nothing.
-   * @return Whether a listener was actually removed.
-   */
-  removeListener(changeListener: ColorChangeListener): boolean {
-    const toRemove =
-        this.listeners_.findIndex(listener => listener === changeListener);
-    if (toRemove === -1) {
-      return false;
-    }
-
-    this.listeners_.splice(toRemove, 1);
-    return true;
-  }
-  // </if>
 }
 
 // <if expr="chromeos_ash">
 export function addColorChangeListener(listener: ColorChangeListener) {
-  ColorChangeUpdater.forDocument().addListener(listener);
+  ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+      COLOR_PROVIDER_CHANGED, listener);
 }
 
 export function removeColorChangeListener(listener: ColorChangeListener) {
-  ColorChangeUpdater.forDocument().removeListener(listener);
+  ColorChangeUpdater.forDocument().eventTarget.removeEventListener(
+      COLOR_PROVIDER_CHANGED, listener);
 }
 // </if>
 
@@ -159,6 +132,5 @@ export function removeColorChangeListener(listener: ColorChangeListener) {
  * top level HTML document whenever changes occur.
  */
 export function startColorChangeUpdater() {
-  const updater = ColorChangeUpdater.forDocument();
-  updater.start();
+  ColorChangeUpdater.forDocument().start();
 }
