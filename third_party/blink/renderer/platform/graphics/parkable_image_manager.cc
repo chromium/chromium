@@ -17,7 +17,7 @@ namespace blink {
 
 BASE_FEATURE(kParkableImagesToDisk,
              "ParkableImagesToDisk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 struct ParkableImageManager::Statistics {
   size_t unparked_size = 0;
