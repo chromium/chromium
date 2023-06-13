@@ -52,6 +52,8 @@ blink_modules_sources("service_worker") {
     "service_worker_module_tree_client.h",
     "service_worker_registration.cc",
     "service_worker_registration.h",
+    "service_worker_router_type_converter.cc",
+    "service_worker_router_type_converter.h",
     "service_worker_script_cached_metadata_handler.cc",
     "service_worker_script_cached_metadata_handler.h",
     "service_worker_thread.cc",

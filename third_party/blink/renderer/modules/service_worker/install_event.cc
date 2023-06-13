@@ -4,14 +4,39 @@
 
 #include "third_party/blink/renderer/modules/service_worker/install_event.h"
 
+#include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom-blink.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_routerrule_routerrulesequence.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
+
+namespace {
+
+void DidRegisterRouter(ScriptPromiseResolver* resolver) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
+    return;
+  }
+  resolver->Resolve();
+}
+
+ScriptPromise ParseErrorPromise(ScriptState* script_state) {
+  return ScriptPromise::Reject(
+      script_state, V8ThrowException::CreateTypeError(
+                        script_state->GetIsolate(),
+                        "Failed to parse a rule. Possibly syntax error."));
+}
+
+}  // namespace
 
 InstallEvent* InstallEvent::Create(const AtomicString& type,
                                    const ExtendableEventInit* event_init) {
@@ -45,9 +70,47 @@ InstallEvent::InstallEvent(const AtomicString& type,
 ScriptPromise InstallEvent::registerRouter(
     ScriptState* script_state,
     const V8UnionRouterRuleOrRouterRuleSequence* v8_rules) {
-  return ScriptPromise::Reject(
-      script_state, V8ThrowException::CreateTypeError(
-                        script_state->GetIsolate(), "Not implemented yet"));
+  ServiceWorkerGlobalScope* global_scope =
+      To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
+  if (!global_scope) {
+    return ScriptPromise::Reject(
+        script_state,
+        V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
+                                         DOMExceptionCode::kInvalidStateError,
+                                         "No ServiceWorkerGlobalScope."));
+  }
+  if (did_register_router_) {
+    return ScriptPromise::Reject(
+        script_state, V8ThrowException::CreateTypeError(
+                          script_state->GetIsolate(),
+                          "registerRouter is called multiple times."));
+  }
+  did_register_router_ = true;
+
+  blink::ServiceWorkerRouterRules rules;
+  if (v8_rules->IsRouterRule()) {
+    auto r = mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(
+        v8_rules->GetAsRouterRule());
+    if (!r) {
+      return ParseErrorPromise(script_state);
+    }
+    rules.rules.emplace_back(*r);
+  } else {
+    CHECK(v8_rules->IsRouterRuleSequence());
+    for (const blink::RouterRule* rule : v8_rules->GetAsRouterRuleSequence()) {
+      auto r =
+          mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(rule);
+      if (!r) {
+        return ParseErrorPromise(script_state);
+      }
+      rules.rules.emplace_back(*r);
+    }
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  global_scope->GetServiceWorkerHost()->RegisterRouter(
+      rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
 }  // namespace blink

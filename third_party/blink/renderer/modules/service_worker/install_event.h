@@ -40,6 +40,7 @@ class MODULES_EXPORT InstallEvent : public ExtendableEvent {
 
  protected:
   const int event_id_;
+  bool did_register_router_ = false;
 };
 
 }  // namespace blink

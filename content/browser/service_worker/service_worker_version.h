@@ -915,6 +915,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
                       const GURL& url,
                       NavigateClientCallback callback) override;
   void SkipWaiting(SkipWaitingCallback callback) override;
+  void RegisterRouter(const blink::ServiceWorkerRouterRules& rules,
+                      RegisterRouterCallback callback) override;
 
   void OnSetCachedMetadataFinished(int64_t callback_id,
                                    size_t size,

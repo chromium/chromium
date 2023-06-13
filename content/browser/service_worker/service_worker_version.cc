@@ -1813,6 +1813,25 @@ void ServiceWorkerVersion::SkipWaiting(SkipWaitingCallback callback) {
     registration->ActivateWaitingVersionWhenReady();
 }
 
+void ServiceWorkerVersion::RegisterRouter(
+    const blink::ServiceWorkerRouterRules& rules,
+    RegisterRouterCallback callback) {
+  if (router_evaluator()) {
+    // The renderer should have denied calling this twice.
+    receiver_.ReportBadMessage("The ServiceWorker router rules are set twice.");
+    return;
+  }
+  if (!SetupRouterEvaluator(rules)) {
+    // The renderer should have denied calling this method while the setup
+    // fails.
+    // TODO(crbug.com/1371756): revisit this to confirm no case for this error.
+    receiver_.ReportBadMessage(
+        "Failed to configure a router. Possibly a syntax error");
+    return;
+  }
+  std::move(callback).Run();
+}
+
 void ServiceWorkerVersion::OnSetCachedMetadataFinished(int64_t callback_id,
                                                        size_t size,
                                                        int result) {
