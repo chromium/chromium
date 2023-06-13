@@ -1400,7 +1400,8 @@ LayoutUnit LayoutBox::ConstrainContentBoxLogicalHeightByMinMax(
 void LayoutBox::SetLocationAndUpdateOverflowControlsIfNeeded(
     const LayoutPoint& location) {
   NOT_DESTROYED();
-  if (!HasLayer()) {
+  if (!HasLayer() ||
+      RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()) {
     SetLocation(location);
     return;
   }
