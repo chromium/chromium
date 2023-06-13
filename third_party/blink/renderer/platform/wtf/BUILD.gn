@@ -356,6 +356,7 @@ source_set("wtf_unittests_sources") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:blink_pch",
   ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":wtf",

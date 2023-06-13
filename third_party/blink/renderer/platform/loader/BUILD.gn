@@ -241,6 +241,7 @@ source_set("unit_tests") {
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     "//base/test:test_support",

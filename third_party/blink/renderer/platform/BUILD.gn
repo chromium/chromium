@@ -2323,7 +2323,10 @@ source_set("blink_platform_unittests_sources") {
 
   data_deps = [ ":blink_platform_unittests_data" ]
 
-  defines = [ "INSIDE_BLINK" ]
+  defines = [
+    "INSIDE_BLINK",
+    "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS",
+  ]
   if (use_minikin_hyphenation) {
     defines += [ "USE_MINIKIN_HYPHENATION" ]
   }
@@ -2411,6 +2414,7 @@ test("blink_platform_perftests") {
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
   ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":platform",
@@ -2550,6 +2554,7 @@ fuzzer_test("open_type_math_support_fuzzer") {
     "//third_party/blink/web_tests/external/wpt/fonts/math",
     "//testing/libfuzzer/fuzzers/woff2_corpus",
   ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 }
 
 # Fuzzer for blink::StretchyOperatorShaper
@@ -2563,6 +2568,7 @@ fuzzer_test("stretchy_operator_shaper_fuzzer") {
     "//third_party/blink/web_tests/external/wpt/fonts/math",
     "//testing/libfuzzer/fuzzers/woff2_corpus",
   ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 }
 
 # Fuzzer for blink::MHTMLParser.
@@ -2654,6 +2660,7 @@ fuzzer_test("blink_http_parsers_fuzzer") {
     ":platform",
   ]
   dict = "network/HTTPParsersFuzzer.dict"
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 }
 
 fuzzer_test("blink_storage_key_fuzzer") {

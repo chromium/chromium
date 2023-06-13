@@ -1423,6 +1423,7 @@ source_set("unit_tests") {
   if (is_apple) {
     configs += [ "//build/config/compiler:enable_arc" ]
   }
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":core",
@@ -1531,6 +1532,7 @@ source_set("perf_tests") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
   ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":core",
@@ -1582,6 +1584,7 @@ source_set("unit_test_support") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
   ]
+  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":core",
