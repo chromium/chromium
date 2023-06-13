@@ -1963,3 +1963,9 @@ crbug.com/1378476 [ Mac13-arm64 ] virtual/threaded/fast/idleToBlob/OffscreenCanv
 crbug.com/1378476 [ Mac11-arm64 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Skip ]
 crbug.com/1378476 [ Mac12-arm64 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Skip ]
 crbug.com/1378476 [ Mac13-arm64 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Skip ]
+
+# Chrome for Testing specific tests that only run on Linux due to requiring FlagSpecific overrides.
+crbug.com/1446931 [ Android ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
+crbug.com/1446931 [ Fuchsia ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
+crbug.com/1446931 [ Mac ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
+crbug.com/1446931 [ Win ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
