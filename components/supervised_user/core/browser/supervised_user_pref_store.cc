@@ -172,7 +172,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // being disallowed.
       bool permissions_disallowed =
           settings.FindBool(supervised_user::kGeolocationDisabled)
-              .value_or(true);
+              .value_or(false);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
       base::UmaHistogramBoolean(

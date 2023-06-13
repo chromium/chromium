@@ -131,10 +131,10 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Permissions requests default to disallowed.
+  // Permissions requests default to allowed, to match server-side behavior.
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
-              Optional(false));
+              Optional(true));
 #endif
 
   // Activating the service again should not change anything.
@@ -185,10 +185,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_user::kGeolocationDisabled,
                            base::Value(false));
-  EXPECT_EQ(1u, fixture.changed_prefs()->size());
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  prefs::kSupervisedUserExtensionsMayRequestPermissions),
-              Optional(true));
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   histogram_tester.ExpectUniqueSample(
       "SupervisedUsers.ExtensionsMayRequestPermissions", /*enabled=*/true, 1);
