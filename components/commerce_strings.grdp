@@ -206,11 +206,16 @@
         Typical Price
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
-        Save and Track price
+        Save and Track Price
       </message>
-      <!-- TODO(b/286097739): Update the string for the icon tooltip and remove the translateable attribute once strings are finalized -->
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar." translateable="false">
-        Price Insights For This Page
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+        Price is Low
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+        Price is High
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
+        Shopping Insights
       </message>
     </if> <!-- use_titlecase -->
     <if expr="not use_titlecase">
@@ -232,9 +237,14 @@
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and track price
       </message>
-      <!-- TODO(b/286097739): Update the string for the icon tooltip and remove the translateable attribute once strings are finalized -->
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar." translateable="false">
-        Price insights for this page
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+        Price is low
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+        Price is high
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
+        Shopping insights
       </message>
     </if> <!-- not use_titlecase -->
 
@@ -279,6 +289,12 @@
     </message>
     <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel.">
       You'll get email alerts if the price drops on any site.
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DONE" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user successfully tracks the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved.">
+      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user failed to track the product displayed on the current web page.">
+      Something went wrong. Your change wasn't saved.
     </message>
   </if>
 
