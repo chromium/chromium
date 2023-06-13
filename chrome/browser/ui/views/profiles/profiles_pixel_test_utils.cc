@@ -80,9 +80,6 @@ void InitPixelTestFeatures(
     base::test::ScopedFeatureList& feature_list,
     std::vector<base::test::FeatureRef>& enabled_features,
     std::vector<base::test::FeatureRef>& disabled_features) {
-  if (params.use_dark_theme) {
-    enabled_features.push_back(features::kWebUIDarkMode);
-  }
   if (params.use_chrome_refresh_2023_style) {
     enabled_features.push_back(features::kChromeRefresh2023);
     enabled_features.push_back(features::kChromeWebuiRefresh2023);

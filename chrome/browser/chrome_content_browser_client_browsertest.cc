@@ -332,9 +332,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
 class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
                                public InProcessBrowserTest {
  protected:
-  PrefersColorSchemeTest() : theme_client_(&test_theme_) {
-    feature_list_.InitWithFeatureState(features::kWebUIDarkMode, GetParam());
-  }
+  PrefersColorSchemeTest() : theme_client_(&test_theme_) {}
 
   ~PrefersColorSchemeTest() override {
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
@@ -390,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
 }
 
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
-  test_theme_.SetDarkMode(true);
+  test_theme_.SetDarkMode(GetParam());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -409,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
-  test_theme_.SetDarkMode(true);
+  test_theme_.SetDarkMode(GetParam());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()

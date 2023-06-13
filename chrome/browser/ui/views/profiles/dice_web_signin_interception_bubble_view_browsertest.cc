@@ -149,9 +149,6 @@ class DiceWebSigninInterceptionBubblePixelTest
     // `DiceWebSigninInterceptionBubbleV2PixelTest`
     std::vector<base::test::FeatureRef> disabled_features = {
         kSigninInterceptBubbleV2, kSyncPromoAfterSigninIntercept};
-    if (GetParam().use_dark_theme) {
-      enabled_features.push_back(features::kWebUIDarkMode);
-    }
     base_scoped_feature_list_.InitWithFeatures(enabled_features,
                                                disabled_features);
   }

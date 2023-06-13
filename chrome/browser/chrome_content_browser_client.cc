@@ -3639,20 +3639,11 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
       ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  bool force_light = false;
-  // Force a light preferred color scheme on certain URLs if kWebUIDarkMode is
-  // disabled; some of the UI is not yet correctly themed.
-  if (!base::FeatureList::IsEnabled(features::kWebUIDarkMode)) {
-    // Update based on last committed url.
-    force_light = force_light || url.SchemeIs(content::kChromeUIScheme);
-    force_light = force_light || IsPdfExtensionOrigin(url::Origin::Create(url));
-  }
-
   // Reauth WebUI doesn't support dark mode yet because it shares the dialog
   // with GAIA web contents that is not correctly themed.
-  force_light =
-      force_light || (url.SchemeIs(content::kChromeUIScheme) &&
-                      url.host_piece() == chrome::kChromeUISigninReauthHost);
+  const bool force_light =
+      url.SchemeIs(content::kChromeUIScheme) &&
+      url.host_piece() == chrome::kChromeUISigninReauthHost;
 
   if (force_light) {
     web_prefs->preferred_color_scheme =

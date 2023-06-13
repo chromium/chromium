@@ -996,7 +996,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           render_frame, params, info, identifier, group_name, template_id,
           message);
     };
-    WebLocalFrame* frame = render_frame->GetWebFrame();
     switch (status) {
       case chrome::mojom::PluginStatus::kNotFound: {
         NOTREACHED();
@@ -1005,6 +1004,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
       case chrome::mojom::PluginStatus::kAllowed:
       case chrome::mojom::PluginStatus::kPlayImportantContent: {
 #if BUILDFLAG(ENABLE_NACL) && BUILDFLAG(ENABLE_EXTENSIONS)
+        WebLocalFrame* frame = render_frame->GetWebFrame();
         const bool is_nacl_plugin =
             info.name == ASCIIToUTF16(nacl::kNaClPluginName);
         const bool is_nacl_mime_type =
@@ -1075,17 +1075,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         }
 #endif  // BUILDFLAG(ENABLE_NACL) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-        if (GURL(frame->GetDocument().Url()).host_piece() ==
-            extension_misc::kPdfExtensionId) {
-          if (!base::FeatureList::IsEnabled(features::kWebUIDarkMode)) {
-            auto* web_view = render_frame->GetWebView();
-            if (web_view) {
-              web_view->GetSettings()->SetPreferredColorScheme(
-                  blink::mojom::PreferredColorScheme::kLight);
-            }
-          }
-        } else if (info.path.value() ==
-                   ChromeContentClient::kPDFExtensionPluginPath) {
+        if (info.path.value() == ChromeContentClient::kPDFExtensionPluginPath) {
           // Report PDF load metrics. Since the PDF plugin is comprised of an
           // extension that loads a second plugin, avoid double counting by
           // ignoring the creation of the second plugin.
