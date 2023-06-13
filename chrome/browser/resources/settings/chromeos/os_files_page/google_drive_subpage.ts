@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';

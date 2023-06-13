@@ -954,6 +954,9 @@
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BODY_TEXT" translateable="false" desc="Body text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
     New Google Drive files will no longer be synced automatically, but files that are already synced will remain available.
   </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DISABLED_TOOLTIP" translateable="false" desc="Tooltip text that shows when hovering over the clear offline storage button in the Settings: Files: Google Drive.">
+    Can’t clean up storage while files are automatically syncing.
+  </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_TITLE_TEXT" translateable="false" desc="Title text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the user doesn't have enough free space in Settings: Files: Google Drive.">
     Low disk space
   </message>

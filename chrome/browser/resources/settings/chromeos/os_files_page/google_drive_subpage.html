@@ -89,11 +89,23 @@
         [[totalPinnedSize_]]
       </div>
     </div>
-    <cr-button role="button"
-        on-click="onClearPinnedFiles_"
-        disabled="[[shouldEnableClearOfflineButton_(bulkPinningStatus_)]]">
-      $i18n{googleDriveOfflineClearAction}
-    </cr-button>
+    <div id="clear-offline-storage-button-wrapper">
+      <cr-button role="button"
+          on-click="onClearPinnedFiles_"
+          disabled="[[shouldEnableClearOfflineButton_(bulkPinningStatus_)]]"
+          on-focus="onShowTooltip_"
+          on-mouseenter="onShowTooltip_">
+        $i18n{googleDriveOfflineClearAction}
+      </cr-button>
+    </div>
+    <template is="dom-if"
+        if="[[shouldEnableClearOfflineButton_(bulkPinningStatus_)]]" restamp>
+      <paper-tooltip id="clear-offline-storage-tooltip"
+          for="clear-offline-storage-button-wrapper"
+          fit-to-visible-bounds part="tooltip">
+          $i18n{googleDriveClearStorageDisabledTooltip}
+      </paper-tooltip>
+    </template>
   </div>
 
   <template is="dom-if"

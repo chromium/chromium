@@ -126,6 +126,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DIALOG_TITLE},
       {"googleDriveOfflineClearDialogBody",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DIALOG_BODY},
+      {"googleDriveClearStorageDisabledTooltip",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DISABLED_TOOLTIP},
       {"googleDriveTurnOffLabel",
        IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL},
       {"googleDriveTurnOffTitle",
