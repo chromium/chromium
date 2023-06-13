@@ -50,7 +50,7 @@ class CONTENT_EXPORT BrowserOrResourceContext final {
   // TODO(dcheng): Change this to return a ref.
   BrowserContext* ToBrowserContext() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return &absl::get<raw_ref<BrowserContext>>(storage_).get();
+    return &*absl::get<raw_ref<BrowserContext>>(storage_);
   }
 
   // To be called only on the UI thread. Will CHECK() if `this` does not hold a
@@ -58,7 +58,7 @@ class CONTENT_EXPORT BrowserOrResourceContext final {
   // TODO(dcheng): Change this to return a ref.
   ResourceContext* ToResourceContext() const {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    return &absl::get<raw_ref<ResourceContext>>(storage_).get();
+    return &*absl::get<raw_ref<ResourceContext>>(storage_);
   }
 
  private:
