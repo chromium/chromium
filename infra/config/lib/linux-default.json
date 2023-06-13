@@ -163,6 +163,7 @@
     "android-binary-size-generator": "Ubuntu-22.04",
     "android-build-perf-developer": "Ubuntu-22.04",
     "android-code-coverage": "Ubuntu-22.04",
+    "android-code-coverage-native": "Ubuntu-22.04",
     "android-cronet-x86-dbg": "Ubuntu-22.04",
     "android-official": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
