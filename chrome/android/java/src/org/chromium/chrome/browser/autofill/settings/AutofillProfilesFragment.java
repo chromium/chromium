@@ -75,6 +75,19 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                 sObserverForTest.onEditorReadyToEdit();
             }
         }
+
+        @Override
+        public void onDelete(AutofillAddress address) {
+            String guid = address.getProfile().getGUID();
+            if (guid == null) {
+                return;
+            }
+            PersonalDataManager.getInstance().deleteProfile(guid);
+            SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
+            if (sObserverForTest != null) {
+                sObserverForTest.onEditorReadyToEdit();
+            }
+        }
     };
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
@@ -227,32 +240,21 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             return;
         }
 
-        AutofillProfileEditorPreference editorPreference =
-                (AutofillProfileEditorPreference) preference;
-
-        final String guid = editorPreference.getGUID();
-        Runnable runnable = guid == null ? null : () -> {
-            PersonalDataManager.getInstance().deleteProfile(guid);
-            SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
-            if (sObserverForTest != null) {
-                sObserverForTest.onEditorReadyToEdit();
-            }
-        };
-
-        AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
+        AutofillAddress autofillAddress =
+                getAutofillAddress((AutofillProfileEditorPreference) preference);
         if (autofillAddress == null) {
             mAddressEditor = new AddressEditorCoordinator(getActivity(),
                     HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
                     mProfile,
                     /*saveToDisk=*/true);
-            mAddressEditor.setDeleteRunnable(runnable);
+            mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();
         } else {
             mAddressEditor = new AddressEditorCoordinator(getActivity(),
                     HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
                     mProfile, autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
                     /*saveToDisk=*/true);
-            mAddressEditor.setDeleteRunnable(runnable);
+            mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();
         }
     }

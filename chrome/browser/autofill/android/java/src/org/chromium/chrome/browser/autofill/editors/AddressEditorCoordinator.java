@@ -29,11 +29,24 @@ public class AddressEditorCoordinator {
      * Delegate used to subscribe to AddressEditor user interactions.
      */
     public static interface Delegate {
-        // The user has tapped "Done" button.
+        /**
+         * The user has tapped "Done" button.
+         *
+         * @param autofillAddress the autofill address with all user changes.
+         */
         default void onDone(AutofillAddress autofillAddress) {}
 
-        // The user has canceled editing the address.
+        /**
+         * The user has canceled editing the address.
+         */
         default void onCancel() {}
+
+        /**
+         * The user has confirmed deletion of this autofill profile.
+         *
+         * @param autofillAddress the initial autofill address with no user changes.
+         */
+        default void onDelete(AutofillAddress autofillAddress) {}
     }
 
     /**
@@ -101,12 +114,11 @@ public class AddressEditorCoordinator {
     /**
      * Sets the runnable deleting the current autofill profile, e.g. when the user selects
      * the delete option in the menu and confirms autofill profile deletion.
-     * TODO(crbug.com/1435314): make this part of model.
      *
      * @param deleteRunnable A {@link Runnable} deleting the current profile.
      */
-    public void setDeleteRunnable(Runnable deleteRunnable) {
-        mEditorDialog.setDeleteRunnable(deleteRunnable);
+    public void setAllowDelete(boolean allowDelete) {
+        mMediator.setAllowDelete(allowDelete);
     }
 
     /**

@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
@@ -107,8 +109,6 @@ public class EditorDialogView
     private View mFooter;
 
     private Animator mDialogInOutAnimator;
-    @Nullable
-    private Runnable mDeleteRunnable;
     private boolean mIsDismissed;
     @Nullable
     private UiConfig mUiConfig;
@@ -171,13 +171,6 @@ public class EditorDialogView
     }
 
     /**
-     * @param deleteRunnable The runnable that when called will delete the profile.
-     */
-    public void setDeleteRunnable(Runnable deleteRunnable) {
-        mDeleteRunnable = deleteRunnable;
-    }
-
-    /**
      * Prepares the toolbar for use.
      *
      * Many of the things that would ideally be set as attributes don't work and need to be set
@@ -189,7 +182,7 @@ public class EditorDialogView
         toolbar.setTitleTextAppearance(
                 toolbar.getContext(), R.style.TextAppearance_Headline_Primary);
         toolbar.setTitle(mEditorModel.get(EDITOR_TITLE));
-        toolbar.setShowDeleteMenuItem(mDeleteRunnable != null);
+        toolbar.setShowDeleteMenuItem(mEditorModel.get(ALLOW_DELETE));
 
         // Show the help article when the help icon is clicked on, or delete
         // the profile and go back when the delete icon is clicked on.
@@ -629,8 +622,8 @@ public class EditorDialogView
     }
 
     private void handleDelete() {
-        assert mDeleteRunnable != null;
-        mDeleteRunnable.run();
+        assert mEditorModel.get(DELETE_RUNNABLE) != null;
+        mEditorModel.get(DELETE_RUNNABLE).run();
         animateOutDialog();
     }
 

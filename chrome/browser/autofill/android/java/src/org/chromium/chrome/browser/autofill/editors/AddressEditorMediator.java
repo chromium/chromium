@@ -8,11 +8,13 @@ import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordina
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_CALLBACK;
@@ -116,6 +118,7 @@ class AddressEditorMediator {
     private List<AddressUiComponent> mVisibleEditorFields;
     @Nullable
     private String mCustomDoneButtonText;
+    private boolean mAllowDelete;
 
     /**
      * The list of possible address fields for editing is determined statically.
@@ -270,6 +273,10 @@ class AddressEditorMediator {
         mPhoneFormatter.setCountryCode(mCountryField.get(VALUE));
     }
 
+    public void setAllowDelete(boolean allowDelete) {
+        mAllowDelete = allowDelete;
+    }
+
     private void setAddressFieldValues() {
         mCountryField.set(VALUE, AutofillAddress.getCountryCode(mProfileToEdit));
         if (mHonorificField != null) {
@@ -320,6 +327,8 @@ class AddressEditorMediator {
                         // which was the original state (could be null, a complete address, a
                         // partial address).
                         .with(CANCEL_RUNNABLE, mDelegate::onCancel)
+                        .with(ALLOW_DELETE, mAllowDelete)
+                        .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mAddressToEdit))
                         .build();
 
         // Changing the country will update which fields are in the model. The actual fields are not
