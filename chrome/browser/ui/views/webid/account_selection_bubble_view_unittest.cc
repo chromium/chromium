@@ -378,25 +378,12 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         failure_dialog->children();
     ASSERT_EQ(failure_dialog_children.size(), 2u);
 
-    const views::View* text_column = failure_dialog_children[0];
-    const std::vector<views::View*> text_column_children =
-        text_column->children();
-    ASSERT_EQ(text_column_children.size(), 2u);
-
     // Check the body shown.
-    views::Label* body = static_cast<views::Label*>(text_column_children[0]);
+    views::Label* body = static_cast<views::Label*>(failure_dialog_children[0]);
     ASSERT_TRUE(body);
     EXPECT_EQ(body->GetText(),
-              u"Use your idp-example.com account to sign in to "
-              u"top-frame-example.com");
-
-    // Check the description shown.
-    views::Label* description =
-        static_cast<views::Label*>(text_column_children[1]);
-    ASSERT_TRUE(description);
-    EXPECT_EQ(description->GetText(),
-              l10n_util::GetStringUTF16(
-                  IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_DESCRIPTION));
+              u"You can use your idp-example.com account on this site. To "
+              u"continue, sign in to idp-example.com.");
 
     // Check the "Continue" button.
     views::MdTextButton* button =

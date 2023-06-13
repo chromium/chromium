@@ -584,41 +584,21 @@ void AccountSelectionBubbleView::ShowFailureDialog(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kLeftRightPadding)));
 
-  // Add column for text.
-  views::View* const text_column =
-      row->AddChildView(std::make_unique<views::View>());
-  text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
-  // Add body for mismatch dialog.
-  views::Label* const body =
-      text_column->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY,
-                                     idp_for_display, top_frame_for_display),
-          views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  // Add body.
+  views::Label* const body = row->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY,
+                                 idp_for_display),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   body->SetMultiLine(true);
-  body->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(kVerticalSpacing, 0)));
   body->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  constexpr int kBodyLineHeight = 22;
+  constexpr int kBodyLineHeight = 20;
   body->SetLineHeight(kBodyLineHeight);
 
-  // Add description for signing in.
-  views::Label* const description =
-      text_column->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(
-              IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_DESCRIPTION),
-          views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_SECONDARY));
-  description->SetMultiLine(true);
-  description->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  constexpr int kDescriptionLineHeight = 20;
-  description->SetLineHeight(kDescriptionLineHeight);
-
-  // The space between the description and the continue button.
+  // Add space between the body and the separator and the body and the continue
+  // button.
   constexpr int kBottomSpacing = 16;
-  description->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBottomSpacing, 0)));
+  body->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalSpacing, 0, kBottomSpacing, 0)));
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
