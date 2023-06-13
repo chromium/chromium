@@ -203,7 +203,8 @@ void ChipController::InitializePermissionPrompt(
     delay_prompt_timer_.Start(
         FROM_HERE, collapse_timer_.GetCurrentDelay(),
         base::BindOnce(&ChipController::InitializePermissionPrompt,
-                       weak_factory_.GetWeakPtr(), web_contents, delegate,
+                       weak_factory_.GetWeakPtr(),
+                       base::UnsafeDanglingUntriaged(web_contents), delegate,
                        std::move(callback)));
     return;
   }
@@ -241,7 +242,8 @@ void ChipController::ShowPermissionPrompt(
     delay_prompt_timer_.Start(
         FROM_HERE, collapse_timer_.GetCurrentDelay(),
         base::BindOnce(&ChipController::ShowPermissionPrompt,
-                       weak_factory_.GetWeakPtr(), web_contents, delegate));
+                       weak_factory_.GetWeakPtr(),
+                       base::UnsafeDanglingUntriaged(web_contents), delegate));
     return;
   }
 
