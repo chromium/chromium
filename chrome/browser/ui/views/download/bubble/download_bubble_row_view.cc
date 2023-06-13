@@ -391,8 +391,13 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/true,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorId(views::style::GetColorId(
-      views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
+  if (features::IsChromeRefresh2023()) {
+    views::InkDrop::Get(this)->SetBaseColorId(kColorDownloadBubbleRowHover);
+    views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
+  } else {
+    views::InkDrop::Get(this)->SetBaseColorId(views::style::GetColorId(
+        views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
+  }
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);

@@ -80,6 +80,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
   mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
+  mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
       ui::GetResultingPaintColor(ui::kColorSysStateDisabled,
                                  kColorDownloadShelfBackground),

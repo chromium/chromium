@@ -56,6 +56,7 @@
   /* Download bubble colors. */\
   E_CPONLY(kColorDownloadBubbleInfoBackground) \
   E_CPONLY(kColorDownloadBubbleInfoIcon) \
+  E_CPONLY(kColorDownloadBubbleRowHover) \
   /* Download shelf colors. */ \
   E_CPONLY(kColorDownloadItemForeground) \
   E_CPONLY(kColorDownloadItemForegroundDangerous) \
