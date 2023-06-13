@@ -72,9 +72,6 @@
 # crbug.com/1063981
 -org.chromium.chrome.browser.toolbar.IdentityDiscControllerTest.testIdentityDiscWithSignInState
 
-# crbug.com/1063987
--org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testHidesWithAnimation
-
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu
 
