@@ -7,10 +7,22 @@
 
 #include "ash/ash_export.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
 // Expects that scrims `exist` on all root windows with expected properties.
 ASH_EXPORT void ExpectScrimsOnAllRootWindows(bool exist);
+
+// Returns the Welcome Tour dialog's accept button. If the dialog does not
+// exist, returns `nullptr`.
+ASH_EXPORT const views::View* GetDialogAcceptButton();
+
+// Returns the Welcome Tour dialog's cancel button. If the dialog does not
+// exist, returns `nullptr`.
+ASH_EXPORT const views::View* GetDialogCancelButton();
 
 }  // namespace ash
 

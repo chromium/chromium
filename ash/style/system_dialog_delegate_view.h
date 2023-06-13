@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -52,6 +53,11 @@ namespace ash {
 class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(SystemDialogDelegateView);
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescriptionTextIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleTextIdForTesting);
 
   SystemDialogDelegateView();
   SystemDialogDelegateView(const SystemDialogDelegateView&) = delete;

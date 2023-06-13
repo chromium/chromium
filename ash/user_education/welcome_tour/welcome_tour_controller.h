@@ -54,8 +54,12 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void OnChromeTerminating() override;
   void OnSessionStateChanged(session_manager::SessionState) override;
 
-  // Starts the Welcome Tour tutorial iff the primary user session is active.
-  void MaybeStartTutorial();
+  // Shows the Welcome Tour dialog iff the primary user session is active.
+  void MaybeShowDialog();
+
+  // Starts the Welcome Tour tutorial. The tutorial should start when the accept
+  // button of the Welcome Tour dialog is clicked.
+  void StartTutorial();
 
   // Invoked when the Welcome Tour is started/ended. The latter is called
   // regardless of whether the tour was completed or aborted.
@@ -71,12 +75,12 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   base::ObserverList<WelcomeTourControllerObserver> observer_list_;
 
   // Sessions are observed only until the primary user session is activated for
-  // the first time at which point the Welcome Tour tutorial is started.
+  // the first time at which point the Welcome Tour dialog is shown.
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
 
-  // It is theoretically possible for the Welcome Tour tutorial to outlive
-  // `this` controller during the destruction sequence.
+  // It is theoretically possible for the Welcome Tour dialog/tutorial to
+  // outlive `this` controller during the destruction sequence.
   base::WeakPtrFactory<WelcomeTourController> weak_ptr_factory_{this};
 };
 

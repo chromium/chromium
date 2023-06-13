@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -14,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -29,13 +31,19 @@ constexpr gfx::Size kImagePreferredSize(240, 240);
 
 // WelcomeTourDialog -----------------------------------------------------------
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WelcomeTourDialog,
+                                      kWelcomeTourDialogElementIdForTesting);
+
 // static
-void WelcomeTourDialog::CreateAndShow(
-    base::OnceClosure start_tutorial_callback) {
+void WelcomeTourDialog::CreateAndShow(base::OnceClosure accept_callback,
+                                      base::OnceClosure cancel_callback,
+                                      base::OnceClosure close_callback) {
   views::Widget::InitParams params;
   params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_HelpBubbleContainer);
-  params.delegate = new WelcomeTourDialog(std::move(start_tutorial_callback));
+  params.delegate = new WelcomeTourDialog(std::move(accept_callback),
+                                          std::move(cancel_callback),
+                                          std::move(close_callback));
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 
   auto* widget = new views::Widget;
@@ -51,10 +59,10 @@ WelcomeTourDialog* WelcomeTourDialog::Get() {
   return g_instance;
 }
 
-WelcomeTourDialog::WelcomeTourDialog(
-    base::OnceClosure start_tutorial_callback) {
-  // TODO(http://b/285027636): Check the Welcome Tour feature flag after this
-  // class is integrated with the Welcome Tour tutorial.
+WelcomeTourDialog::WelcomeTourDialog(base::OnceClosure accept_callback,
+                                     base::OnceClosure cancel_callback,
+                                     base::OnceClosure close_callback) {
+  CHECK(features::IsWelcomeTourEnabled());
 
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
@@ -64,11 +72,15 @@ WelcomeTourDialog::WelcomeTourDialog(
   views::Builder<SystemDialogDelegateView>(this)
       .SetAcceptButtonText(l10n_util::GetStringUTF16(
           IDS_ASH_WELCOME_TOUR_DIALOG_ACCEPT_BUTTON_TEXT))
-      .SetAcceptCallback(std::move(start_tutorial_callback))
+      .SetAcceptCallback(std::move(accept_callback))
       .SetCancelButtonText(l10n_util::GetStringUTF16(
           IDS_ASH_WELCOME_TOUR_DIALOG_CANCEL_BUTTON_TEXT))
+      .SetCancelCallback(std::move(cancel_callback))
+      .SetCloseCallback(std::move(close_callback))
       .SetDescription(l10n_util::GetStringUTF16(
           IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT))
+      .SetProperty(views::kElementIdentifierKey,
+                   kWelcomeTourDialogElementIdForTesting)
       .SetTitleText(
           l10n_util::GetStringUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT))
       .SetTopContentView(views::Builder<views::ImageView>()

@@ -108,6 +108,15 @@ aura::Window* GetDialogHostWindow(const views::Widget* dialog_widget) {
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kAcceptButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kCancelButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kDescriptionTextIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kTitleTextIdForTesting);
+
 //------------------------------------------------------------------------------
 // SystemDialogDelegateView::ButtonContainer:
 // The container includes an accept button and a cancel button. The buttons are
@@ -138,8 +147,12 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
 
     cancel_button_->SetID(
         ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
+    cancel_button_->SetProperty(views::kElementIdentifierKey,
+                                kCancelButtonIdForTesting);
     accept_button_->SetID(
         ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON);
+    accept_button_->SetProperty(views::kElementIdentifierKey,
+                                kAcceptButtonIdForTesting);
   }
 
   ButtonContainer(const ButtonContainer&) = delete;
@@ -225,6 +238,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetEnabledColorId(kTitleColorId);
   title_->SetVisible(false);
+  title_->SetProperty(views::kElementIdentifierKey, kTitleTextIdForTesting);
 
   description_ = AddChildView(std::make_unique<views::Label>());
   SetViewLayoutSpecs(
@@ -240,6 +254,8 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   description_->SetAutoColorReadabilityEnabled(false);
   description_->SetEnabledColorId(kBodyColorId);
   description_->SetVisible(false);
+  description_->SetProperty(views::kElementIdentifierKey,
+                            kDescriptionTextIdForTesting);
 
   button_container_ = AddChildView(std::make_unique<ButtonContainer>(this));
   SetViewLayoutSpecs(

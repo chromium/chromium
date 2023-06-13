@@ -14,8 +14,10 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -73,7 +75,7 @@ WelcomeTourController::WelcomeTourController() {
   g_instance = this;
 
   session_observation_.Observe(Shell::Get()->session_controller());
-  MaybeStartTutorial();
+  MaybeShowDialog();
 }
 
 WelcomeTourController::~WelcomeTourController() {
@@ -215,7 +217,7 @@ WelcomeTourController::GetTutorialDescriptions() {
 
 void WelcomeTourController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
-  MaybeStartTutorial();
+  MaybeShowDialog();
 }
 
 void WelcomeTourController::OnChromeTerminating() {
@@ -224,20 +226,36 @@ void WelcomeTourController::OnChromeTerminating() {
 
 void WelcomeTourController::OnSessionStateChanged(
     session_manager::SessionState session_state) {
-  MaybeStartTutorial();
+  MaybeShowDialog();
 }
 
-void WelcomeTourController::MaybeStartTutorial() {
+void WelcomeTourController::MaybeShowDialog() {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   if (!user_education_util::IsPrimaryAccountActive()) {
     return;
   }
 
-  // We can stop observations since we only observe sessions in order to start
-  // the tutorial when the primary user session is activated for the first time.
+  // We can stop observations since we only observe sessions in order to show
+  // the dialog when the primary user session is activated for the first time.
   session_observation_.Reset();
 
+  WelcomeTourDialog::CreateAndShow(
+      /*accept_callback=*/base::BindOnce(&WelcomeTourController::StartTutorial,
+                                         weak_ptr_factory_.GetWeakPtr()),
+      /*cancel_callback=*/
+      base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*close_callback=*/
+      base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // `WelcomeTourDialog` is part of the Welcome Tour. Therefore, when the dialog
+  // shows, the tour has indeed been started.
+  OnWelcomeTourStarted();
+}
+
+void WelcomeTourController::StartTutorial() {
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
   UserEducationController::Get()->StartTutorial(
@@ -249,10 +267,6 @@ void WelcomeTourController::MaybeStartTutorial() {
       /*aborted_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // The attempt to start the tutorial above is guaranteed to succeed or crash.
-  // If this line of code is reached, the tutorial has indeed been started.
-  OnWelcomeTourStarted();
 }
 
 // TODO(http://b/277091006): Stabilize app launches.

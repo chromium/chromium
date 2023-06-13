@@ -5,9 +5,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
+#include "ash/style/system_dialog_delegate_view.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
+#include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -80,9 +83,53 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
             ash::WelcomeTourController::Get()->GetInitialElementContext()));
   }
 
+  // Returns a builder for an interaction step that waits for the dialog.
+  [[nodiscard]] static auto WaitForDialog() {
+    return WaitForShow(
+        ash::WelcomeTourDialog::kWelcomeTourDialogElementIdForTesting);
+  }
+
   // Returns a builder for an interaction step that waits for a help bubble.
   [[nodiscard]] static auto WaitForHelpBubble() {
     return WaitForShow(ash::HelpBubbleViewAsh::kHelpBubbleElementIdForTesting);
+  }
+
+  // Returns a builder for an interaction step that checks the dialog accept
+  // button text.
+  [[nodiscard]] static auto CheckDialogAcceptButtonText() {
+    return CheckViewProperty(
+        ash::SystemDialogDelegateView::kAcceptButtonIdForTesting,
+        &ash::PillButton::GetText,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_WELCOME_TOUR_DIALOG_ACCEPT_BUTTON_TEXT));
+  }
+
+  // Returns a builder for an interaction step that checks the dialog cancel
+  // button text.
+  [[nodiscard]] static auto CheckDialogCancelButtonText() {
+    return CheckViewProperty(
+        ash::SystemDialogDelegateView::kCancelButtonIdForTesting,
+        &ash::PillButton::GetText,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_WELCOME_TOUR_DIALOG_CANCEL_BUTTON_TEXT));
+  }
+
+  // Returns a builder for an interaction step that checks the dialog
+  // description.
+  [[nodiscard]] static auto CheckDialogDescription() {
+    return CheckViewProperty(
+        ash::SystemDialogDelegateView::kDescriptionTextIdForTesting,
+        &views::Label::GetText,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT));
+  }
+
+  // Returns a builder for an interaction step that checks the dialog title.
+  [[nodiscard]] static auto CheckDialogTitle() {
+    return CheckViewProperty(
+        ash::SystemDialogDelegateView::kTitleTextIdForTesting,
+        &views::Label::GetText,
+        l10n_util::GetStringUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT));
   }
 
   // Returns a builder for an interaction step that checks that the anchor of a
@@ -113,6 +160,13 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
                              l10n_util::GetStringUTF16(message_id));
   }
 
+  // Returns a builder for an interaction step that presses the dialog accept
+  // button.
+  [[nodiscard]] auto PressDialogAcceptButton() {
+    return PressButton(
+        ash::SystemDialogDelegateView::kAcceptButtonIdForTesting);
+  }
+
   // Returns a builder for an interaction step that presses the default button
   // of a help bubble.
   [[nodiscard]] auto PressHelpBubbleDefaultButton() {
@@ -128,6 +182,13 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
 // An interactive UI test that exercises the entire Welcome Tour.
 IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
   RunTestSequence(
+      // Step 0: Dialog.
+      InAnyContext(WaitForDialog()),
+      InSameContext(Steps(CheckDialogAcceptButtonText(),
+                          CheckDialogCancelButtonText(),
+                          CheckDialogDescription(), CheckDialogTitle(),
+                          PressDialogAcceptButton(), FlushEvents())),
+
       // Step 1: Shelf.
       InAnyContext(WaitForHelpBubble()),
       InSameContext(Steps(

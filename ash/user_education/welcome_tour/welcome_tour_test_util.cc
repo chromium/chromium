@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider_source.h"
+#include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,6 +97,22 @@ void ExpectScrimsOnAllRootWindows(bool exist) {
                             Bounds(GetLocalBounds(help_bubble_container)))))),
             Not(Contains(Name(Eq(WelcomeTourScrim::kLayerName))))));
   }
+}
+
+const views::View* GetDialogAcceptButton() {
+  if (auto* const dialog = WelcomeTourDialog::Get()) {
+    return dialog->GetViewByID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON);
+  }
+  return nullptr;
+}
+
+const views::View* GetDialogCancelButton() {
+  if (auto* const dialog = WelcomeTourDialog::Get()) {
+    return dialog->GetViewByID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
+  }
+  return nullptr;
 }
 
 }  // namespace ash

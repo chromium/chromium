@@ -18,6 +18,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/mock_welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
@@ -33,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 namespace {
@@ -192,19 +194,20 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              /*has_next_button=*/false))))));
 }
 
-// Verifies that the Welcome Tour tutorial is started when the primary user
-// session is first activated and then never again, as well as that start/end
-// events are propagated to observers appropriately.
-TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
-  AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
-  AccountId secondary_account_id = AccountId::FromUserEmail("secondary@test");
+// Verifies that the Welcome Tour is started when the primary user session is
+// first activated and then never again, as well as that start/end events are
+// propagated to observers appropriately.
+TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
+  const AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
+  const AccountId secondary_account_id =
+      AccountId::FromUserEmail("secondary@test");
 
   // Ensure controller exists.
-  auto* welcome_tour_controller = WelcomeTourController::Get();
+  auto* const welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
   // Ensure delegate exists and disallow any unexpected tutorial starts.
-  auto* user_education_delegate = this->user_education_delegate();
+  auto* const user_education_delegate = this->user_education_delegate();
   ASSERT_TRUE(user_education_delegate);
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
@@ -215,15 +218,22 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
   observation.Observe(welcome_tour_controller);
 
   // Add a primary and secondary user session. This should *not* trigger the
-  // Welcome Tour tutorial to start.
-  auto* session_controller_client = GetSessionControllerClient();
+  // Welcome Tour to start.
+  auto* const session_controller_client = GetSessionControllerClient();
   session_controller_client->AddUserSession(primary_account_id.GetUserEmail());
   session_controller_client->AddUserSession(
       secondary_account_id.GetUserEmail());
 
-  // Activate the primary user session. This *should* trigger the Welcome Tour
-  // tutorial to start as well as notify observers. Note that completed/aborted
-  // callbacks are cached for later verification.
+  // Activate the primary user session. The shown dialog marks the start of the
+  // Welcome Tour and the observers are notified.
+  EXPECT_CALL(observer, OnWelcomeTourStarted);
+  session_controller_client->SetSessionState(SessionState::ACTIVE);
+  EXPECT_TRUE(WelcomeTourDialog::Get());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Click `accept_button`. This *should* trigger the Welcome Tour tutorial to
+  // start. Note that the tutorial completed/aborted callbacks are cached for
+  // later verification.
   base::OnceClosure ended_callbacks[2u];
   EXPECT_CALL(
       *user_education_delegate,
@@ -233,23 +243,32 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
                     /*completed_callback=*/_,
                     /*aborted_callback=*/_))
       .WillOnce(MoveArgs<3, 4>(&ended_callbacks[0u], &ended_callbacks[1u]));
-  EXPECT_CALL(observer, OnWelcomeTourStarted);
-  session_controller_client->SetSessionState(SessionState::ACTIVE);
+  const views::View* const accept_button = GetDialogAcceptButton();
+  ASSERT_TRUE(accept_button);
+  LeftClickOn(accept_button);
   testing::Mock::VerifyAndClearExpectations(user_education_delegate);
-  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Wait until `welcome_tour_dialog` gets destroyed.
+  views::test::WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget())
+      .Wait();
+  EXPECT_FALSE(WelcomeTourDialog::Get());
 
   // Disallow any unexpected tutorial starts.
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
   // Switch to the secondary user session and back again. This should *not*
-  // trigger the Welcome Tour tutorial to start.
+  // either show the dialog or start the Welcome Tour tutorial.
   session_controller_client->SwitchActiveUser(secondary_account_id);
+  EXPECT_FALSE(WelcomeTourDialog::Get());
   session_controller_client->SwitchActiveUser(primary_account_id);
+  EXPECT_FALSE(WelcomeTourDialog::Get());
 
   // Deactivate and then reactivate the primary user session. This should *not*
-  // trigger the Welcome Tour tutorial to start.
+  // either show the dialog or start the Welcome Tour tutorial.
   session_controller_client->SetSessionState(SessionState::LOCKED);
+  EXPECT_FALSE(WelcomeTourDialog::Get());
   session_controller_client->SetSessionState(SessionState::ACTIVE);
+  EXPECT_FALSE(WelcomeTourDialog::Get());
 
   // Verify that the same event is propagated to observers regardless of whether
   // user education services in the browser indicate the tour was completed or
@@ -260,6 +279,27 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
     std::move(ended_callback).Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
+}
+
+// Verifies that the Welcome Tour ends without starting the tutorial after
+// clicking the dialog cancel button.
+TEST_F(WelcomeTourControllerTest, CancelsTourAndPropagatesEvents) {
+  SimulateUserLogin("primary@test");
+
+  // Observe the `WelcomeTourController` for end events.
+  StrictMock<MockWelcomeTourControllerObserver> observer;
+  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
+      observation{&observer};
+  observation.Observe(WelcomeTourController::Get());
+
+  base::test::TestFuture<void> ended_future;
+  EXPECT_CALL(observer, OnWelcomeTourEnded)
+      .WillOnce(RunOnceClosure(ended_future.GetCallback()));
+
+  const views::View* const cancel_button = GetDialogCancelButton();
+  ASSERT_TRUE(cancel_button);
+  LeftClickOn(cancel_button);
+  EXPECT_TRUE(ended_future.Wait());
 }
 
 // WelcomeTourControllerRunTest ------------------------------------------------
@@ -295,8 +335,8 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     EXPECT_CALL(observer, OnWelcomeTourEnded)
         .WillOnce(RunOnceClosure(ended_future.GetCallback()));
 
-    // When the Welcome Tour is started, cache the callback to invoke to
-    // complete the tutorial.
+    // When the Welcome Tour tutorial is started, cache the callback to invoke
+    // to complete the tutorial.
     base::OnceClosure completed_callback;
     EXPECT_CALL(
         *delegate,
@@ -307,6 +347,11 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     // Welcome Tour to start automatically.
     SimulateUserLogin("primary@test");
     EXPECT_TRUE(started_future.Wait());
+
+    // Click the dialog's accept button to start the tutorial.
+    const views::View* const accept_button = GetDialogAcceptButton();
+    ASSERT_TRUE(accept_button);
+    LeftClickOn(accept_button);
 
     // Invoke the `in_progress_callback` so that tests can assert expectations
     // while the Welcome Tour is in progress.

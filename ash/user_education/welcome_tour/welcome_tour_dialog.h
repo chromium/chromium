@@ -8,19 +8,27 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ash {
 
-// A singleton dialog view where a user can choose to start the Welcome Tour
-// tutorial. Used if and only if the Welcome Tour feature is enabled.
+// A singleton dialog view which serves as a part of the Welcome Tour. From this
+// dialog, a user can choose to accept or cancel the Welcome Tour tutorial. Used
+// if and only if the Welcome Tour feature is enabled.
 class ASH_EXPORT WelcomeTourDialog : public SystemDialogDelegateView {
  public:
   METADATA_HEADER(WelcomeTourDialog);
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWelcomeTourDialogElementIdForTesting);
+
   // Creates and shows the Welcome Tour dialog at the center of the primary
-  // display. `start_tutorial_callback` is the callback that runs to start the
-  // Welcome Tour tutorial.
-  static void CreateAndShow(base::OnceClosure start_tutorial_callback);
+  // display. `accept_callback` is the callback that runs when the accept button
+  // is clicked. `cancel_callback` is the callback that runs when the cancel
+  // button is clicked. `close_callback` is the callback that runs when a user
+  // closes the dialog without clicking the accept button or the cancel button.
+  static void CreateAndShow(base::OnceClosure accept_callback,
+                            base::OnceClosure cancel_callback,
+                            base::OnceClosure close_callback);
 
   // Returns a pointer to the `WelcomeTourDialog` instance. Returns `nullptr` if
   // the instance does not exist.
@@ -31,7 +39,9 @@ class ASH_EXPORT WelcomeTourDialog : public SystemDialogDelegateView {
   ~WelcomeTourDialog() override;
 
  private:
-  explicit WelcomeTourDialog(base::OnceClosure start_tutorial_callback);
+  WelcomeTourDialog(base::OnceClosure accept_callback,
+                    base::OnceClosure cancel_callback,
+                    base::OnceClosure close_callback);
 };
 
 }  // namespace ash
