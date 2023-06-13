@@ -2867,7 +2867,7 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac13-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Timeout ]
+crbug.com/626703 [ Mac13-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/separators.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
@@ -6696,3 +6696,6 @@ crbug.com/1454070 [ Linux ] fast/css/inline-outline-with-border-radius-outset.ht
 
 crbug.com/1453272 http/tests/devtools/indexeddb/database-refresh-view.js [ Failure Pass Timeout ]
 
+# Gardener 2023-06-13
+crbug.com/1453982 [ Mac11-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
+crbug.com/1453982 [ Mac12-arm64 ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Pass Timeout ]
