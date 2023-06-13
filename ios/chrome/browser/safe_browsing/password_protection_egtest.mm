@@ -100,22 +100,18 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kInputElement)];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"P")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"a")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"s")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"s")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"w")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"o")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"r")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"d")]
-      performAction:grey_tap()];
+  for (NSString* character in
+       @[ @"P", @"a", @"s", @"s", @"w", @"o", @"r", @"d" ]) {
+    id<GREYMatcher> keyMatcher = grey_allOf(
+        grey_accessibilityLabel(character),
+        grey_accessibilityTrait(UIAccessibilityTraitKeyboardKey), nil);
+
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:keyMatcher
+                                    timeout:base::test::ios::
+                                                kWaitForUIElementTimeout];
+    [[EarlGrey selectElementWithMatcher:keyMatcher] performAction:grey_tap()];
+  }
 }
 
 // Tests that password protection UI is shown when saved password is reused on
