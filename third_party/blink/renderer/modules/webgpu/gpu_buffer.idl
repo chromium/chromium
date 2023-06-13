@@ -4,6 +4,8 @@
 
 // https://gpuweb.github.io/gpuweb/
 
+typedef unsigned long long GPUSize64Out;
+
 [
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
@@ -18,7 +20,7 @@
     [CallWith=Isolate] void unmap();
     [CallWith=Isolate] void destroy();
 
-    readonly attribute GPUSize64 size;
+    readonly attribute GPUSize64Out size;
     readonly attribute GPUBufferUsageFlags usage;
     readonly attribute GPUBufferMapState mapState;
 };
