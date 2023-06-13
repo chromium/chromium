@@ -642,6 +642,19 @@ std::string SerializeClientSideDetectionType(ClientSideDetectionType csd_type) {
   return "UNKNOWN_ENUM_SPECIFIED";
 }
 
+base::Value::Dict SerializeImageFeatureEmbedding(
+    ImageFeatureEmbedding image_feature_embedding) {
+  base::Value::Dict dict;
+  base::Value::List embedding_values;
+  for (const auto& value : image_feature_embedding.embedding_value()) {
+    embedding_values.Append(value);
+  }
+  dict.Set("embedding_model_version",
+           image_feature_embedding.embedding_model_version());
+  dict.Set("embedding_value", std::move(embedding_values));
+  return dict;
+}
+
 base::Value::Dict SerializeChromeUserPopulation(
     const ChromeUserPopulation& population) {
   base::Value::Dict population_dict;
@@ -1080,6 +1093,11 @@ std::string SerializeClientPhishingRequest(
     dict.Set(
         "client_side_detection_type",
         SerializeClientSideDetectionType(cpr.client_side_detection_type()));
+  }
+
+  if (cpr.has_image_feature_embedding()) {
+    dict.Set("image_feature_embedding",
+             SerializeImageFeatureEmbedding(cpr.image_feature_embedding()));
   }
 
   base::Value::List features;

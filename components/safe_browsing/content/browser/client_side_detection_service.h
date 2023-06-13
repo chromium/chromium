@@ -163,6 +163,14 @@ class ClientSideDetectionService
   // override it.
   virtual const base::File& GetVisualTfLiteModel();
 
+  // Returns the Image Embedding model file. Virtual so that mock implementation
+  // can override it.
+  virtual const base::File& GetImageEmbeddingModel();
+
+  virtual bool HasImageEmbeddingModel();
+
+  virtual bool IsModelMetadataImageEmbeddingVersionMatching();
+
   // Returns the visual TFLite model thresholds from the model class
   virtual const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds();
@@ -182,9 +190,12 @@ class ClientSideDetectionService
 
   bool IsModelAvailable();
 
-  // For testing the model in browser test
+  // For testing the model in browser test.
   void SetModelAndVisualTfLiteForTesting(const base::FilePath& model,
                                          const base::FilePath& visual_tf_lite);
+
+  bool IsSubscribedToImageEmbeddingModelUpdates();
+  bool ShouldSendImageEmbeddingModelToRenderer();
 
  private:
   friend class ClientSideDetectionServiceTest;
@@ -297,6 +308,16 @@ class ClientSideDetectionService
       client_side_phishing_model_optimization_guide_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Used to note whether the model update should follow with sending the image
+  // embedding model to renderer, because removing the observer from
+  // OptimizationGuide service does not remove the observer instantaneously,
+  // making a user quick resubscription scenario fail a DCHECK in their service.
+  // We will always update the model on the disc if the user has subscribed to
+  // image embedding model once in their current session, but the state of this
+  // boolean value indicate whether the model updates will be sent to the
+  // renderer or not.
+  bool send_image_embedding_model_to_renderer_ = false;
 
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.

@@ -158,6 +158,16 @@ void ClientSideDetectionService::OnPrefsUpdated() {
                 base::BindRepeating(
                     &ClientSideDetectionService::SendModelToRenderers,
                     weak_factory_.GetWeakPtr()));
+        if (base::FeatureList::IsEnabled(
+                kClientSideDetectionModelImageEmbedder)) {
+          if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+            client_side_phishing_model_optimization_guide_
+                ->SubscribeToImageEmbedderOptimizationGuide();
+            send_image_embedding_model_to_renderer_ = true;
+          } else {
+            send_image_embedding_model_to_renderer_ = false;
+          }
+        }
       }
     }
   } else {
@@ -509,6 +519,24 @@ const base::File& ClientSideDetectionService::GetVisualTfLiteModel() {
   return ClientSidePhishingModel::GetInstance()->GetVisualTfLiteModel();
 }
 
+const base::File& ClientSideDetectionService::GetImageEmbeddingModel() {
+  // At launch, we will only deploy the Image Embedding Model through
+  // OptimizationGuide
+  return client_side_phishing_model_optimization_guide_
+      ->GetImageEmbeddingModel();
+}
+
+bool ClientSideDetectionService::HasImageEmbeddingModel() {
+  return client_side_phishing_model_optimization_guide_
+      ->HasImageEmbeddingModel();
+}
+
+bool ClientSideDetectionService::
+    IsModelMetadataImageEmbeddingVersionMatching() {
+  return client_side_phishing_model_optimization_guide_
+      ->IsModelMetadataImageEmbeddingVersionMatching();
+}
+
 void ClientSideDetectionService::SetURLLoaderFactoryForTesting(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = url_loader_factory;
@@ -533,8 +561,28 @@ void ClientSideDetectionService::SetPhishingModel(
                                      GetVisualTfLiteModel().Duplicate());
       return;
     case CSDModelType::kFlatbuffer:
-      model_setter->SetPhishingFlatBufferModel(
-          GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate());
+      if (delegate_ && delegate_->GetPrefs() &&
+          IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionModelImageEmbedder) &&
+          ShouldSendImageEmbeddingModelToRenderer() &&
+          HasImageEmbeddingModel()) {
+        if (IsModelMetadataImageEmbeddingVersionMatching()) {
+          base::UmaHistogramBoolean(
+              "SBClientPhishing.ImageEmbeddingModelVersionMatch", true);
+          model_setter->SetImageEmbeddingAndPhishingFlatBufferModel(
+              GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate(),
+              GetImageEmbeddingModel().Duplicate());
+        } else {
+          base::UmaHistogramBoolean(
+              "SBClientPhishing.ImageEmbeddingModelVersionMatch", false);
+          model_setter->SetPhishingFlatBufferModel(
+              GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate());
+        }
+      } else {
+        model_setter->SetPhishingFlatBufferModel(
+            GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate());
+      }
       return;
   }
 }
@@ -627,6 +675,21 @@ bool ClientSideDetectionService::IsModelAvailable() {
   } else {
     return ClientSidePhishingModel::GetInstance()->IsEnabled();
   }
+}
+
+bool ClientSideDetectionService::IsSubscribedToImageEmbeddingModelUpdates() {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide) &&
+      base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
+    return client_side_phishing_model_optimization_guide_ &&
+           client_side_phishing_model_optimization_guide_
+               ->IsSubscribedToImageEmbeddingModelUpdates();
+  }
+  return false;
+}
+
+bool ClientSideDetectionService::ShouldSendImageEmbeddingModelToRenderer() {
+  return send_image_embedding_model_to_renderer_;
 }
 
 // IN-TEST

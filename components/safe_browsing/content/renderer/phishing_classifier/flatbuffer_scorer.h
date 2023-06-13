@@ -47,6 +47,12 @@ class FlatBufferModelScorer : public Scorer {
       base::ReadOnlySharedMemoryRegion region,
       base::File visual_tflite_model);
 
+  static std::unique_ptr<FlatBufferModelScorer>
+  CreateFlatBufferModelWithImageEmbeddingScorer(
+      base::ReadOnlySharedMemoryRegion region,
+      base::File visual_tflite_model,
+      base::File image_embedding_model);
+
   double ComputeScore(const FeatureMap& features) const override;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -87,6 +93,7 @@ class FlatBufferModelScorer : public Scorer {
   base::ReadOnlySharedMemoryMapping flatbuffer_mapping_;
   google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>
       thresholds_;
+  base::MemoryMappedFile image_embedding_model_;
 };
 
 }  // namespace safe_browsing

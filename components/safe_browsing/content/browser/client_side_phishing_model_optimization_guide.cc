@@ -21,6 +21,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/client_side_phishing_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -68,6 +71,32 @@ void ReadOverridenModel(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      std::make_pair(contents, std::move(tflite_model))));
+}
+
+base::File LoadImageEmbeddingModelFile(const base::FilePath& model_file_path) {
+  if (!base::PathExists(model_file_path)) {
+    VLOG(0)
+        << "Model path does not exist. Returning empty file. Given path is: "
+        << model_file_path;
+    return base::File();
+  }
+
+  base::File image_embedding_model_file(
+      model_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  bool image_embedding_model_valid = image_embedding_model_file.IsValid();
+
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding",
+      image_embedding_model_valid);
+
+  if (!image_embedding_model_valid) {
+    VLOG(2)
+        << "Failed to receive image embedding model file. File is not valid";
+    return base::File();
+  }
+
+  return image_embedding_model_file;
 }
 
 // Load the model file at the provided file path.
@@ -144,20 +173,56 @@ void ClientSidePhishingModelOptimizationGuide::OnModelUpdated(
     const optimization_guide::ModelInfo& model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optimization_target !=
-      optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
+          optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING &&
+      optimization_target !=
+          optimization_guide::proto::
+              OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
     return;
   }
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&LoadModelAndVisualTfLiteFile,
-                     model_info.GetModelFilePath(),
-                     model_info.GetAdditionalFiles()),
-      base::BindOnce(&ClientSidePhishingModelOptimizationGuide::
-                         OnModelAndVisualTfLiteFileLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+
+  if (optimization_target ==
+      optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&LoadModelAndVisualTfLiteFile,
+                       model_info.GetModelFilePath(),
+                       model_info.GetAdditionalFiles()),
+        base::BindOnce(&ClientSidePhishingModelOptimizationGuide::
+                           OnModelAndVisualTfLiteFileLoaded,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       model_info.GetModelMetadata()));
+  } else if (optimization_target ==
+             optimization_guide::proto::
+                 OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&LoadImageEmbeddingModelFile,
+                       model_info.GetModelFilePath()),
+        base::BindOnce(&ClientSidePhishingModelOptimizationGuide::
+                           OnImageEmbeddingModelLoaded,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       model_info.GetModelMetadata()));
+  }
+}
+
+void ClientSidePhishingModelOptimizationGuide::
+    SubscribeToImageEmbedderOptimizationGuide() {
+  if (!subscribed_to_image_embedder_ && opt_guide_) {
+    subscribed_to_image_embedder_ = true;
+    opt_guide_->AddObserverForOptimizationTargetModel(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
+        /*model_metadata=*/absl::nullopt, this);
+  }
+}
+
+bool ClientSidePhishingModelOptimizationGuide::
+    IsSubscribedToImageEmbeddingModelUpdates() {
+  return subscribed_to_image_embedder_;
 }
 
 void ClientSidePhishingModelOptimizationGuide::OnModelAndVisualTfLiteFileLoaded(
+    absl::optional<optimization_guide::proto::Any> model_metadata,
     std::pair<std::string, base::File> model_and_tflite) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -243,12 +308,72 @@ void ClientSidePhishingModelOptimizationGuide::OnModelAndVisualTfLiteFileLoaded(
     base::UmaHistogramMediumTimes(
         "SBClientPhishing.OptimizationGuide.ModelFetchTime",
         base::TimeTicks::Now() - beginning_time_);
+
+    absl::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
+        client_side_phishing_model_metadata = absl::nullopt;
+
+    if (model_metadata.has_value()) {
+      client_side_phishing_model_metadata =
+          optimization_guide::ParsedAnyMetadata<
+              optimization_guide::proto::ClientSidePhishingModelMetadata>(
+              model_metadata.value());
+    }
+
+    if (client_side_phishing_model_metadata.has_value()) {
+      trigger_model_version_ =
+          client_side_phishing_model_metadata->image_embedding_model_version();
+    } else {
+      VLOG(1) << "Client side phishing model metadata is missing an image "
+                 "embedding model version value";
+    }
+
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ClientSidePhishingModelOptimizationGuide::NotifyCallbacksOnUI,
             weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void ClientSidePhishingModelOptimizationGuide::OnImageEmbeddingModelLoaded(
+    absl::optional<optimization_guide::proto::Any> model_metadata,
+    base::File image_embedding_model) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  image_embedding_model_ = std::move(image_embedding_model);
+
+  absl::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
+      image_embedding_model_metadata = absl::nullopt;
+
+  if (model_metadata.has_value()) {
+    image_embedding_model_metadata = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::ClientSidePhishingModelMetadata>(
+        model_metadata.value());
+  }
+
+  if (image_embedding_model_metadata.has_value()) {
+    embedding_model_version_ =
+        image_embedding_model_metadata->image_embedding_model_version();
+  } else {
+    VLOG(1) << "Image embedding model metadata is missing a version value";
+  }
+
+  // There is no use of the image embedding model if the visual trigger model is
+  // not present, so we will only send to the renderer when that is the case.
+  if (visual_tflite_model_ && image_embedding_model_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ClientSidePhishingModelOptimizationGuide::NotifyCallbacksOnUI,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+bool ClientSidePhishingModelOptimizationGuide::
+    IsModelMetadataImageEmbeddingVersionMatching() {
+  return trigger_model_version_.has_value() &&
+         embedding_model_version_.has_value() &&
+         trigger_model_version_.value() == embedding_model_version_.value();
 }
 
 ClientSidePhishingModelOptimizationGuide::
@@ -258,13 +383,27 @@ ClientSidePhishingModelOptimizationGuide::
   opt_guide_->RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
       this);
-  opt_guide_ = nullptr;
+
+  if (subscribed_to_image_embedder_) {
+    opt_guide_->RemoveObserverForOptimizationTargetModel(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
+        this);
+  }
 
   if (visual_tflite_model_) {
     background_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
   }
+
+  if (image_embedding_model_) {
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+  }
+
+  opt_guide_ = nullptr;
 }
 
 base::CallbackListSubscription
@@ -361,6 +500,18 @@ ClientSidePhishingModelOptimizationGuide::GetVisualTfLiteModel() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(visual_tflite_model_ && visual_tflite_model_->IsValid());
   return *visual_tflite_model_;
+}
+
+const base::File&
+ClientSidePhishingModelOptimizationGuide::GetImageEmbeddingModel() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(image_embedding_model_ && image_embedding_model_->IsValid());
+  return *image_embedding_model_;
+}
+
+bool ClientSidePhishingModelOptimizationGuide::HasImageEmbeddingModel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !!image_embedding_model_;
 }
 
 CSDModelTypeOptimizationGuide
@@ -590,7 +741,7 @@ void ClientSidePhishingModelOptimizationGuide::
                      additional_files),
       base::BindOnce(&ClientSidePhishingModelOptimizationGuide::
                          OnModelAndVisualTfLiteFileLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
 }
 
 }  // namespace safe_browsing

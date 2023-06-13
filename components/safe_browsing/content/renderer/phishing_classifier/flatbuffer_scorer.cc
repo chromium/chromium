@@ -93,6 +93,26 @@ std::unique_ptr<FlatBufferModelScorer> FlatBufferModelScorer::Create(
   return scorer;
 }
 
+std::unique_ptr<FlatBufferModelScorer>
+FlatBufferModelScorer::CreateFlatBufferModelWithImageEmbeddingScorer(
+    base::ReadOnlySharedMemoryRegion region,
+    base::File visual_tflite_model,
+    base::File image_embedding_model) {
+  std::unique_ptr<FlatBufferModelScorer> scorer =
+      Create(std::move(region), std::move(visual_tflite_model));
+
+  if (image_embedding_model.IsValid()) {
+    if (scorer && !scorer->image_embedding_model_.Initialize(
+                      std::move(image_embedding_model))) {
+      RecordScorerCreationStatus(
+          SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
+      return nullptr;
+    }
+  }
+
+  return scorer;
+}
+
 double FlatBufferModelScorer::ComputeRuleScore(
     const flat::ClientSideModel_::Rule* rule,
     const FeatureMap& features) const {

@@ -142,6 +142,20 @@ interface PhishingDetector {
 // Interface for setting a phishing model. This is scoped to an entire
 // RenderProcess.
 interface PhishingModelSetter {
+  // A classification model for client-side phishing detection in addition to
+  // the image embedding model. This call sends the model and the image
+  // embedding model from browser process to the renderer process. The image
+  // embedding model is converted from a TfLite file to a string in the browser
+  // process to be used to create an ImageEmbedder in the renderer process. This
+  // function call should only be called for Enhanced Safe Browsing enabled
+  // users who will allow the ImageEmbedding output as part of the CSD-Phishing
+  // ping to be sent to CSPP for better model training. All else is the same as
+  // the SetPhishingFlatBufferModel function.
+  SetImageEmbeddingAndPhishingFlatBufferModel(
+                              mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+                              mojo_base.mojom.ReadOnlyFile? tflite_model,
+                              mojo_base.mojom.ReadOnlyFile?
+                              image_embedding_model_);
   // A classification model for client-side phishing detection.
   // The string is an encoded safe_browsing::ClientSideModel protocol buffer, or
   // empty to disable client-side phishing detection for this renderer. The

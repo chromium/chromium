@@ -122,7 +122,7 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
-  reserved 14, 30;
+  reserved 14;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -183,6 +183,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
   // Target for segmentation: Determine users who are tabletproductivity users.
   OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER = 29;
+  // Target for client side phishing image embedding model.
+  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER = 30;
   // Target for ranking clusters that have passed minimal filtering for the New
   // Tab Page History Clusters module.
   OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING = 31;

@@ -131,6 +131,14 @@ message ChromeUserPopulation {
   optional bool is_signed_in = 18;
 }
 
+message ImageFeatureEmbedding {
+  // Tracking embedding-model's version from iteration to iteration
+  optional int32 embedding_model_version = 1;
+
+  // Raw tensor output of the embedding layer.
+  repeated float embedding_value = 2;
+}
+
 message ClientPhishingRequest {
   // URL that the client visited.  The CGI parameters are stripped by the
   // client.
@@ -242,7 +250,10 @@ message ClientPhishingRequest {
   // where the scoring from protego requested this request.
   optional ClientSideDetectionType client_side_detection_type = 28;
 
-  // next available tag number: 29.
+  // Image embedding from model output tensor
+  optional ImageFeatureEmbedding image_feature_embedding = 29;
+
+  // next available tag number: 30.
 }
 
 message ClientPhishingResponse {

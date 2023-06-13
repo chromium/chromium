@@ -75,6 +75,13 @@ class ClientSidePhishingModelObserverTracker
                                 .SetAdditionalFiles(additional_files_path)
                                 .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
+    } else if (optimization_target ==
+               optimization_guide::proto::
+                   OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
+      auto model_metadata = optimization_guide::TestModelInfoBuilder()
+                                .SetModelFilePath(model_file_path)
+                                .Build();
+      model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     }
   }
 
@@ -84,14 +91,21 @@ class ClientSidePhishingModelObserverTracker
   raw_ptr<optimization_guide::OptimizationTargetModelObserver> model_observer_;
 };
 
-class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
-                                    public testing::WithParamInterface<bool> {
+class ClientSidePhishingModelTest
+    : public content::RenderViewHostTestHarness,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ClientSidePhishingModelTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {};
     if (ShouldEnableCacao()) {
-      feature_list_.InitAndEnableFeature(
-          kClientSideDetectionModelOptimizationGuide);
+      enabled_features.push_back(kClientSideDetectionModelOptimizationGuide);
     }
+
+    if (ShouldEnableImageEmbedder()) {
+      enabled_features.push_back(kClientSideDetectionModelImageEmbedder);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   void SetUp() override {
@@ -125,13 +139,24 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
     task_environment()->RunUntilIdle();
   }
 
+  void ValidateImageEmbeddingModel(
+      const base::FilePath& image_embedding_model_file_path) {
+    model_observer_tracker_->NotifyModelFileUpdate(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
+        image_embedding_model_file_path, {});
+    task_environment()->RunUntilIdle();
+  }
+
   ClientSidePhishingModelOptimizationGuide* service() {
     return client_side_phishing_model_.get();
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  bool ShouldEnableCacao() { return GetParam(); }
+  bool ShouldEnableCacao() { return get<0>(GetParam()); }
+
+  bool ShouldEnableImageEmbedder() { return get<1>(GetParam()); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -168,7 +193,9 @@ void GetFlatBufferStringFromMappedMemory(
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All, ClientSidePhishingModelTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSidePhishingModelTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(ClientSidePhishingModelTest, ValidModel) {
   if (!base::FeatureList::IsEnabled(
@@ -203,6 +230,20 @@ TEST_P(ClientSidePhishingModelTest, ValidModel) {
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", true, 1);
   EXPECT_TRUE(service()->IsEnabled());
+  if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
+    base::FilePath image_embedding_model_file_path;
+    base::PathService::Get(base::DIR_SOURCE_ROOT,
+                           &image_embedding_model_file_path);
+    image_embedding_model_file_path =
+        image_embedding_model_file_path.AppendASCII("components")
+            .AppendASCII("test")
+            .AppendASCII("data")
+            .AppendASCII("safe_browsing")
+            .AppendASCII("image_embedding.tflite");
+    ValidateImageEmbeddingModel(image_embedding_model_file_path);
+    histogram_tester().ExpectUniqueSample(
+        "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 1);
+  }
 }
 
 TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {

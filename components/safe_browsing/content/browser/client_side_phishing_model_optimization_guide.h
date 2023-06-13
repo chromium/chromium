@@ -59,6 +59,12 @@ class ClientSidePhishingModelOptimizationGuide
       optimization_guide::proto::OptimizationTarget optimization_target,
       const optimization_guide::ModelInfo& model_info) override;
 
+  // Enhanced Safe Browsing users receive an additional image embedding model to
+  // be attached to CSD-Phishing ping to better train the models.
+  void SubscribeToImageEmbedderOptimizationGuide();
+
+  void UnsubscribeToImageEmbedderOptimizationGuide();
+
   // Register a callback to be notified whenever the model changes. All
   // notifications will occur on the UI thread.
   base::CallbackListSubscription RegisterCallback(
@@ -81,6 +87,12 @@ class ClientSidePhishingModelOptimizationGuide
 
   const base::File& GetVisualTfLiteModel() const;
 
+  const base::File& GetImageEmbeddingModel() const;
+
+  bool HasImageEmbeddingModel();
+
+  bool IsModelMetadataImageEmbeddingVersionMatching();
+
   // Overrides the model string for use in tests.
   void SetModelStrForTesting(const std::string& model_str);
   void SetVisualTfLiteModelForTesting(base::File file);
@@ -101,7 +113,12 @@ class ClientSidePhishingModelOptimizationGuide
   void MaybeOverrideModel();
 
   void OnModelAndVisualTfLiteFileLoaded(
+      absl::optional<optimization_guide::proto::Any> model_metadata,
       std::pair<std::string, base::File> model_and_tflite);
+
+  void OnImageEmbeddingModelLoaded(
+      absl::optional<optimization_guide::proto::Any> model_metadata,
+      base::File image_embedding_model_data);
 
   void SetModelAndVisualTfLiteForTesting(
       const base::FilePath& model_file_path,
@@ -111,6 +128,8 @@ class ClientSidePhishingModelOptimizationGuide
   // client_side_phishing_model_unittest
   void SetModelStringForTesting(const std::string& model_str,
                                 base::File visual_tflite_model);
+
+  bool IsSubscribedToImageEmbeddingModelUpdates();
 
  private:
   static const int kInitialClientModelFetchDelayMs;
@@ -135,6 +154,10 @@ class ClientSidePhishingModelOptimizationGuide
   absl::optional<base::File> visual_tflite_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Image Embedding TfLite model file. Guarded by sequence_checker_.
+  absl::optional<base::File> image_embedding_model_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Thresholds in visual TFLite model file to be used for comparison after
   // visual classification
   base::flat_map<std::string, TfLiteModelMetadata::Threshold> thresholds_;
@@ -156,7 +179,23 @@ class ClientSidePhishingModelOptimizationGuide
   // BrowserContextKeyedServiceFactory and should not be used after Shutdown
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> opt_guide_;
 
+  // These two integer values will be set from reading the metadata specified
+  // under each optimization target. These two are used to match the model
+  // pairings properly. If the two values match, then the image embedding model
+  // will be sent to the renderer process along with the trigger models.
+  absl::optional<int> trigger_model_version_;
+  absl::optional<int> embedding_model_version_;
+
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // If the users subscribe to ESB, the code will add an observer to the
+  // OptimizationGuide service for the image embedder model. We can choose to
+  // remove the observer, but it will be on the list to be removed, and not
+  // removed instantly. Therefore, if the user subscribes, unsubscribes, and
+  // re-subscribes again in very quick succession, the code will crash because
+  // the DCHECK fails, indicating that the observer is added already. Therefore,
+  // this will be a one time use flag.
+  bool subscribed_to_image_embedder_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

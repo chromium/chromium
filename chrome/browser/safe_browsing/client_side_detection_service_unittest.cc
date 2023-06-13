@@ -106,7 +106,7 @@ class ClientSidePhishingModelObserverTracker
 
 class ClientSideDetectionServiceTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   ClientSideDetectionServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
@@ -125,11 +125,17 @@ class ClientSideDetectionServiceTest
           {kSafeBrowsingDailyPhishingReportsLimit, params});
     }
 
+    if (ShouldEnableImageEmbeddingModelCacao()) {
+      enabled_features.push_back({kClientSideDetectionModelImageEmbedder, {}});
+    }
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
   bool ShouldEnableCacao() { return get<0>(GetParam()); }
 
   bool ShouldEnableESBDailyPhishingLimit() { return get<1>(GetParam()); }
+
+  bool ShouldEnableImageEmbeddingModelCacao() { return get<2>(GetParam()); }
 
  protected:
   void SetUp() override {
@@ -316,7 +322,9 @@ class ClientSideDetectionServiceTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ClientSideDetectionServiceTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 TEST_P(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
@@ -602,6 +610,31 @@ TEST_P(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
   // Safe Browsing is enabled.
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   EXPECT_TRUE(csd_service_->enabled());
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       TestReceivingImageEmbedderUpdatesAfterResubscription) {
+  if (!(base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide) &&
+        base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder))) {
+    return;
+  }
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get(), background_task_runner_);
+
+  EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
+  EXPECT_FALSE(csd_service_->ShouldSendImageEmbeddingModelToRenderer());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
+  EXPECT_TRUE(csd_service_->ShouldSendImageEmbeddingModelToRenderer());
 }
 
 }  // namespace safe_browsing
