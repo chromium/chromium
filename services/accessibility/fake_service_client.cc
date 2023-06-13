@@ -30,13 +30,14 @@ void FakeServiceClient::BindTts(
 }
 
 void FakeServiceClient::Speak(const std::string& utterance,
+                              ax::mojom::TtsOptionsPtr options,
                               SpeakCallback callback) {
   auto result = mojom::TtsSpeakResult::New();
   result->error = mojom::TtsError::kNoError;
   result->utterance_client = tts_utterance_client_.BindNewPipeAndPassReceiver();
   std::move(callback).Run(std::move(result));
   if (tts_speak_callback_) {
-    tts_speak_callback_.Run(utterance);
+    tts_speak_callback_.Run(utterance, std::move(options));
   }
 }
 
@@ -126,7 +127,8 @@ bool FakeServiceClient::TtsIsBound() const {
 }
 
 void FakeServiceClient::SetTtsSpeakCallback(
-    base::RepeatingCallback<void(const std::string&)> callback) {
+    base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
+        callback) {
   tts_speak_callback_ = std::move(callback);
 }
 

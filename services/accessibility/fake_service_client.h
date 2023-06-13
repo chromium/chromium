@@ -44,7 +44,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
 
   // ax::mojom::Tts:
-  void Speak(const std::string& utterance, SpeakCallback callback) override;
+  void Speak(const std::string& utterance,
+             ax::mojom::TtsOptionsPtr options,
+             SpeakCallback callback) override;
   void Stop() override;
   void Pause() override;
   void Resume() override;
@@ -62,7 +64,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetTtsBoundClosure(base::OnceClosure closure);
   bool TtsIsBound() const;
   void SetTtsSpeakCallback(
-      base::RepeatingCallback<void(const std::string&)> callback);
+      base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
+          callback);
   void SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event);
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
@@ -73,11 +76,12 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   raw_ptr<mojom::AccessibilityService> service_;
   base::OnceClosure automation_bound_closure_;
   base::OnceClosure tts_bound_closure_;
-  base::RepeatingCallback<void(const std::string&)> tts_speak_callback_;
 
   mojo::RemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
+      tts_speak_callback_;
   mojo::ReceiverSet<mojom::Tts> tts_receivers_;
   mojo::Remote<ax::mojom::TtsUtteranceClient> tts_utterance_client_;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)

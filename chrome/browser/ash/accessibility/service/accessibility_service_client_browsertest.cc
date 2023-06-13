@@ -16,8 +16,10 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom-shared.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -94,6 +96,9 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
              base::OnceCallback<void(bool)> speech_started_callback) override {
     utterance_id_ = utterance_id;
     utterance_ = utterance;
+    lang_ = lang;
+    voice_ = voice;
+    params_ = params;
     content::TtsController::GetInstance()->OnTtsEvent(
         utterance_id, /*event_type=*/content::TTS_EVENT_START, /*char_index=*/0,
         /*length=*/static_cast<int>(utterance.size()),
@@ -137,21 +142,24 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   bool IsSpeaking() override { return utterance_id_ != -1; }
 
   void GetVoices(std::vector<content::VoiceData>* voices) override {
-    voices->emplace_back();
-    content::VoiceData& voice = voices->back();
-    voice.native = true;
-    voice.name = "TestyMcTestFace";
-    voice.engine_id = extension_misc::kGoogleSpeechSynthesisExtensionId;
-    voice.events.insert(content::TTS_EVENT_END);
-    voice.events.insert(content::TTS_EVENT_START);
-    voice.events.insert(content::TTS_EVENT_PAUSE);
-    voice.events.insert(content::TTS_EVENT_RESUME);
-    voice.events.insert(content::TTS_EVENT_INTERRUPTED);
-    voice.events.insert(content::TTS_EVENT_WORD);
-    voice.events.insert(content::TTS_EVENT_SENTENCE);
-    voice.events.insert(content::TTS_EVENT_MARKER);
-    voice.events.insert(content::TTS_EVENT_CANCELLED);
-    voice.events.insert(content::TTS_EVENT_ERROR);
+    for (int i = 0; i < 3; i++) {
+      voices->emplace_back();
+      content::VoiceData& voice = voices->back();
+      voice.native = true;
+      voice.name = "TestyMcTestFace" + base::NumberToString(i);
+      voice.lang = "en-NZ";
+      voice.engine_id = extension_misc::kGoogleSpeechSynthesisExtensionId;
+      voice.events.insert(content::TTS_EVENT_END);
+      voice.events.insert(content::TTS_EVENT_START);
+      voice.events.insert(content::TTS_EVENT_PAUSE);
+      voice.events.insert(content::TTS_EVENT_RESUME);
+      voice.events.insert(content::TTS_EVENT_INTERRUPTED);
+      voice.events.insert(content::TTS_EVENT_WORD);
+      voice.events.insert(content::TTS_EVENT_SENTENCE);
+      voice.events.insert(content::TTS_EVENT_MARKER);
+      voice.events.insert(content::TTS_EVENT_CANCELLED);
+      voice.events.insert(content::TTS_EVENT_ERROR);
+    }
   }
 
   void Shutdown() override {}
@@ -177,10 +185,16 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   void SetNextUtteranceError(const std::string& error) {
     next_utterance_error_ = error;
   }
+  const std::string& lang() { return lang_; }
+  const content::VoiceData& voice() { return voice_; }
+  const content::UtteranceContinuousParameters& params() { return params_; }
 
  private:
   std::string utterance_ = "";
   int utterance_id_ = -1;
+  std::string lang_ = "";
+  content::VoiceData voice_;
+  content::UtteranceContinuousParameters params_;
   std::string error_ = "";
   std::string next_utterance_error_ = "";
 };
@@ -424,9 +438,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
   fake_service_->RequestTtsVoices(base::BindLambdaForTesting(
       [&waiter](std::vector<ax::mojom::TtsVoicePtr> voices) {
         waiter.Quit();
-        ASSERT_EQ(voices.size(), 1u);
+        ASSERT_EQ(voices.size(), 3u);
         auto& voice = voices[0];
-        EXPECT_EQ(voice->voice_name, "TestyMcTestFace");
+        EXPECT_EQ(voice->voice_name, "TestyMcTestFace0");
         EXPECT_EQ(voice->engine_id,
                   extension_misc::kGoogleSpeechSynthesisExtensionId);
         ASSERT_TRUE(voice->event_types);
@@ -633,6 +647,188 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsUtteranceError) {
             utterance_client = std::make_unique<TtsUtteranceClientImpl>(
                 std::move(result->utterance_client), std::move(callback));
           }));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptions) {
+  MockTtsPlatformImpl tts_platform;
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+
+  auto options = ax::mojom::TtsOptions::New();
+  options->rate = .5;
+  options->pitch = 1.5;
+  options->volume = .8;
+  options->enqueue = true;
+  options->voice_name = "TestyMcTestFace2";
+  options->engine_id = extension_misc::kGoogleSpeechSynthesisExtensionId;
+  options->lang = "en-NZ";
+  options->on_event = false;
+
+  fake_service_->RequestSpeak(
+      "I can't recall the taste of strawberries", std::move(options),
+      base::BindLambdaForTesting([&waiter, &tts_platform](
+                                     ax::mojom::TtsSpeakResultPtr result) {
+        waiter.Quit();
+        content::UtteranceContinuousParameters params = tts_platform.params();
+        EXPECT_EQ(params.rate, .5);
+        EXPECT_EQ(params.pitch, 1.5);
+        EXPECT_EQ(params.volume, .8);
+        content::VoiceData voice = tts_platform.voice();
+        EXPECT_EQ(voice.name, "TestyMcTestFace2");
+        EXPECT_EQ(tts_platform.lang(), "en-NZ");
+      }));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsPitchError) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+  auto options = ax::mojom::TtsOptions::New();
+  options->pitch = 3.0;
+
+  fake_service_->RequestSpeak(
+      "You shall not pass", std::move(options),
+      base::BindLambdaForTesting(
+          [&waiter](ax::mojom::TtsSpeakResultPtr result) {
+            waiter.Quit();
+            EXPECT_EQ(result->error, ax::mojom::TtsError::kErrorInvalidPitch);
+          }));
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsRateError) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+  auto options = ax::mojom::TtsOptions::New();
+  options->rate = 0.01;
+  fake_service_->RequestSpeak(
+      "For frodo", std::move(options),
+      base::BindLambdaForTesting(
+          [&waiter](ax::mojom::TtsSpeakResultPtr result) {
+            waiter.Quit();
+            EXPECT_EQ(result->error, ax::mojom::TtsError::kErrorInvalidRate);
+          }));
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsVolumeError) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+  auto options = ax::mojom::TtsOptions::New();
+  options->volume = 1.5;
+  fake_service_->RequestSpeak(
+      "The board is set. The pieces are moving.", std::move(options),
+      base::BindLambdaForTesting(
+          [&waiter](ax::mojom::TtsSpeakResultPtr result) {
+            waiter.Quit();
+            EXPECT_EQ(result->error, ax::mojom::TtsError::kErrorInvalidVolume);
+          }));
+
+  waiter.Run();
+}
+
+// Starts two requests for speech, the second starting just after the first
+// is in progress. With the option to enqueue, they should not interrupt.
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsEnqueue) {
+  MockTtsPlatformImpl tts_platform;
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr event)> first_callback =
+      base::BindLambdaForTesting([](ax::mojom::TtsEventPtr event) {
+        EXPECT_EQ(event->type, ax::mojom::TtsEventType::kStart);
+      });
+  auto first_options = ax::mojom::TtsOptions::New();
+  first_options->enqueue = true;
+  first_options->on_event = true;
+  std::unique_ptr<TtsUtteranceClientImpl> first_utterance_client;
+  fake_service_->RequestSpeak(
+      "Shadowfax, show us the meaning of haste.", std::move(first_options),
+      base::BindLambdaForTesting([&first_callback, &first_utterance_client](
+                                     ax::mojom::TtsSpeakResultPtr result) {
+        first_utterance_client = std::make_unique<TtsUtteranceClientImpl>(
+            std::move(result->utterance_client), std::move(first_callback));
+      }));
+  EXPECT_EQ(content::TtsController::GetInstance()->QueueSize(), 0);
+
+  auto second_options = ax::mojom::TtsOptions::New();
+  second_options->enqueue = true;
+  second_options->on_event = true;
+  std::unique_ptr<TtsUtteranceClientImpl> second_utterance_client;
+  fake_service_->RequestSpeak(
+      "Keep it secret. Keep it safe.", std::move(second_options),
+      base::BindLambdaForTesting(
+          [&waiter](ax::mojom::TtsSpeakResultPtr result) {
+            EXPECT_EQ(content::TtsController::GetInstance()->QueueSize(), 1);
+            waiter.Quit();
+          }));
+  waiter.Run();
+}
+
+// Starts two requests for speech, the second starting just after the first
+// is in progress. With the the option to enqueue false, the second interrupts
+// the first.
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsInterrupt) {
+  MockTtsPlatformImpl tts_platform;
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+  int start_count = 0;
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr event)> first_callback =
+      base::BindLambdaForTesting([&start_count](ax::mojom::TtsEventPtr event) {
+        if (event->type == ax::mojom::TtsEventType::kStart) {
+          // The first event should be started.
+          EXPECT_EQ(start_count, 0);
+          start_count++;
+          return;
+        }
+        // And then interrupted.
+        EXPECT_EQ(event->type, ax::mojom::TtsEventType::kInterrupted);
+      });
+  auto first_options = ax::mojom::TtsOptions::New();
+  first_options->enqueue = true;
+  first_options->on_event = true;
+  std::unique_ptr<TtsUtteranceClientImpl> first_utterance_client;
+  fake_service_->RequestSpeak(
+      "Shadowfax, show us the meaning of haste.", std::move(first_options),
+      base::BindLambdaForTesting([&first_callback, &first_utterance_client](
+                                     ax::mojom::TtsSpeakResultPtr result) {
+        first_utterance_client = std::make_unique<TtsUtteranceClientImpl>(
+            std::move(result->utterance_client), std::move(first_callback));
+      }));
+
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr event)> second_callback =
+      base::BindLambdaForTesting(
+          [&start_count, &waiter](ax::mojom::TtsEventPtr event) {
+            EXPECT_EQ(event->type, ax::mojom::TtsEventType::kStart);
+            // The second utterance should start after the first started.
+            EXPECT_EQ(start_count, 1);
+            waiter.Quit();
+          });
+
+  auto second_options = ax::mojom::TtsOptions::New();
+  second_options->enqueue = false;
+  second_options->on_event = true;
+  std::unique_ptr<TtsUtteranceClientImpl> second_utterance_client;
+  fake_service_->RequestSpeak(
+      "Keep it secret. Keep it safe.", std::move(second_options),
+      base::BindLambdaForTesting([&second_utterance_client, &second_callback](
+                                     ax::mojom::TtsSpeakResultPtr result) {
+        EXPECT_EQ(content::TtsController::GetInstance()->QueueSize(), 0);
+        second_utterance_client = std::make_unique<TtsUtteranceClientImpl>(
+            std::move(result->utterance_client), std::move(second_callback));
+      }));
+
   waiter.Run();
 }
 

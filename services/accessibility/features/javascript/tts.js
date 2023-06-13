@@ -43,38 +43,44 @@ class AtpTts {
    * @param {chrome.tts.TtsOptions} ttsOptions
    */
   speak(utterance, ttsOptions) {
-    // TODO(b:277221897): Parse and pass in ttsOptions.
-    this.remote_.speak(utterance).then(speakResult => {
-      if (speakResult.result.error != ax.mojom.TtsError.kNoError) {
-        console.error(
-            'Error when trying to speak', utterance,
-            speakResult.result.error);
-        return;
-      }
-      if (!speakResult.result.utteranceClient) {
-        console.error(
-            'UtteranceClient was unexpectedly missing from TtsSpeakResult.');
-        return;
-      }
-      const ttsEventObserver = new TtsEventObserver(
-          speakResult.result.utteranceClient, (ttsEvent) => {
-            if (ttsOptions.onEvent) {
-              let type = AtpTts.eventTypeToString_(ttsEvent.type);
-              ttsOptions.onEvent({
-                type,
-                charIndex: ttsEvent.charIndex,
-                length: ttsEvent.length,
-                errorMessage: ttsEvent.errorMessage
+    this.remote_.speak(utterance, AtpTts.createMojomOptions_(ttsOptions))
+        .then(speakResult => {
+          if (speakResult.result.error != ax.mojom.TtsError.kNoError) {
+            console.error(
+                'Error when trying to speak', utterance,
+                speakResult.result.error);
+            return;
+          }
+          if (!ttsOptions.onEvent) {
+            // No utterance client will be returned, no need to make an
+            // event observer.
+            return;
+          }
+          if (!speakResult.result.utteranceClient) {
+            console.error(
+                'UtteranceClient was unexpectedly ' +
+                'missing from TtsSpeakResult.');
+            return;
+          }
+          const ttsEventObserver = new TtsEventObserver(
+              speakResult.result.utteranceClient, (ttsEvent) => {
+                if (ttsOptions.onEvent) {
+                  let type = AtpTts.eventTypeToString_(ttsEvent.type);
+                  ttsOptions.onEvent({
+                    type,
+                    charIndex: ttsEvent.charIndex,
+                    length: ttsEvent.length,
+                    errorMessage: ttsEvent.errorMessage
+                  });
+                }
+                if (ttsEvent.isFinal) {
+                  // There will be no more events. Delete this observer from
+                  // observers.
+                  this.ttsEventObservers_.delete(ttsEventObserver);
+                }
               });
-            }
-            if (ttsEvent.isFinal) {
-              // There will be no more events. Delete this observer from
-              // observers.
-              this.ttsEventObservers_.delete(ttsEventObserver);
-            }
-          });
-      this.ttsEventObservers_.add(ttsEventObserver);
-    });
+          this.ttsEventObservers_.add(ttsEventObserver);
+        });
   }
 
   /**
@@ -163,6 +169,46 @@ class AtpTts {
       case ax.mojom.TtsEventType.kResume:
         return 'resume';
     }
+  }
+
+  /**
+   * Constructs a Mojom options object from a TtsOptions.
+   * @param {?chrome.tts.TtsOptions} ttsOptions
+   * @return {ax.mojom.TtsOptions}
+   * @private
+   */
+  static createMojomOptions_(ttsOptions) {
+    let options = new ax.mojom.TtsOptions();
+    if (ttsOptions === undefined) {
+      // Use default options.
+      return options;
+    }
+
+    if (ttsOptions.rate !== undefined) {
+      options.rate = ttsOptions.rate;
+    }
+    if (ttsOptions.pitch !== undefined) {
+      options.pitch = ttsOptions.pitch;
+    }
+    if (ttsOptions.volume !== undefined) {
+      options.volume = ttsOptions.volume;
+    }
+    if (ttsOptions.enqueue !== undefined) {
+      options.enqueue = ttsOptions.enqueue;
+    }
+    if (ttsOptions.voiceName !== undefined) {
+      options.voiceName = ttsOptions.voiceName;
+    }
+    if (ttsOptions.engineId !== undefined) {
+      options.engineId = ttsOptions.engineId;
+    }
+    if (ttsOptions.lang !== undefined) {
+      options.lang = ttsOptions.lang;
+    }
+    if (ttsOptions.onEvent !== undefined) {
+      options.onEvent = ttsOptions.onEvent !== undefined;
+    }
+    return options;
   }
 }
 

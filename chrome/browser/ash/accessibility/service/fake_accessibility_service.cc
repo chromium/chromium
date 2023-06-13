@@ -117,9 +117,18 @@ void FakeAccessibilityService::WaitForAutomationEvents() {
 void FakeAccessibilityService::RequestSpeak(
     const std::string& utterance,
     base::OnceCallback<void(ax::mojom::TtsSpeakResultPtr)> callback) {
+  auto options = ax::mojom::TtsOptions::New();
+  options->on_event = true;
+  RequestSpeak(utterance, std::move(options), std::move(callback));
+}
+
+void FakeAccessibilityService::RequestSpeak(
+    const std::string& utterance,
+    ax::mojom::TtsOptionsPtr options,
+    base::OnceCallback<void(ax::mojom::TtsSpeakResultPtr)> callback) {
   CHECK_EQ(tts_remotes_.size(), 1u);
   for (auto& tts_client : tts_remotes_) {
-    tts_client->Speak(utterance, std::move(callback));
+    tts_client->Speak(utterance, std::move(options), std::move(callback));
   }
 }
 

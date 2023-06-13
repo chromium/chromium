@@ -16,6 +16,7 @@
 #include "services/accessibility/os_accessibility_service.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ax {
@@ -176,8 +177,8 @@ TEST_F(TtsJSApiTest, TtsGetVoices) {
 // is consistent: if start is sent before end in C++, it should
 // be received before end in JS.
 TEST_F(TtsJSApiTest, TtsSpeakWithStartAndEndEvents) {
-  client_->SetTtsSpeakCallback(
-      base::BindLambdaForTesting([this](const std::string& text) {
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [this](const std::string& text, mojom::TtsOptionsPtr options) {
         EXPECT_EQ(text, "Hello, world");
         auto start_event = ax::mojom::TtsEvent::New();
         start_event->type = mojom::TtsEventType::kStart;
@@ -205,8 +206,8 @@ TEST_F(TtsJSApiTest, TtsSpeakWithStartAndEndEvents) {
 
 TEST_F(TtsJSApiTest, TtsSpeaksNumbers) {
   base::RunLoop waiter;
-  client_->SetTtsSpeakCallback(
-      base::BindLambdaForTesting([&waiter](const std::string& text) {
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [&waiter](const std::string& text, mojom::TtsOptionsPtr options) {
         EXPECT_EQ(text, "42");
         waiter.Quit();
       }));
@@ -218,8 +219,8 @@ TEST_F(TtsJSApiTest, TtsSpeaksNumbers) {
 }
 
 TEST_F(TtsJSApiTest, TtsSpeakPauseResumeStopEvents) {
-  client_->SetTtsSpeakCallback(
-      base::BindLambdaForTesting([this](const std::string& text) {
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [this](const std::string& text, mojom::TtsOptionsPtr options) {
         EXPECT_EQ(text, "Green is the loneliest color");
         auto start_event = ax::mojom::TtsEvent::New();
         start_event->type = mojom::TtsEventType::kStart;
@@ -261,8 +262,8 @@ TEST_F(TtsJSApiTest, TtsSpeakPauseResumeStopEvents) {
 
 // Test that parameters can be sent in an event.
 TEST_F(TtsJSApiTest, TtsEventPassesParams) {
-  client_->SetTtsSpeakCallback(
-      base::BindLambdaForTesting([this](const std::string& text) {
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [this](const std::string& text, mojom::TtsOptionsPtr options) {
         EXPECT_EQ(text, "Hello, world");
         auto start_event = ax::mojom::TtsEvent::New();
         start_event->type = mojom::TtsEventType::kStart;
@@ -287,8 +288,8 @@ TEST_F(TtsJSApiTest, TtsEventPassesParams) {
 }
 
 TEST_F(TtsJSApiTest, TtsIsSpeaking) {
-  client_->SetTtsSpeakCallback(
-      base::BindLambdaForTesting([this](const std::string& text) {
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [this](const std::string& text, mojom::TtsOptionsPtr options) {
         EXPECT_EQ(text, "Pie in the sky");
         auto start_event = ax::mojom::TtsEvent::New();
         start_event->type = mojom::TtsEventType::kStart;
@@ -315,8 +316,8 @@ TEST_F(TtsJSApiTest, TtsIsSpeaking) {
 }
 
 TEST_F(TtsJSApiTest, TtsUtteranceError) {
-  client_->SetTtsSpeakCallback(
-      base::BindLambdaForTesting([this](const std::string& text) {
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [this](const std::string& text, mojom::TtsOptionsPtr options) {
         EXPECT_EQ(text, "No man can kill me");
         auto error_event = ax::mojom::TtsEvent::New();
         error_event->type = mojom::TtsEventType::kError;
@@ -336,6 +337,63 @@ TEST_F(TtsJSApiTest, TtsUtteranceError) {
     });
   )JS");
   WaitForJSTestComplete();
+}
+
+TEST_F(TtsJSApiTest, DefaultTtsOptions) {
+  base::RunLoop waiter;
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [&waiter](const std::string& text, mojom::TtsOptionsPtr options) {
+        waiter.Quit();
+        EXPECT_EQ(options->pitch, 1.0);
+        EXPECT_EQ(options->rate, 1.0);
+        EXPECT_EQ(options->volume, 1.0);
+        EXPECT_FALSE(options->enqueue);
+        EXPECT_FALSE(options->voice_name);
+        EXPECT_FALSE(options->engine_id);
+        EXPECT_FALSE(options->lang);
+        EXPECT_FALSE(options->on_event);
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.tts.speak('You have my ax');
+  )JS");
+
+  waiter.Run();
+}
+
+TEST_F(TtsJSApiTest, TtsOptions) {
+  base::RunLoop waiter;
+  client_->SetTtsSpeakCallback(base::BindLambdaForTesting(
+      [&waiter](const std::string& text, mojom::TtsOptionsPtr options) {
+        waiter.Quit();
+        EXPECT_EQ(options->pitch, 0.5);
+        EXPECT_EQ(options->rate, 1.5);
+        EXPECT_EQ(options->volume, 2.5);
+        EXPECT_TRUE(options->enqueue);
+        ASSERT_TRUE(options->voice_name);
+        EXPECT_EQ(options->voice_name.value(), "Gimli");
+        ASSERT_TRUE(options->engine_id);
+        EXPECT_EQ(options->engine_id.value(), "us_dwarf");
+        ASSERT_TRUE(options->lang);
+        EXPECT_EQ(options->lang.value(), "en-NZ");
+        EXPECT_TRUE(options->on_event);
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const options = {
+      pitch: .5,
+      rate: 1.5,
+      volume: 2.5,
+      enqueue: true,
+      engineId: 'us_dwarf',
+      lang: 'en-NZ',
+      voiceName: 'Gimli',
+      onEvent: (ttsEvent) => {},
+    };
+    chrome.tts.speak('You have my ax', options);
+  )JS");
+
+  waiter.Run();
 }
 
 }  // namespace ax
