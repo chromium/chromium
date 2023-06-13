@@ -48,6 +48,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "device/fido/mac/util.h"
 #endif
 
 namespace {
@@ -414,14 +415,24 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
                            ? Step::kPreSelectSingleAccount
                            : Step::kPreSelectAccount);
       } else {
-        // For requests with an allow list, pre-select a random credential and
-        // show that one to the user. For platform authenticators with optional
-        // UV (e.g. Touch ID), this step essentially acts as the user presence
-        // check.
+        // For requests with an allow list, pre-select a random credential.
         ephemeral_state_.creds_ = {
             transport_availability_
                 .recognized_platform_authenticator_credentials.front()};
-        SetCurrentStep(Step::kPreSelectSingleAccount);
+#if BUILDFLAG(IS_MAC)
+        if (base::FeatureList::IsEnabled(
+                device::kWebAuthnSkipSingleAccountMacOS) &&
+            device::fido::mac::DeviceHasBiometricsAvailable()) {
+          // If we can do Touch ID, jump directly to it.
+          HideDialogAndDispatchToPlatformAuthenticator();
+        } else
+#endif
+        {
+          // Otherwise show the chosen credential to the user. For platform
+          // authenticators with optional UV (e.g. Touch ID), this step
+          // essentially acts as the user presence check.
+          SetCurrentStep(Step::kPreSelectSingleAccount);
+        }
       }
       return;
     }

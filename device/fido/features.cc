@@ -98,4 +98,9 @@ BASE_FEATURE(kWebAuthnPrelinkPlayServices,
              "WebAuthenticationPrelinkPlayServices",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled in M116. Remove in or after M119.
+BASE_FEATURE(kWebAuthnSkipSingleAccountMacOS,
+             "WebAuthenticationSkipSingleAccountMacOS",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

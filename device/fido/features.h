@@ -74,6 +74,10 @@ BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPrelinkPlayServices);
 
+// Don't show the single-account sheet on macOS if Touch ID is available.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

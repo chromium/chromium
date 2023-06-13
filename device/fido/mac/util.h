@@ -69,6 +69,7 @@ CodeSigningState ProcessIsSigned();
 // to whether the device supports Touch ID, and whether the sensor is ready to
 // be used (i.e. not soft-locked from consecutive bad attempts; laptop lid not
 // closed).
+COMPONENT_EXPORT(DEVICE_FIDO)
 bool DeviceHasBiometricsAvailable();
 
 }  // namespace device::fido::mac
