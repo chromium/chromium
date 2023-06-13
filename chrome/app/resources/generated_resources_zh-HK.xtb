@@ -527,6 +527,7 @@
 <translation id="1448779317883494811">筆刷工具</translation>
 <translation id="1449191289887455076">再次按下「<ph name="CURRENTKEY" />」鍵即可確認指派設定並<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">另存為單一檔案網頁</translation>
+<translation id="145280054552001290">新增和移除字幕語言</translation>
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />
     偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕擷圖</translation>
@@ -1456,6 +1457,7 @@
 <translation id="2204020417499639567">填入咗電郵。</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
 <translation id="2204387456724731099">翻譯唔到呢個揀咗嘅項目</translation>
+<translation id="2207116775853792104">保留此擴充程式</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
 <translation id="2211245494465528624">管理同步處理選項</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
@@ -3616,6 +3618,7 @@
 <translation id="4044612648082411741">輸入您的憑證密碼</translation>
 <translation id="4044708573046946214">螢幕鎖定密碼</translation>
 <translation id="404493185430269859">預設搜尋引擎</translation>
+<translation id="4045196801416070837">裝置音效</translation>
 <translation id="4046013316139505482">這些擴充程式無需查看或變更此網站的資料。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4047345532928475040">不適用</translation>
@@ -5219,6 +5222,7 @@
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您備份資料，並在 {NUM_DAYS} 天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
+<translation id="5485435764083510385">偏好的字幕語言</translation>
 <translation id="5485754497697573575">還原所有分頁</translation>
 <translation id="5486261815000869482">確認密碼</translation>
 <translation id="5486561344817861625">模擬瀏覽器重新啟動</translation>
@@ -7400,6 +7404,7 @@
 <translation id="7400839060291901923">在 <ph name="PHONE_NAME" /> 上設定連線</translation>
 <translation id="7401778920660465883">關閉此訊息</translation>
 <translation id="7402198013420237102">要將已儲存的密碼移至 Google 帳戶嗎？</translation>
+<translation id="740333000181878130">裝置啟動音效</translation>
 <translation id="7403642243184989645">下載資源</translation>
 <translation id="7404065585741198296">連接 USB 連接線的手機</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{1 小時前已執行安全檢查}other{{NUM_HOURS} 小時前已執行安全檢查}}</translation>
@@ -7447,6 +7452,7 @@
 <translation id="7434509671034404296">開發人員</translation>
 <translation id="7434757724413878233">滑鼠加速</translation>
 <translation id="7434969625063495310">無法新增列印伺服器。請檢查伺服器設定，然後再試一次。</translation>
+<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{檢查從「Chrome 網上應用程式商店」下架的 1 個擴充程式}other{檢查從「Chrome 網上應用程式商店」下架的 {NUM_EXTENSIONS} 個擴充程式}}</translation>
 <translation id="7436921188514130341">很抱歉！重新命名過程中發生錯誤。</translation>
 <translation id="7439519621174723623">新增裝置名稱以繼續</translation>
 <translation id="7441736921018636843">如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />以移除同步密碼短語</translation>
@@ -7463,6 +7469,7 @@
 <translation id="7452166281927983300">已關閉的警告 (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">選取此打印機，即表示您授權下列擴充程式存取您的打印機：</translation>
 <translation id="7453467225369441013">您會登出大部分的網站，但不會因此登出 Google 帳戶。</translation>
+<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{此擴充程式可能不安全。Chrome 建議您移除此擴充程式。}other{這些擴充程式可能不安全。Chrome 建議您移除這些擴充程式。}}</translation>
 <translation id="7454548535253569100">入口網站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">管理其他容器</translation>
 <translation id="7455988709578031708">根據您的瀏覽記錄推薦。此設定已開啟。</translation>

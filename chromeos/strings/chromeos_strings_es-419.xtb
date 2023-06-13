@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
 <translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks.</translation>
+<translation id="1164939766849482256">Protector de pantalla Del amanecer a la noche</translation>
 <translation id="1167755866710282443">Abre el menú para personalizar las teclas. Arrastra el menú para moverlo.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Promedio (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">Exploración en el navegador</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2878387241690264070">Se descargó el <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="2880569433548999039">Protector de pantalla Flujo de nubes</translation>
 <translation id="2926057806159140518">Ingresa tu nombre de usuario y contraseña, o bien, escanea tu código QR</translation>
 <translation id="2940811910881150316">No se puede probar el dispositivo. Vuelve a abrir la tapa para realizar pruebas.</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">Se detectó un portal cautivo.</translation>
 <translation id="3160172848211257835">Enviar <ph name="BEGIN_LINK1" />información del sistema y las apps<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Coloca tu documento en el escáner.</translation>
+<translation id="3174321110679064523">Fondo de pantalla Del amanecer a la noche</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="319101249942218879">Se cambió la imagen de avatar</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
+<translation id="3373141842870501561">Fondo de pantalla Flujo de la Tierra</translation>
 <translation id="3404249063913988450">Habilitar el protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">superior</translation>
 <translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
 <translation id="3663574643422533538">Selecciona material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">Fondo de pantalla Flujo de nubes</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">controles de rgb</translation>
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
+<translation id="382043424867370667">Fondo de pantalla Puesta del sol</translation>
 <translation id="3824259034819781947">Adjuntar archivos</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
 <translation id="3845880861638660475">Presiona <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> para cerrar el diálogo.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">Contraseña anterior</translation>
 <translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Destino del escaneo</translation>
+<translation id="4469288414739283461">Protector de pantalla Flujo de la Tierra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">Volver a ejecutar las rutinas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">color de retroiluminación</translation>
+<translation id="5292579816060236070">Fondo de pantalla Amanecer</translation>
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover la ventana al escritorio</translation>
+<translation id="5303837385540978511">Fondo de pantalla exclusivo para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{¿Deseas volver a escanear la página?}=1{¿Deseas volver a escanear la página {PAGE_NUMBER}?}other{¿Deseas volver a escanear la página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">Protector de pantalla exclusivo para <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Se detuvo: se atascó el papel</translation>
 <translation id="6494974875566443634">Personalización</translation>
 <translation id="6500818810472529210">Ver el resultado en la Búsqueda de Google</translation>

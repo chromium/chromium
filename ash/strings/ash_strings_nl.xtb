@@ -141,6 +141,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1550406609415860283">Apparaten beschikbaar</translation>
 <translation id="1550523713251050646">Klik voor meer opties</translation>
 <translation id="1555130319947370107">Blauw</translation>
+<translation id="1576511610858879060">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Gebruik een andere invoerbron voor een betere audiokwaliteit.</translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
@@ -356,6 +357,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="256712445991462162">het vastgezette vergrootglas</translation>
 <translation id="2573588302192866788">Kan <ph name="NAME" /> niet koppelen</translation>
 <translation id="2575685495496069081">Toegang tot meerdere accounts is uitgezet</translation>
+<translation id="2579264398927991698">Firmware-updates</translation>
 <translation id="2582112259361606227">Opnieuw starten om updates uit te voeren</translation>
 <translation id="2586561057878260610">Druk op Ctrl + W om te combineren met <ph name="DESK_NAME" />. Druk op Ctrl + Shift + W om het bureau en de vensters te sluiten.</translation>
 <translation id="2595239820337756193">5 km in mijl</translation>
@@ -687,6 +689,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4028481283645788203">Wachtwoord vereist voor extra beveiliging</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Je deelt je scherm</translation>
+<translation id="404437169852192935">Updates beëindigd</translation>
 <translation id="4049230407053723315">Snelle instellingen</translation>
 <translation id="4057003836560082631">Browsertabblad <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Uit voor een app}other{Uit voor # apps}}</translation>
@@ -1017,11 +1020,13 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /> + <ph name="KEY_ONE" /> of <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Firmware-updates beschikbaar</translation>
 <translation id="5503884284981862082">De Google Assistent openen/sluiten</translation>
+<translation id="550391772491508736">Casten hervatten</translation>
 <translation id="5506975627792768506">Vergrootglas aan- of uitzetten</translation>
 <translation id="5512042095225963688">Vorig woord verwijderen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Je beheerder heeft alle e-simkaartprofielen verwijderd. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> maakt verbinding.</translation>
+<translation id="5529587891732734495">Casten onderbreken</translation>
 <translation id="5532994612895037630">Tik ergens om het hele scherm op te nemen</translation>
 <translation id="5536723544185013515">Recente apps, navigeer met de pijl-links of -rechts voor toegang tot alle recente apps</translation>
 <translation id="553675580533261935">Sessie sluiten</translation>
@@ -1389,6 +1394,7 @@ Nieuwe installatie</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
+<translation id="7185362672357349361">Porren voor geluid uitzetten aanzetten? Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="7187711731540696127">Je <ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
 <translation id="7189412385142492784">Hoe ver weg is Venus</translation>

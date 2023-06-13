@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A janela de atualização de firmware para dispositivos externos está aberta. <ph name="NUM_UPDATES" /> atualizações disponíveis.</translation>
 <translation id="1145516343487477149">Encontre artigos de ajuda e respostas a perguntas comuns sobre Chromebooks</translation>
+<translation id="1164939766849482256">Protetor de tela Do amanhecer à escuridão</translation>
 <translation id="1167755866710282443">Abra o menu para personalizar as teclas. Arraste o menu para mover.</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Médio (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">Navegação no navegador</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="2880569433548999039">Protetor de tela Fluxo das nuvens</translation>
 <translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o código QR</translation>
 <translation id="2940811910881150316">Não foi possível testar o dispositivo. Abra a tampa novamente para testar.</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">Portal cativo detectado</translation>
 <translation id="3160172848211257835">Enviar <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> e <ph name="BEGIN_LINK1" />informações sobre apps e o sistema<ph name="END_LINK1" /></translation>
 <translation id="3170673040743561620">Coloque o documento no scanner</translation>
+<translation id="3174321110679064523">Plano de fundo Do amanhecer à escuridão</translation>
 <translation id="3188257591659621405">Meus arquivos</translation>
 <translation id="319101249942218879">A imagem do avatar foi alterada</translation>
 <translation id="3192947282887913208">Arquivos de áudio</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
+<translation id="3373141842870501561">Plano de fundo Fluxo da Terra</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
 <translation id="3413935475507503304">Para continuar com a atualização, clique em "Próxima".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">parte de cima</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3663574643422533538">Selecione pôsteres exclusivos do <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">Plano de fundo Fluxo das nuvens</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">controles de RGB</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
+<translation id="382043424867370667">Plano de fundo Pôr do sol</translation>
 <translation id="3824259034819781947">Anexar arquivos</translation>
 <translation id="3838338534323494292">Nova senha</translation>
 <translation id="3845880861638660475">Pressione <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para fechar a caixa de diálogo.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">Senha antiga</translation>
 <translation id="4453205916657964690">Máscara de sub-rede</translation>
 <translation id="4454245904991689773">Salvar em</translation>
+<translation id="4469288414739283461">Protetor de tela Fluxo da Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">Repetir rotinas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">cor da iluminação</translation>
+<translation id="5292579816060236070">Plano de fundo Amanhecer</translation>
 <translation id="5294769550414936029">versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover janela para o espaço de trabalho</translation>
+<translation id="5303837385540978511">Plano de fundo exclusivo para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDO</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Digitalizar a página novamente?}=1{Digitalizar a página {PAGE_NUMBER} novamente?}one{Digitalizar a página {PAGE_NUMBER} novamente?}other{Digitalizar a página {PAGE_NUMBER} novamente?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">Protetor de tela exclusivo para <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>
 <translation id="6494974875566443634">Personalização</translation>
 <translation id="6500818810472529210">Ver resultados na Pesquisa Google</translation>
@@ -967,6 +977,7 @@
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8845001906332463065">Ajuda</translation>
+<translation id="8851859208664803097">Interrompido: impressora inacessível</translation>
 <translation id="8855781559874488009">O firewall impediu a conexão a sites HTTP</translation>
 <translation id="885701979325669005">Armazenamento</translation>
 <translation id="885704831271383379">teclado mais escuro</translation>

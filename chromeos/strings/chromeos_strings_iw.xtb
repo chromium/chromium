@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
 <translation id="1145516343487477149">‏חיפוש של מאמרי עזרה ותשובות לשאלות נפוצות בנושא Chromebook</translation>
+<translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
 <translation id="1167755866710282443">פתיחת התפריט להתאמה אישית של המפתחות. יש לגרור את התפריט כדי להזיז אותו.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ממוצע (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">ניווט באמצעות הדפדפן</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
+<translation id="2880569433548999039">שומר המסך של תנועת העננים</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
 <translation id="3008341117444806826">רענון</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">זוהה פורטל שבוי</translation>
 <translation id="3160172848211257835">שליחת <ph name="BEGIN_LINK1" />פרטי אפליקציות ומערכת<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />מדדים<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">צריך להניח את המסמך על הסורק</translation>
+<translation id="3174321110679064523">הטפט: מעלות השחר עד לרדת החושך</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">חלונות</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
+<translation id="3373141842870501561">הטפט של זרימה בכדור הארץ</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">העליון</translation>
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
 <translation id="3663574643422533538">בחירה של יצירת אומנות בלעדית ל-<ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">הטפט של תנועת העננים</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">‏פקדים לכוונון RGB</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
+<translation id="382043424867370667">טפט השקיעה</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">סיסמה ישנה</translation>
 <translation id="4453205916657964690">מסכה של רשת משנה</translation>
 <translation id="4454245904991689773">מיקום שמירת הסריקה</translation>
+<translation id="4469288414739283461">שומר המסך של זרימה בכדור הארץ</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
 <translation id="4500966230243561393">צבע הממשק</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">הפעלת תרחישים מחדש</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">צבע התאורה האחורית</translation>
+<translation id="5292579816060236070">טפט הזריחה</translation>
 <translation id="5294769550414936029">גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
+<translation id="5303837385540978511">טפט בלעדי ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">‏נתוני EvDo</translation>
 <translation id="5315873049536339193">זהות</translation>
 <translation id="5317780077021120954">שמירה</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">שומר מסך בלעדי ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
 <translation id="6494974875566443634">התאמה אישית</translation>
 <translation id="6500818810472529210">‏לתוצאות בחיפוש Google</translation>
@@ -967,6 +977,7 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
+<translation id="8851859208664803097">המשימה הופסקה – אין גישה למדפסת</translation>
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>
 <translation id="885701979325669005">אחסון</translation>
 <translation id="885704831271383379">איך להכהות את המקלדת</translation>

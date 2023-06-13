@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizace firmwaru externích zařízení je otevřené. Dostupné aktualizace: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Články nápovědy a odpovědi na časté dotazy ohledně Chromebooků</translation>
+<translation id="1164939766849482256">Spořič obrazovky Od úsvitu do setmění</translation>
 <translation id="1167755866710282443">Otevřete nabídku pro přizpůsobení kláves. Nabídku přesunete přetažením.</translation>
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Průměrný (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">Navigace v prohlížeči</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
+<translation id="2880569433548999039">Spořič obrazovky s plynoucími oblaky</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
 <translation id="2940811910881150316">Zařízení nelze otestovat. Znovu otevřete víko.</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
 <translation id="3160172848211257835">Odesílat <ph name="BEGIN_LINK1" />informace o systému a aplikacích<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Položte dokument na skener</translation>
+<translation id="3174321110679064523">Tapeta od úsvitu do setmění</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
+<translation id="3373141842870501561">Tapeta Plynoucí Země</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">nahoře</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
 <translation id="3663574643422533538">Vybrat umělecké dílo exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">Tapeta s plynoucími oblaky</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">ovládání rgb</translation>
 <translation id="38114475217616659">Vymazat celou historii</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
+<translation id="382043424867370667">Tapeta se západem slunce</translation>
 <translation id="3824259034819781947">Připojit soubory</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3845880861638660475">Dialogové okno zavřete stisknutím kombinace kláves <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsítě</translation>
 <translation id="4454245904991689773">Uložit do</translation>
+<translation id="4469288414739283461">Spořič obrazovky Plynoucí Země</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
 <translation id="4500966230243561393">Barva rozhraní</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">Znovu spustit sledy činností</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">barva podsvícení</translation>
+<translation id="5292579816060236070">Tapeta s východem slunce</translation>
 <translation id="5294769550414936029">verze <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Přesunout okno na plochu</translation>
+<translation id="5303837385540978511">Exkluzivní tapeta pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložit</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku?}=1{Znovu naskenovat stránku {PAGE_NUMBER}?}few{Znovu naskenovat stránku {PAGE_NUMBER}?}many{Znovu naskenovat stránku {PAGE_NUMBER}?}other{Znovu naskenovat stránku {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Jednorázové heslo</translation>
 <translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">Exkluzivní spořič obrazovky pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Zastaveno – zasekl se papír</translation>
 <translation id="6494974875566443634">Přizpůsobení</translation>
 <translation id="6500818810472529210">Zobrazit výsledek ve Vyhledávání Google</translation>
