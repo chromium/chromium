@@ -327,6 +327,7 @@
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
   "goma": {
+    "android-archive-dbg-goma-rbe-ats-canary": "Ubuntu-22.04",
     "linux-archive-rel-goma-rbe-ats-canary": "Ubuntu-22.04"
   },
   "reclient": {
