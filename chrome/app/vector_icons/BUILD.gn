@@ -136,6 +136,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "notes.icon",
     "open_in_new.icon",
     "open_in_new_chrome_refresh.icon",
+    "open_in_new_off_chrome_refresh.icon",
     "overflow_chevron.icon",
     "paintbrush.icon",
     "palette.icon",

@@ -50,6 +50,7 @@
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
@@ -292,6 +293,80 @@ const ContentSettingsImageDetails* GetImageDetails(ContentSettingsType type) {
   return nullptr;
 }
 
+void GetIconChromeRefresh(ContentSettingsType type,
+                          bool blocked,
+                          raw_ptr<const gfx::VectorIcon>* icon) {
+  switch (type) {
+    case ContentSettingsType::COOKIES:
+      *icon = blocked ? &vector_icons::kCookieOffChromeRefreshIcon
+                      : &vector_icons::kCookieChromeRefreshIcon;
+      return;
+    case ContentSettingsType::IMAGES:
+      *icon = blocked ? &vector_icons::kPhotoOffChromeRefreshIcon
+                      : &vector_icons::kPhotoChromeRefreshIcon;
+      return;
+    case ContentSettingsType::JAVASCRIPT:
+      *icon = blocked ? &vector_icons::kCodeOffChromeRefreshIcon
+                      : &vector_icons::kCodeChromeRefreshIcon;
+      return;
+    case ContentSettingsType::MIXEDSCRIPT:
+      *icon = blocked ? &vector_icons::kNotSecureWarningOffChromeRefreshIcon
+                      : &vector_icons::kNotSecureWarningChromeRefreshIcon;
+      return;
+    case ContentSettingsType::SOUND:
+      *icon = blocked ? &vector_icons::kVolumeOffChromeRefreshIcon
+                      : &vector_icons::kVolumeUpChromeRefreshIcon;
+      return;
+    case ContentSettingsType::ADS:
+      *icon = blocked ? &vector_icons::kAdsOffChromeRefreshIcon
+                      : &vector_icons::kAdsChromeRefreshIcon;
+      return;
+    case ContentSettingsType::GEOLOCATION:
+      *icon = blocked ? &vector_icons::kLocationOffChromeRefreshIcon
+                      : &vector_icons::kLocationOnChromeRefreshIcon;
+      return;
+    case ContentSettingsType::PROTOCOL_HANDLERS:
+      *icon = blocked ? &vector_icons::kProtocolHandlerOffChromeRefreshIcon
+                      : &vector_icons::kProtocolHandlerChromeRefreshIcon;
+      return;
+    case ContentSettingsType::MIDI_SYSEX:
+      *icon = blocked ? &vector_icons::kMidiOffChromeRefreshIcon
+                      : &vector_icons::kMidiChromeRefreshIcon;
+      return;
+    case ContentSettingsType::AUTOMATIC_DOWNLOADS:
+      *icon = blocked ? &vector_icons::kFileDownloadOffChromeRefreshIcon
+                      : &vector_icons::kFileDownloadChromeRefreshIcon;
+      return;
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+      *icon = blocked ? &vector_icons::kContentPasteOffChromeRefreshIcon
+                      : &vector_icons::kContentPasteChromeRefreshIcon;
+      return;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      *icon = blocked ? &vector_icons::kMicOffChromeRefreshIcon
+                      : &vector_icons::kMicChromeRefreshIcon;
+      return;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      *icon = blocked ? &vector_icons::kVideocamOffChromeRefreshIcon
+                      : &vector_icons::kVideocamChromeRefreshIcon;
+      return;
+    case ContentSettingsType::NOTIFICATIONS:
+      *icon = blocked ? &vector_icons::kNotificationsOffChromeRefreshIcon
+                      : &vector_icons::kNotificationsChromeRefreshIcon;
+      return;
+    case ContentSettingsType::SENSORS:
+      *icon = blocked ? &vector_icons::kSensorsOffChromeRefreshIcon
+                      : &vector_icons::kSensorsChromeRefreshIcon;
+      return;
+    case ContentSettingsType::POPUPS:
+      *icon = blocked ? &kOpenInNewOffChromeRefreshIcon
+                      : &kOpenInNewChromeRefreshIcon;
+      return;
+    default:
+      NOTREACHED();
+      return;
+  }
+}
+
 // A wrapper function that allows returning both post-chrome-refresh and
 // pre-chrome-refresh icons. To minimize code churn, this method returns two
 // icons: a base icon and a badge. The badge is painted on top of the base icon,
@@ -301,6 +376,12 @@ void GetIconFromType(ContentSettingsType type,
                      bool blocked,
                      raw_ptr<const gfx::VectorIcon>* icon,
                      raw_ptr<const gfx::VectorIcon>* badge) {
+  if (features::IsChromeRefresh2023()) {
+    *badge = &gfx::kNoneIcon;
+    GetIconChromeRefresh(type, blocked, icon);
+    return;
+  }
+
   *badge = (blocked ? &vector_icons::kBlockedBadgeIcon : &gfx::kNoneIcon);
   switch (type) {
     case ContentSettingsType::COOKIES:
@@ -534,6 +615,7 @@ void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
 }
 
 void ContentSettingImageModel::SetFramebustBlockedIcon() {
+  // TODO(https://crbug.com/1447073): Set a cr23 icon for blocked redirect.
   icon_ = &kBlockedRedirectIcon;
   icon_badge_ = &vector_icons::kBlockedBadgeIcon;
 }
