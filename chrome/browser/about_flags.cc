@@ -10430,6 +10430,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kProcessPerSiteUpToMainFrameThreshold)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-battery-saver-always-on",
+     flag_descriptions::kCrosBatterySaverAlwaysOnName,
+     flag_descriptions::kCrosBatterySaverAlwaysOnDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBatterySaverAlwaysOn)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

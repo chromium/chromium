@@ -245,6 +245,11 @@ BASE_FEATURE(kBatterySaver,
              "CrosBatterySaver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Make Battery Saver on all the time, even when charged or charging.
+BASE_FEATURE(kBatterySaverAlwaysOn,
+             "CrosBatterySaverAlwaysOn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -2670,6 +2675,10 @@ bool IsBackgroundBlurEnabled() {
 
 bool IsBatterySaverAvailable() {
   return base::FeatureList::IsEnabled(kBatterySaver);
+}
+
+bool IsBatterySaverAlwaysOn() {
+  return base::FeatureList::IsEnabled(kBatterySaverAlwaysOn);
 }
 
 bool IsBluetoothQualityReportEnabled() {

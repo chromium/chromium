@@ -66221,6 +66221,7 @@ from previous Chrome versions.
   <int value="1719958026" label="QueryTiles:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
+  <int value="1722521465" label="CrosBatterySaverAlwaysOn:disabled"/>
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>
   <int value="1723601083" label="enable-app-window-controls"/>
   <int value="1724247189" label="StylusHandwriting:enabled"/>
@@ -66645,6 +66646,7 @@ from previous Chrome versions.
       label="EnableBluetoothVerboseLogsForGooglers:enabled"/>
   <int value="1930901873" label="disable-sync-app-list"/>
   <int value="1931309368" label="fill-on-account-select:disabled"/>
+  <int value="1932038907" label="CrosBatterySaverAlwaysOn:enabled"/>
   <int value="1932204471" label="SyncPseudoUSSThemes:disabled"/>
   <int value="1932732886" label="OpenVR:enabled"/>
   <int value="1933282728" label="OmniboxUICuesForSearchHistoryMatches:enabled"/>

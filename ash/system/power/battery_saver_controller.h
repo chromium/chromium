@@ -52,6 +52,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   PrefChangeRegistrar pref_change_registrar_;
 
+  bool always_on_;
+
   base::WeakPtrFactory<BatterySaverController> weak_ptr_factory_{this};
 };
 

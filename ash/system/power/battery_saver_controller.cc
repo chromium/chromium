@@ -4,6 +4,7 @@
 
 #include "ash/system/power/battery_saver_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -15,7 +16,8 @@ namespace ash {
 const double BatterySaverController::kActivationChargePercent = 20.0;
 
 BatterySaverController::BatterySaverController(PrefService* local_state)
-    : local_state_(local_state) {
+    : local_state_(local_state),
+      always_on_(features::IsBatterySaverAlwaysOn()) {
   power_status_observation_.Observe(PowerStatus::Get());
 
   pref_change_registrar_.Init(local_state);
@@ -36,6 +38,11 @@ void BatterySaverController::RegisterLocalStatePrefs(
 }
 
 void BatterySaverController::OnPowerStatusChanged() {
+  if (always_on_) {
+    SetBatterySaverState(true);
+    return;
+  }
+
   auto* power_status = PowerStatus::Get();
   double battery_percent = power_status->GetBatteryPercent();
   bool active = power_status->IsBatterySaverActive();
@@ -52,6 +59,11 @@ void BatterySaverController::OnPowerStatusChanged() {
 }
 
 void BatterySaverController::OnSettingsPrefChanged() {
+  if (always_on_) {
+    SetBatterySaverState(true);
+    return;
+  }
+
   // OS Settings has changed the pref, tell Power Manager.
   SetBatterySaverState(local_state_->GetBoolean(prefs::kPowerBatterySaver));
 }
