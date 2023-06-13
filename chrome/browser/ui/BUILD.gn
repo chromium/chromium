@@ -510,6 +510,7 @@ static_library("ui") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/chrome_for_testing:buildflags",
     "//chrome/browser/companion/core",
+    "//chrome/browser/companion/visual_search",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/google",

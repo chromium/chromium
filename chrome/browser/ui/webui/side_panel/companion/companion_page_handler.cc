@@ -12,6 +12,8 @@
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
+#include "chrome/browser/companion/visual_search/features.h"
+#include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -61,6 +63,13 @@ CompanionPageHandler::CompanionPageHandler(
   identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(GetProfile()));
   consent_helper_observation_.Observe(consent_helper_.get());
+  if (base::FeatureList::IsEnabled(
+          visual_search::features::kVisualSearchSuggestions)) {
+    visual_search_host_ =
+        std::make_unique<visual_search::VisualSearchClassifierHost>(
+            visual_search::VisualSearchSuggestionsServiceFactory::GetForProfile(
+                GetProfile()));
+  }
 }
 
 CompanionPageHandler::~CompanionPageHandler() {
@@ -126,6 +135,22 @@ void CompanionPageHandler::DidFinishNavigation(
     return;
   }
   NotifyURLChanged(/*is_full_reload=*/false);
+}
+
+void CompanionPageHandler::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  // We only want to classify images in the main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // TODO(b/284640445) - Add browser test to verify side effect of feature
+  // on/off, use histogram check to determine whether or not classification was
+  // called.
+  if (visual_search_host_) {
+    visual_search_host_->StartClassification(render_frame_host, validated_url);
+  }
 }
 
 void CompanionPageHandler::ShowUI() {

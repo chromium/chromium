@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -72,6 +73,8 @@ class CompanionPageHandler
   // IdentityManager::Observer overrides.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
   // UrlKeyedDataCollectionConsentHelper::Observer overrides.
   void OnUrlKeyedDataCollectionConsentStateChanged(
@@ -109,6 +112,10 @@ class CompanionPageHandler
   std::unique_ptr<PromoHandler> promo_handler_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       consent_helper_;
+
+  // Owns the orchestrator for visual search suggestions.
+  std::unique_ptr<visual_search::VisualSearchClassifierHost>
+      visual_search_host_;
 
   // Logs metrics for companion page. Reset when there is a new navigation.
   std::unique_ptr<CompanionMetricsLogger> metrics_logger_;
