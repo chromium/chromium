@@ -1209,6 +1209,10 @@ bool DoRecordInterestGroupJoin(sql::Database& db,
   // enclose them in a transaction since only one will actually modify the
   // database.
 
+  int64_t join_day = join_time.ToDeltaSinceWindowsEpoch()
+                         .FloorToMultiple(base::Days(1))
+                         .InMicroseconds();
+
   // clang-format off
   sql::Statement insert_join_hist(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -1221,7 +1225,7 @@ bool DoRecordInterestGroupJoin(sql::Database& db,
   insert_join_hist.Reset(true);
   insert_join_hist.BindString(0, Serialize(owner));
   insert_join_hist.BindString(1, name);
-  insert_join_hist.BindTime(2, join_time);
+  insert_join_hist.BindInt64(2, join_day);
   if (!insert_join_hist.Run())
     return false;
 
@@ -1242,7 +1246,7 @@ bool DoRecordInterestGroupJoin(sql::Database& db,
   update_join_hist.Reset(true);
   update_join_hist.BindString(0, Serialize(owner));
   update_join_hist.BindString(1, name);
-  update_join_hist.BindTime(2, join_time);
+  update_join_hist.BindInt64(2, join_day);
 
   return update_join_hist.Run();
 }
@@ -1522,6 +1526,10 @@ bool DoRecordInterestGroupBid(sql::Database& db,
   // enclose them in a transaction since only one will actually modify the
   // database.
 
+  int64_t bid_day = bid_time.ToDeltaSinceWindowsEpoch()
+                        .FloorToMultiple(base::Days(1))
+                        .InMicroseconds();
+
   // clang-format off
   sql::Statement insert_bid_hist(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -1534,7 +1542,7 @@ bool DoRecordInterestGroupBid(sql::Database& db,
   insert_bid_hist.Reset(true);
   insert_bid_hist.BindString(0, Serialize(group_key.owner));
   insert_bid_hist.BindString(1, group_key.name);
-  insert_bid_hist.BindTime(2, bid_time);
+  insert_bid_hist.BindInt64(2, bid_day);
   if (!insert_bid_hist.Run())
     return false;
 
@@ -1555,7 +1563,7 @@ bool DoRecordInterestGroupBid(sql::Database& db,
   update_bid_hist.Reset(true);
   update_bid_hist.BindString(0, Serialize(group_key.owner));
   update_bid_hist.BindString(1, group_key.name);
-  update_bid_hist.BindTime(2, bid_time);
+  update_bid_hist.BindInt64(2, bid_day);
 
   return update_bid_hist.Run();
 }
