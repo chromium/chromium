@@ -2309,7 +2309,6 @@ class Port(object):
 
     @memoized
     def virtual_test_suites(self):
-        include_expired = self.get_option('include_expired', False)
         path_to_virtual_test_suites = self._filesystem.join(
             self.web_tests_dir(), 'VirtualTestSuites')
         assert self._filesystem.exists(path_to_virtual_test_suites), \
@@ -2323,13 +2322,8 @@ class Port(object):
                 # Strings are treated as comments.
                 if isinstance(json_config, str):
                     continue
-                expires = json_config.get('expires', 'never')
-                expired = (expires.lower() != 'never' and datetime.strptime(
-                    expires, '%b %d, %Y') <= current_time)
-                if expired and not include_expired:
-                    # Do not include expired virtual suites, except when requested (such as
-                    # for presubmit checks).
-                    continue
+                # expired VTSs are loaded and continue to run. We will have a separate
+                # process to delete expired VTSs.
                 vts = VirtualTestSuite(**json_config)
                 if any(vts.full_prefix == s.full_prefix
                        for s in virtual_test_suites):
@@ -2707,6 +2701,7 @@ class VirtualTestSuite(object):
                  bases=None,
                  exclusive_tests=None,
                  args=None,
+                 owners=None,
                  expires=None):
         assert VALID_FILE_NAME_REGEX.match(prefix), \
             "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
