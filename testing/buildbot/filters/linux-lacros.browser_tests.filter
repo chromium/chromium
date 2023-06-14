@@ -1,7 +1,6 @@
 # TODO(crbug.com/1111979) Enable all tests on lacros.
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/*
--BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -DeclarativeContentApiTest.RulesPersistence
 -ExternalProtocolDialogBrowserTest.TestFocus

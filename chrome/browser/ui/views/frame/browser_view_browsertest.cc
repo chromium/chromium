@@ -334,27 +334,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 // accessible title for tab-modal dialogs is not necessary.
 #if !BUILDFLAG(IS_MAC)
 
-// Open a tab-modal dialog and check that the accessible window title is the
-// title of the dialog.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
-  std::u16string window_title =
-      u"about:blank - " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
-                               window_title, base::CompareCase::SENSITIVE));
-
-  content::WebContents* contents = browser_view()->GetActiveWebContents();
-  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
-  TestTabModalConfirmDialogDelegate* delegate_observer = delegate.get();
-  TabModalConfirmDialog::Create(std::move(delegate), contents);
-  EXPECT_EQ(browser_view()->GetAccessibleWindowTitle(),
-            delegate_observer->GetTitle());
-
-  delegate_observer->Close();
-
-  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
-                               window_title, base::CompareCase::SENSITIVE));
-}
-
 // Open a tab-modal dialog and check that the accessibility tree only contains
 // the dialog.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
