@@ -175,8 +175,14 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   // entry in the map for this |web_contents| if it's not there already.
   DataCollectorsContainer* collectors =
       &data_collectors_map_[GetWebContentsKey(web_contents)];
-  if (collectors->threat_details != nullptr)
+  bool collection_in_progress = collectors->threat_details != nullptr;
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart" +
+          std::string(resource.is_subresource ? ".Subresource" : ".Mainframe"),
+      collection_in_progress);
+  if (collection_in_progress) {
     return false;
+  }
 
   bool should_trim_threat_details = trigger_type == TriggerType::AD_SAMPLE;
   collectors->threat_details = ThreatDetails::NewThreatDetails(

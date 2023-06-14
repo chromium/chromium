@@ -444,6 +444,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtFinish.{ResourceType}"
+    enum="BooleanAvailable" expires_after="2023-12-13">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a threat details job is in progress before sending client
+    safe browsing report for blocking page triggered by {ResourceType}. If it is
+    false, no report will be sent.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Mainframe" summary="mainframe"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart.{ResourceType}"
+    enum="BooleanAvailable" expires_after="2023-12-13">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a threat details job has already started before starting to
+    collect threat details for blocking page triggered by {ResourceType}. If it
+    is true, no report will be sent after user interacts with the warning.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Mainframe" summary="mainframe"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab"
     enum="BooleanAvailable" expires_after="2023-11-12">
   <owner>xinghuilu@chromium.org</owner>

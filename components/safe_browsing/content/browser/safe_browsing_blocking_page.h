@@ -134,6 +134,8 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
   // The threat source that triggers the blocking page.
   ThreatSource threat_source_;
+  // Whether the blocking page is triggered by subresource.
+  bool is_subresource_;
 
  private:
   raw_ptr<history::HistoryService> history_service_ = nullptr;

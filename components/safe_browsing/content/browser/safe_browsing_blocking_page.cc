@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -67,6 +68,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                        display_options),
       threat_details_in_progress_(false),
       threat_source_(unsafe_resources[0].threat_source),
+      is_subresource_(unsafe_resources[0].is_subresource),
       history_service_(history_service),
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
@@ -141,6 +143,10 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
 void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
                                                    bool did_proceed,
                                                    int num_visits) {
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtFinish" +
+          std::string(is_subresource_ ? ".Subresource" : ".Mainframe"),
+      threat_details_in_progress_);
   // Not all interstitials collect threat details (eg., incognito mode).
   if (!threat_details_in_progress_)
     return;
