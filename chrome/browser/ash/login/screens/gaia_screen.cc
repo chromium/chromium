@@ -45,11 +45,31 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
       static_cast<int>(ReauthReason::kPasswordUpdateSkipped),
       static_cast<int>(ReauthReason::kForgotPassword),
       static_cast<int>(ReauthReason::kCryptohomeRecovery),
+      static_cast<int>(ReauthReason::kOther),
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
   absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
   return reauth_reason.has_value() &&
          base::Contains(kPossibleReasons, reauth_reason.value());
+}
+
+bool ShouldUseReauthEndpoint(const AccountId& account_id) {
+  if (account_id.empty()) {
+    return false;
+  }
+  auto* user = user_manager::UserManager::Get()->FindUser(account_id);
+  DCHECK(user);
+  // Use reauth endpoint for child users.
+  if (user && user->IsChild()) {
+    return true;
+  }
+  // Use reauth endpoint for potential recovery use cases (exclude cases where
+  // reauth enforced by policy).
+  if (features::IsGaiaReauthEndpointEnabled() &&
+      ShouldPrepareForRecovery(account_id)) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -84,11 +104,8 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
   if (!view_)
     return;
   auto gaia_path = GaiaView::GaiaPath::kDefault;
-  if (!account.empty()) {
-    auto* user = user_manager::UserManager::Get()->FindUser(account);
-    DCHECK(user);
-    if (user && (user->IsChild() || features::IsGaiaReauthEndpointEnabled()))
-      gaia_path = GaiaView::GaiaPath::kReauth;
+  if (ShouldUseReauthEndpoint(account)) {
+    gaia_path = GaiaView::GaiaPath::kReauth;
   }
   view_->SetGaiaPath(gaia_path);
   view_->SetReauthRequestToken(std::string());

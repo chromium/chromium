@@ -603,15 +603,10 @@ void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
     return;
   }
 
-  if (!GetQueryParameter(request_url.query(), "is_supervised",
-                         &is_supervised_)) {
-    LOG(ERROR) << "Missing param 'is_supervised' in "
-                  "/embedded/reauth/chromeos call";
-    return;
-  }
-
+  GetQueryParameter(request_url.query(), "is_supervised", &is_supervised_);
   GetQueryParameter(request_url.query(), "is_device_owner", &is_device_owner_);
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
+  GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
