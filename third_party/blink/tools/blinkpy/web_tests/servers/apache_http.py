@@ -132,7 +132,7 @@ class ApacheHTTP(server_base.ServerBase):
         if self._is_win:
             start_cmd += [
                 '-c',
-                'ThreadsPerChild %d' % (self._number_of_servers * 8)
+                'ThreadsPerChild %d' % (self._number_of_servers * 16)
             ]
         else:
             start_cmd += [
