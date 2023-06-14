@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS, PAGE_DOWN] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"10.2340920823px" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
 ++TextView text:"10px" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
 ++TextView text:"11px" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
