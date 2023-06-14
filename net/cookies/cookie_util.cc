@@ -355,8 +355,9 @@ bool GetCookieDomainWithString(const GURL& url,
         base::EqualsCaseInsensitiveASCII("." + url_host, domain_string)))) {
     *result = url_host;
     // TODO(crbug.com/1453416): Once empty label support is implemented we can
-    // CHECK our assumptions here. For now, just dump to gather usage data.
-    DUMP_WILL_BE_CHECK(DomainIsHostOnly(*result));
+    // CHECK our assumptions here. For now, we DCHECK as DUMP_WILL_BE_CHECK is
+    // generating too many crash reports and already know why this is failing.
+    DCHECK(DomainIsHostOnly(*result));
     return true;
   }
 
