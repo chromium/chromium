@@ -1,11 +1,5 @@
 Test that prerender navigations receives the status updates
 {
-    id : <number>
-    result : {
-    }
-    sessionId : <string>
-}
-{
     method : Preload.prerenderStatusUpdated
     params : {
         key : {

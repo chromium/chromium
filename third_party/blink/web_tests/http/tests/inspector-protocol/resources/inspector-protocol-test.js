@@ -269,6 +269,28 @@ var TestRunner = class {
     return this._start(description, options);
   }
 
+  async startBlankWithTabTarget(description) {
+    try {
+      if (!description)
+        throw new Error('Please provide a description for the test!');
+      this.log(description);
+
+      const bp = this.browserP();
+      const params = {url: 'about:blank', forTab: true};
+      const tabTargetId =
+          (await bp.Target.createTarget(params)).result.targetId;
+      const tabTargetSessionId = (await bp.Target.attachToTarget({
+                                   targetId: tabTargetId,
+                                   flatten: true
+                                 })).result.sessionId;
+      const tabTargetSession = new TestRunner.Session(this, tabTargetSessionId);
+
+      return {tabTargetSession};
+    } catch (e) {
+      this.die('Error starting the test', e);
+    }
+  }
+
   async logStackTrace(debuggers, stackTrace, debuggerId) {
     while (stackTrace) {
       const {description, callFrames, parent, parentId} = stackTrace;
@@ -489,6 +511,54 @@ TestRunner.Session = class {
       };
       this._addEventHandler(eventName, handler);
     });
+  }
+};
+
+// Helper class to collect information of auto attached targets and
+// create `TestRunner.Session` from them.
+TestRunner.ChildTargetManager = class {
+  // @param {TestRunner} testRunner
+  // @param {Session} session
+  constructor(testRunner, session) {
+    this._testRunner = testRunner;
+    this._session = session;
+    this._attachedTargets = [];
+  }
+
+  // @param {object|undefined} autoAttachParams
+  // @return {void}
+  //
+  // Issues `Target.setAutoAttach` and starts collecting auto attached
+  // `TargetInfo`.
+  async startAutoAttach(autoAttachParams) {
+    autoAttachParams = autoAttachParams ||
+        {autoAttach: true, flatten: true, waitForDebuggerOnStart: false};
+    this._session.protocol.Target.onAttachedToTarget(event => {
+      this._attachedTargets.push(event.params);
+    });
+    await this._session.protocol.Target.setAutoAttach(autoAttachParams);
+  }
+
+  // @param {(TargetInfo): bool} pred
+  // @return {TestRunner.Session|null}
+  findAttachedSession(pred) {
+    const found =
+        this._attachedTargets.find(({targetInfo}) => pred(targetInfo));
+    return found ? this._session.createChild(found.sessionId) : null;
+  }
+
+  // @return {TestRunner.Session|null}
+  findAttachedSessionPrimaryMainFrame() {
+    return this.findAttachedSession(
+        targetInfo =>
+            targetInfo.type === 'page' && targetInfo.subtype === undefined);
+  }
+
+  // @return {TestRunner.Session|null}
+  findAttachedSessionPrerender() {
+    return this.findAttachedSession(
+        targetInfo =>
+            targetInfo.type === 'page' && targetInfo.subtype === 'prerender');
   }
 };
 

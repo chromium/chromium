@@ -2,15 +2,24 @@
  // prerendering is cancelled for some reasons. To emulate the cancellation,
  // this test navigates the prerender trigger page to an unrelated page so that
  // prerendering is cancelled with the `Destroyed` final status.
-(async function(testRunner) {
-  const {page, session, dp} = await testRunner.startBlank(
-      `Test that prerender navigations report the final status`);
-  await dp.Preload.enable();
+ (async function(testRunner) {
+   const {tabTargetSession} = await testRunner.startBlankWithTabTarget(
+       `Test that prerender navigations report the final status`);
 
-  // Navigate to speculation rules Prerender Page.
-  await page.navigate('resources/simple-prerender.html');
-  page.navigate('resources/empty.html?navigateaway');
-  const statusReport = await dp.Preload.oncePrerenderAttemptCompleted();
-  testRunner.log(statusReport, '', ['loaderId', 'initiatingFrameId', 'sessionId']);
-  testRunner.completeTest();
-});
+   const childTargetManager =
+       new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+   await childTargetManager.startAutoAttach();
+   const session1 = childTargetManager.findAttachedSessionPrimaryMainFrame();
+   const dp1 = session1.protocol;
+   await dp1.Preload.enable();
+
+   // Navigate to speculation rules Prerender Page.
+   await session1.navigate('resources/simple-prerender.html');
+   session1.navigate('resources/empty.html?navigateaway');
+
+   testRunner.log(
+       await dp1.Preload.oncePrerenderAttemptCompleted(), '',
+       ['loaderId', 'initiatingFrameId', 'sessionId']);
+
+   testRunner.completeTest();
+ });
