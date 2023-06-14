@@ -9,6 +9,7 @@
 #import "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -46,9 +47,11 @@
       DCHECK(authenticationService->initialized());
       BOOL isSignedIn = authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin);
-
       DCHECK(self.promosManager);
-      if (ShouldRegisterPromoWithPromoManager(isSignedIn)) {
+      if (ShouldRegisterPromoWithPromoManager(
+              isSignedIn,
+              feature_engagement::TrackerFactory::GetForBrowserState(
+                  sceneState.appState.mainBrowserState))) {
         self.promosManager->RegisterPromoForSingleDisplay(
             promos_manager::Promo::DefaultBrowser);
       } else {

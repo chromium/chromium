@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
@@ -19,12 +20,7 @@
 #pragma mark - Public
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/1446316): Record user action
   [self openSettingsURLString];
-}
-
-- (void)didTapSecondaryActionButton {
-  // TODO(crbug.com/1446316): Record user action
 }
 
 #pragma mark Private

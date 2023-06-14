@@ -11771,6 +11771,73 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.DefaultBrowserVideoPromo.Appear">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user is presented with the default browser video promo. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user dismissed the full screen default browser video promo. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserVideoPromo.Fullscreen.Impression">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user is presented with the fullscreen screen arm of the default browser
+    video promo. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user accepted the full screen default browser video promo, and was taken
+    to the Settings app. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserVideoPromo.Halfscreen.Dismiss">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user dismissed the half screen default browser video promo. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserVideoPromo.Halfscreen.Impression">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user is presented with the half screen arm of the default browser video
+    promo. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserVideoPromo.Halfscreen.ShowMeHow">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user accepted the half screen default browser video promo, and was taken
+    to the full screen default browser video promo. iOS only.
+  </description>
+</action>
+
 <action name="IOS.EmailExperience.LongPress.Copy">
   <owner>erahmaoui@google.com</owner>
   <owner>djean@chromium.org</owner>

@@ -603,6 +603,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
+    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2023-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The action taken by the user in response to the full screen default browser
+    video promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserVideoPromo.Halfscreen"
+    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2023-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The action taken by the user in response to the half screen default browser
+    video promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DistantTab.TimeSinceLastUse" units="ms"
     expires_after="2023-11-01">
   <owner>ewannpv@chromium.org</owner>

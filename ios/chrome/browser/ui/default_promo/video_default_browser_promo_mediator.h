@@ -15,9 +15,6 @@
 // Handles user tap on primary action.
 - (void)didTapPrimaryActionButton;
 
-// Handles user tap on secondary action.
-- (void)didTapSecondaryActionButton;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_VIDEO_DEFAULT_BROWSER_PROMO_MEDIATOR_H_

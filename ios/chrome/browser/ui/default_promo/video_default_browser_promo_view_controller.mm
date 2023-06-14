@@ -107,6 +107,7 @@ NSString* const kDefaultBrowserAnimation = @"default_browser_animation";
   alertScreen.primaryActionString = primaryActionString;
   alertScreen.secondaryActionString = secondaryActionString;
   alertScreen.actionHandler = self.actionHandler;
+  alertScreen.modalPresentationStyle = UIModalPresentationFullScreen;
   self.alertScreen = alertScreen;
 }
 

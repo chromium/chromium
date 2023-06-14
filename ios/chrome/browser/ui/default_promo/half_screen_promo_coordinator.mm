@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/default_promo/half_screen_promo_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/default_promo/half_screen_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/half_screen_promo_view_controller.h"
@@ -12,6 +15,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 @interface HalfScreenPromoCoordinator () <
     UIAdaptivePresentationControllerDelegate,
@@ -41,6 +47,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Halfscreen.Impression"));
   self.viewController = [[HalfScreenPromoViewController alloc] init];
   self.viewController.actionHandler = self;
   [self.baseNavigationController pushViewController:self.viewController
@@ -60,10 +68,20 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserVideoPromo.Halfscreen",
+      IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Halfscreen.ShowMeHow"));
   [self.delegate handlePrimaryActionForHalfScreenPromoCoordinator:self];
 }
 
 - (void)confirmationAlertSecondaryAction {
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserVideoPromo.Halfscreen",
+      IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Halfscreen.Dismiss"));
   [self.delegate handleSecondaryActionForHalfScreenPromoCoordinator:self];
 }
 
@@ -71,6 +89,10 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  base::UmaHistogramEnumeration("IOS.DefaultBrowserVideoPromo.Halfscreen",
+                                IOSDefaultBrowserVideoPromoAction::kSwipeDown);
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Halfscreen.Dismiss"));
   [self.delegate handleDismissActionForHalfScreenPromoCoordinator:self];
 }
 

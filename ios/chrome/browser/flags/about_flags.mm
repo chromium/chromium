@@ -222,9 +222,13 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
 
 const FeatureEntry::FeatureParam kDefaultBrowserVideoPromoHalfscreen[] = {
     {"default_browser_video_promo_halfscreen", "true"}};
+const FeatureEntry::FeatureParam kDefaultBrowserVideoPromoFullscreen[] = {
+    {"default_browser_video_promo_halfscreen", "false"}};
 const FeatureEntry::FeatureVariation kDefaultBrowserVideoPromoVariations[] = {
     {"Show half screen ui", kDefaultBrowserVideoPromoHalfscreen,
      std::size(kDefaultBrowserVideoPromoHalfscreen), nullptr},
+    {"Show full screen ui", kDefaultBrowserVideoPromoFullscreen,
+     std::size(kDefaultBrowserVideoPromoFullscreen), nullptr},
 };
 
 const FeatureEntry::FeatureParam

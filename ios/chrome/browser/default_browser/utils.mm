@@ -451,7 +451,6 @@ DefaultPromoType ForceDefaultPromoType() {
           kDefaultBrowserPromoForceShowPromo);
   int default_promo_type = 0;
   if (base::StringToInt(type, &default_promo_type)) {
-    // return static_cast<DefaultPromoType>(default_promo_type);
     switch (default_promo_type) {
       case DefaultPromoTypeGeneral:
       case DefaultPromoTypeStaySafe:
@@ -465,7 +464,7 @@ DefaultPromoType ForceDefaultPromoType() {
   return DefaultPromoType::DefaultPromoTypeGeneral;
 }
 
-bool IsDefaultBrowserVideoPromoFullscreenEnabled() {
+bool IsDefaultBrowserVideoPromoHalfscreenEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kDefaultBrowserVideoPromo, "default_browser_video_promo_halfscreen",
       false);
@@ -664,10 +663,12 @@ bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
   return NO;
 }
 
-bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
+bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
+                                         feature_engagement::Tracker* tracker) {
   if (ShouldForceDefaultPromoType()) {
     return YES;
   }
+
   // Consider showing the default browser promo if (1) launch is not after a
   // crash, (2) chrome is not likely set as default browser, (3) the user has
   // not seen a default browser promo too recently, (4) the user is eligible
@@ -675,7 +676,8 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
   return GetApplicationContext()->WasLastShutdownClean() &&
          !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
          (IsTailoredPromoEligibleUser(is_signed_in) ||
-          IsGeneralPromoEligibleUser(is_signed_in));
+          IsGeneralPromoEligibleUser(is_signed_in) ||
+          IsVideoPromoEligibleUser(tracker));
 }
 
 bool IsTailoredPromoEligibleUser(bool is_signed_in) {

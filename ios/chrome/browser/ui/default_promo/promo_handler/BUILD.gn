@@ -15,6 +15,7 @@ source_set("promo_handler") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/feature_engagement:feature_engagement",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",

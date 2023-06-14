@@ -54343,6 +54343,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="All Tabs"/>
 </enum>
 
+<enum name="IOSDefaultBrowserVideoPromoAction">
+  <int value="0" label="Primary Action Button"/>
+  <int value="1" label="Secondary Action Button"/>
+  <int value="2" label="Swipe Down"/>
+</enum>
+
 <enum name="IOSDeviceRestoreSignedinState">
   <int value="0" label="User not signed in before iOS device restore"/>
   <int value="1"
