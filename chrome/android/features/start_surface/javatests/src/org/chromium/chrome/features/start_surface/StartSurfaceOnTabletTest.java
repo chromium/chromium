@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_ON_TABLET_TEST_PARAMS;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -36,6 +41,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
@@ -46,6 +53,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -584,6 +592,63 @@ public class StartSurfaceOnTabletTest {
 
         // Verifies that the last active Tab is showing, and NTP home surface is closed.
         verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, null /* expectHomeSurfaceUiShown */);
+    }
+
+    /**
+     * Test the close of the tab to track for the single tab card on the
+     * {@link NewTabPage} in the tablet.
+     */
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    public void testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed()
+            throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
+        Tab ntpTab = cta.getActivityTab();
+        NewTabPage ntp = (NewTabPage) ntpTab.getNativePage();
+        Assert.assertTrue("The single tab card is still invisible after initialization.",
+                ntp.isSingleTabCardVisibleForTesting());
+        assertFalse("There is a wrong signal that the single tab card is changed and needs a "
+                        + "snapshot for the NTP.",
+                ntp.getSnapshotSingleTabCardChangedForTesting());
+
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> cta.findViewById(R.id.tab_switcher_button).performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getTabModelSelector().getModel(false).closeTab(lastActiveTab); });
+        assertTrue("The single tab card does not show that it is changed and needs a "
+                        + "snapshot for the NTP.",
+                ntp.getSnapshotSingleTabCardChangedForTesting());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
+        NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> cta.findViewById(R.id.tab_switcher_button).performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
+        NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
+        assertFalse("There is no extra snapshot for the NTP to cache the change "
+                        + "of the single tab card.",
+                ntp.getSnapshotSingleTabCardChangedForTesting());
     }
 
     /**

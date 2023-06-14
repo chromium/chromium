@@ -133,7 +133,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected final NewTabPageManagerImpl mNewTabPageManager;
     protected final TileGroup.Delegate mTileGroupDelegate;
     private final boolean mIsTablet;
-    private boolean mIsHidden;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final NewTabPageUma mNewTabPageUma;
     private final ContextMenuManager mContextMenuManager;
@@ -173,6 +172,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Nullable
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final boolean mIsNtpAsHomeSurfaceEnabled;
+    private boolean mSnapshotSingleTabCardChanged;
 
     @Nullable
     private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -397,23 +397,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 // Showing the NTP is only meaningful when the page has been loaded already.
                 if (mIsLoaded) recordNTPShown();
                 mNewTabPageLayout.onSwitchToForeground();
-                // We update the visibility of the single tab card to false here rather than
-                // in function onHidden in order to keep the new tab page's thumbnail unchanged
-                // in the grid tab switcher. Otherwise, it would show a blank space instead of
-                // single tab car in the thumbnail.
-                if (mIsHidden && mSingleTabSwitcherCoordinator != null) {
-                    mIsHidden = false;
-                    if (mHomeSurfaceTracker == null
-                            || !mHomeSurfaceTracker.canShowHomeSurface(mTab)) {
-                        setSingleTabCardVisibility(false);
-                    }
-                }
             }
 
             @Override
             public void onHidden(Tab tab, @TabHidingType int type) {
                 if (mIsLoaded) recordNTPHidden();
-                mIsHidden = true;
+                if (mSingleTabSwitcherCoordinator != null
+                        && (mHomeSurfaceTracker == null
+                                || !mHomeSurfaceTracker.canShowHomeSurface(mTab))) {
+                    setSingleTabCardVisibility(false);
+                }
             }
 
             @Override
@@ -980,13 +973,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Override
     public boolean shouldCaptureThumbnail() {
         return mNewTabPageLayout.shouldCaptureThumbnail()
-                || mFeedSurfaceProvider.shouldCaptureThumbnail();
+                || mFeedSurfaceProvider.shouldCaptureThumbnail() || mSnapshotSingleTabCardChanged;
     }
 
     @Override
     public void captureThumbnail(Canvas canvas) {
         mNewTabPageLayout.onPreCaptureThumbnail();
         mFeedSurfaceProvider.captureThumbnail(canvas);
+        mSnapshotSingleTabCardChanged = false;
     }
     // Implements FeedSurfaceDelegate
     @Override
@@ -1026,14 +1020,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @VisibleForTesting
     TabObserver getTabObserverForTesting() {
         return mTabObserver;
-    }
-
-    void setIsHiddenForTesting(boolean isHidden) {
-        mIsHidden = isHidden;
-    }
-
-    boolean getIsHiddenForTesting() {
-        return mIsHidden;
     }
 
     /**
@@ -1096,7 +1082,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         updateSingleTabCardContainerMargins();
         mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(mActivity,
                 mSingleTabCardContainer, mActivityLifecycleDispatcher, mTabModelSelector, true,
-                isScrollableMvtEnabled(mContext), mostRecentTab, this::onSingleTabCardClicked);
+                isScrollableMvtEnabled(mContext), mostRecentTab, this::onSingleTabCardClicked,
+                () -> mSnapshotSingleTabCardChanged = true);
         mSingleTabSwitcherCoordinator.initWithNative();
         setSingleTabCardVisibility(true);
     }
@@ -1154,5 +1141,10 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         setSingleTabCardVisibility(false);
         mSingleTabSwitcherCoordinator.destroy();
         mSingleTabSwitcherCoordinator = null;
+    }
+
+    @VisibleForTesting
+    public boolean getSnapshotSingleTabCardChangedForTesting() {
+        return mSnapshotSingleTabCardChanged;
     }
 }

@@ -45,14 +45,19 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     private TabObserver mLastActiveTabObserver;
     private Tab mLastActiveTab;
 
+    @Nullable
+    private final Runnable mSnapshotParentViewRunnable;
+
     public SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector, boolean isTablet,
             boolean isScrollableMvtEnabled, Tab mostRecentTab,
-            @Nullable Runnable singleTabCardClickedCallback) {
+            @Nullable Runnable singleTabCardClickedCallback,
+            @Nullable Runnable snapshotParentViewRunnable) {
         mTabModelSelector = tabModelSelector;
         mIsTablet = isTablet;
         mLastActiveTab = mostRecentTab;
+        mSnapshotParentViewRunnable = snapshotParentViewRunnable;
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         SingleTabView singleTabView = (SingleTabView) LayoutInflater.from(activity).inflate(
                 R.layout.single_tab_view_layout, container, false);
@@ -160,6 +165,9 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
                         mLastActiveTab.removeObserver(mLastActiveTabObserver);
                         mLastActiveTab = null;
                         mLastActiveTabObserver = null;
+                        if (mSnapshotParentViewRunnable != null) {
+                            mSnapshotParentViewRunnable.run();
+                        }
                     }
                 }
             };

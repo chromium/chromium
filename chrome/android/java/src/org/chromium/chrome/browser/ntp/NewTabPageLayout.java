@@ -854,12 +854,6 @@ public class NewTabPageLayout extends LinearLayout {
         return mMostVisitedTilesCoordinator;
     }
 
-    @VisibleForTesting
-    void setMostVisitedTilesCoordinatorForTesting(
-            MostVisitedTilesCoordinator mostVisitedTilesCoordinator) {
-        mMostVisitedTilesCoordinator = mostVisitedTilesCoordinator;
-    }
-
     void maybeShowFeatureNotificationVoiceSearchIPH() {
         IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
                 R.string.feature_notification_guide_tooltip_message_voice_search,
