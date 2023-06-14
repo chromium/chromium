@@ -51,6 +51,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -502,6 +503,12 @@ void ImeMenuTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
+void ImeMenuTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  UpdateTrayImageOrLabelColor(
+      extension_ime_util::IsArcIME(ime_controller_->current_ime().id));
+}
+
 void ImeMenuTray::OnTrayActivated(const ui::Event& event) {
   if (!event.IsMouseEvent() && !event.IsGestureEvent())
     return;
@@ -608,15 +615,22 @@ void ImeMenuTray::UpdateTrayLabel() {
   // IME.
   if (extension_ime_util::IsArcIME(current_ime.id)) {
     CreateImageView();
-    image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        kShelfGlobeIcon, kColorAshIconColorPrimary));
+    if (chromeos::features::IsJellyEnabled()) {
+      UpdateTrayImageOrLabelColor(/*is_image=*/true);
+    } else {
+      image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+          kShelfGlobeIcon, kColorAshIconColorPrimary));
+    }
     return;
   }
 
   // Updates the tray label based on the current input method.
   CreateLabel();
-
-  label_->SetEnabledColorId(kColorAshIconColorPrimary);
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayImageOrLabelColor(/*is_image=*/false);
+  } else {
+    label_->SetEnabledColorId(kColorAshIconColorPrimary);
+  }
 
   if (current_ime.third_party)
     label_->SetText(current_ime.short_name + u"*");
@@ -653,6 +667,21 @@ void ImeMenuTray::CreateImageView() {
   image_view_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   tray_container()->AddChildView(image_view_.get());
+}
+
+void ImeMenuTray::UpdateTrayImageOrLabelColor(bool is_image) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  const ui::ColorId color_id =
+      is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysOnSurface;
+
+  if (is_image) {
+    image_view_->SetImage(
+        ui::ImageModel::FromVectorIcon(kShelfGlobeIcon, color_id));
+    return;
+  }
+
+  label_->SetEnabledColorId(color_id);
 }
 
 BEGIN_METADATA(ImeMenuTray, TrayBackgroundView)

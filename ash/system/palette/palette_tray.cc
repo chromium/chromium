@@ -46,6 +46,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -276,7 +277,6 @@ PaletteTray::PaletteTray(Shelf* shelf)
   icon->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
   tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
   icon_ = tray_container()->AddChildView(std::move(icon));
-  UpdateTrayIcon();
 
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
@@ -462,6 +462,11 @@ void PaletteTray::ClickedOutsideBubble() {
                               PaletteInvocationMethod::MENU);
   }
   HidePalette();
+}
+
+void PaletteTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  UpdateTrayIcon();
 }
 
 void PaletteTray::OnThemeChanged() {
@@ -702,12 +707,19 @@ void PaletteTray::InitializeWithLocalState() {
 }
 
 void PaletteTray::UpdateTrayIcon() {
+  SkColor color;
+  if (chromeos::features::IsJellyEnabled()) {
+    color = GetColorProvider()->GetColor(
+        is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                    : cros_tokens::kCrosSysOnSurface);
+  } else {
+    color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+  }
   icon_->SetImage(CreateVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      kTrayIconSize, color));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {

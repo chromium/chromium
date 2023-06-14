@@ -20,8 +20,11 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -150,6 +153,14 @@ void ProjectorAnnotationTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
+void ProjectorAnnotationTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      GetIconForTool(GetCurrentTool(), current_pen_color_),
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysOnSurface));
+}
+
 std::u16string ProjectorAnnotationTray::GetAccessibleNameForTray() {
   std::u16string enabled_state = l10n_util::GetStringUTF16(
       GetCurrentTool() == kToolNone
@@ -171,7 +182,7 @@ void ProjectorAnnotationTray::HideBubbleWithView(
 void ProjectorAnnotationTray::CloseBubble() {
   pen_view_ = nullptr;
   bubble_.reset();
-
+  SetIsActive(false);
   shelf()->UpdateAutoHideState();
 }
 
@@ -294,12 +305,16 @@ void ProjectorAnnotationTray::DeactivateActiveTool() {
 
 void ProjectorAnnotationTray::UpdateIcon() {
   const ProjectorTool tool = GetCurrentTool();
-  image_view_->SetImage(gfx::CreateVectorIcon(
-      GetIconForTool(tool, current_pen_color_),
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  image_view_->SetTooltipText(GetTooltip());
   SetIsActive(tool != kToolNone);
+  // Only sets the image if Jelly is not enabled, since `UpdateTrayItemColor()`
+  // will be called in `SetIsActive()` to set the image for Jelly.
+  if (!chromeos::features::IsJellyEnabled()) {
+    image_view_->SetImage(gfx::CreateVectorIcon(
+        GetIconForTool(tool, current_pen_color_),
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  }
+  image_view_->SetTooltipText(GetTooltip());
 }
 
 void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {

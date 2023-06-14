@@ -44,6 +44,9 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
   void UpdateLayout() override;
   void UpdateBackground() override;
   void ClickedOutsideBubble() override;
+  // No need to override since this view doesn't have an active/inactive state.
+  // Clicking on it will log out of the session and make this view disappear.
+  void UpdateTrayItemColor(bool is_active) override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

@@ -541,7 +541,6 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
 
 void UnifiedSystemTray::OnOpeningCalendarView() {
   SetIsActive(false);
-  UpdateTrayItemsColor(/*active=*/false);
   for (auto& observer : observers_) {
     observer.OnOpeningCalendarView();
   }
@@ -549,7 +548,6 @@ void UnifiedSystemTray::OnOpeningCalendarView() {
 
 void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
   SetIsActive(true);
-  UpdateTrayItemsColor(/*active=*/true);
   for (auto& observer : observers_) {
     observer.OnLeavingCalendarView();
   }
@@ -792,13 +790,11 @@ void UnifiedSystemTray::ShowBubbleInternal() {
     return;
   }
   SetIsActive(true);
-  UpdateTrayItemsColor(/*active=*/true);
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
   DestroyBubbles();
   SetIsActive(false);
-  UpdateTrayItemsColor(/*active=*/false);
 }
 
 void UnifiedSystemTray::UpdateNotificationInternal() {
@@ -863,12 +859,10 @@ void UnifiedSystemTray::DestroyBubbles() {
   bubble_.reset();
 }
 
-void UnifiedSystemTray::UpdateTrayItemsColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
+void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
   for (auto* tray_item : tray_items_) {
-    tray_item->UpdateLabelOrImageViewColor(active);
+    tray_item->UpdateLabelOrImageViewColor(is_active);
   }
 }
 

@@ -85,6 +85,7 @@ class MockTrayBackgroundView : public ash::TrayBackgroundView {
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}
+  void UpdateTrayItemColor(bool is_active) override {}
 };
 
 }  // namespace

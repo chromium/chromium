@@ -141,6 +141,14 @@ void NotificationCenterTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
+void NotificationCenterTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  for (auto* tray_item : tray_container()->children()) {
+    static_cast<TrayItemView*>(tray_item)->UpdateLabelOrImageViewColor(
+        is_active);
+  }
+}
+
 void NotificationCenterTray::CloseBubble() {
   if (!bubble_) {
     return;
@@ -148,7 +156,6 @@ void NotificationCenterTray::CloseBubble() {
 
   bubble_.reset();
   SetIsActive(false);
-  UpdateTrayItemsColor(/*active=*/false);
 
   // Inform the message center that the bubble has closed so that popups are
   // created for new notifications.
@@ -174,7 +181,6 @@ void NotificationCenterTray::ShowBubble() {
   bubble_->ShowBubble();
 
   SetIsActive(true);
-  UpdateTrayItemsColor(/*active=*/true);
 }
 
 void NotificationCenterTray::UpdateAfterLoginStatusChange() {
@@ -222,20 +228,13 @@ void NotificationCenterTray::UpdateVisibility() {
       message_center::MessageCenter::Get()->NotificationCount() > 0 &&
       system_tray_visible_;
   SetVisiblePreferred(new_visibility);
-  UpdateTrayItemsColor(is_active());
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active());
+  }
 
   // We should close the bubble if there are no more notifications to show.
   if (!new_visibility && bubble_) {
     CloseBubble();
-  }
-}
-
-void NotificationCenterTray::UpdateTrayItemsColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-  for (auto* tray_item : tray_container()->children()) {
-    static_cast<TrayItemView*>(tray_item)->UpdateLabelOrImageViewColor(active);
   }
 }
 

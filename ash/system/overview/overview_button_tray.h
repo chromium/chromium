@@ -81,6 +81,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void UpdateAfterLoginStatusChange() override;
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -94,6 +95,9 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   void OnButtonPressed(const ui::Event& event);
 
   void UpdateIconVisibility();
+
+  // Gets the icon image of `icon_`.
+  gfx::ImageSkia GetIconImage();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   raw_ptr<views::ImageView, ExperimentalAsh> icon_;

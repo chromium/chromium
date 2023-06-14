@@ -65,6 +65,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;

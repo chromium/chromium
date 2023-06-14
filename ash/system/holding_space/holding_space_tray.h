@@ -67,6 +67,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void Initialize() override;
   void ClickedOutsideBubble() override;
+  // TODO(http://b/287098833): No need to override since the update will be
+  // handled in the linked bug.
+  void UpdateTrayItemColor(bool is_active) override {}
   std::u16string GetAccessibleNameForTray() override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& point) const override;

@@ -38,6 +38,7 @@ class TestTrayBackgroundView : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override {}
+  void UpdateTrayItemColor(bool is_active) override {}
   std::u16string GetAccessibleNameForTray() override {
     return u"TestTrayBackgroundView";
   }

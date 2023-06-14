@@ -863,13 +863,15 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
     return;
   }
   is_active_ = is_active;
-  if (!chromeos::features::IsJellyEnabled()) {
+  UpdateBackgroundColor(is_active);
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active);
+  } else {
     views::InkDrop::Get(this)->AnimateToState(
         is_active_ ? views::InkDropState::ACTIVATED
                    : views::InkDropState::DEACTIVATED,
         nullptr);
   }
-  UpdateBackgroundColor(is_active);
 }
 
 views::View* TrayBackgroundView::GetBubbleAnchor() const {

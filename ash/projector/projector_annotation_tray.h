@@ -46,6 +46,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -68,7 +69,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   // UI.
   void DeactivateActiveTool();
 
-  // Updates the icon in the status area.
+  // Updates the icon and tooltip of `image_view_` in the status area.
   void UpdateIcon();
 
   void OnPenColorPressed(SkColor color);

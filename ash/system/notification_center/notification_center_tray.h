@@ -72,6 +72,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   void CloseBubble() override;
   void ShowBubble() override;
   void UpdateAfterLoginStatusChange() override;
@@ -96,10 +97,6 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
-
-  // Updates the color of all tray item views in `tray_container()` based on the
-  // active status.
-  void UpdateTrayItemsColor(bool active);
 
   // Manages notification metrics.
   const std::unique_ptr<NotificationMetricsRecorder>

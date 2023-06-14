@@ -224,9 +224,13 @@ MediaTray::MediaTray(Shelf* shelf)
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
-  icon->SetImage(ui::ImageModel::FromVectorIcon(kGlobalMediaControlsIcon,
-                                                kColorAshIconColorPrimary));
   icon_ = tray_container()->AddChildView(std::move(icon));
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active());
+  } else {
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(kGlobalMediaControlsIcon,
+                                                   kColorAshIconColorPrimary));
+  }
 }
 
 MediaTray::~MediaTray() {
@@ -293,6 +297,14 @@ void MediaTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 
 void MediaTray::ClickedOutsideBubble() {
   CloseBubble();
+}
+
+void MediaTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kGlobalMediaControlsIcon,
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysOnSurface));
 }
 
 void MediaTray::OnLockStateChanged(bool locked) {

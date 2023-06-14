@@ -23,8 +23,12 @@
 #include "ash/wm/window_state.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -34,13 +38,6 @@
 namespace ash {
 
 namespace {
-
-gfx::ImageSkia GetIconImage() {
-  return gfx::CreateVectorIcon(
-      kShelfOverviewIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor));
-}
 
 bool ShouldButtonBeVisible() {
   auto* shell = Shell::Get();
@@ -154,6 +151,11 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 
 void OverviewButtonTray::ClickedOutsideBubble() {}
 
+void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  icon_->SetImage(GetIconImage());
+}
+
 std::u16string OverviewButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME);
 }
@@ -237,6 +239,19 @@ void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
 
 void OverviewButtonTray::UpdateIconVisibility() {
   SetVisiblePreferred(ShouldButtonBeVisible());
+}
+
+gfx::ImageSkia OverviewButtonTray::GetIconImage() {
+  SkColor color;
+  if (GetColorProvider() && chromeos::features::IsJellyEnabled()) {
+    color = GetColorProvider()->GetColor(
+        is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                    : cros_tokens::kCrosSysOnSurface);
+  } else {
+    color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+  }
+  return gfx::CreateVectorIcon(kShelfOverviewIcon, color);
 }
 
 BEGIN_METADATA(OverviewButtonTray, TrayBackgroundView)

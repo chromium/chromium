@@ -98,6 +98,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   void OnThemeChanged() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

@@ -254,8 +254,13 @@ EcheTray::EcheTray(Shelf* shelf)
   // Note: `ScreenLayoutObserver` starts observing at its constructor.
   observed_session_.Observe(Shell::Get()->session_controller());
   icon_->SetTooltipText(GetAccessibleNameForTray());
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(kPhoneHubPhoneIcon,
-                                                 kColorAshIconColorPrimary));
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active());
+  } else {
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(kPhoneHubPhoneIcon,
+                                                   kColorAshIconColorPrimary));
+  }
+
   shelf_observation_.Observe(shelf);
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   shell_observer_.Observe(Shell::Get());
@@ -278,6 +283,14 @@ bool EcheTray::IsInitialized() const {
 
 void EcheTray::ClickedOutsideBubble() {
   //  Do nothing
+}
+
+void EcheTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kPhoneHubPhoneIcon, is_active
+                              ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                              : cros_tokens::kCrosSysOnSurface));
 }
 
 std::u16string EcheTray::GetAccessibleNameForTray() {

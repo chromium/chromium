@@ -115,16 +115,15 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
   icon->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
-
-  icon->SetImageModel(
-      views::ImageButton::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          kPhoneHubPhoneIcon,
-          chromeos::features::IsJellyrollEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-              : kColorAshIconColorPrimary));
-
   icon_ = tray_container()->AddChildView(std::move(icon));
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active());
+  } else {
+    icon_->SetImageModel(views::ImageButton::STATE_NORMAL,
+                         ui::ImageModel::FromVectorIcon(
+                             kPhoneHubPhoneIcon, kColorAshIconColorPrimary));
+  }
+
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
 
@@ -151,6 +150,16 @@ void PhoneHubTray::SetPhoneHubManager(
 
 void PhoneHubTray::ClickedOutsideBubble() {
   CloseBubble();
+}
+
+void PhoneHubTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  icon_->SetImageModel(
+      views::ImageButton::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          kPhoneHubPhoneIcon,
+          is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                    : cros_tokens::kCrosSysOnSurface));
 }
 
 std::u16string PhoneHubTray::GetAccessibleNameForTray() {

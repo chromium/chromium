@@ -208,6 +208,7 @@ class ASH_EXPORT UnifiedSystemTray
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
@@ -299,10 +300,6 @@ class ASH_EXPORT UnifiedSystemTray
   // Destroys the `bubble_` and the `message_center_bubble_`, also handles
   // removing bubble related observers.
   void DestroyBubbles();
-
-  // Updates the color of all tray item views in `tray_container()` based on the
-  // active status.
-  void UpdateTrayItemsColor(bool active);
 
   std::unique_ptr<UiDelegate> ui_delegate_;
 

@@ -161,6 +161,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Updates the background layer.
   virtual void UpdateBackground();
 
+  // For Jelly: updates the color of either the icon or the label of this view
+  // based on the active state specified by `is_active`.
+  virtual void UpdateTrayItemColor(bool is_active) = 0;
+
   // Gets the anchor for bubbles, which is tray_container().
   views::View* GetBubbleAnchor() const;
 

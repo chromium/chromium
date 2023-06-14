@@ -106,14 +106,16 @@ void DateTray::ClickedOutsideBubble() {
   }
 }
 
+void DateTray::UpdateTrayItemColor(bool is_active) {
+  time_view_->UpdateLabelOrImageViewColor(is_active);
+}
+
 void DateTray::OnOpeningCalendarView() {
   SetIsActive(true);
-  time_view_->UpdateLabelOrImageViewColor(/*active=*/true);
 }
 
 void DateTray::OnLeavingCalendarView() {
   SetIsActive(false);
-  time_view_->UpdateLabelOrImageViewColor(/*active=*/false);
 }
 
 void DateTray::OnButtonPressed(const ui::Event& event) {
