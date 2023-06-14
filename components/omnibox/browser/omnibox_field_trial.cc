@@ -687,7 +687,7 @@ bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
 const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     &omnibox::kUniformRowHeight,
     "OmniboxRichSuggestionVerticalMargin",
-    4);
+    6);
 
 bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
   static bool enabled =
