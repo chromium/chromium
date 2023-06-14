@@ -88,22 +88,6 @@ class ScopedFramebufferBindingReset {
   GLint read_framebuffer_;
 };
 
-class ScopedRenderbufferBindingReset {
- public:
-  explicit ScopedRenderbufferBindingReset(gl::GLApi* api)
-      : api_(api), renderbuffer_(0) {
-    api_->glGetIntegervFn(GL_RENDERBUFFER_BINDING, &renderbuffer_);
-  }
-
-  ~ScopedRenderbufferBindingReset() {
-    api_->glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer_);
-  }
-
- private:
-  raw_ptr<gl::GLApi> api_;
-  GLint renderbuffer_;
-};
-
 class ScopedTextureBindingReset {
  public:
   // |texture_target| only supports GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES, and
@@ -208,20 +192,6 @@ bool GetClientID(const ClientServiceMap<ClientType, ServiceType>* map,
   }
   *result = static_cast<ResultType>(client_id);
   return true;
-}
-
-void ResizeRenderbuffer(const GLES2DecoderPassthroughImpl* impl,
-                        GLuint renderbuffer,
-                        const gfx::Size& size,
-                        GLenum internal_format) {
-  gl::GLApi* api = impl->api();
-  GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt
-      scoped_pls_interrupt(impl);
-  ScopedRenderbufferBindingReset scoped_renderbuffer_reset(api);
-
-  api->glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer);
-  api->glRenderbufferStorageEXTFn(GL_RENDERBUFFER, internal_format,
-                                  size.width(), size.height());
 }
 
 void RequestExtensions(gl::GLApi* api,
@@ -651,55 +621,14 @@ GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ScopedFramebufferBindingReset scoped_fbo_reset(
       api(), impl_->supports_separate_fbo_bindings_);
-  ScopedRenderbufferBindingReset scoped_renderbuffer_reset(api());
 
   api()->glGenFramebuffersEXTFn(1, &framebuffer_service_id);
   api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
 
-  const EmulatedDefaultFramebufferFormat& format =
-      impl_->emulated_default_framebuffer_format_;
   color_texture = std::make_unique<EmulatedColorBuffer>(impl_);
   api()->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                      GL_TEXTURE_2D,
                                      color_texture->texture->service_id(), 0);
-
-  if (format.depth_stencil_internal_format != GL_NONE) {
-    DCHECK(format.depth_internal_format == GL_NONE &&
-           format.stencil_internal_format == GL_NONE);
-    api()->glGenRenderbuffersEXTFn(1, &depth_stencil_buffer_service_id);
-    api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER,
-                                   depth_stencil_buffer_service_id);
-    if (impl_->feature_info_->gl_version_info().IsAtLeastGLES(3, 0) ||
-        impl_->features().angle_webgl_compatibility) {
-      api()->glFramebufferRenderbufferEXTFn(
-          GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-          depth_stencil_buffer_service_id);
-    } else {
-      api()->glFramebufferRenderbufferEXTFn(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                            GL_RENDERBUFFER,
-                                            depth_stencil_buffer_service_id);
-      api()->glFramebufferRenderbufferEXTFn(
-          GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-          depth_stencil_buffer_service_id);
-    }
-  } else {
-    if (format.depth_internal_format != GL_NONE) {
-      api()->glGenRenderbuffersEXTFn(1, &depth_buffer_service_id);
-      api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER, depth_buffer_service_id);
-      api()->glFramebufferRenderbufferEXTFn(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                            GL_RENDERBUFFER,
-                                            depth_buffer_service_id);
-    }
-
-    if (format.stencil_internal_format != GL_NONE) {
-      api()->glGenRenderbuffersEXTFn(1, &stencil_buffer_service_id);
-      api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER,
-                                     stencil_buffer_service_id);
-      api()->glFramebufferRenderbufferEXTFn(
-          GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-          stencil_buffer_service_id);
-    }
-  }
 }
 
 GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
@@ -759,22 +688,8 @@ bool GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Resize(
   }
   size = new_size;
 
-  const EmulatedDefaultFramebufferFormat& format =
-      impl_->emulated_default_framebuffer_format_;
   if (color_texture) {
     color_texture->Resize(size);
-  }
-  if (depth_stencil_buffer_service_id != 0) {
-    ResizeRenderbuffer(impl_, depth_stencil_buffer_service_id, size,
-                       format.depth_stencil_internal_format);
-  }
-  if (depth_buffer_service_id != 0) {
-    ResizeRenderbuffer(impl_, depth_buffer_service_id, size,
-                       format.depth_internal_format);
-  }
-  if (stencil_buffer_service_id != 0) {
-    ResizeRenderbuffer(impl_, stencil_buffer_service_id, size,
-                       format.stencil_internal_format);
   }
 
   // Check that the framebuffer is complete
@@ -802,15 +717,6 @@ void GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Destroy(
   if (have_context) {
     api()->glDeleteFramebuffersEXTFn(1, &framebuffer_service_id);
     framebuffer_service_id = 0;
-
-    api()->glDeleteRenderbuffersEXTFn(1, &depth_stencil_buffer_service_id);
-    depth_stencil_buffer_service_id = 0;
-
-    api()->glDeleteRenderbuffersEXTFn(1, &depth_buffer_service_id);
-    depth_buffer_service_id = 0;
-
-    api()->glDeleteRenderbuffersEXTFn(1, &stencil_buffer_service_id);
-    stencil_buffer_service_id = 0;
   }
   if (color_texture) {
     color_texture->Destroy(have_context);

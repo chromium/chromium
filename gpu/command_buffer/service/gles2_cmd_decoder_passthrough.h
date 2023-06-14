@@ -774,9 +774,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     GLenum color_texture_internal_format = GL_NONE;
     GLenum color_texture_format = GL_NONE;
     GLenum color_texture_type = GL_NONE;
-    GLenum depth_stencil_internal_format = GL_NONE;
-    GLenum depth_internal_format = GL_NONE;
-    GLenum stencil_internal_format = GL_NONE;
   };
 
   struct EmulatedColorBuffer {
@@ -827,15 +824,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     // Color buffer texture (if not multisampled)
     std::unique_ptr<EmulatedColorBuffer> color_texture;
-
-    // Service ID of the depth stencil renderbuffer
-    GLuint depth_stencil_buffer_service_id = 0;
-
-    // Service ID of the depth renderbuffer
-    GLuint depth_buffer_service_id = 0;
-
-    // Service ID of the stencil renderbuffer (
-    GLuint stencil_buffer_service_id = 0;
 
     gfx::Size size;
   };
