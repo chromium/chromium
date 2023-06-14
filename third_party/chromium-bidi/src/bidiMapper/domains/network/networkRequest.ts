@@ -20,7 +20,7 @@
  * @fileoverview `NetworkRequest` represents a single network request and keeps
  * track of all the related CDP events.
  */
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';

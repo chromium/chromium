@@ -14,33 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
 import {
-  BrowsingContext,
-  CDP,
+  type BrowsingContext,
+  type CDP,
   Input,
   Message,
-  Script,
+  type Script,
 } from '../../../protocol/protocol.js';
-import {LogType, LoggerFn} from '../../../utils/log.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {Realm} from '../script/realm.js';
-import {RealmStorage} from '../script/realmStorage.js';
-import {ActionOption} from '../input/ActionOption.js';
+import type {Realm} from '../script/realm.js';
+import type {RealmStorage} from '../script/realmStorage.js';
+import type {ActionOption} from '../input/ActionOption.js';
 import {InputStateManager} from '../input/InputStateManager.js';
 import {ActionDispatcher} from '../input/ActionDispatcher.js';
-import {InputState} from '../input/InputState.js';
+import type {InputState} from '../input/InputState.js';
 import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 
 import {
-  BidiPreloadScript,
-  CdpPreloadScript,
+  type BidiPreloadScript,
+  type CdpPreloadScript,
   PreloadScriptStorage,
 } from './PreloadScriptStorage.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {BrowsingContextStorage} from './browsingContextStorage.js';
+import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {

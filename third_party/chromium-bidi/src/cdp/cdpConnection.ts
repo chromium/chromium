@@ -18,8 +18,8 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {ITransport} from '../utils/transport.js';
 
-import {CloseError, CdpClient, ICdpClient} from './cdpClient.js';
-import {CdpMessage} from './cdpMessage.js';
+import {CloseError, CdpClient, type ICdpClient} from './cdpClient.js';
+import type {CdpMessage} from './cdpMessage.js';
 
 interface CdpCallbacks {
   resolve: (result: CdpMessage<any>['result']) => void;

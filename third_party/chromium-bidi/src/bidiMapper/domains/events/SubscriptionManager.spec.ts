@@ -21,7 +21,7 @@ import * as sinon from 'sinon';
 import {
   BrowsingContext,
   CDP,
-  CommonDataTypes,
+  type CommonDataTypes,
   Log,
   Network,
   Script,

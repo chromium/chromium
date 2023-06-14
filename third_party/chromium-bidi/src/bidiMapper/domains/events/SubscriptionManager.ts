@@ -18,14 +18,14 @@
 import {
   BrowsingContext,
   CDP,
-  CommonDataTypes,
+  type CommonDataTypes,
   Log,
   Message,
   Network,
   Script,
-  Session,
+  type Session,
 } from '../../../protocol/protocol.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 /**
  * Returns the cartesian product of the given arrays.

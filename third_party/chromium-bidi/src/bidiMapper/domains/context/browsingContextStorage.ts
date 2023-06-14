@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {CommonDataTypes, Message} from '../../../protocol/protocol.js';
+import {type CommonDataTypes, Message} from '../../../protocol/protocol.js';
 
-import {BrowsingContextImpl} from './browsingContextImpl.js';
+import type {BrowsingContextImpl} from './browsingContextImpl.js';
 
 /** Container class for browsing contexts. */
 export class BrowsingContextStorage {

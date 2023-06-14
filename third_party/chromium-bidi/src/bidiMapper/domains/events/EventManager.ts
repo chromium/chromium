@@ -16,10 +16,10 @@
  */
 
 import {
-  CommonDataTypes,
+  type CommonDataTypes,
   Log,
-  Message,
-  Session,
+  type Message,
+  type Session,
 } from '../../../protocol/protocol.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {Buffer} from '../../../utils/buffer.js';

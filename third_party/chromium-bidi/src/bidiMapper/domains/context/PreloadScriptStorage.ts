@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 import {uuidv4} from '../../../utils/uuid.js';
-import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 
-import {CdpTarget} from './cdpTarget.js';
+import type {CdpTarget} from './cdpTarget.js';
 
 export type BidiPreloadScript = {
   /** BiDi ID, an automatically generated UUID. */

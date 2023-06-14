@@ -19,15 +19,15 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogManager} from '../log/logManager.js';
-import {RealmStorage} from '../script/realmStorage.js';
+import type {RealmStorage} from '../script/realmStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {CDP, Script} from '../../../protocol/protocol.js';
+import {CDP, type Script} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
-import {LoggerFn, LogType} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 
-import {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import {BrowsingContextStorage} from './browsingContextStorage';
+import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
+import type {BrowsingContextStorage} from './browsingContextStorage';
 
 export class CdpTarget {
   readonly #targetId: string;

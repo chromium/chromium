@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {LogType, LoggerFn} from './log.js';
+import {LogType, type LoggerFn} from './log.js';
 
 export class ProcessingQueue<T> {
   readonly #logger?: LoggerFn;

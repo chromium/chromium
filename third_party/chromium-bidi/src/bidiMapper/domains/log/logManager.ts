@@ -14,13 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
+import {
+  type CommonDataTypes,
+  Log,
+  type Script,
+} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {Realm} from '../script/realm.js';
-import {RealmStorage} from '../script/realmStorage.js';
-import {CdpTarget} from '../context/cdpTarget.js';
+import type {Realm} from '../script/realm.js';
+import type {RealmStorage} from '../script/realmStorage.js';
+import type {CdpTarget} from '../context/cdpTarget.js';
 
 import {getRemoteValuesText} from './logHelper.js';
 

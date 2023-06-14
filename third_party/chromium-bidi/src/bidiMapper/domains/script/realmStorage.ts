@@ -14,11 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
+import {
+  type CommonDataTypes,
+  Message,
+  type Script,
+} from '../../../protocol/protocol.js';
 
-import {Realm, RealmType} from './realm.js';
+import type {Realm, RealmType} from './realm.js';
 
 type RealmFilter = {
   realmId?: Script.Realm;

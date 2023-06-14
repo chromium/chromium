@@ -20,7 +20,10 @@ import * as sinon from 'sinon';
 import * as uuid from '../../../utils/uuid.js';
 
 import {CdpTarget} from './cdpTarget';
-import {PreloadScriptStorage, CdpPreloadScript} from './PreloadScriptStorage';
+import {
+  PreloadScriptStorage,
+  type CdpPreloadScript,
+} from './PreloadScriptStorage';
 
 const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';
 const MOCKED_UUID_2 = '00000000-0000-0000-0000-00000000000b';

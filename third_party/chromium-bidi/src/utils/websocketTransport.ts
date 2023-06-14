@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import WebSocket from 'ws';
+import type WebSocket from 'ws';
 
 import type {ITransport} from './transport.js';
 

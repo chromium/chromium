@@ -16,16 +16,16 @@
  */
 
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LogType, LoggerFn} from '../utils/log.js';
+import {LogType, type LoggerFn} from '../utils/log.js';
 import type {Message} from '../protocol/protocol.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
-import {BidiParser, CommandProcessor} from './CommandProcessor.js';
-import {BidiTransport} from './BidiTransport.js';
+import {type BidiParser, CommandProcessor} from './CommandProcessor.js';
+import type {BidiTransport} from './BidiTransport.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
-import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
 type BidiServerEvents = {

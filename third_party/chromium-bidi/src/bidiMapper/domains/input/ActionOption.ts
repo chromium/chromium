@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Input} from '../../../protocol/protocol.js';
+import type {Input} from '../../../protocol/protocol.js';
 
 export type ActionOption = ActionOptionFor<
   | Input.NoneSourceAction

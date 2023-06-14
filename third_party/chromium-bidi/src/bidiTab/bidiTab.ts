@@ -19,17 +19,17 @@
 
 import * as Parser from '../protocol-parser/protocol-parser.js';
 import {
-  BrowsingContext,
-  CDP,
-  Input,
+  type BrowsingContext,
+  type CDP,
+  type Input,
   Message,
-  Script,
-  Session,
+  type Script,
+  type Session,
 } from '../protocol/protocol';
 import {
-  BidiParser,
+  type BidiParser,
   BidiServer,
-  BidiTransport,
+  type BidiTransport,
   OutgoingBidiMessage,
 } from '../bidiMapper/bidiMapper.js';
 import {CdpConnection} from '../cdp/cdpConnection.js';

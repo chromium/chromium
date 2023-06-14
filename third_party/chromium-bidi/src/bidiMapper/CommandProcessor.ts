@@ -16,22 +16,22 @@
  */
 
 import {
-  BrowsingContext,
-  CDP,
-  Input,
+  type BrowsingContext,
+  type CDP,
+  type Input,
   Message,
-  Script,
-  Session,
+  type Script,
+  type Session,
 } from '../protocol/protocol.js';
-import {LogType, LoggerFn} from '../utils/log.js';
+import {LogType, type LoggerFn} from '../utils/log.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
-import {RealmStorage} from './domains/script/realmStorage.js';
+import type {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;

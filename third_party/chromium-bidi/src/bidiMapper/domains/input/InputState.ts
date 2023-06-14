@@ -18,11 +18,11 @@
 import {Input, Message} from '../../../protocol/protocol.js';
 import {Mutex} from '../../../utils/Mutex.js';
 
-import {ActionOption} from './ActionOption.js';
+import type {ActionOption} from './ActionOption.js';
 import {
-  InputSource,
+  type InputSource,
   PointerSource,
-  InputSourceFor,
+  type InputSourceFor,
   NoneSource,
   KeySource,
   WheelSource,

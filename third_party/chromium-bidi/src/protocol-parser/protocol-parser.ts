@@ -19,7 +19,7 @@
  * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
  * Parser types should match the `../protocol` types.
  */
-import {ZodType, z as zod} from 'zod';
+import {type ZodType, z as zod} from 'zod';
 
 import {
   BrowsingContext as BrowsingContextTypes,
@@ -27,9 +27,9 @@ import {
   Log as LogTypes,
   CDP as CdpTypes,
   Message as MessageTypes,
-  Session as SessionTypes,
+  type Session as SessionTypes,
   Network as NetworkTypes,
-  CommonDataTypes as CommonDataTypesTypes,
+  type CommonDataTypes as CommonDataTypesTypes,
   Input as InputTypes,
 } from '../protocol/protocol.js';
 

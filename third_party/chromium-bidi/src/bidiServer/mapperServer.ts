@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 import WebSocket from 'ws';
 import debug from 'debug';
 
 import {CdpConnection} from '../cdp/cdpConnection.js';
-import {CdpClient} from '../cdp/cdpClient.js';
+import type {CdpClient} from '../cdp/cdpClient.js';
 import {LogType} from '../utils/log.js';
 import {WebSocketTransport} from '../utils/websocketTransport.js';
 

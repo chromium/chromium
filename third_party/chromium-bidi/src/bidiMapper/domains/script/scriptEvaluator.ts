@@ -14,12 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
+import {
+  type CommonDataTypes,
+  Message,
+  type Script,
+} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 
-import {Realm} from './realm.js';
+import type {Realm} from './realm.js';
 import {ChannelProxy} from './channelProxy.js';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`

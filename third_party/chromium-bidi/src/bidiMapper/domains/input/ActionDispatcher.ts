@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-import {CommonDataTypes, Input, Message} from '../../../protocol/protocol.js';
+import {
+  type CommonDataTypes,
+  Input,
+  Message,
+} from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import {BrowsingContextImpl} from '../context/browsingContextImpl.js';
+import type {BrowsingContextImpl} from '../context/browsingContextImpl.js';
 
-import {ActionOption} from './ActionOption.js';
-import {KeySource, PointerSource, WheelSource} from './InputSource.js';
-import {InputState} from './InputState.js';
+import type {ActionOption} from './ActionOption.js';
+import type {KeySource, PointerSource, WheelSource} from './InputSource.js';
+import type {InputState} from './InputState.js';
 import {KeyToKeyCode} from './USKeyboardLayout.js';
 import {getNormalizedKey, getKeyCode, getKeyLocation} from './keyUtils.js';
 

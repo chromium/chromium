@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import {LogType, LoggerFn} from '../../../utils/log.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 
 import {SHARED_ID_DIVIDER, ScriptEvaluator} from './scriptEvaluator.js';
-import {RealmStorage} from './realmStorage.js';
+import type {RealmStorage} from './realmStorage.js';
 
 export type RealmType = Script.RealmType;
 

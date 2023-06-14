@@ -16,7 +16,7 @@
  */
 
 import {assert} from '../../../utils/assert.js';
-import {BrowsingContextImpl} from '../context/browsingContextImpl.js';
+import type {BrowsingContextImpl} from '../context/browsingContextImpl.js';
 
 import {InputState} from './InputState.js';
 

@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {
   BrowsingContext,
-  CommonDataTypes,
+  type CommonDataTypes,
   Message,
 } from '../../../protocol/protocol.js';
-import {LoggerFn, LogType} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
-import {RealmStorage} from '../script/realmStorage.js';
+import type {RealmStorage} from '../script/realmStorage.js';
 
-import {BrowsingContextStorage} from './browsingContextStorage.js';
-import {CdpTarget} from './cdpTarget.js';
+import type {BrowsingContextStorage} from './browsingContextStorage.js';
+import type {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
   /** The ID of this browsing context. */

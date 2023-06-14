@@ -14,7 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mitt, {Emitter, EventType, Handler, WildcardHandler} from 'mitt';
+import mitt, {
+  type Emitter,
+  type EventType,
+  type Handler,
+  type WildcardHandler,
+} from 'mitt';
 
 export class EventEmitter<Events extends Record<EventType, unknown>> {
   #emitter: Emitter<Events> = mitt();
