@@ -284,6 +284,12 @@ BASE_FEATURE(kEnableADPFMidFrameBoost,
 const base::FeatureParam<double> kADPFMidFrameBoostDurationMultiplier{
     &kEnableADPFMidFrameBoost, "adpf_mid_frame_boost_multiplier", 1.0};
 
+// If enabled, Chrome includes the Renderer Main thread(s) into the
+// ADPF(Android Dynamic Performance Framework) hint session.
+BASE_FEATURE(kEnableADPFRendererMain,
+             "EnableADPFRendererMain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

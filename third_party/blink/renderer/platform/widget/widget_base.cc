@@ -185,6 +185,8 @@ void WidgetBase::InitializeCompositing(
   main_thread_compositor_task_runner_ =
       page_scheduler.GetAgentGroupScheduler().CompositorTaskRunner();
 
+  main_thread_id_ = base::PlatformThread::CurrentId();
+
   auto* compositing_thread_scheduler =
       ThreadScheduler::CompositorThreadScheduler();
   layer_tree_view_ = std::make_unique<LayerTreeView>(this, widget_scheduler_);
@@ -603,6 +605,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   auto params = std::make_unique<
       cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>();
   params->io_thread_id = Platform::Current()->GetIOThreadId();
+  if (base::FeatureList::IsEnabled(::features::kEnableADPFRendererMain)) {
+    params->main_thread_id = main_thread_id_;
+  }
+
   params->compositor_task_runner =
       Platform::Current()->CompositorThreadTaskRunner();
   if (for_web_tests && !params->compositor_task_runner) {

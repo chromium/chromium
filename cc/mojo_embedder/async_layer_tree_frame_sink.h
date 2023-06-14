@@ -76,6 +76,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     UnboundMessagePipes pipes;
     bool wants_animate_only_begin_frames = false;
     base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
+    base::PlatformThreadId main_thread_id = base::kInvalidThreadId;
 
     // If `true`, the CompositorFrameSinkClient receiver will receive IPC
     // directly to the thread on which the AsyncLayerTreeFrameSink lives, rather
@@ -142,6 +143,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   std::unique_ptr<viz::SyntheticBeginFrameSource> synthetic_begin_frame_source_;
 #if BUILDFLAG(IS_ANDROID)
   base::PlatformThreadId io_thread_id_;
+  base::PlatformThreadId main_thread_id_;
 #endif
 
   // Message pipes that will be bound when BindToClient() is called.

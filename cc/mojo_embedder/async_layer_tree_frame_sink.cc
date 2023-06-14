@@ -57,6 +57,7 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
           std::move(params->synthetic_begin_frame_source)),
 #if BUILDFLAG(IS_ANDROID)
       io_thread_id_(params->io_thread_id),
+      main_thread_id_(params->main_thread_id),
 #endif
       pipes_(std::move(params->pipes)),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
@@ -117,6 +118,9 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   thread_ids.push_back(base::PlatformThread::CurrentId());
   if (io_thread_id_ != base::kInvalidThreadId)
     thread_ids.push_back(io_thread_id_);
+  if (main_thread_id_ != base::kInvalidThreadId) {
+    thread_ids.push_back(main_thread_id_);
+  }
   compositor_frame_sink_ptr_->SetThreadIds(thread_ids);
 #endif
 
