@@ -81,10 +81,10 @@ void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
 void PreloadingAttemptImpl::SetEligibility(PreloadingEligibility eligibility) {
   // Ensure that eligiblity is only set once and that it's set before the
   // holdback status and the triggering outcome.
-  DCHECK_EQ(eligibility_, PreloadingEligibility::kUnspecified);
-  DCHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kUnspecified);
-  DCHECK_EQ(triggering_outcome_, PreloadingTriggeringOutcome::kUnspecified);
-  DCHECK_NE(eligibility, PreloadingEligibility::kUnspecified);
+  CHECK_EQ(eligibility_, PreloadingEligibility::kUnspecified);
+  CHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kUnspecified);
+  CHECK_EQ(triggering_outcome_, PreloadingTriggeringOutcome::kUnspecified);
+  CHECK_NE(eligibility, PreloadingEligibility::kUnspecified);
   eligibility_ = eligibility;
 }
 
@@ -95,15 +95,15 @@ void PreloadingAttemptImpl::SetHoldbackStatus(
     PreloadingHoldbackStatus holdback_status) {
   // Ensure that the holdback status is only set once and that it's set for
   // eligible attempts and before the triggering outcome.
-  DCHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
-  DCHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kUnspecified);
-  DCHECK_EQ(triggering_outcome_, PreloadingTriggeringOutcome::kUnspecified);
-  DCHECK_NE(holdback_status, PreloadingHoldbackStatus::kUnspecified);
+  CHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
+  CHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kUnspecified);
+  CHECK_EQ(triggering_outcome_, PreloadingTriggeringOutcome::kUnspecified);
+  CHECK_NE(holdback_status, PreloadingHoldbackStatus::kUnspecified);
   holdback_status_ = holdback_status;
 }
 
 bool PreloadingAttemptImpl::ShouldHoldback() {
-  DCHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
+  CHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
   if (holdback_status_ != PreloadingHoldbackStatus::kUnspecified) {
     // The holdback status has already been determined, just use that value.
     return holdback_status_ == PreloadingHoldbackStatus::kHoldback;
@@ -123,8 +123,8 @@ void PreloadingAttemptImpl::SetTriggeringOutcome(
     PreloadingTriggeringOutcome triggering_outcome) {
   // Ensure that the triggering outcome is only set for eligible and
   // non-holdback attempts.
-  DCHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
-  DCHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kAllowed);
+  CHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
+  CHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kAllowed);
   // Check that we do the correct transition before setting
   // `triggering_outcome_`.
   DCHECKTriggeringOutcomeTransitions(/*old_state=*/triggering_outcome_,
@@ -139,9 +139,9 @@ void PreloadingAttemptImpl::SetTriggeringOutcome(
     // `PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown` is set for
     // those other features.
     case PreloadingTriggeringOutcome::kReady:
-      DCHECK(preloading_type_ == PreloadingType::kPrefetch ||
-             preloading_type_ == PreloadingType::kPrerender ||
-             preloading_type_ == PreloadingType::kNoStatePrefetch);
+      CHECK(preloading_type_ == PreloadingType::kPrefetch ||
+            preloading_type_ == PreloadingType::kPrerender ||
+            preloading_type_ == PreloadingType::kNoStatePrefetch);
       if (!ready_time_) {
         ready_time_ = elapsed_timer_.Elapsed();
       }
@@ -154,10 +154,10 @@ void PreloadingAttemptImpl::SetTriggeringOutcome(
 void PreloadingAttemptImpl::SetFailureReason(PreloadingFailureReason reason) {
   // Ensure that the failure reason is only set once and is only set for
   // eligible and non-holdback attempts.
-  DCHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
-  DCHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kAllowed);
-  DCHECK_EQ(failure_reason_, PreloadingFailureReason::kUnspecified);
-  DCHECK_NE(reason, PreloadingFailureReason::kUnspecified);
+  CHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
+  CHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kAllowed);
+  CHECK_EQ(failure_reason_, PreloadingFailureReason::kUnspecified);
+  CHECK_NE(reason, PreloadingFailureReason::kUnspecified);
 
   // It could be possible that the TriggeringOutcome is already kFailure, when
   // we try to set FailureReason after setting TriggeringOutcome to kFailure.
@@ -197,7 +197,7 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
     // instance does not have the opportunity to set the
     // `is_accurate_triggering_` flag to true in this case.
     if (preloading_type_ != PreloadingType::kPrefetch) {
-      DCHECK(is_accurate_triggering_)
+      CHECK(is_accurate_triggering_)
           << "TriggeringOutcome set to kSuccess without correct prediction\n";
     }
   }
@@ -294,7 +294,7 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptUMA() {
 }
 
 void PreloadingAttemptImpl::SetIsAccurateTriggering(const GURL& navigated_url) {
-  DCHECK(url_match_predicate_);
+  CHECK(url_match_predicate_);
 
   // `PreloadingAttemptImpl::SetIsAccurateTriggering` is called during
   // `WCO::DidStartNavigation`.
