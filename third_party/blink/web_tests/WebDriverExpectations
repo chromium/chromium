@@ -169,7 +169,11 @@ crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/take_element_scr
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/take_element_screenshot/screenshot.py>>test_no_such_element_from_other_window_handle[open] [ Failure ]
 
 crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/maximize_window/maximize.py>>test_no_top_browsing_context [ Failure Pass ]
-crbug.com/1430083 [ Linux ] external/wpt/webdriver/tests/classic/get_element_property/user_prompts.py>>test_dismiss_and_notify[capabilities0-alert-None] [ Failure Pass ]
+crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/get_element_property/user_prompts.py>>test_dismiss_and_notify[capabilities0-alert-None] [ Failure Pass ]
+crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/back/user_prompts.py>>test_accept[capabilities0-alert] [ Failure Pass ]
+crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/back/user_prompts.py>>test_accept_and_notify[capabilities0-alert-None] [ Failure Pass ]
+crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/get_element_property/get.py>>test_stale_element_reference[child_context] [ Failure Pass ]
+crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/properties.py>>test_content_attribute [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/element_clear/clear.py>>test_contenteditable [ Failure ]
