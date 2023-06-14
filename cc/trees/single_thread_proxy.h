@@ -163,6 +163,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
     return host_impl_.get();
   }
 
+  viz::BeginFrameArgs BeginImplFrameForTest(base::TimeTicks frame_begin_time);
+
  protected:
   SingleThreadProxy(LayerTreeHost* layer_tree_host,
                     LayerTreeHostSingleThreadClient* client,

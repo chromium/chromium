@@ -348,10 +348,10 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
       property_trees()->scroll_tree().Node(sticky_data->scroll_ancestor);
   const TransformNode* transform_node = Node(scroll_node->transform_id);
   DCHECK(transform_node);
-  gfx::PointF scroll_offset =
-      property_trees()->scroll_tree().current_scroll_offset(
-          scroll_node->element_id);
-  gfx::PointF scroll_position(scroll_offset.x(), scroll_offset.y());
+  // We need the scroll offset from the transform tree, not the scroll tree.
+  // Tracking the scroll tree here would make sticky elements run "ahead" of a
+  // main-repainted scroll.
+  gfx::PointF scroll_position = transform_node->scroll_offset;
   if (transform_node->scrolls) {
     // The scroll position does not include snapping which shifts the scroll
     // offset to align to a pixel boundary, we need to manually include it here.

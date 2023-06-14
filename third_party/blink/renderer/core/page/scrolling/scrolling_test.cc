@@ -31,6 +31,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/trees/compositor_commit_data.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
@@ -2723,6 +2724,95 @@ TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
   Compositor().BeginFrame();
   EXPECT_EQ(100, GetActiveScrollOffset(box->GetScrollableArea()).y());
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
+}
+
+TEST_P(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+  SetPreferCompositingToLCDText(false);
+
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <style>
+    .spincont { position: absolute;
+                width: 10px; height: 10px; left: 50px; top: 20px; }
+    .spinner { animation: spin 1s linear infinite; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .scroller { position: absolute; overflow: scroll;
+                left: 10px; top: 50px; width: 750px; height: 400px;
+                border: 10px solid #ccc; }
+    .spacer { position: absolute; width: 9000px; height: 100px; }
+    .sticky { position: sticky; background: #eee;
+              left: 50px; top: 50px; width: 600px; height: 200px; }
+    .bluechip { position: absolute; background: blue; color: white;
+                left: 100px; top: 50px; width: 200px; height: 30px; }
+    </style>
+    <div class="spincont"><div class="spinner">X</div></div>
+    <div class="scroller">
+      <div class="spacer">scrolling</div>
+      <div class="sticky"><div class="bluechip">sticky?</div></div>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame(0.016, /* raster */ true);
+  Element* scroller = GetDocument().QuerySelector(".scroller");
+  LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
+  EXPECT_EQ(0, GetActiveScrollOffset(box->GetScrollableArea()).y());
+
+  WebGestureEvent scroll_begin(
+      WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests(), WebGestureDevice::kTouchpad);
+  scroll_begin.SetPositionInWidget(gfx::PointF(200, 200));
+  scroll_begin.data.scroll_begin.delta_x_hint = -100;
+
+  WebGestureEvent scroll_update(
+      WebInputEvent::Type::kGestureScrollUpdate, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests(), WebGestureDevice::kTouchpad);
+  scroll_update.SetPositionInWidget(gfx::PointF(200, 200));
+  scroll_update.data.scroll_update.delta_x = -100;
+
+  WebGestureEvent scroll_end(
+      WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests(), WebGestureDevice::kTouchpad);
+  scroll_end.SetPositionInWidget(gfx::PointF(200, 200));
+
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(scroll_begin);
+  widget.DispatchThroughCcInputHandler(scroll_update);
+  widget.DispatchThroughCcInputHandler(scroll_end);
+
+  // Scroll applied immediately in the scroll tree.
+  EXPECT_EQ(100, GetActiveScrollOffset(box->GetScrollableArea()).x());
+
+  // Tick impl animation to dirty draw properties.
+  static_cast<cc::SingleThreadProxy*>(
+      GetWebFrameWidget().LayerTreeHostForTesting()->proxy())
+      ->BeginImplFrameForTest(Compositor().LastFrameTime() +
+                              base::Seconds(0.016));
+
+  // Update draw properties.
+  cc::LayerTreeHostImpl::FrameData frame;
+  auto* lthi = GetLayerTreeHostImpl();
+  lthi->PrepareToDraw(&frame);
+
+  Element* sticky = GetDocument().QuerySelector(".sticky");
+  cc::ElementId sticky_translation = CompositorElementIdFromUniqueObjectId(
+      sticky->GetLayoutObject()->UniqueId(),
+      CompositorElementIdNamespace::kStickyTranslation);
+  auto* transform_node = lthi->active_tree()
+                             ->property_trees()
+                             ->transform_tree()
+                             .FindNodeFromElementId(sticky_translation);
+
+  // Sticky translation should NOT reflect the updated scroll, since the scroll
+  // is main-repainted and we haven't had a main frame yet.
+  EXPECT_EQ(50, transform_node->to_parent.To2dTranslation().x());
 }
 
 TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {

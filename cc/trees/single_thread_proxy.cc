@@ -731,6 +731,21 @@ void SingleThreadProxy::RequestBeginMainFrameNotExpected(bool new_state) {
   }
 }
 
+viz::BeginFrameArgs SingleThreadProxy::BeginImplFrameForTest(
+    base::TimeTicks frame_begin_time) {
+  viz::BeginFrameArgs begin_frame_args(viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
+      begin_frame_sequence_number_++, frame_begin_time, base::TimeTicks(),
+      viz::BeginFrameArgs::DefaultInterval(), viz::BeginFrameArgs::NORMAL));
+
+  // Start the impl frame.
+  {
+    DebugScopedSetImplThread impl(task_runner_provider_);
+    WillBeginImplFrame(begin_frame_args);
+  }
+  return begin_frame_args;
+}
+
 void SingleThreadProxy::CompositeImmediatelyForTest(
     base::TimeTicks frame_begin_time,
     bool raster,
@@ -756,16 +771,8 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     }
   }
 
-  viz::BeginFrameArgs begin_frame_args(viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
-      begin_frame_sequence_number_++, frame_begin_time, base::TimeTicks(),
-      viz::BeginFrameArgs::DefaultInterval(), viz::BeginFrameArgs::NORMAL));
-
-  // Start the impl frame.
-  {
-    DebugScopedSetImplThread impl(task_runner_provider_);
-    WillBeginImplFrame(begin_frame_args);
-  }
+  viz::BeginFrameArgs begin_frame_args =
+      BeginImplFrameForTest(frame_begin_time);  // IN-TEST
 
   // Run the "main thread" and get it to commit.
   {
