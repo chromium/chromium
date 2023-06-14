@@ -29,7 +29,8 @@ class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(WelcomeTourDialogPixelTest, Appearance) {
+// TODO(https://crbug.com/1454700): flaky on  linux-chromeos-rel.
+TEST_F(WelcomeTourDialogPixelTest, DISABLED_Appearance) {
   ASSERT_TRUE(WelcomeTourDialog::Get());
 
   // Take a screenshot of the Welcome Tour dialog.
