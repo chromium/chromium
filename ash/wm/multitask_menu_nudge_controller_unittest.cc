@@ -27,6 +27,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
@@ -180,7 +181,8 @@ TEST_F(MultitaskMenuNudgeControllerTest,
 
   // After floating the window from the multitask menu, there is no crash.
   LeftClickOn(
-      multitask_menu->multitask_menu_view()->float_button_for_testing());
+      chromeos::MultitaskMenuViewTestApi(multitask_menu->multitask_menu_view())
+          .GetFloatButton());
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
 

@@ -24,6 +24,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -90,7 +91,9 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
     ShowMultitaskMenu(*window);
     auto* multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
     const gfx::Rect half_bounds =
-        multitask_menu_view->half_button_for_testing()->GetBoundsInScreen();
+        chromeos::MultitaskMenuViewTestApi(multitask_menu_view)
+            .GetHalfButton()
+            ->GetBoundsInScreen();
     GetEventGenerator()->GestureTapAt(left ? half_bounds.left_center()
                                            : half_bounds.right_center());
     auto* split_view_controller = SplitViewController::Get(window);
@@ -159,10 +162,11 @@ TEST_F(TabletModeMultitaskMenuTest, BasicShowMenu) {
   chromeos::MultitaskMenuView* multitask_menu_view =
       GetMultitaskMenuView(multitask_menu);
   ASSERT_TRUE(multitask_menu_view);
-  EXPECT_TRUE(multitask_menu_view->half_button_for_testing());
+  chromeos::MultitaskMenuViewTestApi test_api(multitask_menu_view);
+  EXPECT_TRUE(test_api.GetHalfButton());
   EXPECT_TRUE(multitask_menu_view->partial_button());
-  EXPECT_TRUE(multitask_menu_view->full_button_for_testing());
-  EXPECT_TRUE(multitask_menu_view->float_button_for_testing());
+  EXPECT_TRUE(test_api.GetFullButton());
+  EXPECT_TRUE(test_api.GetFloatButton());
 
   // Verify that the menu is horizontally centered.
   EXPECT_EQ(multitask_menu->widget()
@@ -214,8 +218,9 @@ TEST_F(TabletModeMultitaskMenuTest, PressMoveAndReleaseTouch) {
   ShowMultitaskMenu(*window);
 
   // Press and move the touch slightly to mimic a real tap.
-  auto* half_button =
-      GetMultitaskMenuView(GetMultitaskMenu())->half_button_for_testing();
+  auto* half_button = chromeos::MultitaskMenuViewTestApi(
+                          GetMultitaskMenuView(GetMultitaskMenu()))
+                          .GetHalfButton();
   GetEventGenerator()->set_current_screen_location(
       half_button->GetBoundsInScreen().left_center());
   GetEventGenerator()->PressMoveAndReleaseTouchBy(0, 3);
@@ -383,8 +388,9 @@ TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnButtonPress) {
   auto window = CreateAppWindow();
   GenerateScroll(window->bounds().CenterPoint().x(), 0,
                  /*end_y=*/60);
-  GestureTapOn(
-      GetMultitaskMenuView(GetMultitaskMenu())->float_button_for_testing());
+  GestureTapOn(chromeos::MultitaskMenuViewTestApi(
+                   GetMultitaskMenuView(GetMultitaskMenu()))
+                   .GetFloatButton());
 
   // Wait for the TabletModeMultitaskMenuView layer to fade out.
   ui::LayerAnimationStoppedWaiter().Wait(
@@ -445,8 +451,9 @@ TEST_F(TabletModeMultitaskMenuTest, HalfButtonFunctionality) {
   ShowMultitaskMenu(*window);
 
   // Press the primary half split button.
-  auto* half_button =
-      GetMultitaskMenuView(GetMultitaskMenu())->half_button_for_testing();
+  auto* half_button = chromeos::MultitaskMenuViewTestApi(
+                          GetMultitaskMenuView(GetMultitaskMenu()))
+                          .GetHalfButton();
   GetEventGenerator()->GestureTapAt(
       half_button->GetBoundsInScreen().left_center());
   histogram_tester_.ExpectBucketCount(
@@ -556,7 +563,8 @@ TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
   ASSERT_TRUE(GetMultitaskMenu());
   chromeos::MultitaskMenuView* multitask_menu_view =
       GetMultitaskMenuView(GetMultitaskMenu());
-  ASSERT_TRUE(multitask_menu_view->half_button_for_testing());
+  ASSERT_TRUE(
+      chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
   ASSERT_TRUE(multitask_menu_view->partial_button()->GetEnabled());
   ASSERT_FALSE(multitask_menu_view->partial_button()
                    ->GetRightBottomButton()
@@ -569,7 +577,8 @@ TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
       gfx::Size(work_area_bounds.width() * 0.6f, work_area_bounds.height()));
   ShowMultitaskMenu(*window);
   multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
-  EXPECT_FALSE(multitask_menu_view->half_button_for_testing());
+  ASSERT_FALSE(
+      chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
   EXPECT_TRUE(multitask_menu_view->partial_button()->GetEnabled());
   ASSERT_FALSE(multitask_menu_view->partial_button()
                    ->GetRightBottomButton()
@@ -582,7 +591,8 @@ TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
       gfx::Size(work_area_bounds.width() * 0.7f, work_area_bounds.height()));
   ShowMultitaskMenu(*window);
   multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
-  EXPECT_FALSE(multitask_menu_view->half_button_for_testing());
+  EXPECT_FALSE(
+      chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
   EXPECT_FALSE(multitask_menu_view->partial_button());
 }
 
@@ -607,10 +617,11 @@ TEST_F(TabletModeMultitaskMenuTest, HiddenButtons) {
   chromeos::MultitaskMenuView* multitask_menu_view =
       GetMultitaskMenuView(multitask_menu);
   ASSERT_TRUE(multitask_menu_view);
-  EXPECT_FALSE(multitask_menu_view->half_button_for_testing());
+  chromeos::MultitaskMenuViewTestApi test_api(multitask_menu_view);
+  EXPECT_FALSE(test_api.GetHalfButton());
   EXPECT_FALSE(multitask_menu_view->partial_button());
-  EXPECT_TRUE(multitask_menu_view->full_button_for_testing());
-  EXPECT_FALSE(multitask_menu_view->float_button_for_testing());
+  EXPECT_TRUE(test_api.GetFullButton());
+  EXPECT_FALSE(test_api.GetFloatButton());
 }
 
 // Tests that the cue is still showing when the menu is opened, and it has been

@@ -77,18 +77,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // If the menu is opened because of mouse hover, moving the mouse outside the
   // menu for 3 seconds will result in it auto closing. This function reduces
   // that 3 second delay to zero.
-  // TODO(sammiequon|sophiewen): Move these for testing functions to private
-  // test only api.
   static void SetSkipMouseOutDelayForTesting(bool val);
-
-  SplitButtonView* half_button_for_testing() { return half_button_.get(); }
-  MultitaskButton* full_button_for_testing() { return full_button_.get(); }
-  MultitaskButton* float_button_for_testing() { return float_button_.get(); }
-
-  bool is_reversed_for_testing() const { return is_reversed_; }
 
  private:
   class MenuPreTargetHandler;
+  friend class MultitaskMenuViewTestApi;
 
   // Callbacks for the buttons in the multitask menu view.
   void HalfButtonPressed(SnapDirection direction);
