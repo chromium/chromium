@@ -57,6 +57,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuSyncOffIcon] = {ui::kColorMenuIcon};
   mixer[kColorProfileMenuSyncPausedIcon] = {ui::kColorSysPrimary};
 
+  // Tab Search Colors.
+  mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
+  mixer[kColorTabSearchPrimaryForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }

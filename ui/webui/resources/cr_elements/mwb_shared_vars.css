@@ -18,11 +18,26 @@ html {
   --mwb-list-section-title-font-size: 11px;
   --mwb-list-section-title-height: 40px;
   --mwb-primary-text-font-size: 13px;
+  --mwb-primary-text-font-weight: normal;
   --mwb-scrollbar-thumb-color: var(--google-grey-300);
   --mwb-scrollbar-thumb-hover-color: var(--google-grey-500);
   --mwb-scrollbar-track-color: var(--mwb-background-color);
   --mwb-scrollbar-width: 4px;
   --mwb-secondary-text-font-size: 12px;
+  --mwb-secondary-text-font-weight: normal;
+}
+
+html[chrome-refresh-2023] {
+  --cr-primary-text-color: var(--color-tab-search-primary-foreground);
+  --cr-secondary-text-color: var(--color-tab-search-secondary-foreground);
+  --mwb-background-color: var(--color-tab-search-background);
+  --mwb-icon-button-fill-color: var(--color-tab-search-secondary-foreground);
+  --mwb-list-item-hover-background-color: var(--cr-hover-background-color);
+  --mwb-list-item-selected-background-color: var(--cr-active-background-color);
+  --mwb-primary-text-font-size: 12px;
+  --mwb-primary-text-font-weight: 500;
+  --mwb-secondary-text-font-size: 11px;
+  --mwb-secondary-text-font-weight: 400;
 }
 
 @media (prefers-color-scheme: dark) {
