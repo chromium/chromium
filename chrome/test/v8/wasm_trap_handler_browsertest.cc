@@ -60,7 +60,6 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
       int original_count = GetRecoveredTrapCount();
       ASSERT_NO_FATAL_FAILURE(RunJSTest(js));
       int new_count = GetRecoveredTrapCount();
-      ASSERT_NO_FATAL_FAILURE(RunJSTest(js));
       // Out-of-bounds writes, on AArch64 Linux platforms, can perform partial
       // writes. On these platforms, we do not use trap handlers to perform
       // bounds checks on writes. So, for tests that are attempting to access
