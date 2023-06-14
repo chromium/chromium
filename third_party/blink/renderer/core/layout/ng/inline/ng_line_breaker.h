@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_leading_floats.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_break_point.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -44,8 +45,7 @@ class CORE_EXPORT NGLineBreaker {
                 NGLineBreakerMode,
                 const NGConstraintSpace&,
                 const NGLineLayoutOpportunity&,
-                const NGPositionedFloatVector& leading_floats,
-                unsigned handled_leading_floats_index,
+                const NGLeadingFloats& leading_floats,
                 const NGInlineBreakToken*,
                 const NGColumnSpannerPath*,
                 NGExclusionSpace*);
@@ -372,9 +372,8 @@ class CORE_EXPORT NGLineBreaker {
   LayoutUnit override_available_width_;
 
   // Keep track of handled float items. See HandleFloat().
-  const NGPositionedFloatVector& leading_floats_;
+  const NGLeadingFloats& leading_floats_;
   unsigned leading_floats_index_ = 0u;
-  unsigned handled_leading_floats_index_;
 
   // Cache for computing |MinMaxSize|. See |MaxSizeCache|.
   MaxSizeCache* max_size_cache_ = nullptr;

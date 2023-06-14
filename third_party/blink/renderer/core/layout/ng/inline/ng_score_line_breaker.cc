@@ -36,11 +36,10 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
 
   // Compute line breaks and cache the results (`NGLineInfo`) up to
   // `NGLineInfoList::kCapacity` lines.
-  NGPositionedFloatVector empty_leading_floats;
+  NGLeadingFloats empty_leading_floats;
   NGLineBreaker line_breaker(
       node_, NGLineBreakerMode::kContent, ConstraintSpace(), line_opportunity_,
-      empty_leading_floats,
-      /* handled_leading_floats_index */ 0u, break_token_,
+      empty_leading_floats, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {

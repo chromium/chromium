@@ -56,15 +56,14 @@ struct LineBreakResults {
                     const NGInlineBreakToken* stop_at = nullptr) {
     DCHECK(lines_.empty());
     const NGLineLayoutOpportunity line_opportunity(available_width);
-    NGPositionedFloatVector leading_floats;
+    NGLeadingFloats leading_floats;
     NGExclusionSpace exclusion_space;
     NGLineInfo line_info;
     for (;;) {
-      NGLineBreaker line_breaker(
-          node_, NGLineBreakerMode::kContent, space_, line_opportunity,
-          leading_floats,
-          /* handled_leading_floats_index */ 0, break_token_,
-          /* column_spanner_path_ */ nullptr, &exclusion_space);
+      NGLineBreaker line_breaker(node_, NGLineBreakerMode::kContent, space_,
+                                 line_opportunity, leading_floats, break_token_,
+                                 /* column_spanner_path_ */ nullptr,
+                                 &exclusion_space);
       line_breaker.NextLine(&line_info);
       // Bisecting can't find the desired value if the paragraph has forced line
       // breaks.

@@ -349,8 +349,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
                              NGLineBreakerMode mode,
                              const NGConstraintSpace& space,
                              const NGLineLayoutOpportunity& line_opportunity,
-                             const NGPositionedFloatVector& leading_floats,
-                             unsigned handled_leading_floats_index,
+                             const NGLeadingFloats& leading_floats,
                              const NGInlineBreakToken* break_token,
                              const NGColumnSpannerPath* column_spanner_path,
                              NGExclusionSpace* exclusion_space)
@@ -380,7 +379,6 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       shaper_(text_content_),
       spacing_(text_content_, is_svg_text_),
       leading_floats_(leading_floats),
-      handled_leading_floats_index_(handled_leading_floats_index),
       base_direction_(node_.BaseDirection()) {
   UpdateAvailableWidth();
   if (is_svg_text_) {
@@ -2727,10 +2725,11 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     return;
 
   // Make sure we populate the positioned_float inside the |item_result|.
-  if (current_.item_index <= handled_leading_floats_index_ &&
-      !leading_floats_.empty()) {
-    DCHECK_LT(leading_floats_index_, leading_floats_.size());
-    item_result->positioned_float = leading_floats_[leading_floats_index_++];
+  if (current_.item_index <= leading_floats_.handled_index &&
+      !leading_floats_.floats.empty()) {
+    DCHECK_LT(leading_floats_index_, leading_floats_.floats.size());
+    item_result->positioned_float =
+        leading_floats_.floats[leading_floats_index_++];
 
     // Don't break after leading floats if indented.
     if (position_ != 0)

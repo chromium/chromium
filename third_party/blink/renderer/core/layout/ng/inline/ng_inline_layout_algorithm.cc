@@ -1334,9 +1334,8 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
-  STACK_UNINITIALIZED NGPositionedFloatVector leading_floats;
-  unsigned handled_leading_floats_index =
-      PositionLeadingFloats(&initial_exclusion_space, &leading_floats);
+  NGLeadingFloats leading_floats;
+  PositionLeadingFloats(initial_exclusion_space, leading_floats);
 
   // Determine our BFC block-offset, but *don't* set it on the builder yet as
   // we might be an empty line.
@@ -1445,10 +1444,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // `line_info` was cached.
       line_info.SetBfcBlockOffset(line_opportunity.bfc_block_offset);
     } else {
-      NGLineBreaker line_breaker(
-          Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
-          line_opportunity, leading_floats, handled_leading_floats_index,
-          break_token, column_spanner_path_, &ExclusionSpace());
+      NGLineBreaker line_breaker(Node(), NGLineBreakerMode::kContent,
+                                 ConstraintSpace(), line_opportunity,
+                                 leading_floats, break_token,
+                                 column_spanner_path_, &ExclusionSpace());
       line_break_strategy.SetupLineBreaker(context_, line_breaker);
       line_breaker.NextLine(&line_info);
     }
@@ -1673,13 +1672,14 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
 // This positions any "leading" floats within the given exclusion space.
 // If we are also an empty inline, it will add any out-of-flow descendants.
-unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
-    NGExclusionSpace* exclusion_space,
-    NGPositionedFloatVector* positioned_floats) {
+void NGInlineLayoutAlgorithm::PositionLeadingFloats(
+    NGExclusionSpace& exclusion_space,
+    NGLeadingFloats& leading_floats) {
   const HeapVector<NGInlineItem>& items =
       Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = BreakToken() ? BreakToken()->StartItemIndex() : 0;
+  NGPositionedFloatVector& positioned_floats = leading_floats.floats;
   for (; index < items.size(); ++index) {
     const NGInlineItem& item = items[index];
 
@@ -1701,7 +1701,7 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
     const LayoutUnit origin_bfc_block_offset =
         ConstraintSpace().ExpectedBfcBlockOffset();
     NGPositionedFloat positioned_float = PositionFloat(
-        origin_bfc_block_offset, item.GetLayoutObject(), exclusion_space);
+        origin_bfc_block_offset, item.GetLayoutObject(), &exclusion_space);
 
     if (ConstraintSpace().HasBlockFragmentation()) {
       // Propagate any breaks before or inside floats to the block container.
@@ -1717,10 +1717,10 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
       }
     }
 
-    positioned_floats->push_back(positioned_float);
+    positioned_floats.push_back(positioned_float);
   }
 
-  return index;
+  leading_floats.handled_index = index;
 }
 
 NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(

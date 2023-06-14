@@ -55,13 +55,13 @@ class NGLineBreakerTest : public RenderingTest {
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
     NGExclusionSpace exclusion_space;
-    NGPositionedFloatVector leading_floats;
+    NGLeadingFloats leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
     NGLineInfo line_info;
     do {
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
-                                 line_opportunity, leading_floats, 0u,
-                                 break_token, /* column_spanner_path */ nullptr,
+                                 line_opportunity, leading_floats, break_token,
+                                 /* column_spanner_path */ nullptr,
                                  &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
@@ -94,13 +94,13 @@ class NGLineBreakerTest : public RenderingTest {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     const NGInlineBreakToken* break_token = nullptr;
     NGExclusionSpace exclusion_space;
-    NGPositionedFloatVector leading_floats;
+    NGLeadingFloats leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
     wtf_size_t line_index = 0;
     do {
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
-                                 line_opportunity, leading_floats, 0u,
-                                 break_token, /* column_spanner_path */ nullptr,
+                                 line_opportunity, leading_floats, break_token,
+                                 /* column_spanner_path */ nullptr,
                                  &exclusion_space);
       if (line_index < break_points.size()) {
         line_breaker.SetBreakAt(break_points[line_index]);
@@ -1243,10 +1243,10 @@ TEST_P(CanBreakInsideTest, Data) {
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
   const NGInlineBreakToken* break_token = nullptr;
   NGExclusionSpace exclusion_space;
-  NGPositionedFloatVector leading_floats;
+  NGLeadingFloats leading_floats;
   NGLineLayoutOpportunity line_opportunity(available_width);
   NGLineBreaker line_breaker(target, NGLineBreakerMode::kContent, space,
-                             line_opportunity, leading_floats, 0u, break_token,
+                             line_opportunity, leading_floats, break_token,
                              /* column_spanner_path */ nullptr,
                              &exclusion_space);
   EXPECT_EQ(line_breaker.CanBreakInside(line_info_list[0]),

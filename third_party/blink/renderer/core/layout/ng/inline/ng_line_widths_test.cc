@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_leading_floats.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -37,8 +38,8 @@ class NGLineWidthsTest : public RenderingTest {
                                       /*column_spanner_path*/ nullptr,
                                       &context);
     NGExclusionSpace exclusion_space(space.ExclusionSpace());
-    NGPositionedFloatVector leading_floats;
-    algorithm.PositionLeadingFloats(&exclusion_space, &leading_floats);
+    NGLeadingFloats leading_floats;
+    algorithm.PositionLeadingFloats(exclusion_space, leading_floats);
     const LayoutOpportunityVector& opportunities =
         exclusion_space.AllLayoutOpportunities(
             {space.BfcOffset().line_offset, /*bfc_block_offset*/ LayoutUnit()},
