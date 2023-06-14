@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -33,11 +34,14 @@ static constexpr int kMM21TileHeight = 16;
 
 static constexpr int kNumberOfTestFrames = 10;
 static constexpr int kNumberOfTestCycles = 1000;
+static constexpr int kNumberOfCappedTestCycles = 300;
 
 static constexpr int kTestImageWidth = 1920;
 static constexpr int kTestImageHeight = 1088;
 
 static constexpr int kRandomFrameSeed = 1000;
+
+static constexpr int kUsecPerFrameAt60fps = 16666;
 
 namespace media {
 namespace {
@@ -288,6 +292,142 @@ TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
                      static_cast<double>(kNumberOfTestCycles));
   reporter.AddResult(".total_duration",
                      static_cast<double>(delta_time.InMicroseconds()));
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input
+// frames looped over |kNumberOfCappedTestCycles| iterations to the
+// GLImageProcessor at 60fps. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
+  InitializeImageProcessorTest();
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+  std::unique_ptr<ImageProcessor> gl_image_processor = ImageProcessorFactory::
+      CreateGLImageProcessorWithInputCandidatesForTesting(
+          candidates_, test_image_visible_rect_, test_image_size_,
+          /*num_buffers=*/1, client_task_runner, pick_format_cb_, error_cb_);
+  ASSERT_TRUE(gl_image_processor) << "Error creating GLImageProcessor";
+
+  LOG(INFO) << "Running GLImageProcessor Capped Perf Test";
+  int loop_iterations = kNumberOfCappedTestCycles;
+  base::TimeTicks start, end;
+  base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>* gl_callback_ptr;
+  base::RepeatingCallback gl_callback =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+
+        if (!(--loop_iterations)) {
+          quit_closure.Run();
+        } else {
+          end = base::TimeTicks::Now();
+          base::TimeDelta delta_time = end - start;
+          if (delta_time.InMicroseconds() < kUsecPerFrameAt60fps) {
+            usleep(kUsecPerFrameAt60fps - delta_time.InMicroseconds());
+          } else {
+            LOG(WARNING) << "Frame detiling was late by "
+                         << (delta_time.InMicroseconds() - kUsecPerFrameAt60fps)
+                         << "us";
+          }
+          start = base::TimeTicks::Now();
+          gl_image_processor->Process(
+              input_frames_[loop_iterations % kNumberOfTestFrames],
+              output_frame_, *gl_callback_ptr);
+        }
+      });
+
+  gl_callback_ptr = &gl_callback;
+
+  gl_image_processor->Process(input_frames_[0], output_frame_,
+                              *gl_callback_ptr);
+
+  start = base::TimeTicks::Now();
+  auto total_start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+
+  auto total_end_time = base::TimeTicks::Now();
+  base::TimeDelta total_delta_time = total_end_time - total_start_time;
+  const double fps = (kNumberOfCappedTestCycles / total_delta_time.InSeconds());
+
+  perf_test::PerfResultReporter reporter("GLImageProcessor", "Capped Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfCappedTestCycles));
+  reporter.AddResult(".total_duration",
+                     static_cast<double>(total_delta_time.InMicroseconds()));
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests LibYUV by feeding in |kNumberOfTestFrames| unique input
+// frames looped over |kNumberOfCappedTestCycles| iterations to the
+// LibYUV at 60fps. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, CappedLibYUVPerfTest) {
+  InitializeImageProcessorTest();
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+  std::unique_ptr<ImageProcessor> libyuv_image_processor =
+      ImageProcessorFactory::
+          CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+              candidates_, test_image_visible_rect_, test_image_size_,
+              /*num_buffers=*/1, client_task_runner, pick_format_cb_,
+              error_cb_);
+  ASSERT_TRUE(libyuv_image_processor) << "Error creating LibYUV";
+
+  LOG(INFO) << "Running LibYUV Capped Perf Test";
+  int loop_iterations = 0;
+  base::TimeTicks start, end;
+  base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>* libyuv_callback_ptr;
+  base::RepeatingCallback libyuv_callback =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+
+        if ((++loop_iterations) >= kNumberOfCappedTestCycles) {
+          quit_closure.Run();
+        } else {
+          end = base::TimeTicks::Now();
+          base::TimeDelta delta_time = end - start;
+          if (delta_time.InMicroseconds() < kUsecPerFrameAt60fps) {
+            usleep(kUsecPerFrameAt60fps - delta_time.InMicroseconds());
+          } else {
+            LOG(WARNING) << "Frame detiling was late by "
+                         << (delta_time.InMicroseconds() - kUsecPerFrameAt60fps)
+                         << "us";
+          }
+          start = base::TimeTicks::Now();
+          libyuv_image_processor->Process(
+              input_frames_[loop_iterations % kNumberOfTestFrames],
+              output_frame_, *libyuv_callback_ptr);
+        }
+      });
+
+  libyuv_callback_ptr = &libyuv_callback;
+
+  libyuv_image_processor->Process(input_frames_[0], output_frame_,
+                                  *libyuv_callback_ptr);
+
+  start = base::TimeTicks::Now();
+  auto total_start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+
+  auto total_end_time = base::TimeTicks::Now();
+  base::TimeDelta total_delta_time = total_end_time - total_start_time;
+  const double fps = (kNumberOfCappedTestCycles / total_delta_time.InSeconds());
+
+  perf_test::PerfResultReporter reporter("LibYUV", "Capped Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfCappedTestCycles));
+  reporter.AddResult(".total_duration",
+                     static_cast<double>(total_delta_time.InMicroseconds()));
   reporter.AddResult(".frames_per_second", fps);
 }
 
