@@ -129,6 +129,8 @@ void AutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {}
 
+void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
   // This is overridden by platform subclasses. Currently only

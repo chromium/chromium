@@ -14,6 +14,7 @@ include_rules = [
   "+components/security_state",
   "+components/security_interstitials/core/pref_names.h",
   "+components/signin/public",
+  "+components/strings",
   "+components/sync",
   "+components/translate/core/browser",
   "+components/translate/core/common",

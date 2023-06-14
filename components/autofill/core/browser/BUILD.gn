@@ -337,6 +337,8 @@ static_library("browser") {
     "payments/iban_save_manager.h",
     "payments/legal_message_line.cc",
     "payments/legal_message_line.h",
+    "payments/mandatory_reauth_manager.cc",
+    "payments/mandatory_reauth_manager.h",
     "payments/offer_notification_handler.cc",
     "payments/offer_notification_handler.h",
     "payments/otp_unmask_delegate.h",
@@ -692,6 +694,8 @@ static_library("test_support") {
     "mock_merchant_promo_code_manager.h",
     "mock_single_field_form_fill_router.cc",
     "mock_single_field_form_fill_router.h",
+    "payments/test/mock_mandatory_reauth_manager.cc",
+    "payments/test/mock_mandatory_reauth_manager.h",
     "payments/test/test_credit_card_otp_authenticator.cc",
     "payments/test/test_credit_card_otp_authenticator.h",
     "payments/test_authentication_requester.cc",
@@ -1014,6 +1018,7 @@ source_set("unit_tests") {
     sources += [
       "metrics/payments/better_auth_metrics_unittest.cc",
       "payments/credit_card_fido_authenticator_unittest.cc",
+      "payments/mandatory_reauth_manager_unittest.cc",
     ]
   }
 

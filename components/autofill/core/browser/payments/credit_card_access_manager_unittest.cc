@@ -71,6 +71,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -786,10 +787,17 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
-  const absl::optional<std::string>& guid =
-      autofill_client_.GetFormDataImporter()
-          ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted();
-  EXPECT_EQ(guid, kTestGUID);
+  absl::optional<absl::variant<FormDataImporter::CardGuid,
+                               FormDataImporter::CardLastFourDigits>>
+      card_identifier =
+          autofill_client_.GetFormDataImporter()
+              ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted();
+  ASSERT_TRUE(card_identifier.has_value());
+  ASSERT_TRUE(absl::holds_alternative<FormDataImporter::CardGuid>(
+      card_identifier.value()));
+  ASSERT_EQ(
+      absl::get<FormDataImporter::CardGuid>(card_identifier.value()).value(),
+      kTestGUID);
 }
 
 // Ensures that FetchCreditCard() reports a failure when a card does not exist.
@@ -848,9 +856,10 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
     }
     // Expect that we did not signal that there was no interactive
     // authentication.
-    EXPECT_FALSE(autofill_client_.GetFormDataImporter()
-                     ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
-                     .has_value());
+    EXPECT_FALSE(
+        autofill_client_.GetFormDataImporter()
+            ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+            .has_value());
   }
 }
 
@@ -2539,11 +2548,22 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));
 
   // There was no interactive authentication in this flow, so check that this
+  // is signaled correctly. The card identifier in the virtual card case should
+  // be the last four digits of the card number.
+  // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
-  const absl::optional<std::string>& guid =
-      autofill_client_.GetFormDataImporter()
-          ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted();
-  EXPECT_EQ(guid, kTestGUID);
+  absl::optional<absl::variant<FormDataImporter::CardGuid,
+                               FormDataImporter::CardLastFourDigits>>
+      card_identifier =
+          autofill_client_.GetFormDataImporter()
+              ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted();
+  ASSERT_TRUE(card_identifier.has_value());
+  ASSERT_TRUE(absl::holds_alternative<FormDataImporter::CardLastFourDigits>(
+      card_identifier.value()));
+  ASSERT_EQ(
+      absl::get<FormDataImporter::CardLastFourDigits>(card_identifier.value())
+          .value(),
+      response.real_pan.substr(response.real_pan.size() - 4));
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -2577,9 +2597,10 @@ TEST_F(CreditCardAccessManagerTest,
           .with_cvc(u"123"));
 
   // Expect that we did not signal that there was no interactive authentication.
-  EXPECT_FALSE(autofill_client_.GetFormDataImporter()
-                   ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
-                   .has_value());
+  EXPECT_FALSE(
+      autofill_client_.GetFormDataImporter()
+          ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -2610,9 +2631,10 @@ TEST_F(CreditCardAccessManagerTest,
           .with_cvc(u"123"));
 
   // Expect that we did not signal that there was no interactive authentication.
-  EXPECT_FALSE(autofill_client_.GetFormDataImporter()
-                   ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
-                   .has_value());
+  EXPECT_FALSE(
+      autofill_client_.GetFormDataImporter()
+          ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -2665,9 +2687,10 @@ TEST_F(CreditCardAccessManagerTest,
   }
 
   // Expect that we did not signal that there was no interactive authentication.
-  EXPECT_FALSE(autofill_client_.GetFormDataImporter()
-                   ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
-                   .has_value());
+  EXPECT_FALSE(
+      autofill_client_.GetFormDataImporter()
+          ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -3094,20 +3117,23 @@ TEST_F(CreditCardAccessManagerTest,
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
-// Test that the CreditCardAccessManager's destructor resets the GUID of the
-// card that had no interactive authentication flows completed in the associated
-// FormDataImporter.
-TEST_F(CreditCardAccessManagerTest, DestructorResetsCardGuid) {
+// Test that the CreditCardAccessManager's destructor resets the identifier of
+// the card that had no interactive authentication flows completed in the
+// associated FormDataImporter.
+TEST_F(CreditCardAccessManagerTest, DestructorResetsCardIdentifier) {
   auto* form_data_importer = autofill_client_.GetFormDataImporter();
-  form_data_importer->SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
-      "TestGuid");
-  EXPECT_TRUE(form_data_importer
-                  ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
-                  .has_value());
+  form_data_importer
+      ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
+          FormDataImporter::CardGuid("TestGuid"));
+  EXPECT_TRUE(
+      form_data_importer
+          ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
   autofill_driver_.reset();
-  EXPECT_FALSE(form_data_importer
-                   ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
-                   .has_value());
+  EXPECT_FALSE(
+      form_data_importer
+          ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
 }
 
 // Params of the CreditCardAccessManagerCardMetadataTest:

@@ -539,6 +539,14 @@ void ChromeAutofillClient::ShowMandatoryReauthOptInPrompt(
                    std::move(close_mandatory_reauth_callback));
 }
 
+void ChromeAutofillClient::ShowMandatoryReauthOptInConfirmation() {
+  MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
+  // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we
+  // enforce that the confirmation bubble is shown.
+  MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
+      ->ReshowBubble();
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());

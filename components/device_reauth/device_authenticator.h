@@ -65,7 +65,11 @@ enum class DeviceAuthRequester {
   // and re-auth is triggered.
   kVirtualCardAutofill = 11,
 
-  kMaxValue = kVirtualCardAutofill,
+  // The prompt displayed while we were trying to opt the user into payments
+  // autofill re-auth.
+  kPaymentsAutofillOptIn = 12,
+
+  kMaxValue = kPaymentsAutofillOptIn,
 };
 
 // This interface encapsulates operations related to biometric authentication.

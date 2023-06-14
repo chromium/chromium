@@ -464,6 +464,25 @@ class TestAutofillClientTemplate : public T {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   }
 
+  void ShowMandatoryReauthOptInPrompt(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback) override {
+    mandatory_reauth_opt_in_prompt_was_shown_ = true;
+  }
+
+  bool GetMandatoryReauthOptInPromptWasShown() {
+    return mandatory_reauth_opt_in_prompt_was_shown_;
+  }
+
+  void ShowMandatoryReauthOptInConfirmation() override {
+    mandatory_reauth_opt_in_prompt_was_reshown_ = true;
+  }
+
+  bool GetMandatoryReauthOptInPromptWasReshown() {
+    return mandatory_reauth_opt_in_prompt_was_reshown_;
+  }
+
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override {
     std::move(callback).Run("some risk data");
@@ -720,6 +739,11 @@ class TestAutofillClientTemplate : public T {
   // Populated if IBAN save was offered. True if bubble was shown, false
   // otherwise.
   bool offer_to_save_iban_bubble_was_shown_ = false;
+
+  // Populated if mandatory re-auth opt-in was offered, or re-offered,
+  // respectively.
+  bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
+  bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
 
   std::vector<std::string> migration_card_selection_;
 

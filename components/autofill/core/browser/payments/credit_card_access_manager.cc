@@ -14,6 +14,7 @@
 #include "base/functional/not_fn.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -77,7 +78,7 @@ CreditCardAccessManager::~CreditCardAccessManager() {
   if (client_) {
     if (auto* form_data_importer = client_->GetFormDataImporter()) {
       form_data_importer
-          ->SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
+          ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
               absl::nullopt);
     }
   }
@@ -1117,8 +1118,8 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // This local card autofill flow did not have any interactive
     // authentication, so notify the FormDataImporter of this.
     client_->GetFormDataImporter()
-        ->SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
-            card_->guid());
+        ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
+            FormDataImporter::CardGuid(card_->guid()));
 
     // `accessor_->OnCreditCardFetched()` makes a copy of `card` and `cvc`
     // before it asynchronously fills them into the form. Thus we can safely
@@ -1185,10 +1186,13 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
         // If the server responded with success and the real pan, no interactive
         // authentication happened. It's also possible that the server does not
         // provide the real pan but requests an authentication which is handled
-        // below.
+        // below. In this case, since the virtual card has a randomly generated
+        // GUID and is not stored in the autofill table, we must set the card
+        // identifier as the last four digits of the virtual card.
         client_->GetFormDataImporter()
-            ->SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
-                card_->guid());
+            ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
+                FormDataImporter::CardLastFourDigits(
+                    base::UTF16ToUTF8(card_->LastFourDigits())));
 
         autofill_metrics::LogServerCardUnmaskResult(
             autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
