@@ -10,7 +10,8 @@ import pathlib
 import sys
 import unittest
 
-REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
 
 import licenses
@@ -26,28 +27,40 @@ class LicensesTest(unittest.TestCase):
     return {
         os.path.join('third_party', 'lib1'): {
             'Name': 'lib1',
+            'Shipped': 'yes',
             'License File': os.path.join('third_party', 'lib1', 'LICENSE'),
         },
         os.path.join('third_party', 'lib2'): {
             'Name': 'lib2',
+            'Shipped': 'yes',
             'License File': os.path.join('third_party', 'lib2', 'LICENSE'),
         },
         'ignored': {
             'Name': 'ignored',
+            'Shipped': 'no',
             'License File': licenses.NOT_SHIPPED,
+        },
+        os.path.join('third_party', 'lib_unshipped'): {
+            'Name': 'lib_unshipped',
+            'Shipped': 'no',
+            'License File': os.path.join('third_party', 'lib_unshipped',
+                                         'LICENSE'),
         },
         os.path.join('third_party', 'lib3'): {
             'Name': 'lib3',
+            'Shipped': 'yes',
             'License File': os.path.join('third_party', 'lib3', 'LICENSE'),
         },
         os.path.join('third_party', 'lib3-v1'): {
             # Test SPDX license file dedup. (different name, same license file)
             'Name': 'lib3-v1',
+            'Shipped': 'yes',
             'License File': os.path.join('third_party', 'lib3', 'LICENSE'),
         },
         os.path.join('third_party', 'lib3-v2'): {
             # Test SPDX id dedup. (same name, different license file)
             'Name': 'lib3',
+            'Shipped': 'yes',
             'License File': os.path.join('third_party', 'lib3-v2', 'LICENSE'),
         },
     }
