@@ -175,6 +175,25 @@ class DataDecoder {
   // or fails before this DataDecoder is destroyed.
   void GzipUncompress(base::span<const uint8_t> data, GzipperCallback callback);
 
+  // Parses the potentially unsafe CBOR bytes in |cbor| using this
+  // DataDecoder's service instance or some other platform-specific decoding
+  // facility. The parser conforms to RFC 7049, except a few limitations:
+  // - Does not support null or undefined values.
+  // - Integers must fit in the 'int' type.
+  // - Does not support float values (limitations in components/cbor library).
+  // - The keys in Maps must be a string or byte-string.
+  // - If at least one Map key is invalid, an error will be returned.
+  //
+  // Note that |callback| will only be called if the parsing operation succeeds
+  // or fails before this DataDecoder is destroyed.
+  void ParseCbor(base::span<const uint8_t> cbor, ValueParseCallback callback);
+
+  // Parses the potentially unsafe CBOR bytes in |cbor|. This static helper
+  // uses a dedicated instance of the Data Decoder service on applicable
+  // platforms.
+  static void ParseCborIsolated(base::span<const uint8_t> cbor,
+                                ValueParseCallback callback);
+
  private:
   // The amount of idle time to tolerate on a DataDecoder instance. If the
   // instance is unused for this period of time, the underlying service process

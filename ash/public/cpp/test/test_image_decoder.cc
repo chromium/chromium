@@ -4,7 +4,9 @@
 
 #include "ash/public/cpp/test/test_image_decoder.h"
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,6 +91,10 @@ class TestImageDecoder::DataDecoderServiceImpl
   }
   void BindGzipper(
       mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) override {
+    FAIL();
+  }
+  void BindCborParser(mojo::PendingReceiver<data_decoder::mojom::CborParser>
+                          receiver) override {
     FAIL();
   }
   void BindBleScanParser(

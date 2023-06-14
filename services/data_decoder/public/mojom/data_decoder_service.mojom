@@ -6,6 +6,7 @@ module data_decoder.mojom;
 
 import "components/web_package/mojom/web_bundle_parser.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "services/data_decoder/public/mojom/cbor_parser.mojom";
 import "services/data_decoder/public/mojom/gzipper.mojom";
 import "services/data_decoder/public/mojom/image_decoder.mojom";
 import "services/data_decoder/public/mojom/json_parser.mojom";
@@ -42,4 +43,7 @@ interface DataDecoderService {
 
   // Binds an interface which can be used to parse structured headers.
   BindStructuredHeadersParser(pending_receiver<StructuredHeadersParser> receiver);
+
+  // Binds an interface which can be used to parse CBOR data.
+  BindCborParser(pending_receiver<CborParser> receiver);
 };
