@@ -1719,7 +1719,9 @@ void AXObjectCacheImpl::ProcessSubtreeRemovals() {
 }
 
 void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node) {
-  DCHECK(node);
+  if (!node || !node->isConnected()) {
+    return;
+  }
   if (AXObject::CanSafelyUseFlatTreeTraversalNow(node->GetDocument())) {
     RemoveSubtreeWithFlatTraversal(node, /* remove_root */ true,
                                    /* notify_parent */ true);
