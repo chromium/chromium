@@ -14924,7 +14924,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled,switch_to_agc2:true,target_range_min_dbfs:-50,target_range_max_dbfs:-30,max_gain_db:50,initial_gain_db:20,enable_clipping_predictor:true,disallow_transient_suppressor_usage:true,_20230208"
+                    "name": "Enabled,switch_to_agc2:true,target_range_min_dbfs:-50,target_range_max_dbfs:-30,max_gain_db:50,initial_gain_db:15,max_gain_change_db_per_second:6,headroom_db:5,enable_clipping_predictor:true,disallow_transient_suppressor_usage:true,_20230614"
                 }
             ]
         }
