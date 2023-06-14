@@ -18,6 +18,7 @@ export {PasskeyDetailsCardElement} from './credential_details/passkey_details_ca
 export {PasswordDetailsCardElement} from './credential_details/password_details_card.js';
 export {AddPasswordDialogElement} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
+export {DeletePasskeyDialogElement} from './dialogs/delete_passkey_dialog.js';
 export {EditPasskeyDialogElement} from './dialogs/edit_passkey_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
 // <if expr="is_win or is_macosx">

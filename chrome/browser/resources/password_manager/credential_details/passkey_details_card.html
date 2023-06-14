@@ -57,8 +57,15 @@
     </cr-button>
   </div>
 </div>
-<template is="dom-if" if="[[showEditPasskeyDialog_]]" restamp>
+<template is="dom-if" if="[[showEditPasskeyDialog_]]" restamp
+          id="editPasskeyTemplate">
   <edit-passkey-dialog on-close="onEditPasskeyDialogClosed_"
       id="editPasskeyDialog" passkey="{{passkey}}">
   </edit-passkey-dialog>
+</template>
+<template is="dom-if" if="[[showDeletePasskeyDialog_]]" restamp
+          id="deletePasskeyTemplate">
+  <delete-passkey-dialog on-close="onDeletePasskeyDialogClosed_"
+      id="deletePasskeyDialog" passkey="{{passkey}}">
+  </delete-passkey-dialog>
 </template>
