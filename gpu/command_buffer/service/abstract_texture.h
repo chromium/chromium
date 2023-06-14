@@ -55,7 +55,7 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // Set a texture parameter.  The GL context must be current.
   virtual void SetParameteri(GLenum pname, GLint param) = 0;
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_OZONE)
   // Attaches |image| to the AbstractTexture. The decoder does not call
   // GLImage::Copy/Bind. Further, the decoder guarantees that
   // ScheduleOverlayPlane will be called if the texture is ever promoted to an

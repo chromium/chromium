@@ -23,12 +23,15 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gpu_timing_fake.h"
 #include "ui/gl/scoped_make_current.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/gl/gl_image.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
@@ -59,6 +62,7 @@ namespace gles2 {
 
 namespace {
 
+#if BUILDFLAG(IS_OZONE)
 class GLImageStub : public gl::GLImage {
  public:
   GLImageStub() = default;
@@ -66,6 +70,7 @@ class GLImageStub : public gl::GLImage {
  private:
   ~GLImageStub() override = default;
 };
+#endif
 
 }  // namespace
 void GLES2DecoderRGBBackbufferTest::SetUp() {
@@ -268,7 +273,7 @@ TEST_P(GLES2DecoderTest, IsTexture) {
   EXPECT_FALSE(DoIsTexture(client_texture_id_));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_OZONE)
 TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
   const GLuint service_id = 123;
   EXPECT_CALL(*gl_, GenTextures(1, _))
@@ -345,7 +350,9 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   abstract_texture.reset();
   EXPECT_TRUE(cleanup_flag);
 }
+#endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 TEST_P(GLES2DecoderTest, AbstractTextureIsDestroyedWithDecoder) {
   // Deleting the decoder should delete the AbstractTexture's TextureRef.
   const GLuint service_id = 123;

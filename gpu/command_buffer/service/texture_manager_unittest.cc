@@ -26,9 +26,12 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/gl/gl_image.h"
+#endif
 
 using ::testing::AtLeast;
 using ::testing::Pointee;
@@ -42,6 +45,7 @@ namespace gles2 {
 
 namespace {
 
+#if BUILDFLAG(IS_OZONE)
 class GLImageStub : public gl::GLImage {
  public:
   GLImageStub() = default;
@@ -49,6 +53,7 @@ class GLImageStub : public gl::GLImage {
  private:
   ~GLImageStub() override = default;
 };
+#endif
 
 }  // namespace
 
@@ -2055,12 +2060,12 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   manager_->SetTarget(texture_ref_.get(), target);
   Texture* texture = texture_ref_->texture();
   EXPECT_EQ(static_cast<GLenum>(target), texture->target());
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
   scoped_refptr<gl::GLImage> image(new GLImageStub);
 #endif
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
   manager_->SetBoundLevelImage(texture_ref_.get(), target, 0, image.get());
 #endif
   GLuint service_id = texture->service_id();
@@ -2352,7 +2357,7 @@ TEST_F(SharedTextureTest, Memory) {
   EXPECT_EQ(initial_memory2, memory_tracker2_.GetSize());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
 TEST_F(SharedTextureTest, Images) {
   scoped_refptr<TextureRef> ref1 = texture_manager1_->CreateTexture(10, 10);
   scoped_refptr<TextureRef> ref2 =

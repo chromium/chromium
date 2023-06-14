@@ -25,10 +25,13 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/gl/gl_image.h"
+#endif
 
 #if !defined(GL_DEPTH24_STENCIL8)
 #define GL_DEPTH24_STENCIL8 0x88F0
@@ -3341,7 +3344,7 @@ TEST_P(GLES2DecoderManualInitTest, GenerateMipmapDepthTexture) {
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
 class MockGLImage : public gl::GLImage {
  public:
   MockGLImage() = default;
@@ -3376,14 +3379,14 @@ TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
   InitDecoder(init);
 
   TextureRef* texture_ref = GetTexture(client_texture_id_);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
   scoped_refptr<MockGLImage> image(new MockGLImage);
 #endif
   group().texture_manager()->SetTarget(texture_ref, GL_TEXTURE_EXTERNAL_OES);
   group().texture_manager()->SetLevelInfo(texture_ref, GL_TEXTURE_EXTERNAL_OES,
                                           0, GL_RGBA, 1, 1, 1, 0, GL_RGBA,
                                           GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
   group().texture_manager()->SetBoundLevelImage(
       texture_ref, GL_TEXTURE_EXTERNAL_OES, 0, image.get());
 #endif
