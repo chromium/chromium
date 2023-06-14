@@ -32,10 +32,6 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/common/dxgi_helpers.h"
-#endif
-
 namespace media {
 
 namespace {
