@@ -40,6 +40,20 @@ namespace css_shorthand {
 
 namespace {
 
+// New animation-* properties are  "reset only":
+// https://github.com/w3c/csswg-drafts/issues/6946#issuecomment-1233190360
+bool IsResetOnlyAnimationProperty(CSSPropertyID property) {
+  switch (property) {
+    case CSSPropertyID::kAnimationDelayEnd:
+    case CSSPropertyID::kAnimationTimeline:
+    case CSSPropertyID::kAnimationRangeStart:
+    case CSSPropertyID::kAnimationRangeEnd:
+      return true;
+    default:
+      return false;
+  }
+}
+
 // Legacy parsing allows <string>s for animation-name.
 CSSValue* ConsumeAnimationValue(CSSPropertyID property,
                                 CSSParserTokenRange& range,
@@ -54,8 +68,8 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
       DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
       return css_parsing_utils::ConsumeAnimationDelay(range, context);
     case CSSPropertyID::kAnimationDelayEnd:
-      // New animation-* properties are  "reset only":
-      // https://github.com/w3c/csswg-drafts/issues/6946#issuecomment-1233190360
+      // New animation-* properties are  "reset only", see
+      // IsResetOnlyAnimationProperty.
       //
       // Returning nullptr here means that AnimationDelayEnd::InitialValue will
       // be used.
@@ -104,7 +118,8 @@ bool ParseAnimationShorthand(const StylePropertyShorthand& shorthand,
   HeapVector<Member<CSSValueList>, css_parsing_utils::kMaxNumAnimationLonghands>
       longhands(longhand_count);
   if (!css_parsing_utils::ConsumeAnimationShorthand(
-          shorthand, longhands, ConsumeAnimationValue, range, context,
+          shorthand, longhands, ConsumeAnimationValue,
+          IsResetOnlyAnimationProperty, range, context,
           local_context.UseAliasParsing())) {
     return false;
   }
@@ -122,11 +137,22 @@ const CSSValue* CSSValueFromComputedAnimation(
     const StylePropertyShorthand& shorthand,
     const CSSAnimationData* animation_data) {
   if (animation_data) {
+    // The shorthand can not represent the following properties if they have
+    // non-initial values. This is because they are always reset to their
+    // initial value by the shorthand.
+    if (!animation_data->HasSingleInitialTimeline() ||
+        !animation_data->HasSingleInitialDelayEnd() ||
+        !animation_data->HasSingleInitialRangeStart() ||
+        !animation_data->HasSingleInitialRangeEnd()) {
+      return nullptr;
+    }
+
     CSSValueList* animations_list = CSSValueList::CreateCommaSeparated();
     for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
       list->Append(*ComputedStyleUtils::ValueForAnimationDuration(
-          CSSTimingData::GetRepeated(animation_data->DurationList(), i)));
+          CSSTimingData::GetRepeated(animation_data->DurationList(), i),
+          /* resolve_auto_to_zero */ true));
       list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
           CSSTimingData::GetRepeated(animation_data->TimingFunctionList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
@@ -141,25 +167,6 @@ const CSSValue* CSSValueFromComputedAnimation(
           CSSTimingData::GetRepeated(animation_data->PlayStateList(), i)));
       list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
           animation_data->NameList()[i]));
-      // The shorthand can not represent the following properties if they have
-      // non-initial values. This is because they are always reset to their
-      // initial value by the shorthand.
-      if (CSSAnimationData::InitialTimeline() !=
-          animation_data->GetTimeline(i)) {
-        return nullptr;
-      }
-      if (CSSAnimationData::InitialDelayEnd() !=
-          CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)) {
-        return nullptr;
-      }
-      if (CSSAnimationData::InitialRangeStart() !=
-          CSSTimingData::GetRepeated(animation_data->RangeStartList(), i)) {
-        return nullptr;
-      }
-      if (CSSAnimationData::InitialRangeEnd() !=
-          CSSTimingData::GetRepeated(animation_data->RangeEndList(), i)) {
-        return nullptr;
-      }
       animations_list->Append(*list);
     }
     return animations_list;
@@ -169,7 +176,8 @@ const CSSValue* CSSValueFromComputedAnimation(
   // animation-name default value.
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
   list->Append(*ComputedStyleUtils::ValueForAnimationDuration(
-      CSSAnimationData::InitialDuration()));
+      CSSAnimationData::InitialDuration(),
+      /* resolve_auto_to_zero */ true));
   list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
       CSSAnimationData::InitialTimingFunction()));
   list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
@@ -3502,11 +3510,14 @@ bool Transition::ParseShorthand(
   const StylePropertyShorthand shorthand = transitionShorthandForParsing();
   const unsigned longhand_count = shorthand.length();
 
+  // Only relevant for 'animation'.
+  auto is_reset_only_function = [](CSSPropertyID) { return false; };
+
   HeapVector<Member<CSSValueList>, css_parsing_utils::kMaxNumAnimationLonghands>
       longhands(longhand_count);
   if (!css_parsing_utils::ConsumeAnimationShorthand(
-          shorthand, longhands, ConsumeTransitionValue, range, context,
-          local_context.UseAliasParsing())) {
+          shorthand, longhands, ConsumeTransitionValue, is_reset_only_function,
+          range, context, local_context.UseAliasParsing())) {
     return false;
   }
 

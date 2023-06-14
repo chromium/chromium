@@ -4403,6 +4403,7 @@ bool ConsumeAnimationShorthand(
     const StylePropertyShorthand& shorthand,
     HeapVector<Member<CSSValueList>, kMaxNumAnimationLonghands>& longhands,
     ConsumeAnimationItemValue consumeLonghandItem,
+    IsResetOnlyFunction is_reset_only,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     bool use_legacy_parsing) {
@@ -4439,9 +4440,30 @@ bool ConsumeAnimationShorthand(
     } while (!range.AtEnd() && range.Peek().GetType() != kCommaToken);
 
     for (unsigned i = 0; i < longhand_count; ++i) {
+      const Longhand& longhand = *To<Longhand>(shorthand.properties()[i]);
       if (!parsed_longhand[i]) {
-        longhands[i]->Append(
-            *To<Longhand>(shorthand.properties()[i])->InitialValue());
+        // For each longhand that doesn't parse, add the initial (list-item)
+        // value instead. However, we only do this *once* for reset-only
+        // properties to end up with the initial value for the property as
+        // a whole.
+        //
+        // Example:
+        //
+        //  animation: anim1, anim2;
+        //
+        // Should expand to (ignoring longhands other than name and timeline):
+        //
+        //   animation-name: anim1, anim2;
+        //   animation-timeline: auto;
+        //
+        // It should *not* expand to:
+        //
+        //   animation-name: anim1, anim2;
+        //   animation-timeline: auto, auto;
+        //
+        if (!is_reset_only(longhand.PropertyID()) || !longhands[i]->length()) {
+          longhands[i]->Append(*longhand.InitialValue());
+        }
       }
       parsed_longhand[i] = false;
     }

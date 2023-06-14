@@ -358,12 +358,13 @@ const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDurationList(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationDurationList(
+      style.Animations(), CSSValuePhase::kUsedValue);
 }
 
 const CSSValue* AnimationDuration::InitialValue() const {
   return ComputedStyleUtils::ValueForAnimationDuration(
-      CSSAnimationData::InitialDuration());
+      CSSAnimationData::InitialDuration(), /* resolve_auto_to_zero */ false);
 }
 
 const CSSValue* AnimationFillMode::ParseSingleValue(

@@ -2290,21 +2290,28 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDirectionList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDuration(
-    const absl::optional<double>& duration) {
-  if (!duration.has_value()) {
+    const absl::optional<double>& duration,
+    bool resolve_auto_to_zero) {
+  absl::optional<double> resolved_duration =
+      (!duration.has_value() && resolve_auto_to_zero) ? 0 : duration;
+  if (!resolved_duration.has_value()) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
-  return CSSNumericLiteralValue::Create(duration.value(),
+  return CSSNumericLiteralValue::Create(resolved_duration.value(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
-    const CSSAnimationData* animation_data) {
+    const CSSAnimationData* animation_data,
+    CSSValuePhase phase) {
+  bool resolve_auto_to_zero =
+      (phase == CSSValuePhase::kUsedValue) &&
+      (!animation_data || animation_data->HasSingleInitialTimeline());
   return CreateAnimationValueList(
       animation_data
           ? animation_data->DurationList()
           : Vector<absl::optional<double>>{CSSAnimationData::InitialDuration()},
-      &ValueForAnimationDuration);
+      ValueForAnimationDuration, resolve_auto_to_zero);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
@@ -2314,7 +2321,8 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
           ? transition_data->DurationList()
           : Vector<
                 absl::optional<double>>{CSSTransitionData::InitialDuration()},
-      &ValueForAnimationDuration);
+      ValueForAnimationDuration,
+      /* resolve_auto_to_zero */ false);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationFillMode(
@@ -3885,6 +3893,9 @@ const CSSValue* ComputedStyleUtils::ComputedPropertyValue(
     const ComputedStyle& style,
     const LayoutObject* layout_object) {
   switch (property.PropertyID()) {
+    case CSSPropertyID::kAnimationDuration:
+      return ComputedStyleUtils::ValueForAnimationDurationList(
+          style.Animations(), CSSValuePhase::kComputedValue);
     // Computed value is usually relative so that multiple fonts in child
     // elements work properly, but resolved value is always a pixel length.
     case CSSPropertyID::kLineHeight:

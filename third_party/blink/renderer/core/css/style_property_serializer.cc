@@ -1643,10 +1643,15 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       // The shorthand can not represent the following properties if they have
       // non-initial values. This is because they are always reset to their
       // initial value by the shorthand.
+      //
+      // Note that initial values for animation-* properties only contain
+      // one list item, hence the check for 'layer > 0'.
       if (property->IDEquals(CSSPropertyID::kAnimationTimeline)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
-        if (!ident || (ident->GetValueID() !=
-                       CSSAnimationData::InitialTimeline().GetKeyword())) {
+        if (!ident ||
+            (ident->GetValueID() !=
+             CSSAnimationData::InitialTimeline().GetKeyword()) ||
+            layer > 0) {
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
@@ -1654,14 +1659,16 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       }
       if (property->IDEquals(CSSPropertyID::kAnimationDelayEnd)) {
         if (CSSToStyleMap::MapAnimationDelayEnd(*value) !=
-            CSSTimingData::InitialDelayEnd()) {
+                CSSTimingData::InitialDelayEnd() ||
+            layer > 0) {
           return g_empty_string;
         }
         is_initial_value = true;
       }
       if (property->IDEquals(CSSPropertyID::kAnimationRangeStart)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
-        if (!ident || (ident->GetValueID() != CSSValueID::kNormal)) {
+        if (!ident || (ident->GetValueID() != CSSValueID::kNormal) ||
+            layer > 0) {
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
@@ -1669,7 +1676,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       }
       if (property->IDEquals(CSSPropertyID::kAnimationRangeEnd)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
-        if (!ident || (ident->GetValueID() != CSSValueID::kNormal)) {
+        if (!ident || (ident->GetValueID() != CSSValueID::kNormal) ||
+            layer > 0) {
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
