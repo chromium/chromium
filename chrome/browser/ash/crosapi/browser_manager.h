@@ -757,13 +757,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // shared resource file after ash is rebooted.
   bool is_initial_lacros_launch_after_reboot_ = true;
 
+  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
+  std::unique_ptr<EnvironmentProvider> environment_provider_;
+
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
-
-  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  std::unique_ptr<EnvironmentProvider> environment_provider_;
 
   // Used to wait for the primary user profile to be fully created.
   std::unique_ptr<PrimaryProfileCreationWaiter>
