@@ -73,6 +73,9 @@ ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting::
   BypassWindowCloseWaitingForTesting() = false;  // IN-TEST
 }
 
+// TODO(crbug.com/1453661): Also handle DidFinishNavigation() and
+// do not start the ManifestUpdateCheckCommand if different origin
+// navigation happens.
 class ManifestUpdateManager::PreUpdateWebContentsObserver
     : public content::WebContentsObserver {
  public:
@@ -312,6 +315,14 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
   if (update_stage_it == update_stages_.end()) {
     // If the web_app already has already been uninstalled after the
     // manifest update data fetch has happened, then we can early exit.
+    return;
+  }
+
+  if (check_result ==
+      ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation) {
+    update_stages_.erase(app_id);
+    NotifyResult(url, app_id,
+                 ManifestUpdateResult::kCancelledDueToMainFrameNavigation);
     return;
   }
 
