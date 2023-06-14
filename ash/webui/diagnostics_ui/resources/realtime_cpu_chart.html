@@ -7,6 +7,11 @@
     font: var(--cros-annotation-1-font);
   }
 
+  :host-context(body.jelly-enabled) #legend-bar {
+    border-radius: 4px;
+    height: 4px;
+  }
+
   g.tick line {
     shape-rendering: crispEdges;
     stroke: var(--cros-separator-color);
