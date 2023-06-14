@@ -102,7 +102,7 @@ void SetPrintableAreaIfValid(PrintSettings& settings,
 
   // Scale the page size and printable area to device units.
   // Blink doesn't support different dpi settings in X and Y axis. Because of
-  // this, printers with non-square DPIs still scale page size and printable
+  // this, printers with non-square pixels still scale page size and printable
   // area using device_units_per_inch() instead of their respective dimensions
   // in device_units_per_inch_size().
   float scale =

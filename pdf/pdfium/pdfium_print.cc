@@ -379,8 +379,8 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
   float source_page_width = FPDF_GetPageWidthF(page_to_print);
   float source_page_height = FPDF_GetPageHeightF(page_to_print);
 
-  // For computing size in pixels, use a square dpi since the source PDF page
-  // has square DPI.
+  // For computing size in pixels, use square pixels since the source PDF page
+  // has square pixels.
   int width_in_pixels = ConvertUnit(source_page_width, kPointsPerInch, dpi);
   int height_in_pixels = ConvertUnit(source_page_height, kPointsPerInch, dpi);
 
