@@ -1337,10 +1337,6 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   if (smoothness_data.worst_smoothness_after5sec >= 0)
     builder.SetWorstCaseAfter5Sec(smoothness_data.worst_smoothness_after5sec);
   builder.Record(ukm::UkmRecorder::Get());
-
-  base::UmaHistogramPercentage(
-      "Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow",
-      smoothness_data.worst_smoothness);
 }
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
