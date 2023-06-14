@@ -71,8 +71,10 @@ void PopulateAndSortAllPaperNames(PrinterSemanticCapsAndDefaults& info) {
   // Pair the paper entries with their sort info so they can be sorted.
   std::vector<PaperWithSizeInfo> size_list;
   for (PrinterSemanticCapsAndDefaults::Paper& paper : info.papers) {
-    size_list.emplace_back(LocalizePaperDisplayName(paper.size_um),
-                           std::move(paper));
+    // Copy `paper.size_um` to avoid potentially using `paper` after calling
+    // std::move(paper).
+    gfx::Size size_um = paper.size_um;
+    size_list.emplace_back(LocalizePaperDisplayName(size_um), std::move(paper));
   }
 
   // Sort and recreate the list with localizations inserted.
