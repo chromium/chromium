@@ -13262,6 +13262,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_PAGE_LOADING_AX_TITLE_FORMAT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the back/forward button is focused and has been pressed. If the title of the page can be obtained, it will be included. Example: 'Loading Google News'.">
           Loading <ph name="WINDOW_TITLE">$1<ex>Google News</ex></ph>
       </message>
+      <message name="IDS_TAB_AX_INACTIVE_TAB" desc="Accessibility label text when the tab becomes inactive to save memory.'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - Inactive tab
+      </message>
+      <message name="IDS_TAB_AX_MEMORY_SAVINGS" desc="Accessibility label text of how much memory was saved by the inactive tab'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - Saved <ph name="MEMORY_VALUE">$2<ex>175MB</ex></ph>
+      </message>
+      <message name="IDS_TAB_AX_MEMORY_USAGE" desc="Accessibility label text of how much memory is used by the tab'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - Memory usage - <ph name="MEMORY_VALUE">$2<ex>175MB</ex></ph>
+      </message>
+      <message name="IDS_TAB_AX_HIGH_MEMORY_USAGE" desc="Accessibility label text of how much memory is used by the tab'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - High memory usage - <ph name="MEMORY_VALUE">$2<ex>175MB</ex></ph>
+      </message>
 
       <!-- ProcessSingleton -->
       <message name="IDS_PROFILE_IN_USE_LINUX_QUIT" desc="Text of button in profile in use dialog to quit without doing anything.">

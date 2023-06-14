@@ -224,6 +224,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -3162,48 +3163,84 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
 
   // Alert tab states.
   absl::optional<TabAlertState> alert = tabstrip_->GetTabAlertState(index);
-  if (!alert.has_value())
-    return title;
-
-  switch (alert.value()) {
-    case TabAlertState::AUDIO_PLAYING:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT,
-                                        title);
-    case TabAlertState::USB_CONNECTED:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT,
-                                        title);
-    case TabAlertState::BLUETOOTH_CONNECTED:
-      return l10n_util::GetStringFUTF16(
-          IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT, title);
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-      return l10n_util::GetStringFUTF16(
-          IDS_TAB_AX_LABEL_BLUETOOTH_SCAN_ACTIVE_FORMAT, title);
-    case TabAlertState::HID_CONNECTED:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT,
-                                        title);
-    case TabAlertState::SERIAL_CONNECTED:
-      return l10n_util::GetStringFUTF16(
-          IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT, title);
-    case TabAlertState::MEDIA_RECORDING:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT,
-                                        title);
-    case TabAlertState::AUDIO_MUTING:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT,
-                                        title);
-    case TabAlertState::TAB_CAPTURING:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_TAB_CAPTURING_FORMAT,
-                                        title);
-    case TabAlertState::PIP_PLAYING:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT,
-                                        title);
-    case TabAlertState::DESKTOP_CAPTURING:
-      return l10n_util::GetStringFUTF16(
-          IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT, title);
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
+  if (alert.has_value()) {
+    switch (alert.value()) {
+      case TabAlertState::AUDIO_PLAYING:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title);
+        break;
+      case TabAlertState::USB_CONNECTED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT, title);
+        break;
+      case TabAlertState::BLUETOOTH_CONNECTED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT, title);
+        break;
+      case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_BLUETOOTH_SCAN_ACTIVE_FORMAT, title);
+        break;
+      case TabAlertState::HID_CONNECTED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT, title);
+        break;
+      case TabAlertState::SERIAL_CONNECTED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT, title);
+        break;
+      case TabAlertState::MEDIA_RECORDING:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT, title);
+        break;
+      case TabAlertState::AUDIO_MUTING:
+        title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT,
+                                           title);
+        break;
+      case TabAlertState::TAB_CAPTURING:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_TAB_CAPTURING_FORMAT, title);
+        break;
+      case TabAlertState::PIP_PLAYING:
+        title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT,
+                                           title);
+        break;
+      case TabAlertState::DESKTOP_CAPTURING:
+        title = l10n_util::GetStringFUTF16(
+            IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT, title);
+        break;
+      case TabAlertState::VR_PRESENTING_IN_HEADSET:
+        title =
+            l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
+        break;
+    }
   }
 
-  NOTREACHED_NORETURN();
+  const TabRendererData& tab_data = tabstrip_->tab_at(index)->data();
+  if (tab_data.should_show_discard_status &&
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardedTabTreatment)) {
+    title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
+    if (tab_data.discarded_memory_savings_in_bytes > 0) {
+      title = l10n_util::GetStringFUTF16(
+          IDS_TAB_AX_MEMORY_SAVINGS, title,
+          ui::FormatBytes(tab_data.discarded_memory_savings_in_bytes));
+    }
+  } else if (tab_data.tab_resource_usage &&
+             tab_data.tab_resource_usage->memory_usage_in_bytes() > 0) {
+    const uint64_t memory_used =
+        tab_data.tab_resource_usage->memory_usage_in_bytes();
+    const int message_id =
+        memory_used > static_cast<uint64_t>(
+                          performance_manager::features::
+                              kMemoryUsageInHovercardsHighThresholdBytes.Get())
+            ? IDS_TAB_AX_HIGH_MEMORY_USAGE
+            : IDS_TAB_AX_MEMORY_USAGE;
+    title = l10n_util::GetStringFUTF16(message_id, title,
+                                       ui::FormatBytes(memory_used));
+  }
+
+  return title;
 }
 
 std::vector<views::NativeViewHost*>
