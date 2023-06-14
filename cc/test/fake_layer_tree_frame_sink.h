@@ -83,13 +83,6 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
         std::move(context_provider), std::move(worker_context_provider)));
   }
 
-  static std::unique_ptr<FakeLayerTreeFrameSink> Create3d(
-      std::unique_ptr<viz::TestGLES2Interface> gl) {
-    return base::WrapUnique(new FakeLayerTreeFrameSink(
-        viz::TestContextProvider::Create(std::move(gl)),
-        viz::TestContextProvider::CreateWorker()));
-  }
-
   static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization() {
     return Builder()
         .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)

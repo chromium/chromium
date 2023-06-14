@@ -23,8 +23,6 @@
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/fake_skia_output_surface.h"
-#include "components/viz/test/test_gles2_interface.h"
-#include "gpu/GLES2/gl2extchromium.h"
 
 namespace cc {
 

@@ -39,7 +39,6 @@
 #include "cc/trees/tree_synchronizer.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

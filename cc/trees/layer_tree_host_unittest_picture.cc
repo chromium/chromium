@@ -13,7 +13,6 @@
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
 
 namespace cc {

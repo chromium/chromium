@@ -3,6 +3,7 @@ include_rules = [
   "+components/viz/test",
   "+components/viz/service",
   "+gpu/command_buffer/client/gles2_implementation.h",
+  "+gpu/command_buffer/client/gles2_interface.h",
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
   "+gpu/command_buffer/common",

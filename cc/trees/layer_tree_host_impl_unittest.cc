@@ -1498,14 +1498,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutRootLayer) {
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutRenderer) {
-  auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-  gl_owned->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                                GL_INNOCENT_CONTEXT_RESET_ARB);
+  auto compositor_context = viz::TestContextProvider::CreateRaster();
+  compositor_context->UnboundTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
 
   // Initialization will fail.
-  EXPECT_FALSE(
-      CreateHostImpl(DefaultSettings(),
-                     FakeLayerTreeFrameSink::Create3d(std::move(gl_owned))));
+  EXPECT_FALSE(CreateHostImpl(
+      DefaultSettings(),
+      FakeLayerTreeFrameSink::Create3d(std::move(compositor_context))));
 
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
 
