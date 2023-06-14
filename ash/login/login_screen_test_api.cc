@@ -348,8 +348,8 @@ bool LoginScreenTestApi::IsManagedIconShown(const AccountId& account_id) {
     return false;
   }
   LoginUserView::TestApi user_test(big_user_view->GetUserView());
-  auto* enterprise_icon = user_test.enterprise_icon();
-  return enterprise_icon->GetVisible();
+  auto* enterprise_icon_container = user_test.enterprise_icon_container();
+  return enterprise_icon_container->GetVisible();
 }
 
 // static

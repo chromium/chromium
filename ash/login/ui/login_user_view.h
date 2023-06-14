@@ -39,7 +39,7 @@ class ASH_EXPORT LoginUserView : public views::View,
     views::View* tap_button() const;
     views::View* dropdown() const;
     LoginRemoveAccountDialog* remove_account_dialog() const;
-    views::View* enterprise_icon() const;
+    views::View* enterprise_icon_container() const;
 
     void OnTap() const;
 
