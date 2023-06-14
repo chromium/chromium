@@ -14690,6 +14690,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Learn more
     </message>
 
+    <!-- Additional information for app uninstall prompt for apps that are considered 'parent apps' by the Multi App API-->
+    <message name="IDS_APP_UNINSTALL_PROMPT_ADDITIONAL_UNINSTALLS_MESSAGE" desc="Text displayed in the app uninstall prompt above a list of one or more associated apps that will also be uninstalled if the user continues with the uninstallation. [ICU Syntax]">
+      {NUM_SUB_APPS, plural,
+        =1 {Uninstalling "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also uninstall this app:}
+        other {Uninstalling "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also uninstall these apps:}}
+    </message>
+
     <!-- Speech Recognition -->
     <message name="IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME" desc="The name of the service process used to interface with the Speech On-Demand API.">
       Speech recognition service

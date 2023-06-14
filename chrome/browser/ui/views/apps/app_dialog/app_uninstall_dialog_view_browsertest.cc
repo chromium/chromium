@@ -36,6 +36,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
@@ -325,4 +326,51 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
     run_loop.Run();
   }
   ASSERT_NE(nullptr, ActiveView());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
+                       SubAppsShownCorrectly) {
+  CreateApp();
+
+  std::unordered_set<std::u16string> sub_apps_expected;
+
+  // Include non-ASCII characters in app names to ensure they get displayed
+  // correctly
+  for (const std::string& app_name : {"one", "fünf", "🌈"}) {
+    std::u16string sub_app_name = u"Sub App " + base::UTF8ToUTF16(app_name);
+    sub_apps_expected.emplace(sub_app_name);
+
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url =
+        https_server_.GetURL("app.com", "/sub-app-" + app_name);
+    web_app_info->parent_app_id = app_id_;
+    web_app_info->title = sub_app_name;
+    web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info),
+                                 /*overwrite_existing_manifest_fields=*/true,
+                                 webapps::WebappInstallSource::SUB_APP);
+  }
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  std::unordered_set<std::u16string> sub_apps_actual;
+  views::View* view = ActiveView()->GetWidget()->GetContentsView();
+  std::vector<views::View*> views_group;
+  view->GetViewsInGroup(
+      static_cast<int>(AppUninstallDialogView::DialogViewID::SUB_APP_LABEL),
+      &views_group);
+  for (auto* label : views_group) {
+    sub_apps_actual.emplace(static_cast<views::Label*>(label)->GetText());
+  }
+  EXPECT_EQ(sub_apps_actual, sub_apps_expected);
 }

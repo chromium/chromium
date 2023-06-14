@@ -23,6 +23,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
@@ -226,16 +227,42 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
 
   EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
 
-  SelectContextMenuForApp(app_id, kUninstallIndex);
+  {
+    base::test::TestFuture<void> signal;
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == "AppDialogView") {
+            signal.GetCallback().Run();
+          }
+        }));
+
+    SelectContextMenuForApp(app_id, kUninstallIndex);
+    EXPECT_TRUE(signal.Wait());
+  }
+
   AppUninstallDialogView::GetActiveViewForTesting()->CancelDialog();
   EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
 
   SelectContextMenuForApp(app_id, kPinIndex);
 
   {
+    base::test::TestFuture<void> signal;
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == "AppDialogView") {
+            signal.GetCallback().Run();
+          }
+        }));
+
+    SelectContextMenuForApp(app_id, kUninstallIndex);
+    EXPECT_TRUE(signal.Wait());
+  }
+
+  {
     AppInstanceWaiter app_instance_waiter(AppServiceProxy()->InstanceRegistry(),
                                           app_id, apps::kDestroyed);
-    SelectContextMenuForApp(app_id, kUninstallIndex);
     AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
     web_app::AppReadinessWaiter(profile(), app_id,
                                 apps::Readiness::kUninstalledByUser)

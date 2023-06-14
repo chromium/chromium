@@ -8,7 +8,9 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/message_formatter.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +23,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/chromium_strings.h"
@@ -39,13 +44,23 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
+#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
 namespace {
@@ -150,21 +165,39 @@ std::u16string GetWindowTitleForApp(Profile* profile,
 
 }  // namespace
 
+struct SubApp {
+  explicit SubApp(std::u16string short_name)
+      : short_name(std::move(short_name)) {}
+  SubApp(SubApp&& sub_app) = default;
+  SubApp& operator=(SubApp&& sub_app) = default;
+  SubApp(const SubApp&) = delete;
+  SubApp& operator=(const SubApp&) = delete;
+
+  std::u16string short_name;
+};
+
+static views::Widget* CreateAndShowWidget(gfx::NativeWindow parent_window,
+                                          AppUninstallDialogView* dialog_view) {
+  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
+      dialog_view, parent_window);
+  widget->Show();
+  return widget;
+}
+
 // static
-views::Widget* apps::UninstallDialog::UiBase::Create(
+void apps::UninstallDialog::UiBase::Create(
     Profile* profile,
     apps::AppType app_type,
     const std::string& app_id,
     const std::string& app_name,
     gfx::ImageSkia image,
     gfx::NativeWindow parent_window,
+    apps::OnDialogCreatedCallback callback,
     apps::UninstallDialog* uninstall_dialog) {
-  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
-      (new AppUninstallDialogView(profile, app_type, app_id, app_name, image,
-                                  uninstall_dialog)),
-      parent_window);
-  widget->Show();
-  return widget;
+  new AppUninstallDialogView(profile, app_type, app_id, app_name, image,
+                             uninstall_dialog,
+                             base::BindOnce(CreateAndShowWidget, parent_window)
+                                 .Then(std::move(callback)));
 }
 
 AppUninstallDialogView::AppUninstallDialogView(
@@ -173,10 +206,14 @@ AppUninstallDialogView::AppUninstallDialogView(
     const std::string& app_id,
     const std::string& app_name,
     gfx::ImageSkia image,
-    apps::UninstallDialog* uninstall_dialog)
+    apps::UninstallDialog* uninstall_dialog,
+    UninstallDialogReadyCallback callback)
     : apps::UninstallDialog::UiBase(uninstall_dialog),
       AppDialogView(ui::ImageModel::FromImageSkia(image)),
+      uninstall_dialog_ready_callback_(std::move(callback)),
       profile_(profile) {
+  profile_observation_.Observe(profile);
+
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
 
@@ -199,6 +236,10 @@ AppUninstallDialogView::~AppUninstallDialogView() {
 // static
 AppUninstallDialogView* AppUninstallDialogView::GetActiveViewForTesting() {
   return g_app_uninstall_dialog_view;
+}
+
+void AppUninstallDialogView::OnProfileWillBeDestroyed(Profile* profile) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void AppUninstallDialogView::InitializeView(Profile* profile,
@@ -271,12 +312,20 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
 
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-      InitializeViewForWebApp(profile, app_id);
+#if BUILDFLAG(IS_CHROMEOS)
+      async_ = true;
+      CheckForSubAppsThenInitializeViewForWebApp(app_id);
+      return;
+#else
+      InitializeViewForWebApp(app_id, /*sub_apps=*/{});
       break;
+#endif
     case apps::AppType::kChromeApp:
       InitializeViewForExtension(profile, app_id);
       break;
   }
+
+  std::move(uninstall_dialog_ready_callback_).Run(this);
 }
 
 void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
@@ -355,19 +404,144 @@ void AppUninstallDialogView::InitializeViewForExtension(
   }
 }
 
-void AppUninstallDialogView::InitializeViewForWebApp(
-    Profile* profile,
+#if BUILDFLAG(IS_CHROMEOS)
+void AppUninstallDialogView::InitializeSubAppList(
+    const std::string& short_app_name,
+    const std::vector<SubApp>& sub_apps) {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  std::u16string description =
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_APP_UNINSTALL_PROMPT_ADDITIONAL_UNINSTALLS_MESSAGE),
+          /*name0=*/"NUM_SUB_APPS", static_cast<int>(sub_apps.size()),
+          /*name1=*/"APP_NAME", base::ASCIIToUTF16(short_app_name));
+
+  auto* description_label =
+      AddChildView(std::make_unique<views::Label>(description));
+  description_label->SetMultiLine(/*multi_line=*/true);
+  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  auto sub_apps_container = std::make_unique<views::BoxLayoutView>();
+  sub_apps_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  sub_apps_container->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
+  sub_apps_container->SetInsideBorderInsets(gfx::Insets::TLBR(
+      0, provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL), 0,
+      0));
+
+  for (const SubApp& sub_app : sub_apps) {
+    auto box = std::make_unique<views::BoxLayoutView>();
+    box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    auto* sub_app_label =
+        box->AddChildView(std::make_unique<views::Label>(sub_app.short_name));
+
+    sub_app_label->SetGroup(static_cast<int>(DialogViewID::SUB_APP_LABEL));
+
+    sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    sub_app_label->SetMultiLine(true);
+    sub_apps_container->AddChildView(std::move(box));
+  }
+
+  std::unique_ptr<views::ScrollView> scroll_view =
+      std::make_unique<views::ScrollView>();
+  scroll_view->SetContents(std::move(sub_apps_container));
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+
+  scroll_view->ClipHeightTo(
+      0, provider->GetDistanceMetric(
+             views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
+  AddChildView(std::move(scroll_view));
+  AddChildView(std::make_unique<views::Separator>());
+}
+
+void AppUninstallDialogView::LoadSubAppIds(const std::string& parent_app_id,
+                                           GetSubAppsCallback callback) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (provider) {
+    provider->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+        "AppUninstallDialogView::LoadSubAppIds",
+        std::make_unique<web_app::AppLockDescription>(parent_app_id),
+        base::BindOnce(
+            [](const std::string& parent_app_id, web_app::AppLock& lock) {
+              return lock.registrar().GetAllSubAppIds(parent_app_id);
+            },
+            parent_app_id)
+            .Then(base::BindOnce(&AppUninstallDialogView::GetSubAppsInfo,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(callback))));
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
+      crosapi::CrosapiManager::Get()
+          ->crosapi_ash()
+          ->web_app_service_ash()
+          ->GetWebAppProviderBridge();
+
+  if (!web_app_provider_bridge) {
+    LOG(ERROR) << "Could not find WebAppProviderBridge.";
+    std::move(callback).Run({});
+    return;
+  }
+
+  web_app_provider_bridge->GetSubAppIds(
+      parent_app_id,
+      base::BindOnce(&AppUninstallDialogView::GetSubAppsInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+#endif
+}
+
+void AppUninstallDialogView::GetSubAppsInfo(
+    GetSubAppsCallback callback,
+    const std::vector<std::string>& sub_app_ids) {
+  std::vector<SubApp> sub_apps;
+  for (const std::string& sub_app_id : sub_app_ids) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->AppRegistryCache()
+        .ForOneApp(sub_app_id, [&sub_apps](const apps::AppUpdate& update) {
+          sub_apps.emplace_back(base::UTF8ToUTF16(update.ShortName()));
+        });
+  }
+  std::move(callback).Run(std::move(sub_apps));
+}
+
+void AppUninstallDialogView::CheckForSubAppsThenInitializeViewForWebApp(
     const std::string& app_id) {
+  LoadSubAppIds(app_id,
+                base::BindOnce(&AppUninstallDialogView::InitializeViewForWebApp,
+                               weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
+#endif
+
+void AppUninstallDialogView::InitializeViewForWebApp(
+    const std::string& app_id,
+    std::vector<SubApp> sub_apps) {
   // For web apps, publisher id is the start url.
   GURL app_start_url;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
+  std::string short_app_name;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
-      .ForOneApp(app_id, [&app_start_url](const apps::AppUpdate& update) {
+      .ForOneApp(app_id, [&app_start_url,
+                          &short_app_name](const apps::AppUpdate& update) {
         app_start_url = GURL(update.PublisherId());
+        short_app_name = update.ShortName();
       });
   DCHECK(app_start_url.is_valid());
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!sub_apps.empty()) {
+    InitializeSubAppList(short_app_name, sub_apps);
+  }
+#endif
+
   InitializeCheckbox(app_start_url);
+
+  if (async_) {
+    std::move(uninstall_dialog_ready_callback_).Run(this);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

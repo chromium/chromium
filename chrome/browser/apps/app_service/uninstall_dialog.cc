@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
@@ -101,12 +102,16 @@ void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
     return;
   }
 
-  widget_ = UiBase::Create(profile_, app_type_, app_id_, app_name_,
-                           icon_value->uncompressed, parent_window_, this);
+  UiBase::Create(profile_, app_type_, app_id_, app_name_,
+                 icon_value->uncompressed, parent_window_,
+                 base::BindOnce(&UninstallDialog::OnUninstallDialogCreated,
+                                weak_ptr_factory_.GetWeakPtr()),
+                 this);
+}
 
-  // For browser tests, if the callback is set, run the callback to stop the run
-  // loop.
-  if (!uninstall_dialog_created_callback_.is_null()) {
+void UninstallDialog::OnUninstallDialogCreated(views::Widget* widget) {
+  widget_ = widget;
+  if (uninstall_dialog_created_callback_) {
     std::move(uninstall_dialog_created_callback_).Run(true);
   }
 }
