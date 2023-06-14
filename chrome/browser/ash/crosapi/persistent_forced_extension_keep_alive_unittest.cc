@@ -36,7 +36,11 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
  public:
   PersistentForcedExtensionKeepAliveTest()
       : browser_manager_(std::make_unique<FakeBrowserManager>()) {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
+        {});
   }
 
   PersistentForcedExtensionKeepAliveTest(
@@ -63,13 +67,15 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
     fake_user_manager->AddUser(account_id);
     fake_user_manager->LoginUser(account_id);
 
-    scoped_unset_all_keep_alive_ =
-        std::make_unique<BrowserManager::ScopedUnsetAllKeepAliveForTesting>(
-            BrowserManager::Get());
-
     CreateTestingProfile();
 
     ASSERT_TRUE(browser_util::IsLacrosEnabled());
+
+    // Unset KeepAlive temporarily at the end of SetUp(), so that any KeepAlive
+    // instantiated during the set up will be disabled.
+    scoped_unset_all_keep_alive_ =
+        std::make_unique<BrowserManager::ScopedUnsetAllKeepAliveForTesting>(
+            BrowserManager::Get());
   }
 
   void TearDown() override {
