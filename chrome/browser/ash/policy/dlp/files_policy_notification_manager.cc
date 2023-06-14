@@ -51,9 +51,7 @@ namespace {
 // modal.
 const base::TimeDelta kOpenFilesAppTimeout = base::Milliseconds(3000);
 
-constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
-constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
-constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
+constexpr char kDlpFilesNotificationId[] = "dlp_files";
 
 // TODO(b/279435843): Replace with translation strings.
 std::u16string GetNotificationTitle(
@@ -140,26 +138,11 @@ file_manager::io_task::IOTaskController* GetIOTaskController(
   return volume_manager->io_task_controller();
 }
 
-// Computes and returns a new notification ID for `action`.
-std::string GetNotificationId(dlp::FileAction action, size_t count) {
-  switch (action) {
-    case dlp::FileAction::kDownload:
-      return kDownloadBlockedNotificationId + std::string("_") +
-             base::NumberToString(count);
-    case dlp::FileAction::kUpload:
-      return kUploadBlockedNotificationId + std::string("_") +
-             base::NumberToString(count);
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      return kOpenBlockedNotificationId + std::string("_") +
-             base::NumberToString(count);
-    case dlp::FileAction::kCopy:
-    case dlp::FileAction::kMove:
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:
-      // TODO(b/269609831): Return valid ID.
-      return "";
-  }
+// Computes and returns a new notification ID by appending `count` to the
+// prefix.
+std::string GetNotificationId(size_t count) {
+  return kDlpFilesNotificationId + std::string("_") +
+         base::NumberToString(count);
 }
 }  // namespace
 
@@ -646,8 +629,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
       // TODO(b/269609831): Show correct notification here.
       return;
   }
-  const std::string notification_id =
-      GetNotificationId(action, notification_count_++);
+  const std::string notification_id = GetNotificationId(notification_count_++);
   auto notification = file_manager::CreateSystemNotification(
       notification_id, std::move(title), std::move(message),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(

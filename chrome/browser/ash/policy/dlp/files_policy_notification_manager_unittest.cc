@@ -39,10 +39,6 @@ bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
 }
 
-constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
-constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
-constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
-
 class IOTaskStatusObserver
     : public file_manager::io_task::IOTaskController::Observer {
  public:
@@ -182,12 +178,9 @@ TEST_F(FilesPolicyNotificationManagerTest, AddTrashTask) {
 TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  std::string notification_id_1 =
-      kUploadBlockedNotificationId + std::string("_0");
-  std::string notification_id_2 =
-      kUploadBlockedNotificationId + std::string("_1");
-  std::string notification_id_3 =
-      kOpenBlockedNotificationId + std::string("_2");
+  std::string notification_id_1 = "dlp_files_0";
+  std::string notification_id_2 = "dlp_files_1";
+  std::string notification_id_3 = "dlp_files_2";
 
   std::vector<base::FilePath> files_1 = {base::FilePath("file1.txt"),
                                          base::FilePath("file2.txt"),
@@ -628,23 +621,21 @@ INSTANTIATE_TEST_SUITE_P(
             file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
             u"Blocked move")));
 
-class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
-                          public ::testing::WithParamInterface<
-                              std::tuple<dlp::FileAction, std::string>> {};
+class FPNMShowBlockTest
+    : public FilesPolicyNotificationManagerTest,
+      public ::testing::WithParamInterface<std::tuple<dlp::FileAction>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     PolicyFilesNotify,
     FPNMShowBlockTest,
-    ::testing::Values(
-        std::make_tuple(dlp::FileAction::kDownload,
-                        kDownloadBlockedNotificationId),
-        std::make_tuple(dlp::FileAction::kUpload, kUploadBlockedNotificationId),
-        std::make_tuple(dlp::FileAction::kOpen, kOpenBlockedNotificationId),
-        std::make_tuple(dlp::FileAction::kShare, kOpenBlockedNotificationId)));
+    ::testing::Values(std::make_tuple(dlp::FileAction::kDownload),
+                      std::make_tuple(dlp::FileAction::kUpload),
+                      std::make_tuple(dlp::FileAction::kOpen),
+                      std::make_tuple(dlp::FileAction::kShare)));
 
 TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification) {
-  auto [action, id_prefix] = GetParam();
-  const std::string notification_id = id_prefix + std::string("_0");
+  auto [action] = GetParam();
+  const std::string notification_id = "dlp_files_0";
 
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
