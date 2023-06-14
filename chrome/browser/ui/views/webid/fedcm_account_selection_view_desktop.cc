@@ -374,6 +374,9 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 
 void FedCmAccountSelectionView::OnSigninToIdP() {
   delegate_->OnSigninToIdP();
+  is_mismatch_continue_clicked_ = true;
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
+                            MismatchDialogResult::kContinued);
 }
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
@@ -473,4 +476,15 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
 
   if (notify_delegate_of_dismiss_)
     delegate_->OnDismiss(dismiss_reason);
+
+  // Check is_mismatch_continue_clicked_ to ensure we don't record this metric
+  // after MismatchDialogResult::kContinued has been recorded.
+  if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH &&
+      !is_mismatch_continue_clicked_) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
+        dismiss_reason == DismissReason::kCloseButton
+            ? MismatchDialogResult::kDismissedByCloseIcon
+            : MismatchDialogResult::kDismissedForOtherReasons);
+  }
 }
