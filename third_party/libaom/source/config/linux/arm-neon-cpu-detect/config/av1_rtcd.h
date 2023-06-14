@@ -80,14 +80,35 @@ void aom_comp_avg_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *cons
                                                    const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
                                                    int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
                                                    int ref_stride, int subpel_search);
-#define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_c
-
-void aom_comp_mask_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask,
-                                                       int subpel_search);
-#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_c
+void aom_comp_avg_upsampled_pred_neon(MACROBLOCKD* xd,
+                                      const struct AV1Common* const cm,
+                                      int mi_row,
+                                      int mi_col,
+                                      const MV* const mv,
+                                      uint8_t* comp_pred,
+                                      const uint8_t* pred,
+                                      int width,
+                                      int height,
+                                      int subpel_x_q3,
+                                      int subpel_y_q3,
+                                      const uint8_t* ref,
+                                      int ref_stride,
+                                      int subpel_search);
+RTCD_EXTERN void (*aom_comp_avg_upsampled_pred)(
+    MACROBLOCKD* xd,
+    const struct AV1Common* const cm,
+    int mi_row,
+    int mi_col,
+    const MV* const mv,
+    uint8_t* comp_pred,
+    const uint8_t* pred,
+    int width,
+    int height,
+    int subpel_x_q3,
+    int subpel_y_q3,
+    const uint8_t* ref,
+    int ref_stride,
+    int subpel_search);
 
 void aom_dist_wtd_comp_avg_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
                                                        const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
@@ -102,7 +123,32 @@ RTCD_EXTERN void (*aom_quantize_b_helper)(const tran_low_t *coeff_ptr, intptr_t 
 void aom_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
                                           const MV *const mv, uint8_t *comp_pred, int width, int height, int subpel_x_q3,
                                           int subpel_y_q3, const uint8_t *ref, int ref_stride, int subpel_search);
-#define aom_upsampled_pred aom_upsampled_pred_c
+void aom_upsampled_pred_neon(MACROBLOCKD* xd,
+                             const struct AV1Common* const cm,
+                             int mi_row,
+                             int mi_col,
+                             const MV* const mv,
+                             uint8_t* comp_pred,
+                             int width,
+                             int height,
+                             int subpel_x_q3,
+                             int subpel_y_q3,
+                             const uint8_t* ref,
+                             int ref_stride,
+                             int subpel_search);
+RTCD_EXTERN void (*aom_upsampled_pred)(MACROBLOCKD* xd,
+                                       const struct AV1Common* const cm,
+                                       int mi_row,
+                                       int mi_col,
+                                       const MV* const mv,
+                                       uint8_t* comp_pred,
+                                       int width,
+                                       int height,
+                                       int subpel_x_q3,
+                                       int subpel_y_q3,
+                                       const uint8_t* ref,
+                                       int ref_stride,
+                                       int subpel_search);
 
 void av1_apply_selfguided_restoration_c(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
 void av1_apply_selfguided_restoration_neon(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
@@ -598,8 +644,16 @@ static void setup_rtcd_internal(void)
 
     (void)flags;
 
+    aom_comp_avg_upsampled_pred = aom_comp_avg_upsampled_pred_c;
+    if (flags & HAS_NEON) {
+      aom_comp_avg_upsampled_pred = aom_comp_avg_upsampled_pred_neon;
+    }
     aom_quantize_b_helper = aom_quantize_b_helper_c;
     if (flags & HAS_NEON) aom_quantize_b_helper = aom_quantize_b_helper_neon;
+    aom_upsampled_pred = aom_upsampled_pred_c;
+    if (flags & HAS_NEON) {
+      aom_upsampled_pred = aom_upsampled_pred_neon;
+    }
     av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_c;
     if (flags & HAS_NEON) av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_neon;
     av1_block_error = av1_block_error_c;
