@@ -37,6 +37,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -52,6 +53,7 @@ constexpr uint16_t kTestProductId = 0xabcd;
 constexpr char kTestSerialNumber[] = "serial-number";
 constexpr char kTestProductName[] = "product-name";
 constexpr char kTestPhysicalDeviceId[] = "physical-device-id";
+constexpr char kTestUserEmail[] = "user@example.com";
 
 // The HID usages assigned to the top-level collection of the simulated device.
 constexpr uint16_t kTestUsagePage = device::mojom::kPageGenericDesktop;
@@ -67,7 +69,7 @@ class HidChooserContextTestBase {
   ~HidChooserContextTestBase() = default;
 
   void DoSetUp(bool is_affiliated, bool login_user) {
-    constexpr char kTestUserEmail[] = "user@example.com";
+    auto* profile_name = kTestUserEmail;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (login_user) {
       constexpr char kTestUserGaiaId[] = "1111111111";
@@ -80,13 +82,15 @@ class HidChooserContextTestBase {
           AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
       fake_user_manager_ptr->AddUserWithAffiliation(account_id, is_affiliated);
       fake_user_manager_ptr->LoginUser(account_id);
+    } else {
+      profile_name = ash::kSigninBrowserContextBaseName;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile(kTestUserEmail);
+    profile_ = testing_profile_manager_->CreateTestingProfile(profile_name);
     ASSERT_TRUE(profile_);
 
     mojo::PendingRemote<device::mojom::HidManager> hid_manager;
@@ -269,6 +273,12 @@ class HidChooserContextTestBase {
   void SetAllowDevicesForUrlsPolicy(base::StringPiece policy) {
     testing_profile_manager_->local_state()->Get()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesForUrls, ParseJson(policy));
+  }
+
+  void SetAllowDevicesForUrlsOnLoginScreenPolicy(base::StringPiece policy) {
+    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+        prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen,
+        ParseJson(policy));
   }
 
   void SetAllowDevicesWithHidUsagesForUrlsPolicy(base::StringPiece policy) {
@@ -1240,15 +1250,24 @@ TEST_F(HidChooserContextLoginScreenTest, ApplyPolicyOnLoginScreen) {
   // Connect a device.
   auto device = ConnectPersistentUsbDeviceBlocking();
 
-  // Set the AllowDevicesForUrls policy
-  SetAllowDevicesForUrlsPolicy(R"(
+  // Set the DeviceLoginScreenWebHidAllowDevicesForUrls policy
+  SetAllowDevicesForUrlsOnLoginScreenPolicy(R"(
       [
         {
           "devices": [{ "vendor_id": 4660, "product_id": 43981 }],
           "urls": [ "https://google.com" ]
         }
       ])");
+
+  // The policy has an effect only for IS_CHROMEOS_ASH build, otherwise it is
+  // ignored.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
   EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
   EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+#else
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+#endif
 }

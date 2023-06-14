@@ -168,7 +168,6 @@
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
-#include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -983,15 +982,6 @@ SerialPolicyAllowedPorts* BrowserProcessImpl::serial_policy_allowed_ports() {
         std::make_unique<SerialPolicyAllowedPorts>(local_state());
   }
   return serial_policy_allowed_ports_.get();
-}
-
-HidPolicyAllowedDevices* BrowserProcessImpl::hid_policy_allowed_devices() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!hid_policy_allowed_devices_) {
-    hid_policy_allowed_devices_ =
-        std::make_unique<HidPolicyAllowedDevices>(local_state());
-  }
-  return hid_policy_allowed_devices_.get();
 }
 
 HidSystemTrayIcon* BrowserProcessImpl::hid_system_tray_icon() {

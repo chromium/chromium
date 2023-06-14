@@ -33069,6 +33069,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1113" label="UrlKeyedMetricsAllowed"/>
   <int value="1114"
       label="AllowBackForwardCacheForCacheControlNoStorePageEnabled"/>
+  <int value="1115" label="DeviceLoginScreenWebHidAllowDevicesForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -13,7 +13,8 @@ namespace policy {
 
 class PolicyMap;
 
-// Handles the WebHidAllowDevicesForUrls and
+// Handles the WebHidAllowDevicesForUrls,
+// DeviceLoginScreenWebHidAllowDevicesForUrls, and
 // WebHidAllowDevicesWithHidUsagesForUrls policies.
 class WebHidDevicePolicyHandler : public SchemaValidatingPolicyHandler {
  public:

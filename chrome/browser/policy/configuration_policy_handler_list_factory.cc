@@ -2152,6 +2152,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<WebHidDevicePolicyHandler>(
       key::kWebHidAllowDevicesForUrls, prefs::kManagedWebHidAllowDevicesForUrls,
       chrome_schema));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  handlers->AddHandler(std::make_unique<WebHidDevicePolicyHandler>(
+      key::kDeviceLoginScreenWebHidAllowDevicesForUrls,
+      prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen, chrome_schema));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   handlers->AddHandler(std::make_unique<WebHidDevicePolicyHandler>(
       key::kWebHidAllowDevicesWithHidUsagesForUrls,
       prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls, chrome_schema));

@@ -33,13 +33,19 @@ class HidPolicyAllowedDevicesTest : public testing::Test {
 
   ~HidPolicyAllowedDevicesTest() override = default;
 
-  void InitializePolicy() {
+  void InitializePolicy(bool on_login_screen = false) {
     EXPECT_FALSE(policy_);
-    policy_ = std::make_unique<HidPolicyAllowedDevices>(&local_state_);
+    policy_ = std::make_unique<HidPolicyAllowedDevices>(&local_state_,
+                                                        on_login_screen);
   }
 
   void SetAllowDevicesForUrlsPrefValue(base::StringPiece policy) {
     local_state_.Set(prefs::kManagedWebHidAllowDevicesForUrls,
+                     ParseJson(policy));
+  }
+
+  void SetAllowDevicesForUrlsOnLoginScreenPrefValue(base::StringPiece policy) {
+    local_state_.Set(prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen,
                      ParseJson(policy));
   }
 
@@ -89,6 +95,7 @@ TEST_F(HidPolicyAllowedDevicesTest, InitializeWithMissingPrefValue) {
 
 TEST_F(HidPolicyAllowedDevicesTest, InitializeWithExistingEmptyPrefValue) {
   SetAllowDevicesForUrlsPrefValue("[]");
+  SetAllowDevicesForUrlsOnLoginScreenPrefValue("[]");
   SetAllowDevicesWithHidUsagesForUrlsPrefValue("[]");
   SetAllowAllDevicesForUrlsPrefValue("[]");
 
@@ -289,6 +296,52 @@ TEST_F(HidPolicyAllowedDevicesTest, InitializeWithMissingPrefValuesThenUpdate) {
   EXPECT_FALSE(policy()->HasDevicePermission(kOrigin1, *device));
   EXPECT_TRUE(policy()->HasDevicePermission(kOrigin2, *device));
   EXPECT_TRUE(policy()->HasDevicePermission(kOrigin3, *device));
+}
+
+TEST_F(HidPolicyAllowedDevicesTest,
+       InitializeWithMissingPrefValuesThenUpdateOnLoginScreen) {
+  const auto kOrigin1 = url::Origin::Create(GURL("https://origin1"));
+  const auto kOrigin2 = url::Origin::Create(GURL("https://origin2"));
+
+  InitializePolicy(/*on_login_screen=*/true);
+
+  EXPECT_EQ(0u, policy()->device_policy().size());
+  EXPECT_EQ(0u, policy()->vendor_policy().size());
+  EXPECT_EQ(0u, policy()->usage_page_policy().size());
+  EXPECT_EQ(0u, policy()->usage_policy().size());
+  EXPECT_EQ(0u, policy()->all_devices_policy().size());
+
+  SetAllowDevicesForUrlsOnLoginScreenPrefValue(kAllowDevicesForUrls);
+
+  EXPECT_EQ(1u, policy()->device_policy().size());
+  EXPECT_EQ(1u, policy()->vendor_policy().size());
+  EXPECT_EQ(0u, policy()->usage_page_policy().size());
+  EXPECT_EQ(0u, policy()->usage_policy().size());
+  EXPECT_EQ(0u, policy()->all_devices_policy().size());
+
+  const auto device_key = std::make_pair(kTestVendorId1, kTestProductId1);
+  ASSERT_TRUE(base::Contains(policy()->device_policy(), device_key));
+  EXPECT_THAT(policy()->device_policy().at(device_key),
+              UnorderedElementsAre(kOrigin1));
+
+  ASSERT_TRUE(base::Contains(policy()->vendor_policy(), kTestVendorId2));
+  EXPECT_THAT(policy()->vendor_policy().at(kTestVendorId2),
+              UnorderedElementsAre(kOrigin1));
+
+  auto device = CreateAndAddDevice(kTestVendorId1, kTestProductId1,
+                                   /*usage_page=*/0xff00, /*usage=*/1);
+  EXPECT_TRUE(policy()->HasDevicePermission(kOrigin1, *device));
+  EXPECT_FALSE(policy()->HasDevicePermission(kOrigin2, *device));
+
+  device = CreateAndAddDevice(kTestVendorId1, kTestProductId2,
+                              /*usage_page=*/0xff00, /*usage=*/1);
+  EXPECT_FALSE(policy()->HasDevicePermission(kOrigin1, *device));
+  EXPECT_FALSE(policy()->HasDevicePermission(kOrigin2, *device));
+
+  device = CreateAndAddDevice(kTestVendorId2, kTestProductId2,
+                              /*usage_page=*/0xff00, /*usage=*/1);
+  EXPECT_TRUE(policy()->HasDevicePermission(kOrigin1, *device));
+  EXPECT_FALSE(policy()->HasDevicePermission(kOrigin2, *device));
 }
 
 TEST_F(HidPolicyAllowedDevicesTest, InitializeWithPrefValuesThenRemovePolicy) {

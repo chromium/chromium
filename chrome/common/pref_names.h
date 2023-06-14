@@ -553,6 +553,7 @@ extern const char kManagedSerialAllowAllPortsForUrls[];
 extern const char kManagedSerialAllowUsbDevicesForUrls[];
 extern const char kManagedWebHidAllowAllDevicesForUrls[];
 extern const char kManagedWebHidAllowDevicesForUrls[];
+extern const char kManagedWebHidAllowDevicesForUrlsOnLoginScreen[];
 extern const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -3743,6 +3743,8 @@ static_library("browser") {
       "hid/hid_connection_tracker_factory.h",
       "hid/hid_policy_allowed_devices.cc",
       "hid/hid_policy_allowed_devices.h",
+      "hid/hid_policy_allowed_devices_factory.cc",
+      "hid/hid_policy_allowed_devices_factory.h",
       "hid/hid_system_tray_icon.cc",
       "hid/hid_system_tray_icon.h",
       "hid/web_hid_histograms.cc",

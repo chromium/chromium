@@ -1737,6 +1737,11 @@ const char kManagedWebHidAllowAllDevicesForUrls[] =
 const char kManagedWebHidAllowDevicesForUrls[] =
     "managed.web_hid_allow_devices_for_urls";
 
+// Used to store the value of the DeviceLoginScreenWebHidAllowDevicesForUrls
+// policy.
+const char kManagedWebHidAllowDevicesForUrlsOnLoginScreen[] =
+    "managed.web_hid_allow_devices_for_urls_on_login_screen";
+
 // Used to store the value of the WebHidAllowAllDevicesWithHidUsagesForUrls
 // policy.
 const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[] =

@@ -28,7 +28,6 @@ class BuildState;
 class DownloadRequestLimiter;
 class DownloadStatusUpdater;
 class GpuModeManager;
-class HidPolicyAllowedDevices;
 class IconManager;
 class MediaFileSystemRegistry;
 class NotificationPlatformBridge;
@@ -265,10 +264,6 @@ class BrowserProcess {
   // Returns the object which keeps track of serial port permissions configured
   // through the policy engine.
   virtual SerialPolicyAllowedPorts* serial_policy_allowed_ports() = 0;
-
-  // Returns the object which keeps track of Human Interface Device (HID)
-  // permissions configured through the policy engine.
-  virtual HidPolicyAllowedDevices* hid_policy_allowed_devices() = 0;
 
   // Returns the object which maintains Human Interface Device (HID) system tray
   // icon.

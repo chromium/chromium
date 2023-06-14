@@ -2004,4 +2004,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceSystemAecEnabledProto device_system_aec_enabled = 146;
   optional DeviceLoginScreenGeolocationAccessLevelProto
       device_login_screen_geolocation_access_level = 147;
+  optional StringPolicyProto device_login_screen_webhid_allow_devices_for_urls =
+      148;
 }
