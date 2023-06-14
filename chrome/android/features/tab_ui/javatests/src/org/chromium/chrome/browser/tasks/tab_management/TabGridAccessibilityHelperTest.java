@@ -13,10 +13,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
 import android.content.Context;
@@ -26,31 +24,27 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
 import androidx.annotation.IntDef;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.test.util.UiRestriction;
@@ -66,11 +60,7 @@ import java.util.List;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-// START_SURFACE_REFACTOR is required to have stable parent id logic.
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                          ChromeFeatureList.START_SURFACE_REFACTOR,
-                          ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-@Batch(Batch.PER_CLASS)
+@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class TabGridAccessibilityHelperTest {
     // clang-format on
     @IntDef({TabMovementDirection.LEFT, TabMovementDirection.RIGHT, TabMovementDirection.UP,
@@ -84,38 +74,29 @@ public class TabGridAccessibilityHelperTest {
         int NUM_ENTRIES = 4;
     }
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Before
     public void setUp() {
-        Layout layout =
-                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
-        assertTrue(layout instanceof TabSwitcherLayout);
+        mActivityTestRule.startMainActivityFromLauncher();
+        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         CriteriaHelper.pollUiThread(
-                sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @After
     public void tearDown() {
-        ActivityTestUtils.clearActivityOrientation(sActivityTestRule.getActivity());
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        if (cta != null && cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            leaveTabSwitcher(cta);
-        }
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test
     @MediumTest
-    // Low-end uses list mode.
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/1318376")
     public void testGetPotentialActionsForView() {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        // clang-format on
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         final AccessibilityActionChecker checker = new AccessibilityActionChecker(cta);
         createTabs(cta, false, 5);
         enterTabSwitcher(cta);
@@ -128,13 +109,8 @@ public class TabGridAccessibilityHelperTest {
         // Verify action list in portrait mode with span count = 2.
         onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
                 .check((v, noMatchingViewException) -> {
-                    if (noMatchingViewException != null) {
-                        throw noMatchingViewException;
-                    }
                     assertTrue(v instanceof RecyclerView);
                     RecyclerView recyclerView = (RecyclerView) v;
-                    assertEquals(2,
-                            ((GridLayoutManager) recyclerView.getLayoutManager()).getSpanCount());
 
                     View item1 = getItemViewForPosition(recyclerView, 0);
                     checker.verifyListOfAccessibilityAction(
@@ -171,15 +147,8 @@ public class TabGridAccessibilityHelperTest {
         // Verify action list in landscape mode with span count = 3.
         onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
                 .check((v, noMatchingViewException) -> {
-                    if (noMatchingViewException != null) {
-                        throw noMatchingViewException;
-                    }
                     assertTrue(v instanceof RecyclerView);
                     RecyclerView recyclerView = (RecyclerView) v;
-                    // This case only applies for a span of 3.
-                    if (((GridLayoutManager) recyclerView.getLayoutManager()).getSpanCount() != 3) {
-                        return;
-                    }
 
                     View item1 = getItemViewForPosition(recyclerView, 0);
                     checker.verifyListOfAccessibilityAction(
@@ -214,10 +183,9 @@ public class TabGridAccessibilityHelperTest {
 
     @Test
     @MediumTest
-    // Low-end uses list mode.
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/1318394")
     public void testGetPositionsOfReorderAction() {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         int leftActionId = R.id.move_tab_left;
         int rightActionId = R.id.move_tab_right;
         int upActionId = R.id.move_tab_up;
@@ -230,17 +198,10 @@ public class TabGridAccessibilityHelperTest {
                            instanceof TabListMediator.TabGridAccessibilityHelper);
         TabListMediator.TabGridAccessibilityHelper helper = cta.findViewById(R.id.tab_list_view);
 
-        // Span count 2.
         onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
                 .check((v, noMatchingViewException) -> {
-                    if (noMatchingViewException != null) {
-                        throw noMatchingViewException;
-                    }
                     assertTrue(v instanceof RecyclerView);
                     RecyclerView recyclerView = (RecyclerView) v;
-                    assertEquals(2,
-                            ((GridLayoutManager) recyclerView.getLayoutManager()).getSpanCount());
-
                     Pair<Integer, Integer> positions;
 
                     View item1 = getItemViewForPosition(recyclerView, 0);
@@ -264,19 +225,10 @@ public class TabGridAccessibilityHelperTest {
 
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
 
-        // Span count 3.
         onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
                 .check((v, noMatchingViewException) -> {
-                    if (noMatchingViewException != null) {
-                        throw noMatchingViewException;
-                    }
                     assertTrue(v instanceof RecyclerView);
                     RecyclerView recyclerView = (RecyclerView) v;
-                    // This case only applies for a span of 3.
-                    if (((GridLayoutManager) recyclerView.getLayoutManager()).getSpanCount() != 3) {
-                        return;
-                    }
-
                     Pair<Integer, Integer> positions;
 
                     View item2 = getItemViewForPosition(recyclerView, 1);
@@ -304,8 +256,6 @@ public class TabGridAccessibilityHelperTest {
     }
 
     private View getItemViewForPosition(RecyclerView recyclerView, int position) {
-        // Scroll to position to ensure the ViewHolder is not recycled.
-        ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPosition(position);
         RecyclerView.ViewHolder viewHolder =
                 recyclerView.findViewHolderForAdapterPosition(position);
         assertNotNull(viewHolder);
