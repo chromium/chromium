@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+
+declare_args() {
+  # Enable support for content analysis against a cloud agent for Enterprise
+  # Connector policies.
+  enterprise_cloud_content_analysis =
+      is_win || is_mac || is_linux || is_chromeos
+
+  # Enable support for content analysis against a cloud agent for Enterprise
+  # Connector policies.
+  enterprise_local_content_analysis = is_win || is_mac || is_linux
+}
