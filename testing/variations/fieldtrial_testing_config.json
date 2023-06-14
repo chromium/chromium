@@ -12722,6 +12722,29 @@
             ]
         }
     ],
+    "SpeculativeServiceWorkerWarmUp": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableWarmUp_20230613",
+                    "enable_features": [
+                        "SpeculativeServiceWorkerWarmUp"
+                    ],
+                    "disable_features": [
+                        "SpeculativeServiceWorkerStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
