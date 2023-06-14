@@ -457,6 +457,12 @@
       'linux-blink-wpt-reset-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-build-perf-developer': 'developer',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
+      # Keep in sync with linux-chromeos-rel
+      'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
+      'linux-chromeos-build-perf-siso': {
+        'builtin': 'chromeos_with_codecs_release_trybot_code_coverage_siso',
+        'reproxy': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
+      },
       'linux-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
@@ -2344,6 +2350,13 @@
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
+    ],
+
+    'chromeos_with_codecs_release_trybot_code_coverage_siso': [
+      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
+      'no_goma', 'no_reclient',
     ],
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [

@@ -303,6 +303,8 @@
     "linux-wpt-fyi-rel": "Ubuntu-22.04",
     "linux-wpt-identity-fyi-rel": "Ubuntu-22.04",
     "linux-wpt-input-fyi-rel": "Ubuntu-22.04",
+    "linux-chromeos-build-perf": "Ubuntu-22.04",
+    "linux-chromeos-build-perf-siso": "Ubuntu-22.04",
     "mac-angle-chromium-amd": "Ubuntu-22.04",
     "mac-angle-chromium-intel": "Ubuntu-22.04",
     "mac10.13-updater-tester-dbg": "Ubuntu-22.04",
