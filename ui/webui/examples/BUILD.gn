@@ -7,8 +7,6 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
-assert(use_aura)
-
 static_library("webui_examples_lib") {
   testonly = true
 
@@ -27,12 +25,6 @@ static_library("webui_examples_lib") {
     "browser/devtools/devtools_manager_delegate.h",
     "browser/devtools/devtools_server.cc",
     "browser/devtools/devtools_server.h",
-    "browser/ui/aura/aura_context.cc",
-    "browser/ui/aura/aura_context.h",
-    "browser/ui/aura/content_window.cc",
-    "browser/ui/aura/content_window.h",
-    "browser/ui/aura/fill_layout.cc",
-    "browser/ui/aura/fill_layout.h",
     "browser/ui/web/webui.cc",
     "browser/ui/web/webui.h",
     "browser/webui_controller_factory.cc",
@@ -40,8 +32,6 @@ static_library("webui_examples_lib") {
     "common/content_client.cc",
     "common/content_client.h",
   ]
-
-  data_deps = [ "//tools/v8_context_snapshot" ]
 
   deps = [
     ":pak",
@@ -52,15 +42,36 @@ static_library("webui_examples_lib") {
     "//content/public/browser",
     "//ipc",
     "//net",
-    "//ui/aura",
-    "//ui/aura:test_support",
     "//ui/base",
     "//ui/display",
     "//ui/platform_window",
-    "//ui/wm",
-    "//ui/wm/public",
     "//url",
   ]
+
+  data_deps = [ "//tools/v8_context_snapshot" ]
+
+  if (use_aura) {
+    sources += [
+      "browser/browser_main_parts_aura.cc",
+      "browser/ui/aura/aura_context.cc",
+      "browser/ui/aura/aura_context.h",
+      "browser/ui/aura/content_window.cc",
+      "browser/ui/aura/content_window.h",
+      "browser/ui/aura/fill_layout.cc",
+      "browser/ui/aura/fill_layout.h",
+    ]
+    deps += [
+      "//ui/aura",
+      "//ui/aura:test_support",
+      "//ui/wm",
+      "//ui/wm/public",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "browser/browser_main_parts_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
 }
 
 grit("resources") {
@@ -121,5 +132,9 @@ executable("webui_examples") {
       "//content:sandbox_helper_win",
       "//sandbox/win:sandbox",
     ]
+  }
+
+  if (is_mac) {
+    deps += [ "//sandbox/mac:seatbelt" ]
   }
 }

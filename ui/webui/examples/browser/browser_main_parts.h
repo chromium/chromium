@@ -21,14 +21,13 @@ class WebContentsViewDelegate;
 
 namespace webui_examples {
 
-class AuraContext;
 class BrowserContext;
-class ContentWindow;
 class WebUIControllerFactory;
 
 class BrowserMainParts : public content::BrowserMainParts {
  public:
-  BrowserMainParts();
+  static std::unique_ptr<BrowserMainParts> Create();
+
   BrowserMainParts(const BrowserMainParts&) = delete;
   BrowserMainParts& operator=(const BrowserMainParts&) = delete;
   ~BrowserMainParts() override;
@@ -38,6 +37,18 @@ class BrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate();
 
+ protected:
+  BrowserMainParts();
+  virtual void InitializeUiToolkit();
+  virtual void ShutdownUiToolkit();
+  virtual void CreateAndShowWindowForWebContents(
+      std::unique_ptr<content::WebContents> web_contents,
+      const std::u16string& title) = 0;
+
+  content::BrowserContext* browser_context() { return browser_context_.get(); }
+
+  void OnWindowClosed();
+
  private:
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
@@ -45,17 +56,15 @@ class BrowserMainParts : public content::BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
-  // content::WebContents is associated and bound to the lifetime of the window.
-  content::WebContents* CreateAndShowContentWindow(GURL url,
-                                                   const std::u16string& title);
-  void OnWindowClosed(std::unique_ptr<ContentWindow> content_window);
+  content::WebContents* CreateAndShowWindow(GURL url,
+                                            const std::u16string& title);
+
   void QuitMessageLoop();
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<WebUIControllerFactory> web_ui_controller_factory_;
   std::unique_ptr<content::BrowserContext> browser_context_;
 
-  std::unique_ptr<AuraContext> aura_context_;
   int content_windows_outstanding_ = 0;
 
   base::RepeatingClosure quit_run_loop_;

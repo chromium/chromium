@@ -16,7 +16,7 @@ ContentBrowserClient::~ContentBrowserClient() = default;
 
 std::unique_ptr<content::BrowserMainParts>
 ContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
-  auto browser_main_parts = std::make_unique<BrowserMainParts>();
+  auto browser_main_parts = BrowserMainParts::Create();
   browser_main_parts_ = browser_main_parts.get();
   return browser_main_parts;
 }

@@ -13,14 +13,14 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/examples/browser/browser_context.h"
 #include "ui/webui/examples/browser/devtools/devtools_frontend.h"
 #include "ui/webui/examples/browser/devtools/devtools_manager_delegate.h"
 #include "ui/webui/examples/browser/devtools/devtools_server.h"
-#include "ui/webui/examples/browser/ui/aura/aura_context.h"
-#include "ui/webui/examples/browser/ui/aura/content_window.h"
 #include "ui/webui/examples/browser/webui_controller_factory.h"
 #include "ui/webui/examples/grit/webui_examples_resources.h"
 
@@ -67,7 +67,7 @@ BrowserMainParts::CreateWebContentsViewDelegate(
       web_contents,
       base::BindRepeating(
           [](BrowserMainParts* browser_main_parts, const GURL& url) {
-            return browser_main_parts->CreateAndShowContentWindow(
+            return browser_main_parts->CreateAndShowWindow(
                 url, l10n_util::GetStringUTF16(IDS_DEVTOOLS_WINDOW_TITLE));
           },
           base::Unretained(this)));
@@ -80,11 +80,15 @@ BrowserMainParts::CreateDevToolsManagerDelegate() {
       base::BindRepeating(
           [](BrowserMainParts* browser_main_parts,
              content::BrowserContext* browser_context, const GURL& url) {
-            return browser_main_parts->CreateAndShowContentWindow(
+            return browser_main_parts->CreateAndShowWindow(
                 url, l10n_util::GetStringUTF16(IDS_DEVTOOLS_WINDOW_TITLE));
           },
           base::Unretained(this)));
 }
+
+void BrowserMainParts::InitializeUiToolkit() {}
+
+void BrowserMainParts::ShutdownUiToolkit() {}
 
 int BrowserMainParts::PreMainMessageLoopRun() {
   std::ignore = temp_dir_.CreateUniqueTempDir();
@@ -97,13 +101,29 @@ int BrowserMainParts::PreMainMessageLoopRun() {
   content::WebUIControllerFactory::RegisterFactory(
       web_ui_controller_factory_.get());
 
-  aura_context_ = std::make_unique<AuraContext>();
+  InitializeUiToolkit();
 
-  CreateAndShowContentWindow(
+  CreateAndShowWindow(
       GURL("chrome://main/"),
       l10n_util::GetStringUTF16(IDS_WEBUI_EXAMPLES_WINDOW_TITLE));
 
   return 0;
+}
+
+content::WebContents* BrowserMainParts::CreateAndShowWindow(
+    GURL url,
+    const std::u16string& title) {
+  ++content_windows_outstanding_;
+
+  content::WebContents::CreateParams params(browser_context_.get());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(params);
+  content::NavigationController::LoadURLParams url_params(url);
+  web_contents->GetController().LoadURLWithParams(url_params);
+
+  auto* web_contents_ptr = web_contents.get();
+  CreateAndShowWindowForWebContents(std::move(web_contents), title);
+  return web_contents_ptr;
 }
 
 void BrowserMainParts::WillRunMainMessageLoop(
@@ -116,31 +136,9 @@ void BrowserMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
 }
 
-content::WebContents* BrowserMainParts::CreateAndShowContentWindow(
-    GURL url,
-    const std::u16string& title) {
-  auto content_window = std::make_unique<ContentWindow>(aura_context_.get(),
-                                                        browser_context_.get());
-  ContentWindow* content_window_ptr = content_window.get();
-  content_window_ptr->SetTitle(title);
-  content_window_ptr->NavigateToURL(url);
-  content_window_ptr->Show();
-  content_window_ptr->SetCloseCallback(
-      base::BindOnce(&BrowserMainParts::OnWindowClosed,
-                     weak_factory_.GetWeakPtr(), std::move(content_window)));
-  ++content_windows_outstanding_;
-  return content_window_ptr->web_contents();
-}
-
-void BrowserMainParts::OnWindowClosed(
-    std::unique_ptr<ContentWindow> content_window) {
+void BrowserMainParts::OnWindowClosed() {
   --content_windows_outstanding_;
   auto task_runner = content::GetUIThreadTaskRunner({});
-  // We are dispatching a callback that originates from the content_window.
-  // Deleting soon instead of now eliminates the chance of a crash in case the
-  // content_window or associated objects have more work to do after this
-  // callback.
-  task_runner->DeleteSoon(FROM_HERE, std::move(content_window));
   if (content_windows_outstanding_ == 0) {
     task_runner->PostTask(FROM_HERE,
                           base::BindOnce(&BrowserMainParts::QuitMessageLoop,
@@ -149,7 +147,7 @@ void BrowserMainParts::OnWindowClosed(
 }
 
 void BrowserMainParts::QuitMessageLoop() {
-  aura_context_.reset();
+  ShutdownUiToolkit();
   web_ui_controller_factory_.reset();
   quit_run_loop_.Run();
 }
