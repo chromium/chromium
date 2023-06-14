@@ -7,8 +7,6 @@ source_set("metrics") {
   sources = [
     "feed_metrics_constants.h",
     "feed_metrics_constants.mm",
-    "feed_metrics_provider.h",
-    "feed_metrics_provider.mm",
     "feed_metrics_recorder+testing.h",
     "feed_metrics_recorder.h",
     "feed_metrics_recorder.mm",
@@ -47,7 +45,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "feed_metrics_provider_unittest.mm",
     "feed_metrics_recorder_unittest.mm",
     "feed_session_recorder_unittest.mm",
   ]

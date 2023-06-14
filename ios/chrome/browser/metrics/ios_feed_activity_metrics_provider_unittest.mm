@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_feed_activity_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 // Tests metrics that are recorded and uploaded by
-// FeedMetricsProvider.
-class FeedMetricsProviderTest : public PlatformTest {
+// IOSFeedActivityMetricsProvider.
+class IOSFeedActivityMetricsProviderTest : public PlatformTest {
  public:
-  FeedMetricsProviderTest() {
+  IOSFeedActivityMetricsProviderTest() {
     histogram_tester_.reset(new base::HistogramTester());
   }
 
@@ -27,8 +27,8 @@ class FeedMetricsProviderTest : public PlatformTest {
 };
 
 // Tests the implementation of ProvideCurrentSessionData
-TEST_F(FeedMetricsProviderTest, ProvideCurrentSessionData) {
-  FeedMetricsProvider provider;
+TEST_F(IOSFeedActivityMetricsProviderTest, ProvideCurrentSessionData) {
+  IOSFeedActivityMetricsProvider provider;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setInteger:1 forKey:kActivityBucketKey];
   provider.ProvideCurrentSessionData(nullptr /* uma_proto */);
