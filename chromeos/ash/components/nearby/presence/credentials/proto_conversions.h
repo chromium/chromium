@@ -37,6 +37,12 @@ ash::nearby::proto::TrustType TrustTypeFromIdentityType(
     ::nearby::internal::IdentityType identity_type);
 int64_t MillisecondsToSeconds(int64_t milliseconds);
 
+::nearby::internal::SharedCredential PublicCertificateToSharedCredential(
+    ash::nearby::proto::PublicCertificate certificate);
+::nearby::internal::IdentityType TrustTypeToIdentityType(
+    ash::nearby::proto::TrustType trust_type);
+int64_t SecondsToMilliseconds(int64_t seconds);
+
 }  // namespace ash::nearby::presence
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_

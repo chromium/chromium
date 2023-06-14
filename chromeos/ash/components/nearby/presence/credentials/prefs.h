@@ -17,6 +17,7 @@ extern const char kNearbyPresenceProfileUrlPrefName[];
 extern const char kNearbyPresenceSharedCredentialIdListPrefName[];
 extern const char kNearbyPresenceSchedulingFirstTimeRegistrationPrefName[];
 extern const char kNearbyPresenceSchedulingFirstTimeUploadPrefName[];
+extern const char kNearbyPresenceSchedulingFirstTimeDownloadPrefName[];
 
 }  // namespace prefs
 

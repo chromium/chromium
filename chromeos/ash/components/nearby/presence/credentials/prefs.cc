@@ -21,6 +21,8 @@ const char kNearbyPresenceSchedulingFirstTimeRegistrationPrefName[] =
     "nearby_presence.scheduling.first_time_registration";
 const char kNearbyPresenceSchedulingFirstTimeUploadPrefName[] =
     "nearby_presence.scheduling.first_time_upload";
+const char kNearbyPresenceSchedulingFirstTimeDownloadPrefName[] =
+    "nearby_presence.scheduling.first_time_download";
 
 }  // namespace prefs
 
@@ -38,6 +40,8 @@ void RegisterNearbyPresenceCredentialPrefs(PrefRegistrySimple* registry) {
       prefs::kNearbyPresenceSchedulingFirstTimeRegistrationPrefName);
   registry->RegisterDictionaryPref(
       prefs::kNearbyPresenceSchedulingFirstTimeUploadPrefName);
+  registry->RegisterDictionaryPref(
+      prefs::kNearbyPresenceSchedulingFirstTimeDownloadPrefName);
 }
 
 }  // namespace ash::nearby::presence

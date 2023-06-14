@@ -29,6 +29,7 @@ class NearbyScheduler;
 
 namespace ash::nearby::proto {
 class UpdateDeviceResponse;
+class ListPublicCertificatesResponse;
 }  // namespace ash::nearby::proto
 
 namespace nearby::internal {
@@ -92,21 +93,27 @@ class NearbyPresenceCredentialManagerImpl
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       mojom::StatusCode status);
 
-  // Callback for first time credential upload/download during first time
+  // Callbacks for first time credential upload/download during first time
   // server registration.
-  void OnFirstTimeCredentialUpload(bool success);
   void ScheduleUploadCredentials(
       std::vector<::nearby::internal::SharedCredential>
           proto_shared_credentials);
+  void OnFirstTimeCredentialsUpload(bool success);
+  void ScheduleDownloadCredentials();
+  void OnFirstTimeCredentialsDownload(
+      std::vector<::nearby::internal::SharedCredential> credentials,
+      bool success);
 
-  // Helper functions to trigger uploading credentials in the NP server. The
-  // helper functions are used for first time server registration to upload
-  // newly generated credentials, daily syncs with the server to upload
-  // credentials if they have changed. These helper functions are also used in
-  // `UpdateCredentials` flows.
+  // Helper functions to trigger uploading and downloading credentials in the NP
+  // server. The helper functions are used for first time server registration to
+  // upload newly generated credentials and download remote devices'
+  // credentials, as well as daily syncs with the server to upload
+  // credentials if they have changed and download remote devices' credentials.
+  // These helper functions are also used in `UpdateCredentials` flows.
   //
-  // They take a repeating callback because UploadCredentials must be bound as a
-  // RepeatingCallback itself as a task in a NearbyScheduler.
+  // They take a repeating callback because `UploadCredentials()` and
+  // `DownloadCredentials()` must be bound as a RepeatingCallback itself as a
+  // task in a NearbyScheduler.
   void UploadCredentials(
       std::vector<::nearby::internal::SharedCredential> credentials,
       base::RepeatingCallback<void(bool)> upload_credentials_result_callback);
@@ -120,6 +127,30 @@ class NearbyPresenceCredentialManagerImpl
       const ash::nearby::proto::UpdateDeviceResponse& response);
   void OnUploadCredentialsFailure(
       base::RepeatingCallback<void(bool)> upload_credentials_callback,
+      ash::nearby::NearbyHttpError error);
+  void DownloadCredentials(
+      base::RepeatingCallback<
+          void(std::vector<::nearby::internal::SharedCredential>, bool)>
+          download_credentials_result_callback);
+  void HandleDownloadCredentialsResult(
+      base::RepeatingCallback<
+          void(std::vector<::nearby::internal::SharedCredential>, bool)>
+          download_credentials_result_callback,
+      bool success,
+      std::vector<::nearby::internal::SharedCredential> credentials);
+  void OnDownloadCredentialsTimeout(
+      base::RepeatingCallback<
+          void(std::vector<::nearby::internal::SharedCredential>, bool)>
+          download_credentials_result_callback);
+  void OnDownloadCredentialsSuccess(
+      base::RepeatingCallback<
+          void(std::vector<::nearby::internal::SharedCredential>, bool)>
+          download_credentials_result_callback,
+      const ash::nearby::proto::ListPublicCertificatesResponse& response);
+  void OnDownloadCredentialsFailure(
+      base::RepeatingCallback<
+          void(std::vector<::nearby::internal::SharedCredential>, bool)>
+          download_credentials_result_callback,
       ash::nearby::NearbyHttpError error);
 
   // Constructed per RPC request, and destroyed on RPC response (server
@@ -144,6 +175,8 @@ class NearbyPresenceCredentialManagerImpl
       first_time_registration_on_demand_scheduler_;
   std::unique_ptr<ash::nearby::NearbyScheduler>
       first_time_upload_on_demand_scheduler_;
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      first_time_download_on_demand_scheduler_;
 
   // Callback to return the result of the first time registration. Not
   // guaranteed to be a valid callback, as this is set only during first time

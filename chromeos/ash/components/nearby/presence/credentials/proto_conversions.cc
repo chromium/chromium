@@ -141,4 +141,42 @@ int64_t MillisecondsToSeconds(int64_t milliseconds) {
   return milliseconds / 1000.0;
 }
 
+::nearby::internal::SharedCredential PublicCertificateToSharedCredential(
+    ash::nearby::proto::PublicCertificate certificate) {
+  ::nearby::internal::SharedCredential shared_credential;
+  shared_credential.set_secret_id(certificate.secret_id());
+  shared_credential.set_key_seed(certificate.secret_key());
+  shared_credential.set_connection_signature_verification_key(
+      certificate.public_key());
+  shared_credential.set_start_time_millis(
+      SecondsToMilliseconds(certificate.start_time().seconds()));
+  shared_credential.set_end_time_millis(
+      SecondsToMilliseconds(certificate.end_time().seconds()));
+  shared_credential.set_encrypted_metadata_bytes_v0(
+      certificate.encrypted_metadata_bytes());
+  shared_credential.set_metadata_encryption_key_unsigned_adv_tag(
+      certificate.metadata_encryption_key_tag());
+  shared_credential.set_identity_type(
+      TrustTypeToIdentityType(certificate.trust_type()));
+  return shared_credential;
+}
+
+::nearby::internal::IdentityType TrustTypeToIdentityType(
+    ash::nearby::proto::TrustType trust_type) {
+  switch (trust_type) {
+    case ash::nearby::proto::TrustType::TRUST_TYPE_UNSPECIFIED:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
+    case ash::nearby::proto::TrustType::TRUST_TYPE_PRIVATE:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
+    case ash::nearby::proto::TrustType::TRUST_TYPE_TRUSTED:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+    default:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
+  }
+}
+
+int64_t SecondsToMilliseconds(int64_t seconds) {
+  return seconds * 1000.0;
+}
+
 }  // namespace ash::nearby::presence

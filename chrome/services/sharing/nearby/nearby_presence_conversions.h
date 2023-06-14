@@ -14,12 +14,10 @@ namespace ash::nearby::presence {
 
 ::nearby::internal::DeviceType DeviceTypeFromMojom(
     mojom::PresenceDeviceType device_type);
-
 ::nearby::internal::Metadata MetadataFromMojom(mojom::Metadata* metadata);
 
 mojom::IdentityType IdentityTypeToMojom(
     ::nearby::internal::IdentityType identity_type);
-
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential);
 

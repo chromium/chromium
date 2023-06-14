@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
+#include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/prefs/pref_service.h"
@@ -104,6 +105,7 @@ void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
   //      2. Generate this device's credentials.
   //      3. Upload this device's credentials.
   //      4. Download other devices' credentials.
+  //      5. Save other devices' credentials.
 
   // Construct a request for first time registration to let the server know
   // to return the user's name and image url.
@@ -170,11 +172,12 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
       /*display_name=*/response.person_name(),
       /*image_url=*/response.image_url());
 
-  // We've completed the 1st of 4 steps of first time registration:
+  // We've completed the 1st of 5 steps of first time registration:
   //   -> 1. Register this device with the server.
   //      2. Generate this device's credentials.
   //      3. Upload this device's credentials.
   //      4. Download other devices' credentials.
+  //      5. Save other devices' credentials.
   // Next, kick off Step 2.
   nearby_presence_->UpdateLocalDeviceMetadataAndGenerateCredentials(
       MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()),
@@ -211,11 +214,12 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
   local_device_data_provider_->UpdatePersistedSharedCredentials(
       proto_shared_credentials);
 
-  // We've completed the 2nd of 4 steps of first time registration:
+  // We've completed the 2nd of 5 steps of first time registration:
   //      1. Register this device with the server.
   //   -> 2. Generate this device's credentials.
   //      3. Upload this device's credentials.
   //      4. Download other devices' credentials.
+  //      5. Save other devices' credentials.
   // Next, kick off Step 3.
   ScheduleUploadCredentials(proto_shared_credentials);
 }
@@ -233,14 +237,14 @@ void NearbyPresenceCredentialManagerImpl::ScheduleUploadCredentials(
               &NearbyPresenceCredentialManagerImpl::UploadCredentials,
               weak_ptr_factory_.GetWeakPtr(), proto_shared_credentials,
               base::BindRepeating(&NearbyPresenceCredentialManagerImpl::
-                                      OnFirstTimeCredentialUpload,
+                                      OnFirstTimeCredentialsUpload,
                                   weak_ptr_factory_.GetWeakPtr())),
           base::DefaultClock::GetInstance());
   first_time_upload_on_demand_scheduler_->Start();
   first_time_upload_on_demand_scheduler_->MakeImmediateRequest();
 }
 
-void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialUpload(
+void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsUpload(
     bool success) {
   CHECK(first_time_upload_on_demand_scheduler_);
   if (!success) {
@@ -265,17 +269,74 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialUpload(
   first_time_upload_on_demand_scheduler_->HandleResult(/*success=*/true);
   first_time_upload_on_demand_scheduler_.reset();
 
-  // TODO(b/276307539): Currently first time registration is considered
-  // successful on the successful upload of generated credentials, however this
-  // is not fully complete. Next, the CredentialManager needs to download the
-  // credentials before executing the success callback.
-  //
-  // We've completed the 3rd of 4 steps of first time registration:
+  // We've completed the 3rd of 5 steps of first time registration:
   //      1. Register this device with the server.
   //      2. Generate this device's credentials.
   //   -> 3. Upload this device's credentials.
   //      4. Download other devices' credentials.
+  //      5. Save other devices' credentials.
   // Next, kick off Step 4.
+  ScheduleDownloadCredentials();
+}
+
+void NearbyPresenceCredentialManagerImpl::ScheduleDownloadCredentials() {
+  // Next, to complete first time registration, the CredentialManager needs to
+  // download the remote devices' shared credentials and save them to the
+  // Nearby library.
+  first_time_download_on_demand_scheduler_ =
+      ash::nearby::NearbySchedulerFactory::CreateOnDemandScheduler(
+          /*retry_failures=*/true,
+          /*require_connectivity=*/true,
+          prefs::kNearbyPresenceSchedulingFirstTimeDownloadPrefName,
+          pref_service_,
+          base::BindRepeating(
+              &NearbyPresenceCredentialManagerImpl::DownloadCredentials,
+              weak_ptr_factory_.GetWeakPtr(),
+              base::BindRepeating(&NearbyPresenceCredentialManagerImpl::
+                                      OnFirstTimeCredentialsDownload,
+                                  weak_ptr_factory_.GetWeakPtr())),
+          base::DefaultClock::GetInstance());
+  first_time_download_on_demand_scheduler_->Start();
+  first_time_download_on_demand_scheduler_->MakeImmediateRequest();
+}
+
+void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
+    std::vector<::nearby::internal::SharedCredential> credentials,
+    bool success) {
+  CHECK(first_time_download_on_demand_scheduler_);
+  if (!success) {
+    // Allow the scheduler to exponentially attempt uploading credentials
+    // until the max. Once it reaches the max attempts, notify consumers of
+    // failure.
+    if (first_time_download_on_demand_scheduler_->GetNumConsecutiveFailures() <
+        kServerCommunicationMaxAttempts) {
+      first_time_download_on_demand_scheduler_->HandleResult(
+          /*success=*/false);
+      return;
+    }
+
+    // We've exceeded the max attempts; registration has failed.
+    first_time_download_on_demand_scheduler_->Stop();
+    first_time_download_on_demand_scheduler_.reset();
+    CHECK(on_registered_callback_);
+    std::move(on_registered_callback_).Run(/*success=*/false);
+    return;
+  }
+
+  first_time_download_on_demand_scheduler_->HandleResult(/*success=*/true);
+  first_time_download_on_demand_scheduler_.reset();
+
+  // TODO(b/276307539): Currently first time registration is considered
+  // successful on the successful download of remote credentials, however this
+  // is not fully complete. Next, the CredentialManager needs to save the
+  // download credentials to the NP library over the mojo pipe.
+  //
+  // We've completed the 4th of 5 steps for first time registration.
+  //      1. Register this device with the server.
+  //      2. Generate this device's credentials.
+  //      3. Upload this device's credentials.
+  //   -> 4. Download other devices' credentials.
+  //      5. Save other devices' credentials.
   CHECK(on_registered_callback_);
   std::move(on_registered_callback_).Run(/*success=*/true);
 }
@@ -304,6 +365,7 @@ void NearbyPresenceCredentialManagerImpl::UploadCredentials(
 
   // Construct a HTTP client for the request. The HTTP client lifetime is
   // tied to a single request.
+  CHECK(!server_client_);
   server_client_ = NearbyPresenceServerClientImpl::Factory::Create(
       std::make_unique<ash::nearby::NearbyApiCallFlowImpl>(), identity_manager_,
       url_loader_factory_);
@@ -354,6 +416,89 @@ void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsFailure(
   server_response_timer_.Stop();
   HandleUploadCredentialsResult(upload_credentials_callback,
                                 /*success=*/false);
+}
+
+void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
+    base::RepeatingCallback<
+        void(std::vector<::nearby::internal::SharedCredential>, bool)>
+        download_credentials_result_callback) {
+  ash::nearby::proto::ListPublicCertificatesRequest request;
+  request.set_parent(kDeviceIdPrefix +
+                     local_device_data_provider_->GetDeviceId());
+
+  server_response_timer_.Start(
+      FROM_HERE, kServerResponseTimeout,
+      base::BindOnce(
+          &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsTimeout,
+          weak_ptr_factory_.GetWeakPtr(),
+          download_credentials_result_callback));
+
+  // Construct a HTTP client for the request. The HTTP client lifetime is
+  // tied to a single request.
+  CHECK(!server_client_);
+  server_client_ = NearbyPresenceServerClientImpl::Factory::Create(
+      std::make_unique<ash::nearby::NearbyApiCallFlowImpl>(), identity_manager_,
+      url_loader_factory_);
+  server_client_->ListPublicCertificates(
+      request,
+      base::BindOnce(
+          &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess,
+          weak_ptr_factory_.GetWeakPtr(), download_credentials_result_callback),
+      base::BindOnce(
+          &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure,
+          weak_ptr_factory_.GetWeakPtr(),
+          download_credentials_result_callback));
+}
+
+void NearbyPresenceCredentialManagerImpl::HandleDownloadCredentialsResult(
+    base::RepeatingCallback<
+        void(std::vector<::nearby::internal::SharedCredential>, bool)>
+        download_credentials_result_callback,
+    bool success,
+    std::vector<::nearby::internal::SharedCredential> credentials) {
+  // TODO(b/276307539): Add metrics to record failures.
+  server_client_.reset();
+  CHECK(download_credentials_result_callback);
+  download_credentials_result_callback.Run(/*remote_credentials=*/credentials,
+                                           /*success=*/success);
+}
+
+void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsTimeout(
+    base::RepeatingCallback<
+        void(std::vector<::nearby::internal::SharedCredential>, bool)>
+        download_credentials_result_callback) {
+  // TODO(b/276307539): Add metrics to record timeout.
+  HandleDownloadCredentialsResult(download_credentials_result_callback,
+                                  /*success=*/false, /*credentials=*/{});
+}
+
+void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
+    base::RepeatingCallback<
+        void(std::vector<::nearby::internal::SharedCredential>, bool)>
+        download_credentials_result_callback,
+    const ash::nearby::proto::ListPublicCertificatesResponse& response) {
+  server_response_timer_.Stop();
+
+  std::vector<::nearby::internal::SharedCredential> remote_credentials;
+  for (auto public_certificate : response.public_certificates()) {
+    remote_credentials.push_back(
+        PublicCertificateToSharedCredential(public_certificate));
+  }
+
+  HandleDownloadCredentialsResult(download_credentials_result_callback,
+                                  /*success=*/true,
+                                  /*credentials=*/remote_credentials);
+}
+
+void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure(
+    base::RepeatingCallback<
+        void(std::vector<::nearby::internal::SharedCredential>, bool)>
+        download_credentials_result_callback,
+    ash::nearby::NearbyHttpError error) {
+  // TODO(b/276307539): Add metrics to record the type of NearbyHttpError.
+  server_response_timer_.Stop();
+  HandleDownloadCredentialsResult(download_credentials_result_callback,
+                                  /*success=*/false, /*credentials=*/{});
 }
 
 }  // namespace ash::nearby::presence
