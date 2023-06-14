@@ -38,6 +38,7 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
 
   // FrameNodeObserver:
   void OnFrameNodeInitializing(const FrameNode* frame_node) override;
+  void OnIsCurrentChanged(const FrameNode* frame_node) override;
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
 };
 
