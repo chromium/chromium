@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,6 +31,9 @@
 #include "ui/views/vector_icons.h"
 
 namespace {
+
+// 7.5 rows * 60 px per row = 450;
+constexpr int kMaxHeightForRowList = 450;
 
 bool IsOtrInfoRowEnabled(Browser* browser) {
   if (!browser) {
@@ -64,10 +68,22 @@ void DownloadBubblePrimaryView::BuildAndAddScrollView(
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> models,
     int fixed_width) {
-  // TODO(crbug.com/1450660): Actually construct the ScrollView here.
-  scroll_view_ = AddChildView(DownloadBubbleRowListView::CreateWithScroll(
-      std::move(browser), std::move(bubble_controller),
-      std::move(navigation_handler), std::move(models), fixed_width));
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
+  row_list_view_ = row_list_view.get();
+  for (DownloadUIModel::DownloadUIModelPtr& model : models) {
+    // raw pointer for `row_list_view_` is safe as the row list view
+    // owns an individual row view. Note we need to copy rather than move
+    // the WeakPtrs so that each row view gets a valid pointer.
+    row_list_view_->AddRow(std::make_unique<DownloadBubbleRowView>(
+        std::move(model), row_list_view_, bubble_controller, navigation_handler,
+        browser, fixed_width));
+  }
+
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view_->SetContents(std::move(row_list_view));
+  scroll_view_->ClipHeightTo(0, kMaxHeightForRowList);
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
 }
 
 void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {

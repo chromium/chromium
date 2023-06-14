@@ -13,6 +13,7 @@
 
 class Browser;
 class DownloadBubbleNavigationHandler;
+class DownloadBubbleRowListView;
 class DownloadBubbleUIController;
 
 namespace views {
@@ -56,8 +57,9 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
  private:
   // The ScrollView holding the DownloadBubbleRowListView with the download
   // rows.
-  // TODO(crbug.com/1450660): Keep track of info about rows and offsets.
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  // The contents contained in the above `scroll_view_`.
+  raw_ptr<DownloadBubbleRowListView> row_list_view_ = nullptr;
 
   // Time when this view was created, for metrics.
   base::Time creation_time_;

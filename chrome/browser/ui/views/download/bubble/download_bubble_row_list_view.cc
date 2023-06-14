@@ -4,45 +4,15 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
+#include "components/offline_items_collection/core/offline_item.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
-namespace {
-
-// 7.5 rows * 60 px per row = 450;
-constexpr int kMaxHeightForRowList = 450;
-
-}  // namespace
-
-//  static
-std::unique_ptr<views::ScrollView> DownloadBubbleRowListView::CreateWithScroll(
-    base::WeakPtr<Browser> browser,
-    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
-    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    int fixed_width) {
-  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
-  for (DownloadUIModel::DownloadUIModelPtr& model : rows) {
-    // raw pointer for `row_list_view` is safe as the toolbar owns the bubble,
-    // which owns an individual row view. Note we need to copy rather than move
-    // the WeakPtrs so that each row view gets a valid pointer.
-    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), bubble_controller,
-        navigation_handler, browser, fixed_width));
-  }
-
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetContents(std::move(row_list_view));
-  scroll_view->ClipHeightTo(0, kMaxHeightForRowList);
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kEnabled);
-  return scroll_view;
-}
+using offline_items_collection::ContentId;
 
 DownloadBubbleRowListView::DownloadBubbleRowListView() {
   SetOrientation(views::LayoutOrientation::kVertical);
@@ -50,6 +20,34 @@ DownloadBubbleRowListView::DownloadBubbleRowListView() {
 }
 
 DownloadBubbleRowListView::~DownloadBubbleRowListView() = default;
+
+void DownloadBubbleRowListView::AddRow(
+    std::unique_ptr<DownloadBubbleRowView> row) {
+  const ContentId& id = row->model()->GetContentId();
+  CHECK(!base::Contains(rows_by_id_, id));
+  auto* child = AddChildView(std::move(row));
+  rows_by_id_[id] = child;
+}
+
+std::unique_ptr<DownloadBubbleRowView> DownloadBubbleRowListView::RemoveRow(
+    DownloadBubbleRowView* row) {
+  // We can't remove the row by ContentId here, because by this point the model
+  // has nulled out the DownloadItem* and we can no longer retrieve the proper
+  // ContentId from `row->model()`.
+  for (auto it = rows_by_id_.begin(); it != rows_by_id_.end(); ++it) {
+    if (it->second == row) {
+      rows_by_id_.erase(it);
+      break;
+    }
+  }
+  return RemoveChildViewT(row);
+}
+
+size_t DownloadBubbleRowListView::NumRows() const {
+  size_t num_rows = children().size();
+  CHECK_EQ(num_rows, rows_by_id_.size());
+  return num_rows;
+}
 
 BEGIN_METADATA(DownloadBubbleRowListView, views::FlexLayoutView)
 END_METADATA

@@ -830,8 +830,8 @@ void DownloadBubbleRowView::OnDownloadDestroyed(const ContentId& id) {
   // This will return ownership and destroy this object at the end of the
   // method.
   std::unique_ptr<DownloadBubbleRowView> row_view_ptr =
-      row_list_view_->RemoveChildViewT(this);
-  if (row_list_view_->children().empty()) {
+      row_list_view_->RemoveRow(this);
+  if (row_list_view_->NumRows() == 0) {
     navigation_handler_->CloseDialog(views::Widget::ClosedReason::kUnspecified);
   } else {
     navigation_handler_->ResizeDialog();
