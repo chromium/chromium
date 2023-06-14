@@ -376,14 +376,63 @@ class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFOOPIFBrowserTest);
 
-class HeadlessPDFTinyPageBrowserTest : public HeadlessPDFBrowserTestBase {
+class HeadlessPDFTinyPageBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public testing::WithParamInterface<gfx::SizeF> {
  public:
   const char* GetUrl() override { return "/hello.html"; }
 
   base::Value::Dict GetPrintToPDFParams() override {
+    // This tests that we can print into tiny pages as some WPT
+    // tests expect that.
+    base::Value::Dict params;
+    params.Set("paperHeight", paper_height());
+    params.Set("paperWidth", paper_width());
+    params.Set("marginTop", 0);
+    params.Set("marginBottom", 0);
+    params.Set("marginLeft", 0);
+    params.Set("marginRight", 0);
+
+    return params;
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_GT(num_pages, 0);
+  }
+
+  void OnPDFFailure(int code, const std::string& message) override {
+    ADD_FAILURE() << "code=" << code << " message: " << message
+                  << " paper size: " << paper_size().ToString();
+  }
+
+  gfx::SizeF paper_size() const { return GetParam(); }
+  float paper_height() const { return paper_size().height(); }
+  float paper_width() const { return paper_size().width(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessPDFTinyPageBrowserTest,
+                         testing::Values(gfx::SizeF(0.1, 0.1),
+                                         gfx::SizeF(0.01, 0.01),
+                                         gfx::SizeF(0.001, 0.001)));
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessPDFTinyPageBrowserTest);
+
+class HeadlessPDFOversizeMarginsBrowserTest
+    : public HeadlessPDFBrowserTestBase {
+ public:
+  const char* GetUrl() override { return "/hello.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    // Set paper size to be smaller than the margins and expect content size
+    // error.
     base::Value::Dict params;
     params.Set("paperHeight", 0.1);
     params.Set("paperWidth", 0.1);
+    params.Set("marginTop", 0.2);
+    params.Set("marginBottom", 0.2);
+    params.Set("marginLeft", 0.2);
+    params.Set("marginRight", 0.2);
 
     return params;
   }
@@ -396,11 +445,12 @@ class HeadlessPDFTinyPageBrowserTest : public HeadlessPDFBrowserTestBase {
     EXPECT_THAT(
         code,
         testing::Eq(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
-    EXPECT_THAT(message, testing::Eq("invalid print parameters"));
+    EXPECT_THAT(message,
+                testing::Eq("invalid print parameters: content area is empty"));
   }
 };
 
-HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFTinyPageBrowserTest);
+HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFOversizeMarginsBrowserTest);
 
 class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
  public:

@@ -154,7 +154,7 @@ GetPrintPagesParams(const GURL& page_url,
   if (paper_height_in_inches <= 0)
     return "paper height is zero or negative";
 
-  gfx::Size paper_size_in_points = gfx::ToRoundedSize(
+  gfx::Size paper_size_in_points = gfx::ToCeiledSize(
       gfx::SizeF(paper_width_in_inches * printing::kPointsPerInch,
                  paper_height_in_inches * printing::kPointsPerInch));
   gfx::Rect printable_area_device_units(paper_size_in_points);
@@ -174,6 +174,17 @@ GetPrintPagesParams(const GURL& page_url,
       base::UTF8ToUTF16(footer_template.value_or(""));
   print_pages_params->params->prefer_css_page_size =
       prefer_css_page_size.value_or(false);
+
+  CHECK(!print_pages_params->params->page_size.IsEmpty())
+      << print_pages_params->params->page_size.ToString();
+
+  if (print_pages_params->params->printable_area.IsEmpty()) {
+    return "invalid print parameters: printable area is empty";
+  }
+
+  if (print_pages_params->params->content_size.IsEmpty()) {
+    return "invalid print parameters: content area is empty";
+  }
 
   if (!printing::PrintMsgPrintParamsIsValid(*print_pages_params->params)) {
     return "invalid print parameters";
