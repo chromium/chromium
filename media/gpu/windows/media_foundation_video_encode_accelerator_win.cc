@@ -2021,7 +2021,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
 
 HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,
                                                              DWORD* pdwQueue) {
-  return MFASYNC_FAST_IO_PROCESSING_CALLBACK;
+  *pdwFlags = MFASYNC_FAST_IO_PROCESSING_CALLBACK;
+  *pdwQueue = MFASYNC_CALLBACK_QUEUE_TIMER;
+  return S_OK;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::Invoke(
