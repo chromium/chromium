@@ -12,8 +12,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/login/login_screen_controller.h"
+#include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -80,6 +83,7 @@ class ASH_EXPORT WallpaperControllerImpl
     : public WallpaperController,
       public WindowTreeHostManager::Observer,
       public ShellObserver,
+      public LoginDataDispatcher::Observer,
       public SessionObserver,
       public TabletModeObserver,
       public OverviewObserver,
@@ -332,6 +336,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnRootWindowAdded(aura::Window* root_window) override;
   void OnShellInitialized() override;
   void OnShellDestroying() override;
+
+  // LoginDataDispatcher::Observer:
+  void OnOobeDialogStateChanged(OobeDialogState state) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
@@ -788,6 +795,8 @@ class ASH_EXPORT WallpaperControllerImpl
                                              const WallpaperInfo& info);
 
   bool is_session_active_ = false;
+
+  OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 
   WallpaperMode wallpaper_mode_ = WALLPAPER_NONE;
 

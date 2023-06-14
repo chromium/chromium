@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -504,6 +505,7 @@ WallpaperControllerImpl::WallpaperControllerImpl(
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
+  Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   wallpaper_metrics_manager_ = std::make_unique<WallpaperMetricsManager>();
 }
@@ -511,6 +513,9 @@ WallpaperControllerImpl::WallpaperControllerImpl(
 WallpaperControllerImpl::~WallpaperControllerImpl() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
+  // Per ash/shell.cc, wallpaper_controller_impl outlives
+  // login_screen_controller. Therefore don't remove the observer from
+  // data_dispatcher on destruction.
 }
 
 // static
@@ -1670,6 +1675,10 @@ void WallpaperControllerImpl::OnActiveUserSessionChanged(
     CheckGooglePhotosStaleness(account_id, info);
 }
 
+void WallpaperControllerImpl::OnOobeDialogStateChanged(OobeDialogState state) {
+  oobe_state_ = state;
+}
+
 void WallpaperControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
   // Replace the device policy wallpaper with a user wallpaper if necessary.
@@ -2728,12 +2737,28 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
 }
 
 bool WallpaperControllerImpl::ShouldCalculateColors() const {
+  gfx::ImageSkia image = GetWallpaper();
+  if (image.isNull()) {
+    return false;
+  }
+
   session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
-  gfx::ImageSkia image = GetWallpaper();
-  return (session_state == session_manager::SessionState::ACTIVE ||
-          session_state == session_manager::SessionState::OOBE) &&
-         !image.isNull();
+  // Default OOBE flow
+  if (session_state == session_manager::SessionState::OOBE) {
+    return true;
+  }
+  // OOBE enterprise enrollment -> add person flow
+  if (session_state == session_manager::SessionState::LOGIN_PRIMARY &&
+      oobe_state_ != OobeDialogState::HIDDEN) {
+    return true;
+  }
+  // Active session
+  if (session_state == session_manager::SessionState::ACTIVE) {
+    return true;
+  }
+
+  return false;
 }
 
 void WallpaperControllerImpl::OnOverrideWallpaperDecoded(

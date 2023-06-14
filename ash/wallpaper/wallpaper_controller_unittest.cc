@@ -1027,6 +1027,8 @@ TEST_F(WallpaperControllerTest, ShouldCalculateColorsBasedOnImage) {
 
 TEST_F(WallpaperControllerTest, ShouldCalculateColorsBasedOnSessionState) {
   EnableShelfColoring();
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
+      OobeDialogState::HIDDEN);
 
   SetSessionState(SessionState::UNKNOWN);
   EXPECT_FALSE(ShouldCalculateColors());
@@ -1048,6 +1050,20 @@ TEST_F(WallpaperControllerTest, ShouldCalculateColorsBasedOnSessionState) {
 
   SetSessionState(SessionState::LOGIN_SECONDARY);
   EXPECT_FALSE(ShouldCalculateColors());
+}
+
+TEST_F(WallpaperControllerTest, ShouldCalculateColorsBasedOnLoginDisplayState) {
+  EnableShelfColoring();
+  SetSessionState(SessionState::LOGIN_PRIMARY);
+
+  // Cover login screen
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
+      OobeDialogState::HIDDEN);
+  EXPECT_FALSE(ShouldCalculateColors());
+  // Cover OOBE enterprise enrollment flow
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
+      OobeDialogState::GAIA_SIGNIN);
+  EXPECT_TRUE(ShouldCalculateColors());
 }
 
 TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
