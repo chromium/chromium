@@ -17,3 +17,6 @@ NSString* const kWhatsNewDaysAfterFre = @"whatsNewDaysAfterFre";
 NSString* const kWhatsNewLaunchesAfterFre = @"whatsNewLaunchesAfterFre";
 
 NSString* const kWhatsNewUsageEntryKey = @"userHasInteractedWithWhatsNew";
+
+NSString* const kWhatsNewM116UsageEntryKey =
+    @"userHasInteractedWithWhatsNewM116";

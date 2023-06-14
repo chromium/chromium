@@ -20,4 +20,8 @@ extern NSString* const kWhatsNewLaunchesAfterFre;
 // menu.
 extern NSString* const kWhatsNewUsageEntryKey;
 
+// Key to store whether a user interacted with What's New M116 from the overflow
+// menu.
+extern NSString* const kWhatsNewM116UsageEntryKey;
+
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_CONSTANTS_H_

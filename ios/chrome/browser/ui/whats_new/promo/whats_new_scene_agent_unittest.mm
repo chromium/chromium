@@ -48,6 +48,8 @@ void ClearWhatsNewUserData() {
       removeObjectForKey:kWhatsNewPromoRegistrationKey];
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kWhatsNewUsageEntryKey];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewM116UsageEntryKey];
 }
 
 }  // namespace

@@ -26,6 +26,9 @@ extern NSString* const kWhatsNewLaunchesAfterFre;
 // menu.
 extern NSString* const kWhatsNewUsageEntryKey;
 
+// Key to store whether a user interacted with What's New M116.
+extern NSString* const kWhatsNewM116UsageEntryKey;
+
 // Returns whether What's New was used in the overflow menu. This is used to
 // decide on the location of the What's New entry point in the overflow menu.
 bool WasWhatsNewUsed();

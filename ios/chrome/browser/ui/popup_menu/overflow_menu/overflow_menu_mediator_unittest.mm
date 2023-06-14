@@ -107,6 +107,8 @@ constexpr syncer::SyncService::UserActionableError
 void CleanupNSUserDefaults() {
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kWhatsNewUsageEntryKey];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewM116UsageEntryKey];
 }
 
 }  // namespace

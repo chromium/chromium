@@ -70,6 +70,14 @@ BASE_FEATURE(kWhatsNewIOSM116,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool WasWhatsNewUsed() {
+  if (IsWhatsNewM116Enabled()) {
+    // Remove the previous user defaults
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kWhatsNewUsageEntryKey];
+    return [[NSUserDefaults standardUserDefaults]
+        boolForKey:kWhatsNewM116UsageEntryKey];
+  }
+
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kWhatsNewUsageEntryKey];
 }
@@ -83,8 +91,13 @@ void SetWhatsNewUsed(PromosManager* promosManager) {
   DCHECK(promosManager);
   promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
 
-  [[NSUserDefaults standardUserDefaults] setBool:YES
-                                          forKey:kWhatsNewUsageEntryKey];
+  if (IsWhatsNewM116Enabled()) {
+    [[NSUserDefaults standardUserDefaults] setBool:YES
+                                            forKey:kWhatsNewM116UsageEntryKey];
+  } else {
+    [[NSUserDefaults standardUserDefaults] setBool:YES
+                                            forKey:kWhatsNewUsageEntryKey];
+  }
 }
 
 void setWhatsNewPromoRegistration() {
