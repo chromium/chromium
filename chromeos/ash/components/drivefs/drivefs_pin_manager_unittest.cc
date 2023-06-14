@@ -2411,14 +2411,20 @@ TEST_F(DriveFsPinManagerTest, SetOnlineAndBatteryOk) {
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
   EXPECT_TRUE(manager.is_online_);
 
-  manager.SetOnline(false);
-  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_FALSE(manager.is_online_);
-
   power_manager::BatterySaverModeState state;
   state.set_enabled(true);
   manager.BatterySaverModeStateChanged(state);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_FALSE(manager.is_battery_ok_);
+
+  manager.Start();
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  EXPECT_TRUE(manager.is_online_);
+  EXPECT_FALSE(manager.is_battery_ok_);
+
+  manager.Stop();
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_TRUE(manager.is_online_);
   EXPECT_FALSE(manager.is_battery_ok_);
 
   state.set_enabled(false);
