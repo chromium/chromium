@@ -670,3 +670,75 @@ testcase.fileTasksDlpRestricted = async () => {
   await remoteCall.waitForElement(
       appId, ['#tasks-menu:not([hidden]) cr-menu-item[disabled]:nth-child(3)']);
 };
+
+
+/**
+ * Tests that extraction works when the scoped file access delegate exists and
+ * correct output files are generated.
+ */
+testcase.zipExtractRestrictedArchiveCheckContent = async () => {
+  const entry = ENTRIES.zipArchive;
+
+  // Add entries to Downloads and setup the fake source URLs.
+  await addEntries(['local'], [entry]);
+  await sendTestMessage({
+    name: 'setGetFilesSourcesMock',
+    fileNames: [entry.nameText],
+    sourceUrls: ['https://blocked.com'],
+  });
+
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
+
+  // Setup the scoped file access delegate.
+  await sendTestMessage({name: 'setupScopedFileAccessDelegateAllowed'});
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Wait for the DLP managed icon to be shown.
+  await remoteCall.waitForElementsCount(
+      appId, ['#file-list .dlp-managed-icon'], 1);
+
+  const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch',
+  });
+
+  // Select the file.
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
+
+  // Right-click the selected file.
+  await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Click the 'Extract all' menu command.
+  await remoteCall.waitAndClickElement(
+      appId, '[command="#extract-all"]:not([hidden])');
+
+  const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
+  // Check: the extract directory should appear.
+  await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Double click the created directory to open it.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseDoubleClick', appId, [directoryQuery]),
+      'fakeMouseDoubleClick failed');
+
+  // Check: File content in the ZIP should appear.
+  await remoteCall.waitForFiles(
+      appId,
+      [
+        ['folder', '--', 'Folder'],
+        ['text.txt', '--', 'Plain text'],
+        ['image.png', '--', 'PNG image'],
+      ],
+      {ignoreFileSize: true, ignoreLastModifiedTime: true});
+};

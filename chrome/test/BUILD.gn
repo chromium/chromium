@@ -3477,6 +3477,7 @@ if (!is_android) {
           "//chrome/browser/chromeos/extensions/wm",
           "//chrome/browser/error_reporting:test_support",
           "//chromeos/dbus/dlp:dlp",
+          "//components/file_access:test_support",
         ]
 
         data += [

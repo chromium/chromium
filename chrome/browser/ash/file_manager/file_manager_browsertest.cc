@@ -43,6 +43,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -620,6 +621,18 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
               ::testing::Return(policy::DlpRulesManager::Level::kBlock));
       return true;
     }
+    if (name == "setupScopedFileAccessDelegateAllowed") {
+      scoped_file_access_delegate_ =
+          std::make_unique<file_access::MockScopedFileAccessDelegate>();
+      EXPECT_CALL(*scoped_file_access_delegate_, RequestFilesAccessForSystem)
+          .WillOnce([](const std::vector<base::FilePath>& paths,
+                       base::OnceCallback<void(file_access::ScopedFileAccess)>
+                           callback) {
+            std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+          });
+
+      return true;
+    }
     return false;
   }
 
@@ -627,6 +640,9 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
   // this class.
   raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
       nullptr;
+
+  std::unique_ptr<file_access::MockScopedFileAccessDelegate>
+      scoped_file_access_delegate_;
 
  private:
   std::unique_ptr<KeyedService> SetDlpRulesManager(
@@ -1701,7 +1717,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp(),
         TestCase("openFolderDlpRestricted").EnableDlp(),
-        TestCase("fileTasksDlpRestricted").EnableDlp()));
+        TestCase("fileTasksDlpRestricted").EnableDlp(),
+        TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */
