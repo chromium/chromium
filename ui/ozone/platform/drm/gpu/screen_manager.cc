@@ -265,7 +265,8 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
   }
 
   controllers_.push_back(std::make_unique<HardwareDisplayController>(
-      std::make_unique<CrtcController>(drm, crtc, connector), gfx::Point()));
+      std::make_unique<CrtcController>(drm, crtc, connector), gfx::Point(),
+      drm_modifiers_filter_.get()));
 }
 
 void ScreenManager::RemoveDisplayControllers(
@@ -653,7 +654,8 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
   // restore mirror mode.
   if (controller->IsMirrored()) {
     controllers_.push_back(std::make_unique<HardwareDisplayController>(
-        controller->RemoveCrtc(drm, crtc), controller->origin()));
+        controller->RemoveCrtc(drm, crtc), controller->origin(),
+        drm_modifiers_filter_.get()));
     it = controllers_.end() - 1;
     controller = it->get();
   }
@@ -671,7 +673,8 @@ bool ScreenManager::SetDisableDisplayControllerForDisableAndGetProps(
     HardwareDisplayController* controller = it->get();
     if (controller->IsMirrored()) {
       controllers_.push_back(std::make_unique<HardwareDisplayController>(
-          controller->RemoveCrtc(drm, crtc), controller->origin()));
+          controller->RemoveCrtc(drm, crtc), controller->origin(),
+          drm_modifiers_filter_.get()));
       controller = controllers_.back().get();
     }
 
@@ -954,6 +957,12 @@ DrmWindow* ScreenManager::FindWindowAt(const gfx::Rect& bounds) const {
   }
 
   return nullptr;
+}
+
+void ScreenManager::SetDrmModifiersFilter(
+    std::unique_ptr<DrmModifiersFilter> filter) {
+  DCHECK(controllers_.empty());
+  drm_modifiers_filter_ = std::move(filter);
 }
 
 }  // namespace ui

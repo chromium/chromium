@@ -155,6 +155,15 @@ if (enable_vulkan) {
       ]
     }
 
+    if (use_ozone) {
+      sources += [
+        "drm_modifiers_filter_vulkan.cc",
+        "drm_modifiers_filter_vulkan.h",
+      ]
+
+      deps += [ "//ui/ozone:drm_modifiers_filter" ]
+    }
+
     if (is_fuchsia) {
       sources += [ "vulkan_image_fuchsia.cc" ]
 
@@ -247,6 +256,8 @@ if (enable_vulkan) {
       }
 
       if (use_ozone) {
+        sources += [ "drm_modifiers_filter_vulkan_unittest.cc" ]
+
         deps += [ "//ui/ozone" ]
       }
     }
