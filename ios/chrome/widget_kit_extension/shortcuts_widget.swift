@@ -168,7 +168,7 @@ struct ShortcutsWidgetEntryView: View {
 
   // Shows the widget with 4 shortcuts placeholder in the gallery view to respect user's privacy.
   public var websitesPlaceholder: some View {
-    HStack(spacing: 0.5) {
+    HStack(spacing: 3) {
       WebSitePlaceholder()
       SeparatorVertical()
       WebSitePlaceholder()
@@ -177,9 +177,7 @@ struct ShortcutsWidgetEntryView: View {
       SeparatorVertical()
       WebSitePlaceholder()
     }
-    .padding(.horizontal, Dimensions.placeholdersPadding)
     .frame(minWidth: 0, maxWidth: .infinity)
-    .padding([.leading, .trailing], Dimensions.iconsPadding)
   }
 
   // Shows the "No shortcuts available" text when the user's delete
@@ -252,8 +250,8 @@ struct ShortcutsWidgetEntryView: View {
           }
           Spacer()
         }.frame(minWidth: 0, maxWidth: .infinity)
-          .padding([.leading, .trailing], Dimensions.stackFramePadding)
       }
+      Spacer()
     }.background(Colors.widgetMostVisitedSitesRow)
   }
 }
@@ -269,7 +267,7 @@ extension NTPTile: Comparable {
 // Vertical `|` separator view between two shortcuts in a row of the Shortcuts widget.
 struct SeparatorVertical: View {
   enum Dimensions {
-    static let height: CGFloat = 40
+    static let height: CGFloat = 32
     static let width: CGFloat = 2
     static let cornerRadius: CGFloat = 1
   }
@@ -288,10 +286,13 @@ struct WebSitePlaceholder: View {
   enum Dimensions {
     static let placeholderSize: CGFloat = 28
   }
+  enum Colors {
+    static let widgetTextColor = Color("widget_text_color")
+  }
   var body: some View {
     Circle()
       .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
-      .foregroundColor(Color(.darkGray))
+      .foregroundColor(Colors.widgetTextColor)
       .opacity(0.2)
       .frame(minWidth: 0, maxWidth: .infinity)
   }
@@ -301,11 +302,13 @@ struct WebSitePlaceholder: View {
 struct WebsiteLogo: View {
   enum Dimensions {
     static let placeholderSize: CGFloat = 28
-    static let cornerRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 4
     static let fontSize: CGFloat = 15
   }
+
   enum Colors {
-    static let widgetTextColor: Color = Color("widget_text_color")
+    static let shortcutBackgroundColor = Color("widget_background_color")
+    static let shortcutTextColor = Color("widget_text_color")
   }
 
   let ntpTile: NTPTile
@@ -314,7 +317,7 @@ struct WebsiteLogo: View {
     if let backgroundColor = ntpTile.fallbackBackgroundColor {
       return Color(backgroundColor)
     } else {
-      return Color(.darkGray).opacity(0.3)
+      return Colors.shortcutBackgroundColor
     }
   }
   var fallbackMonogram: String {
@@ -324,7 +327,7 @@ struct WebsiteLogo: View {
     if let fallbackTextColor = ntpTile.fallbackTextColor {
       return Color(fallbackTextColor)
     } else {
-      return Colors.widgetTextColor
+      return Colors.shortcutTextColor
     }
   }
   var faviconImage: Image? {
@@ -343,7 +346,6 @@ struct WebsiteLogo: View {
     ZStack {
       RoundedRectangle(cornerRadius: Dimensions.cornerRadius, style: .continuous)
         .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
-        .foregroundColor(Color.white)
       faviconImage.resizable()
         .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
     }
@@ -354,22 +356,21 @@ struct WebsiteLogo: View {
       RoundedRectangle(cornerRadius: Dimensions.cornerRadius, style: .continuous)
         .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
         .foregroundColor(backgroundColor)
-        .frame(minWidth: 0, maxWidth: .infinity)
       monogramText
     }
   }
 
   var monogramText: some View {
     Text(verbatim: fallbackMonogram)
-      .font(.system(size: Dimensions.fontSize, weight: .bold))
-      .foregroundColor(Color.white)
+      .font(.system(size: Dimensions.fontSize))
+      .foregroundColor(fallbackTextColor)
   }
 
   var body: some View {
     if let faviconImage = faviconImage {
-      backgroundWithLogo(faviconImage: faviconImage)
+      backgroundWithLogo(faviconImage: faviconImage).cornerRadius(Dimensions.cornerRadius)
     } else {
-      monogramIcon
+      monogramIcon.cornerRadius(Dimensions.cornerRadius)
     }
   }
 }
