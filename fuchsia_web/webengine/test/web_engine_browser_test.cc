@@ -7,6 +7,8 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
+#include <lib/vfs/cpp/pseudo_dir.h>
+
 #include <vector>
 
 #include "base/command_line.h"

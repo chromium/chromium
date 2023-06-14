@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/runners/cast/test/fake_cast_agent.h"
 
+#include <lib/vfs/cpp/service.h>
+
 #include <memory>
 #include <utility>
 
