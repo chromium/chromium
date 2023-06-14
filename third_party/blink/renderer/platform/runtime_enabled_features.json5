@@ -1645,7 +1645,7 @@
       name: "FedCmLoginHint",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     {
@@ -1658,6 +1658,7 @@
       name: "FedCmRpContext",
       depends_on: ["FedCm"],
       public: true,
+      status: "stable",
       base_feature: "none",
     },
     {
@@ -1670,7 +1671,7 @@
       name: "FedCmUserInfo",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     {

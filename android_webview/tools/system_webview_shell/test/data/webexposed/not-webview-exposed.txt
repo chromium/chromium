@@ -242,6 +242,7 @@ interface FontData
 
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential
+interface IdentityProvider
 
 [GLOBAL OBJECT]
     method openDatabase
