@@ -481,10 +481,22 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowColor = '#0f0';
     ctx.shadowOffsetY = 50;
-    ctx.drawImage(document.getElementById('red.png'), 0, -50);
+    {{ load_image }}
+    ctx.drawImage(img, 0, -50);
 
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
+  variants: &load-image-variant-definition
+    _HtmlCanvas:
+      canvasType: ['HtmlCanvas']
+      load_image: var img = document.getElementById('{{ images[0] }}');
+    _OffscreenCanvas:
+      canvasType: ['OffscreenCanvas', 'Worker']
+      test_type: promise
+      load_image: |-
+        var response = await fetch('/images/{{ images[0] }}')
+        var blob = await response.blob();
+        var img = await createImageBitmap(blob);
 
 - name: 2d.shadow.image.transparent.1
   desc: Shadows are not drawn for transparent images
@@ -495,10 +507,12 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowColor = '#f00';
     ctx.shadowOffsetY = 50;
-    ctx.drawImage(document.getElementById('transparent.png'), 0, -50);
+    {{ load_image }}
+    ctx.drawImage(img, 0, -50);
 
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.image.transparent.2
   desc: Shadows are not drawn for transparent parts of images
@@ -511,14 +525,16 @@
     ctx.fillRect(50, 0, 50, 50);
     ctx.shadowOffsetY = 50;
     ctx.shadowColor = '#0f0';
-    ctx.drawImage(document.getElementById('redtransparent.png'), 50, -50);
+    {{ load_image }}
+    ctx.drawImage(img, 50, -50);
     ctx.shadowColor = '#f00';
-    ctx.drawImage(document.getElementById('redtransparent.png'), -50, -50);
+    ctx.drawImage(img, -50, -50);
 
     @assert pixel 25,25 == 0,255,0,255;
     @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 75,25 == 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.image.alpha
   desc: Shadows are drawn correctly for partially-transparent images
@@ -529,7 +545,8 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowOffsetY = 50;
     ctx.shadowColor = '#00f';
-    ctx.drawImage(document.getElementById('transparent50.png'), 0, -50);
+    {{ load_image }}
+    ctx.drawImage(img, 0, -50);
 
     @assert pixel 50,25 ==~ 127,0,127,255;
   expected: |
@@ -537,6 +554,7 @@
     cr.set_source_rgb(0.5, 0, 0.5)
     cr.rectangle(0, 0, 100, 50)
     cr.fill()
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.image.section
   desc: Shadows are not drawn for areas outside image source rectangles
@@ -547,12 +565,14 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowOffsetY = 50;
     ctx.shadowColor = '#f00';
-    ctx.drawImage(document.getElementById('redtransparent.png'), 50, 0, 50, 50, 0, -50, 50, 50);
+    {{ load_image }}
+    ctx.drawImage(img, 50, 0, 50, 50, 0, -50, 50, 50);
 
     @assert pixel 25,25 ==~ 0,255,0,255;
     @assert pixel 50,25 ==~ 0,255,0,255;
     @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.image.scale
   desc: Shadows are drawn correctly for scaled images
@@ -563,19 +583,19 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowOffsetY = 50;
     ctx.shadowColor = '#0f0';
-    ctx.drawImage(document.getElementById('redtransparent.png'), 0, 0, 100, 50, -10, -50, 240, 50);
+    {{ load_image }}
+    ctx.drawImage(img, 0, 0, 100, 50, -10, -50, 240, 50);
 
     @assert pixel 25,25 ==~ 0,255,0,255;
     @assert pixel 50,25 ==~ 0,255,0,255;
     @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.canvas.basic
   desc: Shadows are drawn for canvases
   code: |
-    var canvas2 = document.createElement('canvas');
-    canvas2.width = 100;
-    canvas2.height = 50;
+    {{ create_canvas2 }}
     var ctx2 = canvas2.getContext('2d');
     ctx2.fillStyle = '#f00';
     ctx2.fillRect(0, 0, 100, 50);
@@ -588,13 +608,22 @@
 
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
+  variants: &create-canvas2-variant-definition
+    _HtmlCanvas:
+      canvasType: ['HtmlCanvas']
+      create_canvas2: |-
+        var canvas2 = document.createElement('canvas');
+        canvas2.width = 100;
+        canvas2.height = 50;
+    _OffscreenCanvas:
+      canvasType: ['OffscreenCanvas', 'Worker']
+      create_canvas2: |-
+        var canvas2 = new OffscreenCanvas(100, 50);
 
 - name: 2d.shadow.canvas.transparent.1
   desc: Shadows are not drawn for transparent canvases
   code: |
-    var canvas2 = document.createElement('canvas');
-    canvas2.width = 100;
-    canvas2.height = 50;
+    {{ create_canvas2 }}
     var ctx2 = canvas2.getContext('2d');
 
     ctx.fillStyle = '#0f0';
@@ -605,13 +634,12 @@
 
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
+  variants: *create-canvas2-variant-definition
 
 - name: 2d.shadow.canvas.transparent.2
   desc: Shadows are not drawn for transparent parts of canvases
   code: |
-    var canvas2 = document.createElement('canvas');
-    canvas2.width = 100;
-    canvas2.height = 50;
+    {{ create_canvas2 }}
     var ctx2 = canvas2.getContext('2d');
     ctx2.fillStyle = '#f00';
     ctx2.fillRect(0, 0, 50, 50);
@@ -630,15 +658,12 @@
     @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 75,25 == 0,255,0,255;
   expected: green
+  variants: *create-canvas2-variant-definition
 
 - name: 2d.shadow.canvas.alpha
   desc: Shadows are drawn correctly for partially-transparent canvases
-  images:
-  - transparent50.png
   code: |
-    var canvas2 = document.createElement('canvas');
-    canvas2.width = 100;
-    canvas2.height = 50;
+    {{ create_canvas2 }}
     var ctx2 = canvas2.getContext('2d');
     ctx2.fillStyle = 'rgba(255, 0, 0, 0.5)';
     ctx2.fillRect(0, 0, 100, 50);
@@ -655,6 +680,7 @@
     cr.set_source_rgb(0.5, 0, 0.5)
     cr.rectangle(0, 0, 100, 50)
     cr.fill()
+  variants: *create-canvas2-variant-definition
 
 - name: 2d.shadow.pattern.basic
   desc: Shadows are drawn for fill patterns
@@ -662,7 +688,8 @@
   images:
   - red.png
   code: |
-    var pattern = ctx.createPattern(document.getElementById('red.png'), 'repeat');
+    {{ load_image }}
+    var pattern = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowColor = '#0f0';
@@ -672,6 +699,7 @@
 
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.pattern.transparent.1
   desc: Shadows are not drawn for transparent fill patterns
@@ -679,7 +707,8 @@
   images:
   - transparent.png
   code: |
-    var pattern = ctx.createPattern(document.getElementById('transparent.png'), 'repeat');
+    {{ load_image }}
+    var pattern = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowColor = '#f00';
@@ -689,6 +718,7 @@
 
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.pattern.transparent.2
   desc: Shadows are not drawn for transparent parts of fill patterns
@@ -696,7 +726,8 @@
   images:
   - redtransparent.png
   code: |
-    var pattern = ctx.createPattern(document.getElementById('redtransparent.png'), 'repeat');
+    {{ load_image }}
+    var pattern = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 50, 50);
     ctx.fillStyle = '#0f0';
@@ -710,6 +741,7 @@
     @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 75,25 == 0,255,0,255;
   expected: green
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.pattern.alpha
   desc: Shadows are drawn correctly for partially-transparent fill patterns
@@ -717,7 +749,8 @@
   images:
   - transparent50.png
   code: |
-    var pattern = ctx.createPattern(document.getElementById('transparent50.png'), 'repeat');
+    {{ load_image }}
+    var pattern = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowOffsetY = 50;
@@ -731,6 +764,7 @@
     cr.set_source_rgb(0.5, 0, 0.5)
     cr.rectangle(0, 0, 100, 50)
     cr.fill()
+  variants: *load-image-variant-definition
 
 - name: 2d.shadow.gradient.basic
   desc: Shadows are drawn for gradient fills
