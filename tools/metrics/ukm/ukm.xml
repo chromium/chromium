@@ -235,6 +235,21 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything.EmptyState">
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Recorded when an empty state is shown in Read Anything. The empty state is
+    shown whenever distillation fails. When this happens, the user can
+    &quot;select to distill&quot;, meaning they can manually select text in the
+    main web page they would like to see in reading mode.
+  </summary>
+  <metric name="TotalNumSelections">
+    <summary>
+      Total number of selections made.
+    </summary>
+  </metric>
+</event>
+
 <event name="Accessibility.Renderer">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>

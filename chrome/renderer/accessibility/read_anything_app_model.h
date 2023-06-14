@@ -18,6 +18,10 @@ class AXNode;
 class AXSerializableTree;
 }  // namespace ui
 
+namespace ukm {
+class MojoUkmRecorder;
+}
+
 // A class that holds state for the ReadAnythingAppController for the Read
 // Anything WebUI app.
 class ReadAnythingAppModel {
@@ -81,9 +85,7 @@ class ReadAnythingAppModel {
   void SetActiveTreeSelectable(bool active_tree_selectable) {
     active_tree_selectable_ = active_tree_selectable;
   }
-  void SetActiveUkmSourceId(ukm::SourceId source_id) {
-    active_ukm_source_id_ = source_id;
-  }
+  void SetActiveUkmSourceId(ukm::SourceId source_id);
 
   void SetActiveTreeId(ui::AXTreeID tree_id) { active_tree_id_ = tree_id; }
 
@@ -218,6 +220,13 @@ class ReadAnythingAppModel {
   bool requires_distillation_ = false;
   bool requires_post_process_selection_ = false;
   bool selection_from_action_ = false;
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+
+  // Used to keep track of how many selections were made for the
+  // active_ukm_source_id_. Only recorded during the select-to-distill flow
+  // (when the empty state page is shown).
+  int32_t num_selections_ = 0;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

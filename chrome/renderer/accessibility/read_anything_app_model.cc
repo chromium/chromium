@@ -8,14 +8,26 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "content/public/renderer/render_thread.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 
-ReadAnythingAppModel::ReadAnythingAppModel() = default;
-ReadAnythingAppModel::~ReadAnythingAppModel() = default;
+ReadAnythingAppModel::ReadAnythingAppModel() {
+  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  content::RenderThread::Get()->BindHostReceiver(
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
+}
+
+ReadAnythingAppModel::~ReadAnythingAppModel() {
+  SetActiveUkmSourceId(ukm::kInvalidSourceId);
+}
 
 void ReadAnythingAppModel::OnThemeChanged(
     read_anything::mojom::ReadAnythingThemePtr new_theme) {
@@ -81,6 +93,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     base::UmaHistogramEnumeration(
         string_constants::kEmptyStateHistogramName,
         ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
+    num_selections_++;
   }
 
   // If the main panel selection contains content outside of the distilled
@@ -406,6 +419,19 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     SetActiveUkmSourceId(ukm::kInvalidSourceId);
   }
   EraseTree(tree_id);
+}
+
+void ReadAnythingAppModel::SetActiveUkmSourceId(ukm::SourceId source_id) {
+  // Record the number of selections made on the current page if it was not
+  // distillable.
+  if (active_ukm_source_id_ != ukm::kInvalidSourceId &&
+      content_node_ids_.empty()) {
+    ukm::builders::Accessibility_ReadAnything_EmptyState(active_ukm_source_id_)
+        .SetTotalNumSelections(num_selections_)
+        .Record(ukm_recorder_.get());
+  }
+  num_selections_ = 0;
+  active_ukm_source_id_ = source_id;
 }
 
 ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
