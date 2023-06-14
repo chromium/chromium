@@ -25,6 +25,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
