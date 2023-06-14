@@ -335,8 +335,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Omnibox.AutocompleteClassifierClassifyTime" units="ms"
-    expires_after="2023-12-01">
+<histogram name="Omnibox.AutocompleteClassifierClassifyTime"
+    units="microseconds" expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -348,11 +348,16 @@ chromium-metrics-reviews@google.com.
 
     This is intended to measure some performance optimization features and be
     removed after.
+
+    This metric uses SCOPED_UMA_HISTOGRAM_TIMER_MICROS so clients without
+    high-resolution clocks will either a) be dropped, b) report 0 for very short
+    times, or c) be recorded as expected (depending on which comments you
+    believe ¯\_(ツ)_/¯).
   </summary>
 </histogram>
 
-<histogram name="Omnibox.AutocompletionTime.UpdateResult{Slice}" units="ms"
-    expires_after="2023-12-01">
+<histogram name="Omnibox.AutocompletionTime.UpdateResult{Slice}"
+    units="microseconds" expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -379,15 +384,29 @@ chromium-metrics-reviews@google.com.
     implementation of `UpdateResult()`.
 
     {Slice}
+
+    This metric uses SCOPED_UMA_HISTOGRAM_TIMER_MICROS so clients without
+    high-resolution clocks will either a) be dropped, b) report 0 for very short
+    times, or c) be recorded as expected (depending on which comments you
+    believe ¯\_(ツ)_/¯).
   </summary>
   <token key="Slice">
     <variant name=""/>
+    <variant name=".DeduplicateMatches"
+        summary="The '.DeduplicateMatches' slice measures the time
+                 `AutocompleteResult::DeduplicateMatches()` took. When ML
+                 ranking is enabled, this can include async calls that aren't
+                 included in the unsliced metric. Otherwise, it's a subset of
+                 both the unsliced metric and the sliced '.SortAndCull'
+                 metric and is called exactly once per `SortAndCull()` call."/>
     <variant name=".SortAndCull"
         summary="The '.SortAndCull' slice measures the time
-                 `AutocompleteResult::SortAndCull()` took. This is invoked
-                 only from `AutocompleteController::UpdateResult()`; i.e.,
-                 this is included in the unsliced metric, `SortAndCull()` can
-                 be called up to twice per `UpdateResult()`. For all but the
+                 `AutocompleteResult::SortAndCull()` took. Besides being
+                 called from `AutocompleteController::UpdateResult()`, this
+                 is also called asyncly in ML ranking code paths. Therefore,
+                 when ML ranking is enabled, not all '.SortAndCull' times are
+                 included in the unsliced metric. `SortAndCull()` can be
+                 called up to twice per `UpdateResult()`. For all but the
                  last async update, it's called twice; for the last async
                  update (which may not occur if interrupted), it's called
                  once."/>
@@ -1280,7 +1299,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.OmniboxEditModelOpenMatchTime" units="ms"
+<histogram name="Omnibox.OmniboxEditModelOpenMatchTime" units="microseconds"
     expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1293,10 +1312,15 @@ chromium-metrics-reviews@google.com.
 
     This is intended to measure some performance optimization features and be
     removed after.
+
+    This metric uses SCOPED_UMA_HISTOGRAM_TIMER_MICROS so clients without
+    high-resolution clocks will either a) be dropped, b) report 0 for very short
+    times, or c) be recorded as expected (depending on which comments you
+    believe ¯\_(ツ)_/¯).
   </summary>
 </histogram>
 
-<histogram name="Omnibox.OmniboxViewRevertAll" units="ms"
+<histogram name="Omnibox.OmniboxViewRevertAll" units="microseconds"
     expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1307,6 +1331,11 @@ chromium-metrics-reviews@google.com.
     etc. It includes the time to a) revert the edit model, b) close the popup,
     and c) refresh the model. This is intended to measure some performance
     optimization features and be removed after.
+
+    This metric uses SCOPED_UMA_HISTOGRAM_TIMER_MICROS so clients without
+    high-resolution clocks will either a) be dropped, b) report 0 for very short
+    times, or c) be recorded as expected (depending on which comments you
+    believe ¯\_(ツ)_/¯).
   </summary>
 </histogram>
 
