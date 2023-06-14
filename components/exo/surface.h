@@ -472,6 +472,9 @@ class Surface final : public ui::PropertyHandler {
   // A negative number removes it.
   void SetClientAccessibilityId(int id);
 
+  // Set top inset for surface.
+  void SetTopInset(int height);
+
   // Inform observers and subsurfaces about new fullscreen state
   void OnFullscreenStateChanged(bool fullscreen);
 

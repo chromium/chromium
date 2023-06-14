@@ -128,9 +128,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // otherwise committed by OnPostWidgetCommit().
   void CommitPendingScale();
 
-  // Set top inset for surface.
-  void SetTopInset(int height);
-
   // Sends the request to change the zoom level to the client.
   void ChangeZoomLevel(ZoomChange change);
 
@@ -300,9 +297,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   gfx::Rect GetClientBoundsForWindowBoundsAndWindowState(
       const gfx::Rect& window_bounds,
       chromeos::WindowStateType window_state) const;
-
-  int top_inset_height_ = 0;
-  int pending_top_inset_height_ = 0;
 
   double scale_ = 1.0;
   // The pending scale is initialized to 0.0 to indicate that the scale is not

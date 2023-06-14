@@ -1866,6 +1866,12 @@ void Surface::SetClientAccessibilityId(int id) {
   }
 }
 
+void Surface::SetTopInset(int height) {
+  if (delegate_) {
+    delegate_->SetTopInset(height);
+  }
+}
+
 void Surface::OnFullscreenStateChanged(bool fullscreen) {
   for (SurfaceObserver& observer : observers_) {
     observer.OnFullscreenStateChanged(fullscreen);

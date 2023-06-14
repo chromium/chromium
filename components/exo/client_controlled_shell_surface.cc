@@ -515,13 +515,6 @@ void ClientControlledShellSurface::CommitPendingScale() {
   UpdateCornerRadius();
 }
 
-void ClientControlledShellSurface::SetTopInset(int height) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetTopInset", "height",
-               height);
-
-  pending_top_inset_height_ = height;
-}
-
 void ClientControlledShellSurface::OnWindowStateChangeEvent(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType next_state) {

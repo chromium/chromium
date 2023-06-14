@@ -907,6 +907,10 @@ void AuraToplevel::UnsetSnap() {
   shell_surface_->UnsetSnap();
 }
 
+void AuraToplevel::SetTopInset(int top_inset) {
+  shell_surface_->SetTopInset(top_inset);
+}
+
 template <class T>
 void AddState(wl_array* states, T state) {
   T* value = static_cast<T*>(wl_array_add(states, sizeof(T)));
@@ -1450,6 +1454,12 @@ void aura_toplevel_set_shape(wl_client* client,
                       : absl::nullopt);
 }
 
+void aura_toplevel_set_top_inset(wl_client* client,
+                                 wl_resource* resource,
+                                 int32_t top_inset) {
+  GetUserDataAs<AuraToplevel>(resource)->SetTopInset(top_inset);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1475,6 +1485,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_unset_snap,
     aura_toplevel_set_persistable,
     aura_toplevel_set_shape,
+    aura_toplevel_set_top_inset,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

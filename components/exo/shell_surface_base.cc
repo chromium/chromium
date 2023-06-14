@@ -429,6 +429,11 @@ void ShellSurfaceBase::SetSystemModal(bool system_modal) {
   non_system_modal_window_was_active_ = non_system_modal_window_was_active;
 }
 
+void ShellSurfaceBase::SetTopInset(int height) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetTopInset", "height", height);
+  pending_top_inset_height_ = height;
+}
+
 void ShellSurfaceBase::SetBoundsForShadows(
     const absl::optional<gfx::Rect>& shadow_bounds) {
   if (shadow_bounds_ != shadow_bounds) {
@@ -649,6 +654,21 @@ void ShellSurfaceBase::UpdatePinned() {
     }
 
     current_pinned_state_ = pending_pinned_state_;
+  }
+}
+
+void ShellSurfaceBase::UpdateTopInset() {
+  if (!widget_) {
+    // It is possible to get here before the widget has actually been created.
+    // The state will be set once the widget gets created.
+    return;
+  }
+
+  // Apply new top inset height.
+  if (pending_top_inset_height_ != top_inset_height_) {
+    widget_->GetNativeWindow()->SetProperty(aura::client::kTopViewInset,
+                                            pending_top_inset_height_);
+    top_inset_height_ = pending_top_inset_height_;
   }
 }
 
@@ -1585,13 +1605,15 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   // As setting the pinned mode may have come in earlier we apply it now.
   UpdatePinned();
 
+  UpdateTopInset();
+
   aura::Window* window = widget_->GetNativeWindow();
   window->SetName(base::StringPrintf("ExoShellSurface-%d", shell_id++));
   window->AddChild(host_window());
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   if (is_menu_) {
-    // Sets menu config id to kGroupintPropertyKey if the window is menu.
+    // Sets menu config id to kGroupingPropertyKey if the window is menu.
     window->SetNativeWindowProperty(
         views::TooltipManager::kGroupingPropertyKey,
         reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
@@ -1914,6 +1936,8 @@ void ShellSurfaceBase::OnPostWidgetCommit() {
   // in a single commit process, we need to ensure that it's not reset halfway
   // in the current commit by resetting it here.
   shadow_bounds_changed_ = false;
+
+  UpdateTopInset();
 }
 
 void ShellSurfaceBase::SetContainerInternal(int container) {

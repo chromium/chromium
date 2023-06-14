@@ -259,6 +259,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void Pin(bool trusted) override;
   void Unpin() override;
   void SetSystemModal(bool system_modal) override;
+  void SetTopInset(int height) override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
@@ -460,6 +461,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size minimum_size_;
   gfx::Size maximum_size_;
 
+  // Effective and pending top inset (header) heights, that are reserved or
+  // occupied by the top window frame.
+  int top_inset_height_ = 0;
+  int pending_top_inset_height_ = 0;
+
   // The orientation to be applied when widget is being created. Only set when
   // widget is not created yet orientation lock is being set. This is currently
   // only used by ClientControlledShellSurface.
@@ -490,6 +496,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool IsFrameDecorationSupported(SurfaceFrameType frame_type);
 
   void UpdatePinned();
+
+  void UpdateTopInset();
 
   // Returns the resizability of the window. Useful to get the resizability
   // without actually updating it.
