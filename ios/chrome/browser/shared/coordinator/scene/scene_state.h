@@ -109,13 +109,6 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // YES if the QR scanner is visible.
 @property(nonatomic, assign) BOOL QRScannerVisible;
 
-// YES if the visible NTP should be modified for the Start Surface.
-//
-// This flag is set by SceneController to YES when the Start Surface should be
-// shown. It is checked by the NewTabPageCoordinator to modify the NTP
-// accordingly, and then reset it to NO.
-@property(nonatomic, assign) BOOL modifytVisibleNTPForStartSurface;
-
 // YES if sign-in is in progress which covers the authentication flow and the
 // sign-in prompt UI.
 @property(nonatomic, assign) BOOL signinInProgress;

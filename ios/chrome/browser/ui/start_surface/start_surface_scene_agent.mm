@@ -138,7 +138,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   }
 
   // If there is no active tab, a NTP will be added, and since there is no
-  // recent tab, there is no need to mark `modifytVisibleNTPForStartSurface`.
+  // recent tab.
   // Keep showing the last active NTP tab no matter whether the Start Surface is
   // enabled or not by design.
   // Note that activeWebState could only be nullptr when the Tab grid is active
