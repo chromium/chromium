@@ -3362,6 +3362,19 @@ const FeatureEntry::FeatureVariation kHeuristicMemorySaverVariations[] = {
      std::size(kHeuristicMemorySaverConservative), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kHighEfficiencyMultistateModeDefaultHeuristic[] = {
+        {"default_heuristic_mode", "true"},
+};
+// TODO(charlesmeng): rename option after default_heuristic_mode feature param
+// actually sets the default pref value
+const FeatureEntry::FeatureVariation kHighEfficiencyMultistateModeVariations[] =
+    {
+        {"With Recommended Badge",
+         kHighEfficiencyMultistateModeDefaultHeuristic,
+         std::size(kHighEfficiencyMultistateModeDefaultHeuristic), nullptr},
+};
+
 const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing30Opacity[] = {
     {"discard_tab_treatment_option", "2"},
     {"discard_tab_treatment_opacity", "0.3"}};
@@ -9858,8 +9871,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHighEfficiencyMultistateModeAvailableName,
      flag_descriptions::kHighEfficiencyMultistateModeAvailableDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kHighEfficiencyMultistateMode)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         performance_manager::features::kHighEfficiencyMultistateMode,
+         kHighEfficiencyMultistateModeVariations,
+         "HighEfficiencyMultistateMode")},
 
     {"memory-saver-discarded-tab-treatment",
      flag_descriptions::kHighEfficiencyDiscardedTabTreatmentName,
