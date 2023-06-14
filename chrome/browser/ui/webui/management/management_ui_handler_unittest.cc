@@ -19,8 +19,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -1495,25 +1496,25 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   // When policies are set to values that enable the feature without a usable DM
   // token, nothing to report.
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidToken());
-  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
-                                      enterprise_connectors::FILE_ATTACHED,
-                                      "[{\"service_provider\":\"google\"}]");
-  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
-                                      enterprise_connectors::FILE_DOWNLOADED,
-                                      "[{\"service_provider\":\"google\"}]");
-  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
-                                      enterprise_connectors::BULK_DATA_ENTRY,
-                                      "[{\"service_provider\":\"google\"}]");
-  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
-                                      enterprise_connectors::PRINT,
-                                      "[{\"service_provider\":\"google\"}]");
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_no_domain->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
+      "[{\"service_provider\":\"google\"}]");
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_no_domain->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      "[{\"service_provider\":\"google\"}]");
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_no_domain->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
+      "[{\"service_provider\":\"google\"}]");
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_no_domain->GetPrefs(), enterprise_connectors::PRINT,
+      "[{\"service_provider\":\"google\"}]");
 #if BUILDFLAG(IS_CHROMEOS)
-  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
-                                      enterprise_connectors::FILE_TRANSFER,
-                                      "[{\"service_provider\":\"google\"}]");
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_no_domain->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
+      "[{\"service_provider\":\"google\"}]");
 #endif
-  safe_browsing::SetOnSecurityEventReporting(profile_no_domain->GetPrefs(),
-                                             true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile_no_domain->GetPrefs(), true);
   profile_no_domain->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
   profile_no_domain->GetPrefs()->SetInteger(

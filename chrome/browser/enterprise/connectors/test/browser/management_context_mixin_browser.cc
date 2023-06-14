@@ -6,10 +6,10 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
@@ -31,7 +31,7 @@ ManagementContextMixinBrowser::~ManagementContextMixinBrowser() = default;
 
 void ManagementContextMixinBrowser::ManageCloudUser() {
   ManagementContextMixin::ManageCloudUser();
-  safe_browsing::SetProfileDMToken(browser()->profile(), kProfileDmToken);
+  SetProfileDMToken(browser()->profile(), kProfileDmToken);
 
   auto* profile_policy_manager =
       browser()->profile()->GetUserCloudPolicyManager();

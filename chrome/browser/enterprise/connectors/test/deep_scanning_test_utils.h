@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_TEST_UTILS_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_TEST_UTILS_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_TEST_UTILS_H_
 
 #include <set>
 #include <string>
@@ -22,7 +22,7 @@ namespace policy {
 class MockCloudPolicyClient;
 }
 
-namespace safe_browsing {
+namespace enterprise_connectors::test {
 
 // Helper class that represents a report that's expected from a test. The
 // non-optional fields are expected for every kind of Deep Scanning reports.
@@ -56,8 +56,7 @@ class EventReportValidator {
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_trigger,
-      const enterprise_connectors::ContentAnalysisResponse::Result&
-          expected_dlp_verdict,
+      const ContentAnalysisResponse::Result& expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       absl::optional<int64_t> expected_content_size,
       const std::string& expected_result,
@@ -72,8 +71,7 @@ class EventReportValidator {
       const std::vector<std::string>& expected_filenames,
       const std::vector<std::string>& expected_sha256s,
       const std::string& expected_trigger,
-      const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
-          expected_dlp_verdicts,
+      const std::vector<ContentAnalysisResponse::Result>& expected_dlp_verdicts,
       const std::set<std::string>* expected_mimetypes,
       int64_t expected_content_size,
       const std::vector<std::string>& expected_results,
@@ -89,8 +87,7 @@ class EventReportValidator {
       const std::string& expected_sha256,
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
-      const enterprise_connectors::ContentAnalysisResponse::Result&
-          expected_dlp_verdict,
+      const ContentAnalysisResponse::Result& expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int64_t expected_content_size,
       const std::string& expected_result,
@@ -106,8 +103,7 @@ class EventReportValidator {
       const std::string& expected_sha256,
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
-      const enterprise_connectors::ContentAnalysisResponse::Result&
-          expected_dlp_verdict,
+      const ContentAnalysisResponse::Result& expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int64_t expected_content_size,
       const std::string& expected_result,
@@ -178,12 +174,11 @@ class EventReportValidator {
   void ValidateFederatedOrigin(const base::Value::Dict* value);
   void ValidateIdentities(const base::Value::Dict* value);
   void ValidateMimeType(const base::Value::Dict* value);
-  void ValidateDlpVerdict(
+  void ValidateDlpVerdict(const base::Value::Dict* value,
+                          const ContentAnalysisResponse::Result& result);
+  void ValidateDlpRule(
       const base::Value::Dict* value,
-      const enterprise_connectors::ContentAnalysisResponse::Result& result);
-  void ValidateDlpRule(const base::Value::Dict* value,
-                       const enterprise_connectors::ContentAnalysisResponse::
-                           Result::TriggeredRule& expected_rule);
+      const ContentAnalysisResponse::Result::TriggeredRule& expected_rule);
   void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
@@ -220,9 +215,7 @@ class EventReportValidator {
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use maps to ensure all of them
   // are called as expected.
-  base::flat_map<std::string,
-                 enterprise_connectors::ContentAnalysisResponse::Result>
-      dlp_verdicts_;
+  base::flat_map<std::string, ContentAnalysisResponse::Result> dlp_verdicts_;
   base::flat_map<std::string, std::string> results_;
   base::flat_map<std::string, std::string> filenames_and_hashes_;
   base::flat_map<std::string, std::string> scan_ids_;
@@ -232,7 +225,7 @@ class EventReportValidator {
 
 // Helper functions that set Connector policies for testing.
 void SetAnalysisConnector(PrefService* prefs,
-                          enterprise_connectors::AnalysisConnector connector,
+                          AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope = true);
 void SetOnSecurityEventReporting(
@@ -243,8 +236,7 @@ void SetOnSecurityEventReporting(
         enabled_opt_in_events =
             std::map<std::string, std::vector<std::string>>(),
     bool machine_scope = true);
-void ClearAnalysisConnector(PrefService* prefs,
-                            enterprise_connectors::AnalysisConnector connector);
+void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper function to set the profile DM token. It installs a
@@ -253,6 +245,6 @@ void ClearAnalysisConnector(PrefService* prefs,
 void SetProfileDMToken(Profile* profile, const std::string& dm_token);
 #endif
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors::test
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_TEST_UTILS_H_

@@ -27,14 +27,14 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -746,11 +746,12 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
     // Enable reporting.
-    safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(),
-                                               /*enabled*/ true,
-                                               /*enabled_event_names*/ {},
-                                               /*enabled_opt_in_events*/ {},
-                                               /*machine_scope*/ false);
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        profile()->GetPrefs(),
+        /*enabled*/ true,
+        /*enabled_event_names*/ {},
+        /*enabled_opt_in_events*/ {},
+        /*machine_scope*/ false);
     // Add mock to check reports.
     cloud_policy_client_ = std::make_unique<policy::MockCloudPolicyClient>();
     cloud_policy_client_->SetDMToken("dm_token");
@@ -838,7 +839,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       CHECK(destination);
       LOG(INFO) << "Setting file transfer policy for transfers from " << *source
                 << " to " << *destination;
-      safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::test::SetAnalysisConnector(
           profile()->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
           base::StringPrintf(kFileTransferConnectorSettingsForDlp,
                              source->c_str(), destination->c_str(),
@@ -848,7 +849,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       // responses.
       enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
           base::BindRepeating(
-              &enterprise_connectors::FakeFilesRequestHandler::Create,
+              &enterprise_connectors::test::FakeFilesRequestHandler::Create,
               base::BindRepeating(&FileTransferConnectorFilesAppBrowserTest::
                                       FakeFileUploadCallback,
                                   base::Unretained(this), *source,
@@ -952,8 +953,9 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
         expected_scan_ids.push_back(GetScanIDForFileName(file_name));
       }
 
-      validator_ = std::make_unique<safe_browsing::EventReportValidator>(
-          cloud_policy_client());
+      validator_ =
+          std::make_unique<enterprise_connectors::test::EventReportValidator>(
+              cloud_policy_client());
       validator_->ExpectSensitiveDataEvents(
           /*url*/ "",
           /*source*/ *source_volume_name,
@@ -985,8 +987,8 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-      enterprise_connectors::FakeFilesRequestHandler::FakeFileRequestCallback
-          callback) {
+      enterprise_connectors::test::FakeFilesRequestHandler::
+          FakeFileRequestCallback callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(request->device_token(), "dm_token");
@@ -1032,12 +1034,12 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     enterprise_connectors::ContentAnalysisResponse response;
     // We return a block verdict if the basename contains "blocked".
     if (base::Contains(path.BaseName().value(), "blocked")) {
-      response = enterprise_connectors::FakeContentAnalysisDelegate::
+      response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
               "rule", enterprise_connectors::TriggeredRule::BLOCK);
     } else {
-      response = enterprise_connectors::FakeContentAnalysisDelegate::
+      response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           SuccessfulResponse({"dlp"});
     }
     response.set_request_token(
@@ -1052,7 +1054,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
   // Used to test reporting.
   std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<safe_browsing::EventReportValidator> validator_;
+  std::unique_ptr<enterprise_connectors::test::EventReportValidator> validator_;
   static constexpr char kUserName[] = "test@chromium.org";
   static constexpr char kScanId[] = "scan id";
 

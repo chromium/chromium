@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
+#include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 
@@ -19,7 +19,7 @@ namespace content {
 class WebContents;
 }
 
-namespace enterprise_connectors {
+namespace enterprise_connectors::test {
 
 // A derivative of ContentAnalysisDelegate that overrides calls to the
 // real binary upload service and re-implements them locally.
@@ -33,10 +33,9 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   //
   // For text requests, contents is not empty and path is empty.
   // For print requests, both contents and path are empty.
-  using StatusCallback =
-      base::RepeatingCallback<enterprise_connectors::ContentAnalysisResponse(
-          const std::string& contents,
-          const base::FilePath&)>;
+  using StatusCallback = base::RepeatingCallback<ContentAnalysisResponse(
+      const std::string& contents,
+      const base::FilePath&)>;
 
   FakeContentAnalysisDelegate(base::RepeatingClosure delete_closure,
                               StatusCallback status_callback,
@@ -63,25 +62,24 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
 
   // Returns a content analysis response that represents a successful scan and
   // includes the given tags.
-  static enterprise_connectors::ContentAnalysisResponse SuccessfulResponse(
+  static ContentAnalysisResponse SuccessfulResponse(
       const std::set<std::string>& tags);
 
   // Returns a content analysis response with a specific malware action.
-  static enterprise_connectors::ContentAnalysisResponse MalwareResponse(
-      enterprise_connectors::TriggeredRule::Action action);
+  static ContentAnalysisResponse MalwareResponse(TriggeredRule::Action action);
 
   // Returns a content analysis response with a specific DLP action.
-  static enterprise_connectors::ContentAnalysisResponse DlpResponse(
-      enterprise_connectors::ContentAnalysisResponse::Result::Status status,
+  static ContentAnalysisResponse DlpResponse(
+      ContentAnalysisResponse::Result::Status status,
       const std::string& rule_name,
-      enterprise_connectors::TriggeredRule::Action action);
+      TriggeredRule::Action action);
 
   // Returns a content analysis response with specific malware and DLP actions.
-  static enterprise_connectors::ContentAnalysisResponse MalwareAndDlpResponse(
-      enterprise_connectors::TriggeredRule::Action malware_action,
-      enterprise_connectors::ContentAnalysisResponse::Result::Status dlp_status,
+  static ContentAnalysisResponse MalwareAndDlpResponse(
+      TriggeredRule::Action malware_action,
+      ContentAnalysisResponse::Result::Status dlp_status,
       const std::string& dlp_rule_name,
-      enterprise_connectors::TriggeredRule::Action dlp_action);
+      TriggeredRule::Action dlp_action);
 
   // Sets the BinaryUploadService::Result to use in the next response callback.
   static void SetResponseResult(
@@ -138,6 +136,6 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   base::WeakPtrFactory<FakeContentAnalysisDelegate> weakptr_factory_{this};
 };
 
-}  // namespace enterprise_connectors
+}  // namespace enterprise_connectors::test
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_DELEGATE_H_

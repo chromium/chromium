@@ -13,9 +13,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -95,7 +95,7 @@ std::string text() {
 //   observer.
 // - It sends accessibility events correctly.
 class ContentAnalysisDialogBehaviorBrowserTest
-    : public safe_browsing::DeepScanningBrowserTestBase,
+    : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver,
       public testing::WithParamInterface<
           std::tuple<bool, bool, base::TimeDelta>> {
@@ -277,7 +277,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
 // - It returns a negative verdict on the scanned content.
 // - The "CancelledByUser" metrics are recorded.
 class ContentAnalysisDialogCancelPendingScanBrowserTest
-    : public safe_browsing::DeepScanningBrowserTestBase,
+    : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver {
  public:
   ContentAnalysisDialogCancelPendingScanBrowserTest() {
@@ -319,7 +319,7 @@ class ContentAnalysisDialogCancelPendingScanBrowserTest
 // - It calls the appropriate methods when the user bypasses/respects the
 //   warning.
 class ContentAnalysisDialogWarningBrowserTest
-    : public safe_browsing::DeepScanningBrowserTestBase,
+    : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver,
       public testing::WithParamInterface<bool> {
  public:
@@ -365,7 +365,7 @@ class ContentAnalysisDialogWarningBrowserTest
 //   type.
 // - It shows the appropriate spinner depending on its state.
 class ContentAnalysisDialogAppearanceBrowserTest
-    : public safe_browsing::DeepScanningBrowserTestBase,
+    : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver,
       public testing::WithParamInterface<
           std::tuple<bool, bool, safe_browsing::DeepScanAccessPoint>> {
@@ -495,15 +495,15 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED,
-                                      kBlockingScansForDlpAndMalware);
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      kBlockingScansForDlpAndMalware);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
           dlp_success(), malware_success()));
 
   // Set up delegate test values.
-  FakeContentAnalysisDelegate::SetResponseDelay(response_delay());
+  test::FakeContentAnalysisDelegate::SetResponseDelay(response_delay());
   SetUpDelegate();
 
   bool called = false;
@@ -558,15 +558,15 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED, kBlockingScansForDlp);
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
           /*dlp=*/true, /*malware=*/absl::nullopt));
 
   // Set up delegate test values. An unresponsive delegate is set up to avoid
   // a race between the file responses and the "Cancel" button being clicked.
-  FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
+  test::FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
   SetUpUnresponsiveDelegate();
 
   bool called = false;
@@ -601,8 +601,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Setup policies.
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED, kBlockingScansForDlp);
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
 
   // Setup the DLP warning response.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -659,16 +659,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED,
-                                      kBlockingScansForDlpAndMalware);
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      kBlockingScansForDlpAndMalware);
 
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(success(),
                                                              success()));
 
   // Set up delegate test values.
-  FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
+  test::FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
   SetUpDelegate();
 
   bool called = false;
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetAnalysisConnector(
+  enterprise_connectors::test::SetAnalysisConnector(
       browser()->profile()->GetPrefs(), FILE_ATTACHED,
       kBlockingScansForDlpAndMalwareWithCustomMessage);
 
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
                                                              success()));
 
   // Set up delegate test values.
-  FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
+  test::FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
   SetUpDelegate();
 
   bool called = false;
@@ -1143,7 +1143,7 @@ INSTANTIATE_TEST_SUITE_P(,
                              /*bypass_justification_enabled*/ testing::Bool()));
 
 class ContentAnalysysDialogDownloadObserverTest
-    : public safe_browsing::DeepScanningBrowserTestBase,
+    : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver {
  public:
   ContentAnalysysDialogDownloadObserverTest() {

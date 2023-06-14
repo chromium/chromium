@@ -72,20 +72,26 @@
 #include "chrome/test/base/launchservices_utils_mac.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+// TODO(b/283093731): Replace this macro with cloud content analysis equivalent
+// buildflag condition.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"  // nogncheck
 #include "ui/base/clipboard/clipboard_format_type.h"
 
+// TODO(b/283093731): Replace this macro with local content analysis equivalent
+// buildflag condition.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -682,7 +688,8 @@ IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 
 class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
  public:
@@ -694,16 +701,16 @@ class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Make sure enterprise policies are set to turn on content analysis.
-    safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                        enterprise_connectors::BULK_DATA_ENTRY,
-                                        kBulkDataEntryPolicyValue);
-    safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                        enterprise_connectors::FILE_ATTACHED,
-                                        kFileAttachedPolicyValue);
+    enterprise_connectors::test::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(),
+        enterprise_connectors::BULK_DATA_ENTRY, kBulkDataEntryPolicyValue);
+    enterprise_connectors::test::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
+        kFileAttachedPolicyValue);
 
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
-            &enterprise_connectors::FakeContentAnalysisDelegate::Create,
+            &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
             base::DoNothing(),
             base::BindRepeating([](const std::string& contents,
                                    const base::FilePath& path) {
@@ -715,10 +722,11 @@ class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
                     path.BaseName().AsUTF8Unsafe().substr(0, 5) == "allow";
               }
               return success
-                         ? enterprise_connectors::FakeContentAnalysisDelegate::
-                               SuccessfulResponse({"dlp"})
-                         : enterprise_connectors::FakeContentAnalysisDelegate::
-                               DlpResponse(
+                         ? enterprise_connectors::test::
+                               FakeContentAnalysisDelegate::SuccessfulResponse(
+                                   {"dlp"})
+                         : enterprise_connectors::test::
+                               FakeContentAnalysisDelegate::DlpResponse(
                                    enterprise_connectors::
                                        ContentAnalysisResponse::Result::SUCCESS,
                                    "rule-name",
@@ -883,6 +891,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, SomeFilesBlocked) {
             EXPECT_EQ(clipboard_paste_data->file_paths[0], paths[0]);
           }));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

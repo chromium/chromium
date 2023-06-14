@@ -6,8 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -82,8 +82,7 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockLargeFile) {
       "block_large_files": %s
     })",
                                  bool_setting());
-  safe_browsing::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED,
-                                      pref);
+  test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
             ResultShouldAllowDataUse(
                 settings(),
@@ -99,8 +98,7 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
       "block_password_protected": %s
     })",
                                  bool_setting());
-  safe_browsing::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED,
-                                      pref);
+  test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
             ResultShouldAllowDataUse(
                 settings(),
@@ -116,8 +114,7 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
       "block_unsupported_file_types": %s
     })",
                                  bool_setting());
-  safe_browsing::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED,
-                                      pref);
+  test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
             ResultShouldAllowDataUse(
                 settings(), safe_browsing::BinaryUploadService::Result::

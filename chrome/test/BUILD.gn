@@ -518,8 +518,6 @@ static_library("test_support") {
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h",
       "../browser/signin/signin_browser_test_base.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
@@ -1903,8 +1901,6 @@ if (!is_android) {
       "../browser/download/save_page_browsertest.cc",
       "../browser/engagement/site_engagement_helper_browsertest.cc",
       "../browser/enterprise/browser_management/management_service_browsertest.cc",
-      "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
-      "../browser/enterprise/connectors/connectors_service_browsertest.cc",
       "../browser/enterprise/connectors/reporting/crash_reporting_context_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
@@ -2170,8 +2166,6 @@ if (!is_android) {
       "../browser/resource_coordinator/tab_helper_browsertest.cc",
       "../browser/resource_coordinator/tab_manager_browsertest.cc",
       "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.cc",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.h",
@@ -2539,10 +2533,6 @@ if (!is_android) {
 
     if (!is_chromeos_lacros) {
       sources += [
-        # crbug.com/1230268 These tests need to be fixed for Lacros.
-        "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
-        "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
-
         # Lacros does not seem to have any actual WebView-based UI to test.
         "../browser/accessibility/live_translate_controller_browsertest.cc",
         "../browser/ui/webui/webui_webview_browsertest.cc",
@@ -2567,6 +2557,16 @@ if (!is_android) {
         sources += [
           "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
           "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
+        ]
+      }
+
+      # TODO(b/283093731): Replace the platforms below with a condition for
+      # cloud content analysis.
+      if (is_win || is_linux || is_mac || is_chromeos) {
+        sources += [
+          # crbug.com/1230268 These tests need to be fixed for Lacros.
+          "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
+          "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
         ]
       }
     }
@@ -3095,8 +3095,6 @@ if (!is_android) {
         "../browser/extensions/api/desktop_capture/desktop_capture_apitest.cc",
         "../browser/extensions/api/developer_private/developer_private_apitest.cc",
         "../browser/extensions/api/downloads/downloads_api_browsertest.cc",
-        "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_apitest.cc",
-        "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_browsertest.cc",
         "../browser/extensions/api/extension_action/browser_action_apitest.cc",
         "../browser/extensions/api/extension_action/browser_action_browsertest.cc",
         "../browser/extensions/api/extension_action/extension_action_apitest.cc",
@@ -3346,6 +3344,17 @@ if (!is_android) {
         ]
       }
 
+      # TODO(b/283093731): Replace the platforms below with a condition for
+      # cloud content analysis.
+      if (is_win || is_linux || is_mac || is_chromeos) {
+        sources += [
+          "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
+          "../browser/enterprise/connectors/connectors_service_browsertest.cc",
+          "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_apitest.cc",
+          "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_browsertest.cc",
+        ]
+        deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+      }
       if (is_win || is_linux || is_mac || is_chromeos_ash) {
         sources += [ "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]
 
@@ -3354,7 +3363,6 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/device_trust:prefs",
           "//chrome/browser/enterprise/connectors/device_trust/common",
           "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
-          "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
           "//components/device_signals/test:test_support",
@@ -8790,7 +8798,12 @@ test("unit_tests") {
       "../common/safe_browsing/ipc_protobuf_message_test_messages.h",
       "../common/safe_browsing/ipc_protobuf_message_unittest.cc",
     ]
-    deps += [ "../common/safe_browsing:archive_analyzer_results" ]
+    deps += [
+      # TODO(b/283093731): Replace the dependency below to a more specific
+      # condition for cloud content analysis.
+      "../browser/enterprise/connectors/test:test_support",
+      "../common/safe_browsing:archive_analyzer_results",
+    ]
     if (is_mac) {
       sources += [
         "../browser/safe_browsing/incident_reporting/binary_integrity_analyzer_mac_unittest.cc",

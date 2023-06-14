@@ -14,9 +14,9 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -127,8 +127,7 @@ class ConnectorsServiceHasExtraUiTest
 };
 
 TEST_P(ConnectorsServiceHasExtraUiTest, AnalysisConnectors) {
-  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
-                                      pref());
+  test::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED, pref());
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
   bool show_extra_ui = service->HasExtraUiToDisplay(FILE_DOWNLOADED, kDlpTag);
   ASSERT_EQ(show_extra_ui, has_extra_ui());

@@ -16,10 +16,10 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -63,21 +63,22 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
               ],
               "block_until_verdict": 1
           })";
-      safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::test::SetAnalysisConnector(
           profile_->GetPrefs(), enterprise_connectors::FILE_ATTACHED, kEnabled);
-      safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::test::SetAnalysisConnector(
           profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
           kEnabled);
     } else {
-      safe_browsing::ClearAnalysisConnector(
+      enterprise_connectors::test::ClearAnalysisConnector(
           profile_->GetPrefs(), enterprise_connectors::FILE_ATTACHED);
-      safe_browsing::ClearAnalysisConnector(
+      enterprise_connectors::test::ClearAnalysisConnector(
           profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY);
     }
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    using FakeDelegate = enterprise_connectors::FakeContentAnalysisDelegate;
+    using FakeDelegate =
+        enterprise_connectors::test::FakeContentAnalysisDelegate;
 
     policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
     auto callback = base::BindLambdaForTesting(
@@ -118,7 +119,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
         });
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
-            &enterprise_connectors::FakeContentAnalysisDelegate::Create,
+            &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
             run_loop_->QuitClosure(), callback, "dm_token"));
     enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
     enterprise_connectors::ContentAnalysisDelegate::
