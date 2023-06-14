@@ -458,7 +458,8 @@ TEST_F(BrowserViewControllerTest,
                      animated:NO
                    completion:nil];
 
-  OCMExpect([mockApplicationCommandHandler_ dismissModalDialogs]);
+  OCMExpect(
+      [mockApplicationCommandHandler_ dismissModalDialogsWithCompletion:nil]);
 
   // Present incognito authentication must dismiss presented state.
   [bvc_ setItemsRequireAuthentication:YES];

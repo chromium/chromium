@@ -1433,10 +1433,6 @@ void InjectNTP(Browser* browser) {
   [self dismissModalDialogsWithCompletion:completion dismissOmnibox:YES];
 }
 
-- (void)dismissModalDialogs {
-  [self dismissModalDialogsWithCompletion:nil dismissOmnibox:YES];
-}
-
 - (void)showHistory {
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:self.currentInterface.viewController
@@ -1990,7 +1986,7 @@ void InjectNTP(Browser* browser) {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  [self dismissModalDialogs];
+  [self dismissModalDialogsWithCompletion:nil];
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSavedPasswordsSettingsFromViewController:baseViewController

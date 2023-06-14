@@ -2826,7 +2826,7 @@ enum HeaderBehaviour {
     [firstResponder resignFirstResponder];
     // Close presented view controllers, e.g. share sheets.
     if (self.presentedViewController) {
-      [self.applicationCommandsHandler dismissModalDialogs];
+      [self.applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
     }
 
   } else {

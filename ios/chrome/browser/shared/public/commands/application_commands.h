@@ -109,9 +109,6 @@ struct CredentialUIEntry;
 
 @protocol ApplicationCommands <NSObject, ApplicationSettingsCommands>
 
-// Dismisses all modal dialogs.
-- (void)dismissModalDialogs;
-
 // Dismisses all modal dialogs with a completion block that is called when
 // modals are dismissed (animations done).
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;

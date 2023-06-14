@@ -396,7 +396,7 @@
   if (self.locationBarFocused) {
     id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationCommandsHandler dismissModalDialogs];
+    [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
   }
 }
 
