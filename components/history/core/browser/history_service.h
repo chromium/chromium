@@ -398,6 +398,17 @@ class HistoryService : public KeyedService,
                           DomainDiversityCallback callback,
                           base::CancelableTaskTracker* tracker);
 
+  // Returns, via a callback, unique domains (eLTD+1) visited within the time
+  // range [`begin_time`, `end_time`) for local and synced visits sorted in
+  // reverse-chronological order.
+  using GetUniqueDomainsVisitedCallback =
+      base::OnceCallback<void(DomainsVisitedResult)>;
+
+  void GetUniqueDomainsVisited(const base::Time begin_time,
+                               const base::Time end_time,
+                               GetUniqueDomainsVisitedCallback callback,
+                               base::CancelableTaskTracker* tracker);
+
   using GetLastVisitCallback = base::OnceCallback<void(HistoryLastVisitResult)>;
 
   // Gets the last time any webpage on the given host was visited within the

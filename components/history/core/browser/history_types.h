@@ -433,6 +433,22 @@ struct FilteredURL {
   ExtendedInfo extended_info;
 };
 
+// DomainsVisitedResult --------------------------------------------------
+
+// DomainsVisitedResult encapsulates two lists of domains visited locally
+// and synced.
+struct DomainsVisitedResult {
+  DomainsVisitedResult();
+  DomainsVisitedResult(DomainsVisitedResult&& other);
+  DomainsVisitedResult& operator=(DomainsVisitedResult&& other);
+  ~DomainsVisitedResult();
+
+  // Domains visited on this device.
+  std::vector<std::string> locally_visited_domains;
+  // Domains visited on all devices.
+  std::vector<std::string> all_visited_domains;
+};
+
 // Opener ---------------------------------------------------------------------
 
 // Contains the information required to determine the VisitID of an opening

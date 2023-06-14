@@ -87,6 +87,12 @@ class HistoryDatabase : public DownloadDatabase,
   // Counts the number of unique Hosts visited in the last month.
   int CountUniqueHostsVisitedLastMonth();
 
+  // Gets unique domains (eLTD+1) visited within the time range
+  // [`begin_time`, `end_time`) for local and synced visits sorted in
+  // reverse-chronological order.
+  DomainsVisitedResult GetUniqueDomainsVisited(base::Time begin_time,
+                                               base::Time end_time);
+
   // Counts the number of unique domains (eLTD+1) visited within
   // [`begin_time`, `end_time`).
   // The return value is a pair of (local, all), where "local" only counts

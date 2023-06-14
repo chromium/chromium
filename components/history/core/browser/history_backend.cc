@@ -2030,6 +2030,16 @@ HistoryBackend::GetDomainDiversity(
   return std::make_pair(local_result, all_result);
 }
 
+DomainsVisitedResult HistoryBackend::GetUniqueDomainsVisited(
+    base::Time begin_time,
+    base::Time end_time) {
+  if (!db_) {
+    return {};
+  }
+
+  return db_->GetUniqueDomainsVisited(begin_time, end_time);
+}
+
 HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
     const std::string& host,
     base::Time begin_time,

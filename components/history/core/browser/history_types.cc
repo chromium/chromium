@@ -245,6 +245,18 @@ FilteredURL::~FilteredURL() = default;
 
 FilteredURL::ExtendedInfo::ExtendedInfo() = default;
 
+// DomainsVisitedResult -------------------------------------------------------
+
+DomainsVisitedResult::DomainsVisitedResult() = default;
+
+DomainsVisitedResult::DomainsVisitedResult(DomainsVisitedResult&& other) =
+    default;
+
+DomainsVisitedResult& DomainsVisitedResult::operator=(
+    DomainsVisitedResult&& other) = default;
+
+DomainsVisitedResult::~DomainsVisitedResult() = default;
+
 // TopSitesDelta --------------------------------------------------------------
 
 TopSitesDelta::TopSitesDelta() = default;
