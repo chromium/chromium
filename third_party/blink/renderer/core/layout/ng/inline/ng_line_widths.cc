@@ -15,7 +15,7 @@ bool NGLineWidths::Set(const NGInlineNode& node,
   // Set the default width if no exclusions.
   DCHECK_GE(opportunities.size(), 1u);
   const NGLayoutOpportunity& first_opportunity = opportunities.front();
-  if (opportunities.size() == 1) {
+  if (opportunities.size() == 1 && !node.HasFloats()) {
     DCHECK(!first_opportunity.HasShapeExclusions());
     default_width_ = first_opportunity.rect.InlineSize();
     DCHECK(!num_excluded_lines_);
@@ -42,9 +42,13 @@ bool NGLineWidths::Set(const NGInlineNode& node,
   // `::first-line` is not supported.
   DCHECK_EQ(&items_data, &node.ItemsData(true));
   const HeapVector<NGInlineItem>& items = items_data.items;
+  bool is_empty_so_far = true;
   for (const NGInlineItem& item : items) {
     switch (item.Type()) {
       case NGInlineItem::kText: {
+        if (UNLIKELY(!item.Length())) {
+          break;
+        }
         const ShapeResult* shape_result = item.TextShapeResult();
         DCHECK(shape_result);
         if (shape_result->PrimaryFont() != primary_font ||
@@ -72,13 +76,32 @@ bool NGLineWidths::Set(const NGInlineNode& node,
       case NGInlineItem::kOpenTag: {
         DCHECK(item.Style());
         const ComputedStyle& style = *item.Style();
-        if (style.VerticalAlign() != EVerticalAlign::kBaseline) {
+        if (UNLIKELY(style.VerticalAlign() != EVerticalAlign::kBaseline)) {
           return false;
         }
         break;
       }
-      default:
+      case NGInlineItem::kCloseTag:
+      case NGInlineItem::kControl:
+      case NGInlineItem::kOutOfFlowPositioned:
+      case NGInlineItem::kBidiControl:
+        // These items don't affect line heights.
         break;
+      case NGInlineItem::kFloating:
+        // Only leading floats are computable without layout.
+        if (is_empty_so_far) {
+          break;
+        }
+        return false;
+      case NGInlineItem::kAtomicInline:
+      case NGInlineItem::kBlockInInline:
+      case NGInlineItem::kInitialLetterBox:
+      case NGInlineItem::kListMarker:
+        // These items need layout to determine the height.
+        return false;
+    }
+    if (is_empty_so_far && !item.IsEmptyItem()) {
+      is_empty_so_far = false;
     }
   }
 

@@ -65,7 +65,7 @@ struct LineWidthsData {
     {{100, 100}, R"HTML(
       <div id="target">0123 <b>5</b>678</div>
     )HTML"},
-    // Single left/right float should be computable.
+    // Single left/right leading float should be computable.
     {{70, 100}, R"HTML(
       <div id="target">
         <div class="left"></div>
@@ -76,8 +76,17 @@ struct LineWidthsData {
       <div id="target">
         <div class="right"></div>
         0123 5678
+      </div
+    )HTML"},
+    // Non-leading floats are not computable.
+    {{}, R"HTML(
+      <div id="target">
+        0123 5678
+        <div class="left"></div>
       </div>
     )HTML"},
+    // Even when the float is taller than the font, it's computable as long as
+    // it fits in the leading.
     {{70, 100}, R"HTML(
       <div id="target" style="line-height: 15px">
         <div class="left" style="height: 11px"></div>
@@ -135,6 +144,18 @@ struct LineWidthsData {
         0123 5678 <big>0123</big> 5678
       </div>
     )HTML"},
+    // Atomic inlines are not computable if there are leading floats.
+    {{100, 100}, R"HTML(
+      <div id="target">
+        0123 <span style="display: inline-block"></span> 5678
+      </div>
+    )HTML"},
+    {{}, R"HTML(
+      <div id="target">
+        <div class="left"></div>
+        0123 <span style="display: inline-block"></span> 5678
+      </div>
+    )HTML"},
 };
 class NGLineWidthsDataTest
     : public NGLineWidthsTest,
@@ -170,14 +191,12 @@ TEST_P(NGLineWidthsDataTest, Data) {
                                   data.html));
   const NGInlineNode target = GetInlineNodeByElementId("target");
   const absl::optional<NGLineWidths> line_widths = ComputeLineWidths(target);
-  if (!line_widths) {
-    EXPECT_EQ(data.widths.size(), 0u);
-    return;
-  }
-  EXPECT_GT(data.widths.size(), 0u);
   std::vector<int> actual_widths;
-  for (wtf_size_t i = 0; i < data.widths.size(); ++i) {
-    actual_widths.push_back((*line_widths)[i].ToInt());
+  if (line_widths) {
+    const size_t size = data.widths.size() ? data.widths.size() : 3;
+    for (wtf_size_t i = 0; i < size; ++i) {
+      actual_widths.push_back((*line_widths)[i].ToInt());
+    }
   }
   EXPECT_THAT(actual_widths, data.widths);
 }

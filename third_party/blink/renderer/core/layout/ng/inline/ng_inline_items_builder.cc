@@ -1099,6 +1099,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
   AppendOpaque(NGInlineItem::kFloating, kObjectReplacementCharacter,
                layout_object);
+  has_floats_ = true;
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
@@ -1429,6 +1430,7 @@ void NGInlineItemsBuilderTemplate<
   // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
   // doesn't contain any RTL characters.
   data->is_bidi_enabled_ = MayBeBidiEnabled();
+  data->has_floats_ = has_floats_;
   data->has_initial_letter_box_ = has_initial_letter_box_;
   data->has_ruby_ = has_ruby_;
   data->is_block_level_ = IsBlockLevel();

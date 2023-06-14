@@ -96,8 +96,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool IsBidiEnabled() const { return Data().is_bidi_enabled_; }
   TextDirection BaseDirection() const { return Data().BaseDirection(); }
 
+  bool HasFloats() const { return Data().HasFloats(); }
   bool HasInitialLetterBox() const { return Data().has_initial_letter_box_; }
-
   bool HasRuby() const { return Data().has_ruby_; }
 
   bool IsBlockLevel() { return EnsureData().is_block_level_; }
