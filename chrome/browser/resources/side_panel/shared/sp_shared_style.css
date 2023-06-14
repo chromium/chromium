@@ -125,3 +125,19 @@
   margin: 0;
   width: 100%;
 }
+
+:host-context([chrome-refresh-2023]) cr-dialog {
+  --cr-dialog-background-color: var(--color-side-panel-dialog-background);
+  --cr-primary-text-color: var(--color-side-panel-dialog-primary-foreground);
+  --cr-secondary-text-color: var(
+      --color-side-panel-dialog-secondary-foreground);
+  --cr-dialog-title-font-size: 16px;
+  --cr-dialog-title-slot-padding-bottom: 8px;
+  font-weight: 500;
+}
+
+:host-context([chrome-refresh-2023]) cr-dialog::part(dialog) {
+  --scroll-border-color: var(--color-side-panel-dialog-divider);
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+}

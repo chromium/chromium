@@ -358,6 +358,9 @@
   E_CPONLY(kColorSidePanelBadgeBackgroundUpdated) \
   E_CPONLY(kColorSidePanelBadgeForeground) \
   E_CPONLY(kColorSidePanelBadgeForegroundUpdated) \
+  E_CPONLY(kColorSidePanelBookmarksSelectedFolderBackground) \
+  E_CPONLY(kColorSidePanelBookmarksSelectedFolderForeground) \
+  E_CPONLY(kColorSidePanelBookmarksSelectedFolderIcon) \
   E_CPONLY(kColorSidePanelCardBackground) \
   E_CPONLY(kColorSidePanelCardPrimaryForeground) \
   E_CPONLY(kColorSidePanelCardSecondaryForeground) \
@@ -373,6 +376,10 @@
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeSnapshotBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeWebStoreOptionBorder) \
+  E_CPONLY(kColorSidePanelDialogBackground) \
+  E_CPONLY(kColorSidePanelDialogDivider) \
+  E_CPONLY(kColorSidePanelDialogPrimaryForeground) \
+  E_CPONLY(kColorSidePanelDialogSecondaryForeground) \
   E_CPONLY(kColorSidePanelDivider) \
   E_CPONLY(kColorSidePanelEditFooterBorder) \
   E_CPONLY(kColorSidePanelFilterChipBorder) \

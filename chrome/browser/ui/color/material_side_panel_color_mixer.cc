@@ -21,6 +21,13 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSidePanelDivider] = {ui::kColorSysDivider};
 
+  /* Dialogs within the side panel. */
+  mixer[kColorSidePanelDialogBackground] = {ui::kColorSysSurface};
+  mixer[kColorSidePanelDialogDivider] = {ui::kColorSysNeutralOutline};
+  mixer[kColorSidePanelDialogPrimaryForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorSidePanelDialogSecondaryForeground] = {
+      ui::kColorSysOnSurfaceSubtle};
+
   mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorSidePanelBadgeBackgroundUpdated] = {
       ui::kColorSysTertiaryContainer};
@@ -43,6 +50,14 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysTonalContainer};
 
   mixer[kColorSidePanelTextfieldBorder] = {ui::kColorSysNeutralOutline};
+
+  /* Bookmarks */
+  mixer[kColorSidePanelBookmarksSelectedFolderBackground] = {
+      ui::kColorSysStateRipplePrimary};
+  mixer[kColorSidePanelBookmarksSelectedFolderForeground] = {
+      ui::kColorSysOnSurface};
+  mixer[kColorSidePanelBookmarksSelectedFolderIcon] = {
+      ui::kColorSysOnSurfaceSubtle};
 
   /* Customize Chrome */
   mixer[kColorSidePanelCustomizeChromeColorPickerCheckmarkBackground] = {
