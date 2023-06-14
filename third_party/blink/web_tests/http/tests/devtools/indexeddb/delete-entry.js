@@ -52,24 +52,24 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   var objectStoreTreeElement = idbDatabaseTreeElement.childAt(0);
   objectStoreTreeElement.select();
-  await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
+  await TestRunner.addSnifferPromise(objectStoreTreeElement.view, 'updatedDataForTests');
   var indexTreeElement = objectStoreTreeElement.childAt(0);
   indexTreeElement.select();
-  await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
+  await TestRunner.addSnifferPromise(indexTreeElement.view, 'updatedDataForTests');
   dumpObjectStores();
 
   var node = objectStoreTreeElement.view.dataGrid.rootNode().children[0];
   node.select();
   objectStoreTreeElement.view.deleteButtonClicked(node);
-  await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
-  await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
+  await TestRunner.addSnifferPromise(objectStoreTreeElement.view, 'updatedDataForTests');
+  await TestRunner.addSnifferPromise(indexTreeElement.view, 'updatedDataForTests');
   dumpObjectStores();
 
   node = indexTreeElement.view.dataGrid.rootNode().children[0];
   node.select();
   indexTreeElement.view.deleteButtonClicked(node);
-  await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
-  await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
+  await TestRunner.addSnifferPromise(objectStoreTreeElement.view, 'updatedDataForTests');
+  await TestRunner.addSnifferPromise(indexTreeElement.view, 'updatedDataForTests');
   dumpObjectStores();
 
   TestRunner.completeTest();
