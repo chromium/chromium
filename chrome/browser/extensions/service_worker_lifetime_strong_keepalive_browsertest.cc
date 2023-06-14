@@ -201,8 +201,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
 // Tests that the service workers will not stop if both extensions are
 // allowlisted via policy and the port is not closed.
-// TODO(https://crbug.com/1454339): Flakes on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1454339): Flakes on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ServiceWorkersDoNotTimeOutWithPolicy \
   DISABLED_ServiceWorkersDoNotTimeOutWithPolicy
 #else
