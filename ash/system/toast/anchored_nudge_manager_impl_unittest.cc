@@ -85,6 +85,9 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
+  // Ensure the nudge widget was not activated when shown.
+  EXPECT_FALSE(nudge->GetWidget()->IsActive());
+
   // Cancel the nudge, expect it to be removed from the shown nudges map.
   CancelNudge(id);
   EXPECT_FALSE(GetShownNudges()[id]);

@@ -239,7 +239,8 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   // using the anchor window bounds.
   anchored_nudge_ptr->SizeToContents();
 
-  anchored_nudge_widget->Show();
+  // The widget is not activated so the nudge does not steal focus.
+  anchored_nudge_widget->ShowInactive();
 
   nudge_widget_observers_[id] =
       std::make_unique<NudgeWidgetObserver>(anchored_nudge_ptr, this);
