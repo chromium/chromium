@@ -449,6 +449,12 @@ void DefaultProvider::RecordHistogramMetrics() {
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::IDLE_DETECTION))),
       CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultStorageAccessSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::STORAGE_ACCESS))),
+      CONTENT_SETTING_NUM_SETTINGS);
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
