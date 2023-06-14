@@ -90,24 +90,29 @@ struct COLOR_SPACE_EXPORT HdrMetadataSmpteSt2086 {
 };
 
 // HDR metadata for extended range color spaces.
-struct COLOR_SPACE_EXPORT ExtendedRangeBrightness {
-  // The current hdr/sdr ratio of the current buffer. For example if the buffer
-  // was rendered with a target SDR whitepoint of 100 nits and a max display
-  // brightness of 200 nits, this should be set to 2.0f.
-  float current_buffer_ratio = 1.0f;
+struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
+  constexpr HdrMetadataExtendedRange() = default;
+  constexpr HdrMetadataExtendedRange(float current_headroom,
+                                     float desired_headroom)
+      : current_headroom(current_headroom),
+        desired_headroom(desired_headroom) {}
 
-  // The desired hdr/sdr ratio. This can be used to communicate the max desired
-  // brightness range. This is similar to the "max luminance" value in other HDR
-  // metadata formats, but represented as a ratio of the target SDR whitepoint
-  // to the max display brightness.
-  float desired_ratio = 1.0f;
+  // The HDR headroom of the contents of the current buffer.
+  float current_headroom = 1.f;
 
-  bool operator==(const ExtendedRangeBrightness& rhs) const {
-    return (current_buffer_ratio == rhs.current_buffer_ratio &&
-            desired_ratio == rhs.desired_ratio);
+  // The desired HDR headroom of the content in the current buffer. This may be
+  // greater than `current_headroom` if the content in the current buffer had
+  // to be tonemapped to fit into `current_headroom`.
+  float desired_headroom = 1.f;
+
+  std::string ToString() const;
+
+  bool operator==(const HdrMetadataExtendedRange& rhs) const {
+    return (current_headroom == rhs.current_headroom &&
+            desired_headroom == rhs.desired_headroom);
   }
 
-  bool operator!=(const ExtendedRangeBrightness& rhs) const {
+  bool operator!=(const HdrMetadataExtendedRange& rhs) const {
     return !(*this == rhs);
   }
 };
@@ -119,7 +124,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   // Brightness points for extended range color spaces.
   // NOTE: Is not serialized over IPC.
-  absl::optional<ExtendedRangeBrightness> extended_range_brightness;
+  absl::optional<HdrMetadataExtendedRange> extended_range;
 
   HDRMetadata() = default;
   HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
@@ -134,8 +139,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   bool IsValid() const {
     return (cta_861_3 && cta_861_3->IsValid()) ||
-           (smpte_st_2086 && smpte_st_2086->IsValid()) ||
-           extended_range_brightness;
+           (smpte_st_2086 && smpte_st_2086->IsValid()) || extended_range;
   }
 
   // Return a copy of `hdr_metadata` with its `smpte_st_2086` fully
@@ -151,7 +155,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   bool operator==(const HDRMetadata& rhs) const {
     return cta_861_3 == rhs.cta_861_3 && smpte_st_2086 == rhs.smpte_st_2086 &&
-           extended_range_brightness == rhs.extended_range_brightness;
+           extended_range == rhs.extended_range;
   }
 
   bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }

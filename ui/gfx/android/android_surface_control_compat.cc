@@ -867,11 +867,10 @@ void SurfaceControl::Transaction::SetColorSpace(
   uint64_t data_space = ADATASPACE_UNKNOWN;
   float extended_range_brightness_ratio = 1.f;
   float desired_brightness_ratio = 1.f;
-  if (metadata && metadata->extended_range_brightness &&
+  if (metadata && metadata->extended_range &&
       SurfaceControlMethods::Get()
           .ASurfaceTransaction_setExtendedRangeBrightnessFn) {
-    desired_brightness_ratio =
-        metadata->extended_range_brightness->desired_ratio;
+    desired_brightness_ratio = metadata->extended_range->desired_headroom;
   }
   ColorSpaceToADataSpace(color_space, desired_brightness_ratio, data_space,
                          extended_range_brightness_ratio);

@@ -947,11 +947,11 @@ void SkiaRenderer::FinishDrawingFrame() {
       if (current_frame()->root_render_pass->content_color_usage ==
           gfx::ContentColorUsage::kHDR) {
         surface_candidate.hdr_metadata.emplace();
-        surface_candidate.hdr_metadata->extended_range_brightness.emplace();
+        surface_candidate.hdr_metadata->extended_range.emplace();
         // TODO(https://crbug.com/1430768): Track the actual brightness of the
         // content. For now, assume that all HDR content is 1,000 nits.
-        surface_candidate.hdr_metadata->extended_range_brightness
-            ->desired_ratio = 1000.f / gfx::ColorSpace::kDefaultSDRWhiteLevel;
+        surface_candidate.hdr_metadata->extended_range->desired_headroom =
+            1000.f / gfx::ColorSpace::kDefaultSDRWhiteLevel;
       }
       surface_candidate.is_opaque = !surface_plane.enable_blending;
       surface_candidate.opacity = surface_plane.opacity;
