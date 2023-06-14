@@ -105,6 +105,8 @@ class ReadingListMediatorTest
         listItemFactory:[[ReadingListListItemFactory alloc] init]];
   }
 
+  ~ReadingListMediatorTest() { [mediator_ disconnect]; }
+
   ReadingListMediatorTest(const ReadingListMediatorTest&) = delete;
   ReadingListMediatorTest& operator=(const ReadingListMediatorTest&) = delete;
 

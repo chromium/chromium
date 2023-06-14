@@ -96,6 +96,10 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
   _modelBridge.reset();
 }
 
+- (void)dealloc {
+  DCHECK(!_model);
+}
+
 #pragma mark - ReadingListDataSource
 
 - (BOOL)isItemRead:(id<ReadingListListItem>)item {
