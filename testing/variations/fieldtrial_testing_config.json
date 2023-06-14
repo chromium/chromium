@@ -12684,29 +12684,6 @@
             ]
         }
     ],
-    "SpeculationRulesPrerenderMemoryLimit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ExperimentalMemoryLimit100_20230607",
-                    "params": {
-                        "acceptable_percent_of_system_memory": "100"
-                    },
-                    "enable_features": [
-                        "Prerender2MemoryControls"
-                    ]
-                }
-            ]
-        }
-    ],
     "SpeculativeServiceWorkerStartup": [
         {
             "platforms": [
