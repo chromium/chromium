@@ -77,13 +77,17 @@ void SigninDelegateImpl::EnableMsbb(bool enable_msbb) {
 }
 
 void SigninDelegateImpl::OpenUrlInBrowser(const GURL& url, bool use_new_tab) {
+  auto* browser = companion::GetBrowserForWebContents(webui_contents_);
+  if (!browser) {
+    return;
+  }
+
   content::OpenURLParams params(url, content::Referrer(),
                                 use_new_tab
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                     : WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                 /*is_renderer_initiated*/ false);
-  auto* browser = companion::GetBrowserForWebContents(webui_contents_);
   browser->OpenURL(params);
 }
 
