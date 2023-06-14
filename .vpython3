@@ -469,7 +469,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/websockets-py3"
-  version: "version:10.3"
+  version: "version:11.0.3"
 >
 
 # Used by:
