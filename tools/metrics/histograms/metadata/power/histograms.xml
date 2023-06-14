@@ -1069,10 +1069,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileHibernated" units="mW"
-    expires_after="2023-06-15">
+    expires_after="2024-06-08">
   <owner>puthik@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
+  <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
+  <owner>chromeos-hibernate@google.com</owner>
   <summary>
     Chrome OS battery discharge rate in mW while the system was hibernated,
     sampled at resume. Only reported if the system was on battery power both
@@ -1830,10 +1831,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.HibernateAttemptsBeforeCancel" units="units"
-    expires_after="2023-06-15">
+    expires_after="2024-06-08">
   <owner>puthik@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
+  <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
+  <owner>chromeos-hibernate@google.com</owner>
   <summary>
     The number of hibernate attempts performed for a single hibernate request
     (e.g. triggered by transition from suspend to hibernation) that was
@@ -1845,10 +1847,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.HibernateAttemptsBeforeSuccess" units="units"
-    expires_after="2023-06-15">
+    expires_after="2024-06-08">
   <owner>puthik@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
+  <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
+  <owner>chromeos-hibernate@google.com</owner>
   <summary>
     The number of hibernation attempts performed for a single hibernation
     request (e.g. triggered by transition from suspend to hibernation) that
