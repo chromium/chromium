@@ -7,7 +7,6 @@ package org.chromium.components.paintpreview.player.frame;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Handler;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -27,7 +26,6 @@ class PlayerFrameBitmapPainter {
     private Rect mDrawBitmapDst = new Rect();
     private Runnable mInvalidateCallback;
     private Runnable mFirstPaintListener;
-    private Handler mHandler = new Handler();
     private boolean mDestroyed;
 
     PlayerFrameBitmapPainter(@NonNull Runnable invalidateCallback,

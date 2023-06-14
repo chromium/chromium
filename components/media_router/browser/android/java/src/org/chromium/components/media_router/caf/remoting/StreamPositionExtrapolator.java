@@ -10,8 +10,6 @@ package org.chromium.components.media_router.caf.remoting;
  * position.
  */
 public class StreamPositionExtrapolator {
-    private static final String TAG = "MediaFling";
-
     private long mDuration;
     private long mLastKnownPosition;
     private long mTimestamp;

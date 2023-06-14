@@ -35,7 +35,6 @@ class WebsitePreference extends ChromeImageViewPreference {
     private final SiteSettingsCategory mCategory;
 
     // TODO(crbug.com/1076571): Move these constants to dimens.xml
-    private static final int FAVICON_PADDING_DP = 4;
     private static final int TEXT_SIZE_SP = 13;
 
     // Whether the favicon has been fetched already.

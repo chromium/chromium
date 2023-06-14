@@ -99,7 +99,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class Fido2ApiTestHelper {
     // Test data.
-    private static final String FILLER_ERROR_MSG = "Error Error";
     private static final int OBJECT_MAGIC = 20293;
 
     /**
@@ -348,7 +347,6 @@ public class Fido2ApiTestHelper {
     private static final byte[] TEST_CLIENT_DATA_JSON = new byte[] {4, 5, 6};
     private static final byte[] TEST_AUTHENTICATOR_DATA = new byte[] {7, 8, 9};
     private static final byte[] TEST_SIGNATURE = new byte[] {10, 11, 12};
-    private static final long TIMEOUT_SAFETY_MARGIN_MS = scaleTimeout(TimeUnit.SECONDS.toMillis(1));
     private static final long TIMEOUT_MS = scaleTimeout(TimeUnit.SECONDS.toMillis(1));
     private static final int[] TEST_USER_VERIFICATION_METHOD = new int[] {0x00000002, 0x00000200};
     private static final short[] TEST_KEY_PROTECTION_TYPE = new short[] {0x0002, 0x0001};

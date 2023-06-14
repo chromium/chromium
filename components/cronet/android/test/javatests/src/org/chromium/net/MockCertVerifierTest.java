@@ -22,8 +22,6 @@ import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
  */
 @RunWith(AndroidJUnit4.class)
 public class MockCertVerifierTest {
-    private static final String TAG = MockCertVerifierTest.class.getSimpleName();
-
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 

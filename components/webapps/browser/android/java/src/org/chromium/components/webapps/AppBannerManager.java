@@ -49,8 +49,6 @@ public class AppBannerManager {
     /** The key to use to store and retrieve (from the menu data) what was shown in the menu. */
     public static final String MENU_TITLE_KEY = "AppMenuTitleShown";
 
-    private static final String TAG = "AppBannerManager";
-
     /** Retrieves information about a given package. */
     private static AppDetailsDelegate sAppDetailsDelegate;
 

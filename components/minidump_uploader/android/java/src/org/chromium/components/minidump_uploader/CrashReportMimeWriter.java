@@ -17,8 +17,6 @@ import java.util.Map;
  */
 @JNINamespace("minidump_uploader")
 public class CrashReportMimeWriter {
-    private static final String TAG = "CrashReportMimeWriter";
-
     private static final String MINIDUMP_KEY = "upload_file_minidump";
 
     /*

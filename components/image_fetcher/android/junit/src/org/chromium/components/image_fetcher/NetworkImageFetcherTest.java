@@ -37,7 +37,6 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 public class NetworkImageFetcherTest {
     private static final String UMA_CLIENT_NAME = "TestUmaClient";
     private static final String URL = "http://google.com/test.png";
-    private static final String PATH = "test/path/cache/test.png";
     private static final int WIDTH_PX = 10;
     private static final int HEIGHT_PX = 20;
 

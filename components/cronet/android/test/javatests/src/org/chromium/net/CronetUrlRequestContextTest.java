@@ -62,15 +62,12 @@ public class CronetUrlRequestContextTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    private static final String TAG = CronetUrlRequestContextTest.class.getSimpleName();
-
     // URLs used for tests.
     private static final String MOCK_CRONET_TEST_FAILED_URL =
             "http://mock.failed.request/-2";
     private static final String MOCK_CRONET_TEST_SUCCESS_URL =
             "http://mock.http/success.txt";
     private static final int MAX_FILE_SIZE = 1000000000;
-    private static final int NUM_EVENT_FILES = 10;
 
     private EmbeddedTestServer mTestServer;
     private String mUrl;

@@ -153,10 +153,6 @@ public class ExternalNavigationHandlerTest {
     private static final String WEBAPK_PACKAGE_NAME = WEBAPK_PACKAGE_PREFIX + ".template";
     private static final String INVALID_WEBAPK_PACKAGE_NAME = WEBAPK_PACKAGE_PREFIX + ".invalid";
 
-    private static final String[] SUPERVISOR_START_ACTIONS = {
-            "com.google.android.instantapps.START", "com.google.android.instantapps.nmr1.INSTALL",
-            "com.google.android.instantapps.nmr1.VIEW"};
-
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 

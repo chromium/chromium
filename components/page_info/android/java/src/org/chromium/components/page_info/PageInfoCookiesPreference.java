@@ -31,7 +31,6 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
-    private static final String CLEAR_BUTTON_PREFERENCE = "clear_button";
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;

@@ -54,11 +54,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastSessionControllerTest {
-    private static final String PRESENTATION_ID = "presentation-id";
-    private static final String ORIGIN = "https://example.com/";
-    private static final int TAB_ID = 1;
-    private static final String APP_ID = "12345678";
-
     @Mock
     private CastDevice mCastDevice;
     @Mock

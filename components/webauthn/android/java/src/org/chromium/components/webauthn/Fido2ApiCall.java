@@ -85,8 +85,6 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int TRANSACTION_HYBRID_SIGN = IBinder.FIRST_CALL_TRANSACTION + 4;
     public static final int TRANSACTION_GET_LINK_INFO = IBinder.FIRST_CALL_TRANSACTION + 0;
 
-    private static final String TAG = "Fido2ApiCall";
-
     private static final String BROWSER_DESCRIPTOR =
             "com.google.android.gms.fido.fido2.internal.privileged.IFido2PrivilegedService";
     private static final String BROWSER_START_SERVICE_ACTION =

@@ -23,8 +23,6 @@ import java.util.List;
  * IdentityManager provides access to native IdentityManager's public API to java components.
  */
 public class IdentityManager {
-    private static final String TAG = "IdentityManager";
-
     /**
      * IdentityManager.Observer is notified when the available account information are updated. This
      * is a subset of native's IdentityManager::Observer.

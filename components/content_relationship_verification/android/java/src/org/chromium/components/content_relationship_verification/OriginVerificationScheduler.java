@@ -22,8 +22,6 @@ import java.util.Set;
  * website will only performed at most once.
  */
 public class OriginVerificationScheduler {
-    private static final String TAG = "OriginVerification";
-
     private static final String HTTP_SCHEME = "http";
     private static final String HTTPS_SCHEME = "https";
 

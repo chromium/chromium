@@ -34,7 +34,6 @@ import java.lang.annotation.RetentionPolicy;
  * Generic dialog view for app modal or tab modal alert dialogs.
  */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
-    private static final String TAG = "ModalDialogView";
     private static final String UMA_SECURITY_FILTERED_TOUCH_RESULT =
             "Android.ModalDialog.SecurityFilteredTouchResult";
 

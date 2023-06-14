@@ -15,8 +15,6 @@ import org.chromium.base.supplier.Supplier;
  * Each notification is associated with a different {@link MediaNotificationController}.
  */
 public class MediaNotificationManager {
-    private static final String TAG = "MediaNotification";
-
     // Maps the notification ids to their corresponding notification managers.
     private static SparseArray<MediaNotificationController> sControllers;
 

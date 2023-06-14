@@ -36,8 +36,6 @@ public class QuicTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    private static final String TAG = QuicTest.class.getSimpleName();
-
     @Before
     public void setUp() throws Exception {
         // Load library first, since we need the Quic test server's URL.

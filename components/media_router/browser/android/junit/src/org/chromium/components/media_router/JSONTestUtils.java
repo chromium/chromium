@@ -15,7 +15,6 @@ import java.util.Iterator;
  * Utilities for comparing JSON objects and strings.
  */
 public class JSONTestUtils {
-    private static final String TAG = "MediaRouter";
     private static final String ANY_PREFIX = "ANY_";
 
     private static boolean isPureJSONObjectEqual(JSONObject expected, JSONObject actual) {

@@ -14,7 +14,6 @@ import org.chromium.base.StrictModeContext;
  * before native has loaded.
  */
 public class SubscriptionFlagManager {
-    private static final String TAG = "SubscriptionFlagManager";
     private static final String PREF_PACKAGE =
             "org.chromium.components.gcm_driver.subscription_flags";
 

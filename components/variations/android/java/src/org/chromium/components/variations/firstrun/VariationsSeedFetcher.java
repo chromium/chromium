@@ -100,8 +100,7 @@ public class VariationsSeedFetcher {
     public static final int SEED_FETCH_RESULT_DELTA_PATCH_EXCEPTION = -6;
     @VisibleForTesting
     public static final int SEED_FETCH_RESULT_INVALID_IM_HEADER = -5;
-
-    private static final int SEED_FETCH_RESULT_INVALID_DATE_HEADER = -4;
+    // private static final int SEED_FETCH_RESULT_INVALID_DATE_HEADER = -4;
     private static final int SEED_FETCH_RESULT_UNKNOWN_HOST_EXCEPTION = -3;
     private static final int SEED_FETCH_RESULT_TIMEOUT = -2;
     @VisibleForTesting

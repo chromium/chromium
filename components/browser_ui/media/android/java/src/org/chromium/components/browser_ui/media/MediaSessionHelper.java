@@ -43,8 +43,6 @@ import java.util.Set;
  * WebContents to a delegate (ultimately, to {@link MediaNotificationController}).
  */
 public class MediaSessionHelper implements MediaImageCallback {
-    private static final String TAG = "MediaSession";
-
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
     @VisibleForTesting
     public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 2500;
