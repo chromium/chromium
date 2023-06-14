@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -493,6 +494,40 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
                                        /*is_one_time=*/false);
   EXPECT_EQ(expected_visible_permissions.size() + 1,
             last_permission_info_list().size());
+}
+
+TEST_F(PageInfoTest, StorageAccessGrantsAreFiltered) {
+  GURL kEmbedded1("https://embedded1.com");
+  ContentSettingsType type = ContentSettingsType::STORAGE_ACCESS;
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  // First-party exceptions are hidden.
+  map->SetContentSettingDefaultScope(url(), url(), type, CONTENT_SETTING_ALLOW);
+  // First-party-set exceptions are hidden based on their SessionModel.
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::SessionModel::NonRestorableUserSession);
+  map->SetContentSettingDefaultScope(kEmbedded1, url(), type,
+                                     CONTENT_SETTING_ALLOW, constraint);
+  page_info()->PresentSitePermissions();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(kEmbedded1, url(), type,
+                                     CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissions();
+  expected_visible_permissions.insert(type);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 }
 
 TEST_F(PageInfoTest, IncognitoPermissionsEmptyByDefault) {
