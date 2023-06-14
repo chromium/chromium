@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 suite('LocationInternalsUITest', function() {
   test('PageLoaded', async function() {
-    const watchTable = document.querySelector<HTMLElement>('#watch-position');
-    assert(watchTable);
+    const watchButton = document.querySelector<HTMLElement>('#watch-btn');
+    assert(watchButton);
   });
 });

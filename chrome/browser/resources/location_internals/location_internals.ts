@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import './diagnose_info_table.js';
 
-let watchButton: HTMLElement;
-let watchTable: HTMLElement;
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+
+const WATCH_TABLE_ID = 'watch-position-table';
+
 let watchId: number = -1;
 
 document.addEventListener('DOMContentLoaded', () => {
-  watchButton = getRequiredElement<HTMLElement>('watch-btn');
-  watchTable = getRequiredElement<HTMLElement>('watch-position');
+  const watchButton = getRequiredElement<HTMLElement>('watch-btn');
   watchButton.addEventListener('click', () => {
     if (watchId === -1) {
       watchId = navigator.geolocation.watchPosition(logSuccess, logError, {
@@ -29,51 +29,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function logSuccess(position: GeolocationPosition) {
-  assert(watchTable);
-  const timeCell = getRequiredElement<HTMLElement>('watch-position-timestamp');
-  const positionCell =
-      getRequiredElement<HTMLElement>('watch-position-position');
+  const data: Record<string, string> = {};
+  data['timestamp'] = new Date(position.timestamp).toLocaleString();
 
-  timeCell.textContent = new Date(position.timestamp).toLocaleString();
-  positionCell.textContent =
-      `${position.coords.latitude} ° , ${position.coords.longitude} ° `;
-
-  if (position.coords.accuracy) {
-    const accuracyCell =
-        getRequiredElement<HTMLElement>('watch-position-accuracy');
-    accuracyCell.textContent = position.coords.accuracy.toString();
+  for (const key in position.coords) {
+    const value = position.coords[key as keyof GeolocationCoordinates];
+    if (typeof value === 'number' || typeof value === 'string') {
+      data[key] = value.toString();
+    }
   }
-
-  if (position.coords.altitude) {
-    const altitudeCell =
-        getRequiredElement<HTMLElement>('watch-position-altitude');
-    altitudeCell.textContent = position.coords.altitude.toString();
-  }
-
-  if (position.coords.altitudeAccuracy) {
-    const altitudeAccuracyCell =
-        getRequiredElement<HTMLElement>('watch-position-altitude-accuracy');
-    altitudeAccuracyCell.textContent =
-        position.coords.altitudeAccuracy.toString();
-  }
-
-  if (position.coords.heading) {
-    const headingCell =
-        getRequiredElement<HTMLElement>('watch-position-heading');
-    headingCell.textContent = position.coords.heading.toString();
-  }
-
-  if (position.coords.speed) {
-    const speedCell = getRequiredElement<HTMLElement>('watch-position-speed');
-    speedCell.textContent = position.coords.speed.toString();
-  }
+  updateTable(WATCH_TABLE_ID, [data]);
 }
 
 function logError(error: GeolocationPositionError) {
-  assert(watchTable);
-  const timeCell = getRequiredElement<HTMLElement>('watch-position-timestamp');
-  const positionCell =
-      getRequiredElement<HTMLElement>('watch-position-position');
-  timeCell.textContent = new Date().toLocaleString();
-  positionCell.textContent = `${error.message}, code: ${error.code}`;
+  const data: Record<string, string> = {};
+  data['timestamp'] = new Date().toLocaleString();
+  data['fail reason'] = `${error.message}, code: ${error.code}`;
+  updateTable(WATCH_TABLE_ID, [data]);
+}
+
+function updateTable(name: string, data: Array<Record<string, string>>) {
+  removeTable(name);
+  const newTableElement = document.createElement('diagnose-info-table');
+  newTableElement.id = name;
+  newTableElement.createTableData(data);
+  newTableElement.updateCaption(name);
+  getRequiredElement<HTMLElement>('container').appendChild(newTableElement);
+}
+
+function removeTable(name: string) {
+  const oldTableElement = $(name);
+  if (oldTableElement) {
+    oldTableElement.remove();
+  }
 }

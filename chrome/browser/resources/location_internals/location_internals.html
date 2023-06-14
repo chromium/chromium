@@ -1,48 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
-
-<head>
-  <meta charset="utf-8">
-  <title>Location Internals</title>
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <link rel="stylesheet" href="location_internals.css">
-</head>
-
-<body>
-  <h2 class="header">Location Internals</h2>
-  <header class="page-header">
-    <button id="watch-btn">Start Watching Position</button>
-  </header>
-  <div id="container">
-
-    <table id="watch-position">
-      <caption>WatchPosition</caption>
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>Position</th>
-          <th>Accuracy</th>
-          <th>Altitude</th>
-          <th>AltitudeAccuracy</th>
-          <th>Heading</th>
-          <th>Speed</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td id="watch-position-timestamp"></td>
-          <td id="watch-position-position"></td>
-          <td id="watch-position-accuracy"></td>
-          <td id="watch-position-altitude"></td>
-          <td id="watch-position-altitude-accuracy"></td>
-          <td id="watch-position-heading"></td>
-          <td id="watch-position-speed"></td>
-        </tr>
-      </tbody>
-    </table>
-
-  </div>
-  <script type="module" src="location_internals.js"></script>
-</body>
-
+  <head>
+    <meta charset="utf-8">
+    <title>Location Internals</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="location_internals.css">
+  </head>
+  <body>
+    <h2 class="header">Location Internals</h2>
+    <header class="page-header">
+      <button id="watch-btn">Start Watching Position</button>
+    </header>
+    <div id="container"></div>
+    <script type="module" src="location_internals.js"></script>
+  </body>
 </html>

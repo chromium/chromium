@@ -4,26 +4,8 @@
 
 #container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
   padding-inline-end: 20px;
   padding-inline-start: 20px;
-}
-
-table {
-  border-collapse: collapse;
-  font-family: arial, sans-serif;
-  margin-top: 20px;
-}
-
-table caption {
-  font-size: 18px;
-  font-weight: bold;
-  text-align: start;
-}
-
-td,
-th {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: start;
 }
