@@ -10,8 +10,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
@@ -22,8 +25,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11_4.h>
-
-#include "ui/gl/gl_angle_util_win.h"
 #endif
 
 namespace content {
@@ -70,17 +71,26 @@ void GpuServiceFactory::RunMediaService(
           {base::TaskPriority::USER_BLOCKING});
     }
 #if BUILDFLAG(IS_WIN)
-    // Since the D3D11Device used for decoding is shared with ANGLE, we need
-    // multithread protection turned on to use it from another thread.
+    // Since the D3D11Device used for decoding is shared with SkiaRenderer(ANGLE
+    // or Dawn), we need multithread protection turned on to use it from another
+    // thread.
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce([] {
-          auto device = gl::QueryD3D11DeviceObjectFromANGLE();
-          CHECK(device);
-          Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
-          auto hr = device->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-          CHECK(SUCCEEDED(hr));
-          multi_threaded->SetMultithreadProtected(TRUE);
-        }));
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<media::MediaGpuChannelManager> manager) {
+              CHECK(manager);
+              gpu::ContextResult result;
+              auto shared_context_state =
+                  manager.get()->channel_manager()->GetSharedContextState(
+                      &result);
+              auto device = shared_context_state->GetD3D11Device();
+              CHECK(device);
+              Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
+              auto hr = device->QueryInterface(IID_PPV_ARGS(&multi_threaded));
+              CHECK(SUCCEEDED(hr));
+              multi_threaded->SetMultithreadProtected(TRUE);
+            },
+            media_gpu_channel_manager_));
 #endif
   }
 

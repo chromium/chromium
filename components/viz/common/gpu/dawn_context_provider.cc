@@ -18,6 +18,10 @@
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/dawn/include/dawn/native/D3D11Backend.h"
+#endif
+
 namespace viz {
 
 namespace {
@@ -70,6 +74,13 @@ DawnContextProvider::DawnContextProvider() {
 }
 
 DawnContextProvider::~DawnContextProvider() = default;
+
+#if BUILDFLAG(IS_WIN)
+Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
+    const {
+  return dawn::native::d3d11::GetD3D11Device(device_.Get());
+}
+#endif
 
 wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
 #if DCHECK_IS_ON()

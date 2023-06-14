@@ -110,6 +110,7 @@ void NotifyPlatformDecoderSupport(
 // queries using the |get_vda_configs| callback.
 absl::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
+    base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info,
@@ -185,6 +186,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
 
   static absl::optional<SupportedVideoDecoderConfigs>
   GetSupportedVideoDecoderConfigsStatic(
+      base::WeakPtr<MediaGpuChannelManager> manager,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const gpu::GPUInfo& gpu_info);

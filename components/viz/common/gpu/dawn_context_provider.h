@@ -7,10 +7,16 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "components/viz/common/viz_dawn_context_provider_export.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#include <wrl/client.h>
+#endif
 
 namespace skgpu::graphite {
 class Context;
@@ -29,6 +35,10 @@ class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
 
   wgpu::Device GetDevice() const { return device_; }
   wgpu::Instance GetInstance() const { return instance_.Get(); }
+
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
+#endif
 
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& options);

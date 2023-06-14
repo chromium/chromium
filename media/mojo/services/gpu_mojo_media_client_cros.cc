@@ -119,6 +119,7 @@ void NotifyPlatformDecoderSupport(
 
 absl::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
+    base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info,

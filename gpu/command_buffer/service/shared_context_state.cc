@@ -54,6 +54,10 @@
 #include "components/viz/common/gpu/dawn_context_provider.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/gl_angle_util_win.h"
+#endif
+
 namespace {
 static constexpr size_t kInitialScratchDeserializationBufferSize = 1024;
 
@@ -959,5 +963,20 @@ int32_t SharedContextState::GetMaxTextureSize() const {
   max_texture_size = std::min(max_texture_size, INT32_MAX - 1);
   return max_texture_size;
 }
+
+#if BUILDFLAG(IS_WIN)
+Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
+    const {
+  switch (gr_context_type_) {
+    case GrContextType::kGL:
+      return gl::QueryD3D11DeviceObjectFromANGLE();
+    case GrContextType::kGraphiteDawn:
+      return dawn_context_provider_->GetD3D11Device();
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+#endif
 
 }  // namespace gpu
