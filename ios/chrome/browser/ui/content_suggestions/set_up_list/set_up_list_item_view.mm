@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -78,9 +80,14 @@ struct ViewConfig {
     _complete = data.complete;
     if (!data.compactLayout) {
       // Normal ViewConfig.
+      const int syncString =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kEnablePasswordsAccountStorage)
+              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION_NO_PASSWORDS
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
       _config = {
           NO,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION,
+          syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
           UIFontTextStyleSubheadline,
@@ -89,9 +96,14 @@ struct ViewConfig {
       };
     } else {
       // ViewConfig for a compact layout.
+      const int syncString =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kEnablePasswordsAccountStorage)
+              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_PASSWORDS
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION;
       _config = {
           YES,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION,
+          syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
           UIFontTextStyleFootnote,
