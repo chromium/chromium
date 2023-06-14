@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -50,6 +51,8 @@ public class FadingEdgeScrollView extends ScrollView {
 
         mSeparatorColor = getContext().getColor(R.color.toolbar_shadow_color);
         mSeparatorHeight = getResources().getDimensionPixelSize(R.dimen.divider_height);
+
+        if (attrs != null) parseAttributes(attrs);
     }
 
     @Override
@@ -112,5 +115,19 @@ public class FadingEdgeScrollView extends ScrollView {
             int top = getScrollY();
             canvas.drawRect(left, top, right, top + mSeparatorHeight, mSeparatorPaint);
         }
+    }
+
+    private void parseAttributes(AttributeSet attrs) {
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.FadingEdgeScrollView);
+
+        if (a.hasValue(R.styleable.FadingEdgeScrollView_topEdgeVisibility)) {
+            mDrawTopEdge =
+                    a.getInt(R.styleable.FadingEdgeScrollView_topEdgeVisibility, EdgeType.FADING);
+        }
+        if (a.hasValue(R.styleable.FadingEdgeScrollView_bottomEdgeVisibility)) {
+            mDrawBottomEdge = a.getInt(
+                    R.styleable.FadingEdgeScrollView_bottomEdgeVisibility, EdgeType.FADING);
+        }
+        a.recycle();
     }
 }

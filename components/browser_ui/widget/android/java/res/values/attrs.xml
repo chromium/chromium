@@ -123,6 +123,19 @@ found in the LICENSE file.
         <attr name="cardElevation" format="reference|dimension"/>
     </declare-styleable>
 
+    <declare-styleable name="FadingEdgeScrollView">
+        <attr name="topEdgeVisibility" format="enum">
+            <enum name="none" value="0" />
+            <enum name="fading" value="1" />
+            <enum name="hard" value="2" />
+        </attr>
+        <attr name="bottomEdgeVisibility" format="enum">
+            <enum name="none" value="0" />
+            <enum name="fading" value="1" />
+            <enum name="hard" value="2" />
+        </attr>
+    </declare-styleable>
+
     <!-- Surface color resources. See https://crbug.com/1410537. -->
     <attr name="tileViewIconBackgroundModern" format="reference"/>
     <attr name="cardElevation" format="reference|dimension"/>
