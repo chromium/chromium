@@ -32200,6 +32200,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromContentArea">
+  <obsolete>Removed in M116.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point

@@ -354,10 +354,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromCloudPrint"));
       break;
-    case AccessPoint::ACCESS_POINT_CONTENT_AREA:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromContentArea"));
-      break;
     case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSigninPromo"));
@@ -601,7 +597,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
           base::UserMetricsAction("Signin_Impression_FromSetUpList"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case AccessPoint::ACCESS_POINT_UNKNOWN:
@@ -651,7 +646,6 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_USER_MANAGER:
     case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case AccessPoint::ACCESS_POINT_RECENT_TABS:
     case AccessPoint::ACCESS_POINT_UNKNOWN:
