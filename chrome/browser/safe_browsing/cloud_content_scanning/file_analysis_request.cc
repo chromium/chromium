@@ -170,13 +170,9 @@ void FileAnalysisRequest::GetRequestData(DataCallback callback) {
   }
 
   if (!delay_opening_file_) {
-    if (file_access::ScopedFileAccessDelegate::HasInstance()) {
-      file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
-          {path_}, base::BindOnce(&FileAnalysisRequest::GetData,
-                                  weakptr_factory_.GetWeakPtr()));
-    } else {
-      GetData(file_access::ScopedFileAccess::Allowed());
-    }
+    file_access::RequestFilesAccessForSystem(
+        {path_}, base::BindOnce(&FileAnalysisRequest::GetData,
+                                weakptr_factory_.GetWeakPtr()));
   }
 }
 

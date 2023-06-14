@@ -233,15 +233,10 @@ void MultipartUploadRequest::SendFileRequest(
     data_pipe_getter_->Reset();
     CompleteSendRequest(std::move(request));
   } else {
-    if (file_access::ScopedFileAccessDelegate::HasInstance()) {
-      file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
-          {path_},
-          base::BindOnce(&MultipartUploadRequest::CreateDatapipe,
-                         weak_factory_.GetWeakPtr(), std::move(request)));
-    } else {
-      CreateDatapipe(std::move(request),
-                     file_access::ScopedFileAccess::Allowed());
-    }
+    file_access::RequestFilesAccessForSystem(
+        {path_},
+        base::BindOnce(&MultipartUploadRequest::CreateDatapipe,
+                       weak_factory_.GetWeakPtr(), std::move(request)));
   }
 }
 

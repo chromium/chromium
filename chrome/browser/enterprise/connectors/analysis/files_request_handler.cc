@@ -177,15 +177,11 @@ bool FilesRequestHandler::UploadDataImpl() {
     for (size_t i = 0; i < paths_.size(); ++i)
       tasks[i].request = PrepareFileRequest(i);
 
-    if (file_access::ScopedFileAccessDelegate::HasInstance()) {
-      file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
-          paths_,
-          base::BindOnce(&FilesRequestHandler::CreateFileOpeningJob,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(tasks)));
-    } else {
-      file_opening_job_ =
-          std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
-    }
+    file_access::RequestFilesAccessForSystem(
+        paths_,
+        base::BindOnce(&FilesRequestHandler::CreateFileOpeningJob,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tasks)));
+
     return true;
   }
 
