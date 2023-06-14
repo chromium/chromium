@@ -25,6 +25,10 @@ Making a pref syncable requires a few things:
 * If the pref contains URLs (example: site permissions), it **must** be marked
   as `is_history_opt_in_required = true`, and it will only be synced if the
   user has opted in to history sync.
+* If the pref is marked as "priority" (`syncer::PRIORITY_PREFERENCES` or
+  `syncer::OS_PRIORITY_PREFERENCES`), then it will not be encrypted. Carefully
+  consider if it actually needs to be "priority". (The most common reason for
+  this is when the pref needs to be consumed on the server side.)
 * In any other cases that are unclear or questionable, reach out to
   chrome-privacy-core@google.com, or to rainhard@ directly.
 
