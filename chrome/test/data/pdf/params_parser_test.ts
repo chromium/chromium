@@ -111,8 +111,14 @@ chrome.test.runTests([
     params = await paramsParser.getViewportFromUrlParams(`${URL}#nameddest=US`);
     chrome.test.assertEq(0, params.page);
 
-    // Checking #page=pagenum nameddest.The document first page has a pagenum
+    // Checking #page=pagenum without setting the page count should not have a
+    // page value.
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#page=6`);
+    chrome.test.assertEq(null, params.page);
+
+    // Checking #page=pagenum nameddest. The document first page has a pagenum
     // value of 1.
+    paramsParser.setPageCount(100);
     params = await paramsParser.getViewportFromUrlParams(`${URL}#page=6`);
     chrome.test.assertEq(5, params.page);
 
@@ -154,6 +160,23 @@ chrome.test.runTests([
     chrome.test.assertEq(2.5, params.zoom);
     chrome.test.assertEq(100, params.position!.x);
     chrome.test.assertEq(200, params.position!.y);
+
+    // Checking #page=pagenum with value out of upper bounds sets the value to
+    // the upper bound.
+    paramsParser.setPageCount(5);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#page=6`);
+    chrome.test.assertEq(4, params.page);
+
+    // Checking #page=pagenum with value out of lower bounds sets the value to
+    // the lower bound.
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#page=0`);
+    chrome.test.assertEq(0, params.page);
+
+    // Checking #page=pagenum with a page count set to 0 should not have a page
+    // value.
+    paramsParser.setPageCount(0);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#page=1`);
+    chrome.test.assertEq(null, params.page);
 
     chrome.test.succeed();
   },
@@ -390,8 +413,18 @@ chrome.test.runTests([
     const paramsParser = getParamsParser();
 
     // Checking #view=FitB.
-    const params =
+    let params =
         await paramsParser.getViewportFromUrlParams(`${URL}#view=FitB`);
+    chrome.test.assertEq(null, params.view);
+    chrome.test.assertEq(null, params.boundingBox);
+
+    paramsParser.setPageCount(0);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#view=FitB`);
+    chrome.test.assertEq(null, params.view);
+    chrome.test.assertEq(null, params.boundingBox);
+
+    paramsParser.setPageCount(1);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#view=FitB`);
     chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX, params.view);
     chrome.test.assertTrue(params.boundingBox !== undefined);
     chrome.test.assertEq(10, params.boundingBox.x);
@@ -404,9 +437,19 @@ chrome.test.runTests([
   async function testParamsViewFitBH() {
     const paramsParser = getParamsParser();
 
-    // Checking #view=FitB.
+    // Checking #view=FitBH.
     let params =
         await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBH`);
+    chrome.test.assertEq(null, params.view);
+    chrome.test.assertEq(null, params.boundingBox);
+
+    paramsParser.setPageCount(0);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBH`);
+    chrome.test.assertEq(null, params.view);
+    chrome.test.assertEq(null, params.boundingBox);
+
+    paramsParser.setPageCount(1);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBH`);
     chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX_WIDTH, params.view);
     chrome.test.assertTrue(params.boundingBox !== undefined);
     chrome.test.assertEq(10, params.boundingBox.x);
@@ -429,9 +472,19 @@ chrome.test.runTests([
   async function testParamsViewFitBV() {
     const paramsParser = getParamsParser();
 
-    // Checking #view=FitB.
+    // Checking #view=FitBV.
     let params =
         await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBV`);
+    chrome.test.assertEq(null, params.view);
+    chrome.test.assertEq(null, params.boundingBox);
+
+    paramsParser.setPageCount(0);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBV`);
+    chrome.test.assertEq(null, params.view);
+    chrome.test.assertEq(null, params.boundingBox);
+
+    paramsParser.setPageCount(1);
+    params = await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBV`);
     chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX_HEIGHT, params.view);
     chrome.test.assertTrue(params.boundingBox !== undefined);
     chrome.test.assertEq(10, params.boundingBox.x);
