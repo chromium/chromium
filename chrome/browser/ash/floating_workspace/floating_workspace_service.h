@@ -13,12 +13,16 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
 
@@ -28,41 +32,44 @@ class SessionSyncService;
 struct SyncedSession;
 }  // namespace sync_sessions
 
-namespace desks_storage {
-class DeskModelObserver;
-}  // namespace desks_storage
-
 namespace ash {
 
-// Testing enum to substitute for feature flag during testing.
-enum TestFloatingWorkspaceVersion {
-  // Default value, indicates no version was enabled.
-  kNoVersionEnabled = 0,
+extern const char kNotificationForNoNetworkConnection[];
+extern const char kNotificationForSyncErrorOrTimeOut[];
+extern const char kNotificationForRestoreAfterError[];
 
-  // Version 1.
-  kFloatingWorkspaceV1Enabled = 1,
+// The restore from error notification button index.
+enum class RestoreFromErrorNotificationButtonIndex {
+  kRestore = 0,
+  kCancel,
+};
 
-  // Version 2.
-  kFloatingWorkspaceV2Enabled = 2,
+// The notification type for floating workspace service.
+enum class FloatingWorkspaceServiceNotificationType {
+  kUnknown = 0,
+  kNoNetworkConnection,
+  kSyncErrorOrTimeOut,
+  kRestoreAfterError,
 };
 
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.
 class FloatingWorkspaceService : public KeyedService,
-                                 public desks_storage::DeskModelObserver {
+                                 public message_center::NotificationObserver,
+                                 public syncer::SyncServiceObserver {
  public:
   static FloatingWorkspaceService* GetForProfile(Profile* profile);
 
-  explicit FloatingWorkspaceService(Profile* profile);
+  explicit FloatingWorkspaceService(
+      Profile* profile,
+      floating_workspace_util::FloatingWorkspaceVersion version);
 
   ~FloatingWorkspaceService() override;
 
   // Used in constructor for initializations
-  void Init();
-  void InitForTest(
-      TestFloatingWorkspaceVersion version,
-      raw_ptr<desks_storage::DeskSyncService> fake_desk_sync_service);
+  void Init(syncer::SyncService* sync_service,
+            desks_storage::DeskSyncService* desk_sync_service);
 
   // Add subscription to foreign session changes.
   void SubscribeToForeignSessionUpdates();
@@ -76,19 +83,24 @@ class FloatingWorkspaceService : public KeyedService,
   void CaptureAndUploadActiveDeskForTest(
       std::unique_ptr<DeskTemplate> desk_template);
 
-  // desks_storage::DeskModelObserver overrides:
-  void DeskModelLoaded() override {}
-  void OnDeskModelDestroying() override;
-  void EntriesAddedOrUpdatedRemotely(
-      const std::vector<const DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override {}
+  // syncer::SyncServiceObserver overrides:
+  void OnStateChanged(syncer::SyncService* sync) override;
+
+  // message_center::NotificationObserver overrides:
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
+
+  void MaybeCloseNotification();
 
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
+  // Indicate if it is a testing class.
+  bool is_testing_ = false;
 
  private:
   void InitForV1();
-  void InitForV2();
+  void InitForV2(syncer::SyncService* sync_service,
+                 desks_storage::DeskSyncService* desk_sync_service);
 
   const sync_sessions::SyncedSession* GetMostRecentlyUsedRemoteSession();
 
@@ -107,6 +119,9 @@ class FloatingWorkspaceService : public KeyedService,
   // Start and Stop capturing and uploading the active desks.
   void StartCaptureAndUploadActiveDesk();
   void StopCaptureAndUploadActiveDesk();
+
+  // Get latest Floating Workspace Template from DeskSyncBridge.
+  const DeskTemplate* GetLatestFloatingWorkspaceTemplate();
 
   // Capture the current active desk task, running every ~30(TBD) seconds.
   // Upload captured desk to chrome sync and record the randomly generated
@@ -156,8 +171,21 @@ class FloatingWorkspaceService : public KeyedService,
   // an absl::nullopt if there is no floating workspace uuid that is associated
   // with the current device.
   absl::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
+  // When sync passes an error status to floating workspace service,
+  // floating workspace service should send notification to user asking whether
+  // to restore the most recent FWS desk from local storage.
+  void HandleSyncEror();
+
+  // When floating workspace service waited long enough but no desk is restored
+  // floating workspace service should send notification to user asking whether
+  // to restore the most recent FWS desk from local storage.
+  void MaybeHandleDownloadTimeOut();
+
+  void SendNotification(const std::string& id);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
+
+  const floating_workspace_util::FloatingWorkspaceVersion version_;
 
   raw_ptr<sync_sessions::SessionSyncService, ExperimentalAsh>
       session_sync_service_;
@@ -173,16 +201,20 @@ class FloatingWorkspaceService : public KeyedService,
   // Timer used for periodic capturing and uploading.
   base::RepeatingTimer timer_;
 
+  // Timer used to wait for internet connection after service initialization.
+  base::OneShotTimer connection_timer_;
+
   // Convenience pointer to desks_storage::DeskSyncService. Guaranteed to be not
   // null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
 
-  // Indicate if it is a testing class.
-  bool is_testing_ = false;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   // The uuid associated with this device's floating workspace template. This is
   // populated when we first capture a floating workspace template.
   absl::optional<base::Uuid> floating_workspace_uuid_;
+
+  std::unique_ptr<message_center::Notification> notification_;
 
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};

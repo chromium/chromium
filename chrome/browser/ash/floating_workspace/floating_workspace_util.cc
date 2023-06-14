@@ -7,8 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -63,6 +68,12 @@ bool IsFloatingWorkspaceV2Enabled() {
     return pref_service->GetBoolean(ash::prefs::kFloatingWorkspaceV2Enabled);
   }
   return features::IsFloatingWorkspaceV2Enabled();
+}
+
+bool IsInternetConnected() {
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
+  return nsh != nullptr &&
+         nsh->ConnectedNetworkByType(NetworkTypePattern::Default()) != nullptr;
 }
 
 }  // namespace floating_workspace_util
