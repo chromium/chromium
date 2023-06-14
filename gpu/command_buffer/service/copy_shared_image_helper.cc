@@ -522,7 +522,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
         yuva_textures[i] = source_scoped_access[i]->graphite_texture();
       }
       skgpu::graphite::YUVABackendTextures yuva_backend_textures(
-          recorder, yuva_info, yuva_textures.data());
+          recorder, yuva_info, yuva_textures);
       result_image = SkImages::TextureFromYUVATextures(
           recorder, yuva_backend_textures, src_rgb_color_space);
     }
