@@ -272,6 +272,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // SetNeedsDisplay() that have not been committed to the compositor thread.
   const gfx::Rect& update_rect() const { return update_rect_.Read(*this); }
 
+  // If this returns true, then `SetNeedsDisplay` will be called in response to
+  // the HDR headroom of the display that the content is rendering to changing.
+  virtual bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const;
+
   void ResetUpdateRectForTesting() { update_rect_.Write(*this) = gfx::Rect(); }
 
   // For layer tree mode only.

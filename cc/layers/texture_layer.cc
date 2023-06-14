@@ -174,6 +174,12 @@ bool TextureLayer::HasDrawableContent() const {
          Layer::HasDrawableContent();
 }
 
+bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
+  // TODO(https://crbug.com/1450807): Only return true if the contents of the
+  // video are HDR.
+  return true;
+}
+
 bool TextureLayer::Update() {
   bool updated = Layer::Update();
   if (client_.Read(*this)) {

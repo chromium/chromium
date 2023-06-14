@@ -32,12 +32,17 @@ class FakePictureLayer : public PictureLayer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   bool Update() override;
+  bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
 
   int update_count() const { return update_count_; }
   void reset_update_count() { update_count_ = 0; }
 
   void set_always_update_resources(bool always_update_resources) {
     always_update_resources_ = always_update_resources;
+  }
+
+  void set_reraster_on_hdr_change(bool reraster_on_hdr_change) {
+    reraster_on_hdr_change_ = reraster_on_hdr_change;
   }
 
   void set_fixed_tile_size(gfx::Size fixed_tile_size) {
@@ -52,6 +57,7 @@ class FakePictureLayer : public PictureLayer {
 
   int update_count_ = 0;
   bool always_update_resources_ = false;
+  bool reraster_on_hdr_change_ = false;
 
   gfx::Size fixed_tile_size_;
 };

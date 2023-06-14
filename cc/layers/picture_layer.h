@@ -47,6 +47,7 @@ class CC_EXPORT PictureLayer : public Layer {
                         const CommitState& commit_state,
                         const ThreadUnsafeCommitState& unsafe_state) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
+  bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   sk_sp<const SkPicture> GetPicture() const override;
   bool Update() override;
   void RunMicroBenchmark(MicroBenchmark* benchmark) override;

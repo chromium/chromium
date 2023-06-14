@@ -131,6 +131,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
                            absl::optional<gfx::HDRMetadata> hdr_metadata);
 
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
+  bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() const override;
   void PushPropertiesTo(LayerImpl* layer,

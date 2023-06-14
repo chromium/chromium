@@ -1439,6 +1439,10 @@ void Layer::SetNeedsDisplayRect(const gfx::Rect& dirty_rect) {
     layer_tree_host()->SetNeedsUpdateLayers();
 }
 
+bool Layer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
+  return false;
+}
+
 bool Layer::IsSnappedToPixelGridInTarget() const {
   return false;
 }
