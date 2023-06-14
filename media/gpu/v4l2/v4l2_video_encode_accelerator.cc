@@ -1347,7 +1347,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
   input_buf.SetTimeStamp(timestamp);
 
   DCHECK_EQ(device_input_layout_->format(), frame->format());
-  size_t num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(
+  size_t num_planes = GetNumPlanesOfV4L2PixFmt(
       Fourcc::FromVideoPixelFormat(device_input_layout_->format(),
                                    !device_input_layout_->is_multi_planar())
           ->ToV4L2PixFmt());

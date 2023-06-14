@@ -123,9 +123,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   static absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
       const struct v4l2_format& format);
 
-  // Returns number of planes of |pix_fmt|.
-  static size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt);
-
   enum class Type {
     kDecoder,
     kEncoder,

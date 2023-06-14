@@ -17,8 +17,11 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 // TODO(b/255770680): Remove this once V4L2 header is updated.
@@ -186,6 +189,14 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
 #endif
   }
   return VIDEO_CODEC_PROFILE_UNKNOWN;
+}
+
+size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
+  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
+  if (fourcc && fourcc->IsMultiPlanar()) {
+    return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
+  }
+  return 1u;
 }
 
 namespace {

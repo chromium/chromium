@@ -43,6 +43,9 @@ std::string V4L2BufferToString(const struct v4l2_buffer& buffer);
 VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
                                                  uint32_t v4l2_profile);
 
+// Returns number of planes of |pix_fmt|, or 1, if this is unknown.
+size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt);
+
 // Enumerates the supported VideoCodecProfiles for a given device (accessed via
 // |ioctl_cb|) and for |codec_as_pix_fmt| (e.g. V4L2_PIX_FMT_VP9). Returns an
 // empty vector if |codec_as_pix_fmt| is not supported by Chrome, or the

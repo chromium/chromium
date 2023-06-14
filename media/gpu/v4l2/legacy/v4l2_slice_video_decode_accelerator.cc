@@ -544,8 +544,8 @@ bool V4L2SliceVideoDecodeAccelerator::SetupFormats() {
     auto fourcc = Fourcc::FromV4L2PixFmt(fmtdesc.pixelformat);
     if (fourcc && device_->CanCreateEGLImageFrom(*fourcc)) {
       output_format_fourcc_ = fourcc;
-      output_planes_count_ = V4L2Device::GetNumPlanesOfV4L2PixFmt(
-        output_format_fourcc_->ToV4L2PixFmt());
+      output_planes_count_ =
+          GetNumPlanesOfV4L2PixFmt(output_format_fourcc_->ToV4L2PixFmt());
       break;
     }
     ++fmtdesc.index;
@@ -569,8 +569,8 @@ bool V4L2SliceVideoDecodeAccelerator::SetupFormats() {
       VLOGF(1) << "Can't find a usable input format from image processor";
       return false;
     }
-    output_planes_count_ = V4L2Device::GetNumPlanesOfV4L2PixFmt(
-        output_format_fourcc_->ToV4L2PixFmt());
+    output_planes_count_ =
+        GetNumPlanesOfV4L2PixFmt(output_format_fourcc_->ToV4L2PixFmt());
 
     gl_image_format_fourcc_ = v4l2_vda_helpers::FindImageProcessorOutputFormat(
         image_processor_device_.get());
@@ -578,8 +578,8 @@ bool V4L2SliceVideoDecodeAccelerator::SetupFormats() {
       VLOGF(1) << "Can't find a usable output format from image processor";
       return false;
     }
-    gl_image_planes_count_ = V4L2Device::GetNumPlanesOfV4L2PixFmt(
-        gl_image_format_fourcc_->ToV4L2PixFmt());
+    gl_image_planes_count_ =
+        GetNumPlanesOfV4L2PixFmt(gl_image_format_fourcc_->ToV4L2PixFmt());
   } else {
     gl_image_format_fourcc_ = output_format_fourcc_;
     gl_image_planes_count_ = output_planes_count_;
@@ -590,8 +590,8 @@ bool V4L2SliceVideoDecodeAccelerator::SetupFormats() {
   memset(&format, 0, sizeof(format));
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   format.fmt.pix_mp.pixelformat = output_format_fourcc_->ToV4L2PixFmt();
-  format.fmt.pix_mp.num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(
-      output_format_fourcc_->ToV4L2PixFmt());
+  format.fmt.pix_mp.num_planes =
+      GetNumPlanesOfV4L2PixFmt(output_format_fourcc_->ToV4L2PixFmt());
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_FMT, &format);
   DCHECK_EQ(format.fmt.pix_mp.pixelformat,
             output_format_fourcc_->ToV4L2PixFmt());

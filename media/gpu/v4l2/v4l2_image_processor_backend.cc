@@ -54,8 +54,7 @@ void FillV4L2BufferByGpuMemoryBufferHandle(
     const gfx::GpuMemoryBufferHandle& gmb_handle,
     V4L2WritableBufferRef* buffer) {
   DCHECK_EQ(buffer->Memory(), V4L2_MEMORY_DMABUF);
-  const size_t num_planes =
-      V4L2Device::GetNumPlanesOfV4L2PixFmt(fourcc.ToV4L2PixFmt());
+  const size_t num_planes = GetNumPlanesOfV4L2PixFmt(fourcc.ToV4L2PixFmt());
   const std::vector<gfx::NativePixmapPlane>& planes =
       gmb_handle.native_pixmap_handle.planes;
 
@@ -942,8 +941,8 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
 
   switch (input_memory_type_) {
     case V4L2_MEMORY_USERPTR: {
-      const size_t num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(
-          input_config_.fourcc.ToV4L2PixFmt());
+      const size_t num_planes =
+          GetNumPlanesOfV4L2PixFmt(input_config_.fourcc.ToV4L2PixFmt());
       std::vector<void*> user_ptrs(num_planes);
       for (size_t i = 0; i < num_planes; ++i) {
         int bytes_used =

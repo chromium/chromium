@@ -484,15 +484,6 @@ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
 }
 
 // static
-size_t V4L2Device::GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
-  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
-  if (fourcc && fourcc->IsMultiPlanar()) {
-    return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
-  }
-  return 1u;
-}
-
-// static
 bool V4L2Device::UseLibV4L2() {
   static const bool use_libv4l2 = LibV4L2Exists();
   return use_libv4l2;

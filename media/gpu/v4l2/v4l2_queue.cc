@@ -40,7 +40,7 @@ struct v4l2_format BuildV4L2Format(const enum v4l2_buf_type type,
   format.fmt.pix_mp.pixelformat = fourcc;
   format.fmt.pix_mp.width = size.width();
   format.fmt.pix_mp.height = size.height();
-  format.fmt.pix_mp.num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(fourcc);
+  format.fmt.pix_mp.num_planes = GetNumPlanesOfV4L2PixFmt(fourcc);
   format.fmt.pix_mp.plane_fmt[0].sizeimage = buffer_size;
 
   return format;
