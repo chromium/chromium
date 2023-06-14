@@ -181,6 +181,11 @@ void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
   create_params.creation_source = Browser::CreationSource::kDeskTemplate;
   Browser* browser = Browser::Create(create_params);
 
+  // TODO(crbug.com/1442076): Remove after issue is root caused.
+  LOG(ERROR) << "window " << additional_state->restore_window_id
+             << " created by lacros with " << additional_state->urls.size()
+             << " tabs";
+
   for (size_t i = 0; i < additional_state->urls.size(); i++) {
     chrome::AddTabAt(
         browser, additional_state->urls.at(i), /*index=*/-1,

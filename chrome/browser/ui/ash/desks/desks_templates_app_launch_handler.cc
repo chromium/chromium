@@ -299,11 +299,22 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
     if (app_id != app_constants::kLacrosAppId)
       continue;
 
+    // Count the number of lacros windows ash intends to launch. Will be
+    // checked at lacros side to see if anything is missing between ash and
+    // lacros when restoring saved desk.
+    // TODO(crbug.com/1442076): Remove after issue is root caused.
+    int windows_count = 0;
+
     for (const auto& [restore_window_id, app_restore_data] : iter.second) {
       if (!app_restore_data->active_tab_index.has_value() ||
           app_restore_data->urls.empty()) {
         continue;
       }
+
+      // TODO(crbug.com/1442076): Remove after issue is root caused.
+      windows_count++;
+      LOG(ERROR) << "window " << restore_window_id << " launched by Ash with "
+                 << app_restore_data->urls.size() << " tabs";
 
       crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
           app_restore_data->urls,
@@ -318,6 +329,9 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
           app_restore_data->first_non_pinned_tab_index.value_or(0),
           GetBrowserAppName(app_restore_data, app_id), restore_window_id);
     }
+    // TODO(crbug.com/1442076): Remove after issue is root caused.
+    LOG(ERROR) << windows_count
+               << " windows launched by Ash in total for this desk";
   }
   restore_data()->RemoveApp(app_constants::kLacrosAppId);
 }
