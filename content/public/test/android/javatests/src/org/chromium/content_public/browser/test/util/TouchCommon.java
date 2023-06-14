@@ -195,7 +195,13 @@ public class TouchCommon {
      * Sends (synchronously) a single click to the center of the View.
      */
     public static void singleClickView(View v) {
-        singleClickView(v, v.getWidth() / 2, v.getHeight() / 2);
+        int width = v.getWidth();
+        int height = v.getHeight();
+        if (width <= 0 || height <= 0) {
+            throw new IllegalStateException(String.format(
+                    "Cannot click view with dimensions w%d x h%d, view=%s", width, height, v));
+        }
+        singleClickView(v, width / 2, height / 2);
     }
 
     private static boolean singleClickInternal(View view, float windowX, float windowY) {
