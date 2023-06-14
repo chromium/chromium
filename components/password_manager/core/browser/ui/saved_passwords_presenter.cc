@@ -105,7 +105,7 @@ SavedPasswordsPresenter::SavedPasswordsPresenter(
     AffiliationService* affiliation_service,
     scoped_refptr<PasswordStoreInterface> profile_store,
     scoped_refptr<PasswordStoreInterface> account_store,
-    PasskeyModel* passkey_store)
+    webauthn::PasskeyModel* passkey_store)
     : profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)),
       passkey_store_(passkey_store),

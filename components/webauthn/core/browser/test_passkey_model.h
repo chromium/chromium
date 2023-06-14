@@ -11,6 +11,8 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 
+namespace webauthn {
+
 class TestPasskeyModel : public PasskeyModel {
  public:
   TestPasskeyModel();
@@ -36,5 +38,7 @@ class TestPasskeyModel : public PasskeyModel {
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_;
   base::ObserverList<Observer> observers_;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER__TEST_PASSKEY_MODEL_H_

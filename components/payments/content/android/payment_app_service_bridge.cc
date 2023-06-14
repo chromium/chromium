@@ -269,7 +269,7 @@ PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // safety precaution to ensure that `RenderFrameDeleted()` will be called at
   // some point.
   return rfh && rfh->IsActive() && rfh->IsRenderFrameLive()
-             ? std::make_unique<InternalAuthenticatorAndroid>(rfh)
+             ? std::make_unique<webauthn::InternalAuthenticatorAndroid>(rfh)
              : nullptr;
 }
 

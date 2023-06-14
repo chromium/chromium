@@ -17,7 +17,7 @@ namespace device {
 class DiscoverableCredentialMetadata;
 }
 
-namespace components {
+namespace webauthn {
 
 class WebAuthnClientAndroid {
  public:
@@ -58,6 +58,6 @@ class WebAuthnClientAndroid {
                          bool success);
 };
 
-}  // namespace components
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CLIENT_ANDROID_H_

@@ -43,7 +43,7 @@ class PasswordsGrouper;
 // (such as visiting a change password form and then updating the password in
 // Chrome) should not trigger a check.
 class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
-                                public PasskeyModel::Observer,
+                                public webauthn::PasskeyModel::Observer,
                                 public PasswordStoreConsumer {
  public:
   // Observer interface. Clients can implement this to get notified about
@@ -109,7 +109,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   SavedPasswordsPresenter(AffiliationService* affiliation_service,
                           scoped_refptr<PasswordStoreInterface> profile_store,
                           scoped_refptr<PasswordStoreInterface> account_store,
-                          PasskeyModel* passkey_store = nullptr);
+                          webauthn::PasskeyModel* passkey_store = nullptr);
   ~SavedPasswordsPresenter() override;
 
   SavedPasswordsPresenter(const SavedPasswordsPresenter&) = delete;
@@ -252,7 +252,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Store containing account passkeys. This may be null if the feature is
   // disabled.
-  raw_ptr<PasskeyModel> passkey_store_;
+  raw_ptr<webauthn::PasskeyModel> passkey_store_;
 
   // The number of stores from which no updates have been received yet.
   int pending_store_updates_ = 0;
@@ -274,7 +274,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   base::ScopedObservation<PasswordStoreInterface,
                           PasswordStoreInterface::Observer>
       account_store_observation_{this};
-  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer>
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
       passkey_store_observation_{this};
 
   base::WeakPtrFactory<SavedPasswordsPresenter> weak_ptr_factory_{this};

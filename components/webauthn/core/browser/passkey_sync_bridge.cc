@@ -32,6 +32,7 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace webauthn {
 namespace {
 
 // The byte length of the WebauthnCredentialSpecifics `sync_id` field.
@@ -423,3 +424,5 @@ void PasskeySyncBridge::NotifyPasskeysChanged() {
     observer.OnPasskeysChanged();
   }
 }
+
+}  // namespace webauthn

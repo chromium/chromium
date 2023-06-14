@@ -260,7 +260,7 @@ void MaybeShowProfileSwitchIPH(Profile* profile) {
 }
 
 // Returns a passkey model instance if the feature is enabled.
-PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
+webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerPasskeys) &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {

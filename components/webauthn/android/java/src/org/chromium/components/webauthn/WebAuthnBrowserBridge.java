@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.RenderFrameHost;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * Provides a bridge from the the Android Web Authentication request handlers
  * to the embedding browser.
  */
+@JNINamespace("webauthn")
 public class WebAuthnBrowserBridge {
     private long mNativeWebAuthnBrowserBridge;
 

@@ -7,6 +7,7 @@ package org.chromium.components.webauthn;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
@@ -25,6 +26,7 @@ import java.nio.ByteBuffer;
  * The origin associated with requests on InternalAuthenticator should be set by calling
  * setEffectiveOrigin() first.
  */
+@JNINamespace("webauthn")
 public class InternalAuthenticator {
     private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;

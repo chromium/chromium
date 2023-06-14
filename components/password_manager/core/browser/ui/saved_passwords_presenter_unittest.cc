@@ -117,7 +117,7 @@ class SavedPasswordsPresenterTest : public testing::TestWithParam<bool> {
 
   TestPasswordStore& store() { return *store_; }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  TestPasskeyModel& passkey_store() { return test_passkey_store_; }
+  webauthn::TestPasskeyModel& passkey_store() { return test_passkey_store_; }
 #endif
   SavedPasswordsPresenter& presenter() { return presenter_; }
 
@@ -134,7 +134,7 @@ class SavedPasswordsPresenterTest : public testing::TestWithParam<bool> {
       base::MakeRefCounted<TestPasswordStore>();
   FakeAffiliationService affiliation_service_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  TestPasskeyModel test_passkey_store_;
+  webauthn::TestPasskeyModel test_passkey_store_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr,
                                      &test_passkey_store_};

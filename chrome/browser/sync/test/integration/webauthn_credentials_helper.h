@@ -33,7 +33,7 @@ class PasskeySyncActiveChecker : public SingleClientStatusChangeChecker {
 };
 
 class LocalPasskeysChangedChecker : public StatusChangeChecker,
-                                    public PasskeyModel::Observer {
+                                    public webauthn::PasskeyModel::Observer {
  public:
   explicit LocalPasskeysChangedChecker(int profile);
   ~LocalPasskeysChangedChecker() override;
@@ -41,18 +41,19 @@ class LocalPasskeysChangedChecker : public StatusChangeChecker,
   // SingleClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // PasskeyModel::Observer:
+  // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged() override;
 
  private:
   int profile_;
   bool satisfied_ = false;
-  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer> observation_{
-      this};
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      observation_{this};
 };
 
 class LocalPasskeysMatchChecker : public StatusChangeChecker,
-                                  public PasskeyModel::Observer {
+                                  public webauthn::PasskeyModel::Observer {
  public:
   using Matcher =
       testing::Matcher<std::vector<sync_pb::WebauthnCredentialSpecifics>>;
@@ -63,14 +64,15 @@ class LocalPasskeysMatchChecker : public StatusChangeChecker,
   // SingleClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // PasskeyModel::Observer:
+  // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged() override;
 
  private:
   const int profile_;
   const Matcher matcher_;
-  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer> observation_{
-      this};
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      observation_{this};
 };
 
 class ServerPasskeysMatchChecker
@@ -88,19 +90,20 @@ class ServerPasskeysMatchChecker
   const Matcher matcher_;
 };
 
-class MockPasskeyModelObserver : public PasskeyModel::Observer {
+class MockPasskeyModelObserver : public webauthn::PasskeyModel::Observer {
  public:
-  explicit MockPasskeyModelObserver(PasskeyModel* model);
+  explicit MockPasskeyModelObserver(webauthn::PasskeyModel* model);
   ~MockPasskeyModelObserver() override;
 
   MOCK_METHOD(void, OnPasskeysChanged, (), (override));
 
  private:
-  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer> observation_{
-      this};
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      observation_{this};
 };
 
-PasskeyModel& GetModel(int profile_idx);
+webauthn::PasskeyModel& GetModel(int profile_idx);
 
 bool AwaitAllModelsMatch();
 
