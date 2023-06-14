@@ -40,7 +40,9 @@ SystemInfoAnswerResult::SystemInfoAnswerResult(
       url_path_(url_path) {
   SetDisplayType(DisplayType::kAnswerCard);
   set_relevance(relevance_score);
-  SetIcon(IconInfo(icon, kAppIconDimension));
+  // TODO(b/278271038): Consider changing all icons in SystemInfoAnswerResult to
+  // use ImageModel instead of ImageSkia.
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension));
   SetCategory(Category::kSettings);
   SetResultType(ResultType::kSystemInfo);
   UpdateTitleAndDetails(title, description);

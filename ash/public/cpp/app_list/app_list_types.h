@@ -466,8 +466,8 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo();
   // TODO(crbug.com/1232897): Make the search backend explicitly set the shape
   // for all icons by removing the two-argument version of the constructor.
-  SearchResultIconInfo(gfx::ImageSkia icon, int dimension);
-  SearchResultIconInfo(gfx::ImageSkia icon,
+  SearchResultIconInfo(ui::ImageModel icon, int dimension);
+  SearchResultIconInfo(ui::ImageModel icon,
                        int dimension,
                        SearchResultIconShape shape);
 
@@ -476,7 +476,7 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   ~SearchResultIconInfo();
 
   // The icon itself.
-  gfx::ImageSkia icon;
+  ui::ImageModel icon;
 
   // The size to display the icon at, while preserving aspect ratio. Only
   // used for the results list view.

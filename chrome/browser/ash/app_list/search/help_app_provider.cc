@@ -21,7 +21,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 
@@ -58,7 +58,7 @@ HelpAppResult::HelpAppResult(
     const float& relevance,
     Profile* profile,
     const ash::help_app::mojom::SearchResultPtr& result,
-    const gfx::ImageSkia& icon,
+    const ui::ImageModel& icon,
     const std::u16string& query)
     : profile_(profile),
       url_path_(result->url_path_with_parameters),
@@ -105,8 +105,8 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
   // TODO(b/261867385): We manually load the icon from the local codebase as
   // the icon load from proxy is flaky. When the flakiness if solved, we can
   // safely remove this.
-  icon_ = gfx::CreateVectorIcon(app_list::kHelpAppIcon, kAppIconDimension,
-                                SK_ColorTRANSPARENT);
+  icon_ = ui::ImageModel::FromVectorIcon(
+      app_list::kHelpAppIcon, SK_ColorTRANSPARENT, kAppIconDimension);
 
   if (!search_handler_) {
     return;
@@ -137,7 +137,7 @@ void HelpAppProvider::Start(const std::u16string& query) {
   if (!search_handler_) {
     LogListSearchResultState(ListSearchResultState::kSearchHandlerUnavailable);
     return;
-  } else if (icon_.isNull()) {
+  } else if (icon_.IsEmpty()) {
     LogListSearchResultState(ListSearchResultState::kNoHelpAppIcon);
     // This prevents a timeout in the test, but it does not change the user
     // experience because the results were already cleared at the start.
@@ -208,7 +208,7 @@ void HelpAppProvider::OnSearchResultAvailabilityChanged() {
 
 void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
   if (icon_value && icon_value->icon_type == apps::IconType::kStandard) {
-    icon_ = icon_value->uncompressed;
+    icon_ = ui::ImageModel::FromImageSkia(icon_value->uncompressed);
   }
 }
 

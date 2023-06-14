@@ -25,9 +25,9 @@ namespace ash::help_app {
 class SearchHandler;
 }  // namespace ash::help_app
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace app_list {
 
@@ -37,7 +37,7 @@ class HelpAppResult : public ChromeSearchResult {
   HelpAppResult(const float& relevance,
                 Profile* profile,
                 const ash::help_app::mojom::SearchResultPtr& result,
-                const gfx::ImageSkia& icon,
+                const ui::ImageModel& icon,
                 const std::u16string& query);
 
   ~HelpAppResult() override;
@@ -91,7 +91,7 @@ class HelpAppProvider : public SearchProvider,
 
   raw_ptr<ash::help_app::SearchHandler, ExperimentalAsh> search_handler_;
   raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
-  gfx::ImageSkia icon_;
+  ui::ImageModel icon_;
 
   // Last search query. It is reset when the view is closed.
   std::u16string last_query_;

@@ -52,7 +52,7 @@ PersonalizationResult::PersonalizationResult(
   SetTitle(result.text);
   SetResultType(ResultType::kPersonalization);
   SetDisplayType(DisplayType::kList);
-  SetIcon(IconInfo(icon, kAppIconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension));
   SetMetricsType(::ash::SearchResultType::PERSONALIZATION);
 }
 

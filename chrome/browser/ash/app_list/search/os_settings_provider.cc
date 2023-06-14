@@ -145,7 +145,7 @@ bool ContainsBetterAncestor(Setting setting,
 OsSettingsResult::OsSettingsResult(Profile* profile,
                                    const SettingsResultPtr& result,
                                    const double relevance_score,
-                                   const gfx::ImageSkia& icon,
+                                   const ui::ImageModel& icon,
                                    const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
   set_id(kOsSettingsResultPrefix + url_path_);
@@ -220,8 +220,8 @@ OsSettingsProvider::OsSettingsProvider(
   // TODO(b/261867385): We manually load the icon from the local codebase as
   // the icon load from proxy is flaky. When the flakiness if solved, we can
   // safely remove this.
-  icon_ = gfx::CreateVectorIcon(app_list::kOsSettingsIcon, kAppIconDimension,
-                                SK_ColorTRANSPARENT);
+  icon_ = ui::ImageModel::FromVectorIcon(
+      app_list::kOsSettingsIcon, SK_ColorTRANSPARENT, kAppIconDimension);
 
   if (app_service_proxy_) {
     Observe(&app_service_proxy_->AppRegistryCache());
@@ -252,7 +252,7 @@ void OsSettingsProvider::Start(const std::u16string& query) {
   //  - we don't have an icon to display with results.
   if (!search_handler_) {
     return;
-  } else if (icon_.isNull()) {
+  } else if (icon_.IsEmpty()) {
     LogStatus(Status::kNoSettingsIcon);
     return;
   }
@@ -333,7 +333,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
 void OsSettingsProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
-  if (icon_.isNull()) {
+  if (icon_.IsEmpty()) {
     LogIconLoadStatus(IconLoadStatus::kIconNotExistOnDestroyed);
   } else {
     LogIconLoadStatus(IconLoadStatus::kIconExistOnDestroyed);
@@ -413,7 +413,7 @@ std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
 void OsSettingsProvider::OnLoadIcon(bool is_from_constructor,
                                     apps::IconValuePtr icon_value) {
   if (icon_value && icon_value->icon_type == apps::IconType::kStandard) {
-    icon_ = icon_value->uncompressed;
+    icon_ = ui::ImageModel::FromImageSkia(icon_value->uncompressed);
     LogIconLoadStatus(is_from_constructor ? IconLoadStatus::kOkFromConstructor
                                           : IconLoadStatus::kOkFromOnAppUpdate);
   } else if (!icon_value) {

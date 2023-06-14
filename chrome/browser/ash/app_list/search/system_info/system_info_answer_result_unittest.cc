@@ -58,8 +58,9 @@ TEST_F(SystemInfoAnswerResultTest, version) {
   EXPECT_EQ(result.metrics_type(), ash::SYSTEM_INFO);
   EXPECT_EQ(result.icon().dimension, kAppIconDimension);
   EXPECT_EQ(result.icon().shape, ash::SearchResultIconShape::kDefault);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(*result.icon().icon.bitmap(),
-                                   *GetTestIcon().bitmap()));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(*result.icon().icon.Rasterize(nullptr).bitmap(),
+                           *GetTestIcon().bitmap()));
   EXPECT_EQ(result.system_info_answer_card_data()->display_type,
             ash::SystemInfoAnswerCardDisplayType::kTextCard);
   EXPECT_EQ(result.accessible_name(),
@@ -94,8 +95,9 @@ TEST_F(SystemInfoAnswerResultTest, memory) {
   EXPECT_EQ(result.metrics_type(), ash::SYSTEM_INFO);
   EXPECT_EQ(result.icon().dimension, kAppIconDimension);
   EXPECT_EQ(result.icon().shape, ash::SearchResultIconShape::kDefault);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(*result.icon().icon.bitmap(),
-                                   *GetTestIcon().bitmap()));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(*result.icon().icon.Rasterize(nullptr).bitmap(),
+                           *GetTestIcon().bitmap()));
   EXPECT_EQ(result.system_info_answer_card_data()->display_type,
             ash::SystemInfoAnswerCardDisplayType::kBarChart);
   EXPECT_EQ(result.system_info_answer_card_data()->bar_chart_percentage, 54.8);

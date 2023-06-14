@@ -121,7 +121,8 @@ void OpenTabResult::UpdateText() {
 void OpenTabResult::UpdateIcon() {
   // Use a favicon if one is available.
   if (!search_result_->favicon.isNull()) {
-    SetIcon(IconInfo(search_result_->favicon, kFaviconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromImageSkia(search_result_->favicon),
+                     kFaviconDimension));
     return;
   }
 
@@ -132,17 +133,17 @@ void OpenTabResult::UpdateIcon() {
 
 void OpenTabResult::SetGenericIcon() {
   uses_generic_icon_ = true;
-  SetIcon(
-      IconInfo(gfx::CreateVectorIcon(omnibox::kSwitchIcon, kSystemIconDimension,
-                                     GetGenericIconColor()),
-               kSystemIconDimension));
+  SetIcon(IconInfo(
+      ui::ImageModel::FromVectorIcon(
+          omnibox::kSwitchIcon, GetGenericIconColor(), kSystemIconDimension),
+      kSystemIconDimension));
 }
 
 void OpenTabResult::OnFaviconReceived(const gfx::ImageSkia& icon) {
   // By contract, this is never called with an empty `icon`.
   DCHECK(!icon.isNull());
   search_result_->favicon = icon;
-  SetIcon(IconInfo(icon, kFaviconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kFaviconDimension));
 }
 
 }  // namespace app_list

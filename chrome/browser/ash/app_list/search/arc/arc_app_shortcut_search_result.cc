@@ -137,7 +137,7 @@ std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
 }
 
 void ArcAppShortcutSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
-  SetIcon(IconInfo(icon, kAppIconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension));
 }
 
 }  // namespace app_list

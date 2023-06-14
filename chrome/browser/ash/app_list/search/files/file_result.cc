@@ -273,9 +273,10 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
   const auto shape = is_list_display_type
                          ? ash::SearchResultIconShape::kCircle
                          : ash::SearchResultIconShape::kRoundedRectangle;
-  const auto image = gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f);
+  const auto image = ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f));
 
-  SetIcon(ChromeSearchResult::IconInfo(image, dimension, shape));
+  SetIcon(IconInfo(image, dimension, shape));
 }
 
 void FileResult::UpdateIcon() {
@@ -289,16 +290,19 @@ void FileResult::UpdateIcon() {
   } else {
     switch (type_) {
       case Type::kFile:
-        SetIcon(IconInfo(chromeos::GetIconForPath(filepath_, dark_background),
-                         kSystemIconDimension));
+        SetIcon(IconInfo(
+            ui::ImageModel::FromVectorIcon(chromeos::GetIconForPath(filepath_)),
+            kSystemIconDimension));
         break;
       case Type::kDirectory:
-        SetIcon(IconInfo(chromeos::GetIconFromType("folder", dark_background),
-                         kSystemIconDimension));
+        SetIcon(IconInfo(
+            ui::ImageModel::FromVectorIcon(chromeos::GetIconFromType("folder")),
+            kSystemIconDimension));
         break;
       case Type::kSharedDirectory:
-        SetIcon(IconInfo(chromeos::GetIconFromType("shared", dark_background),
-                         kSystemIconDimension));
+        SetIcon(IconInfo(
+            ui::ImageModel::FromVectorIcon(chromeos::GetIconFromType("shared")),
+            kSystemIconDimension));
         break;
     }
   }

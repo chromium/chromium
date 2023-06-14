@@ -1327,9 +1327,9 @@ void SearchResultView::OnMetadataChanged() {
   // looks nicer to keep the stale icon for a little while on screen instead of
   // clearing it out. It should work correctly as long as the SearchResult does
   // not forget to SetIcon when it's ready.
-  if (result() && !result()->icon().icon.isNull()) {
+  if (result() && !result()->icon().icon.IsEmpty()) {
     const SearchResult::IconInfo& icon_info = result()->icon();
-    const gfx::ImageSkia& image = icon_info.icon;
+    const gfx::ImageSkia& image = icon_info.icon.Rasterize(GetColorProvider());
 
     // Calculate the image dimensions. Images could be rectangular, and we
     // should preserve the aspect ratio.

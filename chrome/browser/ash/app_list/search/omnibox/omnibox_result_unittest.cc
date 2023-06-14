@@ -95,12 +95,6 @@ gfx::ImageSkia TestIcon() {
   return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
 }
 
-// Returns the given vector icon using the standard system size and color.
-gfx::ImageSkia SystemIcon(const gfx::VectorIcon& icon) {
-  return gfx::CreateVectorIcon(icon, kSystemIconDimension,
-                               GetGenericIconColor());
-}
-
 // Returns true if the pixels of the two given images are identical.
 bool ImageSkiasEqual(const gfx::ImageSkia& a, const gfx::ImageSkia& b) {
   return gfx::BitmapsAreEqual(*a.bitmap(), *b.bitmap());
@@ -287,8 +281,8 @@ TEST_F(OmniboxResultTest, Metrics) {
   const auto bookmarked_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::HISTORY_URL);
   EXPECT_EQ(ash::OMNIBOX_BOOKMARK, bookmarked_result->metrics_type());
-  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(omnibox::kBookmarkIcon),
-                              bookmarked_result->icon().icon));
+  EXPECT_EQ(&omnibox::kBookmarkIcon,
+            bookmarked_result->icon().icon.GetVectorIcon().vector_icon());
 
   // Unbookmarked URLs belong to the general "recently visited" category and
   // have a generic icon.
@@ -296,8 +290,8 @@ TEST_F(OmniboxResultTest, Metrics) {
       "https://fake.com", AutocompleteMatchType::HISTORY_URL);
   EXPECT_EQ(ash::OMNIBOX_RECENTLY_VISITED_WEBSITE,
             unbookmarked_result->metrics_type());
-  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kOmniboxGenericIcon),
-                              unbookmarked_result->icon().icon));
+  EXPECT_EQ(&ash::kOmniboxGenericIcon,
+            unbookmarked_result->icon().icon.GetVectorIcon().vector_icon());
 }
 
 // Test that the Omnibox search results are specially handled.
@@ -370,12 +364,14 @@ TEST_F(OmniboxResultTest, Favicon) {
   std::move(return_icon_callback).Run(mock_icon_result);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
+  EXPECT_TRUE(
+      ImageSkiasEqual(TestIcon(), result->icon().icon.Rasterize(nullptr)));
 
   // A subsequent result with the same favicon should use the cached result.
   const auto next_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::HISTORY_URL);
-  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), next_result->icon().icon));
+  EXPECT_TRUE(
+      ImageSkiasEqual(TestIcon(), next_result->icon().icon.Rasterize(nullptr)));
 
   // Favicon shouldn't overwrite metrics type.
   EXPECT_EQ(ash::OMNIBOX_RECENTLY_VISITED_WEBSITE, next_result->metrics_type());
@@ -399,20 +395,20 @@ TEST_F(OmniboxResultTest, RichEntityIcon) {
 
   EXPECT_EQ(ash::AppListSearchResultCategory::kSearchAndAssistant,
             result->category());
-  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
+  EXPECT_TRUE(
+      ImageSkiasEqual(TestIcon(), result->icon().icon.Rasterize(nullptr)));
 }
 
 // Test that results have generic icons for their result type.
 TEST_F(OmniboxResultTest, GenericIcon) {
   const auto domain_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::HISTORY_URL);
-  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kOmniboxGenericIcon),
-                              domain_result->icon().icon));
-
+  EXPECT_EQ(&ash::kOmniboxGenericIcon,
+            domain_result->icon().icon.GetVectorIcon().vector_icon());
   const auto search_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kSearchIcon),
-                              search_result->icon().icon));
+  EXPECT_EQ(&ash::kSearchIcon,
+            search_result->icon().icon.GetVectorIcon().vector_icon());
 }
 
 // Test that URLs with descriptions have their contents and descriptions

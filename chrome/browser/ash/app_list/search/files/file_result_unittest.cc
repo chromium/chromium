@@ -105,11 +105,10 @@ TEST_F(FileResultTest, Icons) {
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());
   EXPECT_TRUE(fileResult.chip_icon().isNull());
-  EXPECT_FALSE(fileResult.icon().icon.isNull());
+  EXPECT_FALSE(fileResult.icon().icon.IsEmpty());
   EXPECT_EQ(fileResult.icon().dimension, kSystemIconDimension);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *fileResult.icon().icon.bitmap(),
-      *chromeos::GetIconForPath(excelPath, false).bitmap()));
+  EXPECT_EQ(fileResult.icon().icon, ui::ImageModel::FromVectorIcon(
+                                        chromeos::GetIconForPath(excelPath)));
 
   const base::FilePath folderPath("my/Maps");
   FileResult folderResult(
@@ -119,9 +118,8 @@ TEST_F(FileResultTest, Icons) {
       FileResult::Type::kDirectory, profile_.get());
   EXPECT_TRUE(folderResult.chip_icon().isNull());
   EXPECT_EQ(folderResult.icon().dimension, kSystemIconDimension);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *folderResult.icon().icon.bitmap(),
-      *chromeos::GetIconFromType("folder", false).bitmap()));
+  EXPECT_EQ(folderResult.icon().icon, ui::ImageModel::FromVectorIcon(
+                                          chromeos::GetIconFromType("folder")));
 
   const base::FilePath sharedPath("my/Shared");
   FileResult sharedResult(
@@ -131,9 +129,8 @@ TEST_F(FileResultTest, Icons) {
       FileResult::Type::kSharedDirectory, profile_.get());
   EXPECT_TRUE(sharedResult.chip_icon().isNull());
   EXPECT_EQ(sharedResult.icon().dimension, kSystemIconDimension);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *sharedResult.icon().icon.bitmap(),
-      *chromeos::GetIconFromType("shared", false).bitmap()));
+  EXPECT_EQ(sharedResult.icon().icon, ui::ImageModel::FromVectorIcon(
+                                          chromeos::GetIconFromType("shared")));
 }
 
 }  // namespace app_list::test

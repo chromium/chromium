@@ -26,9 +26,9 @@ class Hierarchy;
 class SearchHandler;
 }  // namespace ash::settings
 
-namespace gfx {
-class ImageSkia;
-}
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace app_list {
 
@@ -38,7 +38,7 @@ class OsSettingsResult : public ChromeSearchResult {
   OsSettingsResult(Profile* profile,
                    const ash::settings::mojom::SearchResultPtr& result,
                    double relevance_score,
-                   const gfx::ImageSkia& icon,
+                   const ui::ImageModel& icon,
                    const std::u16string& query);
   ~OsSettingsResult() override;
 
@@ -122,7 +122,7 @@ class OsSettingsProvider : public SearchProvider,
   raw_ptr<ash::settings::SearchHandler, ExperimentalAsh> search_handler_;
   raw_ptr<const ash::settings::Hierarchy, ExperimentalAsh> hierarchy_;
   raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
-  gfx::ImageSkia icon_;
+  ui::ImageModel icon_;
 
   // Last query. It is reset when view is closed.
   std::u16string last_query_;

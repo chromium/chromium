@@ -58,10 +58,10 @@ class AssistantTextSearchResult : public ChromeSearchResult {
     SetDetails(l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT, text));
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(chromeos::kAssistantIcon, kSystemIconDimension,
-                              gfx::kPlaceholderColor),
-        kSystemIconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(chromeos::kAssistantIcon,
+                                                    gfx::kPlaceholderColor,
+                                                    kSystemIconDimension),
+                     kSystemIconDimension));
 
     SetSkipUpdateAnimation(true);
     set_dismiss_view_on_open(false);

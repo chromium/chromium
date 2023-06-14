@@ -101,12 +101,13 @@ void SearchResultImageView::OnResultChanged() {
 }
 
 void SearchResultImageView::OnMetadataChanged() {
-  if (!result() || result()->icon().icon.isNull()) {
+  if (!result() || result()->icon().icon.IsEmpty()) {
     result_image_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
     return;
   }
 
-  const gfx::ImageSkia& image = result()->icon().icon;
+  const gfx::ImageSkia& image =
+      result()->icon().icon.Rasterize(GetColorProvider());
   result_image_->SetImage(views::Button::STATE_NORMAL, image);
   result_image_->SetTooltipText(result()->title());
   result_image_->SetAccessibleName(result()->title());

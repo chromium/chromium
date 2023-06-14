@@ -206,10 +206,10 @@ std::ostream& operator<<(std::ostream& os, AppListViewState state) {
 
 SearchResultIconInfo::SearchResultIconInfo() = default;
 
-SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon, int dimension)
+SearchResultIconInfo::SearchResultIconInfo(ui::ImageModel icon, int dimension)
     : icon(icon), dimension(dimension) {}
 
-SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon,
+SearchResultIconInfo::SearchResultIconInfo(ui::ImageModel icon,
                                            int dimension,
                                            SearchResultIconShape shape)
     : icon(icon), dimension(dimension), shape(shape) {}

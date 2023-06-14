@@ -313,8 +313,8 @@ double KeyboardShortcutResult::CalculateRelevance(
 }
 
 void KeyboardShortcutResult::UpdateIcon() {
-  gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      chromeos::kKeyboardShortcutsIcon, kAppIconDimension, SK_ColorTRANSPARENT);
+  ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
+      chromeos::kKeyboardShortcutsIcon, SK_ColorTRANSPARENT, kAppIconDimension);
   SetIcon(IconInfo(icon, kAppIconDimension));
 }
 

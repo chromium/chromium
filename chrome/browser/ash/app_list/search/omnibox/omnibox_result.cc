@@ -213,7 +213,7 @@ void OmniboxResult::OnFaviconReceived(const gfx::ImageSkia& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.isNull());
   search_result_->favicon = icon;
-  SetIcon(IconInfo(icon, kFaviconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kFaviconDimension));
 }
 
 void OmniboxResult::UpdateIcon() {
@@ -225,8 +225,9 @@ void OmniboxResult::UpdateIcon() {
   // Use a favicon if eligible. In the event that a favicon becomes available
   // asynchronously, it will be sent to us over Mojo and we will update our
   // icon.
-  if (!search_result_->favicon.isNull()) {
-    SetIcon(IconInfo(search_result_->favicon, kFaviconDimension));
+  gfx::ImageSkia icon = search_result_->favicon;
+  if (!icon.isNull()) {
+    SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kFaviconDimension));
     return;
   }
 
@@ -239,15 +240,16 @@ void OmniboxResult::SetGenericIcon() {
   // the generic bookmark or another generic icon as appropriate.
   if (search_result_->omnibox_type ==
       CrosApiSearchResult::OmniboxType::kBookmark) {
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(omnibox::kBookmarkIcon, kSystemIconDimension,
-                              GetGenericIconColor()),
-        kSystemIconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(omnibox::kBookmarkIcon,
+                                                    GetGenericIconColor(),
+                                                    kSystemIconDimension),
+
+                     kSystemIconDimension));
   } else {
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(TypeToVectorIcon(search_result_->omnibox_type),
-                              kSystemIconDimension, GetGenericIconColor()),
-        kSystemIconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(
+                         TypeToVectorIcon(search_result_->omnibox_type),
+                         GetGenericIconColor(), kSystemIconDimension),
+                     kSystemIconDimension));
   }
 }
 
@@ -318,7 +320,8 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
   if (!bitmap)
     return;
 
-  IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
+  IconInfo icon_info(ui::ImageModel::FromImageSkia(
+                         gfx::ImageSkia::CreateFrom1xBitmap(*bitmap)),
                      kImageIconDimension, IconShape::kRoundedRectangle);
   SetIcon(icon_info);
 }
