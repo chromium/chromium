@@ -19,7 +19,6 @@
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
-
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
@@ -54,6 +53,10 @@
   _historySyncCoordinator.coordinatorCompleted = nil;
   _historySyncCoordinator = nil;
   _baseNavigationController = nil;
+}
+
+- (void)dealloc {
+  CHECK(!_historySyncCoordinator);
 }
 
 #pragma mark - Private
