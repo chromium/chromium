@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/views/examples/examples_color_mixer.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/examples_window_with_content.h"
