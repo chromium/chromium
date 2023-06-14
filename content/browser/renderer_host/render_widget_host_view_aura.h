@@ -292,6 +292,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // content.
   // https://docs.microsoft.com/en-us/windows/win32/tsf/predefined-properties
   ui::TextInputClient::EditingContext GetTextEditingContext() override;
+
+  void OnFrameFocusChanged() override;
 #endif
 
   // Overridden from display::DisplayObserver:

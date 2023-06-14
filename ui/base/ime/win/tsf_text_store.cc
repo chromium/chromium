@@ -266,6 +266,11 @@ HRESULT TSFTextStore::GetStatus(TS_STATUS* status) {
   // TODO(IME): Remove TS_SS_TRANSITORY to support Korean reconversion
   status->dwStaticFlags = TS_SS_TRANSITORY | TS_SS_NOHIDDENTEXT;
 
+  // No text support is needed for empty text store.
+  if (text_input_client_ && is_empty_text_store_supported_ &&
+      text_input_client_->GetTextInputType() == TEXT_INPUT_TYPE_NONE) {
+    status->dwDynamicFlags |= TS_SD_READONLY;
+  }
   return S_OK;
 }
 
@@ -574,6 +579,13 @@ HRESULT TSFTextStore::RequestAttrsTransitioningAtPosition(
 HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (!text_input_client_)
     return E_UNEXPECTED;
+  // No lock is necessary for an empty text store. This is to deny lock to an
+  // unsuspecting TSF in the wild that always assumed a text update with a
+  // store.
+  if (is_empty_text_store_supported_ && text_input_client_ &&
+      text_input_client_->GetTextInputType() == TEXT_INPUT_TYPE_NONE) {
+    return E_FAIL;
+  }
 
   if (!text_store_acp_sink_.Get())
     return E_FAIL;
@@ -1652,6 +1664,25 @@ bool TSFTextStore::IsInputProcessorWithoutVerticalWriting() const {
   bool result = base::StartsWith(description, L"Google Japanese Input");
   ::SysFreeString(description);
   return result;
+}
+
+void ui::TSFTextStore::SetEmptyTextStoreSupport(bool isEnabled) {
+  is_empty_text_store_supported_ = isEnabled;
+}
+
+bool TSFTextStore::MaybeSendOnUrlChanged() {
+  // When the user interacts with a traditional editing control, TSF will query
+  // for the current Url as needed. However, when TSF supports empty stores, we
+  // will also notify the OS when a frame with a committed Url is focused, to
+  // enable scenarios where, for example, a page implements its own controls in
+  // JavaScript (crbug.com/1447061).
+  if (!is_empty_text_store_supported_) {
+    return false;
+  }
+  TS_ATTRID attrs[1];
+  attrs[0] = GUID_PROP_URL;
+  text_store_acp_sink_->OnAttrsChange(NULL, NULL, 1, attrs);
+  return true;
 }
 
 }  // namespace ui

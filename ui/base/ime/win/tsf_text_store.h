@@ -269,6 +269,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Sends OnLayoutChange() via |text_store_acp_sink_|.
   void SendOnLayoutChange();
 
+  // Sends a Url change notification via |text_store_acp_sink_| if the current
+  // version of TSF supports empty text stores.
+  bool MaybeSendOnUrlChanged();
+
+  // Sets the flag to indicate TSF support for empty text stores.
+  void SetEmptyTextStoreSupport(bool isEnabled);
+
  private:
   friend class TSFTextStoreTest;
   friend class TSFTextStoreTestCallback;
@@ -327,6 +334,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Gets the style information from the display attribute for the actively
   // composed text.
   void GetStyle(const TF_DISPLAYATTRIBUTE& attribute, ImeTextSpan* span);
+
+  // Indicates if the operating system's version of TSF supports empty text
+  // stores.
+  bool is_empty_text_store_supported_ = false;
 
   // The reference count of this instance.
   volatile LONG ref_count_ = 0;

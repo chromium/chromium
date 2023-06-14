@@ -86,6 +86,9 @@ class InputMethod {
   // Returns whether the system input locale is in CJK languages.
   // This is only used in Windows platforms.
   virtual bool IsInputLocaleCJK() const = 0;
+
+  // Called when a frame with a committed Url has received focus.
+  virtual void OnUrlChanged() {}
 #endif
 
   // Sets the text input client which receives text input events such as

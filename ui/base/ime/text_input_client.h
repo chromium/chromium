@@ -338,6 +338,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   };
 
   virtual ui::TextInputClient::EditingContext GetTextEditingContext();
+
+  // Notifies accessibility when a frame with a committed Url receives focus.
+  virtual void OnFrameFocusChanged() {}
 #endif
 
   // Called before ui::InputMethod dispatches a not-consumed event to PostIME
