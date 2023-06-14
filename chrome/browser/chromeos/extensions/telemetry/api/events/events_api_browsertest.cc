@@ -592,8 +592,16 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
+// TODO(crbug.com/1454755): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
+  DISABLED_KeyboardDiagnosticEventOpensDiagnosticApp
+#else
+#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
+  KeyboardDiagnosticEventOpensDiagnosticApp
+#endif
 IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       KeyboardDiagnosticEventOpensDiagnosticApp) {
+                       MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 

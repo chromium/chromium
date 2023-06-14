@@ -651,7 +651,13 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RejectValueProp) {
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SkipShowingValueProp) {
+// TODO(crbug.com/1454755): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SkipShowingValueProp DISABLED_SkipShowingValueProp
+#else
+#define MAYBE_SkipShowingValueProp SkipShowingValueProp
+#endif
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, MAYBE_SkipShowingValueProp) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(

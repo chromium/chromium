@@ -1072,7 +1072,13 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, DifferentDomain) {
   enrollment_ui_.RetryAndWaitForSigninStep();
 }
 
-IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
+// TODO(crbug.com/1454755): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnrollmentForced DISABLED_EnrollmentForced
+#else
+#define MAYBE_EnrollmentForced EnrollmentForced
+#endif
+IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, MAYBE_EnrollmentForced) {
   auto initial_enrollment =
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED;
