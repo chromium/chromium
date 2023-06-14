@@ -407,7 +407,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                 action:^{
                   [weakMediator disableSetUpList];
                 }
-                 style:UIAlertActionStyleDefault];
+                 style:UIAlertActionStyleDestructive];
   [_actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL)
