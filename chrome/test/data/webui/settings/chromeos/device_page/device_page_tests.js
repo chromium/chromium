@@ -83,6 +83,13 @@ function getFakePrefs() {
         },
       },
     },
+    power: {
+      cros_battery_saver_active: {
+        key: 'power.cros_battery_saver_active',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
     settings: {
       // TODO(afakhry): Write tests to validate the Night Light slider
       // behavior with 24-hour setting.
@@ -405,22 +412,23 @@ suite('SettingsDevicePage', function() {
    * @param {boolean} adaptiveChargingManaged
    */
   function sendPowerManagementSettings(
-      possibleAcIdleBehaviors, possibleBatteryIdleBehaviors, currAcIdleBehavior,
-      currBatteryIdleBehavior, acIdleManaged, batteryIdleManaged,
-      lidClosedBehavior, lidClosedControlled, hasLid, adaptiveCharging,
-      adaptiveChargingManaged) {
+      possibleAcIdleBehaviors, possibleBatteryIdleBehaviors,
+      currentAcIdleBehavior, currentBatteryIdleBehavior, acIdleManaged,
+      batteryIdleManaged, lidClosedBehavior, lidClosedControlled, hasLid,
+      adaptiveCharging, adaptiveChargingManaged, batterySaverFeatureEnabled) {
     webUIListenerCallback('power-management-settings-changed', {
-      possibleAcIdleBehaviors: possibleAcIdleBehaviors,
-      possibleBatteryIdleBehaviors: possibleBatteryIdleBehaviors,
-      currentAcIdleBehavior: currAcIdleBehavior,
-      currentBatteryIdleBehavior: currBatteryIdleBehavior,
-      acIdleManaged: acIdleManaged,
-      batteryIdleManaged: batteryIdleManaged,
-      lidClosedBehavior: lidClosedBehavior,
-      lidClosedControlled: lidClosedControlled,
-      hasLid: hasLid,
-      adaptiveCharging: adaptiveCharging,
-      adaptiveChargingManaged: adaptiveChargingManaged,
+      possibleAcIdleBehaviors,
+      possibleBatteryIdleBehaviors,
+      currentAcIdleBehavior,
+      currentBatteryIdleBehavior,
+      acIdleManaged,
+      batteryIdleManaged,
+      lidClosedBehavior,
+      lidClosedControlled,
+      hasLid,
+      adaptiveCharging,
+      adaptiveChargingManaged,
+      batterySaverFeatureEnabled,
     });
     flush();
   }
@@ -2435,6 +2443,7 @@ suite('SettingsDevicePage', function() {
       let acIdleSelect;
       let lidClosedToggle;
       let adaptiveChargingToggle;
+      let batterySaverToggle;
 
       suiteSetup(function() {
         // Adaptive charging setting should be shown.
@@ -2462,6 +2471,8 @@ suite('SettingsDevicePage', function() {
               adaptiveChargingToggle =
                   assert(powerPage.shadowRoot.querySelector(
                       '#adaptiveChargingToggle'));
+              batterySaverToggle = assert(
+                  powerPage.shadowRoot.querySelector('#batterySaverToggle'));
 
               assertEquals(
                   1,
@@ -2483,7 +2494,8 @@ suite('SettingsDevicePage', function() {
                   false /* batteryIdleManaged */, LidClosedBehavior.SUSPEND,
                   false /* lidClosedControlled */, true /* hasLid */,
                   false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
             });
       });
 
@@ -2502,6 +2514,8 @@ suite('SettingsDevicePage', function() {
 
         // Power source row is hidden since there's no battery.
         assertTrue(powerSourceRow.hidden);
+        // Battery Saver is also hidden.
+        assertTrue(batterySaverToggle.hidden);
         // Idle settings while on battery and while charging should not be
         // visible if the battery is not present.
         assertEquals(
@@ -2537,6 +2551,8 @@ suite('SettingsDevicePage', function() {
         // Power sources row is visible but dropdown is hidden.
         assertFalse(powerSourceRow.hidden);
         assertTrue(powerSourceSelect.hidden);
+        // Battery saver should be toggleable when not charging.
+        assertFalse(batterySaverToggle.disabled);
 
         // Attach a dual-role USB device.
         const powerSource = {
@@ -2550,12 +2566,18 @@ suite('SettingsDevicePage', function() {
         // "Battery" should be selected.
         assertFalse(powerSourceSelect.hidden);
         assertEquals('', powerSourceSelect.value);
+        // We are charging on a non-low power charger, battery saver should be
+        // grayed out.
+        assertTrue(batterySaverToggle.disabled);
 
         // Select the power source.
         setPowerSources([powerSource], powerSource.id, true);
         flush();
         assertFalse(powerSourceSelect.hidden);
         assertEquals(powerSource.id, powerSourceSelect.value);
+        // Charging, but on a low-power charger, battery saver should be
+        // toggleable.
+        assertFalse(batterySaverToggle.disabled);
 
         // Send another power source; the first should still be selected.
         const otherPowerSource = Object.assign({}, powerSource);
@@ -2564,6 +2586,7 @@ suite('SettingsDevicePage', function() {
         flush();
         assertFalse(powerSourceSelect.hidden);
         assertEquals(powerSource.id, powerSourceSelect.value);
+        assertFalse(batterySaverToggle.disabled);
       });
 
       test('choose power source', function() {
@@ -2656,8 +2679,8 @@ suite('SettingsDevicePage', function() {
               IdleBehavior.DISPLAY_OFF, IdleBehavior.DISPLAY_OFF,
               false /* acIdleManaged */, false /* batteryIdleManaged */,
               lidBehavior, false /* lidClosedControlled */, true /* hasLid */,
-              false /* adaptiveCharging */,
-              false /* adaptiveChargingManaged */);
+              false /* adaptiveCharging */, false /* adaptiveChargingManaged */,
+              true /* batterySaverFeatureEnabled */);
         };
 
         sendLid(LidClosedBehavior.SUSPEND);
@@ -2700,7 +2723,8 @@ suite('SettingsDevicePage', function() {
                      LidClosedBehavior.DO_NOTHING,
                      false /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -2758,7 +2782,8 @@ suite('SettingsDevicePage', function() {
                   true /* acIdleManaged */, true /* batteryIdleManaged */,
                   LidClosedBehavior.DO_NOTHING, false /* lidClosedControlled */,
                   true /* hasLid */, false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
               return new Promise(function(resolve) {
                 microTask.run(resolve);
               });
@@ -2800,7 +2825,8 @@ suite('SettingsDevicePage', function() {
                      LidClosedBehavior.DO_NOTHING,
                      false /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -2857,7 +2883,8 @@ suite('SettingsDevicePage', function() {
                   false /* acIdleManaged */, false /* batteryIdleManaged */,
                   LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
                   true /* hasLid */, false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
               return new Promise(function(resolve) {
                 microTask.run(resolve);
               });
@@ -2910,7 +2937,8 @@ suite('SettingsDevicePage', function() {
                      LidClosedBehavior.SHUT_DOWN,
                      true /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -2946,7 +2974,8 @@ suite('SettingsDevicePage', function() {
                   LidClosedBehavior.STOP_SESSION,
                   true /* lidClosedControlled */, true /* hasLid */,
                   false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
               return new Promise(function(resolve) {
                 microTask.run(resolve);
               });
@@ -2997,7 +3026,8 @@ suite('SettingsDevicePage', function() {
                      false /* batteryIdleManaged */, LidClosedBehavior.SUSPEND,
                      false /* lidClosedControlled */, false /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -3054,7 +3084,8 @@ suite('SettingsDevicePage', function() {
             false /* acIdleManaged */, false /* batteryIdleManaged */,
             LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
             true /* hasLid */, true /* adaptiveCharging */,
-            true /* adaptiveCharingManaged */);
+            true /* adaptiveCharingManaged */,
+            true /* batterySaverFeatureEnabled */);
 
         assertTrue(adaptiveChargingToggle.shadowRoot.querySelector('cr-toggle')
                        .checked);
@@ -3073,6 +3104,78 @@ suite('SettingsDevicePage', function() {
             routes.POWER, '440',
             adaptiveChargingToggle.shadowRoot.querySelector('cr-toggle'),
             'Adaptive charging toggle');
+      });
+
+      test('Battery Saver hidden when feature disabled', () => {
+        sendPowerManagementSettings(
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF_SLEEP,
+            false /* acIdleManaged */, false /* batteryIdleManaged */,
+            LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
+            true /* hasLid */, false /* adaptiveCharging */,
+            false /* adaptiveChargingManaged */,
+            false /* batterySaverFeatureEnabled */);
+
+        assertTrue(batterySaverToggle.hidden);
+      });
+
+      test('Battery Saver toggleable', () => {
+        // Battery is present.
+        webUIListenerCallback('battery-status-changed', {
+          present: true,
+          charging: false,
+          calculating: false,
+          percent: 50,
+          statusText: '5 hours left',
+        });
+        // There are no power sources.
+        setPowerSources([], '', false);
+        // Battery saver feature is enabled.
+        sendPowerManagementSettings(
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF_SLEEP,
+            false /* acIdleManaged */, false /* batteryIdleManaged */,
+            LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
+            true /* hasLid */, false /* adaptiveCharging */,
+            false /* adaptiveChargingManaged */,
+            true /* batterySaverFeatureEnabled */);
+
+        // Battery saver should be visible and toggleable.
+        assertFalse(batterySaverToggle.hidden);
+        assertFalse(batterySaverToggle.disabled);
+      });
+
+      test('Battery Saver updates when pref updates', () => {
+        function setPref(value) {
+          const newPrefs = getFakePrefs();
+          newPrefs.power.cros_battery_saver_active.value = value;
+          powerPage.prefs = newPrefs;
+          flush();
+        }
+
+        setPref(true);
+        assertTrue(batterySaverToggle.checked);
+
+        setPref(false);
+        assertFalse(batterySaverToggle.checked);
       });
     });
   });

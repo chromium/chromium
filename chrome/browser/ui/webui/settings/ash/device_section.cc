@@ -1059,11 +1059,16 @@ void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
       {"powerSourceLowPowerCharger",
        IDS_SETTINGS_POWER_SOURCE_LOW_POWER_CHARGER},
       {"powerTitle", IDS_SETTINGS_POWER_TITLE},
+      {"powerBatterySaverLabel", IDS_SETTINGS_POWER_BATTERY_SAVER_LABEL},
+      {"powerBatterySaverSubtext", IDS_SETTINGS_POWER_BATTERY_SAVER_SUBTEXT},
   };
   html_source->AddLocalizedStrings(kPowerStrings);
 
   // TODO(b:216035280): create and link to real "learn more" webpage.
   html_source->AddString("powerAdaptiveChargingLearnMoreUrl", u"about://blank");
+
+  // TODO(b:278957245): create and link to real "learn more" webpage.
+  html_source->AddString("powerBatterySaverLearnMoreUrl", "about://blank");
 }
 
 // Mirrors enum of the same name in enums.xml.
@@ -1394,6 +1399,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kPowerSource,
       mojom::Setting::kSleepWhenLaptopLidClosed,
       mojom::Setting::kAdaptiveCharging,
+      mojom::Setting::kBatterySaver,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kPower, kPowerSettings, generator);
 }

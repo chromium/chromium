@@ -78,6 +78,7 @@ export interface PowerManagementSettings {
   hasLid: boolean;
   adaptiveCharging: boolean;
   adaptiveChargingManaged: boolean;
+  batterySaverFeatureEnabled: boolean;
 }
 
 /**

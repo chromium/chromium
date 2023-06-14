@@ -146,6 +146,7 @@ enum Setting {
   kKeyboardRemapKeys = 442,
   kChargingSounds = 443,
   kLowBatterySound = 444,
+  kBatterySaver = 445,
 
   // Personalization section.
   kOpenWallpaper = 500,

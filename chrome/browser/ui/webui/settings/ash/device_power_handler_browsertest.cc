@@ -78,6 +78,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
     bool has_lid = true;
     bool adaptive_charging = true;
     bool adaptive_charging_managed = false;
+    bool battery_saver_feature_enabled = false;
   };
 
   PowerHandlerTest() = default;
@@ -161,6 +162,8 @@ class PowerHandlerTest : public InProcessBrowserTest {
     dict.Set(PowerHandler::kAdaptiveChargingKey, settings.adaptive_charging);
     dict.Set(PowerHandler::kAdaptiveChargingManagedKey,
              settings.adaptive_charging_managed);
+    dict.Set(PowerHandler::kBatterySaverFeatureEnabledKey,
+             settings.battery_saver_feature_enabled);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;

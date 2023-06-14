@@ -36,6 +36,16 @@
   </div>
 </div>
 
+<settings-toggle-button id="batterySaverToggle"
+    hidden$="[[batterySaverHidden_]]"
+    pref="{{prefs.power.cros_battery_saver_active}}"
+    label="$i18n{powerBatterySaverLabel}"
+    sub-label="$i18n{powerBatterySaverSubtext}"
+    learn-more-url="$i18n{powerBatterySaverLearnMoreUrl}"
+    disabled="[[batterySaverToggleDisabled_]]"
+    deep-link-focus-id$="[[Setting.kBatterySaver]]">
+</settings-toggle-button>
+
 <settings-toggle-button hidden$="[[!adaptiveChargingEnabled_]]"
   class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
   id="adaptiveChargingToggle"
