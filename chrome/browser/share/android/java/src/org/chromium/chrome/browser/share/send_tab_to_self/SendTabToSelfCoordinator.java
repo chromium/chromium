@@ -133,8 +133,7 @@ public class SendTabToSelfCoordinator {
         }
 
         @Override
-        @EntryPoint
-        public int getEntryPoint() {
+        public @EntryPoint int getEntryPoint() {
             return EntryPoint.SEND_TAB_TO_SELF;
         }
     }

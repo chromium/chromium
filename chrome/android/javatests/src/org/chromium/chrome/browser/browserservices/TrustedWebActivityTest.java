@@ -270,8 +270,7 @@ public class TrustedWebActivityTest {
                 additionalTrustedOrigins);
     }
 
-    @BrowserControlsState
-    private int getBrowserControlConstraints(Tab tab) {
+    private @BrowserControlsState int getBrowserControlConstraints(Tab tab) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> TabBrowserControlsConstraintsHelper.getConstraints(tab));
     }

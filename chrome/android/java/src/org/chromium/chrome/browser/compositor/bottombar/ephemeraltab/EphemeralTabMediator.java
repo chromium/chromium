@@ -252,8 +252,8 @@ public class EphemeralTabMediator {
         };
     }
 
-    @DrawableRes
-    private static int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
+    private static @DrawableRes int getSecurityIconResource(
+            @ConnectionSecurityLevel int securityLevel) {
         switch (securityLevel) {
             case ConnectionSecurityLevel.NONE:
             case ConnectionSecurityLevel.WARNING:

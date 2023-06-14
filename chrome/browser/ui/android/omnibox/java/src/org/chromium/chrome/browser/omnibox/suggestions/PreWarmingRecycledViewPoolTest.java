@@ -70,8 +70,7 @@ public class PreWarmingRecycledViewPoolTest {
             }
 
             @Override
-            @NonNull
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public @NonNull ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 return new ViewHolder(mView, null);
             }
         });

@@ -105,8 +105,7 @@ public class ChromePaymentRequestService
          * @param webContents The web contents for which to lookup the Android activity.
          * @return Possibly null Android activity that should never be cached.
          */
-        @Nullable
-        default Activity getActivity(WebContents webContents) {
+        default @Nullable Activity getActivity(WebContents webContents) {
             return ChromeActivity.fromWebContents(webContents);
         }
 
@@ -134,8 +133,7 @@ public class ChromePaymentRequestService
          * @param webContents Any WebContents.
          * @return The TabModelSelector of the given WebContents.
          */
-        @Nullable
-        default TabModelSelector getTabModelSelector(WebContents webContents) {
+        default @Nullable TabModelSelector getTabModelSelector(WebContents webContents) {
             ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
             return activity == null ? null : activity.getTabModelSelector();
         }
@@ -144,8 +142,7 @@ public class ChromePaymentRequestService
          * @param webContents Any WebContents.
          * @return The TabModel of the given WebContents.
          */
-        @Nullable
-        default TabModel getTabModel(WebContents webContents) {
+        default @Nullable TabModel getTabModel(WebContents webContents) {
             ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
             return activity == null ? null : activity.getCurrentTabModel();
         }
@@ -155,8 +152,7 @@ public class ChromePaymentRequestService
          * @return The ActivityLifecycleDispatcher of the ChromeActivity that contains the given
          *         WebContents.
          */
-        @Nullable
-        default ActivityLifecycleDispatcher getActivityLifecycleDispatcher(
+        default @Nullable ActivityLifecycleDispatcher getActivityLifecycleDispatcher(
                 WebContents webContents) {
             ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
             return activity == null ? null : activity.getLifecycleDispatcher();
@@ -302,8 +298,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    @Nullable
-    public WebContents openPaymentHandlerWindow(
+    public @Nullable WebContents openPaymentHandlerWindow(
             GURL url, boolean isOffTheRecord, long ukmSourceId) {
         @Nullable
         WebContents paymentHandlerWebContents =
@@ -546,15 +541,13 @@ public class ChromePaymentRequestService
 
     // Implement PaymentUiService.Delegate:
     @Override
-    @Nullable
-    public Context getContext() {
+    public @Nullable Context getContext() {
         return mDelegate.getContext(mRenderFrameHost);
     }
 
     // Implement PaymentUiService.Delegate:
     @Override
-    @Nullable
-    public ActivityLifecycleDispatcher getActivityLifecycleDispatcher() {
+    public @Nullable ActivityLifecycleDispatcher getActivityLifecycleDispatcher() {
         return mDelegate.getActivityLifecycleDispatcher(mWebContents);
     }
 }

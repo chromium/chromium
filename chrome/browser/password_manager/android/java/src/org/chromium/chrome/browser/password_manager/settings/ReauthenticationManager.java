@@ -56,18 +56,15 @@ public final class ReauthenticationManager {
     private static Long sLastReauthTimeMillis;
 
     // Stores the reauth scope used when |sLastReauthTimeMillis| was reset last time.
-    @ReauthScope
-    private static int sLastReauthScope = ReauthScope.ONE_AT_A_TIME;
+    private static @ReauthScope int sLastReauthScope = ReauthScope.ONE_AT_A_TIME;
 
     // Used in tests to override the result of checking for screen lock set-up. This allows the
     // tests to be independent of a particular device configuration.
-    @OverrideState
-    private static int sScreenLockSetUpOverride = OverrideState.NOT_OVERRIDDEN;
+    private static @OverrideState int sScreenLockSetUpOverride = OverrideState.NOT_OVERRIDDEN;
 
     // Used in tests to override the result of checking for availability of the screen-locking API.
     // This allows the tests to be independent of a particular device configuration.
-    @OverrideState
-    private static int sApiOverride = OverrideState.NOT_OVERRIDDEN;
+    private static @OverrideState int sApiOverride = OverrideState.NOT_OVERRIDDEN;
 
     // Used in tests to avoid displaying the OS reauth dialog.
     private static boolean sSkipSystemReauth;

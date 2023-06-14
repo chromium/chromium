@@ -578,8 +578,7 @@ public class VoiceRecognitionHandler {
      * Returns the URL of the tab associated with this VoiceRecognitionHandler or null if it is not
      * available.
      */
-    @Nullable
-    private String getUrl() {
+    private @Nullable String getUrl() {
         LocationBarDataProvider locationBarDataProvider = mDelegate.getLocationBarDataProvider();
         if (locationBarDataProvider == null) return null;
 

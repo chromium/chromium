@@ -244,8 +244,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Creates a {@link ModalDialogManager} for this class. Subclasses that need one should override
      * this method.
      */
-    @Nullable
-    protected ModalDialogManager createModalDialogManager() {
+    protected @Nullable ModalDialogManager createModalDialogManager() {
         return null;
     }
 

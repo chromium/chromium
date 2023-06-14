@@ -130,8 +130,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
      * @param email The email address to check.
      * @return The completion status.
      */
-    @CompletionStatus
-    public int checkContactCompletionStatus(
+    public @CompletionStatus int checkContactCompletionStatus(
             @Nullable String name, @Nullable String phone, @Nullable String email) {
         int completionStatus = COMPLETE;
 

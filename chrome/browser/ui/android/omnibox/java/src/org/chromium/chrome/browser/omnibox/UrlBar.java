@@ -669,8 +669,7 @@ public abstract class UrlBar extends AutocompleteEditText {
      *     <li>The visible text is narrower than the viewport.</li>
      * </ul>
      */
-    @Nullable
-    public CharSequence getVisibleTextPrefixHint() {
+    public @Nullable CharSequence getVisibleTextPrefixHint() {
         if (getVisibleMeasuredViewportWidth() != mPreviousScrollViewWidth) return null;
         return mVisibleTextPrefixHint;
     }

@@ -141,8 +141,7 @@ public class PageInfoAboutThisSiteTest {
         helper.waitForCallback(0);
     }
 
-    @NonNull
-    private ViewAssertion renderView(String renderId) {
+    private @NonNull ViewAssertion renderView(String renderId) {
         return (v, noMatchException) -> {
             if (noMatchException != null) throw noMatchException;
             // Allow disk writes and slow calls to render from UI thread.

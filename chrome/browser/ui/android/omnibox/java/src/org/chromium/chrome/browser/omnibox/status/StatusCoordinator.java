@@ -228,8 +228,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     /** Returns the ID of the drawable currently shown in the security icon. */
-    @DrawableRes
-    public int getSecurityIconResourceIdForTesting() {
+    public @DrawableRes int getSecurityIconResourceIdForTesting() {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
                 ? 0
                 : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting();

@@ -353,8 +353,7 @@ public class OmniboxResourceProvider {
      * Returns the background color for suggestions in a "standard" (non-incognito) TabModel with
      * the given context.
      */
-    @ColorInt
-    public static int getStandardSuggestionBackgroundColor(Context context) {
+    public static @ColorInt int getStandardSuggestionBackgroundColor(Context context) {
         return OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 ? ChromeColors.getSurfaceColor(
                         context, R.dimen.omnibox_suggestion_bg_elevation_modern)

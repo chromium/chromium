@@ -167,8 +167,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public String link;
         public int icon;
 
-        @IconType
-        public int iconType = IconType.DRAWABLE;
+        public @IconType int iconType = IconType.DRAWABLE;
 
         // Whether the the message must be shown, even though it was dismissed earlier. This
         // usually means there is a significant download update, e.g. download completed.

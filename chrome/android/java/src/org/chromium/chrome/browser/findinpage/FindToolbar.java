@@ -103,10 +103,8 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     /** Whether the search key should trigger a new search. */
     private boolean mSearchKeyShouldTriggerSearch;
 
-    @FindLocationBarState
-    private int mCurrentState = FindLocationBarState.HIDDEN;
-    @FindLocationBarState
-    private int mDesiredState = FindLocationBarState.HIDDEN;
+    private @FindLocationBarState int mCurrentState = FindLocationBarState.HIDDEN;
+    private @FindLocationBarState int mDesiredState = FindLocationBarState.HIDDEN;
 
     private Handler mHandler = new Handler();
     private Runnable mAccessibleAnnouncementRunnable;

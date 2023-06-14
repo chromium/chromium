@@ -373,8 +373,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     @Override
-    @ActivityType
-    public int getActivityType() {
+    public @ActivityType int getActivityType() {
         return getIntentDataProvider().getActivityType();
     }
 
@@ -390,8 +389,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     @Override
-    @Nullable
-    public Tab getActivityTab() {
+    public @Nullable Tab getActivityTab() {
         return mTabProvider.getTab();
     }
 
@@ -586,8 +584,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
      * @return The package name of the Trusted Web Activity, if the activity is a TWA; null
      * otherwise.
      */
-    @Nullable
-    public String getTwaPackage() {
+    public @Nullable String getTwaPackage() {
         return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
     }
 

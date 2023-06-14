@@ -35,8 +35,7 @@ public class NewTabPageUtils {
     /**
      * @return The {@link NewTabPageLaunchOrigin} decoded from the NTP url.
      */
-    @NewTabPageLaunchOrigin
-    public static int decodeOriginFromNtpUrl(String url) {
+    public static @NewTabPageLaunchOrigin int decodeOriginFromNtpUrl(String url) {
         if (!UrlUtilities.isNTPUrl(url)) {
             return NewTabPageLaunchOrigin.UNKNOWN;
         }

@@ -66,8 +66,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     /**
      * Returns null if there's no instance of SyncService (Sync disabled via command-line).
      */
-    @Nullable
-    public static SyncErrorNotifier get() {
+    public static @Nullable SyncErrorNotifier get() {
         ThreadUtils.assertOnUiThread();
         if (!sInitialized) {
             if (SyncServiceFactory.get() != null) {

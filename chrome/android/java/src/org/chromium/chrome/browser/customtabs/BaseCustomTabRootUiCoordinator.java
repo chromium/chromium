@@ -317,8 +317,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return isPageInsightsHubEnabledSync(mIntentDataProvider.get());
     }
 
-    @Nullable
-    public PageInsightsCoordinator getPageInsightsCoordinator() {
+    public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
         return mPageInsightsCoordinator;
     }
 

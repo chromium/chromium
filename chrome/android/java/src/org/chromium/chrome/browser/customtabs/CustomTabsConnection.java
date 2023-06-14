@@ -884,8 +884,7 @@ public class CustomTabsConnection {
         mClientManager.registerLaunch(session, url);
     }
 
-    @Nullable
-    public String getSpeculatedUrl(CustomTabsSessionToken session) {
+    public @Nullable String getSpeculatedUrl(CustomTabsSessionToken session) {
         return mHiddenTabHolder.getSpeculatedUrl(session);
     }
 
@@ -898,8 +897,7 @@ public class CustomTabsConnection {
      * @param referrer The referrer to use for |url|.
      * @return The hidden tab, or null.
      */
-    @Nullable
-    public Tab takeHiddenTab(
+    public @Nullable Tab takeHiddenTab(
             @Nullable CustomTabsSessionToken session, String url, @Nullable String referrer) {
         return mHiddenTabHolder.takeHiddenTab(
                 session, mClientManager.getIgnoreFragmentsForSession(session), url, referrer);
@@ -1004,8 +1002,8 @@ public class CustomTabsConnection {
      * @param intent Incoming intent with the extras.
      * @return Whether the request was started, with reason in case of failure.
      */
-    @ParallelRequestStatus
-    private int maybeStartParallelRequest(CustomTabsSessionToken session, Intent intent) {
+    private @ParallelRequestStatus int maybeStartParallelRequest(
+            CustomTabsSessionToken session, Intent intent) {
         ThreadUtils.assertOnUiThread();
 
         if (!intent.hasExtra(PARALLEL_REQUEST_URL_KEY)) return ParallelRequestStatus.NO_REQUEST;

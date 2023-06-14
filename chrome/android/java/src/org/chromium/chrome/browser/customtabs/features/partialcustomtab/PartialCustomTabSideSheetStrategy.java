@@ -98,14 +98,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    @PartialCustomTabType
-    public int getStrategyType() {
+    public @PartialCustomTabType int getStrategyType() {
         return PartialCustomTabType.SIDE_SHEET;
     }
 
     @Override
-    @StringRes
-    public int getTypeStringId() {
+    public @StringRes int getTypeStringId() {
         return R.string.accessibility_partial_custom_tab_side_sheet;
     }
 
@@ -335,8 +333,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    @ActivityLayoutState
-    protected int getActivityLayoutState() {
+    protected @ActivityLayoutState int getActivityLayoutState() {
         if (isFullscreen()) {
             return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
         } else if (isMaximized()) {

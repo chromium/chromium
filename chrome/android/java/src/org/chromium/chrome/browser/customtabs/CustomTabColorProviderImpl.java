@@ -37,8 +37,8 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
     private final Integer mNavigationBarDividerColor;
     private final int mInitialBackgroundColor;
 
-    @NonNull
-    private static CustomTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
+    private static @NonNull CustomTabColorSchemeParams getColorSchemeParams(
+            Intent intent, int colorScheme) {
         if (colorScheme == COLOR_SCHEME_SYSTEM) {
             assert false : "Color scheme passed to IntentDataProvider should not be "
                            + "COLOR_SCHEME_SYSTEM";
@@ -114,14 +114,12 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
     }
 
     @Override
-    @Nullable
-    public Integer getNavigationBarColor() {
+    public @Nullable Integer getNavigationBarColor() {
         return mNavigationBarColor;
     }
 
     @Override
-    @Nullable
-    public Integer getNavigationBarDividerColor() {
+    public @Nullable Integer getNavigationBarDividerColor() {
         return mNavigationBarDividerColor;
     }
 

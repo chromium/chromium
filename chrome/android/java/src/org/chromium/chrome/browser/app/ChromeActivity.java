@@ -885,8 +885,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * TODO(pnoland, https://crbug.com/865801): remove this in favor of having RootUICoordinator
      *         inject ToolbarManager directly to sub-components.
      */
-    @Nullable
-    public ToolbarManager getToolbarManager() {
+    public @Nullable ToolbarManager getToolbarManager() {
         return mRootUiCoordinator.getToolbarManager();
     }
 
@@ -1272,8 +1271,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * @return The type for this activity.
      */
-    @ActivityType
-    public abstract int getActivityType();
+    public abstract @ActivityType int getActivityType();
 
     /**
      * @return Whether the given activity contains a CustomTab.
@@ -1984,8 +1982,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * @return Fullscreen manager object.
      */
-    @NonNull
-    public FullscreenManager getFullscreenManager() {
+    public @NonNull FullscreenManager getFullscreenManager() {
         return getBrowserControlsManager().getFullscreenManager();
     }
 
@@ -2822,8 +2819,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @VisibleForTesting
-    @Nullable
-    public BookmarkModel getBookmarkModelForTesting() {
+    public @Nullable BookmarkModel getBookmarkModelForTesting() {
         return mBookmarkModelSupplier.get();
     }
 

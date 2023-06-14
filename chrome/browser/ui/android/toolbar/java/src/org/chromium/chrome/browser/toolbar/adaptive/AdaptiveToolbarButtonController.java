@@ -77,8 +77,8 @@ public class AdaptiveToolbarButtonController
     private final AdaptiveButtonActionMenuCoordinator mMenuCoordinator;
     private int mScreenWidthDp;
 
-    @AdaptiveToolbarButtonVariant
-    private int mSessionButtonVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
+    private @AdaptiveToolbarButtonVariant int mSessionButtonVariant =
+            AdaptiveToolbarButtonVariant.UNKNOWN;
     private CurrentTabObserver mPageLoadMetricsRecorder;
 
     /**

@@ -219,8 +219,7 @@ public class LocaleManagerDelegate {
             return;
         }
 
-        @SearchEnginePromoType
-        final int shouldShow = getSearchEnginePromoShowType();
+        final @SearchEnginePromoType int shouldShow = getSearchEnginePromoShowType();
         Supplier<PromoDialog> dialogSupplier;
 
         switch (shouldShow) {
@@ -309,8 +308,7 @@ public class LocaleManagerDelegate {
     /**
      * @see {@link LocaleManager#getSearchEnginePromoShowType()}
      */
-    @SearchEnginePromoType
-    public int getSearchEnginePromoShowType() {
+    public @SearchEnginePromoType int getSearchEnginePromoShowType() {
         if (!isSpecialLocaleEnabled()) return SearchEnginePromoType.DONT_SHOW;
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         if (preferences.readBoolean(ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN, false)) {

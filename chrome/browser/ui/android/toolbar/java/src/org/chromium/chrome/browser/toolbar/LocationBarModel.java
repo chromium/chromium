@@ -649,8 +649,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    @StringRes
-    public int getSecurityIconContentDescriptionResourceId() {
+    public @StringRes int getSecurityIconContentDescriptionResourceId() {
         return SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(getSecurityLevel());
     }
 

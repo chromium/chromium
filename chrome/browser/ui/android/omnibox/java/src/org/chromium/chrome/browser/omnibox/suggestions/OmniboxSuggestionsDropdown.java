@@ -80,8 +80,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         int HANDLED_INITIAL_SIZING = 3;
     }
 
-    @InitialResizeState
-    private int mInitialResizeState = InitialResizeState.WAITING_FOR_FIRST_MEASURE;
+    private @InitialResizeState int mInitialResizeState =
+            InitialResizeState.WAITING_FOR_FIRST_MEASURE;
     private int mWidthMeasureSpec;
     private int mHeightMeasureSpec;
 

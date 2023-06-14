@@ -103,8 +103,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         }
 
         @Override
-        @Nullable
-        public String getTwaPackageName() {
+        public @Nullable String getTwaPackageName() {
             WebContents liveWebContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;

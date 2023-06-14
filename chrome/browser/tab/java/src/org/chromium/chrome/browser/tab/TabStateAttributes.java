@@ -51,8 +51,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     private final CriticalPersistedTabDataObserver mTabDataObserver;
 
     /** Whether or not the TabState has changed. */
-    @DirtinessState
-    private int mDirtinessState = DirtinessState.CLEAN;
+    private @DirtinessState int mDirtinessState = DirtinessState.CLEAN;
     private WebContentsObserver mWebContentsObserver;
     private boolean mPendingLowPrioritySave;
 
@@ -202,8 +201,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     /**
      * @return true if the {@link TabState} has been changed
      */
-    @DirtinessState
-    public int getDirtinessState() {
+    public @DirtinessState int getDirtinessState() {
         return mDirtinessState;
     }
 
@@ -232,8 +230,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
      * @param obs The observer to be added.
      * @return The current dirtiness state.
      */
-    @DirtinessState
-    public int addObserver(Observer obs) {
+    public @DirtinessState int addObserver(Observer obs) {
         mObservers.addObserver(obs);
         return mDirtinessState;
     }

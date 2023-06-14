@@ -391,8 +391,7 @@ public abstract class ToolbarLayout
     /**
      * @return The {@link ProgressBar} this layout uses.
      */
-    @Nullable
-    protected ToolbarProgressBar getProgressBar() {
+    protected @Nullable ToolbarProgressBar getProgressBar() {
         return mProgressBar;
     }
 

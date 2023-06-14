@@ -80,8 +80,7 @@ public class HomepagePolicyManager implements PrefObserver {
     /**
      * @return The homepage URL from the homepage preference.
      */
-    @NonNull
-    public static GURL getHomepageUrl() {
+    public static @NonNull GURL getHomepageUrl() {
         return getInstance().getHomepagePreference();
     }
 
@@ -233,8 +232,7 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     @VisibleForTesting
-    @NonNull
-    public GURL getHomepagePreference() {
+    public @NonNull GURL getHomepagePreference() {
         assert mIsHomepageLocationPolicyEnabled;
         return mHomepage;
     }

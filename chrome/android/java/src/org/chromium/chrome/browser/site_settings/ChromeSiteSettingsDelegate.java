@@ -164,8 +164,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    @Nullable
-    public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
+    public @Nullable String getDelegateAppNameForOrigin(
+            Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
             return InstalledWebappPermissionManager.get().getDelegateAppName(origin);
         }
@@ -174,8 +174,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    @Nullable
-    public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
+    public @Nullable String getDelegatePackageNameForOrigin(
+            Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
             return InstalledWebappPermissionManager.get().getDelegatePackageName(origin);
         }

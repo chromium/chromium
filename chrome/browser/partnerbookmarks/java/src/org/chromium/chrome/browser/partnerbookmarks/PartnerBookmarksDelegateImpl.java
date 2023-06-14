@@ -9,8 +9,7 @@ import androidx.annotation.Nullable;
 /** Default {@link PartnerBookmarksDelegate} implementation. */
 public class PartnerBookmarksDelegateImpl implements PartnerBookmarksDelegate {
     @Override
-    @Nullable
-    public PartnerBookmarkIterator createIterator() {
+    public @Nullable PartnerBookmarkIterator createIterator() {
         return null;
     }
 }

@@ -118,16 +118,14 @@ public class ChromeShareExtras {
     /**
      * @return Source URL of the image.
      */
-    @NonNull
-    public GURL getImageSrcUrl() {
+    public @NonNull GURL getImageSrcUrl() {
         return mImageSrcUrl;
     }
 
     /**
      * @return URL of the content being shared.
      */
-    @NonNull
-    public GURL getContentUrl() {
+    public @NonNull GURL getContentUrl() {
         return mContentUrl;
     }
 

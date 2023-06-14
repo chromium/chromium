@@ -1521,8 +1521,7 @@ public class RootUiCoordinator
     /**
      * @return The {@link FindToolbarManager} controlling find toolbar.
      */
-    @Nullable
-    public FindToolbarManager getFindToolbarManager() {
+    public @Nullable FindToolbarManager getFindToolbarManager() {
         return mFindToolbarManager;
     }
 

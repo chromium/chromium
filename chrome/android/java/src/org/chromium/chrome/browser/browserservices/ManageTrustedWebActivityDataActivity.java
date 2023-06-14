@@ -64,8 +64,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
         sMockCallingPackage = packageName;
     }
 
-    @Nullable
-    private String getClientPackageName(boolean isWebApk) {
+    private @Nullable String getClientPackageName(boolean isWebApk) {
         if (isWebApk) {
             return sMockCallingPackage != null ? sMockCallingPackage : getCallingPackage();
         }

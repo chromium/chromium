@@ -28,8 +28,7 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     }
 
     @Override
-    @Nullable
-    public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+    public @Nullable Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         Tab newTab = ReturnToChromeUtil.handleLoadUrlFromStartSurface(loadUrlParams,
                 windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
                 windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
@@ -40,8 +39,7 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     }
 
     @Override
-    @Nullable
-    public Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+    public @Nullable Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         // 'open in group' has been disabled in crrev.com/c/2885469. We should never reach this
         // method.
         assert false; // NOTREACHED.

@@ -105,8 +105,7 @@ public abstract class AppHooks {
     /**
      * Returns a new {@link DirectActionCoordinator} instance, if available.
      */
-    @Nullable
-    public DirectActionCoordinator createDirectActionCoordinator() {
+    public @Nullable DirectActionCoordinator createDirectActionCoordinator() {
         return null;
     }
 

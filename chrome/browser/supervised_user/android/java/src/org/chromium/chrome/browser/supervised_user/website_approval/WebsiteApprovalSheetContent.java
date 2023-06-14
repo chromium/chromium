@@ -57,8 +57,7 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @Override
-    @Nullable
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -86,8 +85,7 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
-    @ContentPriority
-    public int getPriority() {
+    public @ContentPriority int getPriority() {
         return ContentPriority.HIGH;
     }
 

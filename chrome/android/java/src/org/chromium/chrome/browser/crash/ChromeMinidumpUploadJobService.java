@@ -10,8 +10,7 @@ import org.chromium.chrome.browser.metrics.UmaUtils;
 
 /** See {@link ChromeMinidumpUploadJobServiceImpl}. */
 public class ChromeMinidumpUploadJobService extends SplitCompatMinidumpUploadJobService {
-    @IdentifierNameString
-    private static String sImplClassName =
+    private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobServiceImpl";
 
     public ChromeMinidumpUploadJobService() {

@@ -104,8 +104,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     private void updateSuggestionIcon(@NonNull AutocompleteMatch suggestion,
             @NonNull PropertyModel model, boolean showContent) {
         boolean isUrlSuggestion = suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL;
-        @DrawableRes
-        final int icon =
+        final @DrawableRes int icon =
                 isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
         setSuggestionDrawableState(model,
                 SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)

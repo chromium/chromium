@@ -27,8 +27,7 @@ public class DirectActionTestRule implements TestRule {
     private DirectActionCoordinator mCoordinator;
 
     /** Returns the coordinator created by the rule. */
-    @Nullable
-    public DirectActionCoordinator getCoordinator() {
+    public @Nullable DirectActionCoordinator getCoordinator() {
         return mCoordinator;
     }
 

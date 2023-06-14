@@ -130,13 +130,11 @@ public class LongScreenshotsCompositor {
         return sCompositorDelegateFactory;
     }
 
-    @Nullable
-    public Size getContentSize() {
+    public @Nullable Size getContentSize() {
         return mContentSize;
     }
 
-    @Nullable
-    public Point getScrollOffset() {
+    public @Nullable Point getScrollOffset() {
         return mScrollOffset;
     }
 

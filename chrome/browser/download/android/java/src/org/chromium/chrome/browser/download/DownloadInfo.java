@@ -105,8 +105,7 @@ public final class DownloadInfo {
         mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
     }
 
-    @NonNull
-    public GURL getUrl() {
+    public @NonNull GURL getUrl() {
         return mUrl;
     }
 
@@ -134,13 +133,11 @@ public final class DownloadInfo {
         return mFilePath;
     }
 
-    @NonNull
-    public GURL getReferrer() {
+    public @NonNull GURL getReferrer() {
         return mReferrer;
     }
 
-    @NonNull
-    public GURL getOriginalUrl() {
+    public @NonNull GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 

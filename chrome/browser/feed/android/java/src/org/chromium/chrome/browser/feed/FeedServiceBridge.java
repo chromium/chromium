@@ -159,8 +159,7 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().isAutoplayEnabled();
     }
 
-    @ContentOrder
-    public static int getContentOrderForWebFeed() {
+    public static @ContentOrder int getContentOrderForWebFeed() {
         return FeedServiceBridgeJni.get().getContentOrderForWebFeed();
     }
 

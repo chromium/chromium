@@ -54,11 +54,9 @@ public class DialogManagerTest {
         /** The dialog has been dismissed. */
         public static final int DISMISSED = 2;
 
-        @DialogState
-        private int mState = NEW;
+        private @DialogState int mState = NEW;
 
-        @DialogState
-        public int getState() {
+        public @DialogState int getState() {
             return mState;
         }
 

@@ -48,8 +48,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     }
 
     @Override
-    @Nullable
-    public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+    public @Nullable Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         Tab loadingTab = null;
 
         switch (windowOpenDisposition) {

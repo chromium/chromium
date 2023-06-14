@@ -59,8 +59,7 @@ public class TabDistillabilityProvider
         tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabDistillabilityProvider(tab));
     }
 
-    @Nullable
-    public static TabDistillabilityProvider get(Tab tab) {
+    public static @Nullable TabDistillabilityProvider get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

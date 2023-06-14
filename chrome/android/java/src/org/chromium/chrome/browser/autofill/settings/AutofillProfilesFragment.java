@@ -259,8 +259,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         }
     }
 
-    @Nullable
-    private AutofillAddress getAutofillAddress(AutofillProfileEditorPreference preference) {
+    private @Nullable AutofillAddress getAutofillAddress(
+            AutofillProfileEditorPreference preference) {
         String guid = preference.getGUID();
         if (guid == null) {
             return null;

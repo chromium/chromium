@@ -327,8 +327,7 @@ public class TabPersistentStoreTest {
                 }
 
                 @Override
-                @ActivityType
-                public int getActivityType() {
+                public @ActivityType int getActivityType() {
                     return ActivityType.TABBED;
                 }
 

@@ -23,8 +23,7 @@ public interface PageInsightsSurfaceRenderer {
      * @param renderData server-provided UI to be rendered.
      * @param contextValues additional context to be incorporated into the rendered UI.
      */
-    @Nullable
-    default View render(byte[] renderData, Map<String, Object> contextValues) {
+    default @Nullable View render(byte[] renderData, Map<String, Object> contextValues) {
         return null;
     }
 

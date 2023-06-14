@@ -114,8 +114,7 @@ public class ChromeActivitySessionTracker {
     /**
      * @return The latest country according to the current variations state. Null if not available.
      */
-    @Nullable
-    public String getVariationsLatestCountry() {
+    public @Nullable String getVariationsLatestCountry() {
         return mVariationsSession.getLatestCountry();
     }
 

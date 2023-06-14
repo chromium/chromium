@@ -248,8 +248,8 @@ public class EditorProperties {
         return fieldItem.type == ItemType.DROPDOWN;
     }
 
-    @Nullable
-    public static String getDropdownKeyByValue(PropertyModel dropdownField, String value) {
+    public static @Nullable String getDropdownKeyByValue(
+            PropertyModel dropdownField, String value) {
         return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
                 .stream()
                 .filter(keyValue -> { return keyValue.getValue().equals(value); })
@@ -258,8 +258,7 @@ public class EditorProperties {
                 .orElse(null);
     }
 
-    @Nullable
-    public static String getDropdownValueByKey(PropertyModel dropdownField, String key) {
+    public static @Nullable String getDropdownValueByKey(PropertyModel dropdownField, String key) {
         return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
                 .stream()
                 .filter(keyValue -> { return keyValue.getKey().equals(key); })
@@ -287,8 +286,7 @@ public class EditorProperties {
         return validator != null && validator.isLengthMaximum(textField.get(FieldProperties.VALUE));
     }
 
-    @Nullable
-    public static String getValidationErrorMessage(PropertyModel textField) {
+    public static @Nullable String getValidationErrorMessage(PropertyModel textField) {
         final String customErrorMessage = textField.get(FieldProperties.CUSTOM_ERROR_MESSAGE);
         if (!TextUtils.isEmpty(customErrorMessage)) {
             return customErrorMessage;
@@ -300,8 +298,7 @@ public class EditorProperties {
             return textField.get(FieldProperties.REQUIRED_ERROR_MESSAGE);
         }
 
-        @Nullable
-        final EditorFieldValidator validator = textField.get(FieldProperties.VALIDATOR);
+        final @Nullable EditorFieldValidator validator = textField.get(FieldProperties.VALIDATOR);
         if (validator != null && !validator.isValid(value)) {
             return textField.get(FieldProperties.INVALID_ERROR_MESSAGE);
         }

@@ -122,15 +122,13 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
     @Override
-    @ConnectionSecurityLevel
-    public int getSecurityLevel() {
+    public @ConnectionSecurityLevel int getSecurityLevel() {
         return SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
     @Override
-    @DrawableRes
-    public int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
+    public @DrawableRes int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
         return SecurityStatusIcon.getSecurityIconResource(securityLevel, mIsSmallDevice,
                 /*skipIconForNeutralState=*/false,
                 /*useUpdatedConnectionSecurityIndicators=*/false);

@@ -99,8 +99,7 @@ public class SearchEngineLogoUtils {
      * @param templateUrlService The TemplateUrlService to use to derive the logo url.
      * Returns the search URL of the current DSE or null if one cannot be found.
      */
-    @Nullable
-    public String getSearchLogoUrl(@Nullable TemplateUrlService templateUrlService) {
+    public @Nullable String getSearchLogoUrl(@Nullable TemplateUrlService templateUrlService) {
         if (templateUrlService == null) return null;
 
         String logoUrlWithPath = templateUrlService.getUrlForSearchQuery(DUMMY_URL_QUERY);

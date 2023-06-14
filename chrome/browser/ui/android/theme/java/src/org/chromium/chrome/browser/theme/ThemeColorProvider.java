@@ -97,8 +97,7 @@ public abstract class ThemeColorProvider {
     /**
      * @return The current theme color of this provider.
      */
-    @ColorInt
-    public int getThemeColor() {
+    public @ColorInt int getThemeColor() {
         return mPrimaryColor;
     }
 

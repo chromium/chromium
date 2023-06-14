@@ -45,8 +45,7 @@ public class RatingStarSpan extends DynamicDrawableSpan {
         return drawable;
     }
 
-    @DrawableRes
-    private int getResourceId(@RatingStarType int type) {
+    private @DrawableRes int getResourceId(@RatingStarType int type) {
         switch (type) {
             case RatingStarType.OUTLINE:
                 return R.drawable.ic_rating_star_outline;

@@ -37,14 +37,12 @@ public final class IncognitoCustomTabColorProvider implements ColorProvider {
     }
 
     @Override
-    @Nullable
-    public Integer getNavigationBarColor() {
+    public @Nullable Integer getNavigationBarColor() {
         return mNavigationBarColor;
     }
 
     @Override
-    @Nullable
-    public Integer getNavigationBarDividerColor() {
+    public @Nullable Integer getNavigationBarDividerColor() {
         return null;
     }
 

@@ -332,14 +332,11 @@ public abstract class PartialCustomTabBaseStrategy
         mOnActivityLayoutCallback.onActivityLayout(left, top, right, bottom, activityLayoutState);
     }
 
-    @PartialCustomTabType
-    public abstract int getStrategyType();
+    public abstract @PartialCustomTabType int getStrategyType();
 
-    @StringRes
-    public abstract int getTypeStringId();
+    public abstract @StringRes int getTypeStringId();
 
-    @ActivityLayoutState
-    protected abstract int getActivityLayoutState();
+    protected abstract @ActivityLayoutState int getActivityLayoutState();
 
     protected abstract void updatePosition();
 

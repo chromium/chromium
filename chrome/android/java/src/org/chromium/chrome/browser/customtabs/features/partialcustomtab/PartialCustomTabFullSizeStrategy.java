@@ -48,8 +48,7 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
     }
 
     @Override
-    @StringRes
-    public int getTypeStringId() {
+    public @StringRes int getTypeStringId() {
         return R.string.accessibility_partial_custom_tab_full_sheet;
     }
 
@@ -112,8 +111,7 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
     }
 
     @Override
-    @ActivityLayoutState
-    protected int getActivityLayoutState() {
+    protected @ActivityLayoutState int getActivityLayoutState() {
         return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
     }
 

@@ -126,8 +126,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
             return controller.processIntent(getService(), intent);
         }
 
-        @Nullable
-        private MediaNotificationController getController() {
+        private @Nullable MediaNotificationController getController() {
             return MediaNotificationManager.getController(mNotificationId);
         }
     }

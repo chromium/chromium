@@ -50,8 +50,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
      * @return {@link RedirectHandler} hanging to the given {@link Tab},
      *     or {@code null} if there is no instance available.
      */
-    @Nullable
-    public static RedirectHandler getHandlerFor(Tab tab) {
+    public static @Nullable RedirectHandler getHandlerFor(Tab tab) {
         RedirectHandlerTabHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (helper == null) return null;
         return helper.mRedirectHandler;

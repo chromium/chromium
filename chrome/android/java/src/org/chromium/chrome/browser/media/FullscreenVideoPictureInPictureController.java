@@ -143,8 +143,7 @@ public class FullscreenVideoPictureInPictureController {
     /**
      * Convenience method to get the {@link WebContents} from the active Tab.
      */
-    @Nullable
-    private WebContents getWebContents() {
+    private @Nullable WebContents getWebContents() {
         Tab tab = mActivityTabProvider.get();
         if (tab == null) return null;
         return tab.getWebContents();
@@ -163,8 +162,7 @@ public class FullscreenVideoPictureInPictureController {
      * @param checkCurrentMode should be true if and only if "already in PiP mode" is sufficient to
      *                         cause this to return failure.
      */
-    @MetricsAttemptResult
-    private int getAttemptResult(boolean checkCurrentMode) {
+    private @MetricsAttemptResult int getAttemptResult(boolean checkCurrentMode) {
         WebContents webContents = getWebContents();
         if (webContents == null) {
             return MetricsAttemptResult.NO_WEB_CONTENTS;
@@ -226,8 +224,7 @@ public class FullscreenVideoPictureInPictureController {
      * Return a METRICS_ATTEMPT_REASON_* for whether Picture in Picture is okay or not.  Considers
      * that "already in PiP mode" is a reason to say no.
      */
-    @MetricsAttemptResult
-    private int getAttemptResult() {
+    private @MetricsAttemptResult int getAttemptResult() {
         return getAttemptResult(true);
     }
 

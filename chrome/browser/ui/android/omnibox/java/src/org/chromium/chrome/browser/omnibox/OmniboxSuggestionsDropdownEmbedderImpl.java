@@ -127,8 +127,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     }
 
     @Override
-    @NonNull
-    public WindowDelegate getWindowDelegate() {
+    public @NonNull WindowDelegate getWindowDelegate() {
         return mWindowDelegate;
     }
 

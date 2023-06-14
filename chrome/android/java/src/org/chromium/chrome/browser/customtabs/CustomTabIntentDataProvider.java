@@ -420,8 +420,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
-    @Nullable
-    private static String getClientPackageNameFromSessionOrCallingActivity(
+    private static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
             Intent intent, CustomTabsSessionToken session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
@@ -827,8 +826,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return url;
     }
 
-    @Nullable
-    private TrustedWebActivityDisplayMode resolveTwaDisplayMode() {
+    private @Nullable TrustedWebActivityDisplayMode resolveTwaDisplayMode() {
         Bundle bundle = IntentUtils.safeGetBundleExtra(mIntent,
                 TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE);
         if (bundle == null) {
@@ -1035,14 +1033,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public CustomTabsSessionToken getSession() {
+    public @Nullable CustomTabsSessionToken getSession() {
         return mSession;
     }
 
     @Override
-    @Nullable
-    public Intent getKeepAliveServiceIntent() {
+    public @Nullable Intent getKeepAliveServiceIntent() {
         return mKeepAliveServiceIntent;
     }
 
@@ -1074,8 +1070,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public String getClientPackageName() {
+    public @Nullable String getClientPackageName() {
         return getClientPackageNameFromSessionOrCallingActivity(mIntent, mSession);
     }
 
@@ -1099,8 +1094,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         if (mUrlToLoad == null) {
             mUrlToLoad = resolveUrlToLoad(getIntent());
         }
@@ -1118,8 +1112,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public Drawable getCloseButtonDrawable() {
+    public @Nullable Drawable getCloseButtonDrawable() {
         return mCloseButtonIcon;
     }
 
@@ -1144,8 +1137,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public RemoteViews getBottomBarRemoteViews() {
+    public @Nullable RemoteViews getBottomBarRemoteViews() {
         return mRemoteViews;
     }
 
@@ -1157,8 +1149,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public PendingIntent getRemoteViewsPendingIntent() {
+    public @Nullable PendingIntent getRemoteViewsPendingIntent() {
         return mRemoteViewsPendingIntent;
     }
 
@@ -1206,8 +1197,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * @return See {@link #EXTRA_MEDIA_VIEWER_URL}.
      */
     @Override
-    @Nullable
-    public String getMediaViewerUrl() {
+    public @Nullable String getMediaViewerUrl() {
         return mMediaViewerUrl;
     }
 
@@ -1249,8 +1239,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public String getTranslateLanguage() {
+    public @Nullable String getTranslateLanguage() {
         return shouldAutoTranslate() ? mAutoTranslateLanguage : mTranslateLanguage;
     }
 
@@ -1275,8 +1264,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public ShareTarget getShareTarget() {
+    public @Nullable ShareTarget getShareTarget() {
         Bundle bundle = IntentUtils.safeGetBundleExtra(
                 getIntent(), TrustedWebActivityIntentBuilder.EXTRA_SHARE_TARGET);
         if (bundle == null) return null;
@@ -1289,8 +1277,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public ShareData getShareData() {
+    public @Nullable ShareData getShareData() {
         Bundle bundle = IntentUtils.safeGetParcelableExtra(
                 getIntent(), TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA);
         if (bundle == null) return null;

@@ -160,8 +160,7 @@ public class AutofillUiUtils {
      * @return The ErrorType value representing the type of error found for the expiration date
      *         unmask fields.
      */
-    @ErrorType
-    public static int getExpirationDateErrorType(EditText monthInput, EditText yearInput,
+    public static @ErrorType int getExpirationDateErrorType(EditText monthInput, EditText yearInput,
             boolean didFocusOnMonth, boolean didFocusOnYear) {
         Calendar calendar = Calendar.getInstance();
         int thisYear = calendar.get(Calendar.YEAR);

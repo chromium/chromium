@@ -553,8 +553,7 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    @NonNull
-    public Rect getThumbnailLocationOfCurrentTab() {
+    public @NonNull Rect getThumbnailLocationOfCurrentTab() {
         if (mTabGridDialogCoordinator != null && mTabGridDialogCoordinator.isVisible()) {
             Rect thumbnail = mTabGridDialogCoordinator.getGlobalLocationOfCurrentThumbnail();
             // Adjust to the relative coordinate.

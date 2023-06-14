@@ -68,8 +68,7 @@ public class AutofillContact extends EditableOption {
     }
 
     /** @return Email address. Null if the merchant did not request it or data is incomplete. */
-    @Nullable
-    public String getPayerEmail() {
+    public @Nullable String getPayerEmail() {
         return mPayerEmail;
     }
 

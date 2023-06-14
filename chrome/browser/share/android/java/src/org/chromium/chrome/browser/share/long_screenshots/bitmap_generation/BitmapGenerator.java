@@ -148,15 +148,13 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         }
     }
 
-    @Nullable
-    public Size getContentSize() {
+    public @Nullable Size getContentSize() {
         if (mCompositor == null) return null;
 
         return mCompositor.getContentSize();
     }
 
-    @Nullable
-    public Point getScrollOffset() {
+    public @Nullable Point getScrollOffset() {
         if (mCompositor == null) return null;
 
         return mCompositor.getScrollOffset();

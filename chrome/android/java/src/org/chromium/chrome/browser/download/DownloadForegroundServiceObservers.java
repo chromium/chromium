@@ -131,8 +131,7 @@ public final class DownloadForegroundServiceObservers {
                 ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 
-    @Nullable
-    private static Observer getObserverFromClassName(String observerClassName) {
+    private static @Nullable Observer getObserverFromClassName(String observerClassName) {
         try {
             Class<?> observerClass = Class.forName(observerClassName);
             return (Observer) observerClass.newInstance();

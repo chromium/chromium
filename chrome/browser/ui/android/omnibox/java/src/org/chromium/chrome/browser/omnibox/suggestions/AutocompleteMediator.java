@@ -121,11 +121,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         int ACTIVATED_BY_USER_INPUT = 1; // The edit session is triggered by user input.
         int ACTIVATED_BY_QUERY_TILE = 2; // The edit session is triggered from query tile.
     }
-    @EditSessionState
-    private int mEditSessionState = EditSessionState.INACTIVE;
+    private @EditSessionState int mEditSessionState = EditSessionState.INACTIVE;
 
-    @RefineActionUsage
-    private int mRefineActionUsage = RefineActionUsage.NOT_USED;
+    private @RefineActionUsage int mRefineActionUsage = RefineActionUsage.NOT_USED;
 
     // The timestamp (using SystemClock.elapsedRealtime()) at the point when the user started
     // modifying the omnibox with new input.

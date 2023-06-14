@@ -71,8 +71,7 @@ public interface ButtonData {
         }
 
         /** Returns the {@link Drawable} for the button icon. */
-        @NonNull
-        public Drawable getDrawable() {
+        public @NonNull Drawable getDrawable() {
             return mDrawable;
         }
 
@@ -94,8 +93,7 @@ public interface ButtonData {
         }
 
         /** Returns the resource ID of the string for the button's action chip label. */
-        @StringRes
-        public int getActionChipLabelResId() {
+        public @StringRes int getActionChipLabelResId() {
             return mActionChipLabelResId;
         }
 
@@ -109,14 +107,12 @@ public interface ButtonData {
          * a minimum the feature name, content string, and accessibility text, but not the anchor
          * view.
          */
-        @Nullable
-        public IPHCommandBuilder getIPHCommandBuilder() {
+        public @Nullable IPHCommandBuilder getIPHCommandBuilder() {
             return mIPHCommandBuilder;
         }
 
         /** Returns the adaptive button variant used for recording metrics. */
-        @AdaptiveToolbarButtonVariant
-        public int getButtonVariant() {
+        public @AdaptiveToolbarButtonVariant int getButtonVariant() {
             return mButtonVariant;
         }
 

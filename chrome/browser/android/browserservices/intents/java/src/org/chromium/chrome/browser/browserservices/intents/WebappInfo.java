@@ -41,8 +41,7 @@ public class WebappInfo {
         mProvider = provider;
     }
 
-    @NonNull
-    public BrowserServicesIntentDataProvider getProvider() {
+    public @NonNull BrowserServicesIntentDataProvider getProvider() {
         return mProvider;
     }
 
@@ -139,8 +138,7 @@ public class WebappInfo {
     /**
      * Returns the icon.
      */
-    @NonNull
-    public WebappIcon icon() {
+    public @NonNull WebappIcon icon() {
         return getWebappExtras().icon;
     }
 
@@ -169,8 +167,7 @@ public class WebappInfo {
     /**
      * Returns the WebAPK's splash icon.
      */
-    @NonNull
-    public WebappIcon splashIcon() {
+    public @NonNull WebappIcon splashIcon() {
         return getWebApkExtras().splashIcon;
     }
 
@@ -179,8 +176,7 @@ public class WebappInfo {
     }
 
     /** Returns data about the WebAPK's share intent handlers. */
-    @NonNull
-    public WebApkShareTarget shareTarget() {
+    public @NonNull WebApkShareTarget shareTarget() {
         return getWebApkExtras().shareTarget;
     }
 

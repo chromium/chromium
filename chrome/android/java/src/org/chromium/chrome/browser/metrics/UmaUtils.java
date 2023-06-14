@@ -215,8 +215,7 @@ public class UmaUtils {
         }
     }
 
-    @StandbyBucketStatus
-    private static int getStandbyBucket(Context context) {
+    private static @StandbyBucketStatus int getStandbyBucket(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return StandbyBucketStatus.UNSUPPORTED;
 
         UsageStatsManager usageStatsManager =

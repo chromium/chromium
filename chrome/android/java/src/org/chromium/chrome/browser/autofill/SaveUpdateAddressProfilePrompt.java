@@ -123,8 +123,7 @@ public class SaveUpdateAddressProfilePrompt {
      * @return instance of the SaveUpdateAddressProfilePrompt or null if the call failed.
      */
     @CalledByNative
-    @Nullable
-    private static SaveUpdateAddressProfilePrompt create(WindowAndroid windowAndroid,
+    private static @Nullable SaveUpdateAddressProfilePrompt create(WindowAndroid windowAndroid,
             SaveUpdateAddressProfilePromptController controller, Profile browserProfile,
             PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate,
             boolean isMigrationToAccount) {

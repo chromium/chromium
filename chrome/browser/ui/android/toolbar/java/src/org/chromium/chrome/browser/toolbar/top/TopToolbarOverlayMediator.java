@@ -203,8 +203,7 @@ public class TopToolbarOverlayMediator {
      * @param tab The tab to get the background color for.
      * @return The background color.
      */
-    @ColorInt
-    private int getToolbarBackgroundColor(Tab tab) {
+    private @ColorInt int getToolbarBackgroundColor(Tab tab) {
         if (sToolbarBackgroundColorForTesting != null) return sToolbarBackgroundColorForTesting;
         return mTopUiThemeColorProvider.getSceneLayerBackground(tab);
     }
@@ -214,8 +213,7 @@ public class TopToolbarOverlayMediator {
      * @param backgroundColor The tab's background color.
      * @return The url bar color.
      */
-    @ColorInt
-    private int getUrlBarBackgroundColor(Tab tab, @ColorInt int backgroundColor) {
+    private @ColorInt int getUrlBarBackgroundColor(Tab tab, @ColorInt int backgroundColor) {
         if (sUrlBarColorForTesting != null) return sUrlBarColorForTesting;
         return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, backgroundColor);
     }

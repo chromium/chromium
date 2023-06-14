@@ -78,8 +78,7 @@ public class ConfirmSyncDataStateMachine
         void onCancel();
     }
 
-    @State
-    private int mState = State.BEFORE_OLD_ACCOUNT_DIALOG;
+    private @State int mState = State.BEFORE_OLD_ACCOUNT_DIALOG;
 
     private static final int ACCOUNT_CHECK_TIMEOUT_MS = 30000;
 

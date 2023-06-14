@@ -1123,8 +1123,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      *
      * @return The email of signed in user or null.
      */
-    @Nullable
-    private String getSignedInUsersEmail() {
+    private @Nullable String getSignedInUsersEmail() {
         if (mProfile.isOffTheRecord()) {
             return null;
         }

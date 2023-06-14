@@ -28,8 +28,7 @@ public class CustomTabActivityTabProvider {
 
     @Nullable
     private Tab mTab;
-    @TabCreationMode
-    private int mTabCreationMode = TabCreationMode.NONE;
+    private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
     @Nullable
     private String mSpeculatedUrl;
 
@@ -57,8 +56,7 @@ public class CustomTabActivityTabProvider {
      *
      * During reparenting, both this method and ActivityTabProvider return null.
      */
-    @Nullable
-    public Tab getTab() {
+    public @Nullable Tab getTab() {
         return mTab;
     }
 
@@ -66,16 +64,14 @@ public class CustomTabActivityTabProvider {
      * Returns a {@link TabCreationMode} specifying how the initial tab was created.
      * Returns {@link TabCreationMode#NONE} if and only if the initial tab has not been yet created.
      */
-    @TabCreationMode
-    public int getInitialTabCreationMode() {
+    public @TabCreationMode int getInitialTabCreationMode() {
         return mTabCreationMode;
     }
 
     /**
      * Returns speculated url, if there was one.
      */
-    @Nullable
-    public String getSpeculatedUrl() {
+    public @Nullable String getSpeculatedUrl() {
         return mSpeculatedUrl;
     }
 

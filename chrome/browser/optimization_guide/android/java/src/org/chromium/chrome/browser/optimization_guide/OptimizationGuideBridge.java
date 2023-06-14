@@ -297,8 +297,7 @@ public class OptimizationGuideBridge implements Destroyable {
         OptimizationGuidePushNotificationManager.onPushNotificationNotHandledByNative(notification);
     }
 
-    @Nullable
-    private static Any deserializeAnyMetadata(@Nullable byte[] serializedAnyMetadata) {
+    private static @Nullable Any deserializeAnyMetadata(@Nullable byte[] serializedAnyMetadata) {
         if (serializedAnyMetadata == null) {
             return null;
         }

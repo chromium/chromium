@@ -480,8 +480,7 @@ public class LocationBarCoordinator
      * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
      *         type.
      */
-    @NonNull
-    public LocationBarCoordinatorPhone getPhoneCoordinator() {
+    public @NonNull LocationBarCoordinatorPhone getPhoneCoordinator() {
         assert mSubCoordinator != null;
         return (LocationBarCoordinatorPhone) mSubCoordinator;
     }
@@ -492,8 +491,7 @@ public class LocationBarCoordinator
      * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
      *         type.
      */
-    @NonNull
-    public LocationBarCoordinatorTablet getTabletCoordinator() {
+    public @NonNull LocationBarCoordinatorTablet getTabletCoordinator() {
         assert mSubCoordinator != null;
         return (LocationBarCoordinatorTablet) mSubCoordinator;
     }

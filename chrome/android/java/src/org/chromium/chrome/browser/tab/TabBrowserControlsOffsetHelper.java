@@ -34,8 +34,7 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
      * @param tab The tab whose helper is being retrieved.
      * @return The offset helper for a given tab.
      */
-    @NonNull
-    public static TabBrowserControlsOffsetHelper get(Tab tab) {
+    public static @NonNull TabBrowserControlsOffsetHelper get(Tab tab) {
         TabBrowserControlsOffsetHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (helper == null) {
             helper = new TabBrowserControlsOffsetHelper(tab);

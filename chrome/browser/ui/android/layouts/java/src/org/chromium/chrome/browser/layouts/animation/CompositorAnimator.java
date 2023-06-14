@@ -99,8 +99,7 @@ public class CompositorAnimator extends Animator {
     private long mStartDelayMs;
 
     /** The current state of the animation. */
-    @AnimationState
-    private int mAnimationState = AnimationState.ENDED;
+    private @AnimationState int mAnimationState = AnimationState.ENDED;
 
     /**
      * Whether the animation ended because of frame updates. This is used to determine if any

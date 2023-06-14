@@ -31,8 +31,7 @@ public class SyncServiceFactory {
      * @param profile The profile associated the SyncService being fetched.
      * @return The SyncService (if any) associated with the Profile.
      */
-    @Nullable
-    public static SyncService getForProfile(Profile profile) {
+    public static @Nullable SyncService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sSyncServiceForTest != null) return sSyncServiceForTest;
         return SyncServiceFactoryJni.get().getForProfile(profile);

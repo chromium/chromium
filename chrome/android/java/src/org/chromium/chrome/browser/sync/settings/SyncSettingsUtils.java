@@ -79,8 +79,7 @@ public class SyncSettingsUtils {
     }
 
     /** Returns the type of the sync error. */
-    @SyncError
-    public static int getSyncError() {
+    public static @SyncError int getSyncError() {
         SyncService syncService = SyncServiceFactory.get();
         if (syncService == null) {
             return SyncError.NO_ERROR;

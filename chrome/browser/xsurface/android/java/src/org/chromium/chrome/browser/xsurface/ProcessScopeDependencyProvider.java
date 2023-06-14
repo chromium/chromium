@@ -27,8 +27,7 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** @return the context associated with the application. */
-    @Nullable
-    default Context getContext() {
+    default @Nullable Context getContext() {
         return null;
     }
 
@@ -108,13 +107,11 @@ public interface ProcessScopeDependencyProvider {
     /**
      * Returns an ImageFetchClient. ImageFetchClient should only be used for fetching images.
      */
-    @Nullable
-    default ImageFetchClient getImageFetchClient() {
+    default @Nullable ImageFetchClient getImageFetchClient() {
         return null;
     }
 
-    @Nullable
-    default PersistentKeyValueCache getPersistentKeyValueCache() {
+    default @Nullable PersistentKeyValueCache getPersistentKeyValueCache() {
         return null;
     }
 
@@ -136,8 +133,7 @@ public interface ProcessScopeDependencyProvider {
      * Returns a LibraryResolver to be used for resolving native library paths. If null is
      * returned, the default library loading mechanism should be used.
      */
-    @Nullable
-    default LibraryResolver getLibraryResolver() {
+    default @Nullable LibraryResolver getLibraryResolver() {
         return null;
     }
 

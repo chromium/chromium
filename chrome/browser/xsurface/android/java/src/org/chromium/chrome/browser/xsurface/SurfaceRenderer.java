@@ -25,8 +25,7 @@ public interface SurfaceRenderer {
      * @param renderData externally-provided bytes to be rendered.
      * @param contextValues additional context to be incorporated into the view.
      */
-    @Nullable
-    default View render(byte[] renderData, Map<String, Object> contextValues) {
+    default @Nullable View render(byte[] renderData, Map<String, Object> contextValues) {
         return null;
     }
 }

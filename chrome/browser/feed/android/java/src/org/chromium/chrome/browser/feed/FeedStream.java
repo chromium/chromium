@@ -754,8 +754,7 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    @StreamKind
-    public int getStreamKind() {
+    public @StreamKind int getStreamKind() {
         return mStreamKind;
     }
 

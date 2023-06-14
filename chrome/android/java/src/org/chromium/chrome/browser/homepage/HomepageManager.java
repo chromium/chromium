@@ -138,8 +138,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @see #getPrefHomepageUseChromeNTP()
      * @see #getPrefHomepageUseDefaultUri()
      */
-    @Nullable
-    public static String getHomepageUri() {
+    public static @Nullable String getHomepageUri() {
         if (!isHomepageEnabled()) return null;
 
         String homepageUri = getInstance().getHomepageUriIgnoringEnabledState();

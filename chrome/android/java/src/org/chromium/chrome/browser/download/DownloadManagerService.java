@@ -676,8 +676,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         if (messageUiController != null) messageUiController.onDownloadStarted();
     }
 
-    @Nullable
-    static Intent getLaunchIntentForDownload(@Nullable String filePath, long downloadId,
+    static @Nullable Intent getLaunchIntentForDownload(@Nullable String filePath, long downloadId,
             boolean isSupportedMimeType, String originalUrl, String referrer,
             @Nullable String mimeType) {
         assert !ThreadUtils.runningOnUiThread();
@@ -711,8 +710,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param mimeType   MIME type of the downloaded file.
      * @return the intent to launch for the given download item.
      */
-    @Nullable
-    private static Intent getLaunchIntentFromDownloadUri(String contentUri,
+    private static @Nullable Intent getLaunchIntentFromDownloadUri(String contentUri,
             boolean isSupportedMimeType, String originalUrl, String referrer,
             @Nullable String mimeType) {
         assert !ThreadUtils.runningOnUiThread();

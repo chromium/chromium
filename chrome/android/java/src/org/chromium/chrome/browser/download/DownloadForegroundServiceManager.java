@@ -181,8 +181,7 @@ public class DownloadForegroundServiceManager {
 
     /** Helper code to process download update queue. */
 
-    @Nullable
-    private DownloadUpdate findInterestingDownloadUpdate() {
+    private @Nullable DownloadUpdate findInterestingDownloadUpdate() {
         Iterator<Map.Entry<Integer, DownloadUpdate>> entries =
                 mDownloadUpdateQueue.entrySet().iterator();
         while (entries.hasNext()) {

@@ -144,8 +144,7 @@ public class HistoryNavigationCoordinator
     }
 
     /** @return {@link TouchEventObserver} for gesture navigation component. */
-    @Nullable
-    public TouchEventObserver getTouchEventObserver() {
+    public @Nullable TouchEventObserver getTouchEventObserver() {
         // Can be null if gesture navigation was not triggered at all or already destroyed.
         return mNavigationHandler;
     }

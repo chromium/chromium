@@ -151,8 +151,7 @@ public class ContactDetailsSection extends SectionInformation {
         updateItemsWithCollection(firstCompleteContactIndex, uniqueContacts);
     }
 
-    @Nullable
-    private AutofillContact createAutofillContactFromProfile(AutofillProfile profile) {
+    private @Nullable AutofillContact createAutofillContactFromProfile(AutofillProfile profile) {
         boolean requestPayerName = mContactEditor.getRequestPayerName();
         boolean requestPayerPhone = mContactEditor.getRequestPayerPhone();
         boolean requestPayerEmail = mContactEditor.getRequestPayerEmail();

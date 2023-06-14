@@ -128,8 +128,7 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
      *         saved.
      */
     @Override
-    @Nullable
-    protected String restoreInstanceState() {
+    protected @Nullable String restoreInstanceState() {
         if (mTab.getWebContents() == null) return null;
 
         NavigationController controller = mTab.getWebContents().getNavigationController();

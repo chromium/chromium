@@ -32,8 +32,7 @@ public final class ActivityUtils {
      * @return Activity currently related to webContents. Could be <c>null</c> and could change,
      *         therefore do not cache.
      */
-    @Nullable
-    public static Activity getActivityFromWebContents(@Nullable WebContents webContents) {
+    public static @Nullable Activity getActivityFromWebContents(@Nullable WebContents webContents) {
         if (webContents == null || webContents.isDestroyed()) return null;
 
         WindowAndroid window = webContents.getTopLevelNativeWindow();

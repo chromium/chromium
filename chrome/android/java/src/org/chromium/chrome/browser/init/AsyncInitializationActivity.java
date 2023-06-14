@@ -657,16 +657,14 @@ public abstract class AsyncInitializationActivity
     /**
      * Creates an {@link ActivityWindowAndroid} to delegate calls to, if the Activity requires it.
      */
-    @Nullable
-    protected ActivityWindowAndroid createWindowAndroid() {
+    protected @Nullable ActivityWindowAndroid createWindowAndroid() {
         return null;
     }
 
     /**
      * @return A {@link ActivityWindowAndroid} instance.  May be null if one was not created.
      */
-    @Nullable
-    public ActivityWindowAndroid getWindowAndroid() {
+    public @Nullable ActivityWindowAndroid getWindowAndroid() {
         return mWindowAndroid;
     }
 

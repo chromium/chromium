@@ -113,8 +113,7 @@ class BookmarkBridge {
      * @param tab Tab whose current URL is checked against.
      * @return BookmarkId or {@link null} if bookmark backend is not loaded or the tab is frozen.
      */
-    @Nullable
-    public BookmarkId getUserBookmarkIdForTab(@Nullable Tab tab) {
+    public @Nullable BookmarkId getUserBookmarkIdForTab(@Nullable Tab tab) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         if (tab == null || tab.isFrozen() || mNativeBookmarkBridge == 0) return null;
@@ -203,8 +202,7 @@ class BookmarkBridge {
      * @return A BookmarkItem instance for the given BookmarkId.
      *         <code>null</code> if it doesn't exist.
      */
-    @Nullable
-    public BookmarkItem getBookmarkById(@Nullable BookmarkId id) {
+    public @Nullable BookmarkItem getBookmarkById(@Nullable BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;

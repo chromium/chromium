@@ -35,8 +35,7 @@ public class FledgePreference extends ImageButtonPreference {
         setTitle(site);
     }
 
-    @NonNull
-    public String getSite() {
+    public @NonNull String getSite() {
         return mSite;
     }
 

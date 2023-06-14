@@ -83,8 +83,7 @@ public class TabUtils {
     /**
      * @return {@link Activity} associated with the given tab.
      */
-    @Nullable
-    public static Activity getActivity(Tab tab) {
+    public static @Nullable Activity getActivity(Tab tab) {
         WebContents webContents = tab != null ? tab.getWebContents() : null;
         if (webContents == null || webContents.isDestroyed()) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();

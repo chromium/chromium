@@ -22,8 +22,7 @@ public class TopicPreference extends ImageButtonPreference {
         setTitle(topic.getName());
     }
 
-    @NonNull
-    public Topic getTopic() {
+    public @NonNull Topic getTopic() {
         return mTopic;
     }
 }

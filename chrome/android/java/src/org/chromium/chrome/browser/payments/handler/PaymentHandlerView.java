@@ -87,8 +87,7 @@ import org.chromium.content_public.browser.WebContents;
     }
 
     @Override
-    @Nullable
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return mToolbarView;
     }
 
@@ -118,8 +117,7 @@ import org.chromium.content_public.browser.WebContents;
     public void destroy() {}
 
     @Override
-    @ContentPriority
-    public int getPriority() {
+    public @ContentPriority int getPriority() {
         // If multiple bottom sheets are queued up to be shown, prioritize payment-handler, because
         // it's triggered by a user gesture, such as a click on <button>Buy this article</button>.
         return BottomSheetContent.ContentPriority.HIGH;

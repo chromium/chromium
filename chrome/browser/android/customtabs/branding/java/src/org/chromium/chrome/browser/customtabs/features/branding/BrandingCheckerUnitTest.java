@@ -236,8 +236,7 @@ public class BrandingCheckerUnitTest {
             notifyCalled();
         }
 
-        @BrandingDecision
-        public int getBrandingDecision() {
+        public @BrandingDecision int getBrandingDecision() {
             assert getCallCount() > 0;
             return mBrandingDecision;
         }

@@ -64,8 +64,7 @@ public class FeedListContentManager implements ListContentManager {
             return mIsFullSpan;
         }
 
-        @Nullable
-        public LoggingParameters getLoggingParameters() {
+        public @Nullable LoggingParameters getLoggingParameters() {
             return null;
         }
     }
@@ -97,8 +96,7 @@ public class FeedListContentManager implements ListContentManager {
         }
 
         @Override
-        @Nullable
-        public LoggingParameters getLoggingParameters() {
+        public @Nullable LoggingParameters getLoggingParameters() {
             return mLoggingParameters;
         }
     }
@@ -448,8 +446,7 @@ public class FeedListContentManager implements ListContentManager {
         mObservers.remove(observer);
     }
 
-    @Nullable
-    private NativeViewContent findNativeViewByType(int viewType) {
+    private @Nullable NativeViewContent findNativeViewByType(int viewType) {
         // Note: since there's relatively few native views, they're mostly at the front, a linear
         // search isn't terrible. This function is also called infrequently.
         for (int i = 0; i < mFeedContentList.size(); i++) {

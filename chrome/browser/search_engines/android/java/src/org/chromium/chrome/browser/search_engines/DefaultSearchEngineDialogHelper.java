@@ -101,15 +101,13 @@ public class DefaultSearchEngineDialogHelper implements OnCheckedChangeListener,
     }
 
     /** @return Keyword that corresponds to the search engine that is currently selected. */
-    @Nullable
-    public final String getCurrentlySelectedKeyword() {
+    public final @Nullable String getCurrentlySelectedKeyword() {
         // TODO(yusufo): All callers should check getConfirmedKeyword below.
         return mCurrentlySelectedKeyword;
     }
 
     /** @return Keyword that corresponds to the search engine that is selected and confirmed. */
-    @Nullable
-    public final String getConfirmedKeyword() {
+    public final @Nullable String getConfirmedKeyword() {
         return mConfirmedKeyword;
     }
 

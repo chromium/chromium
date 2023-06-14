@@ -68,8 +68,7 @@ public interface LocationBar {
 
 
     /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
-    @Nullable
-    default VoiceRecognitionHandler getVoiceRecognitionHandler() {
+    default @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return null;
     }
     /**

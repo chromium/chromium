@@ -22,11 +22,9 @@ public class Tile implements OfflinableSuggestion {
 
     private final int mIndex;
 
-    @TileVisualType
-    private int mType = TileVisualType.NONE;
+    private @TileVisualType int mType = TileVisualType.NONE;
 
-    @IconType
-    private int mIconType = IconType.INVALID;
+    private @IconType int mIconType = IconType.INVALID;
 
     @Nullable
     private Drawable mIcon;
@@ -96,8 +94,7 @@ public class Tile implements OfflinableSuggestion {
      * @return The source of this tile's title. Used for metrics tracking. Valid values are listed
      * in {@code TileTitleSource}.
      */
-    @TileTitleSource
-    public int getTitleSource() {
+    public @TileTitleSource int getTitleSource() {
         return mSiteData.titleSource;
     }
 
@@ -105,16 +102,14 @@ public class Tile implements OfflinableSuggestion {
      * @return The source of this tile. Used for metrics tracking. Valid values are listed in
      * {@code TileSource}.
      */
-    @TileSource
-    public int getSource() {
+    public @TileSource int getSource() {
         return mSiteData.source;
     }
 
     /**
      * @return The visual type of this tile. Valid values are listed in {@link TileVisualType}.
      */
-    @TileVisualType
-    public int getType() {
+    public @TileVisualType int getType() {
         return mType;
     }
 
@@ -129,8 +124,7 @@ public class Tile implements OfflinableSuggestion {
     /**
      * @return The icon type of this tile. Valid values are listed in {@link IconType}.
      */
-    @IconType
-    public int getIconType() {
+    public @IconType int getIconType() {
         return mIconType;
     }
 
@@ -144,8 +138,7 @@ public class Tile implements OfflinableSuggestion {
     /**
      * @return The icon, may be null.
      */
-    @Nullable
-    public Drawable getIcon() {
+    public @Nullable Drawable getIcon() {
         return mIcon;
     }
 
@@ -167,8 +160,7 @@ public class Tile implements OfflinableSuggestion {
         return mIconTint;
     }
 
-    @TileSectionType
-    public int getSectionType() {
+    public @TileSectionType int getSectionType() {
         return mSiteData.sectionType;
     }
 }

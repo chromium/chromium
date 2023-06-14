@@ -1545,8 +1545,7 @@ public class IntentHandler {
      *         metrics.
      * @return Created Intent or null if this operation isn't possible.
      */
-    @Nullable
-    public static Intent createTrustedBringTabToFrontIntent(
+    public static @Nullable Intent createTrustedBringTabToFrontIntent(
             int tabId, @BringToFrontSource int bringToFrontSource) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, ChromeLauncherActivity.class);

@@ -1410,8 +1410,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, audit the wording usage and see if we can rename this method to
     // computeStartSurfaceState.
-    @StartSurfaceState
-    private int computeOverviewStateShown() {
+    private @StartSurfaceState int computeOverviewStateShown() {
         if (mIsStartSurfaceEnabled) {
             if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS) {
                 assert mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE

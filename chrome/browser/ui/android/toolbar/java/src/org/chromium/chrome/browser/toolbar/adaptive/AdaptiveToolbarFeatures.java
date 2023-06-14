@@ -209,8 +209,7 @@ public class AdaptiveToolbarFeatures {
      * Returns the default variant to be shown in segmentation experiment when the backend results
      * are unavailable or not configured.
      */
-    @AdaptiveToolbarButtonVariant
-    static int getSegmentationDefault() {
+    static @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
         assert isCustomizationEnabled();
         if (sButtonVariant != null) return sButtonVariant;
         String defaultSegment = getDefaultSegment();

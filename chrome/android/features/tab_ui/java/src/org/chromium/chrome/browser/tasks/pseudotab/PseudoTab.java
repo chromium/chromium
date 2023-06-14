@@ -324,8 +324,7 @@ public class PseudoTab {
         return sAllTabsFromStateFile;
     }
 
-    @Nullable
-    public static PseudoTab getActiveTabFromStateFile(Context context) {
+    public static @Nullable PseudoTab getActiveTabFromStateFile(Context context) {
         readAllPseudoTabsFromStateFile(context);
         return sActiveTabFromStateFile;
     }

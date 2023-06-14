@@ -1715,8 +1715,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @return The StripLayoutTab that corresponds to that tabid.
      */
     @VisibleForTesting
-    @Nullable
-    public StripLayoutTab findTabById(int id) {
+    public @Nullable StripLayoutTab findTabById(int id) {
         if (mStripTabs == null) return null;
         for (int i = 0; i < mStripTabs.length; i++) {
             if (mStripTabs[i].getId() == id) return mStripTabs[i];

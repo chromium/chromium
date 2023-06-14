@@ -155,14 +155,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
-    @PartialCustomTabType
-    public int getStrategyType() {
+    public @PartialCustomTabType int getStrategyType() {
         return PartialCustomTabType.BOTTOM_SHEET;
     }
 
     @Override
-    @StringRes
-    public int getTypeStringId() {
+    public @StringRes int getTypeStringId() {
         return R.string.accessibility_partial_custom_tab_bottom_sheet;
     }
 
@@ -320,8 +318,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
-    @ActivityLayoutState
-    protected int getActivityLayoutState() {
+    protected @ActivityLayoutState int getActivityLayoutState() {
         if (isFullscreen()) {
             return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
         } else if (isMaximized()) {
@@ -967,8 +964,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mAnimator.start();
         }
 
-        @HeightStatus
-        private int getTargetStatus() {
+        private @HeightStatus int getTargetStatus() {
             return mTargetStatus;
         }
 

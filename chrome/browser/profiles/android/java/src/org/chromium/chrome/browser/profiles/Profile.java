@@ -129,8 +129,7 @@ public class Profile implements BrowserContextHandle {
     /**
      * Returns the OffTheRecord profile id for OffTheRecord profiles, and null for regular profiles.
      */
-    @Nullable
-    public OTRProfileID getOTRProfileID() {
+    public @Nullable OTRProfileID getOTRProfileID() {
         return mOTRProfileID;
     }
 

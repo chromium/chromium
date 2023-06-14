@@ -232,8 +232,7 @@ public class AutofillAddress extends EditableOption {
      * @param profile   The autofill profile containing the address information.
      * @return int      The completion status.
      */
-    @CompletionStatus
-    public static int checkAddressCompletionStatus(AutofillProfile profile) {
+    public static @CompletionStatus int checkAddressCompletionStatus(AutofillProfile profile) {
         @CompletionStatus
         int completionStatus = CompletionStatus.COMPLETE;
 

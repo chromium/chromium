@@ -357,8 +357,7 @@ public abstract class XrTestFramework {
      * @param webContents The WebContents for the tab to check the status in.
      * @return A TestStatus integer corresponding to the current state of the JavaScript test.
      */
-    @TestStatus
-    public static int checkTestStatus(WebContents webContents) {
+    public static @TestStatus int checkTestStatus(WebContents webContents) {
         String resultString =
                 runJavaScriptOrFail("resultString", POLL_TIMEOUT_SHORT_MS, webContents);
         boolean testPassed = Boolean.parseBoolean(
@@ -594,8 +593,7 @@ public abstract class XrTestFramework {
      *
      * @return A TestStatus integer corresponding to the current state of the JavaScript test.
      */
-    @TestStatus
-    public int checkTestStatus() {
+    public @TestStatus int checkTestStatus() {
         return checkTestStatus(getCurrentWebContents());
     }
 

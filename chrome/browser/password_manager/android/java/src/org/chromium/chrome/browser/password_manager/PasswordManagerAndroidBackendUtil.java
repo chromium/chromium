@@ -53,8 +53,7 @@ class PasswordManagerAndroidBackendUtil {
         return 0; // '0' means SUCCESS.
     }
 
-    @Nullable
-    static Integer getConnectionResultCode(Exception exception) {
+    static @Nullable Integer getConnectionResultCode(Exception exception) {
         if (!(exception instanceof ApiException)) return null;
 
         ConnectionResult connectionResult =

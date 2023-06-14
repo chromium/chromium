@@ -121,8 +121,7 @@ public class SearchEngineChoiceMetrics {
 
     /** Retrieves the previously set search engine from Android prefs. */
     @VisibleForTesting
-    @SearchEngineType
-    static int getPreviousSearchEngineType() {
+    static @SearchEngineType int getPreviousSearchEngineType() {
         return SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
                 SearchEngineType.SEARCH_ENGINE_UNKNOWN);
@@ -139,8 +138,7 @@ public class SearchEngineChoiceMetrics {
 
     /** Translates from the default search engine url to the {@link SearchEngineType} int. */
     @VisibleForTesting
-    @SearchEngineType
-    static int getDefaultSearchEngineType() {
+    static @SearchEngineType int getDefaultSearchEngineType() {
         TemplateUrlService templateUrlService =
                 TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         TemplateUrl currentSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();

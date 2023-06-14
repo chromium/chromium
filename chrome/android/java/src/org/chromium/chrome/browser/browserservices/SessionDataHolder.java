@@ -127,16 +127,14 @@ public class SessionDataHolder {
     /**
      * Returns the active session handler if it is associated with given session, null otherwise.
      */
-    @Nullable
-    public SessionHandler getActiveHandler(@Nullable CustomTabsSessionToken session) {
+    public @Nullable SessionHandler getActiveHandler(@Nullable CustomTabsSessionToken session) {
         if (mActiveSessionHandler == null) return null;
         CustomTabsSessionToken activeSession = mActiveSessionHandler.getSession();
         if (activeSession == null || !activeSession.equals(session)) return null;
         return mActiveSessionHandler;
     }
 
-    @Nullable
-    private SessionHandler getActiveHandlerForIntent(Intent intent) {
+    private @Nullable SessionHandler getActiveHandlerForIntent(Intent intent) {
         return getActiveHandler(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
     }
 

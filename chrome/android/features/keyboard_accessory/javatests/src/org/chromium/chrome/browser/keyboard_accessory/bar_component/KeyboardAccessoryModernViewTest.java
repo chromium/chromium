@@ -185,8 +185,7 @@ public class KeyboardAccessoryModernViewTest {
         public void setPriorityNotification(String feature) {}
 
         @Override
-        @Nullable
-        public String getPendingPriorityNotification() {
+        public @Nullable String getPendingPriorityNotification() {
             return null;
         }
 

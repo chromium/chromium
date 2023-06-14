@@ -64,10 +64,8 @@ public abstract class ContextualSearchContext {
     private int mTapWithinWordOffset = INVALID_OFFSET;
 
     // Translation members.
-    @NonNull
-    private String mTargetLanguage = "";
-    @NonNull
-    private String mFluentLanguages = "";
+    private @NonNull String mTargetLanguage = "";
+    private @NonNull String mFluentLanguages = "";
 
     // The Related Searches stamp - non-empty when Related Searches are being requested.
     private String mRelatedSearchesStamp;

@@ -125,8 +125,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         return mTabListCoordinator.getRecyclerViewPosition();
     }
 
-    @Nullable
-    private TabSelectionEditorController getTabSelectionEditorController() {
+    private @Nullable TabSelectionEditorController getTabSelectionEditorController() {
         if (mTabSelectionEditorCoordinator == null) {
             @TabListCoordinator.TabListMode
             int mode = TabUiFeatureUtilities.shouldUseListMode(mActivity)

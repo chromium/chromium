@@ -420,14 +420,12 @@ public class ContextualSearchManager
     }
 
     /** @return The Base Page's {@link WebContents}. */
-    @Nullable
-    private WebContents getBaseWebContents() {
+    private @Nullable WebContents getBaseWebContents() {
         return mSelectionController.getBaseWebContents();
     }
 
     /** @return The Base Page's {@link GURL}. */
-    @Nullable
-    private GURL getBasePageURL() {
+    private @Nullable GURL getBasePageURL() {
         WebContents baseWebContents = mSelectionController.getBaseWebContents();
         if (baseWebContents == null) return null;
         return baseWebContents.getVisibleUrl();
@@ -577,8 +575,7 @@ public class ContextualSearchManager
     }
 
     @Override
-    @Nullable
-    public GURL getBasePageUrl() {
+    public @Nullable GURL getBasePageUrl() {
         WebContents baseWebContents = getBaseWebContents();
         if (baseWebContents == null) return null;
         return baseWebContents.getLastCommittedUrl();

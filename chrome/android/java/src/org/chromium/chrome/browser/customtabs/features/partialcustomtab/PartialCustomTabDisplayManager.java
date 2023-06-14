@@ -108,8 +108,7 @@ public class PartialCustomTabDisplayManager
                 mCurrentPartialCustomTabType, false, sideSheetPosition, sideSheetAnimation);
     }
 
-    @PartialCustomTabType
-    public int getActiveStrategyType() {
+    public @PartialCustomTabType int getActiveStrategyType() {
         return mStrategy.getStrategyType();
     }
 

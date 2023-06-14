@@ -571,14 +571,12 @@ class AddressEditorMediator {
                 : mContext.getString(R.string.autofill_edit_address_dialog_title);
     }
 
-    @Nullable
-    private String getUserEmail() {
+    private @Nullable String getUserEmail() {
         CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return CoreAccountInfo.getEmailFrom(accountInfo);
     }
 
-    @Nullable
-    private String getDeleteConfirmationText() {
+    private @Nullable String getDeleteConfirmationText() {
         if (isAccountAddressProfile()) {
             @Nullable
             String email = getUserEmail();
@@ -592,8 +590,7 @@ class AddressEditorMediator {
         return mContext.getString(R.string.autofill_delete_local_address_source_notice);
     }
 
-    @Nullable
-    private String getSourceNoticeText() {
+    private @Nullable String getSourceNoticeText() {
         if (!isAccountAddressProfile()) return null;
         @Nullable
         String email = getUserEmail();

@@ -19,14 +19,12 @@ import androidx.annotation.Nullable;
  */
 public interface SurfaceScopeDependencyProvider {
     /** Returns the activity. */
-    @Nullable
-    default Activity getActivity() {
+    default @Nullable Activity getActivity() {
         return null;
     }
 
     /** Returns the activity context hosting the surface. */
-    @Nullable
-    default Context getActivityContext() {
+    default @Nullable Context getActivityContext() {
         return null;
     }
 

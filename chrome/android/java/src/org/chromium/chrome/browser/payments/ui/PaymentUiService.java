@@ -353,8 +353,7 @@ public class PaymentUiService
      * Returns the selected payment app, if any.
      * @return The selected payment app or null if none selected.
      */
-    @Nullable
-    public PaymentApp getSelectedPaymentApp() {
+    public @Nullable PaymentApp getSelectedPaymentApp() {
         return mPaymentMethodsSection == null
                 ? null
                 : (PaymentApp) mPaymentMethodsSection.getSelectedItem();
@@ -390,8 +389,7 @@ public class PaymentUiService
     }
 
     /** @return The selected contact, can be null. */
-    @Nullable
-    public AutofillContact getSelectedContact() {
+    public @Nullable AutofillContact getSelectedContact() {
         return mContactSection != null ? (AutofillContact) mContactSection.getSelectedItem() : null;
     }
 
@@ -589,8 +587,7 @@ public class PaymentUiService
     }
 
     /** @return The first modifier that matches the given app, or null. */
-    @Nullable
-    private PaymentDetailsModifier getModifier(@Nullable PaymentApp app) {
+    private @Nullable PaymentDetailsModifier getModifier(@Nullable PaymentApp app) {
         if (mParams.hasClosed()) return null;
         Map<String, PaymentDetailsModifier> modifiers = mParams.getUnmodifiableModifiers();
         if (modifiers.isEmpty() || app == null) return null;
@@ -833,8 +830,7 @@ public class PaymentUiService
      * @return The WebContents of the payment handler that's just opened when the opening is
      *         successful; null if failed.
      */
-    @Nullable
-    public WebContents showPaymentHandlerUI(GURL url, boolean isOffTheRecord) {
+    public @Nullable WebContents showPaymentHandlerUI(GURL url, boolean isOffTheRecord) {
         if (mPaymentHandlerUi != null) return null;
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
         WebContents paymentHandlerWebContents = paymentHandlerUi.show(
@@ -1033,8 +1029,7 @@ public class PaymentUiService
      * @param tabModel The tab model of the current tab.
      * @return The error message if built unsuccessfully; null otherwise.
      */
-    @Nullable
-    public String buildPaymentRequestUI(boolean isWebContentsActive, Activity activity,
+    public @Nullable String buildPaymentRequestUI(boolean isWebContentsActive, Activity activity,
             TabModelSelector tabModelSelector, TabModel tabModel) {
         // Payment methods section must be ready before building the rest of the UI. This is because
         // shipping and contact sections (when requested by merchant) are populated depending on

@@ -147,8 +147,7 @@ public class CloseButtonNavigator {
                 "CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab", closesOneTab);
     }
 
-    @Nullable
-    private NavigationController getNavigationController() {
+    private @Nullable NavigationController getNavigationController() {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return null;
         WebContents webContents = tab.getWebContents();

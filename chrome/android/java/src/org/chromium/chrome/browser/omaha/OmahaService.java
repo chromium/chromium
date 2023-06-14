@@ -44,8 +44,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     private static OmahaService sInstance;
     private static boolean sHasPendingJob;
 
-    @Nullable
-    public static OmahaService getInstance() {
+    public static @Nullable OmahaService getInstance() {
         synchronized (DELEGATE_LOCK) {
             if (sInstance == null) sInstance = new OmahaService();
             return sInstance;

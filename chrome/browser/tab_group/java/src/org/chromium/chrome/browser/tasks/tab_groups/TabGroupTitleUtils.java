@@ -43,8 +43,7 @@ public class TabGroupTitleUtils {
      * @param tabRootId  The tab root ID whose related tab group title will be fetched.
      * @return The stored title of the target tab group, default value is null.
      */
-    @Nullable
-    public static String getTabGroupTitle(int tabRootId) {
+    public static @Nullable String getTabGroupTitle(int tabRootId) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         // TODO(crbug/1419842): Consider checking if this looks like the default plural string and
         // deleting and returning null if any users have saved tab group titles.

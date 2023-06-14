@@ -53,8 +53,7 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
      * Returns {@link ScreenshotTabObserver} object for a given {@link Tab}, or {@code null}
      * if there is no object available.
      */
-    @Nullable
-    public static ScreenshotTabObserver get(Tab tab) {
+    public static @Nullable ScreenshotTabObserver get(Tab tab) {
         if (tab == null || !tab.isInitialized()) return null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }

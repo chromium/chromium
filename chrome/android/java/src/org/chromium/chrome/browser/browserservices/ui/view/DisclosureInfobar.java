@@ -95,8 +95,8 @@ public class DisclosureInfobar
      * Creates the Infobar/Snackbar to show. The override of this method in
      * {@link DisclosureSnackbar} may return {@code null}, if the infobar is already shown.
      */
-    @Nullable
-    protected Snackbar makeRunningInChromeInfobar(SnackbarManager.SnackbarController controller) {
+    protected @Nullable Snackbar makeRunningInChromeInfobar(
+            SnackbarManager.SnackbarController controller) {
         String title = mResources.getString(R.string.twa_running_in_chrome);
         int type = Snackbar.TYPE_PERSISTENT;
 

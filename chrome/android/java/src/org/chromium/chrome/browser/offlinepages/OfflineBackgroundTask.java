@@ -27,8 +27,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
     private static final String TAG = "OfflineBkgrndTask";
 
     @Override
-    @StartBeforeNativeResult
-    protected int onStartTaskBeforeNativeLoaded(
+    protected @StartBeforeNativeResult int onStartTaskBeforeNativeLoaded(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID;
 

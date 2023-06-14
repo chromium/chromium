@@ -406,8 +406,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** @return The current active {@link Tab}. */
-    @Nullable
-    private Tab getCurrentTab() {
+    private @Nullable Tab getCurrentTab() {
         return getToolbarDataProvider().getTab();
     }
 

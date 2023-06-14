@@ -350,8 +350,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         mActivityTabProvider.addObserver(mTabProvider::swapTab);
     }
 
-    @Nullable
-    private Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
+    private @Nullable Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
         if (mSavedInstanceStateSupplier.get() == null) return null;
         tabModelOrchestrator.loadState(true, null);
         tabModelOrchestrator.restoreTabs(true);
@@ -363,8 +362,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     /** Encapsulates CustomTabsConnection#takeHiddenTab() with additional initialization logic. */
-    @Nullable
-    private Tab getHiddenTab() {
+    private @Nullable Tab getHiddenTab() {
         String url = mIntentDataProvider.getUrlToLoad();
         String referrerUrl = IntentHandler.getReferrerUrlIncludingExtraHeaders(mIntent);
         Tab tab = mConnection.takeHiddenTab(mSession, url, referrerUrl);
@@ -425,8 +423,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         }
     }
 
-    @Nullable
-    private WebContents takeAsyncWebContents() {
+    private @Nullable WebContents takeAsyncWebContents() {
         // Async WebContents are not supported for Incognit CCT.
         if (mIntentDataProvider.isIncognito()) return null;
         int assignedTabId = IntentHandler.getTabId(mIntent);

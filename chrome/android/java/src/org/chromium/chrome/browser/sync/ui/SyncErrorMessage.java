@@ -344,8 +344,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     @VisibleForTesting
-    @MessageType
-    public static int getMessageType(@SyncError int error) {
+    public static @MessageType int getMessageType(@SyncError int error) {
         switch (error) {
             case SyncError.AUTH_ERROR:
                 return MessageType.AUTH_ERROR;

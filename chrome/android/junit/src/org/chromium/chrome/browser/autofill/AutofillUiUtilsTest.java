@@ -282,8 +282,7 @@ public class AutofillUiUtilsTest {
         Assert.assertEquals(-1, fourDigitYear);
     }
 
-    @ErrorType
-    private int getExpirationDateErrorForUserEnteredMonthAndYear() {
+    private @ErrorType int getExpirationDateErrorForUserEnteredMonthAndYear() {
         return AutofillUiUtils.getExpirationDateErrorType(mMonthInput,
                 mYearInput, /*didFocusOnMonth=*/
                 true, /*didFocusOnYear=*/true);

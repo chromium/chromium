@@ -38,8 +38,7 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
      * @param windowAndroid The current {@link WindowAndroid} object.
      */
     @CalledByNative
-    @Nullable
-    static OtpVerificationDialogBridge create(
+    static @Nullable OtpVerificationDialogBridge create(
             long nativeOtpVerificationDialogView, WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();

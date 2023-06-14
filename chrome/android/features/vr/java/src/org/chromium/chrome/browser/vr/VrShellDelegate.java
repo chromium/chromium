@@ -458,8 +458,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     /**
      * Enters VR Shell if necessary, displaying browser UI and tab contents in VR.
      */
-    @EnterVRResult
-    private int enterVrInternal() {
+    private @EnterVRResult int enterVrInternal() {
         if (mPaused) return EnterVRResult.CANCELLED;
         if (mInVr) return EnterVRResult.NOT_NECESSARY;
         if (!canEnterVr()) return EnterVRResult.CANCELLED;

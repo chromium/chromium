@@ -148,14 +148,12 @@ public final class SearchEngineChoiceNotification {
         return !lastPresentedVersionNumber.isSmallerThan(lowestAcceptedVersionNumber);
     }
 
-    @Nullable
-    private static VersionNumber getLastPresentedVersionNumber() {
+    private static @Nullable VersionNumber getLastPresentedVersionNumber() {
         return VersionNumber.fromString(SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION, null));
     }
 
-    @Nullable
-    private static VersionNumber getLowestAcceptedVersionNumber() {
+    private static @Nullable VersionNumber getLowestAcceptedVersionNumber() {
         return VersionNumber.fromString(ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION,
                 PARAM_NOTIFICATION_INVALIDATING_VERSION_NUMBER));

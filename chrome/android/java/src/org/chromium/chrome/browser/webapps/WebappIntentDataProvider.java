@@ -75,14 +75,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @Nullable
-    public Intent getIntent() {
+    public @Nullable Intent getIntent() {
         return mIntent;
     }
 
     @Override
-    @Nullable
-    public String getClientPackageName() {
+    public @Nullable String getClientPackageName() {
         if (mWebApkExtras != null) {
             return mWebApkExtras.webApkPackageName;
         }
@@ -90,14 +88,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @Nullable
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         return mWebappExtras.url;
     }
 
     @Override
-    @NonNull
-    public ColorProvider getColorProvider() {
+    public @NonNull ColorProvider getColorProvider() {
         return mColorProvider;
     }
 
@@ -117,8 +113,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @CustomTabsUiType
-    public int getUiType() {
+    public @CustomTabsUiType int getUiType() {
         return CustomTabsUiType.MINIMAL_UI_WEBAPP;
     }
 
@@ -138,20 +133,17 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @Nullable
-    public ShareData getShareData() {
+    public @Nullable ShareData getShareData() {
         return mShareData;
     }
 
     @Override
-    @Nullable
-    public WebappExtras getWebappExtras() {
+    public @Nullable WebappExtras getWebappExtras() {
         return mWebappExtras;
     }
 
     @Override
-    @Nullable
-    public WebApkExtras getWebApkExtras() {
+    public @Nullable WebApkExtras getWebApkExtras() {
         return mWebApkExtras;
     }
 
@@ -180,14 +172,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         }
 
         @Override
-        @Nullable
-        public Integer getNavigationBarColor() {
+        public @Nullable Integer getNavigationBarColor() {
             return null;
         }
 
         @Override
-        @Nullable
-        public Integer getNavigationBarDividerColor() {
+        public @Nullable Integer getNavigationBarDividerColor() {
             return null;
         }
 

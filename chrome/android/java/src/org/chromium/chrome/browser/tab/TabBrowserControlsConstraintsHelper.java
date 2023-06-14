@@ -45,8 +45,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
      * @param tab Tab whose browser controls state is looked into.
      * @return The current visibility constraints.
      */
-    @BrowserControlsState
-    public static int getConstraints(Tab tab) {
+    public static @BrowserControlsState int getConstraints(Tab tab) {
         if (tab == null || get(tab) == null) return BrowserControlsState.BOTH;
         return get(tab).getConstraints();
     }
@@ -197,8 +196,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 current, animate);
     }
 
-    @BrowserControlsState
-    private int getConstraints() {
+    private @BrowserControlsState int getConstraints() {
         return mVisibilityDelegate == null ? BrowserControlsState.BOTH : mVisibilityDelegate.get();
     }
 

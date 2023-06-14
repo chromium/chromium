@@ -717,8 +717,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    @Nullable
-    public TasksView getPrimarySurfaceView() {
+    public @Nullable TasksView getPrimarySurfaceView() {
         if (mTasksSurface != null) {
             return (TasksView) mTasksSurface.getView();
         }

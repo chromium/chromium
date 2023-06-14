@@ -130,8 +130,7 @@ public class UpdateConfigs {
      * @return The command-line flag value if present, or the param is value if present.
      */
 
-    @Nullable
-    private static String getStringParamValue(String paramName) {
+    private static @Nullable String getStringParamValue(String paramName) {
         String value = CommandLine.getInstance().getSwitchValue(paramName);
         if (TextUtils.isEmpty(value)) {
             value = VariationsAssociatedData.getVariationParamValue(FIELD_TRIAL_NAME, paramName);

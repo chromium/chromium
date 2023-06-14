@@ -178,14 +178,12 @@ public class InstalledWebappPermissionManager {
      * Returns the user visible name of the app that will handle permission delegation for the
      * origin.
      */
-    @Nullable
-    public String getDelegateAppName(Origin origin) {
+    public @Nullable String getDelegateAppName(Origin origin) {
         return mStore.getDelegateAppName(origin);
     }
 
     /** Returns the package of the app that will handle permission delegation for the origin. */
-    @Nullable
-    public String getDelegatePackageName(Origin origin) {
+    public @Nullable String getDelegatePackageName(Origin origin) {
         return mStore.getDelegatePackageName(origin);
     }
 
@@ -199,8 +197,7 @@ public class InstalledWebappPermissionManager {
         mStore.clearForTesting();
     }
 
-    @Nullable
-    private static String getAppNameForPackage(String packageName) {
+    private static @Nullable String getAppNameForPackage(String packageName) {
         // TODO(peconn): Dedupe logic with InstalledWebappDataRecorder.
         try {
             PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
@@ -272,8 +269,7 @@ public class InstalledWebappPermissionManager {
      * Returns whether the delegate application for the origin has Android location permission, or
      * {@code null} if it does not exist or did not request location permission.
      **/
-    @Nullable
-    public static Boolean hasAndroidLocationPermission(String packageName) {
+    public static @Nullable Boolean hasAndroidLocationPermission(String packageName) {
         if (packageName == null) return null;
 
         try {
@@ -319,8 +315,7 @@ public class InstalledWebappPermissionManager {
                 hasAndroidLocationPermission(packageName) != null);
     }
 
-    @Nullable
-    private CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
+    private @Nullable CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
         final Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (!(activity instanceof CustomTabActivity)) return null;
         CustomTabActivity customTabActivity = (CustomTabActivity) activity;

@@ -92,8 +92,7 @@ public class SyncPromoPreference extends Preference
     }
 
     /** Returns the state of the preference. Not valid until registerForUpdates is called. */
-    @State
-    public int getState() {
+    public @State int getState() {
         return mState;
     }
 

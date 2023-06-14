@@ -214,8 +214,7 @@ public class AndroidPaymentAppFinderTest
 
     // PaymentAppFactoryParams implementation.
     @Override
-    @Nullable
-    public String getTwaPackageName() {
+    public @Nullable String getTwaPackageName() {
         return mTwaPackageName;
     }
 

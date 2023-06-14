@@ -191,8 +191,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         return Pair.create(gridStart, Math.round(horizontalSpacing));
     }
 
-    @Nullable
-    public SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
+    public @Nullable SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             SuggestionsTileView tileView = (SuggestionsTileView) getChildAt(i);

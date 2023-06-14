@@ -102,8 +102,7 @@ public class DefaultBrowserPromoDeps {
         return false;
     }
 
-    @DefaultBrowserState
-    public int getCurrentDefaultBrowserState() {
+    public @DefaultBrowserState int getCurrentDefaultBrowserState() {
         ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
         return getCurrentDefaultBrowserState(info);
     }

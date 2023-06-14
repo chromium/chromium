@@ -15,13 +15,11 @@ import androidx.annotation.Nullable;
  * single surface can support multiple rendered views.
  */
 public interface SurfaceScope {
-    @Nullable
-    default HybridListRenderer provideListRenderer() {
+    default @Nullable HybridListRenderer provideListRenderer() {
         return null;
     }
 
-    @Nullable
-    default SurfaceRenderer provideSurfaceRenderer() {
+    default @Nullable SurfaceRenderer provideSurfaceRenderer() {
         return null;
     }
 

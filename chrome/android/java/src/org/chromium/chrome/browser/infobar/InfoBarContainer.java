@@ -237,8 +237,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
      * Returns {@link InfoBarContainer} object for a given {@link Tab}, or {@code null}
      * if there is no object available.
      */
-    @Nullable
-    public static InfoBarContainer get(Tab tab) {
+    public static @Nullable InfoBarContainer get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

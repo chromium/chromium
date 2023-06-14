@@ -504,12 +504,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     /**
      * Create a {@link FirstPartyOption} used to do screenshot. Return null if not supported.
      */
-    @Nullable
-    protected abstract FirstPartyOption createScreenshotFirstPartyOption();
+    protected abstract @Nullable FirstPartyOption createScreenshotFirstPartyOption();
 
     /**
      * Create a {@link FirstPartyOption} used to do long screenshot. Return null if not supported.
      */
-    @Nullable
-    protected abstract FirstPartyOption createLongScreenshotsFirstPartyOption();
+    protected abstract @Nullable FirstPartyOption createLongScreenshotsFirstPartyOption();
 }

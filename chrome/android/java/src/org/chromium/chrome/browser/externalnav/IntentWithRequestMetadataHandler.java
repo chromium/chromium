@@ -92,8 +92,7 @@ public class IntentWithRequestMetadataHandler {
      * @param intent Intent that is used to launch chrome.
      * @return Request metadata from the intent if available, or null otherwise.
      */
-    @Nullable
-    public RequestMetadata getRequestMetadataAndClear(Intent intent) {
+    public @Nullable RequestMetadata getRequestMetadataAndClear(Intent intent) {
         if (mIntentToken == null || mUri == null) return null;
         byte[] bytes = IntentUtils.safeGetByteArrayExtra(intent, EXTRA_REQUEST_METADATA_TOKEN);
         RequestMetadata result = null;

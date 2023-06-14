@@ -90,8 +90,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
     private final Handler mStoreIconHandler = new Handler();
-    @ContentSettingsType
-    private int mLastPermission = ContentSettingsType.DEFAULT;
+    private @ContentSettingsType int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
     private final WindowAndroid mWindowAndroid;
 
