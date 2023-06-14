@@ -37,8 +37,16 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
-
 namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+std::unique_ptr<views::BoxLayout> WithCrossAxisAlignment(
+    std::unique_ptr<views::BoxLayout> layout,
+    views::BoxLayout::CrossAxisAlignment cross_axis_alignment) {
+  layout->set_cross_axis_alignment(cross_axis_alignment);
+  return layout;
+}
 
 // Header ----------------------------------------------------------------------
 
@@ -52,9 +60,11 @@ class Header : public views::Button {
             l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE))
         .SetCallback(
             base::BindRepeating(&Header::OnPressed, base::Unretained(this)))
-        .SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-            kHoldingSpaceSectionHeaderSpacing))
+        .SetLayoutManager(WithCrossAxisAlignment(
+            std::make_unique<views::BoxLayout>(
+                views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+                kHoldingSpaceSectionHeaderSpacing),
+            views::BoxLayout::CrossAxisAlignment::kCenter))
         .AddChildren(
             holding_space_ui::CreateSectionHeaderLabel(
                 IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)
