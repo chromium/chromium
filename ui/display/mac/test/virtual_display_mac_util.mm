@@ -12,60 +12,35 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/strings/sys_string_conversions.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // These interfaces were generated from CoreGraphics binaries.
 API_AVAILABLE(macos(10.14))
-@interface CGVirtualDisplay : NSObject {
-  unsigned int _vendorID;
-  unsigned int _productID;
-  unsigned int _serialNum;
-  NSString* _name;
-  struct CGSize _sizeInMillimeters;
-  unsigned int _maxPixelsWide;
-  unsigned int _maxPixelsHigh;
-  struct CGPoint _redPrimary;
-  struct CGPoint _greenPrimary;
-  struct CGPoint _bluePrimary;
-  struct CGPoint _whitePoint;
-  id _queue;
-  id _terminationHandler;
-  unsigned int _displayID;
-  unsigned int _hiDPI;
-  NSArray* _modes;
-}
+@interface CGVirtualDisplay : NSObject
 
-@property(readonly, nonatomic)
-    unsigned int vendorID;  // @synthesize vendorID=_vendorID;
-@property(readonly, nonatomic)
-    unsigned int productID;  // @synthesize productID=_productID;
-@property(readonly, nonatomic)
-    unsigned int serialNum;  // @synthesize serialNum=_serialNum;
-@property(readonly, nonatomic) NSString* name;  // @synthesize name=_name;
-@property(readonly, nonatomic) struct CGSize
-    sizeInMillimeters;  // @synthesize sizeInMillimeters=_sizeInMillimeters;
-@property(readonly, nonatomic)
-    unsigned int maxPixelsWide;  // @synthesize maxPixelsWide=_maxPixelsWide;
-@property(readonly, nonatomic)
-    unsigned int maxPixelsHigh;  // @synthesize maxPixelsHigh=_maxPixelsHigh;
-@property(readonly, nonatomic)
-    struct CGPoint redPrimary;  // @synthesize redPrimary=_redPrimary;
-@property(readonly, nonatomic)
-    struct CGPoint greenPrimary;  // @synthesize greenPrimary=_greenPrimary;
-@property(readonly, nonatomic)
-    struct CGPoint bluePrimary;  // @synthesize bluePrimary=_bluePrimary;
-@property(readonly, nonatomic)
-    struct CGPoint whitePoint;            // @synthesize whitePoint=_whitePoint;
-@property(readonly, nonatomic) id queue;  // @synthesize queue=_queue;
-@property(readonly, nonatomic) id
-    terminationHandler;  // @synthesize terminationHandler=_terminationHandler;
-@property(readonly, nonatomic)
-    unsigned int displayID;  // @synthesize displayID=_displayID;
-@property(readonly, nonatomic) unsigned int hiDPI;  // @synthesize hiDPI=_hiDPI;
-@property(readonly, nonatomic) NSArray* modes;      // @synthesize modes=_modes;
+@property(readonly, nonatomic) unsigned int vendorID;
+@property(readonly, nonatomic) unsigned int productID;
+@property(readonly, nonatomic) unsigned int serialNum;
+@property(readonly, nonatomic) NSString* name;
+@property(readonly, nonatomic) struct CGSize sizeInMillimeters;
+@property(readonly, nonatomic) unsigned int maxPixelsWide;
+@property(readonly, nonatomic) unsigned int maxPixelsHigh;
+@property(readonly, nonatomic) struct CGPoint redPrimary;
+@property(readonly, nonatomic) struct CGPoint greenPrimary;
+@property(readonly, nonatomic) struct CGPoint bluePrimary;
+@property(readonly, nonatomic) struct CGPoint whitePoint;
+@property(readonly, nonatomic) id queue;
+@property(readonly, nonatomic) id terminationHandler;
+@property(readonly, nonatomic) unsigned int displayID;
+@property(readonly, nonatomic) unsigned int hiDPI;
+@property(readonly, nonatomic) NSArray* modes;
 - (BOOL)applySettings:(id)arg1;
 - (void)dealloc;
 - (id)initWithDescriptor:(id)arg1;
@@ -74,45 +49,21 @@ API_AVAILABLE(macos(10.14))
 
 // These interfaces were generated from CoreGraphics binaries.
 API_AVAILABLE(macos(10.14))
-@interface CGVirtualDisplayDescriptor : NSObject {
-  unsigned int _vendorID;
-  unsigned int _productID;
-  unsigned int _serialNum;
-  NSString* _name;
-  struct CGSize _sizeInMillimeters;
-  unsigned int _maxPixelsWide;
-  unsigned int _maxPixelsHigh;
-  struct CGPoint _redPrimary;
-  struct CGPoint _greenPrimary;
-  struct CGPoint _bluePrimary;
-  struct CGPoint _whitePoint;
-  id _queue;
-  id _terminationHandler;
-}
+@interface CGVirtualDisplayDescriptor : NSObject
 
-@property(nonatomic) unsigned int vendorID;  // @synthesize vendorID=_vendorID;
-@property(nonatomic)
-    unsigned int productID;  // @synthesize productID=_productID;
-@property(nonatomic)
-    unsigned int serialNum;  // @synthesize serialNum=_serialNum;
-@property(strong, nonatomic) NSString* name;  // @synthesize name=_name;
-@property(nonatomic) struct CGSize
-    sizeInMillimeters;  // @synthesize sizeInMillimeters=_sizeInMillimeters;
-@property(nonatomic)
-    unsigned int maxPixelsWide;  // @synthesize maxPixelsWide=_maxPixelsWide;
-@property(nonatomic)
-    unsigned int maxPixelsHigh;  // @synthesize maxPixelsHigh=_maxPixelsHigh;
-@property(nonatomic)
-    struct CGPoint redPrimary;  // @synthesize redPrimary=_redPrimary;
-@property(nonatomic)
-    struct CGPoint greenPrimary;  // @synthesize greenPrimary=_greenPrimary;
-@property(nonatomic)
-    struct CGPoint bluePrimary;  // @synthesize bluePrimary=_bluePrimary;
-@property(nonatomic)
-    struct CGPoint whitePoint;          // @synthesize whitePoint=_whitePoint;
-@property(retain, nonatomic) id queue;  // @synthesize queue=_queue;
-@property(copy, nonatomic) id
-    terminationHandler;  // @synthesize terminationHandler=_terminationHandler;
+@property(nonatomic) unsigned int vendorID;
+@property(nonatomic) unsigned int productID;
+@property(nonatomic) unsigned int serialNum;
+@property(strong, nonatomic) NSString* name;
+@property(nonatomic) struct CGSize sizeInMillimeters;
+@property(nonatomic) unsigned int maxPixelsWide;
+@property(nonatomic) unsigned int maxPixelsHigh;
+@property(nonatomic) struct CGPoint redPrimary;
+@property(nonatomic) struct CGPoint greenPrimary;
+@property(nonatomic) struct CGPoint bluePrimary;
+@property(nonatomic) struct CGPoint whitePoint;
+@property(strong, nonatomic) id queue;
+@property(copy, nonatomic) id terminationHandler;
 - (void)dealloc;
 - (id)init;
 - (id)dispatchQueue;
@@ -122,17 +73,11 @@ API_AVAILABLE(macos(10.14))
 
 // These interfaces were generated from CoreGraphics binaries.
 API_AVAILABLE(macos(10.14))
-@interface CGVirtualDisplayMode : NSObject {
-  unsigned int _width;
-  unsigned int _height;
-  double _refreshRate;
-}
+@interface CGVirtualDisplayMode : NSObject
 
-@property(readonly, nonatomic) unsigned int width;  // @synthesize width=_width;
-@property(readonly, nonatomic)
-    unsigned int height;  // @synthesize height=_height;
-@property(readonly, nonatomic)
-    double refreshRate;  // @synthesize refreshRate=_refreshRate;
+@property(readonly, nonatomic) unsigned int width;
+@property(readonly, nonatomic) unsigned int height;
+@property(readonly, nonatomic) double refreshRate;
 - (id)initWithWidth:(unsigned int)arg1
              height:(unsigned int)arg2
         refreshRate:(double)arg3;
@@ -141,13 +86,10 @@ API_AVAILABLE(macos(10.14))
 
 // These interfaces were generated from CoreGraphics binaries.
 API_AVAILABLE(macos(10.14))
-@interface CGVirtualDisplaySettings : NSObject {
-  NSArray* _modes;
-  unsigned int _hiDPI;
-}
+@interface CGVirtualDisplaySettings : NSObject
 
-@property(strong, nonatomic) NSArray* modes;  // @synthesize modes=_modes;
-@property(nonatomic) unsigned int hiDPI;      // @synthesize hiDPI=_hiDPI;
+@property(strong, nonatomic) NSArray* modes;
+@property(nonatomic) unsigned int hiDPI;
 - (void)dealloc;
 - (id)init;
 
@@ -158,56 +100,55 @@ namespace {
 static bool g_need_display_removal_workaround = true;
 
 // A global singleton that tracks the current set of mocked displays.
-std::map<int64_t, base::scoped_nsobject<CGVirtualDisplay>> g_display_map
+std::map<int64_t, CGVirtualDisplay * __strong> g_display_map
     API_AVAILABLE(macos(10.14));
 
 // A helper function for creating virtual display and return CGVirtualDisplay
 // object.
-base::scoped_nsobject<CGVirtualDisplay> CreateVirtualDisplay(int width,
-                                                             int height,
-                                                             int ppi,
-                                                             BOOL hiDPI,
-                                                             NSString* name)
+CGVirtualDisplay* CreateVirtualDisplay(int width,
+                                       int height,
+                                       int ppi,
+                                       BOOL hiDPI,
+                                       NSString* name)
     API_AVAILABLE(macos(10.14)) {
-  base::scoped_nsobject<CGVirtualDisplaySettings> settings(
-      [[CGVirtualDisplaySettings alloc] init]);
-  [settings setHiDPI:hiDPI];
+  CGVirtualDisplaySettings* settings = [[CGVirtualDisplaySettings alloc] init];
+  settings.hiDPI = hiDPI;
 
-  base::scoped_nsobject<CGVirtualDisplayDescriptor> descriptor(
-      [[CGVirtualDisplayDescriptor alloc] init]);
-  [descriptor
-      setQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)];
-  [descriptor setName:name];
+  CGVirtualDisplayDescriptor* descriptor =
+      [[CGVirtualDisplayDescriptor alloc] init];
+  descriptor.queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+  descriptor.name = name;
 
   // See System Preferences > Displays > Color > Open Profile > Apple display
   // native information
-  [descriptor setWhitePoint:CGPointMake(0.3125, 0.3291)];
-  [descriptor setBluePrimary:CGPointMake(0.1494, 0.0557)];
-  [descriptor setGreenPrimary:CGPointMake(0.2559, 0.6983)];
-  [descriptor setRedPrimary:CGPointMake(0.6797, 0.3203)];
-  [descriptor setMaxPixelsHigh:height];
-  [descriptor setMaxPixelsWide:width];
-  [descriptor
-      setSizeInMillimeters:CGSizeMake(25.4 * width / ppi, 25.4 * height / ppi)];
-  [descriptor setSerialNum:0];
-  [descriptor setProductID:0];
-  [descriptor setVendorID:0];
+  descriptor.whitePoint = CGPointMake(0.3125, 0.3291);
+  descriptor.bluePrimary = CGPointMake(0.1494, 0.0557);
+  descriptor.greenPrimary = CGPointMake(0.2559, 0.6983);
+  descriptor.redPrimary = CGPointMake(0.6797, 0.3203);
+  descriptor.maxPixelsHigh = height;
+  descriptor.maxPixelsWide = width;
+  descriptor.sizeInMillimeters =
+      CGSizeMake(25.4 * width / ppi, 25.4 * height / ppi);
+  descriptor.serialNum = 0;
+  descriptor.productID = 0;
+  descriptor.vendorID = 0;
 
-  base::scoped_nsobject<CGVirtualDisplay> display(
-      [[CGVirtualDisplay alloc] initWithDescriptor:descriptor]);
+  CGVirtualDisplay* display =
+      [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];
 
-  if ([settings hiDPI]) {
+  if (settings.hiDPI) {
     width /= 2;
     height /= 2;
   }
-  base::scoped_nsobject<CGVirtualDisplayMode> mode([[CGVirtualDisplayMode alloc]
-      initWithWidth:width
-             height:height
-        refreshRate:60]);
-  [settings setModes:@[ mode ]];
+  CGVirtualDisplayMode* mode =
+      [[CGVirtualDisplayMode alloc] initWithWidth:width
+                                           height:height
+                                      refreshRate:60];
+  settings.modes = @[ mode ];
 
-  if (![display applySettings:settings])
-    return base::scoped_nsobject<CGVirtualDisplay>();
+  if (![display applySettings:settings]) {
+    return nil;
+  }
 
   return display;
 }
@@ -316,17 +257,17 @@ void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
       CGDisplayCopyAllDisplayModes(display_id, nullptr));
   DCHECK(display_modes);
 
-  CGDisplayModeRef prefered_display_mode = nullptr;
+  CGDisplayModeRef preferred_display_mode = nullptr;
   for (CFIndex i = 0; i < CFArrayGetCount(display_modes); ++i) {
     CGDisplayModeRef display_mode =
         (CGDisplayModeRef)CFArrayGetValueAtIndex(display_modes, i);
     if (gfx::Size(CGDisplayModeGetWidth(display_mode),
                   CGDisplayModeGetHeight(display_mode)) == size) {
-      prefered_display_mode = display_mode;
+      preferred_display_mode = display_mode;
       break;
     }
   }
-  DCHECK(prefered_display_mode);
+  DCHECK(preferred_display_mode);
 
   uint32_t expected_changed_metrics =
       display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
@@ -338,7 +279,7 @@ void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
   // This operation is always synchronous. The function doesn’t return until the
   // mode switch is complete.
   CGError result =
-      CGDisplaySetDisplayMode(display_id, prefered_display_mode, nullptr);
+      CGDisplaySetDisplayMode(display_id, preferred_display_mode, nullptr);
   DCHECK_EQ(result, kCGErrorSuccess);
 
   // Wait for `display::Screen` and `display::Display` structures to be updated.
@@ -359,19 +300,17 @@ struct DisplayParams {
         height(height),
         ppi(ppi),
         hiDPI(hiDPI),
-        description([NSString
-            stringWithCString:description.c_str()
-                     encoding:[NSString defaultCStringEncoding]]) {}
+        description(base::SysUTF8ToNSString(description)) {}
 
   bool IsValid() const {
-    return width > 0 && height > 0 && ppi > 0 && [description length] > 0;
+    return width > 0 && height > 0 && ppi > 0 && description.length > 0;
   }
 
   int width;
   int height;
   int ppi;
   BOOL hiDPI;
-  base::scoped_nsobject<NSString> description;
+  NSString* __strong description;
 };
 
 VirtualDisplayMacUtil::VirtualDisplayMacUtil() {
@@ -390,10 +329,10 @@ int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
 
     NSString* display_name =
         [NSString stringWithFormat:@"Virtual Display #%lld", display_id];
-    base::scoped_nsobject<CGVirtualDisplay> display = CreateVirtualDisplay(
+    CGVirtualDisplay* display = CreateVirtualDisplay(
         display_params.width, display_params.height, display_params.ppi,
         display_params.hiDPI, display_name);
-    DCHECK(display.get());
+    DCHECK(display);
 
     // TODO(crbug.com/1126278): Please remove this log or replace it with
     // [D]CHECK() ASAP when the TEST is stable.
@@ -401,7 +340,7 @@ int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
               << " - display id: " << display_id
               << ". CreateVirtualDisplay success.";
 
-    int64_t id = [display displayID];
+    int64_t id = display.displayID;
     DCHECK_NE(id, 0u);
 
     WaitForDisplay(id, /*added=*/true);

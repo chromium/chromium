@@ -199,6 +199,7 @@ static_library("test_support") {
       "mac/test/virtual_display_mac_util.h",
       "mac/test/virtual_display_mac_util.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_chromeos_ash) {

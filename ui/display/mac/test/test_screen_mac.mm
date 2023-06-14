@@ -12,11 +12,15 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace display {
 namespace test {
 
 TestScreenMac::TestScreenMac(const gfx::Size& size)
-    : TestScreen(/* create_display = */ false) {
+    : TestScreen(/*create_display=*/false) {
   NSScreen* screen = [[NSScreen screens] firstObject];
   CGDirectDisplayID display_id =
       [[screen deviceDescription][@"NSScreenNumber"] unsignedIntValue];
