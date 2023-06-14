@@ -265,6 +265,7 @@
 
       &lt;p&gt;&lt;strong&gt;설정&lt;/strong&gt; 앱의 &lt;strong&gt;일반&lt;/strong&gt; 섹션에서 날짜와 시간을 맞추세요.&lt;/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> <ph name="TIME" />에 관리자가 기기를 다시 시작합니다.</translation>
+<translation id="1564753300777780201">이미지에서 변환된 텍스트 없음</translation>
 <translation id="156703335097561114">주소, 인터페이스 구성, 연결 품질 등의 네트워킹 정보</translation>
 <translation id="1567040042588613346">이 정책은 정상 작동 중이나 다른 위치에 같은 값이 설정되었으므로 이 정책에 의해 대체되었습니다.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> 추가</translation>
@@ -1200,6 +1201,7 @@
 <translation id="3890664840433101773">이메일 추가</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3901925938762663762">만료된 카드입니다.</translation>
+<translation id="3906095212874392000">변환된 텍스트의 끝</translation>
 <translation id="3906954721959377182">태블릿</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다.</translation>
@@ -1400,6 +1402,7 @@
 <translation id="4331519897422864041">스태커 5</translation>
 <translation id="4331708818696583467">주의 요함</translation>
 <translation id="4333561522337981382">모든 디스플레이의 창 관리</translation>
+<translation id="4338709847516294988">검색 메뉴에서 m을 누르고 컨텍스트 메뉴에서 이미지를 텍스트로 변환</translation>
 <translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
 <translation id="4348834659292907206"><ph name="SITE" />에 대한 연결이 안전하지 않음</translation>
@@ -1415,6 +1418,7 @@
 <translation id="4359160567981085931">사기성 사이트에 비밀번호를 입력했습니다. Chrome이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
 <translation id="4363222835916186793">제품 관련 알림이 사용 중지되었습니다.</translation>
 <translation id="437040971055499437">보안 관련 활동 발생</translation>
+<translation id="4371307856413138486">변환된 텍스트의 시작</translation>
 <translation id="4371591986692297148">비활성</translation>
 <translation id="4372948949327679948">예상 <ph name="VALUE_TYPE" /> 값입니다.</translation>
 <translation id="4375864595697821259">관심분야를 예측할 때 Chrome에서 선택할 수 있는 주제 풀에 원하는 항목을 다시 추가하세요.</translation>
@@ -2089,6 +2093,7 @@
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
 <translation id="6042308850641462728">자세히</translation>
+<translation id="6042688167654081154">이미지가 텍스트로 변환됨</translation>
 <translation id="6044573915096792553">크기 12</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6047233362582046994">유해한 앱이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />하는 경우 보안상 위험을 반드시 이해하시기 바랍니다.</translation>
@@ -2150,6 +2155,7 @@
 <translation id="6195371403461054755">지질학</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6197648101609735209">89x89mm</translation>
+<translation id="6200386911308538077">이미지 분석 중</translation>
 <translation id="6203231073485539293">인터넷 연결을 확인하세요.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6212314149070368045">미국 Fanfold</translation>

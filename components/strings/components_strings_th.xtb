@@ -265,6 +265,7 @@
 
       &lt;p&gt;โปรดปรับวันที่และเวลาจากหัวข้อ&lt;strong&gt;ทั่วไป&lt;/strong&gt;ในแอป&lt;strong&gt;การตั้งค่า&lt;/strong&gt;&lt;/p&gt;</translation>
 <translation id="1559839503761818503">ผู้ดูแลระบบจะรีสตาร์ทอุปกรณ์ในวันที่ <ph name="DATE" /> เวลา <ph name="TIME" /></translation>
+<translation id="1564753300777780201">ไม่มีข้อความที่แปลงจากรูปภาพ</translation>
 <translation id="156703335097561114">ข้อมูลการเชื่อมต่อเครือข่าย เช่น ที่อยู่ การกำหนดค่าอินเทอร์เฟซ และคุณภาพการเชื่อมต่อ</translation>
 <translation id="1567040042588613346">นโยบายนี้ทำงานตามที่ควรจะเป็นแต่มีการตั้งค่าเดียวกันไว้ที่อื่นและถูกแทนที่โดยนโยบายนี้</translation>
 <translation id="1567405528131216114">เพิ่ม <ph name="TOPIC" /></translation>
@@ -1199,6 +1200,7 @@
 <translation id="3890664840433101773">เพิ่มอีเมล</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
+<translation id="3906095212874392000">สิ้นสุดข้อความที่แปลง</translation>
 <translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">คุณเปลี่ยนใจได้ทุกเมื่อในการตั้งค่า Chrome</translation>
@@ -1399,6 +1401,7 @@
 <translation id="4331519897422864041">สแต็กเกอร์ 5</translation>
 <translation id="4331708818696583467">ไม่ปลอดภัย</translation>
 <translation id="4333561522337981382">จัดการหน้าต่างบนจอแสดงผลทั้งหมดของคุณ</translation>
+<translation id="4338709847516294988">กดค้นหา + m และแปลงรูปภาพเป็นข้อความในเมนูตามบริบท</translation>
 <translation id="4340575312453649552">โฆษณานี้ใช้ทรัพยากรมากเกินไปสำหรับอุปกรณ์ของคุณ Chrome จึงนำโฆษณานี้ออก</translation>
 <translation id="4340982228985273705">ไม่มีการตรวจพบว่าคอมพิวเตอร์เครื่องนี้ได้รับการจัดการโดยองค์กร ดังนั้นนโยบายจะติดตั้งเฉพาะส่วนขยายที่โฮสต์ใน Chrome เว็บสโตร์โดยอัตโนมัติ URL การอัปเดตของ Chrome เว็บสโตร์คือ "<ph name="CWS_UPDATE_URL" />"</translation>
 <translation id="4348834659292907206">การเชื่อมต่อกับ <ph name="SITE" /> ไม่ปลอดภัย</translation>
@@ -1414,6 +1417,7 @@
 <translation id="4359160567981085931">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ช่วยได้ หากต้องการเปลี่ยนรหัสผ่านและแจ้งให้ Google ทราบว่าบัญชีของคุณอาจมีความเสี่ยง ให้คลิก "ปกป้องบัญชี"</translation>
 <translation id="4363222835916186793">ปิดการแจ้งเตือนสำหรับผลิตภัณฑ์นี้แล้ว</translation>
 <translation id="437040971055499437">มีการดำเนินการด้านความปลอดภัย</translation>
+<translation id="4371307856413138486">เริ่มต้นข้อความที่แปลง</translation>
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
 <translation id="4372948949327679948">ค่า <ph name="VALUE_TYPE" /> ที่คาดไว้</translation>
 <translation id="4375864595697821259">เพิ่มรายการกลับหากต้องการรวมไว้ในกลุ่มหัวข้อที่ Chrome สามารถเลือกได้เมื่อประเมินความสนใจ</translation>
@@ -2088,6 +2092,7 @@
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6041777658117377052">อุณหภูมิตู้</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
+<translation id="6042688167654081154">แปลงรูปภาพเป็นข้อความแล้ว</translation>
 <translation id="6044573915096792553">ขนาด 12</translation>
 <translation id="6045164183059402045">เทมเพลตการจัดเรียงหน้าก่อนพิมพ์</translation>
 <translation id="6047233362582046994">หากคุณเข้าใจความเสี่ยงต่อความปลอดภัย คุณสามารถ<ph name="BEGIN_LINK" />ไปยังไซต์นี้<ph name="END_LINK" />ก่อนที่จะมีการนำแอปอันตรายออก</translation>
@@ -2149,6 +2154,7 @@
 <translation id="6195371403461054755">ธรณีวิทยา</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6197648101609735209">89 x 89 มม.</translation>
+<translation id="6200386911308538077">กําลังวิเคราะห์รูปภาพ</translation>
 <translation id="6203231073485539293">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="6205314730813004066">ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

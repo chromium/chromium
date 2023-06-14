@@ -265,6 +265,7 @@
 
       &lt;p&gt;&lt;strong&gt;Параметрлер&lt;/strong&gt; қолданбасының &lt;strong&gt;Жалпы&lt;/strong&gt; бөліміндегі күн мен уақытты реттеңіз.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Әкімші құрылғыңызды өшіріп қосатын уақыт: <ph name="DATE" /> <ph name="TIME" /></translation>
+<translation id="1564753300777780201">Суреттерден түрлендірілген мәтін жоқ</translation>
 <translation id="156703335097561114">Мекенжайлар, интерфейс конфигурациясы және байланыс сапасы сияқты желі ақпараты</translation>
 <translation id="1567040042588613346">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша ауыстырылатын тап осындай мән орнатылған.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> тақырыбын қосу</translation>
@@ -1199,6 +1200,7 @@
 <translation id="3890664840433101773">Электрондық пошта мекенжайын енгізу</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3901925938762663762">Картаның мерзімі өткен</translation>
+<translation id="3906095212874392000">Түрлендірілген мәтін соңы</translation>
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Таңдауыңызды кез келген уақытта Chrome параметрлерінде өзгертуге болады.</translation>
@@ -1399,6 +1401,7 @@
 <translation id="4331519897422864041">5-жинастырушы</translation>
 <translation id="4331708818696583467">Қауіпсіз емес</translation>
 <translation id="4333561522337981382">Барлық дисплейде терезелерді басқару</translation>
+<translation id="4338709847516294988">Іздеу және m пернелерін бірге басып, контекстік мәзірде суретті мәтінге түрлендіріңіз</translation>
 <translation id="4340575312453649552">Бұл жарнама құрылғыңыздың тым көп ресурсын пайдаланғандықтан, Chrome оны өшірді.</translation>
 <translation id="4340982228985273705">Бұл компьютерді кәсіпорын басқармайтындықтан, саясат тек Chrome Webstore дүкенінде орналасқан кеңейтімдерді автоматты түрде орната алады. Chrome Webstore жаңартылған нұсқасының URL мекенжайы: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> сайтымен байланыс қауіпсіз емес</translation>
@@ -1414,6 +1417,7 @@
 <translation id="4359160567981085931">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome көмектесе алады. Құпия сөзді өзгертіп, Google-ға аккаунтқа төніп тұрған қауіп туралы хабарлау үшін "Аккаунтты қорғау" түймесін басыңыз.</translation>
 <translation id="4363222835916186793">Осы өнімге қатысты хабарландырулар өшірілді.</translation>
 <translation id="437040971055499437">Қауіпсіздік іс-шарасы анықталды</translation>
+<translation id="4371307856413138486">Түрлендірілген мәтін басы</translation>
 <translation id="4371591986692297148">Өшірілген</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> мәні қажет.</translation>
 <translation id="4375864595697821259">Қызығушылықтарыңызды бағалау кезінде Chrome таңдай алатын тақырыптар қорында болуын қаласаңыз, элементті қайта қосыңыз</translation>
@@ -2088,6 +2092,7 @@
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6041777658117377052">Камераның температурасы</translation>
 <translation id="6042308850641462728">Жаю</translation>
+<translation id="6042688167654081154">Сурет мәтінге түрлендірілді</translation>
 <translation id="6044573915096792553">Өлшемі: 12</translation>
 <translation id="6045164183059402045">Жолақтарды түсіру үлгісі</translation>
 <translation id="6047233362582046994">Қауіпсіздігіңізге келетін қатерлерді түсінсеңіз, зиянды қолданбалар жойылмай жатып, <ph name="BEGIN_LINK" />осы сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
@@ -2149,6 +2154,7 @@
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6196640612572343990">Үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
+<translation id="6200386911308538077">Сурет талданып жатыр</translation>
 <translation id="6203231073485539293">Интернет байланысын тексеріңіз</translation>
 <translation id="6205314730813004066">Жарнамадағы құпиялық</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

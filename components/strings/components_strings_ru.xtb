@@ -261,6 +261,7 @@
 
       &lt;p&gt;Установите точную дату и время. Для этого откройте раздел &lt;strong&gt;Общие&lt;/strong&gt; в приложении &lt;strong&gt;Настройки&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администратор перезапустит устройство <ph name="DATE" /> в <ph name="TIME" />.</translation>
+<translation id="1564753300777780201">Изображения не были преобразованы в текст</translation>
 <translation id="156703335097561114">Сетевые данные, такие как адреса, настройки интерфейса и качество подключения.</translation>
 <translation id="1567040042588613346">Правило работает корректно, но заменяет одинаковое значение, заданное где-то ещё.</translation>
 <translation id="1567405528131216114">Снова добавить тему "<ph name="TOPIC" />"</translation>
@@ -1181,6 +1182,7 @@
 <translation id="3890664840433101773">Добавление адреса электронной почты</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Срок действия карты истек</translation>
+<translation id="3906095212874392000">Конец полученного текста</translation>
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
 <translation id="3911401144270344103">Вы можете в любое время изменить свое решение в настройках Chrome</translation>
@@ -1379,6 +1381,7 @@
 <translation id="4331519897422864041">Укладчик 5</translation>
 <translation id="4331708818696583467">Не защищено</translation>
 <translation id="4333561522337981382">Управлять окнами на всех ваших экранах</translation>
+<translation id="4338709847516294988">Нажмите Поиск + M и в контекстном меню выберите "Распознать текст на изображении".</translation>
 <translation id="4340575312453649552">Это объявление удалено, так как оно использовало слишком много системных ресурсов.</translation>
 <translation id="4340982228985273705">По нашим данным, этот компьютер не является корпоративным, поэтому в соответствии с правилом на него можно автоматически устанавливать только расширения из Интернет-магазина Chrome. URL для обновления: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">Подключение к сайту <ph name="SITE" /> не защищено.</translation>
@@ -1394,6 +1397,7 @@
 <translation id="4359160567981085931">Вы только что ввели пароль на поддельном сайте. Чтобы изменить пароль и сообщить Google о возможной угрозе безопасности, нажмите "Защитить аккаунт".</translation>
 <translation id="4363222835916186793">Оповещения об этом товаре отключены.</translation>
 <translation id="437040971055499437">Зарегистрировано событие безопасности</translation>
+<translation id="4371307856413138486">Начало полученного текста</translation>
 <translation id="4371591986692297148">неактивно</translation>
 <translation id="4372948949327679948">Ожидаемое значение: <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Вы можете снова добавить тему в список, который Chrome использует для определения ваших интересов.</translation>
@@ -2061,6 +2065,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6041777658117377052">Температура камеры</translation>
 <translation id="6042308850641462728">Ещё</translation>
+<translation id="6042688167654081154">Изображение преобразовано в текст</translation>
 <translation id="6044573915096792553">Размер: 12</translation>
 <translation id="6045164183059402045">Шаблон спуска полос</translation>
 <translation id="6047233362582046994">Если вы осознаете, что можете подвергнуть риску свои личные данные, то можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносных приложений.</translation>
@@ -2122,6 +2127,7 @@
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
+<translation id="6200386911308538077">Изображение анализируется</translation>
 <translation id="6203231073485539293">Проверьте подключение к Интернету</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

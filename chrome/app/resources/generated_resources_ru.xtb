@@ -316,6 +316,7 @@
 <translation id="1252987234827889034">Ошибка в профиле</translation>
 <translation id="1253664522045778676">Нажмите на нужный результат, и страница откроется в текущей вкладке</translation>
 <translation id="1254593899333212300">Прямое подключение к интернету</translation>
+<translation id="1256588359404100567">Параметр синхронизирован с предыдущим устройством.</translation>
 <translation id="1257336506558170607">Экспортировать выбранный сертификат</translation>
 <translation id="1258491128795710625">Что нового</translation>
 <translation id="1259152067760398571">Проверка безопасности выполнена вчера.</translation>
@@ -526,6 +527,7 @@
 <translation id="1448779317883494811">Инструмент "Кисть"</translation>
 <translation id="1449191289887455076">Чтобы подтвердить назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
 <translation id="1451375123200651445">Веб-страница, один файл</translation>
+<translation id="145280054552001290">Добавляйте и удаляйте языки для субтитров</translation>
 <translation id="1453561711872398978">Отправить <ph name="BEGIN_LINK" />журналы отладки<ph name="END_LINK" /> (рекомендуется)</translation>
 <translation id="1454223536435069390">С&amp;делать снимок экрана</translation>
 <translation id="145432137617179457">Языки с поддержкой проверки правописания</translation>
@@ -991,6 +993,7 @@
 <translation id="18260074040409954">Вы можете использовать сохраненные пароли на любом устройстве. Место хранения для аккаунта <ph name="EMAIL" />: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1826192255355608658">Синхронизируйте закладки, пароли, историю и другие данные в браузере Chrome</translation>
 <translation id="1826516787628120939">Проверка</translation>
+<translation id="1826657447823925402">Прокрутка в обратную сторону отключена</translation>
 <translation id="1827504459960247692">Название точки доступа</translation>
 <translation id="1828378091493947763">Плагин не поддерживается на этом устройстве</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Открыть все}=1{&amp;Открыть закладку}one{&amp;Открыть все ({COUNT})}few{&amp;Открыть все ({COUNT})}many{&amp;Открыть все ({COUNT})}other{&amp;Открыть все ({COUNT})}}</translation>
@@ -1276,6 +1279,7 @@
 <translation id="2081816110395725788">Режим ожидания при работе от батареи</translation>
 <translation id="2082187087049518845">Добавить вкладку в группу</translation>
 <translation id="2082510809738716738">Выберите цвета темы</translation>
+<translation id="2084891381052978619">Вы также сможете найти эти функции в параметрах устройства, когда завершите настройку Chromebook.</translation>
 <translation id="208586643495776849">Повторите попытку.</translation>
 <translation id="208634871997892083">Постоянная сеть VPN</translation>
 <translation id="2087822576218954668">Печать: <ph name="PRINT_NAME" /></translation>
@@ -1345,6 +1349,7 @@
 <translation id="212862741129535676">Продолжительность работы процессора на разных ступенях частоты в процентах</translation>
 <translation id="212876957201860463">Подготовка к настройке мобильного устройства…</translation>
 <translation id="2131077480075264">Невозможно установить <ph name="APP_NAME" />: нет разрешения от <ph name="IMPORT_NAME" /></translation>
+<translation id="2133775869826239001">Выберите, что ещё вы хотите настроить</translation>
 <translation id="2133857665503360653">Попробовать скачать файл "<ph name="FILE_NAME" />" ещё раз</translation>
 <translation id="2134905185275441536">Системные центры сертификации</translation>
 <translation id="21354425047973905">Скрыть PIN-коды</translation>
@@ -2919,6 +2924,7 @@
 <translation id="347785443197175480">Предоставить сайту <ph name="HOST" /> доступ к камере и микрофону</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3479685872808224578">Не удалось найти сервер печати. Проверьте его адрес и повторите попытку.</translation>
+<translation id="3479753605053415848">Нажмите, чтобы настроить Chrome.</translation>
 <translation id="3480612136143976912">Задайте размер и стиль автоматических субтитров. Некоторые приложения и сайты также будут использовать эти настройки.</translation>
 <translation id="3480827850068960424">Найдено вкладок: <ph name="NUM" /></translation>
 <translation id="3481268647794498892">Открывается в <ph name="ALTERNATIVE_BROWSER_NAME" />. Осталось <ph name="COUNTDOWN_SECONDS" /> сек.</translation>
@@ -3212,6 +3218,7 @@
 <translation id="3738632186060045350">Данные на <ph name="DEVICE_TYPE" /> будут удалены через 24 ч.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Открыть приложение "<ph name="APPLICATION" />"?</translation>
+<translation id="3740945083753997630">Уменьшить размер изображения и текста</translation>
 <translation id="3741056951918180319">Вы можете включить расширение, нажав на него, на любом сайте</translation>
 <translation id="3742235229730461951">корейская раскладка</translation>
 <translation id="3742666961763734085">Не удалось найти организационное подразделение с таким названием. Повторите попытку.</translation>
@@ -3589,6 +3596,7 @@
 <translation id="4044612648082411741">Введите пароль сертификата</translation>
 <translation id="4044708573046946214">Пароль для блокировки экрана</translation>
 <translation id="404493185430269859">Поисковая система по умолчанию</translation>
+<translation id="4045196801416070837">Звуки устройства</translation>
 <translation id="4046013316139505482">Расширения, которым не требуется право на просмотр и изменение информации на этом сайте</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
 <translation id="4047345532928475040">Н/Д</translation>
@@ -4038,6 +4046,7 @@
 <translation id="4444512841222467874">Если вы не освободите пространство, пользователи и их данные могут быть удалены автоматически.</translation>
 <translation id="4445446646109808714">Лицензионное соглашение с конечным пользователем:<ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Зеркальное отображение</translation>
+<translation id="4448560527907365660">Сохранить настройки и показать ещё</translation>
 <translation id="4448914100439890108">Скрыть пароль для пользователя <ph name="USERNAME" /> в домене <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Настроить разрешения</translation>
 <translation id="4449948729197510913">Это имя пользователя относится к корпоративному аккаунту вашей организации. Чтобы регистрировать устройства в этом аккаунте, подтвердите в консоли администратора, что вы владелец домена. Для этого вам потребуются права администратора аккаунта.</translation>
@@ -5185,7 +5194,9 @@
 <translation id="5481941284378890518">Добавить ближайшие принтеры</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}one{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}few{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}many{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}other{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Установить приложение</translation>
+<translation id="5485435764083510385">Предпочитаемый язык субтитров</translation>
 <translation id="5485754497697573575">Восстановить все вкладки</translation>
+<translation id="5486071940327595306">Возможно, для <ph name="WEBSITE" /> требуется устройство другого типа или более новой модели.</translation>
 <translation id="5486261815000869482">Подтвердите пароль</translation>
 <translation id="5486561344817861625">Симулировать перезапуск браузера</translation>
 <translation id="5487460042548760727">Переименовать профиль в "<ph name="PROFILE_NAME" />"</translation>
@@ -5538,6 +5549,7 @@
 <translation id="5799508265798272974">Виртуальная машина Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Выбранный файл был поврежден или удален после скачивания.</translation>
 <translation id="5800351251499368110">Вы можете закрыть боковое окно поиска. Сейчас оно открыто.</translation>
+<translation id="5800703268655655701">Выберите светлую или тёмную тему</translation>
 <translation id="5801051031414037185">Настроить телефон</translation>
 <translation id="5801568494490449797">Настройки</translation>
 <translation id="5803689677801500549">Здесь появятся сохраненные пароли. Чтобы импортировать пароли в <ph name="BRAND" /> для аккаунта <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />выберите CSV-файл<ph name="END_LINK" />.</translation>
@@ -6927,6 +6939,7 @@
 <translation id="6993050154661569036">Обновление браузера Chrome</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6995984090981858039">Чтение сведений об устройстве с ChromeOS и данных на нем</translation>
+<translation id="6996438701394974959">Увеличить размер изображения и текста</translation>
 <translation id="6997553674029032185">Перейти на сайт</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
 <translation id="6997707937646349884">На ваших устройствах:</translation>
@@ -7365,6 +7378,7 @@
 <translation id="7400839060291901923">Настройте соединение на устройстве <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Закрыть это сообщение</translation>
 <translation id="7402198013420237102">Перенести сохраненные пароли в аккаунт Google?</translation>
+<translation id="740333000181878130">Звук при запуске устройства</translation>
 <translation id="7403642243184989645">Скачивание ресурсов</translation>
 <translation id="7404065585741198296">Телефон с подключением через USB-кабель</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Проверка безопасности выполнена 1 час назад.}one{Проверка безопасности выполнена {NUM_HOURS} час назад.}few{Проверка безопасности выполнена {NUM_HOURS} часа назад.}many{Проверка безопасности выполнена {NUM_HOURS} часов назад.}other{Проверка безопасности выполнена {NUM_HOURS} часа назад.}}</translation>
@@ -7846,6 +7860,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">Фон стартовой страницы изменен на изображение "<ph name="CATEGORY" />".</translation>
+<translation id="7791436592012979144">Прокрутка в обратную сторону включена</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7792012425874949788">При входе в систему произошла ошибка</translation>
 <translation id="7792388396321542707">Закрыть доступ</translation>
@@ -8011,6 +8026,7 @@
 <translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7939062555109487992">Расширенные настройки</translation>
 <translation id="7939073735115504773">Нажмите на значок расширения, чтобы разрешить чтение и изменение данных <ph name="HOST" />.</translation>
+<translation id="793923212791838">Ваше устройство нельзя использовать на этом сайте</translation>
 <translation id="7939328347457537652">Управление сертификатами устройства</translation>
 <translation id="7939412583708276221">Все равно продолжить</translation>
 <translation id="7940265372707990269">Сортировать: <ph name="SORT_TYPE" /></translation>

@@ -527,6 +527,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1448779317883494811">Zana ya kung'arisha picha</translation>
 <translation id="1449191289887455076">Bonyeza “<ph name="CURRENTKEY" />” tena ili uthibitishe swichi uliyokabidhi na <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Ukurasa wa wavuti, Faili Moja</translation>
+<translation id="145280054552001290">Kuweka na kuondoa lugha kwenye manukuu</translation>
 <translation id="1453561711872398978">Tuma <ph name="BEGIN_LINK" />
     kumbukumbu za utatuzi<ph name="END_LINK" /> (inapendekezwa)</translation>
 <translation id="1454223536435069390">Piga picha ya skrini</translation>
@@ -3613,6 +3614,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4044612648082411741">Weka nenosiri la cheti chako</translation>
 <translation id="4044708573046946214">Nenosiri la kufunga skrini</translation>
 <translation id="404493185430269859">Injini tafuti chaguomsingi</translation>
+<translation id="4045196801416070837">Sauti za kifaa</translation>
 <translation id="4046013316139505482">Viendelezi hivi havihitaji kuona na kubadilisha maelezo kwenye tovuti hii.</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
 <translation id="4047345532928475040">Haitumiki</translation>
@@ -5214,6 +5216,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5481941284378890518">Ongeza Printa za Uhamishaji wa Karibu</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii leo. <ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}other{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii ndani ya siku {NUM_DAYS}.<ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ongeza programu</translation>
+<translation id="5485435764083510385">Lugha ya manukuu inayopendelewa</translation>
 <translation id="5485754497697573575">Hifadhi Upya Vichupo Vyote</translation>
 <translation id="5486261815000869482">Thibitisha nenosiri</translation>
 <translation id="5486561344817861625">Unda Uanzishaji upya wa Ukurasa</translation>
@@ -7397,6 +7400,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7400839060291901923">Weka mipangilio ya muunganisho kwenye <ph name="PHONE_NAME" /> yako</translation>
 <translation id="7401778920660465883">Ondoa ujumbe huu</translation>
 <translation id="7402198013420237102">Je, ungependa kuhamisha manenosiri yaliyohifadhiwa kwenye Akaunti yako ya Google?</translation>
+<translation id="740333000181878130">Sauti wakati kifaa kinawaka</translation>
 <translation id="7403642243184989645">Inapakua Nyenzo</translation>
 <translation id="7404065585741198296">Simu yako kwa kutumia kebo ya USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Angalizo la usalama lilitekelezwa saa moja iliyopita}other{Angalizo la usalama lilitekelezwa saa {NUM_HOURS} zilizopita}}</translation>

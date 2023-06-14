@@ -316,6 +316,7 @@
 <translation id="1252987234827889034">프로필 오류가 발생했습니다.</translation>
 <translation id="1253664522045778676">검색결과를 클릭하면 페이지가 현재 탭에서 열립니다.</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
+<translation id="1256588359404100567">이전 기기에서 동기화된 설정</translation>
 <translation id="1257336506558170607">선택한 인증서 내보내기</translation>
 <translation id="1258491128795710625">새로운 기능</translation>
 <translation id="1259152067760398571">안전 확인이 어제 실행됨</translation>
@@ -1006,6 +1007,7 @@
 <translation id="18260074040409954">어느 기기에서든 저장된 비밀번호를 사용할 수 있습니다. <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="1826192255355608658">Chrome 브라우저 북마크, 비밀번호, 방문 기록 등을 동기화</translation>
 <translation id="1826516787628120939">확인 중</translation>
+<translation id="1826657447823925402">역방향 스크롤 사용 중지됨</translation>
 <translation id="1827504459960247692">핫스팟 이름</translation>
 <translation id="1828378091493947763">이 기기에서 지원되지 않는 플러그인입니다.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{모두 열기(&amp;O)}=1{북마크 열기(&amp;O)}other{{COUNT}개 모두 열기(&amp;O)}}</translation>
@@ -1295,6 +1297,7 @@
 <translation id="2081816110395725788">배터리 사용 시 전력 유휴 상태로 설정</translation>
 <translation id="2082187087049518845">탭 그룹화</translation>
 <translation id="2082510809738716738">테마 색상 선택</translation>
+<translation id="2084891381052978619">Chromebook 설정을 완료한 후 설정에서도 이 옵션을 찾을 수 있습니다</translation>
 <translation id="208586643495776849">다시 시도해 주세요.</translation>
 <translation id="208634871997892083">연결 유지 VPN</translation>
 <translation id="2087822576218954668">인쇄: <ph name="PRINT_NAME" /></translation>
@@ -1364,6 +1367,7 @@
 <translation id="212862741129535676">주파수 상태 점유율</translation>
 <translation id="212876957201860463">휴대기기 설정 준비 중...</translation>
 <translation id="2131077480075264"><ph name="IMPORT_NAME" />에서 허용하지 않으므로 '<ph name="APP_NAME" />'을(를) 설치할 수 없습니다.</translation>
+<translation id="2133775869826239001">설정할 기능 더 선택</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> 다시 시도</translation>
 <translation id="2134905185275441536">시스템 CA</translation>
 <translation id="21354425047973905">PIN 숨기기</translation>
@@ -2948,6 +2952,7 @@
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3479685872808224578">인쇄 서버를 찾을 수 없습니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
+<translation id="3479753605053415848">클릭하여 Chrome을 맞춤설정하세요</translation>
 <translation id="3480612136143976912">실시간 자막의 자막 크기 및 스타일을 맞춤설정하세요. 일부 앱 및 사이트에서도 이 설정이 사용됩니다.</translation>
 <translation id="3480827850068960424">탭 <ph name="NUM" />개 찾음</translation>
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" />초 후 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 열립니다.</translation>
@@ -3241,6 +3246,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 데이터가 24시간 후에 삭제됩니다</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />을(를) 여시겠습니까?</translation>
+<translation id="3740945083753997630">디스플레이 및 텍스트 크기 줄이기</translation>
 <translation id="3741056951918180319">확장 프로그램을 클릭하면 모든 사이트에서 사용할 수 있습니다</translation>
 <translation id="3742235229730461951">한국어 자판 배열</translation>
 <translation id="3742666961763734085">해당 이름의 조직 단위를 찾을 수 없습니다. 다시 시도해 보세요.</translation>
@@ -4067,6 +4073,7 @@
 <translation id="4444512841222467874">저장 공간이 충분하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
 <translation id="4445446646109808714">최종 사용자 라이선스 계약: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">미러링</translation>
+<translation id="4448560527907365660">저장 및 더보기</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" />에서 <ph name="USERNAME" /> 비밀번호 숨기기</translation>
 <translation id="4449247303975391730">권한 관리</translation>
 <translation id="4449948729197510913">사용자 이름이 조직의 회사 계정에 속합니다. 기기를 계정에 등록하려면 먼저 관리 콘솔에서 도메인 소유권을 인증하세요. 인증하려면 계정에서 관리자 권한이 있어야 합니다.</translation>
@@ -5223,6 +5230,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5485102783864353244">앱 추가</translation>
 <translation id="5485435764083510385">선호하는 자막 언어</translation>
 <translation id="5485754497697573575">모든 탭 복원</translation>
+<translation id="5486071940327595306"><ph name="WEBSITE" />에 최신 또는 다른 종류의 기기가 필요할 수 있습니다</translation>
 <translation id="5486261815000869482">비밀번호 확인</translation>
 <translation id="5486561344817861625">브라우저 다시 시작 시뮬레이션</translation>
 <translation id="5487460042548760727">프로필 이름을 다음으로 변경 <ph name="PROFILE_NAME" /></translation>
@@ -5577,6 +5585,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="5799508265798272974">Linux 가상 머신: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">마지막 다운로드 이후 대상 파일이 잘렸거나 삭제되었습니다.</translation>
 <translation id="5800351251499368110">측면 패널의 검색을 닫습니다. 측면 패널에 검색이 열려 있습니다.</translation>
+<translation id="5800703268655655701">밝은 테마 또는 어두운 테마 선택</translation>
 <translation id="5801051031414037185">휴대전화 설정</translation>
 <translation id="5801568494490449797">환경설정</translation>
 <translation id="5803689677801500549">저장한 비밀번호가 여기에 표시됩니다. <ph name="USER_EMAIL" />님을 위해 <ph name="BRAND" />로 비밀번호를 가져오려면 <ph name="BEGIN_LINK" />CSV 파일을 선택하세요.<ph name="END_LINK" /></translation>
@@ -6963,6 +6972,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6993050154661569036">Chrome 브라우저 업데이트 중</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6995984090981858039">ChromeOS 기기 정보와 데이터를 읽습니다.</translation>
+<translation id="6996438701394974959">디스플레이 및 텍스트 크기 확대</translation>
 <translation id="6997553674029032185">사이트로 이동</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
@@ -7889,6 +7899,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">시작 페이지 배경화면이 <ph name="CATEGORY" />(으)로 변경되었습니다.</translation>
+<translation id="7791436592012979144">역방향 스크롤 사용 설정됨</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7792012425874949788">로그인 중에 문제가 발생했습니다.</translation>
 <translation id="7792388396321542707">공유 중지</translation>
@@ -8056,6 +8067,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% 완료됨</translation>
 <translation id="7939062555109487992">고급 옵션</translation>
 <translation id="7939073735115504773"><ph name="HOST" />을 읽고 변경하려면 이 확장 프로그램의 아이콘을 클릭하세요.</translation>
+<translation id="793923212791838">이 사이트에서 기기를 사용할 수 없음</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
 <translation id="7939412583708276221">계속 다운로드</translation>
 <translation id="7940265372707990269">정렬 기준: <ph name="SORT_TYPE" /></translation>

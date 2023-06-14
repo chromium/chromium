@@ -267,6 +267,7 @@
 
       &lt;p&gt;Прилагодите датум и време у одељку &lt;strong&gt;Опште&lt;/strong&gt; у апликацији &lt;strong&gt;Подешавања&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администратор ће рестартовати уређај у <ph name="TIME" /> <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Текст није конвертован из слика</translation>
 <translation id="156703335097561114">Информације о мрежама попут адреса, конфигурације интерфејса и квалитета везе</translation>
 <translation id="1567040042588613346">Ове смернице раде као што је предвиђено, али иста вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="1567405528131216114">Додај <ph name="TOPIC" /></translation>
@@ -1207,6 +1208,7 @@
 <translation id="3890664840433101773">Додајте имејл</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3901925938762663762">Картица је истекла</translation>
+<translation id="3906095212874392000">Крај конвертованог текста</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Можете да се предомислите у сваком тренутку у подешавањима Chrome-а</translation>
@@ -1409,6 +1411,7 @@
 <translation id="4331519897422864041">5. преграда за слагање</translation>
 <translation id="4331708818696583467">Није безбедан</translation>
 <translation id="4333561522337981382">Управљајте прозорима на свим екранима</translation>
+<translation id="4338709847516294988">Притисните тастер за претрагу и m да бисте конвертовали слику у текст у контекстуалном менију</translation>
 <translation id="4340575312453649552">Овај оглас је користио превише ресурса за уређај, па га је Chrome уклонио.</translation>
 <translation id="4340982228985273705">Откривено је да овим рачунаром не управља предузеће, па смернице могу аутоматски да инсталирају само додатке који се хостују у Chrome веб-продавници. URL ажурирања у Chrome веб-продавници је „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4348834659292907206">Веза са сајтом <ph name="SITE" /> није безбедна</translation>
@@ -1424,6 +1427,7 @@
 <translation id="4359160567981085931">Управо сте унели лозинку на обмањујућем сајту. Chrome може да вам помогне. Да бисте променили лозинку и обавестили Google да је налог можда угрожен, кликните на Заштити налог.</translation>
 <translation id="4363222835916186793">Обавештења за овај производ су искључена</translation>
 <translation id="437040971055499437">Безбедносни догађај се дешава</translation>
+<translation id="4371307856413138486">Почетак конвертованог текста</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4372948949327679948">Очекивана вредност je <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Поново додајте ставку ако желите да буде у групи тема које Chrome може да изабере при процени интересовања</translation>
@@ -2103,6 +2107,7 @@
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6041777658117377052">Температура коморе</translation>
 <translation id="6042308850641462728">Још</translation>
+<translation id="6042688167654081154">Слика је конвертована у текст</translation>
 <translation id="6044573915096792553">Величина 12</translation>
 <translation id="6045164183059402045">Шаблон распореда странице</translation>
 <translation id="6047233362582046994">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај сајт<ph name="END_LINK" /> пре него што уклонимо штетне апликације.</translation>
@@ -2164,6 +2169,7 @@
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6197648101609735209">89×89 mm</translation>
+<translation id="6200386911308538077">Слика се анализира</translation>
 <translation id="6203231073485539293">Проверите интернет везу</translation>
 <translation id="6205314730813004066">Приватност са огласима</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

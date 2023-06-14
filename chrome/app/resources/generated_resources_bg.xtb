@@ -527,6 +527,7 @@
 <translation id="1448779317883494811">Инструмент за четка</translation>
 <translation id="1449191289887455076">Натиснете <ph name="CURRENTKEY" /> отново, за да потвърдите зададеното действие и да <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Уеб страница, един файл</translation>
+<translation id="145280054552001290">Добавяне и премахване на езици за надписите</translation>
 <translation id="1453561711872398978">Изпращане на
 <ph name="BEGIN_LINK" />регистрационните файлове за отстраняване на програмни грешки<ph name="END_LINK" /> (препоръчително)</translation>
 <translation id="1454223536435069390">Създаване на &amp;екранна снимка</translation>
@@ -3613,6 +3614,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4044612648082411741">Въведете паролата си за сертификата</translation>
 <translation id="4044708573046946214">Парола за заключване на екрана</translation>
 <translation id="404493185430269859">Основна търсеща машина</translation>
+<translation id="4045196801416070837">Звуци от устройството</translation>
 <translation id="4046013316139505482">Тези разширения нямат нужда да виждат и променят информацията на сайта.</translation>
 <translation id="4046123991198612571">Следващ запис</translation>
 <translation id="4047345532928475040">Няма данни</translation>
@@ -5216,6 +5218,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5481941284378890518">Добавяне на принтери в близост</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> днес. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}other{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на {NUM_DAYS} дни. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Добавяне на приложението</translation>
+<translation id="5485435764083510385">Предпочитан език на надписите</translation>
 <translation id="5485754497697573575">Възстановяване на всички раздели</translation>
 <translation id="5486261815000869482">Потвърждаване на паролата</translation>
 <translation id="5486561344817861625">Симулиране на рестартиране на браузъра</translation>
@@ -7400,6 +7403,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7400839060291901923">Настройте връзката на телефона си <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Отхвърляне на това съобщение</translation>
 <translation id="7402198013420237102">Искате ли да преместите запазените пароли в профила си в Google?</translation>
+<translation id="740333000181878130">Звук при стартиране на устройството</translation>
 <translation id="7403642243184989645">Ресурсите се изтеглят</translation>
 <translation id="7404065585741198296">Вашият телефон, свързан с USB кабел</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Проверката на безопасността бе изпълнена преди 1 час}other{Проверката на безопасността бе изпълнена преди {NUM_HOURS} часа}}</translation>

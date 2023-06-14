@@ -317,6 +317,7 @@
 <translation id="1252987234827889034">প্রোফাইল ত্রুটি ঘটেছে</translation>
 <translation id="1253664522045778676">একটি ফলাফলে ক্লিক করুন এবং পৃষ্ঠাটি আপনার বর্তমান ট্যাবে খুলবে</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
+<translation id="1256588359404100567">আপনার আগের ডিভাইস থেকে সেটিং সিঙ্ক করা হয়েছে।</translation>
 <translation id="1257336506558170607">বেছে নেওয়া সার্টিফিকেট এক্সপোর্ট করুন</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
 <translation id="1259152067760398571">গতকাল নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে</translation>
@@ -528,6 +529,7 @@
 <translation id="1448779317883494811">ব্রাশ টুল</translation>
 <translation id="1449191289887455076">অ্যাসাইনমেন্ট কনফার্ম করতে, "<ph name="CURRENTKEY" />" আবার প্রেস করুন এবং <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Webpage, Single File</translation>
+<translation id="145280054552001290">ক্যাপশনে ভাষা যোগ করুন ও সরান</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     ডিবাগ লগ<ph name="END_LINK" /> পাঠান (সাজেস্ট করা হয়)</translation>
 <translation id="1454223536435069390">স্ক্রিনশট নিন</translation>
@@ -1006,6 +1008,7 @@
 <translation id="18260074040409954">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। সেগুলি <ph name="EMAIL" />-এর জন্য <ph name="GOOGLE_PASSWORD_MANAGER" />-এ সেভ হয়</translation>
 <translation id="1826192255355608658">আপনার Chrome ব্রাউজারের বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
+<translation id="1826657447823925402">রিভার্স স্ক্রলিং বন্ধ করা হয়েছে</translation>
 <translation id="1827504459960247692">হটস্পটের নাম</translation>
 <translation id="1828378091493947763">এই ডিভাইসে এই প্লাগ-ইন সমর্থিত নয়</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{সবকটি &amp;খুলুন}=1{বুকমার্ক &amp;খুলুন}one{সবকটি ({COUNT}টি) &amp;খুলুন}other{সবকটি ({COUNT}টি) &amp;খুলুন}}</translation>
@@ -1294,6 +1297,7 @@
 <translation id="2081816110395725788">ব্যাটারিতে চালানোর সময় ডিভাইসকে 'নিষ্ক্রিয়' বা 'স্লিপ' স্ট্যাটাসে রাখা</translation>
 <translation id="2082187087049518845">ট্যাবকে নতুন কোনও গ্রুপে যুক্ত করুন</translation>
 <translation id="2082510809738716738">একটি থিম রঙ বেছে নিন</translation>
+<translation id="2084891381052978619">এছাড়া, আপনার Chromebook সেট-আপ করা শেষ হলে, আপনি এইসব বিকল্প, সেটিংসে দেখতে পারবেন</translation>
 <translation id="208586643495776849">আবার চেষ্টা করুন</translation>
 <translation id="208634871997892083">সবসময় চালু ভিপিএন</translation>
 <translation id="2087822576218954668">প্রিন্ট করুন: <ph name="PRINT_NAME" /></translation>
@@ -1363,6 +1367,7 @@
 <translation id="212862741129535676">ফ্রিকোয়েন্সি স্টেট ওকুপেন্সির শতকরা হার</translation>
 <translation id="212876957201860463">আপনার সেলুলার ডিভাইসকে সেট-আপ করার জন্য প্রস্তুত করা হচ্ছে...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ইনস্টল করা যায়নি কারণ এটি "<ph name="IMPORT_NAME" />" এর দ্বারা অনুমোদিত নয়</translation>
+<translation id="2133775869826239001">সেট-আপ করতে, আরও ফিচার বেছে নিন</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> আবার চেষ্টা করুন</translation>
 <translation id="2134905185275441536">সিস্টেম সিএ (CA)</translation>
 <translation id="21354425047973905">পিন লুকিয়ে রাখুন</translation>
@@ -2946,6 +2951,7 @@
 <translation id="347785443197175480">আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস করতে <ph name="HOST" /> এর মঞ্জুরি অবিরত রাখুন</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
 <translation id="3479685872808224578">প্রিন্ট সার্ভার খুঁজে পাওয়া যায়নি। অ্যাড্রেস চেক করে আবার চেষ্টা করে দেখুন।</translation>
+<translation id="3479753605053415848">Chrome কাস্টমাইজ করতে ক্লিক করুন</translation>
 <translation id="3480612136143976912">'লাইভ ক্যাপশন' ফিচারের স্টাইল ও ক্যাপশন সাইজ কাস্টমাইজ করুন। কিছু অ্যাপ ও সাইটও এই সেটিং ব্যবহার করবে।</translation>
 <translation id="3480827850068960424"><ph name="NUM" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> সেকেন্ডের মধ্যে <ph name="ALTERNATIVE_BROWSER_NAME" /> চালু হতে চলেছে</translation>
@@ -3239,6 +3245,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-এর ডেটা ২৪ ঘণ্টার মধ্যে মুছে যাবে</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> খুলবেন?</translation>
+<translation id="3740945083753997630">ডিসপ্লে ও টেক্সটের সাইজ ছোট করুন</translation>
 <translation id="3741056951918180319">যেকোনও সাইটে এক্সটেনশন ব্যবহার করার জন্য আপনি সবসময় সেটি ক্লিক করতে পারবেন</translation>
 <translation id="3742235229730461951">কোরীয়  কীবোর্ড লেআউট</translation>
 <translation id="3742666961763734085">এই নামের কোনও প্রতিষ্ঠানের ইউনিট খুঁজে পাওয়া যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
@@ -3616,6 +3623,7 @@
 <translation id="4044612648082411741">আপনার সার্টিফিকেটের পাসওয়ার্ড লিখুন</translation>
 <translation id="4044708573046946214">স্ক্রিন লক করার পাসওয়ার্ড</translation>
 <translation id="404493185430269859">ডিফল্ট সার্চ ইঞ্জিন</translation>
+<translation id="4045196801416070837">ডিভাইসের শব্দ</translation>
 <translation id="4046013316139505482">এই এক্সটেনশনগুলির এই সাইটের তথ্য দেখা ও পরিবর্তন করার দরকার নেই।</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -4066,6 +4074,7 @@
 <translation id="4444512841222467874">যদি জায়গা প্রস্তুত করা না হয়, তাহলে ব্যবহারকারী এবং ডেটাকে স্বয়ংক্রিয়ভাবে সরানো হতে পারে।</translation>
 <translation id="4445446646109808714">গ্রাহকের লাইসেন্স চুক্তি: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">মিরর করা হয়েছে</translation>
+<translation id="4448560527907365660">সেভ করুন ও আরও বেশি দেখুন</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" />-এ <ph name="USERNAME" />-এর পাসওয়ার্ড লুকান</translation>
 <translation id="4449247303975391730">অনুমতি ম্যানেজ করুন</translation>
 <translation id="4449948729197510913">আপনার ইউজারনেম আপনার সংস্থার এন্টারপ্রাইজ অ্যাকাউন্টের সাথে যুক্ত আছে। এই অ্যাকাউন্টে ডিভাইস এনরোল করতে, প্রথমে অ্যাডমিন কনসোলে ডোমেনের মালিকানা যাচাই করে নিন। যাচাই করার জন্য আপনাকে এই অ্যাকাউন্টে অ্যাডমিনিস্ট্রেটর সম্বন্ধীয় বিশেষাধিকার অর্জন করতে হবে।</translation>
@@ -5221,7 +5230,9 @@
 <translation id="5481941284378890518">আশেপাশের প্রিন্টারগুলি যোগ করুন</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> আজই ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিবরণ দেখুন<ph name="LINK_END" />}one{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}other{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">অ্যাপ্লিকেশান যোগ করুন</translation>
+<translation id="5485435764083510385">ক্যাপশনের জন্য পছন্দের ভাষা</translation>
 <translation id="5485754497697573575">সকল ট্যাব পুনরুদ্ধার করুন</translation>
+<translation id="5486071940327595306"><ph name="WEBSITE" /> ব্যবহার করার জন্য নতুন বা অন্য ধরনের ডিভাইস প্রয়োজন হতে পারে</translation>
 <translation id="5486261815000869482">পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="5486561344817861625">ব্রাউজার রিস্টার্ট সিমুলেট করুন</translation>
 <translation id="5487460042548760727">প্রোফাইলের নাম পরিবর্তন করে <ph name="PROFILE_NAME" /> রাখুন</translation>
@@ -5577,6 +5588,7 @@
 <translation id="5799508265798272974">Linux ভার্চুয়াল মেশিন: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">শেষ ডাউনলোড থেকে গন্তব্য ফাইল হয় ছাঁটকাট অথবা সরানো হয়েছে৷</translation>
 <translation id="5800351251499368110">সাইড প্যানেলে সার্চ বন্ধ করুন। সাইড প্যানেলে সার্চ বিকল্প খোলা আছে।</translation>
+<translation id="5800703268655655701">লাইট বা ডার্ক থিম বেছে নিন</translation>
 <translation id="5801051031414037185">ফোন সেট-আপ করুন</translation>
 <translation id="5801568494490449797">অভিরুচিসমূহ</translation>
 <translation id="5803689677801500549">সেভ করা পাসওয়ার্ড এখানে দেখা যাবে। <ph name="USER_EMAIL" />-এর জন্য <ph name="BRAND" />-এ পাসওয়ার্ড ইমপোর্ট করতে, <ph name="BEGIN_LINK" />একটি CSV ফাইল বেছে নিন<ph name="END_LINK" />।</translation>
@@ -6966,6 +6978,7 @@
 <translation id="6993050154661569036">Chrome ব্রাউজার আপডেট করা হচ্ছে</translation>
 <translation id="6995899638241819463">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
 <translation id="6995984090981858039">ChromeOS ডিভাইসের তথ্য এবং ডেটা অ্যাক্সেস করতে পারবে</translation>
+<translation id="6996438701394974959">ডিসপ্লে ও টেক্সটের সাইজ বাড়ান</translation>
 <translation id="6997553674029032185">সাইটে যান</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - অ্যাক্টিভিটি লগ</translation>
 <translation id="6997707937646349884">আপনার ডিভাইসে:</translation>
@@ -7408,6 +7421,7 @@
 <translation id="7400839060291901923">আপনার <ph name="PHONE_NAME" /> এ সংযোগ সেট-আপ করুন</translation>
 <translation id="7401778920660465883">এই মেসেজ বাতিল করুন</translation>
 <translation id="7402198013420237102">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ডগুলি সরাবেন?</translation>
+<translation id="740333000181878130">ডিভাইস শুরু হওয়ার আওয়াজ</translation>
 <translation id="7403642243184989645">রিসোর্স ডাউনলোড করা হচ্ছে</translation>
 <translation id="7404065585741198296">ইউএসবি কেবেল দিয়ে আপনার ফোন কানেক্ট করুন</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{১ ঘণ্টা আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}one{{NUM_HOURS} ঘণ্টা আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}other{{NUM_HOURS} ঘণ্টা আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}}</translation>
@@ -7891,6 +7905,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">স্টার্ট পেজের ব্যাকগ্রাউন্ড পরিবর্তন করে <ph name="CATEGORY" /> করা হয়েছে।</translation>
+<translation id="7791436592012979144">রিভার্স স্ক্রলিং চালু করা হয়েছে</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7792012425874949788">প্রবেশ করার সময় কিছু সমস্যা হয়েছে</translation>
 <translation id="7792388396321542707">শেয়ার করা বন্ধ করুন</translation>
@@ -8057,6 +8072,7 @@
 <translation id="7935451262452051102"><ph name="PERCENT" />% হয়ে গেছে</translation>
 <translation id="7939062555109487992">উন্নত বিকল্প</translation>
 <translation id="7939073735115504773"><ph name="HOST" /> পড়তে ও পরিবর্তন করতে, এই এক্সটেনশনের আইকন ক্লিক করুন</translation>
+<translation id="793923212791838">এই সাইটের সাথে আপনার ডিভাইস ব্যবহার করা যাবে না</translation>
 <translation id="7939328347457537652">ডিভাইস সার্টিফিকেট ম্যানেজ করুন</translation>
 <translation id="7939412583708276221">যে কোনও অবস্থাতেই রাখুন</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> অনুসারে সাজান</translation>

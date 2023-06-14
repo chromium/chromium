@@ -267,7 +267,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 
       &lt;p&gt;Podesite datum i vrijeme iz odjeljka &lt;strong&gt;Opće&lt;/strong&gt; u aplikaciji &lt;strong&gt;Postavke&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Vaš administrator će ponovo pokrenuti uređaj u <ph name="TIME" />, <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Nijedan tekst nije konvertiran iz slika</translation>
+<translation id="1564753300777780201">Nijedan tekst nije pretvoren iz slika</translation>
 <translation id="156703335097561114">Informacije o umrežavanju, naprimjer adrese, konfiguracija interfejsa i kvalitet veze</translation>
 <translation id="1567040042588613346">Ovo pravilo radi kako je predviđeno, ali je ista vrijednost postavljena negdje drugo i ovo pravilo ju je zaobišlo.</translation>
 <translation id="1567405528131216114">Dodavanje: <ph name="TOPIC" /></translation>
@@ -1208,7 +1208,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3890664840433101773">Dodajte adresu e-pošte</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je istekla</translation>
-<translation id="3906095212874392000">Kraj konvertiranog teksta</translation>
+<translation id="3906095212874392000">Kraj pretvorenog teksta</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Uvijek se možete predomisliti i promijeniti postavke Chromea</translation>
@@ -1411,7 +1411,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4331519897422864041">Slagač 5</translation>
 <translation id="4331708818696583467">Nije sigurno</translation>
 <translation id="4333561522337981382">Upravljati prozorima na svim vašim ekranima</translation>
-<translation id="4338709847516294988">Na kontekstnom izborniku pritisnite tipku za pretraživanje i tipku m i konvertirajte sliku u tekst</translation>
+<translation id="4338709847516294988">Pritisnite Pretraži i M te pretvorite sliku u tekst u kontekstualnom meniju</translation>
 <translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za vaš uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340982228985273705">Ovaj računar nije prepoznat kao računar kojim upravlja preduzeće stoga pravilo može automatski instalirati ekstenzije koje su hostirane na Chrome web trgovini. URL za ažuriranje Chrome web trgovine je "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">Veza s web lokacijom <ph name="SITE" /> nije sigurna</translation>
@@ -1427,7 +1427,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4359160567981085931">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chrome vam može pomoći. Da promijenite lozinku i obavijestite Google da vam je račun možda ugrožen, kliknite Zaštiti račun.</translation>
 <translation id="4363222835916186793">Obavještenja za ovaj proizvod su isključena</translation>
 <translation id="437040971055499437">Sigurnosni događaj se javlja</translation>
-<translation id="4371307856413138486">Početak konvertiranog teksta</translation>
+<translation id="4371307856413138486">Početak pretvorenog teksta</translation>
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4372948949327679948">Očekivana vrijednost vrste <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Ponovo dodajte artikal ako želite da bude u skupini tema koje Chrome može odabrati prilikom procjenjivanja vaših interesovanja</translation>
@@ -2107,7 +2107,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6041777658117377052">Temperatura komore</translation>
 <translation id="6042308850641462728">Više</translation>
-<translation id="6042688167654081154">Slika je konvertirana u tekst</translation>
+<translation id="6042688167654081154">Slika je pretvorena u tekst</translation>
 <translation id="6044573915096792553">Veličina 12</translation>
 <translation id="6045164183059402045">Šablon položaja</translation>
 <translation id="6047233362582046994">Ako razumijete rizike po vašu sigurnost, možete <ph name="BEGIN_LINK" />posjetiti ovu web lokaciju<ph name="END_LINK" /> prije uklanjanja štetnih aplikacija.</translation>

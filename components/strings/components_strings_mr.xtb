@@ -267,6 +267,7 @@
 
       &lt;p&gt;कृपया &lt;strong&gt;सेटिंग्ज&lt;/strong&gt; ॲपच्या &lt;strong&gt;सर्वसाधारण&lt;/strong&gt; विभागातील तारीख आणि वेळ समायोजित करा.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमचे डिव्हाइस <ph name="DATE" /> रोजी <ph name="TIME" /> वाजता रीस्टार्ट करेल</translation>
+<translation id="1564753300777780201">इमेजमधून कोणत्याही मजकुराचे रूपांतर केले नाही</translation>
 <translation id="156703335097561114">पत्ते, इंटरफेस कॉंफिगरेशन आणि कनेक्शन गुणवत्ता यांसारखी नेटवर्किंग माहिती</translation>
 <translation id="1567040042588613346">हे धोरण अपेक्षेनुसार काम करत आहे पण, कुठेतरी समान मूल्य सेट केले आहे आणि हे धोरण ते मूल्य अधिग्रहित करत आहे.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> जोडा</translation>
@@ -1206,6 +1207,7 @@
 <translation id="3890664840433101773">ईमेल जोडा</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3901925938762663762">कार्ड कालबाह्य झाले आहे</translation>
+<translation id="3906095212874392000">रूपांतर केलेल्या मजकुराचा शेवट</translation>
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">तुम्ही Chrome सेटिंग्जमध्ये हे कधीही बदलू शकता</translation>
@@ -1408,6 +1410,7 @@
 <translation id="4331519897422864041">स्टॅकर ५</translation>
 <translation id="4331708818696583467">सुरक्षित नाही</translation>
 <translation id="4333561522337981382">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करणे</translation>
+<translation id="4338709847516294988">सर्च + M प्रेस करा आणि कॉंटेक्स्ट मेनूमध्ये इमेजचे मजकुरामध्ये रूपांतर करा</translation>
 <translation id="4340575312453649552">या जाहिरातीने तुमच्या डिव्हाइससाठी खूप जास्त स्रोत वापरल्यामुळे, Chrome ने ती काढून टाकली.</translation>
 <translation id="4340982228985273705">हा कॉंप्युटर एंटरप्राइझ व्यवस्थापित म्हणून आढळला नाही म्हणून धोरण फक्त Chrome वेबस्टोअरवर होस्ट केलेले एक्स्टेंशन आपोआप इंस्टॉल करू शकते. Chrome वेबस्टोअर अपडेट URL <ph name="CWS_UPDATE_URL" /> ही आहे.</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> चे कनेक्शन सुरक्षित नाही</translation>
@@ -1423,6 +1426,7 @@
 <translation id="4359160567981085931">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला आहे. Chrome मदत करू शकते. तुमचा पासवर्ड बदलण्यासाठी आणि तुमच्या खात्याला धोका असल्याचे Google ला सूचित करण्यासाठी, खाते संरक्षित करा वर क्लिक करा.</translation>
 <translation id="4363222835916186793">या उत्पादनासाठी सूचना बंद केल्या आहेत</translation>
 <translation id="437040971055499437">सुरक्षितता इव्‍हेंट सुरू होतो</translation>
+<translation id="4371307856413138486">रूपांतर केलेल्या मजकुराची सुरुवात</translation>
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मूल्य.</translation>
 <translation id="4375864595697821259">तुमच्या स्वारस्यांचा अंदाज लावताना Chrome निवडू शकेल अशा विषयांच्या सूचीमध्ये तुम्हाला एखादा आयटम हवा असल्यास तो परत जोडा</translation>
@@ -2102,6 +2106,7 @@
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6041777658117377052">चेंबरचे तापमान</translation>
 <translation id="6042308850641462728">अधिक</translation>
+<translation id="6042688167654081154">इमेजचे मजकुरामध्ये रूपांतर करण्यात आले</translation>
 <translation id="6044573915096792553">आकार १२</translation>
 <translation id="6045164183059402045">लागू करण्याचे टेम्पलेट</translation>
 <translation id="6047233362582046994">तुम्हाला तुमच्या सुरक्षेला असणारा धोका समजत असल्यास, हानिकारक अ‍ॅप्स काढले जाण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
@@ -2165,6 +2170,7 @@
 <translation id="6195371403461054755">भूशास्त्र</translation>
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6197648101609735209">८९ x ८९ मिमी</translation>
+<translation id="6200386911308538077">इमेजचे विश्लेषण केले जात आहे</translation>
 <translation id="6203231073485539293">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

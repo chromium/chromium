@@ -2082,6 +2082,7 @@ Als het beleid niet wordt toegepast of niet is ingesteld, mogen pagina's geen sy
 Dit beleid is verwijderd in Chrome 99.
 
 Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="2948720459196236547">Toestaan dat pagina's met een CCNS-koptekst worden opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="2952347049958405264">Beperkingen:</translation>
 <translation id="2957506574938329824">Niet toestaan dat sites toegang tot Bluetooth-apparaten vragen via de Web Bluetooth API</translation>
 <translation id="2957513448235202597">Accounttype voor <ph name="HTTP_NEGOTIATE" />-verificatie</translation>
@@ -2272,6 +2273,7 @@ De reactieheader <ph name="REJECTED_CASE" /> wordt dan afgewezen, maar <ph name=
 Opmerking: Dit is niet van invloed op de verzoekmethoden <ph name="POST_LOWERCASE_METHOD_NAME" /> en <ph name="PUT_LOWERCASE_METHOD_NAME" />, maar wel op <ph name="PATCH_LOWERCASE_METHOD_NAME" />.
 
 Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
+<translation id="3107054704365085676">Toestaan dat pagina's met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> worden opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" /></translation>
 <translation id="3110248563985502478">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid toepast, worden verouderde plug-ins gebruikt als normale plug-ins. Als je het beleid niet toepast, worden verouderde plug-ins niet gebruikt.
 
       Als je het beleid niet instelt, wordt de gebruikers toestemming gevraagd om verouderde plug-ins uit te voeren.</translation>
@@ -4717,6 +4719,11 @@ Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 
           Als je dit beleid niet toepast, wordt de functie verplicht uitgezet.</translation>
 <translation id="5435888298115339571">Delen van bureaublad aanzetten in de omnibox en het menu met 3 stippen</translation>
+<translation id="5436664291450581091">Dit beleid bepaalt of een pagina met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> (CCNS) kan worden opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" />. De website die deze koptekst instelt, verwacht misschien niet dat de pagina wordt hersteld vanuit <ph name="BACK_FORWARD_CACHE_NAME" />, omdat bepaalde gevoelige informatie na het herstel mogelijk nog steeds wordt getoond, ook als deze niet meer toegankelijk is.
+
+Als je het beleid toepast of niet instelt, kan de pagina met de CCNS-koptekst worden hersteld vanuit <ph name="BACK_FORWARD_CACHE_NAME" />, tenzij verwijdering uit het cachegeheugen wordt geactiveerd (bijvoorbeeld als er een cookiewijziging met alleen HTTP op de site is).
+
+Als je het beleid niet toepast, wordt de pagina met CCNS-koptekst niet opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="5441508088704391614">Geen speciale beperkingen. Standaard.</translation>
 <translation id="5442026853063570579">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'DeveloperToolsDisallowed' (waarde 2), hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op een andere waarde of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
 <translation id="5443582909255996887">Als je dit beleid toepast, worden alle sites op Android geïsoleerd, zodat elke site zijn eigen proces uitvoert, en kunnen gebruikers kunnen deze functie niet uitzetten. Een site is een schema plus eTLD+1 (bijvoorbeeld https://example.com). Android isoleert bepaalde gevoelige sites standaard vanaf versie 77 van <ph name="PRODUCT_NAME" />. Dit beleid breidt die standaard site-isolatiemodus uit naar alle sites.
@@ -4818,6 +4825,7 @@ Dit is verwijderd in M112.</translation>
 <translation id="5503933085302625442">De doelversie van het OS niet herstellen</translation>
 <translation id="55057839818162162">Door de camera ondersteund zoeken via <ph name="GOOGLE_LENS_PRODUCT_NAME" /> toestaan</translation>
 <translation id="55057971769693300">Inlastekenmarkering uitzetten</translation>
+<translation id="5507027524345233268">Niet toestaan dat pagina's met een CCNS-koptekst worden opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="5508307164752647432">Kerberos-functionaliteit aanzetten</translation>
 <translation id="5511702823008968136">Bookmarkbalk aanzetten</translation>
 <translation id="5512418063782665071">URL van homepage</translation>

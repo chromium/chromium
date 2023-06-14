@@ -1086,6 +1086,11 @@ La disponibilidad de las extensiones aún se controla mediante otras políticas.
 <translation id="2006530844219044261">Administración de energía</translation>
 <translation id="2006954055163088863">Considerar al usuario como inactivo mientras se reproduce un video</translation>
 <translation id="2008514891623783266">La política que controla la IP de WebRTC</translation>
+<translation id="201153120366509312">Si habilitas esta política o no la estableces, se permitirá la recopilación de métricas con URL.
+Si el usuario habilita la política y la recopilación de métricas con URL, esta recopilación envía a Google las URLs de las páginas que visita el usuario para mejorar las búsquedas y la navegación junto con las estadísticas de uso por página.
+Las métricas con URL también incluyen los identificadores y las estadísticas de uso de otros componentes del navegador que pueden modificar o proporcionar contenido, como extensiones.
+
+Si no permites la política, los usuarios no podrán habilitar la recopilación de métricas con URL.</translation>
 <translation id="2012296492055302633">Habilitar siempre la pantalla de privacidad</translation>
 <translation id="2014757022750736514">Controla el comportamiento de la pantalla de acceso, donde los usuarios ingresan a sus cuentas. En las opciones de configuración, se determina quiénes pueden acceder, qué tipo de cuentas están permitidas, qué métodos de autenticación deben usarse, además de la configuración regional, el método de entrada y la accesibilidad general.</translation>
 <translation id="201557587962247231">Frecuencia de cargas del informe de estado del dispositivo</translation>
@@ -1335,6 +1340,15 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="2223393221350938149">No permitir que cualquier sitio ejecute JavaScript con JIT</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
 <translation id="222673035924187991">Habilitar TLS Encrypted ClientHello</translation>
+<translation id="222944823539535006">Esta política dejó de estar disponible y se quitará en la versión principal 130. En su lugar, usa <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
+
+Si habilitas la política, la recopilación de datos anónimos con URL estará siempre activa. Esta recopilación envía a Google las URLs de las páginas que visita el usuario para mejorar la búsqueda y la exploración.
+
+Si inhabilitas la política, no se recopilarán datos anónimos con URL.
+
+Si no la estableces, el usuario podrá cambiar esta configuración de forma manual.
+
+En el Kiosco de <ph name="PRODUCT_OS_NAME" />, esta política no ofrece la opción "Permitir que el usuario decida". Si no estableces esta política para el Kiosco de <ph name="PRODUCT_OS_NAME" />, la recopilación de datos anónimos con URL estará siempre activa.</translation>
 <translation id="2231817271680715693">Importar historial de navegación del navegador predeterminado en la primera ejecución</translation>
 <translation id="2231962946025538735">Esta política dejó de estar disponible. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el visor de PDF integrado para abrir este tipo de archivos.
 
@@ -4415,6 +4429,7 @@ Esta política es temporal y se quitará ni bien se inicie la cancelación del e
 <translation id="5025239932007658691">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> enviará consultas ocasionales a un servidor de Google para recuperar una marca de tiempo precisa.
 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
+<translation id="5030415914668947893">Permitir la recopilación de métricas con URL</translation>
 <translation id="5033070732967197381">Permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
 <translation id="5036013147560568855">Versión del protocolo de provisión de certificados. La configuración predeterminada es 1. 1 es el protocolo "estático". 2 es el protocolo "dinámico".</translation>
@@ -5441,6 +5456,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="603768430528561926">Si habilitas la política o no la estableces, los usuarios de dispositivos empresariales podrán canjear ofertas a través del registro en <ph name="PRODUCT_OS_NAME" />.
 
       Si la inhabilitas, los usuarios no podrán canjear esas ofertas.</translation>
+<translation id="6042629184389251062">No permitir la recopilación de métricas con URL</translation>
 <translation id="6046615715547751255">No permitir los controles de informes detallados</translation>
 <translation id="6048199181629830227">Habilita la administración de carga fuera del horario de mayor consumo</translation>
 <translation id="6048690591359317353">No permitir que el usuario desconecte o modifique manualmente una VPN</translation>
@@ -5983,6 +5999,7 @@ Consulta también la política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</trans
 <translation id="6462604655173570082">Si no estableces la política o si la habilitas, los usuarios podrán ver y usar el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña. Si la inhabilitas, los usuarios no verán el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="6464074037294098618">Habilitar "Autocompletar" para las direcciones</translation>
 <translation id="6467613372414922590">Permite el uso de hosts de mensajería nativa en el nivel de usuario (instalados sin permisos de administrador).</translation>
+<translation id="6471018476824827813">Permitir la recopilación de métricas con URL</translation>
 <translation id="6473623140202114570">Configura la lista de dominios donde la Navegación segura no activa advertencias.</translation>
 <translation id="6474194795370862403">Usar el comportamiento anterior de offsetParent</translation>
 <translation id="647645276885673708">Habilitar <ph name="LACROS_NAME" /> y seleccionarlo como navegador predeterminado</translation>

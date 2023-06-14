@@ -530,6 +530,7 @@
 <translation id="1448779317883494811">Інструмент "Пензель"</translation>
 <translation id="1449191289887455076">Натисніть клавішу "<ph name="CURRENTKEY" />" ще раз, щоб підтвердити призначену дію та <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Веб-сторінка в одному файлі</translation>
+<translation id="145280054552001290">Додайте або вилучіть мови субтитрів</translation>
 <translation id="1453561711872398978">Надіслати <ph name="BEGIN_LINK" />
     журнали налагодження<ph name="END_LINK" /> (рекомендовано)</translation>
 <translation id="1454223536435069390">З&amp;робити знімок екрана</translation>
@@ -3619,6 +3620,7 @@
 <translation id="4044612648082411741">Введіть пароль сертифіката</translation>
 <translation id="4044708573046946214">Пароль розблокування екрана</translation>
 <translation id="404493185430269859">Пошукова система за умовчанням</translation>
+<translation id="4045196801416070837">Звуки на пристрої</translation>
 <translation id="4046013316139505482">Зазначені розширення не можуть переглядати та змінювати інформацію на цьому сайті.</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="4047345532928475040">-</translation>
@@ -5222,6 +5224,7 @@
 <translation id="5481941284378890518">Додати принтери поруч</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> сьогодні. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}one{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}few{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}many{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}other{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Установити додаток</translation>
+<translation id="5485435764083510385">Бажана мова субтитрів</translation>
 <translation id="5485754497697573575">Відновити всі вкладки</translation>
 <translation id="5486261815000869482">Підтвердьте пароль</translation>
 <translation id="5486561344817861625">Імітувати перезапуск веб-переглядача</translation>
@@ -7408,6 +7411,7 @@
 <translation id="7400839060291901923">Налаштуйте з’єднання на пристрої <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Відхилити це повідомлення</translation>
 <translation id="7402198013420237102">Перемістити збережені паролі в обліковий запис Google?</translation>
+<translation id="740333000181878130">Звук під час запуску пристрою</translation>
 <translation id="7403642243184989645">Завантаження ресурсів</translation>
 <translation id="7404065585741198296">Телефон із кабелем USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Перевірку безпеки виконано 1 годину тому}one{Перевірку безпеки виконано {NUM_HOURS} годину тому}few{Перевірку безпеки виконано {NUM_HOURS} години тому}many{Перевірку безпеки виконано {NUM_HOURS} годин тому}other{Перевірку безпеки виконано {NUM_HOURS} години тому}}</translation>

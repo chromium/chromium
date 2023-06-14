@@ -527,6 +527,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1448779317883494811">Brush tool</translation>
 <translation id="1449191289887455076">Press '<ph name="CURRENTKEY" />' again to confirm assignment and <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Web page, Single File</translation>
+<translation id="145280054552001290">Add and remove languages to caption</translation>
 <translation id="1453561711872398978">Send <ph name="BEGIN_LINK" />
     debug logs<ph name="END_LINK" /> (recommended)</translation>
 <translation id="1454223536435069390">T&amp;ake screenshot</translation>
@@ -1456,6 +1457,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2204020417499639567">Email filled.</translation>
 <translation id="2204034823255629767">Read and change anything that you type</translation>
 <translation id="2204387456724731099">This selection couldn't be translated</translation>
+<translation id="2207116775853792104">Keep this extension</translation>
 <translation id="2210462644007531147">Couldn’t complete installation</translation>
 <translation id="2211245494465528624">Manage sync options</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
@@ -3616,6 +3618,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4044612648082411741">Enter your certificate password</translation>
 <translation id="4044708573046946214">Screen lock password</translation>
 <translation id="404493185430269859">Default search engine</translation>
+<translation id="4045196801416070837">Device sounds</translation>
 <translation id="4046013316139505482">These extensions don't need to see and change information on this site.</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -5219,6 +5222,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Add app</translation>
+<translation id="5485435764083510385">Preferred caption language</translation>
 <translation id="5485754497697573575">Restore All Tabs</translation>
 <translation id="5486261815000869482">Confirm password</translation>
 <translation id="5486561344817861625">Simulate Browser Restart</translation>
@@ -7402,6 +7406,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7400839060291901923">Set up connection on your <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Dismiss this message</translation>
 <translation id="7402198013420237102">Move saved passwords to your Google Account?</translation>
+<translation id="740333000181878130">Device start-up sound</translation>
 <translation id="7403642243184989645">Downloading resources</translation>
 <translation id="7404065585741198296">Your phone with a USB cable</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Safety check ran 1 hour ago}other{Safety check ran {NUM_HOURS} hours ago}}</translation>
@@ -7450,6 +7455,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7434509671034404296">Developer</translation>
 <translation id="7434757724413878233">Mouse acceleration</translation>
 <translation id="7434969625063495310">Couldn't add the print server. Please check the server's configuration and try again.</translation>
+<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Review 1 extension that was taken down from the Chrome Web Store}other{Review {NUM_EXTENSIONS} extensions that were taken down from the Chrome Web Store}}</translation>
 <translation id="7436921188514130341">Oh no! There was an error during renaming.</translation>
 <translation id="7439519621174723623">Add a device name to continue</translation>
 <translation id="7441736921018636843">To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /> to remove your sync passphrase</translation>
@@ -7466,6 +7472,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7452166281927983300">Dismissed warnings (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
 <translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
+<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{This extension might be unsafe. Chrome recommends that you remove it.}other{These extensions might be unsafe. Chrome recommends that you remove them.}}</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Manage extra containers</translation>
 <translation id="7455988709578031708">Based on your browsing history. This setting is on.</translation>

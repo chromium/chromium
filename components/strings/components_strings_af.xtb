@@ -265,6 +265,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 
           &lt;p&gt;Stel asseblief die datum en tyd reg in die &lt;strong&gt;Algemeen&lt;/strong&gt;-afdeling van die &lt;strong&gt;Instellings&lt;/strong&gt;-program.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Jou administrateur sal jou toestel om <ph name="TIME" /> op <ph name="DATE" /> herbegin</translation>
+<translation id="1564753300777780201">Geen teks is van prente af omgeskakel nie</translation>
 <translation id="156703335097561114">Netwerkinligting soos adresse, koppelvlakopstelling en verbindinggehalte</translation>
 <translation id="1567040042588613346">Hierdie beleid werk soos bedoel, maar dieselfde waarde is elders gestel en word deur hierdie beleid vervang.</translation>
 <translation id="1567405528131216114">Voeg <ph name="TOPIC" /> by</translation>
@@ -1200,6 +1201,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3890664840433101773">Voeg e-posadres by</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3901925938762663762">Die kaart het verval</translation>
+<translation id="3906095212874392000">Einde van omgeskakelde teks</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Jy kan enige tyd in Chrome-instellings van plan verander</translation>
@@ -1400,6 +1402,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4331519897422864041">Stapelaar 5</translation>
 <translation id="4331708818696583467">Nie veilig nie</translation>
 <translation id="4333561522337981382">Bestuur vensters op al jou skerms</translation>
+<translation id="4338709847516294988">Druk soek plus M en skakel prent om in teks in die kontekskieslys</translation>
 <translation id="4340575312453649552">Chrome het hierdie advertensie verwyder omdat dit te veel van jou toestel se hulpbronne gebruik het.</translation>
 <translation id="4340982228985273705">Hierdie rekenaar word nie bespeur as een wat deur 'n onderneming bestuur word nie en beleid kan dus net uitbreidings wat in die Chrome Webwinkel gehuisves word, outomaties installeer. Die Chrome Webwinkel se opdatering-URL is "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">Die verbinding aan <ph name="SITE" /> is nie veilig nie</translation>
@@ -1415,6 +1418,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4359160567981085931">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome kan help. Klik Beskerm Rekening om jou wagwoord te verander en stel Google in kennis dat jou rekening dalk in gevaar is.</translation>
 <translation id="4363222835916186793">Opletberigte vir hierdie produk is afgeskakel</translation>
 <translation id="437040971055499437">Sekuriteitsgeval vind plaas</translation>
+<translation id="4371307856413138486">Begin van omgeskakelde teks</translation>
 <translation id="4371591986692297148">Onaktief</translation>
 <translation id="4372948949327679948">Verwagte <ph name="VALUE_TYPE" />-waarde.</translation>
 <translation id="4375864595697821259">Voeg ’n item weer by as jy dit in die poel onderwerpe wil hê waaruit Chrome kan kies wanneer dit jou belangstellings skat</translation>
@@ -2089,6 +2093,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6041777658117377052">Kamertemperatuur</translation>
 <translation id="6042308850641462728">Meer</translation>
+<translation id="6042688167654081154">Prent is omgeskakel in teks</translation>
 <translation id="6044573915096792553">Grootte 12</translation>
 <translation id="6045164183059402045">Inslaanwerktemplaat</translation>
 <translation id="6047233362582046994">As jy die gevare vir jou veiligheid verstaan, kan jy <ph name="BEGIN_LINK" />hierdie werf besoek<ph name="END_LINK" /> voordat die skadelike programme verwyder is.</translation>
@@ -2150,6 +2155,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
 <translation id="6197648101609735209">89x89 mm</translation>
+<translation id="6200386911308538077">Prent word tans ontleed</translation>
 <translation id="6203231073485539293">Gaan jou internetverbinding na</translation>
 <translation id="6205314730813004066">Advertensieprivaatheid</translation>
 <translation id="6212314149070368045">VS Valvou</translation>
@@ -2268,6 +2274,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6468485451923838994">Lettertipes</translation>
 <translation id="647261751007945333">Toestelbeleide</translation>
 <translation id="647330291963761005">Installeer tans opdaterings</translation>
+<translation id="6474220430271405609">Beleidtoetse</translation>
 <translation id="6475672344094591109">Werwe wat jy besoek kan Chrome vra vir inligting wat hulle help om die werkverrigting van hul advertensies te meet. Chrome beskerm jou privaatheid deur die inligting wat werwe met mekaar kan deel, te beperk.</translation>
 <translation id="6476284679642588870">Bestuur betaalmetodes</translation>
 <translation id="6486200200930923183">Dokumentêre flieks</translation>

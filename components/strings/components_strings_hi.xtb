@@ -265,6 +265,7 @@
 
       &lt;p&gt;कृपया तारीख और समय को &lt;strong&gt;सेटिंग&lt;/strong&gt; ऐप्लिकेशन के &lt;strong&gt;सामान्‍य&lt;/strong&gt; सेक्शन से एडजस्‍ट करें.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">एडमिन, <ph name="DATE" /> को <ph name="TIME" /> बजे आपके डिवाइस को रीस्टार्ट करेगा</translation>
+<translation id="1564753300777780201">किसी इमेज को टेक्स्ट में नहीं बदला गया</translation>
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> जोड़ें</translation>
@@ -1200,6 +1201,7 @@
 <translation id="3890664840433101773">ईमेल जोड़ें</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3901925938762663762">इस कार्ड की समय सीमा खत्म हो गई है</translation>
+<translation id="3906095212874392000">बदला गया आखिरी टेक्स्ट</translation>
 <translation id="3906954721959377182">टैबलेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Chrome की सेटिंग में जाकर, इसमें कभी भी बदलाव किया जा सकता है</translation>
@@ -1400,6 +1402,7 @@
 <translation id="4331519897422864041">स्टैकर 5</translation>
 <translation id="4331708818696583467">सुरक्षित नहीं है</translation>
 <translation id="4333561522337981382">आपके सभी डिसप्ले पर विंडो मैनेज करना</translation>
+<translation id="4338709847516294988">Search और m दबाएं और संदर्भ मेन्यू में इमेज को टेक्स्ट में बदलें</translation>
 <translation id="4340575312453649552">यह विज्ञापन आपके डिवाइस के बहुत से संसाधन इस्तेमाल करता था, इसलिए Chrome ने इसे हटा दिया है.</translation>
 <translation id="4340982228985273705">इस कंप्यूटर की पहचान एंटरप्राइज़ की ओर से प्रबंधित होने के रूप में नहीं की गई है, इसलिए नीति सिर्फ़ Chrome वेबस्टोर पर होस्ट किए जाने वाले एक्सटेंशन ही अपने आप इंस्टॉल कर सकती है. Chrome वेबस्टोर अपडेट यूआरएल "<ph name="CWS_UPDATE_URL" />" है.</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> से कनेक्शन सुरक्षित नहीं है</translation>
@@ -1415,6 +1418,7 @@
 <translation id="4359160567981085931">आपने अभी-अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. Chrome इसमें आपकी मदद कर सकता है. अपना पासवर्ड बदलने और Google को यह बताने के लिए कि आपका खाता सुरक्षित नहीं है, 'खाता सुरक्षित करें' पर क्लिक करें.</translation>
 <translation id="4363222835916186793">इस प्रॉडक्ट के लिए, सूचनाएं पाने की सुविधा बंद कर दी गई है</translation>
 <translation id="437040971055499437">सुरक्षा से जुड़ी गतिविधि होती है</translation>
+<translation id="4371307856413138486">बदला गया पहला टेक्स्ट</translation>
 <translation id="4371591986692297148">चालू नहीं है</translation>
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मान.</translation>
 <translation id="4375864595697821259">अगर आपको किसी आइटम को उन विषयों में फिर से जोड़ना है जिन्हें Chrome आपकी पसंद का अनुमान लगाते समय चुन सकता है, तो उस आइटम को फिर से सूची में जोड़ें</translation>
@@ -2089,6 +2093,7 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6041777658117377052">चेंबर का तापमान</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
+<translation id="6042688167654081154">इमेज को टेक्स्ट में बदला गया</translation>
 <translation id="6044573915096792553">आकार 12</translation>
 <translation id="6045164183059402045">इम्पोज़िशन टेम्प्लेट</translation>
 <translation id="6047233362582046994">अगर आप अपनी सुरक्षा को होने वाले खतरों के बारे में जानते हैं तो, खतरनाक ऐप्लिकेशन हटाए जाने से पहले आप <ph name="BEGIN_LINK" />इस साइट पर जा<ph name="END_LINK" /> सकते हैं.</translation>
@@ -2150,6 +2155,7 @@
 <translation id="6195371403461054755">जियोलॉजी</translation>
 <translation id="6196640612572343990">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="6197648101609735209">89 x 89 मि॰मी॰</translation>
+<translation id="6200386911308538077">इमेज का विश्लेषण किया जा रहा है</translation>
 <translation id="6203231073485539293">अपना इंटरनेट कनेक्शन जांचे</translation>
 <translation id="6205314730813004066">विज्ञापन से जुड़ी निजता सेटिंग</translation>
 <translation id="6212314149070368045">यूएस फ़ैनफ़ोल्ड</translation>

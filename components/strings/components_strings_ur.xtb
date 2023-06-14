@@ -266,6 +266,7 @@
 
       &lt;p&gt;براہ کرم تاریخ اور وقت کو &lt;strong&gt;ترتیبات&lt;‎/strong&gt; ایپ کے &lt;strong&gt;عمومی&lt;‎/strong&gt; سیکشن سے ایڈجسٹ کریں۔&lt;‎/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم آپ کے آلے کو ری سٹارٹ کرے گا</translation>
+<translation id="1564753300777780201">تصاویر سے کوئی ٹیکسٹ تبدیل نہیں ہوا</translation>
 <translation id="156703335097561114">نیٹ ورکنگ معلومات جیسے پتے، انٹرفیس کنفیگریشن اور کنکشن کا معیار</translation>
 <translation id="1567040042588613346">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک جیسی قدر سیٹ کی گئی ہے اور اس نے اس پالیسی کی جگہ لے لی ہے۔</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> کو شامل کریں</translation>
@@ -1202,6 +1203,7 @@
 <translation id="3890664840433101773">ای میل شامل کریں</translation>
 <translation id="3897092660631435901">مینیو</translation>
 <translation id="3901925938762663762">اس کارڈ کی میعاد ختم ہو گئی ہے</translation>
+<translation id="3906095212874392000">تبدیل شدہ ٹیکسٹ کا اختتام</translation>
 <translation id="3906954721959377182">ٹیبلیٹ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا ارادہ بدل سکتے ہیں</translation>
@@ -1402,6 +1404,7 @@
 <translation id="4331519897422864041">اسٹیکر 5</translation>
 <translation id="4331708818696583467">محفوظ نہیں</translation>
 <translation id="4333561522337981382">اپنے سبھی ڈسپلیز پر ونڈوز کا نظم کریں</translation>
+<translation id="4338709847516294988">‏تلاش کے ساتھ m دبائیں اور سیاق و سباق کے مینو میں تصویر کو ٹیکسٹ میں تبدیل کریں</translation>
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> سے کنکشن محفوظ نہیں ہے</translation>
@@ -1417,6 +1420,7 @@
 <translation id="4359160567981085931">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome مدد کر سکتا ہے۔ اپنا پاس ورڈ تبدیل کرنے اور Google کو یہ مطلع کرنے کے لیے کہ آپ کا اکاؤنٹ خطرے میں ہو سکتا ہے، 'اکاؤنٹ کا تحفظ کریں' پر کلک کریں۔</translation>
 <translation id="4363222835916186793">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے</translation>
 <translation id="437040971055499437">سیکیورٹی ایونٹ ہوتا ہے</translation>
+<translation id="4371307856413138486">تبدیل شدہ ٹیکسٹ کا آغاز</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4372948949327679948">متوقع <ph name="VALUE_TYPE" /> قدر۔</translation>
 <translation id="4375864595697821259">‏اگر آپ آئٹم کے پول میں ایسا آئٹم چاہتے ہیں جسے Chrome آپ کی دلچسپیوں کا اندازہ لگاتے وقت استعمال کرے تو اسے دوبارہ شامل کریں</translation>
@@ -2091,6 +2095,7 @@
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6041777658117377052">چمبر کا درجہ حرارت</translation>
 <translation id="6042308850641462728">مزید</translation>
+<translation id="6042688167654081154">تصویر کو ٹیکسٹ میں تبدیل کر دیا گیا</translation>
 <translation id="6044573915096792553">سائز 12</translation>
 <translation id="6045164183059402045">نفاذ کی تمثیل</translation>
 <translation id="6047233362582046994">اگر آپ اپنی سیکیورٹی کے خطرات کو سمجھتے ہیں تو آپ نقصان دہ ایپس کو ہٹائے جانے سے پہلے <ph name="BEGIN_LINK" />یہ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
@@ -2153,6 +2158,7 @@
 <translation id="6195371403461054755">ارضیات</translation>
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6197648101609735209">‏‎89 x 89 ملی میٹر</translation>
+<translation id="6200386911308538077">تصویر کا تجزیہ کیا جا رہا ہے</translation>
 <translation id="6203231073485539293">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -2271,6 +2277,7 @@
 <translation id="6468485451923838994">فونٹس</translation>
 <translation id="647261751007945333">آلے کی پالیسیاں</translation>
 <translation id="647330291963761005">اپ ڈیٹس انسٹال ہو رہی ہیں</translation>
+<translation id="6474220430271405609">پالیسی ٹیسٹس</translation>
 <translation id="6475672344094591109">‏آپ کی ملاحظہ کی جانے والی سائٹس Chrome سے معلومات طلب کر سکتی ہیں جو انہیں اپنے اشتہارات کی کارکردگی کی پیمائش میں مدد کرتی ہے۔ Chrome ان معلومات کو محدود کر کے آپ کی رازداری کی حفاظت کرتا ہے جن کا سائٹس ایک دوسرے کے ساتھ اشتراک کر سکتی ہیں۔</translation>
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="6486200200930923183">دستاویزی فلمیں</translation>

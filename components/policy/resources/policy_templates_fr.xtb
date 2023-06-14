@@ -1084,6 +1084,11 @@ La disponibilité des extensions est toujours contrôlée par d'autres règles.<
 <translation id="2006530844219044261">Gestion de l'alimentation</translation>
 <translation id="2006954055163088863">Considérer l'utilisateur comme inactif pendant la lecture de la vidéo</translation>
 <translation id="2008514891623783266">La règle de gestion des adresses IP de WebRTC</translation>
+<translation id="201153120366509312">Si cette règle est définie sur "Autorisée" ou n'est pas configurée, la collecte de métriques incluant les URL est autorisée.
+Si la collecte de métriques incluant les URL est autorisée et activée par l'utilisateur, elle envoie à Google les URL des pages consultées par l'utilisateur afin d'améliorer la recherche et la navigation, ainsi que les statistiques d'utilisation par page.
+Les métriques incluant les URL comprennent également les identifiants et les statistiques d'utilisation d'autres composants du navigateur pouvant modifier ou fournir du contenu, comme les extensions.
+
+Si cette règle est définie sur "Non autorisée", les utilisateurs ne peuvent pas activer la collecte de métriques incluant les URL.</translation>
 <translation id="2012296492055302633">Toujours activer l'écran de confidentialité</translation>
 <translation id="2014757022750736514">Contrôle le comportement de l'écran de connexion, où les internautes se connectent à leur compte. Les paramètres incluent qui peut se connecter, quels types de comptes sont autorisés, quelles méthodes d'authentification doivent être utilisées, ainsi que l'accessibilité générale, le mode de saisie et les paramètres régionaux.</translation>
 <translation id="201557587962247231">Fréquence d'importation des rapports sur l'état de l'appareil</translation>
@@ -1331,6 +1336,15 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="2223393221350938149">Interdire à tous les sites d'exécuter le JIT pour JavaScript</translation>
 <translation id="2223598546285729819">Paramètre de notification par défaut</translation>
 <translation id="222673035924187991">Activer TLS Encrypted ClientHello</translation>
+<translation id="222944823539535006">Cette règle est obsolète et sera supprimée dans le jalon 130. Veuillez utiliser <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" /> à la place.
+
+Si vous activez cette règle, la collecte de données anonymes incluant les URL, qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation, est toujours active.
+
+Si vous la désactivez, les données anonymes incluant les URL ne sont pas collectées.
+
+Si cette règle n'est pas configurée, l'utilisateur peut modifier ce paramètre manuellement.
+
+Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option "Laisser l'utilisateur décider". Si cette règle n'est pas configurée pour <ph name="PRODUCT_OS_NAME" /> Kiosk, la collecte de données anonymes incluant les URL est toujours active.</translation>
 <translation id="2231817271680715693">Importer l'historique de navigation du navigateur par défaut à la première exécution</translation>
 <translation id="2231962946025538735">Cette règle est obsolète. Veuillez utiliser la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> pour contrôler la disponibilité du plug-in Flash et la règle <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> pour définir si la visionneuse de documents PDF intégrée doit être utilisée pour ouvrir les fichiers PDF.
 
@@ -2661,11 +2675,11 @@ Si une extension spécifiée dans cette règle n'est pas installée, la navigati
 <translation id="3442589735857147823">Autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
 <translation id="3445364060482221648">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
 
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racine du système.
 
-Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
+Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racine du système peuvent être utilisés indifféremment.
 
-Il est prévu que cette règle soit supprimée dans la version 120 de <ph name="PRODUCT_OS_NAME" /> et <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" /> et <ph name="ANDROID_NAME" />, car les certificats racines fournis par la plate-forme ne seront plus pris en charge.
+Il est prévu que cette règle soit supprimée dans la version 120 de <ph name="PRODUCT_OS_NAME" /> et <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" /> et <ph name="ANDROID_NAME" />, car les certificats racine fournis par la plate-forme ne seront plus pris en charge.
 
 Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, car l'outil de vérification des certificats et les racines fournis par la plate-forme ne sont plus pris en charge.</translation>
 <translation id="3450649825886735618">Ne pas utiliser de services Web Google pour corriger les fautes d'orthographe</translation>
@@ -2683,7 +2697,7 @@ Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" 
 Si cette règle est activée, <ph name="PRODUCT_NAME" /> effectue cette vérification.
 Cela aide à prévenir les attaques où un pirate informatique manipule le navigateur pour interpréter une clé d'une manière que le propriétaire du certificat n'avait pas prévue.
 
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ignore cette vérification pour les connexions HTTPS qui à la fois négocient TLS 1.2 et utilisent un certificat RSA qui se lie à une ancre de confiance locale. Parmi les ancres de confiance locales figurent, par exemple, les certificats racines fournis par la règle ou installés par l'utilisateur. Dans tous les autres cas, la vérification est effectuée indépendamment du paramètre de cette règle.
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ignore cette vérification pour les connexions HTTPS qui à la fois négocient TLS 1.2 et utilisent un certificat RSA qui se lie à une ancre de confiance locale. Parmi les ancres de confiance locales figurent, par exemple, les certificats racine fournis par la règle ou installés par l'utilisateur. Dans tous les autres cas, la vérification est effectuée indépendamment du paramètre de cette règle.
 
 Si la règle n'est pas configurée, <ph name="PRODUCT_NAME" /> se comporte comme si elle était désactivée.
 
@@ -4315,6 +4329,7 @@ Cette règle est temporaire et sera supprimée dès le lancement de l'annulation
 <translation id="5025239932007658691">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> envoie des requêtes occasionnelles à un serveur Google pour récupérer un horodatage précis.
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
+<translation id="5030415914668947893">Autoriser la collecte de métriques incluant les URL</translation>
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
@@ -5335,6 +5350,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="603768430528561926">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs d'appareils d'entreprise peuvent profiter d'offres via le service d'enregistrement <ph name="PRODUCT_OS_NAME" />.
 
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
+<translation id="6042629184389251062">La collecte de métriques incluant les URL n'est pas autorisée</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
 <translation id="6048690591359317353">Ne pas autoriser l'utilisateur à déconnecter ni modifier manuellement un VPN</translation>
@@ -5836,6 +5852,7 @@ Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translatio
 <translation id="6462604655173570082">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent afficher et utiliser le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche de la page "Nouvel onglet". Si cette règle est désactivée, les utilisateurs ne verront pas le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans ce champ de recherche.</translation>
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
 <translation id="6467613372414922590">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur (installés sans l'autorisation d'un administrateur)</translation>
+<translation id="6471018476824827813">La collecte de métriques incluant les URL est autorisée</translation>
 <translation id="6473623140202114570">Configurez la liste des domaines sur lesquels la navigation sécurisée ne déclenchera aucun avertissement.</translation>
 <translation id="6474194795370862403">L'ancien comportement offsetParent sera utilisé.</translation>
 <translation id="647645276885673708">Activer <ph name="LACROS_NAME" /> et en faire le navigateur principal</translation>

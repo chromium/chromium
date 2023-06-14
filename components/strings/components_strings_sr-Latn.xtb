@@ -267,6 +267,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 
       &lt;p&gt;Prilagodite datum i vreme u odeljku &lt;strong&gt;Opšte&lt;/strong&gt; u aplikaciji &lt;strong&gt;Podešavanja&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator će restartovati uređaj u <ph name="TIME" /> <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Tekst nije konvertovan iz slika</translation>
 <translation id="156703335097561114">Informacije o mrežama poput adresa, konfiguracije interfejsa i kvaliteta veze</translation>
 <translation id="1567040042588613346">Ove smernice rade kao što je predviđeno, ali ista vrednost je podešena na drugom mestu i zamenjuju je ove smernice.</translation>
 <translation id="1567405528131216114">Dodaj <ph name="TOPIC" /></translation>
@@ -1207,6 +1208,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3890664840433101773">Dodajte imejl</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je istekla</translation>
+<translation id="3906095212874392000">Kraj konvertovanog teksta</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Možete da se predomislite u svakom trenutku u podešavanjima Chrome-a</translation>
@@ -1409,6 +1411,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4331519897422864041">5. pregrada za slaganje</translation>
 <translation id="4331708818696583467">Nije bezbedan</translation>
 <translation id="4333561522337981382">Upravljajte prozorima na svim ekranima</translation>
+<translation id="4338709847516294988">Pritisnite taster za pretragu i m da biste konvertovali sliku u tekst u kontekstualnom meniju</translation>
 <translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340982228985273705">Otkriveno je da ovim računarom ne upravlja preduzeće, pa smernice mogu automatski da instaliraju samo dodatke koji se hostuju u Chrome veb-prodavnici. URL ažuriranja u Chrome veb-prodavnici je „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4348834659292907206">Veza sa sajtom <ph name="SITE" /> nije bezbedna</translation>
@@ -1424,6 +1427,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4359160567981085931">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome može da vam pomogne. Da biste promenili lozinku i obavestili Google da je nalog možda ugrožen, kliknite na Zaštiti nalog.</translation>
 <translation id="4363222835916186793">Obaveštenja za ovaj proizvod su isključena</translation>
 <translation id="437040971055499437">Bezbednosni događaj se dešava</translation>
+<translation id="4371307856413138486">Početak konvertovanog teksta</translation>
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4372948949327679948">Očekivana vrednost je <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Ponovo dodajte stavku ako želite da bude u grupi tema koje Chrome može da izabere pri proceni interesovanja</translation>
@@ -2103,6 +2107,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6041777658117377052">Temperatura komore</translation>
 <translation id="6042308850641462728">Još</translation>
+<translation id="6042688167654081154">Slika je konvertovana u tekst</translation>
 <translation id="6044573915096792553">Veličina 12</translation>
 <translation id="6045164183059402045">Šablon rasporeda stranice</translation>
 <translation id="6047233362582046994">Ako razumete bezbednosne rizike, možete da <ph name="BEGIN_LINK" />posetite ovaj sajt<ph name="END_LINK" /> pre nego što uklonimo štetne aplikacije.</translation>
@@ -2164,6 +2169,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6197648101609735209">89×89 mm</translation>
+<translation id="6200386911308538077">Slika se analizira</translation>
 <translation id="6203231073485539293">Proverite internet vezu</translation>
 <translation id="6205314730813004066">Privatnost sa oglasima</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

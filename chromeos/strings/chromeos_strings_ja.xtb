@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">外部デバイスのファームウェアを更新するためのウィンドウが開いています。<ph name="NUM_UPDATES" /> 件のアップデートがあります。</translation>
 <translation id="1145516343487477149">ヘルプ記事と Chromebook に関するよくある質問の回答を確認できます</translation>
+<translation id="1164939766849482256">「夜明けから夜更けまで」のスクリーン セーバー</translation>
 <translation id="1167755866710282443">メニューを開いてキーをカスタマイズします。メニューをドラッグして移動します。</translation>
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="1175951029573070619">普通（<ph name="SIGNAL_STRENGTH" />）</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">ブラウザ操作</translation>
 <translation id="2874939134665556319">前のトラック</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
+<translation id="2880569433548999039">「雲の流れ」のスクリーン セーバー</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
 <translation id="2940811910881150316">デバイスをテストできません。テストするにはディスプレイをもう一度開きます。</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
 <translation id="3170673040743561620">スキャナにドキュメントを置いてください</translation>
+<translation id="3174321110679064523">「夜明けから夜更けまで」の壁紙</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="319101249942218879">アバター画像を変更しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
+<translation id="3373141842870501561">「地球の動き」の壁紙</translation>
 <translation id="3404249063913988450">スクリーン セーバーを有効にする</translation>
 <translation id="3413935475507503304">更新を進めるには、[次へ] をクリックしてください。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">上</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
 <translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> 限定アートワークを選択する</translation>
+<translation id="3668449597372804501">「雲の流れ」の壁紙</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">RGB 設定</translation>
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
+<translation id="382043424867370667">「日の入り」の壁紙</translation>
 <translation id="3824259034819781947">ファイルを添付</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> キーを押してダイアログを閉じます。</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">古いパスワード</translation>
 <translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
+<translation id="4469288414739283461">「地球の動き」のスクリーン セーバー</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4500966230243561393">インターフェースの色</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">ルーティンを再実行</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">バックライトの色</translation>
+<translation id="5292579816060236070">「日の出」の壁紙</translation>
 <translation id="5294769550414936029">バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ウィンドウをデスクに移動</translation>
+<translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 限定の壁紙</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ID</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ページを再スキャンしますか？}=1{ページ {PAGE_NUMBER} を再スキャンしますか？}other{ページ {PAGE_NUMBER} を再スキャンしますか？}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
+<translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> 限定のスクリーン セーバー</translation>
 <translation id="649050271426829538">停止 - 紙詰まり</translation>
 <translation id="6494974875566443634">カスタマイズ</translation>
 <translation id="6500818810472529210">Google 検索で結果を見る</translation>

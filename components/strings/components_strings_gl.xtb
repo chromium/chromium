@@ -265,6 +265,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 
       &lt;p&gt;Axusta a data e a hora na sección &lt;strong&gt;Xeral&lt;/strong&gt; da aplicación &lt;strong&gt;Configuración&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O teu administrador reiniciará o dispositivo o <ph name="DATE" /> a esta hora: <ph name="TIME" /></translation>
+<translation id="1564753300777780201">Non se converteu ningún texto a partir das imaxes</translation>
 <translation id="156703335097561114">Información das redes como enderezos, configuración de interfaces e calidade das conexións</translation>
 <translation id="1567040042588613346">Esta política funciona segundo o previsto, pero substitúe un valor equivalente que está definido noutro lugar.</translation>
 <translation id="1567405528131216114">Engadir <ph name="TOPIC" /></translation>
@@ -1200,6 +1201,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3890664840433101773">Engadir correo electrónico</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">A tarxeta caducou</translation>
+<translation id="3906095212874392000">Fin do texto convertido</translation>
 <translation id="3906954721959377182">Tableta</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Se cambias de idea, podes modificar a configuración de Chrome en calquera momento</translation>
@@ -1400,6 +1402,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4331519897422864041">Amontoador 5</translation>
 <translation id="4331708818696583467">Non seguro</translation>
 <translation id="4333561522337981382">Xestionar ventás en todas as pantallas</translation>
+<translation id="4338709847516294988">Preme a tecla de busca + M para converter a imaxe en texto desde o menú contextual</translation>
 <translation id="4340575312453649552">Dado que este anuncio utilizaba demasiados recursos para o teu dispositivo, Chrome quitouno.</translation>
 <translation id="4340982228985273705">Non se detectou que unha empresa xestione este ordenador, polo que a política só pode instalar automaticamente extensións aloxadas en Chrome Webstore. O URL de actualización de Chrome Webstore é <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">A conexión a <ph name="SITE" /> non é segura</translation>
@@ -1415,6 +1418,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4359160567981085931">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome pode axudarche. Para cambiar o teu contrasinal e notificarlle a Google que a túa conta pode estar en risco, fai clic en Protexer conta.</translation>
 <translation id="4363222835916186793">Desactiváronse as alertas para este produto</translation>
 <translation id="437040971055499437">Prodúcese un evento de seguranza</translation>
+<translation id="4371307856413138486">Inicio do texto convertido</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4375864595697821259">Engade un elemento de novo se o queres incluír no grupo de temas que Chrome pode escoller ao estimar os teus intereses</translation>
@@ -2089,6 +2093,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6041777658117377052">Temperatura da cámara</translation>
 <translation id="6042308850641462728">Máis</translation>
+<translation id="6042688167654081154">A imaxe converteuse en texto</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Modelo de imposición</translation>
 <translation id="6047233362582046994">Se aceptas os riscos para a túa seguranza, podes <ph name="BEGIN_LINK" />acceder a este sitio<ph name="END_LINK" /> antes de que se eliminen as aplicacións prexudiciais.</translation>
@@ -2150,6 +2155,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6195371403461054755">Xeoloxía</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">Estase analizando a imaxe</translation>
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>

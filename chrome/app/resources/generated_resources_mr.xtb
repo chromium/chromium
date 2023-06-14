@@ -316,6 +316,7 @@
 <translation id="1252987234827889034">प्रोफाइल एरर आली</translation>
 <translation id="1253664522045778676">परिणामावर क्लिक करा आणि पेज तुमच्या वर्तमान टॅबमध्ये उघडेल</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
+<translation id="1256588359404100567">तुमच्या मागील डिव्हाइसवरून सेटिंग सिंक केले आहे.</translation>
 <translation id="1257336506558170607">निवडलेले सर्टिफिकेट एक्सपोर्ट करा</translation>
 <translation id="1258491128795710625">नवीन काय आहे</translation>
 <translation id="1259152067760398571">सुरक्षा तपासणी काल रन केली गेली</translation>
@@ -527,6 +528,7 @@
 <translation id="1448779317883494811">ब्रश टूल</translation>
 <translation id="1449191289887455076">असाइनमेंट कंफर्म करण्यासाठी, “<ph name="CURRENTKEY" />” प्रेस करा आणि <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
+<translation id="145280054552001290">कॅप्शनमध्ये भाषा जोडा आणि काढून टाका</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     डीबग लॉग<ph name="END_LINK" /> पाठवा (शिफारस केलेले)</translation>
 <translation id="1454223536435069390">स्क्रीनशॉट घ्या</translation>
@@ -1004,6 +1006,7 @@
 <translation id="18260074040409954">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" />साठी <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केले आहेत.</translation>
 <translation id="1826192255355608658">तुमच्या Chrome ब्राउझरवरील बुकमार्क, पासवर्ड, इतिहास आणि आणखी बरेच काही सिंक करा</translation>
 <translation id="1826516787628120939">तपासत आहे</translation>
+<translation id="1826657447823925402">रिव्हर्स स्क्रोलिंग बंद केले आहे</translation>
 <translation id="1827504459960247692">हॉटस्पॉटचे नाव</translation>
 <translation id="1828378091493947763">हे प्लग-इन या डिव्हाइसवर सपोर्टेड नाही</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Open All}=1{बुकमार्क उघडा}other{सर्व ({COUNT}) उघडा}}</translation>
@@ -1292,6 +1295,7 @@
 <translation id="2081816110395725788">बॅटरीवर असताना पॉवर निष्क्रिय करा</translation>
 <translation id="2082187087049518845">गट टॅब</translation>
 <translation id="2082510809738716738">थीमचा रंग निवडा</translation>
+<translation id="2084891381052978619">तुम्ही तुमचे Chromebook सेट करणे पूर्ण केल्यानंतर तुम्हाला सेटिंग्ज मध्ये हे पर्यायदेखील दिसतील</translation>
 <translation id="208586643495776849">कृपया पुन्हा प्रयत्न करा</translation>
 <translation id="208634871997892083">VPN नेहमी सुरू ठेवा</translation>
 <translation id="2087822576218954668">प्रिंट: <ph name="PRINT_NAME" /></translation>
@@ -1361,6 +1365,7 @@
 <translation id="212862741129535676">फ्रिक्वेन्सी स्थिती कब्जा टक्केवारी</translation>
 <translation id="212876957201860463">तुमचे मोबाइल डिव्हाइस सेट करण्यास तयार करत आहे…</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" द्वारे "<ph name="APP_NAME" />" ला अनुमती नसल्‍याने तो स्‍थापित करण्‍यात अक्षम</translation>
+<translation id="2133775869826239001">सेट करण्यासाठी आणखी वैशिष्ट्ये निवडा</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> लोड करण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="2134905185275441536">सिस्टीम CAs</translation>
 <translation id="21354425047973905">पिन लपवा</translation>
@@ -2945,6 +2950,7 @@
 <translation id="347785443197175480">तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्यासाठी <ph name="HOST" /> ला परवानगी देणे सुरू ठेवा</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3479685872808224578">प्रिंट सर्व्हर डिटेक्ट करता आला नाही. कृपया ॲड्रेस तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="3479753605053415848">Chrome कस्टमाइझ करण्यासाठी क्लिक करा</translation>
 <translation id="3480612136143976912">लाइव्ह कॅप्शन साठी कॅप्शनचा आकार आणि शैली कस्टमाइझ करा. हे सेटिंग काही अ‍ॅप्स आणि साइटदेखील वापरतील.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> टॅब आढळले</translation>
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> मध्ये <ph name="COUNTDOWN_SECONDS" /> सेकंदांत उघडत आहे</translation>
@@ -3239,6 +3245,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> डेटा २४ तासांमध्ये हटवला जाईल</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> उघडायचा?</translation>
+<translation id="3740945083753997630">डिस्प्ले आणि मजकुराचा आकार कमी करा</translation>
 <translation id="3741056951918180319">कोणत्याही साइटवर एक्स्टेंशन वापरण्यासाठी तुम्ही कधीही त्यावर क्लिक करू शकता</translation>
 <translation id="3742235229730461951">कोरियन कीबोर्ड लेआउट</translation>
 <translation id="3742666961763734085">त्या नावाचे संस्थात्मक एकक शोधू शकत नाही. कृपया पुन्हा प्रयत्न करा.</translation>
@@ -3617,6 +3624,7 @@
 <translation id="4044612648082411741">तुमचा सर्टिफिकेट पासवर्ड एंटर करा</translation>
 <translation id="4044708573046946214">स्क्रीन लॉक पासवर्ड</translation>
 <translation id="404493185430269859">डीफॉल्ट शोध इंजीन</translation>
+<translation id="4045196801416070837">डिव्हाइसचे आवाज</translation>
 <translation id="4046013316139505482">या एक्स्टेंशनना या साइटवरील माहिती पाहण्याची आणि बदलण्याची गरज नाही.</translation>
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -4064,6 +4072,7 @@
 <translation id="4444512841222467874">स्थान उपलब्ध केले नसल्यास, वापरकर्ते आणि डेटा स्वयंचलितपणे काढला जाऊ शकतो.</translation>
 <translation id="4445446646109808714">अंतिम वापरकर्ता परवान्याचा करारनामा: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">मिरर केलेले</translation>
+<translation id="4448560527907365660">सेव्ह करा आणि आणखी पहा</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" /> वरील <ph name="USERNAME" /> साठीचा पासवर्ड लपवा</translation>
 <translation id="4449247303975391730">परवानग्या व्यवस्थापित करा</translation>
 <translation id="4449948729197510913">तुमचे वापरकर्ता नाव तुमच्या संस्थेच्या एंटरप्राइझ खात्याच्या मालकीचे आहे. खात्यावर डिव्हाइसची नोंदणी करण्यासाठी, अ‍ॅडमिन कन्सोलमध्ये प्रथम डोमेनच्या मालकीची पडताळणी करा. पडताळणी करण्यासाठी, खात्यावर तुमच्याकडे अ‍ॅडमिनिस्ट्रेटिव्ह विशेषाधिकार असावे लागतील.</translation>
@@ -5219,7 +5228,9 @@
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आज परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> {NUM_DAYS} दिवसांच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
+<translation id="5485435764083510385">कॅप्शनची प्राधान्य दिलेली भाषा</translation>
 <translation id="5485754497697573575">सर्व टॅब पुनर्संचयित करा</translation>
+<translation id="5486071940327595306"><ph name="WEBSITE" /> ला नवीनतम किंवा वेगळ्या प्रकारच्या डिव्हाइसची आवश्यकता असू शकते</translation>
 <translation id="5486261815000869482">पासवर्ड कन्फर्म करा</translation>
 <translation id="5486561344817861625">ब्राउझर रीस्टार्ट प्रतिकृती करा</translation>
 <translation id="5487460042548760727">प्रोफाइलचे नाव <ph name="PROFILE_NAME" /> वर बदला</translation>
@@ -5575,6 +5586,7 @@
 <translation id="5799508265798272974">Linux व्हर्च्युअल मशीन: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">अंतिम डाउनलोडपासून गंतव्य फाइल कापली किंवा काढली.</translation>
 <translation id="5800351251499368110">साइड पॅनलमध्ये शोध बंद करा. साइड पॅनलमध्ये शोध उघडा आहे.</translation>
+<translation id="5800703268655655701">फिकट किंवा गडद थीम निवडा</translation>
 <translation id="5801051031414037185">फोन सेट करा</translation>
 <translation id="5801568494490449797">प्राधान्ये</translation>
 <translation id="5803689677801500549">सेव्ह केलेले पासवर्ड येथे दिसतील. <ph name="USER_EMAIL" /> साठी <ph name="BRAND" /> वर पासवर्ड इंपोर्ट करण्यासाठी, <ph name="BEGIN_LINK" />CSV फाइल निवडणे<ph name="END_LINK" /> हे करा.</translation>
@@ -6962,6 +6974,7 @@
 <translation id="6993050154661569036">Chrome ब्राउझर अपडेट करत आहे</translation>
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
 <translation id="6995984090981858039">ChromeOS डिव्हाइसची माहिती आणि डेटा रीड करा</translation>
+<translation id="6996438701394974959">डिस्प्ले आणि मजकुराचा आकार वाढवा</translation>
 <translation id="6997553674029032185">साइटवर जा</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ॲक्टिव्हिटी लॉग</translation>
 <translation id="6997707937646349884">तुमच्या डिव्हाइसवर:</translation>
@@ -7404,6 +7417,7 @@
 <translation id="7400839060291901923">तुमच्या <ph name="PHONE_NAME" />वर कनेक्शन सेट अप करा</translation>
 <translation id="7401778920660465883">हा मेसेज डिसमिस करा</translation>
 <translation id="7402198013420237102">सेव्ह केलेले पासवर्ड तुमच्या Google खाते मध्ये हलवायचे आहेत का?</translation>
+<translation id="740333000181878130">डिव्हाइस सुरू होण्याचा आवाज</translation>
 <translation id="7403642243184989645">स्रोत डाउनलोड करत आहे</translation>
 <translation id="7404065585741198296">USB केबल असलेला तुमचा फोन</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{सुरक्षा तपासणी एका तासापूर्वी रन केली गेली}other{सुरक्षा तपासणी {NUM_HOURS} तासांपूर्वी रन केली गेली}}</translation>
@@ -7886,6 +7900,7 @@
 <translation id="7788298548579301890">तुमच्या कॉंप्युटरवरील दुसर्‍या प्रोग्रामने एक अ‍ॅप जोडला जो Chrome ची काम करण्‍याची पद्धत कदाचित बदलू शकतो.
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">पेज बॅकग्राउंड सुरू करा <ph name="CATEGORY" /> असे बदलले गेले आहे.</translation>
+<translation id="7791436592012979144">रिव्हर्स स्क्रोलिंग सुरू केले आहे</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="7792012425874949788">साइन इन करताना काहीतरी चूक झाली</translation>
 <translation id="7792388396321542707">शेअरिंग थांबवा</translation>
@@ -8052,6 +8067,7 @@
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूर्ण झाले आहे</translation>
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
 <translation id="7939073735115504773"><ph name="HOST" /> रीड करण्यासाठी आणि बदलण्यासाठी या एक्स्टेंशनच्या आयकनवर क्लिक करा</translation>
+<translation id="793923212791838">तुमचे डिव्हाइस या साइटसोबत वापरले जाऊ शकत नाही</translation>
 <translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
 <translation id="7939412583708276221">तरीही राहू द्या</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> नुसार क्रमवारी लावा</translation>

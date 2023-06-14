@@ -682,7 +682,7 @@
       如果您未设置此政策，所有 <ph name="PRODUCT_OS_NAME" />功能都将默认处于启用状态，而且用户可以使用其中的任一功能。
 
       注意：目前，扫描功能的默认状态是已通过功能标志停用。即便用户通过功能标志启用了该功能，它仍能被此政策停用。</translation>
-<translation id="1643642938972654829">允许访问策略测试页面</translation>
+<translation id="1643642938972654829">允许访问政策测试页面</translation>
 <translation id="1645793986494086629">架构：</translation>
 <translation id="1647558381546345298">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 在磁盘上存储缓存媒体文件时使用的缓存大小；无论用户是否指定了 --media-cache-size 标记，Google Chrome 都会使用您在此政策中设定的缓存大小。此政策所指定的值并非硬性限值，而是针对缓存系统提出的建议值。任何低于几兆字节的值都会被向上舍入。
 
@@ -1074,6 +1074,11 @@
 <translation id="2006530844219044261">电源管理</translation>
 <translation id="2006954055163088863">视频播放时将用户视为空闲</translation>
 <translation id="2008514891623783266">WebRTC 的 IP 处理政策</translation>
+<translation id="201153120366509312">如果此政策设为允许或未设置，用户将能启用以网址为键的指标收集功能。
+如果此政策设为允许，且用户已启用以网址为键的指标收集功能，该功能就会将用户访问的网页网址发送给 Google 以用于改善搜索和浏览体验，同时也会发送每个网页的使用情况统计信息。
+以网址为键的指标还包括其他可修改/提供内容的浏览器组件（例如扩展程序）的标识符和使用情况统计信息。
+
+如果此政策设为禁止，用户将无法启用以网址为键的指标收集功能。</translation>
 <translation id="2012296492055302633">始终启用隐私保护屏幕</translation>
 <translation id="2014757022750736514">控制登录屏幕（用户会从这里登录帐号）的行为。设置包括：谁可以登录、允许使用什么类型的帐号、应该使用什么样的身份验证方法，以及常规的无障碍设置、输入法设置和语言区域设置。</translation>
 <translation id="201557587962247231">设备状态报告的上传频率</translation>
@@ -1175,11 +1180,11 @@
 <translation id="2096932573113293941">请求用户许可运行需要授权的插件</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>
 <translation id="2099380339157427935">不在任务栏中显示“退出”按钮</translation>
-<translation id="2100630160869631650">添加预先填充的 Kerberos 帐号。如果 Kerberos 凭据与登录凭据相匹配，则可以将帐号配置为重复使用登录凭据，方法是针对主帐号和密码分别指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此策略添加的帐号。
+<translation id="2100630160869631650">添加预先填充的 Kerberos 帐号。如果 Kerberos 凭据与登录凭据相匹配，则可以将帐号配置为重复使用登录凭据，方法是分别为主帐号和密码指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的帐号。
 
-          如果已启用此策略，系统会将此策略定义的帐号列表添加到 Kerberos 帐号设置。
+          如果已启用此政策，系统会将此政策定义的帐号列表添加到 Kerberos 帐号设置。
 
-          如果已停用或未设置此策略，系统不会向 Kerberos 帐号设置中添加帐号，并会移除之前使用此策略添加的所有帐号。如果启用了“用户可以添加 Kerberos 帐号”策略，用户仍可手动添加帐号。</translation>
+          如果已停用或未设置此政策，系统不会向 Kerberos 帐号设置中添加帐号，并会移除之前启用此政策时添加的所有帐号。即使启用了“用户可以添加 Kerberos 帐号”政策，用户也仍可手动添加帐号。</translation>
 <translation id="2104418465060359056">报告扩展程序和插件信息</translation>
 <translation id="2106627642643925514">替换默认 PIN 码打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="2107563874993284076">如果此政策已启用，用户便可在 <ph name="PRODUCT_NAME" />中使用网络文件共享功能。如果此政策已停用，用户便无法使用此功能。</translation>
@@ -1320,6 +1325,15 @@
 <translation id="2223393221350938149">不允许任何网站运行 JavaScript JIT</translation>
 <translation id="2223598546285729819">默认通知设置</translation>
 <translation id="222673035924187991">启用经过 TLS 加密的 ClientHello</translation>
+<translation id="222944823539535006">此政策已被弃用，并将在里程碑 130 中移除，请改用 <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />。
+
+如果此政策已启用，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，用于改善搜索和浏览体验。
+
+如果此政策已停用，系统将不会启用以网址为键的匿名化数据收集功能。
+
+如果此政策未设置，用户将能手动更改此设置。
+
+在 <ph name="PRODUCT_OS_NAME" /> 自助服务终端中，此政策不提供“允许用户决定”选项。如果不为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策，系统会始终启用以网址为键的匿名化数据收集功能。</translation>
 <translation id="2231817271680715693">首次运行时，从默认浏览器导入浏览记录</translation>
 <translation id="2231962946025538735">此政策已被弃用。请使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控制 Flash 插件的可用性，并使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 控制是否应使用集成式 PDF 查看器打开 PDF 文件。
 
@@ -2058,6 +2072,7 @@
       此政策已从 Chrome 99 中移除。
 
       请参阅 https://www.chromestatus.com/feature/4664843055398912。</translation>
+<translation id="2948720459196236547">允许含 CCNS 标头的网页储存至<ph name="BACK_FORWARD_CACHE_NAME" />。</translation>
 <translation id="2952347049958405264">限制：</translation>
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的帐号类型</translation>
@@ -2248,6 +2263,7 @@
 注意：请求方法 <ph name="POST_LOWERCASE_METHOD_NAME" /> 和 <ph name="PUT_LOWERCASE_METHOD_NAME" /> 不受影响，而 <ph name="PATCH_LOWERCASE_METHOD_NAME" /> 会受到影响。
 
 此政策只是暂时性措施，日后会被移除。</translation>
+<translation id="3107054704365085676">允许含“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页储存至<ph name="BACK_FORWARD_CACHE_NAME" /></translation>
 <translation id="3110248563985502478">此政策已在 M88 中弃用，而且 Chrome 已不再支持 Flash。如果此政策已启用，过期插件可作为正常插件使用。如果此政策已停用，系统将不会使用过期插件。
 
       如果您未设置此政策，系统会请求用户授权其运行过期插件。</translation>
@@ -4287,6 +4303,7 @@
 <translation id="5025239932007658691">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 会不定时向 Google 服务器发送查询以检索准确的时间戳。
 
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
+<translation id="5030415914668947893">允许进行以网址为键的指标收集</translation>
 <translation id="5033070732967197381">允许在 TLS 证书已损坏的网站上发出 WebAuthn API 请求。</translation>
 <translation id="5034504101537897433">启用设备崩溃报告信息报告功能</translation>
 <translation id="5036013147560568855">证书配置协议的版本。默认是 1。1 表示“静态”协议。2 表示“动态”协议。</translation>
@@ -4689,6 +4706,11 @@
           如果此政策已停用，系统会强制停用该功能。
           </translation>
 <translation id="5435888298115339571">在多功能框和三点状菜单中启用桌面分享功能</translation>
+<translation id="5436664291450581091">此政策旨在控制含“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”(CCNS) 标头的网页是否可储存至<ph name="BACK_FORWARD_CACHE_NAME" />。设有该标头的网站可能不想从<ph name="BACK_FORWARD_CACHE_NAME" />中恢复相应网页，因为在恢复后某些敏感信息可能仍会显示，即使无法再被访问也是如此。
+
+如果此政策已启用或未设置，系统可能会从<ph name="BACK_FORWARD_CACHE_NAME" />中恢复含 CCNS 标头的网页，除非触发了缓存逐出（例如该网站发生了 HTTP-Only 性质的 Cookie 更改）。
+
+如果此政策已停用，含 CCNS 标头的网页将不会储存在<ph name="BACK_FORWARD_CACHE_NAME" />中。</translation>
 <translation id="5441508088704391614">无特殊限制。默认。</translation>
 <translation id="5442026853063570579">此政策亦用于控制对 Android 开发者选项的访问权限。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法访问开发者选项。如果此政策设为其他值或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次 Build 号即可访问开发者选项。</translation>
 <translation id="5443582909255996887">如果此政策已启用，系统会在 Android 设备上隔离所有网站以使每个网站都在自己的进程内运行，并禁止用户选择停用此设置。网站的网址格式为架构加上 eTLD+1（例如，https://example.com）。请注意，从 <ph name="PRODUCT_NAME" /> 77 版起，Android 会默认隔离某些敏感网站，而此政策会将这个默认网站隔离模式应用到所有网站。
@@ -4746,7 +4768,7 @@
 <translation id="5460797984317417682">启用全屏提醒</translation>
 <translation id="5464816904705580310">为受管理用户配置设置。</translation>
 <translation id="5466596281866046569">报告应用信息</translation>
-<translation id="5467175549232776406">策略测试页面可供访问</translation>
+<translation id="5467175549232776406">政策测试页面可供访问</translation>
 <translation id="546726650689747237">使用交流电源供电时的屏幕变暗延迟时间</translation>
 <translation id="546830339470589966">为新的 Kerberos 票据自动补全域名</translation>
 <translation id="5469143988693423708">允许用户运行 Crostini</translation>
@@ -4788,6 +4810,7 @@
 <translation id="5503933085302625442">请勿将 OS 回滚到目标版本。</translation>
 <translation id="55057839818162162">启用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="55057971769693300">禁止使用光标突出显示</translation>
+<translation id="5507027524345233268">禁止含 CCNS 标头的网页储存至<ph name="BACK_FORWARD_CACHE_NAME" />。</translation>
 <translation id="5508307164752647432">启用 Kerberos 功能</translation>
 <translation id="5511702823008968136">启用书签栏</translation>
 <translation id="5512418063782665071">主页网址</translation>
@@ -5291,6 +5314,7 @@
 <translation id="603768430528561926">如果此政策已启用或未设置，企业设备用户便可通过 <ph name="PRODUCT_OS_NAME" />注册流程来兑换优惠。
 
       如果此政策已停用，用户将无法兑换这类优惠。</translation>
+<translation id="6042629184389251062">禁止进行以网址为键的指标收集</translation>
 <translation id="6046615715547751255">不允许使用精细报告控件</translation>
 <translation id="6048199181629830227">启用用电高峰转移电源管理</translation>
 <translation id="6048690591359317353">不允许用户手动断开或修改 VPN</translation>
@@ -5793,6 +5817,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6462604655173570082">如果此政策未设置或已启用，用户便可在“新标签页”页面上的搜索框中查看和使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。如果此政策已停用，用户将不会在“新标签页”页面上的搜索框中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。</translation>
 <translation id="6464074037294098618">自动填充地址信息</translation>
 <translation id="6467613372414922590">允许使用用户级本地消息传递主机（安装时没有管理员权限）</translation>
+<translation id="6471018476824827813">允许进行以网址为键的指标收集</translation>
 <translation id="6473623140202114570">配置安全浏览功能在哪些网域中不会触发警告。</translation>
 <translation id="6474194795370862403">系统将使用旧的 offsetParent 行为。</translation>
 <translation id="647645276885673708">启用 <ph name="LACROS_NAME" /> 并将其设为主要浏览器</translation>
@@ -7245,7 +7270,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果相应网站与此政策中的网址格式匹配，系统将不会考虑以下政策：<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
-<translation id="77675082813227181">策略测试页面已被屏蔽</translation>
+<translation id="77675082813227181">政策测试页面已被屏蔽</translation>
 <translation id="7771298620150437359">配置首选语言的内容和顺序</translation>
 <translation id="7773790010815041731">在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，Chrome 应用已被弃用。
       如果此政策已启用，<ph name="PRODUCT_NAME" /> 会允许 Chrome 应用在这些平台上继续运行，直到从所有平台上移除对 Chrome 应用的支持的截止日期（2022 年 6 月）来临为止。
@@ -7734,11 +7759,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
 <ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
 <ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
-<translation id="826163650738550159">此策略会提供对政策测试页面的访问权限；在该页面上测试策略时，系统会忽略所有其他策略。
+<translation id="826163650738550159">此政策会提供对政策测试页面的访问权限；在该页面上测试政策时，系统会忽略所有其他政策。
 此功能将仅在 Canary 版渠道中提供。
 
-如果已启用或未设置此策略，用户将能访问该页面。
-如果已停用此策略，该页面将被屏蔽。</translation>
+如果已启用或未设置此政策，用户将能访问该页面。
+如果已停用此政策，该页面将被屏蔽。</translation>
 <translation id="8266778278542911985">如果此政策设为 3，系统会允许网站请求访问串行端口。如果此政策设为 2，系统会禁止访问串行端口。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>

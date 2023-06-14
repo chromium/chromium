@@ -283,6 +283,7 @@
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
 <translation id="6493527311031785448">Google Chrome 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -332,6 +333,7 @@
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7410958280246779049">此文件存在危险，因此 Chrome 已将其屏蔽</translation>
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
@@ -366,6 +368,7 @@
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8019103195866286235">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。现有标签页仍将保持打开状态。}other{贵组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。现有标签页仍将保持打开状态。}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>

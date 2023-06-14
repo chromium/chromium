@@ -265,6 +265,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 
       &lt;p&gt;Newidiwch y dyddiad a'r amser o adran &lt;strong&gt;Cyffredinol&lt;/strong&gt; yr ap &lt;strong&gt;Gosodiadau&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Bydd eich gweinyddwr yn ailgychwyn eich dyfais am <ph name="TIME" /> ar <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Dim testun wedi'i drosi o luniau</translation>
 <translation id="156703335097561114">Gwybodaeth rhwydweithio megis cyfeiriadau, ffurfweddiad rhyngwyneb, ac ansawdd cysylltiad</translation>
 <translation id="1567040042588613346">Mae'r polisi hwn yn gweithio yn ôl y bwriad ond gosodir yr un gwerth mewn man arall ac mae'n cael ei ddisodli gan y polisi hwn.</translation>
 <translation id="1567405528131216114">Ychwanegu <ph name="TOPIC" /></translation>
@@ -1200,6 +1201,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3890664840433101773">Ychwanegwch e-bost</translation>
 <translation id="3897092660631435901">Dewislen</translation>
 <translation id="3901925938762663762">Mae'r cerdyn wedi darfod</translation>
+<translation id="3906095212874392000">Diwedd y testun sydd wedi'i drosi</translation>
 <translation id="3906954721959377182">Llechen</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Gallwch newid eich meddwl ar unrhyw bryd yng ngosodiadau Chrome</translation>
@@ -1400,6 +1402,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4331519897422864041">Pentyrrwr 5</translation>
 <translation id="4331708818696583467">Ddim yn Ddiogel</translation>
 <translation id="4333561522337981382">Rheoli ffenestri ar eich holl sgriniau</translation>
+<translation id="4338709847516294988">Pwyswch Search ac M ac yna trosi llun i destun yn y ddewislen cyd-destun</translation>
 <translation id="4340575312453649552">Gwnaeth yr hysbyseb hon ddefnyddio gormod o adnoddau i'ch dyfais, felly gwnaeth Chrome ei dynnu.</translation>
 <translation id="4340982228985273705">Nid yw'r cyfrifiadur hwn yn cael ei ganfod fel un a reolir gan fenter, felly dim ond estyniadau a gynhelir ar Chrome Webstore y gall y polisi eu gosod yn awtomatig. Yr URL diweddaru Chrome Webstore yw "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">Nid yw'r cysylltiad â <ph name="SITE" /> yn ddiogel</translation>
@@ -1415,6 +1418,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4359160567981085931">Rydych newydd nodi'ch cyfrinair ar wefan dwyllodrus. Gall Chrome helpu. I newid eich cyfrinair ac i hysbysu Google y gallai eich cyfrif fod mewn perygl, cliciwch ar Diogelu Cyfrif.</translation>
 <translation id="4363222835916186793">Mae hysbysiadau ar gyfer y cynnyrch hwn wedi'u diffodd</translation>
 <translation id="437040971055499437">Digwyddiad diogelwch yn digwydd</translation>
+<translation id="4371307856413138486">Dechrau testun sydd wedi'i drosi</translation>
 <translation id="4371591986692297148">Anweithredol</translation>
 <translation id="4372948949327679948">Disgwylir gwerth o'r math <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Ychwanegwch eitem yn ôl os ydych ei heisiau yn y gronfa o bynciau y gall Chrome ddewis ohonynt wrth amcangyfrif eich diddordebau</translation>
@@ -2089,6 +2093,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6041777658117377052">Tymheredd y siambr</translation>
 <translation id="6042308850641462728">Mwy</translation>
+<translation id="6042688167654081154">Mae'r llun wedi'i drosi i destun</translation>
 <translation id="6044573915096792553">Maint 12</translation>
 <translation id="6045164183059402045">Templed gosod</translation>
 <translation id="6047233362582046994">Os ydych yn deall y risgiau i'ch diogelwch, gallwch <ph name="BEGIN_LINK" />fynd i'r wefan hon<ph name="END_LINK" /> cyn i'r apiau niweidiol gael eu tynnu.</translation>
@@ -2150,6 +2155,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6195371403461054755">Daeareg</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">Mae'r llun yn cael ei dadansoddi</translation>
 <translation id="6203231073485539293">Gwiriwch eich cysylltiad Rhyngrwyd</translation>
 <translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
 <translation id="6212314149070368045">Ffanffold UDA</translation>

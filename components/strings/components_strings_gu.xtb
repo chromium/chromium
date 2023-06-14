@@ -267,6 +267,7 @@
 
           &lt;p&gt;કૃપા કરીને &lt;strong&gt;સેટિંગ&lt;/strong&gt; અ‍ૅપના &lt;strong&gt;સામાન્ય&lt;/strong&gt; વિભાગમાં તારીખ અને સમય ગોઠવો.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે તમારું ડિવાઇસ ફરી શરૂ કરશે</translation>
+<translation id="1564753300777780201">છબીઓનું રૂપાંતરણ ટેક્સ્ટમાં કરવામાં આવ્યું નથી</translation>
 <translation id="156703335097561114">ઍડ્રેસ, ઇન્ટરફેસ કન્ફિગ્યુરેશન અને કનેક્શન ક્વૉલિટી જેવી નેટવર્કની માહિતી</translation>
 <translation id="1567040042588613346">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે પરંતુ સમાન મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેની જગ્યા લે છે.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> ઉમેરો</translation>
@@ -1207,6 +1208,7 @@
 <translation id="3890664840433101773">ઇમેઇલ ઉમેરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
 <translation id="3901925938762663762">કાર્ડની સમયસીમા સમાપ્ત થઇ ગઈ છે</translation>
+<translation id="3906095212874392000">રૂપાંતરિત ટેક્સ્ટની સમાપ્તિ</translation>
 <translation id="3906954721959377182">ટૅબ્લેટ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">તમે કોઈપણ સમયે Chrome સેટિંગમાં જઈને તમારો નિર્ણય બદલી શકો છો</translation>
@@ -1409,6 +1411,7 @@
 <translation id="4331519897422864041">સ્ટૅકર 5</translation>
 <translation id="4331708818696583467">સુરક્ષિત નથી</translation>
 <translation id="4333561522337981382">તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરો</translation>
+<translation id="4338709847516294988">Search + M કી દબાવો અને સંદર્ભ મેનૂમાં છબીનું રૂપાંતરણ ટેક્સ્ટમાં કરો</translation>
 <translation id="4340575312453649552">આ જાહેરાતે તમારા ડિવાઇસ માટે ઘણાં વધારે સાધનોનો ઉપયોગ કર્યો, આથી Chrome દ્વારા તેને કાઢી નાખવામાં આવી છે.</translation>
 <translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી પૉલિસી માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શન ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
 <translation id="4348834659292907206"><ph name="SITE" />નું કનેક્શન સુરક્ષિત નથી</translation>
@@ -1424,6 +1427,7 @@
 <translation id="4359160567981085931">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. Chrome સહાય કરી શકે છે. તમારો પાસવર્ડ બદલવા માટે અને Googleને એ જાણ કરવા માટે કે તમારું એકાઉન્ટ જોખમમાં હોઈ શકે છે, એકાઉન્ટ સુરક્ષિત કરો પર ક્લિક કરો.</translation>
 <translation id="4363222835916186793">આ પ્રોડક્ટ માટેના અલર્ટ બંધ કરવામાં આવ્યા છે</translation>
 <translation id="437040971055499437">સુરક્ષા ઇવેન્ટ થવા પર</translation>
+<translation id="4371307856413138486">રૂપાંતરિત ટેક્સ્ટની શરૂઆત</translation>
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4372948949327679948">અપેક્ષિત <ph name="VALUE_TYPE" /> મૂલ્ય.</translation>
 <translation id="4375864595697821259">તમારી રુચિઓનો અંદાજ કાઢતી વખતે Chrome પસંદ કરી શકે તેવા વિષયોના પૂલમાં જો તમે કોઈ આઇટમ મેળવવા ઇચ્છતા હો, તો તેને ફરી પાછી ઉમેરો</translation>
@@ -2103,6 +2107,7 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6041777658117377052">ચેમ્બરનું તાપમાન</translation>
 <translation id="6042308850641462728">વધુ</translation>
+<translation id="6042688167654081154">છબીનું રૂપાંતરણ ટેક્સ્ટમાં કરવામાં આવ્યું</translation>
 <translation id="6044573915096792553">કદ 12</translation>
 <translation id="6045164183059402045">લાગુ કરવા માટેનો નમૂનો</translation>
 <translation id="6047233362582046994">જો તમે તમારી સુરક્ષાના જોખમોને સમજો છો, તો તમે જોખમકારક ઍપ્લિકેશનો દૂર કરતા પહેલા <ph name="BEGIN_LINK" />આ સાઇટની મુલાકાત<ph name="END_LINK" /> લઈ શકો છો.</translation>
@@ -2165,6 +2170,7 @@
 <translation id="6195371403461054755">ભૂસ્તરશાસ્ત્ર</translation>
 <translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="6197648101609735209">89 x 89 મિમી</translation>
+<translation id="6200386911308538077">છબીનું વિશ્લેષણ કરવામાં આવી રહ્યું છે</translation>
 <translation id="6203231073485539293">તમારું ઇન્ટરનેટ કનેક્શન તપાસો</translation>
 <translation id="6205314730813004066">જાહેરાત સંબંધી પ્રાઇવસી</translation>
 <translation id="6212314149070368045">યુએસ ફૅનફોલ્ડ</translation>
@@ -2283,6 +2289,7 @@
 <translation id="6468485451923838994">ફૉન્ટ</translation>
 <translation id="647261751007945333">ડિવાઇસ પૉલિસીઓ</translation>
 <translation id="647330291963761005">અપડેટ ઇન્સ્ટૉલ કરી રહ્યાં છીએ</translation>
+<translation id="6474220430271405609">પૉલિસીના પરીક્ષણો</translation>
 <translation id="6475672344094591109">તમે મુલાકાત લો એ બધી સાઈટ Chrome પાસે એવી માહિતી માગી શકે છે, જે તેમની જાહેરાતોનું પર્ફોર્મન્સ માપવામાં તેમને સહાય કરે છે. વિવિધ સાઈટ એક-બીજા સાથે શેર કરી શકે તેવી માહિતીને મર્યાદિત કરીને Chrome, તમારી પ્રાઇવસીને સુરક્ષિત કરે છે.</translation>
 <translation id="6476284679642588870">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="6486200200930923183">દસ્તાવેજી મૂવી</translation>

@@ -265,6 +265,7 @@
 
       &lt;p&gt;Lütfən, tarix və saatı &lt;strong&gt;Ayarlar&lt;/strong&gt; tətbiqinin &lt;strong&gt;Ümumi&lt;/strong&gt; bölməsində düzəldin.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator cihazınızı bu vaxt yenidən başladacaq: <ph name="TIME" />, <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Şəkillərdən mətn çevrilməyib</translation>
 <translation id="156703335097561114">Ünvanlar, interfeys konfiqurasiyası və bağlantı keyfiyyəti kimi şəbəkə məlumatları</translation>
 <translation id="1567040042588613346">Bu siyasət nəzərdə tutulduğu kimi işləyir, lakin eyni dəyər başqa bir yerdə təyin olunub və bu siyasət tərəfindən əvəz edilib.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> əlavə edin</translation>
@@ -1196,6 +1197,7 @@
 <translation id="3890664840433101773">E-poçt ünvanı əlavə edin</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Kartın vaxtı bitib.</translation>
+<translation id="3906095212874392000">Çevrilmiş mətnin sonu</translation>
 <translation id="3906954721959377182">Planşet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">İstənilən vaxt Chrome ayarlarında fikrinizi dəyişə bilərsiniz</translation>
@@ -1396,6 +1398,7 @@
 <translation id="4331519897422864041">Yığıcı 5</translation>
 <translation id="4331708818696583467">Təhlükəsiz deyil</translation>
 <translation id="4333561522337981382">Bütün displeylərinizdə pəncərələri idarə edin</translation>
+<translation id="4338709847516294988">Axtarış və m üzərinə basıb, kontekst menyusunda şəkli mətnə çevirin</translation>
 <translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytına bağlantı güvənli deyil</translation>
@@ -1411,6 +1414,7 @@
 <translation id="4359160567981085931">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome yardım edə bilər. Parolunuzu dəyişmək və Google'a hesabınızın təhlükədə ola biləcəyini bildirmək üçün "Hesabı Qoruyun" seçiminə toxunun.</translation>
 <translation id="4363222835916186793">Bu məhsul üçün xəbərdarlıqlar deaktiv edilib</translation>
 <translation id="437040971055499437">Güvənlik tədbiri baş verir</translation>
+<translation id="4371307856413138486">Çevrilmiş mətnin başlanğıcı</translation>
 <translation id="4371591986692297148">Fəaliyyətsiz</translation>
 <translation id="4372948949327679948">Gözlənilən <ph name="VALUE_TYPE" /> dəyəri.</translation>
 <translation id="4375864595697821259">Maraqlarınızı qiymətləndirərkən Chrome'un seçə biləcəyi mövzular bazasında olmasını istəyirsinizsə, elementi geri əlavə edin</translation>
@@ -2085,6 +2089,7 @@
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6041777658117377052">Kameranın temperaturu</translation>
 <translation id="6042308850641462728">Daha çox</translation>
+<translation id="6042688167654081154">Şəkil mətnə çevrildi</translation>
 <translation id="6044573915096792553">Ölçü 12</translation>
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
 <translation id="6047233362582046994">Təhlükəsizliklə bağlı riskləri başa düşürsünüzsə, zərərli tətbiqlər silinmədən əvvəl <ph name="BEGIN_LINK" />bu sayta daxil ola<ph name="END_LINK" /> bilərsiniz.</translation>
@@ -2146,6 +2151,7 @@
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">Şəkil təhlil edilir</translation>
 <translation id="6203231073485539293">İnternet bağlantısını yoxlayın</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
 <translation id="6212314149070368045">ABŞ Fanfold</translation>
@@ -2264,6 +2270,7 @@
 <translation id="6468485451923838994">Şriftlər</translation>
 <translation id="647261751007945333">Cihaz siyasəti</translation>
 <translation id="647330291963761005">Güncəllənmələr quraşdırılır</translation>
+<translation id="6474220430271405609">Siyasət testləri</translation>
 <translation id="6475672344094591109">Ziyarət etdiyiniz saytlar Chrome'dan reklamlarının performansını ölçməyə kömək edən məlumat istəyə bilər. Chrome saytların bir-biri ilə paylaşa biləcəyi məlumatları məhdudlaşdırmaqla məxfiliyinizi qoruyur.</translation>
 <translation id="6476284679642588870">Ödəniş metodlarını idarə edin</translation>
 <translation id="6486200200930923183">Sənədli filmlər</translation>

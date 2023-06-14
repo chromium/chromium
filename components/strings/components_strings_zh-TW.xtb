@@ -265,6 +265,7 @@
 
       &lt;p&gt;請前往「設定」應用程式的「一般設定」專區調整日期和時間。&lt;strong&gt;&lt;/strong&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/p&gt;</translation>
 <translation id="1559839503761818503">系統管理員將在 <ph name="DATE" /><ph name="TIME" /> 重新啟動你的裝置。</translation>
+<translation id="1564753300777780201">沒有從圖片中轉換的文字</translation>
 <translation id="156703335097561114">包括位址、介面設定和連線品質等網路資訊</translation>
 <translation id="1567040042588613346">這項政策運作正常，但與其他地方設定的值相同，並已取代該值。</translation>
 <translation id="1567405528131216114">新增「<ph name="TOPIC" />」</translation>
@@ -1199,6 +1200,7 @@
 <translation id="3890664840433101773">新增電子郵件地址</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">這張信用卡已過期</translation>
+<translation id="3906095212874392000">轉換文字結尾</translation>
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3911401144270344103">你隨時可以在 Chrome 設定中變更這個選項</translation>
@@ -1399,6 +1401,7 @@
 <translation id="4331519897422864041">堆疊出紙器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
 <translation id="4333561522337981382">管理所有螢幕上的視窗</translation>
+<translation id="4338709847516294988">按下搜尋鍵 + m 鍵，接著點選內容選單中的「將圖片轉成文字」</translation>
 <translation id="4340575312453649552">這個廣告使用了太多裝置資源，因此 Chrome 已將其移除。</translation>
 <translation id="4340982228985273705">系統偵測結果顯示這台電腦未受企業管理，因此政策只能自動安裝透過 Chrome 線上應用程式商店代管的擴充功能。Chrome 線上應用程式商店更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
@@ -1414,6 +1417,7 @@
 <translation id="4359160567981085931">你剛才在詐騙網站上輸入了密碼。Chrome 能夠幫助你。如要變更密碼並通知 Google 你的帳戶可能面臨風險，請按一下 [保護帳戶]。</translation>
 <translation id="4363222835916186793">這項產品的快訊已關閉</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
+<translation id="4371307856413138486">轉換文字開頭</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4372948949327679948">預期的「<ph name="VALUE_TYPE" />」值。</translation>
 <translation id="4375864595697821259">你也可以將項目加回清單中，做為 Chrome 推測興趣喜好的依據</translation>
@@ -2088,6 +2092,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6041777658117377052">室內溫度</translation>
 <translation id="6042308850641462728">更多</translation>
+<translation id="6042688167654081154">圖片已轉成文字</translation>
 <translation id="6044573915096792553">粗細：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果你瞭解安全性風險，也可以選擇在有害應用程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個網站<ph name="END_LINK" />。</translation>
@@ -2149,6 +2154,7 @@
 <translation id="6195371403461054755">地質學</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 公釐</translation>
+<translation id="6200386911308538077">正在分析圖片</translation>
 <translation id="6203231073485539293">檢查網際網路連線</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6212314149070368045">美國 Fanfold</translation>

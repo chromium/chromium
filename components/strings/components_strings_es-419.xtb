@@ -265,6 +265,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 
       &lt;p&gt;Ajusta la fecha y la hora desde la sección &lt;strong&gt;General&lt;/strong&gt; de la app de &lt;strong&gt;Configuración&lt;/strong&gt; .&lt;/p&gt;</translation>
 <translation id="1559839503761818503">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" /></translation>
+<translation id="1564753300777780201">No se convirtió texto a partir de las imágenes</translation>
 <translation id="156703335097561114">La información de la red, como las direcciones, la configuración de las interfaces y la calidad de la conexión</translation>
 <translation id="1567040042588613346">Esta política se comporta según lo esperado, pero sustituyó el mismo valor que se configuró en otro lugar.</translation>
 <translation id="1567405528131216114">Agregar <ph name="TOPIC" /></translation>
@@ -1201,6 +1202,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3890664840433101773">Agregar correo electrónico</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">Caducó la tarjeta.</translation>
+<translation id="3906095212874392000">Fin del texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome</translation>
@@ -1401,6 +1403,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4331519897422864041">Apilador 5</translation>
 <translation id="4331708818696583467">No seguro</translation>
 <translation id="4333561522337981382">Administrar ventanas en todas tus pantallas</translation>
+<translation id="4338709847516294988">Presiona la tecla de búsqueda y M para convertir la imagen a texto en el menú contextual</translation>
 <translation id="4340575312453649552">Chrome quitó este anuncio porque usó demasiados recursos en tu dispositivo.</translation>
 <translation id="4340982228985273705">Esta computadora no se detectó como una empresa administrada, por lo que la política solo puede instalar automáticamente las extensiones alojadas en Chrome Web Store. La URL de actualización de Chrome Web Store es "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">La conexión a <ph name="SITE" /> no es segura</translation>
@@ -1416,6 +1419,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4359160567981085931">Ingresaste tu contraseña en un sitio engañoso. Chrome puede ayudarte. Para cambiar la contraseña y notificar a Google que tu cuenta podría estar en riesgo, haz clic en Proteger cuenta.</translation>
 <translation id="4363222835916186793">Se desactivaron las alertas para este producto</translation>
 <translation id="437040971055499437">Se produjo un evento de seguridad</translation>
+<translation id="4371307856413138486">Inicio del texto convertido</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4375864595697821259">Vuelve a agregar un elemento si quieres que aparezca en el grupo de temas que Chrome puede elegir al estimar tus intereses.</translation>
@@ -2090,6 +2094,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6041777658117377052">Temperatura de la cámara</translation>
 <translation id="6042308850641462728">Más</translation>
+<translation id="6042688167654081154">Se convirtió la imagen a texto</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Plantilla de imposición</translation>
 <translation id="6047233362582046994">Si comprendes los riesgos de seguridad, puedes <ph name="BEGIN_LINK" />visitar este sitio<ph name="END_LINK" /> antes de que se hayan quitado las apps dañinas.</translation>
@@ -2151,6 +2156,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6195371403461054755">Geología</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
+<translation id="6200386911308538077">Se está analizando la imagen</translation>
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
 <translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>

@@ -314,6 +314,7 @@
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1253664522045778676">點選任一項搜尋結果，該頁面就會在目前的分頁中開啟</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
+<translation id="1256588359404100567">已從舊裝置同步處理設定。</translation>
 <translation id="1257336506558170607">匯出選取的憑證</translation>
 <translation id="1258491128795710625">新功能</translation>
 <translation id="1259152067760398571">昨天已執行安全檢查</translation>
@@ -525,6 +526,7 @@
 <translation id="1448779317883494811">筆刷工具</translation>
 <translation id="1449191289887455076">再次按下「<ph name="CURRENTKEY" />」鍵即可確認指派設定並<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">另存為單一檔案網頁</translation>
+<translation id="145280054552001290">新增及移除字幕語言</translation>
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕畫面(&amp;A)</translation>
 <translation id="145432137617179457">拼字檢查支援的語言</translation>
@@ -994,6 +996,7 @@
 <translation id="18260074040409954">你可以在任何裝置上使用儲存的密碼，這些密碼會儲存在 <ph name="EMAIL" /> 的<ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="1826192255355608658">同步處理 Chrome 瀏覽器的書籤、密碼和歷史記錄等資料</translation>
 <translation id="1826516787628120939">檢查中</translation>
+<translation id="1826657447823925402">已停用反向捲動功能</translation>
 <translation id="1827504459960247692">無線基地台名稱</translation>
 <translation id="1828378091493947763">這部裝置不支援這個外掛程式</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{開啟所有網址(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟所有 ({COUNT} 個) 網址(&amp;O)}}</translation>
@@ -1281,6 +1284,7 @@
 <translation id="2081816110395725788">使用電池時閒置電源</translation>
 <translation id="2082187087049518845">將分頁分組</translation>
 <translation id="2082510809738716738">請選擇主題顏色</translation>
+<translation id="2084891381052978619">完成 Chromebook 設定後，你也可以在「設定」中找到這些選項</translation>
 <translation id="208586643495776849">請再試一次</translation>
 <translation id="208634871997892083">永久連線的 VPN</translation>
 <translation id="2087822576218954668">列印：<ph name="PRINT_NAME" /></translation>
@@ -1350,6 +1354,7 @@
 <translation id="212862741129535676">頻率狀態占用率</translation>
 <translation id="212876957201860463">正在準備設定你的行動裝置...</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
+<translation id="2133775869826239001">選擇更多要設定的功能</translation>
 <translation id="2133857665503360653">重新嘗試下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2134905185275441536">系統 CA</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
@@ -2931,6 +2936,7 @@
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取你的攝影機和麥克風</translation>
 <translation id="3479552764303398839">現在不要</translation>
 <translation id="3479685872808224578">偵測不到印表機伺服器。請檢查位址是否正確，然後再試一次。</translation>
+<translation id="3479753605053415848">點選即可自訂 Chrome</translation>
 <translation id="3480612136143976912">自訂即時字幕的文字大小和樣式。部分應用程式及網站也會套用這項設定。</translation>
 <translation id="3480827850068960424">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="3481268647794498892">將於 <ph name="COUNTDOWN_SECONDS" /> 秒後在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
@@ -3224,6 +3230,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 資料將在 24 小時後遭到刪除</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要開啟「<ph name="APPLICATION" />」嗎？</translation>
+<translation id="3740945083753997630">縮小顯示和文字大小</translation>
 <translation id="3741056951918180319">只要在任何網站上點選擴充功能，即可隨時使用</translation>
 <translation id="3742235229730461951">韓文鍵盤配置</translation>
 <translation id="3742666961763734085">找不到使用該名稱的機構單位，請再試一次。</translation>
@@ -3601,6 +3608,7 @@
 <translation id="4044612648082411741">輸入您的憑證密碼</translation>
 <translation id="4044708573046946214">螢幕鎖定密碼</translation>
 <translation id="404493185430269859">預設搜尋引擎</translation>
+<translation id="4045196801416070837">裝置音效</translation>
 <translation id="4046013316139505482">這些擴充功能不需要查看和變更這個網站上的資訊。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4047345532928475040">不適用</translation>
@@ -4050,6 +4058,7 @@
 <translation id="4444512841222467874">如果未釋出可用空間，系統可能會自動移除使用者和資料。</translation>
 <translation id="4445446646109808714">使用者授權協議：<ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">鏡像模式</translation>
+<translation id="4448560527907365660">儲存並查看更多功能</translation>
 <translation id="4448914100439890108">在 <ph name="DOMAIN" /> 上隱藏 <ph name="USERNAME" /> 的密碼</translation>
 <translation id="4449247303975391730">管理權限</translation>
 <translation id="4449948729197510913">你的使用者名稱屬於貴機構的公司帳戶。如要將裝置註冊到這個帳戶，請先在管理控制台中驗證網域擁有權。你必須擁有帳戶的管理員權限才能進行驗證。</translation>
@@ -5203,7 +5212,9 @@
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
+<translation id="5485435764083510385">偏好的字幕語言</translation>
 <translation id="5485754497697573575">還原所有分頁</translation>
+<translation id="5486071940327595306"><ph name="WEBSITE" /> 可能需要新版或不同種類的裝置</translation>
 <translation id="5486261815000869482">確認密碼</translation>
 <translation id="5486561344817861625">模擬瀏覽器重新啟動</translation>
 <translation id="5487460042548760727">將設定檔重新命名為「<ph name="PROFILE_NAME" />」</translation>
@@ -5554,6 +5565,7 @@
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已遭截斷或移除。</translation>
 <translation id="5800351251499368110">關閉側邊面板中的搜尋工具列。側邊面板中的搜尋工具列已開啟。</translation>
+<translation id="5800703268655655701">選取淺色或深色主題</translation>
 <translation id="5801051031414037185">設定手機</translation>
 <translation id="5801568494490449797">偏好設定</translation>
 <translation id="5803689677801500549">已儲存的密碼會顯示在這裡。如要將 <ph name="USER_EMAIL" /> 的密碼匯入 <ph name="BRAND" />，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
@@ -6938,6 +6950,7 @@
 <translation id="6993050154661569036">正在更新 Chrome 瀏覽器</translation>
 <translation id="6995899638241819463">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6995984090981858039">讀取 ChromeOS 裝置資訊和資料</translation>
+<translation id="6996438701394974959">放大顯示和文字大小</translation>
 <translation id="6997553674029032185">前往網站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在你的裝置上：</translation>
@@ -7380,6 +7393,7 @@
 <translation id="7400839060291901923">在 <ph name="PHONE_NAME" /> 上設定連線</translation>
 <translation id="7401778920660465883">關閉這則訊息</translation>
 <translation id="7402198013420237102">要將已儲存的密碼移至你的 Google 帳戶嗎？</translation>
+<translation id="740333000181878130">裝置啟動音效</translation>
 <translation id="7403642243184989645">正在下載資源</translation>
 <translation id="7404065585741198296">接上 USB 傳輸線的手機</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{1 小時前已執行安全檢查}other{{NUM_HOURS} 小時前已執行安全檢查}}</translation>
@@ -7866,6 +7880,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">起始網頁背景已變更為<ph name="CATEGORY" />。</translation>
+<translation id="7791436592012979144">已啟用反向捲動功能</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7792012425874949788">登入帳戶時發生錯誤</translation>
 <translation id="7792388396321542707">停止共用</translation>
@@ -8032,6 +8047,7 @@
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="7939073735115504773">按一下這項擴充功能的圖示即可讀取及變更 <ph name="HOST" /></translation>
+<translation id="793923212791838">無法搭配你的裝置使用這個網站</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
 <translation id="7939412583708276221">保留</translation>
 <translation id="7940265372707990269">按「<ph name="SORT_TYPE" />」排序</translation>
