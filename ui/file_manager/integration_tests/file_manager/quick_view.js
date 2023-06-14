@@ -1313,9 +1313,9 @@ testcase.openQuickViewBackgroundColorHtml = async () => {
   /**
    * The preview resides in the <files-safe-media type="html"> shadow DOM,
    * which is a child of the #quick-view shadow DOM. This test only needs to
-   * examine the <files-safe-media> element.
+   * examine the <files-safe-media>'s iframe element.
    */
-  const fileSafeMedia = ['#quick-view', 'files-safe-media[type="html"]'];
+  const preview = ['#quick-view', 'files-safe-media[type="html"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.tallHtml.
   const appId =
@@ -1324,29 +1324,29 @@ testcase.openQuickViewBackgroundColorHtml = async () => {
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.tallHtml.nameText);
 
-  // Get the <files-safe-media type='html'> backgroundColor style.
-  function getFileSafeMediaBackgroundColor(elements) {
+  // Wait for the Quick View preview to load and display its content.
+  function checkPreviewHtmlLoaded(elements) {
     let haveElements = Array.isArray(elements) && elements.length === 1;
     if (haveElements) {
       haveElements = elements[0].styles.display.includes('block');
     }
-    if (!haveElements || !elements[0].styles.backgroundColor) {
-      return pending(caller, 'Waiting for <files-safe-media> element.');
+    if (!haveElements || elements[0].attributes.loaded !== '') {
+      return pending(caller, `Waiting for ${previewTag} to load.`);
     }
-    return elements[0].styles.backgroundColor;
+    return;
   }
-  const backgroundColor = await repeatUntil(async () => {
-    const styles = ['display', 'backgroundColor'];
-    return getFileSafeMediaBackgroundColor(await remoteCall.callRemoteTestUtil(
-        'deepQueryAllElements', appId, [fileSafeMedia, styles]));
+  await repeatUntil(async () => {
+    return checkPreviewHtmlLoaded(await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId, [preview, ['display']]));
   });
 
-  // Check: the <files-safe-media> backgroundColor: var(--cros-bg-color).
-  if (await isDarkModeEnabled()) {
-    chrome.test.assertEq('rgb(32, 33, 36)', backgroundColor);
-  } else {
-    chrome.test.assertEq('rgb(255, 255, 255)', backgroundColor);
-  }
+  // Get the preview document.body backgroundColor style.
+  const getBackgroundStyle =
+      'window.getComputedStyle(document.body).backgroundColor';
+  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+      appId, preview, getBackgroundStyle);
+
+  chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
 };
 
 /**
