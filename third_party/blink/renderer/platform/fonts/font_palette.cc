@@ -12,19 +12,6 @@
 
 namespace blink {
 
-static_assert(sizeof(FontPalette::FontPaletteOverride) ==
-                      sizeof(SkFontArguments::Palette::Override) &&
-                  sizeof(FontPalette::FontPaletteOverride::index) ==
-                      sizeof(SkFontArguments::Palette::Override::index) &&
-                  sizeof(FontPalette::FontPaletteOverride::color) ==
-                      sizeof(SkFontArguments::Palette::Override::color) &&
-                  offsetof(FontPalette::FontPaletteOverride, index) ==
-                      offsetof(SkFontArguments::Palette::Override, index) &&
-                  offsetof(FontPalette::FontPaletteOverride, color) ==
-                      offsetof(SkFontArguments::Palette::Override, color),
-              "Struct FontPalette::FontPaletteOverride must match "
-              "SkFontArguments::Palette::Override.");
-
 unsigned FontPalette::GetHash() const {
   unsigned computed_hash = 0;
   WTF::AddIntToHash(computed_hash, palette_keyword_);

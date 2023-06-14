@@ -82,14 +82,14 @@ TEST_F(OpenTypeCpalLookupTest, DarkLightPalettes) {
 }
 
 TEST_F(OpenTypeCpalLookupTest, RetrieveColorRecordsFromExistingPalette) {
-  Vector<SkColor> expected_color_records = {
-      SkColorSetARGB(255, 255, 255, 0),   SkColorSetARGB(255, 0, 0, 255),
-      SkColorSetARGB(255, 255, 0, 255),   SkColorSetARGB(255, 0, 255, 255),
-      SkColorSetARGB(255, 255, 255, 255), SkColorSetARGB(255, 0, 0, 0),
-      SkColorSetARGB(255, 255, 0, 0),     SkColorSetARGB(255, 0, 255, 0),
+  Vector<Color> expected_color_records = {
+      Color::FromRGBA(255, 255, 0, 255),   Color::FromRGBA(0, 0, 255, 255),
+      Color::FromRGBA(255, 0, 255, 255),   Color::FromRGBA(0, 255, 255, 255),
+      Color::FromRGBA(255, 255, 255, 255), Color::FromRGBA(0, 0, 0, 255),
+      Color::FromRGBA(255, 0, 0, 255),     Color::FromRGBA(0, 255, 0, 255),
   };
 
-  Vector<SkColor> actual_color_records =
+  Vector<Color> actual_color_records =
       OpenTypeCpalLookup::RetrieveColorRecords(colr_palette_typeface_, 3);
 
   EXPECT_EQ(expected_color_records, actual_color_records);
@@ -97,7 +97,7 @@ TEST_F(OpenTypeCpalLookupTest, RetrieveColorRecordsFromExistingPalette) {
 
 TEST_F(OpenTypeCpalLookupTest, RetrieveColorRecordsFromNonExistingPalette) {
   // Palette at index 16 does not exist in the font should return empty Vector
-  Vector<SkColor> actual_color_records =
+  Vector<Color> actual_color_records =
       OpenTypeCpalLookup::RetrieveColorRecords(colr_palette_typeface_, 16);
 
   EXPECT_EQ(actual_color_records.size(), 0u);

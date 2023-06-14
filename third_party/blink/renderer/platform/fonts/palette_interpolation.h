@@ -31,11 +31,11 @@ class PLATFORM_EXPORT PaletteInterpolation {
       Vector<FontPalette::FontPaletteOverride>&& start_color_records,
       Vector<FontPalette::FontPaletteOverride>&& end_color_records,
       FontPalette::InterpolablePaletteOperation operation);
-  static SkColor ScaleSkColor(Color color, double scale);
-  static SkColor AddSkColors(Color start_color, Color end_color);
-  static SkColor InterpolateSkColor(Color start_color,
-                                    Color end_color,
-                                    double progress);
+  static Color ScaleColor(Color color, double scale);
+  static Color AddColors(Color start_color, Color end_color);
+  static Color InterpolateColor(Color start_color,
+                                Color end_color,
+                                double progress);
   sk_sp<SkTypeface> typeface_;
 };
 

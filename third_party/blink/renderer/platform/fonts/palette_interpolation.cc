@@ -9,9 +9,9 @@
 
 namespace blink {
 
-SkColor PaletteInterpolation::InterpolateSkColor(Color start_color,
-                                                 Color end_color,
-                                                 double progress) {
+Color PaletteInterpolation::InterpolateColor(Color start_color,
+                                             Color end_color,
+                                             double progress) {
   float alpha = ClampTo<double>(
       start_color.Alpha() * (1 - progress) + end_color.Alpha() * progress, 0,
       1);
@@ -29,10 +29,10 @@ SkColor PaletteInterpolation::InterpolateSkColor(Color start_color,
 
   Color result_color = Color::FromColorSpace(Color::ColorSpace::kOklab, param0,
                                              param1, param2, alpha);
-  return result_color.toSkColor4f().toSkColor();
+  return result_color;
 }
 
-SkColor PaletteInterpolation::AddSkColors(Color start_color, Color end_color) {
+Color PaletteInterpolation::AddColors(Color start_color, Color end_color) {
   float alpha = ClampTo<double>(start_color.Alpha() + end_color.Alpha(), 0, 1);
 
   const auto add_params = [&start_color, &end_color, &alpha](double start_param,
@@ -47,10 +47,10 @@ SkColor PaletteInterpolation::AddSkColors(Color start_color, Color end_color) {
 
   Color result_color = Color::FromColorSpace(Color::ColorSpace::kOklab, param0,
                                              param1, param2, alpha);
-  return result_color.toSkColor4f().toSkColor();
+  return result_color;
 }
 
-SkColor PaletteInterpolation::ScaleSkColor(Color color, double scale) {
+Color PaletteInterpolation::ScaleColor(Color color, double scale) {
   float alpha = ClampTo<double>(color.Alpha() * scale, 0, 1);
 
   float param0 = color.Param0() * scale;
@@ -59,7 +59,7 @@ SkColor PaletteInterpolation::ScaleSkColor(Color color, double scale) {
 
   Color result_color = Color::FromColorSpace(Color::ColorSpace::kOklab, param0,
                                              param1, param2, alpha);
-  return result_color.toSkColor4f().toSkColor();
+  return result_color;
 }
 
 Vector<FontPalette::FontPaletteOverride>
@@ -74,25 +74,24 @@ PaletteInterpolation::ApplyOperationToColorRecords(
   wtf_size_t color_records_cnt = start_color_records.size();
   for (wtf_size_t i = 0; i < color_records_cnt; i++) {
     DCHECK_EQ(start_color_records[i].index, end_color_records[i].index);
-    SkColor result_color = 0;
-
     // Since there is no way for user to specify which color space should be
     // used for interpolation, it defaults to Oklab.
     // https://www.w3.org/TR/css-color-4/#interpolation-space
-    Color start_color = Color::FromSkColor(start_color_records[i].color);
+    Color start_color = start_color_records[i].color;
     start_color.ConvertToColorSpace(Color::ColorSpace::kOklab);
-    Color end_color = Color::FromSkColor(end_color_records[i].color);
+    Color end_color = end_color_records[i].color;
     end_color.ConvertToColorSpace(Color::ColorSpace::kOklab);
+    Color result_color = start_color;
     switch (operation.type) {
       case FontPalette::kMixPalettes:
         result_color =
-            InterpolateSkColor(start_color, end_color, operation.param);
+            InterpolateColor(start_color, end_color, operation.param);
         break;
       case FontPalette::kAddPalettes:
-        result_color = AddSkColors(start_color, end_color);
+        result_color = AddColors(start_color, end_color);
         break;
       case FontPalette::kScalePalette:
-        result_color = ScaleSkColor(start_color, operation.param);
+        result_color = ScaleColor(start_color, operation.param);
         break;
       case FontPalette::kNoInterpolation:
         NOTREACHED();
@@ -143,7 +142,7 @@ absl::optional<uint16_t> PaletteInterpolation::RetrievePaletteIndex(
 Vector<FontPalette::FontPaletteOverride>
 PaletteInterpolation::RetrieveColorRecords(const FontPalette* palette,
                                            unsigned int palette_index) const {
-  Vector<SkColor> colors =
+  Vector<Color> colors =
       OpenTypeCpalLookup::RetrieveColorRecords(typeface_, palette_index);
 
   wtf_size_t colors_size = colors.size();

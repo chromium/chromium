@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_CPAL_LOOKUP_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkColor.h"
+
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
@@ -32,8 +33,8 @@ class PLATFORM_EXPORT OpenTypeCpalLookup {
   /* Returns a sorted Vector of color records from the specified font palette.
    * The position in the returned vector matches the palette index in the font.
    */
-  static Vector<SkColor> RetrieveColorRecords(sk_sp<SkTypeface> typeface,
-                                              unsigned int palette_index);
+  static Vector<Color> RetrieveColorRecords(sk_sp<SkTypeface> typeface,
+                                            unsigned int palette_index);
 };
 
 }  // namespace blink

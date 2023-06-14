@@ -7,11 +7,11 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
@@ -32,7 +32,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   // Data layout should match SkFontarguments::PaletteOverride::ColorOverride.
   struct FontPaletteOverride {
     int index;
-    SkColor color;
+    Color color;
 
     bool operator==(const FontPaletteOverride& other) const {
       return index == other.index && color == other.color;
