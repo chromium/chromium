@@ -9113,6 +9113,84 @@
             ]
         }
     ],
+    "OmniboxMlUrlScoringDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Final_Matches_Only_061423",
+                    "params": {
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Final_Matches_Only_CF_061423",
+                    "params": {
+                        "MlUrlScoringCounterfactual": "true",
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Final_Matches_Only_Custom_Missing_Value_061423",
+                    "params": {
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Final_Matches_Only_Preserve_Default_061423",
+                    "params": {
+                        "MlUrlScoringPreserveDefault": "true",
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Final_Matches_Only_Preserve_Default_CF_061423",
+                    "params": {
+                        "MlUrlScoringCounterfactual": "true",
+                        "MlUrlScoringPreserveDefault": "true",
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Final_Matches_Only_Preserve_Default_Custom_Missing_Value_061423",
+                    "params": {
+                        "MlUrlScoringPreserveDefault": "true",
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnClobberFocusTypeOnContent": [
         {
             "platforms": [
