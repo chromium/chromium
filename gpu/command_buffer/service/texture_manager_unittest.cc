@@ -30,7 +30,7 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/gl/gl_image.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #endif
 
 using ::testing::AtLeast;
@@ -42,20 +42,6 @@ using ::testing::_;
 
 namespace gpu {
 namespace gles2 {
-
-namespace {
-
-#if BUILDFLAG(IS_OZONE)
-class GLImageStub : public gl::GLImage {
- public:
-  GLImageStub() = default;
-
- private:
-  ~GLImageStub() override = default;
-};
-#endif
-
-}  // namespace
 
 class TextureTestHelper {
  public:
@@ -2061,7 +2047,8 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   Texture* texture = texture_ref_->texture();
   EXPECT_EQ(static_cast<GLenum>(target), texture->target());
 #if BUILDFLAG(IS_OZONE)
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
+  scoped_refptr<gl::GLImage> image(
+      GLImageNativePixmap::CreateForTesting(gfx::Size()));
 #endif
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
@@ -2371,14 +2358,16 @@ TEST_F(SharedTextureTest, Images) {
   EXPECT_FALSE(ref2->texture()->HasImages());
   EXPECT_FALSE(texture_manager1_->HaveImages());
   EXPECT_FALSE(texture_manager2_->HaveImages());
-  scoped_refptr<gl::GLImage> image1(new GLImageStub);
+  scoped_refptr<gl::GLImage> image1(
+      GLImageNativePixmap::CreateForTesting(gfx::Size()));
   texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
                                         image1.get());
   EXPECT_TRUE(ref1->texture()->HasImages());
   EXPECT_TRUE(ref2->texture()->HasImages());
   EXPECT_TRUE(texture_manager1_->HaveImages());
   EXPECT_TRUE(texture_manager2_->HaveImages());
-  scoped_refptr<gl::GLImage> image2(new GLImageStub);
+  scoped_refptr<gl::GLImage> image2(
+      GLImageNativePixmap::CreateForTesting(gfx::Size()));
   texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
                                         image2.get());
   EXPECT_TRUE(ref1->texture()->HasImages());

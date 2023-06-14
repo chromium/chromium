@@ -30,7 +30,7 @@
 #include "ui/gl/gl_surface_stub.h"
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/gl/gl_image.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #endif
 
 #if !defined(GL_DEPTH24_STENCIL8)
@@ -3344,29 +3344,6 @@ TEST_P(GLES2DecoderManualInitTest, GenerateMipmapDepthTexture) {
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
 
-#if BUILDFLAG(IS_OZONE)
-class MockGLImage : public gl::GLImage {
- public:
-  MockGLImage() = default;
-
-  // Overridden from gl::GLImage:
-  MOCK_METHOD0(GetSize, gfx::Size());
-  MOCK_METHOD0(GetInternalFormat, unsigned());
-  MOCK_METHOD1(BindTexImage, bool(unsigned));
-  MOCK_METHOD1(ReleaseTexImage, void(unsigned));
-  MOCK_METHOD1(CopyTexImage, bool(unsigned));
-  MOCK_METHOD3(CopyTexSubImage,
-               bool(unsigned, const gfx::Point&, const gfx::Rect&));
-  MOCK_METHOD3(OnMemoryDump,
-               void(base::trace_event::ProcessMemoryDump*,
-                    uint64_t,
-                    const std::string&));
-
- protected:
-  ~MockGLImage() override = default;
-};
-#endif
-
 TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
   InitState init;
   init.extensions = "GL_OES_EGL_image_external";
@@ -3380,7 +3357,8 @@ TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
 
   TextureRef* texture_ref = GetTexture(client_texture_id_);
 #if BUILDFLAG(IS_OZONE)
-  scoped_refptr<MockGLImage> image(new MockGLImage);
+  scoped_refptr<GLImageNativePixmap> image(
+      GLImageNativePixmap::CreateForTesting(gfx::Size()));
 #endif
   group().texture_manager()->SetTarget(texture_ref, GL_TEXTURE_EXTERNAL_OES);
   group().texture_manager()->SetLevelInfo(texture_ref, GL_TEXTURE_EXTERNAL_OES,

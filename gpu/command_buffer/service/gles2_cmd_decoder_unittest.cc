@@ -30,7 +30,7 @@
 #include "ui/gl/scoped_make_current.h"
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/gl/gl_image.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -60,19 +60,6 @@ using ::testing::StrictMock;
 namespace gpu {
 namespace gles2 {
 
-namespace {
-
-#if BUILDFLAG(IS_OZONE)
-class GLImageStub : public gl::GLImage {
- public:
-  GLImageStub() = default;
-
- private:
-  ~GLImageStub() override = default;
-};
-#endif
-
-}  // namespace
 void GLES2DecoderRGBBackbufferTest::SetUp() {
   InitState init;
   init.bind_generates_resource = true;
@@ -287,7 +274,8 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
                                           1,                    /* depth */
                                           0,                    /* border */
                                           GL_RGBA, GL_UNSIGNED_BYTE);
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
+  scoped_refptr<gl::GLImage> image(
+      GLImageNativePixmap::CreateForTesting(gfx::Size(256, 256)));
 
   abstract_texture->SetBoundImage(image.get());
 
@@ -328,7 +316,8 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->min_filter(), static_cast<GLenum>(GL_LINEAR));
 
   // Attach an image and see if it works.
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
+  scoped_refptr<gl::GLImage> image(
+      GLImageNativePixmap::CreateForTesting(gfx::Size()));
 
   abstract_texture->SetBoundImage(image.get());
 
