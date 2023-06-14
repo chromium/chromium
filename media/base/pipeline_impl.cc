@@ -960,7 +960,14 @@ void PipelineImpl::RendererWrapper::OnPipelineError(PipelineStatus error) {
     return;
   }
 
-  status_ = error;
+  // PIPELINE_ERROR_HARDWARE_CONTEXT_RESET and DEMUXER_ERROR_DETECTED_HLS are
+  // not fatal errors. They are just signals to restart or reconfig the
+  // pipeline.
+  if (error != PIPELINE_ERROR_HARDWARE_CONTEXT_RESET &&
+      error != DEMUXER_ERROR_DETECTED_HLS) {
+    status_ = error;
+  }
+
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&PipelineImpl::OnError, weak_pipeline_, error));
 }
