@@ -64,7 +64,11 @@ ScopedRunLoopTimeout::ScopedRunLoopTimeout(
     : nested_timeout_(RunLoop::GetTimeoutForCurrentThread()) {
   CHECK(timeout.has_value() || nested_timeout_)
       << "Cannot use default timeout if no default is set.";
-  run_timeout_.timeout = timeout.value_or(nested_timeout_->timeout);
+  // We can't use value_or() here because it gets the value in parentheses no
+  // matter timeout has a value or not, causing null pointer dereference if
+  // nested_timeout_ is nullptr.
+  run_timeout_.timeout =
+      timeout.has_value() ? timeout.value() : nested_timeout_->timeout;
   CHECK_GT(run_timeout_.timeout, TimeDelta());
 
   run_timeout_.on_timeout = BindRepeating(
