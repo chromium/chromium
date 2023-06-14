@@ -62283,6 +62283,7 @@ from previous Chrome versions.
   <int value="-385461103" label="XsurfaceMetricsReporting:enabled"/>
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>
+  <int value="-382542238" label="CWSInfoFastCheck:disabled"/>
   <int value="-381181808" label="DragAppsInTabletMode:enabled"/>
   <int value="-380992110"
       label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:enabled"/>
@@ -62466,6 +62467,7 @@ from previous Chrome versions.
   <int value="-290802952" label="OmniboxOnDeviceTailModel:enabled"/>
   <int value="-290802690" label="PartialSplit:enabled"/>
   <int value="-290672626" label="enable-asm-wasm"/>
+  <int value="-290533453" label="SafetyCheckExtensions:enabled"/>
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-287089194" label="PrintManagementSetupAssistance:enabled"/>
@@ -65219,6 +65221,7 @@ from previous Chrome versions.
   <int value="1165828757" label="kAutofillEnableOffersInDownstream:disabled"/>
   <int value="1166169237" label="disable-delay-agnostic-aec"/>
   <int value="1166789664" label="SyncPseudoUSSAppList:disabled"/>
+  <int value="1166883356" label="CWSInfoFastCheck:enabled"/>
   <int value="1166897718" label="TextSuggestionsTouchBar:disabled"/>
   <int value="1167350114" label="AndroidNightMode:enabled"/>
   <int value="1167613030" label="enable-permission-action-reporting"/>
@@ -66339,6 +66342,7 @@ from previous Chrome versions.
   <int value="1758262950"
       label="OmniboxUIExperimentVerticalMarginLimitToNonTouchOnly:disabled"/>
   <int value="1758688616" label="OmniboxModernizeVisualUpdate:disabled"/>
+  <int value="1759193892" label="SafetyCheckExtensions:disabled"/>
   <int value="1759323272" label="DefaultCalculatorWebApp:disabled"/>
   <int value="1760547768" label="BackGestureRefactorActivityAndroid:disabled"/>
   <int value="1760946944" label="MacViewsAutofillPopup:disabled"/>

@@ -857,6 +857,12 @@ extern const char kWebViewTagMPArchBehaviorDescription[];
 extern const char kWebAuthFlowInBrowserTabName[];
 extern const char kWebAuthFlowInBrowserTabDescription[];
 
+extern const char kCWSInfoFastCheckName[];
+extern const char kCWSInfoFastCheckDescription[];
+
+extern const char kSafetyCheckExtensionsName[];
+extern const char kSafetyCheckExtensionsDescription[];
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kExtensionWebFileHandlersName[];
 extern const char kExtensionWebFileHandlersDescription[];

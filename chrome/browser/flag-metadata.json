@@ -1410,6 +1410,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cws-info-fast-check",
+    "owners": [
+      "anunoy"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "darken-websites-checkbox-in-themes-setting",
     "owners": [ "nemco@google.com", "wenyufu@google.com", "twellington" ],
     "expiry_milestone": 115
@@ -6766,6 +6773,15 @@
     "name": "safe-sites-filter-behavior-policy-android",
     "owners": ["ftirelo"],
     "expiry_milestone": 123
+  },
+  {
+    "name": "safety-check-extensions",
+    "owners": [
+      "zackhan",
+      "anunoy",
+      "psarouthakis@google.com"
+    ],
+    "expiry_milestone": 125
   },
   {
     "name": "safety-check-notification-permissions",
