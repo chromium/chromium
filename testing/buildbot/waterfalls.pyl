@@ -1359,7 +1359,7 @@
       # which doesn't exist in the CfT config.
       'mac-rel-cft': {
         'mixins': [
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'isolate_profile_data',
         ],
         # TODO(crbug.com/1399527) - for some reason gcapi_example
@@ -2084,7 +2084,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -2118,7 +2118,7 @@
           'has_native_resultdb_integration',
           'ios_restart_device',
           'limited_capacity_bot',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -2220,7 +2220,7 @@
           'has_native_resultdb_integration',
           'ios_output_disabled_tests',
           'isolate_profile_data',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -2280,7 +2280,7 @@
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -2729,7 +2729,7 @@
       },
       'mac-arm-rel-dev': {
         'mixins': [
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
         ],
         'test_suites': {
            'gtest_tests': 'chromium_dev_desktop_gtests',
@@ -3094,7 +3094,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3290,7 +3290,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3304,7 +3304,7 @@
         'mixins': [
           'finch-chromium-swarming-pool',
           'has_native_resultdb_integration',
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3322,7 +3322,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3335,7 +3335,7 @@
       'ios-m1-simulator-cronet': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3348,7 +3348,7 @@
       'ios-simulator-cronet': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3361,7 +3361,7 @@
       'ios-simulator-multi-window': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3375,7 +3375,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'ios_custom_webkit',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3388,7 +3388,7 @@
       'ios-wpt-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'xcode_14_main',
         ],
@@ -3742,7 +3742,7 @@
       'mac-fieldtrial-tester': {
         'mixins': [
           'finch-chromium-swarming-pool',
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
         ],
         'test_suites': {
           'gtest_tests': 'fieldtrial_browser_tests',
@@ -4967,7 +4967,7 @@
       },
       'Mac12 Tests': {
         'mixins': [
-            'mac_12_or_13_x64',
+            'mac_12_x64',
             'isolate_profile_data',
         ],
         'test_suites': {
@@ -5015,7 +5015,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_12_or_13_t2_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -5032,7 +5032,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_12_or_13_t2_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -5048,7 +5048,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -5086,7 +5086,7 @@
         'mixins': [
             # Only run selected test suites on CQ. https://crbug.com/1234525.
             'ci_only',
-            'mac_12_or_13_arm64',
+            'mac_12_arm64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
@@ -5243,7 +5243,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -5468,7 +5468,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -5496,7 +5496,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -5637,7 +5637,7 @@
           'rust_build_tests',
         ],
         'mixins': [
-          'mac_12_or_13_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'rust_host_gtests',
@@ -6053,7 +6053,7 @@
       },
       'WebRTC Chromium Mac Tester': {
         'mixins': [
-          'mac_12_or_13_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           # TODO(crbug.com/1409418): Reenable baremetal_tests.
@@ -6142,7 +6142,7 @@
       },
       'WebRTC Chromium FYI Mac Tester': {
         'mixins': [
-          'mac_12_or_13_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',
@@ -6170,7 +6170,7 @@
       'WebRTC Chromium FYI ios-simulator': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_or_13_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -6575,7 +6575,7 @@
       'mac-arm64-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'mac_12_or_13_arm64',
+          'mac_default_arm64',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',

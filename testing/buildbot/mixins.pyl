@@ -906,34 +906,6 @@
       },
     },
   },
-  # TODO (crbug/1448671): remove the 3 OR mixins below after Mac13 upgrade completes
-  'mac_12_or_13_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-12|Mac-13',
-      },
-    },
-  },
-  # this can be replaced with mac_13_x64 mixins after upgrade completes. Mac13 machines
-  # are automatically on T2 or above
-  'mac_12_or_13_t2_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'mac_model': 'Macmini8,1',
-        'os': 'Mac-12|Mac-13',
-      },
-    },
-  },
-  'mac_12_or_13_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-12|Mac-13',
-      },
-    },
-  },
   'mac_12_x64': {
     'swarming': {
       'dimensions': {
@@ -1001,6 +973,22 @@
     },
   },
   'mac_beta_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-13',
+      },
+    },
+  },
+  'mac_default_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-13',
+      },
+    },
+  },
+  'mac_default_x64': {
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
