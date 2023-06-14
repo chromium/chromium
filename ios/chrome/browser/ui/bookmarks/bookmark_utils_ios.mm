@@ -363,7 +363,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
   return CreateUndoToastWithWrapper(wrapper, text,
-                                    "MobileBookmarkManagerBookmarkAddedUndone");
+                                    "MobileBookmarkManagerAddedBookmarkUndone");
 }
 
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
