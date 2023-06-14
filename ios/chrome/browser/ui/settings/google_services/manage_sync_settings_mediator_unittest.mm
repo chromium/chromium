@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -99,6 +100,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     mediator_ = [[ManageSyncSettingsMediator alloc]
         initWithSyncService:sync_service_mock_
             userPrefService:pref_service_
+            identityManager:IdentityManagerFactory::GetForBrowserState(
+                                browser_state_.get())
         initialAccountState:SyncSettingsAccountState::kSyncing];
     mediator_.syncSetupService = sync_setup_service_mock_;
     mediator_.consumer = consumer_;

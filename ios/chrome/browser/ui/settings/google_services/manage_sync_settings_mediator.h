@@ -20,6 +20,9 @@ class SyncSetupService;
 namespace syncer {
 class SyncService;
 }  // syncer
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // Mediator for the manager sync settings.
 @interface ManageSyncSettingsMediator
@@ -51,6 +54,7 @@ class SyncService;
 // `syncService`: Sync service. Should not be null.
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
+                    identityManager:(signin::IdentityManager*)identityManager
                 initialAccountState:
                     (SyncSettingsAccountState)initialAccountState
     NS_DESIGNATED_INITIALIZER;

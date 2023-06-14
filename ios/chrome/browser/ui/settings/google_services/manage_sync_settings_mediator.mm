@@ -110,21 +110,28 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   PrefBackedBoolean* _autocompleteWalletPreference;
   // Sync service.
   syncer::SyncService* _syncService;
+  // Observer for `IdentityManager`.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
+                    identityManager:(signin::IdentityManager*)identityManager
                 initialAccountState:
                     (SyncSettingsAccountState)initialAccountState {
   self = [super init];
   if (self) {
     DCHECK(syncService);
     _syncService = syncService;
-    _syncObserver.reset(new SyncObserverBridge(self, syncService));
+    _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _autocompleteWalletPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:autofill::prefs::kAutofillWalletImportEnabled];
     _autocompleteWalletPreference.observer = self;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
     _initialAccountState = initialAccountState;
   }
   return self;
@@ -136,6 +143,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   _autocompleteWalletPreference.observer = nil;
   [_autocompleteWalletPreference stop];
   _autocompleteWalletPreference = nil;
+  _identityManagerObserver.reset();
 }
 
 #pragma mark - Loads sync data type section

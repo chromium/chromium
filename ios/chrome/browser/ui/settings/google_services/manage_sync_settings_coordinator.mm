@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -98,9 +99,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)start {
   DCHECK(self.baseNavigationController);
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
   switch (_accountState) {
     case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
     case SyncSettingsAccountState::kSyncing:
@@ -117,10 +118,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
       initWithSyncService:self.syncService
-          userPrefService:self.browser->GetBrowserState()->GetPrefs()
+          userPrefService:browserState->GetPrefs()
+          identityManager:IdentityManagerFactory::GetForBrowserState(
+                              browserState)
       initialAccountState:_accountState];
-  self.mediator.syncSetupService = SyncSetupServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  self.mediator.syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
   self.mediator.commandHandler = self;
   self.mediator.syncErrorHandler = self;
   self.mediator.forcedSigninEnabled =
@@ -144,7 +147,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.mediator.consumer = self.viewController;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
-  _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
+  _syncObserver = std::make_unique<SyncObserverBridge>(self, self.syncService);
 }
 
 - (void)stop {
