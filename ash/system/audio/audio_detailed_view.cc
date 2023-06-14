@@ -615,8 +615,18 @@ void AudioDetailedView::UpdateAudioDevices() {
 }
 
 void AudioDetailedView::UpdateScrollableList() {
-  scroll_content()->RemoveAllChildViews();
+  // Resets all raw pointers inside the `scroll_content()`. Otherwise it can
+  // lead to a crash when the the view is clicked. Also clears `device_map_`
+  // before removing all child views since it holds pointers to child views in
+  // `scroll_content()`.
+  noise_cancellation_view_ = nullptr;
+  noise_cancellation_icon_ = nullptr;
+  noise_cancellation_button_ = nullptr;
+  live_caption_view_ = nullptr;
+  live_caption_icon_ = nullptr;
+  live_caption_button_ = nullptr;
   device_map_.clear();
+  scroll_content()->RemoveAllChildViews();
 
   const bool is_qs_revamp = features::IsQsRevampEnabled();
 
