@@ -184,7 +184,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   }
   ScriptState::Scope scope(script_state);
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-  if (!frame || !frame->IsMainFrame()) {
+  if (!frame || !frame->IsOutermostMainFrame()) {
     return;
   }
   LocalDOMWindow* window = frame->DomWindow();
