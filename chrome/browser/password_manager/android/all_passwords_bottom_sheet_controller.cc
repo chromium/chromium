@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
@@ -19,6 +20,8 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
+#include "ui/gfx/native_widget_types.h"
 
 using autofill::mojom::FocusedFieldType;
 using password_manager::PasswordManagerClient;
@@ -27,6 +30,7 @@ using safe_browsing::PasswordReuseDetectionManagerClient;
 // No-op constructor for tests.
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     base::PassKey<class AllPasswordsBottomSheetControllerTest>,
+    content::WebContents* web_contents,
     std::unique_ptr<AllPasswordsBottomSheetView> view,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     password_manager::PasswordStoreInterface* store,
@@ -34,15 +38,19 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     FocusedFieldType focused_field_type,
     PasswordManagerClient* client,
     PasswordReuseDetectionManagerClient*
-        password_reuse_detection_manager_client)
+        password_reuse_detection_manager_client,
+    ShowMigrationWarningCallback show_migration_warning_callback)
     : view_(std::move(view)),
+      web_contents_(web_contents),
       store_(store),
       dismissal_callback_(std::move(dismissal_callback)),
       driver_(std::move(driver)),
       focused_field_type_(focused_field_type),
       client_(client),
       password_reuse_detection_manager_client_(
-          password_reuse_detection_manager_client) {}
+          password_reuse_detection_manager_client),
+      show_migration_warning_callback_(
+          std::move(show_migration_warning_callback)) {}
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
@@ -53,7 +61,9 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       web_contents_(web_contents),
       store_(store),
       dismissal_callback_(std::move(dismissal_callback)),
-      focused_field_type_(focused_field_type) {
+      focused_field_type_(focused_field_type),
+      show_migration_warning_callback_(
+          base::BindRepeating(&password_manager::ShowWarning)) {
   DCHECK(web_contents_);
   DCHECK(store_);
   DCHECK(dismissal_callback_);
@@ -127,6 +137,13 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
   } else if (!requests_to_fill_password) {
     driver_->FillIntoFocusedField(is_password_field, username);
   }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    show_migration_warning_callback_.Run(
+        web_contents_->GetTopLevelNativeWindow());
+  }
+
   // Consumes the dismissal callback to destroy the native controller and java
   // controller after the user selects a credential.
   OnDismiss();

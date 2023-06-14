@@ -37,9 +37,12 @@ class AllPasswordsBottomSheetController
  public:
   using RequestsToFillPassword =
       base::StrongAlias<struct RequestsToFillPasswordTag, bool>;
+  using ShowMigrationWarningCallback =
+      base::RepeatingCallback<void(gfx::NativeWindow)>;
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,
+      content::WebContents* web_contents,
       std::unique_ptr<AllPasswordsBottomSheetView> view,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       password_manager::PasswordStoreInterface* store,
@@ -47,7 +50,8 @@ class AllPasswordsBottomSheetController
       autofill::mojom::FocusedFieldType focused_field_type,
       password_manager::PasswordManagerClient* client,
       safe_browsing::PasswordReuseDetectionManagerClient*
-          password_reuse_detection_manager_client);
+          password_reuse_detection_manager_client,
+      ShowMigrationWarningCallback show_migration_warning_callback);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
@@ -124,6 +128,10 @@ class AllPasswordsBottomSheetController
   // password has been reused.
   raw_ptr<safe_browsing::PasswordReuseDetectionManagerClient>
       password_reuse_detection_manager_client_ = nullptr;
+
+  // Callback invoked to try to show the password migration warning. Used
+  // to facilitate testing.
+  ShowMigrationWarningCallback show_migration_warning_callback_;
 
   base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
       this};
