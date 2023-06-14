@@ -6302,6 +6302,7 @@ static_library("test_support") {
 
   if (is_mac) {
     assert(toolkit_views)
+    configs += [ "//build/config/compiler:enable_arc" ]
     sources += [
       "cocoa/test/cocoa_test_helper.h",
       "cocoa/test/cocoa_test_helper.mm",
