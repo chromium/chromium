@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {
-  startColorChangeUpdater,
+  ColorChangeUpdater,
 } from
     'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
@@ -516,7 +516,7 @@ async function setupDynamicColor(): Promise<void> {
     });
   }
   if (loadTimeData.getChromeFlag(Flag.JELLY)) {
-    startColorChangeUpdater();
+    ColorChangeUpdater.forDocument().start();
     await loadCSS('chrome://theme/colors.css?sets=ref,sys');
   } else {
     await loadCSS('/css/colors_default.css');

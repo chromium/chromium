@@ -16,7 +16,7 @@ import './system_page.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -210,7 +210,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
       typographyLink.rel = 'stylesheet';
       document.head.appendChild(typographyLink);
       document.body.classList.add('jelly-enabled');
-      startColorChangeUpdater();
+      ColorChangeUpdater.forDocument().start();
     }
 
     this.createNavigationPanel();

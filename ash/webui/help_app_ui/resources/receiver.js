@@ -8,7 +8,7 @@
  */
 import './sandboxed_load_time_data.js';
 
-import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {MessagePipe} from './message_pipe.js';
 import {Message} from './message_types.js';
@@ -89,11 +89,12 @@ window.customLaunchData = {
   delegate: DELEGATE,
 };
 
-window.addEventListener('DOMContentLoaded', () => {
-  // Start listening to color change events. These events get picked up by logic
-  // in ts_helpers.ts on the google3 side.
-  startColorChangeUpdater();
-});
+window.addEventListener(
+    'DOMContentLoaded', /** @suppress {checkTypes} */ function() {
+      // Start listening to color change events. These events get picked up by
+      // logic in ts_helpers.ts on the google3 side.
+      ColorChangeUpdater.forDocument().start();
+    });
 // Expose functions to bind to color change events to window so they can be
 // automatically picked up by installColors(). See ts_helpers.ts in google3.
 window['addColorChangeListener'] =
