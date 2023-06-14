@@ -18,6 +18,7 @@ interface FileManager {
   taskController: TaskController;
   dialogType: DialogType;
   directoryModel: DirectoryModel;
+  directoryTreeNamingController: DirectoryTreeNamingController;
 }
 
 /**

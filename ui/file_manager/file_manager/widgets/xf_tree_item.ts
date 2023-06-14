@@ -177,6 +177,7 @@ export class XfTreeItem extends XfBase {
   @state() private level_ = 1;
 
   @query('li') private $treeItem_!: HTMLLIElement;
+  @query('.tree-row') private $treeRow_!: HTMLDivElement;
   @query('slot:not([name])') private $childrenSlot_!: HTMLSlotElement;
 
   /** The child tree items. */
@@ -230,6 +231,19 @@ export class XfTreeItem extends XfBase {
       throw new Error(
           '<xf-tree-item> can not be used without a parent <xf-tree>');
     }
+  }
+
+  /**
+   * When <xf-tree-item> responds to the "contextmenu" event, the `e.target`
+   * will always be the host element even if we put the focus on the inner
+   * ".tree-row" element, this is because it's inside the shadow DOM. To make
+   * sure the context menu shows in the correct location (when triggered by
+   * keyboard), we need to expose this method to re-position the menu based on
+   * the ".tree-row"'s bounding box. This method will be invoked by
+   * `ContextMenuHandler`.
+   */
+  getRectForContextMenu(): DOMRect {
+    return this.$treeRow_.getBoundingClientRect();
   }
 
   private onSlotChanged_() {
@@ -409,6 +423,14 @@ function getCSS() {
       background-color: unset;
     }
 
+    :host-context(html.drag-drop-active):host(.denies) .tree-row {
+      background-color: var(--cros-highlight-color-error);
+    }
+
+    :host-context(html.drag-drop-active):host(.accepts) .tree-row {
+      background-color: var(--cros-ripple-color);
+    }
+
     .expand-icon {
       -webkit-mask-image: url(../foreground/images/files/ui/sort_desc.svg);
       -webkit-mask-position: center;
@@ -550,7 +572,6 @@ function getCSS() {
 
     li {
       display: block;
-      padding: 4px;
     }
 
     li:focus-visible {
@@ -574,6 +595,8 @@ function getCSS() {
       cursor: pointer;
       display: flex;
       height: 40px;
+      margin-inline: 4px;
+      margin-block: 8px;
       padding-inline-end: 12px;
       position: relative;
       user-select: none;
@@ -613,6 +636,19 @@ function getCSS() {
     :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:not(:active):hover {
       background-color: unset;
+    }
+
+    :host-context(html.drag-drop-active):host(.denies) .tree-row {
+      background-color: var(--cros-sys-error_container);
+      color: var(--cros-sys-on_error_container);
+    }
+
+    :host-context(html.drag-drop-active):host(.accepts) .tree-row {
+      background-color: var(--cros-sys-hover_on_subtle);
+    }
+
+    :host-context(html.drag-drop-active):host(.accepts[selected]) .tree-row {
+      background-color: var(--cros-sys-primary);
     }
 
     .expand-icon {

@@ -83,6 +83,23 @@ export class XfTree extends XfBase {
     return getCSS();
   }
 
+  constructor() {
+    super();
+    // Delegate the tree level contextmenu event to the focused child tree item.
+    // This is triggered when right click at the blank space of the tree area.
+    this.addEventListener('contextmenu', (e: MouseEvent) => {
+      if (this.focusedItem_) {
+        const domRect = this.focusedItem_.getRectForContextMenu();
+        // Calculate the center point of the tree item, so <xf-tree-item> knows
+        // where to show the context menu pop-up.
+        const x = domRect.x + (domRect.width / 2);
+        const y = domRect.y + (domRect.height / 2);
+        this.focusedItem_.dispatchEvent(
+            new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
+      }
+    });
+  }
+
   override render() {
     return html`
       <ul
