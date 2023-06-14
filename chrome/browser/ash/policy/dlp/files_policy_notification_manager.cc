@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
 #include <cstddef>
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/new_window_delegate.h"
@@ -46,6 +47,9 @@ enum NotificationButton {
 };
 
 namespace {
+// How long to wait for a Files App to open before falling back to a system
+// modal.
+const base::TimeDelta kOpenFilesAppTimeout = base::Milliseconds(3000);
 
 constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
 constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
@@ -161,7 +165,8 @@ std::string GetNotificationId(dlp::FileAction action, size_t count) {
 
 FilesPolicyNotificationManager::FilesPolicyNotificationManager(
     content::BrowserContext* context)
-    : context_(context) {
+    : context_(context),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(context);
 
   auto* io_task_controller = GetIOTaskController(context_);
@@ -261,29 +266,10 @@ void FilesPolicyNotificationManager::ShowDialog(
 
   // No window found, so open a new one. This should notify us by through
   // OnBrowserSetLastActive() to show the dialog.
-  BrowserList::AddObserver(this);
-  DCHECK(!pending_callback_);
-  pending_callback_ =
+  LaunchFilesApp(std::make_unique<DialogInfo>(
       base::BindOnce(&FilesPolicyNotificationManager::ShowFilesPolicyDialog,
-                     weak_factory_.GetWeakPtr(), task_id, type);
-
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.allowed_paths =
-      ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
-  GURL files_swa_url = file_manager::util::GetFileManagerMainPageUrlWithParams(
-      ui::SelectFileDialog::SELECT_NONE,
-      /*title=*/{},
-      /*current_directory_url=*/{},
-      /*selection_url=*/{},
-      /*target_name=*/{}, &file_type_info,
-      /*file_type_index=*/0,
-      /*search_query=*/{},
-      /*show_android_picker_apps=*/false,
-      /*volume_filter=*/{});
-  ash::SystemAppLaunchParams params;
-  params.url = files_swa_url;
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
-                               params);
+                     weak_factory_.GetWeakPtr(), task_id, type),
+      task_id));
 }
 
 bool FilesPolicyNotificationManager::HasIOTask(
@@ -341,6 +327,13 @@ FilesPolicyNotificationManager::FileTaskInfo::FileTaskInfo(
     FileTaskInfo&& other) = default;
 
 FilesPolicyNotificationManager::FileTaskInfo::~FileTaskInfo() = default;
+
+FilesPolicyNotificationManager::DialogInfo::DialogInfo(
+    ShowDialogCallback callback,
+    file_manager::io_task::IOTaskId task_id)
+    : task_id(task_id), callback(std::move(callback)) {}
+
+FilesPolicyNotificationManager::DialogInfo::~DialogInfo() = default;
 
 void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
     file_manager::io_task::IOTaskId task_id,
@@ -463,22 +456,50 @@ void FilesPolicyNotificationManager::AddIOTask(
   io_tasks_.emplace(std::move(task_id), FileTaskInfo(action));
 }
 
+void FilesPolicyNotificationManager::LaunchFilesApp(
+    std::unique_ptr<DialogInfo> info) {
+  // Start observing the browser list only if the queue is empty.
+  if (pending_dialogs_.empty()) {
+    BrowserList::AddObserver(this);
+  }
+  StartTimer(info.get(),
+             base::BindOnce(&FilesPolicyNotificationManager::OnIOTaskTimedOut,
+                            weak_factory_.GetWeakPtr(), info->task_id));
+  pending_dialogs_.emplace(std::move(info));
+
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.allowed_paths =
+      ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
+  GURL files_swa_url = file_manager::util::GetFileManagerMainPageUrlWithParams(
+      ui::SelectFileDialog::SELECT_NONE,
+      /*title=*/{},
+      /*current_directory_url=*/{},
+      /*selection_url=*/{},
+      /*target_name=*/{}, &file_type_info,
+      /*file_type_index=*/0,
+      /*search_query=*/{},
+      /*show_android_picker_apps=*/false,
+      /*volume_filter=*/{});
+  ash::SystemAppLaunchParams params;
+  params.url = files_swa_url;
+  ash::LaunchSystemWebAppAsync(Profile::FromBrowserContext(context_),
+                               ash::SystemWebAppType::FILE_MANAGER, params);
+}
+
 void FilesPolicyNotificationManager::OnBrowserSetLastActive(Browser* browser) {
   if (!ash::IsBrowserForSystemWebApp(browser,
                                      ash::SystemWebAppType::FILE_MANAGER)) {
-    // TODO(b/282663949): Consider if we need a timeout here in case it never
-    // opens.
     LOG(WARNING) << "Browser did not match Files app";
     return;
   }
 
   // Files app successfully opened.
-  gfx::NativeWindow modal_parent = browser->window()->GetNativeWindow();
+  ShowPendingDialog(browser->window()->GetNativeWindow());
+}
 
-  BrowserList::RemoveObserver(this);
-
-  DCHECK(pending_callback_);
-  std::move(pending_callback_).Run(modal_parent);
+void FilesPolicyNotificationManager::SetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  task_runner_ = task_runner;
 }
 
 void FilesPolicyNotificationManager::OnIOTaskStatus(
@@ -687,6 +708,39 @@ void FilesPolicyNotificationManager::PauseIOTask(
   // needed for the strings.
   io_task_controller->Pause(task_id, std::move(pause_params));
   // TODO(ayaelattar): Timeout after total 5 minutes.
+}
+
+void FilesPolicyNotificationManager::StartTimer(
+    DialogInfo* info,
+    base::OnceClosure on_timeout_callback) {
+  info->timeout_timer.SetTaskRunner(task_runner_);
+  info->timeout_timer.Start(FROM_HERE, kOpenFilesAppTimeout,
+                            std::move(on_timeout_callback));
+}
+
+void FilesPolicyNotificationManager::OnIOTaskTimedOut(
+    file_manager::io_task::IOTaskId task_id) {
+  if (pending_dialogs_.empty()) {
+    return;
+  }
+  DCHECK(pending_dialogs_.front()->task_id == task_id);
+  // Stop waiting for the Files App and fallback to system modal.
+  ShowPendingDialog(/*modal_parent=*/nullptr);
+}
+
+void FilesPolicyNotificationManager::ShowPendingDialog(
+    gfx::NativeWindow modal_parent) {
+  if (pending_dialogs_.empty()) {
+    return;
+  }
+  CHECK(pending_dialogs_.front()->callback);
+  std::move(pending_dialogs_.front()->callback).Run(modal_parent);
+  // Pop the dialog. This also stops the timer if it hasn't fired already.
+  pending_dialogs_.pop();
+  // If this was the last dialog, stop observing the browser list.
+  if (pending_dialogs_.empty()) {
+    BrowserList::RemoveObserver(this);
+  }
 }
 
 }  // namespace policy

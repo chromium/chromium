@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_FILES_POLICY_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_FILES_POLICY_NOTIFICATION_MANAGER_H_
 
+#include <memory>
+#include <queue>
+
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -77,6 +80,9 @@ class FilesPolicyNotificationManager
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
 
+  // Used in tests to set the test task runner.
+  void SetTaskRunnerForTesting(scoped_refptr<base::SequencedTaskRunner>);
+
  protected:
   // The number of notifications shown so far. Used to calculate a unique
   // notification ID. Only applies to non IOTasks operations (upload, download,
@@ -119,6 +125,25 @@ class FilesPolicyNotificationManager
     dlp::FileAction action;
   };
 
+  // Callback to show the dialog. Invoked with a Files App window when
+  // successfully opened, or null if opening the Files App times out.
+  using ShowDialogCallback = base::OnceCallback<void(gfx::NativeWindow)>;
+
+  // Holds information for showing a Files Policy dialog.
+  struct DialogInfo {
+    DialogInfo() = delete;
+    DialogInfo(ShowDialogCallback callback,
+               file_manager::io_task::IOTaskId task_id);
+    ~DialogInfo();
+
+    // Id of the task for which dialog is being shown.
+    file_manager::io_task::IOTaskId task_id;
+    // Callback to show the dialog.
+    ShowDialogCallback callback;
+    base::TimeTicks created_at;
+    base::OneShotTimer timeout_timer;
+  };
+
   // Click handler for Data Leak Prevention or Enterprise Connectors policy
   // warning notifications.
   void HandleFilesPolicyWarningNotificationClick(
@@ -141,6 +166,10 @@ class FilesPolicyNotificationManager
   // Starts tracking IO task with `task_id`.
   void AddIOTask(file_manager::io_task::IOTaskId task_id,
                  dlp::FileAction action);
+
+  // Launches the Files App in default directory and appends `dialog_info` to
+  // the queue of pending dialogs in order to show the dialog over it.
+  void LaunchFilesApp(std::unique_ptr<DialogInfo> dialog_info);
 
   // BrowserListObserver overrides:
   // Called when opening a new Files App window to use as the modal parent for a
@@ -194,6 +223,18 @@ class FilesPolicyNotificationManager
                    dlp::FileAction action,
                    Policy warning_reason);
 
+  // Starts a timer when `info` is created.
+  void StartTimer(DialogInfo* info, base::OnceClosure on_timeout_callback);
+
+  // Called after opening the Files App times out.
+  // Stops waiting for the app and shows a dialog for `task_id` without a modal
+  // parent (i.e. as a system modal).
+  void OnIOTaskTimedOut(file_manager::io_task::IOTaskId task_id);
+
+  // Helper method that pops the oldest entry from `pending_dialogs_` and
+  // creates a dialog with with `modal_parent`. No-op if the list is empty.
+  void ShowPendingDialog(gfx::NativeWindow modal_parent);
+
   // Callback to show a policy dialog after waiting to open a Files App window.
   base::OnceCallback<void(gfx::NativeWindow)> pending_callback_;
 
@@ -202,6 +243,12 @@ class FilesPolicyNotificationManager
 
   // A map from tracked IO tasks ids to their info.
   std::map<file_manager::io_task::IOTaskId, FileTaskInfo> io_tasks_;
+
+  // Callbacks to show a policy dialog after waiting to open a Files App window.
+  std::queue<std::unique_ptr<DialogInfo>> pending_dialogs_;
+
+  // Used to fallack to system modal if opening the Files App times out.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<FilesPolicyNotificationManager> weak_factory_{this};
 };
