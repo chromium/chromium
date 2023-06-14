@@ -1967,8 +1967,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadMoreTrigger.OffsetFromEndOfStream"
-    units="cards" expires_after="2023-07-23">
-  <owner>rogerm@chromium.org</owner>
+    units="cards" expires_after="2024-01-31">
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1983,8 +1982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadMoreTrigger.TotalCards"
-    units="cards" expires_after="2023-07-23">
-  <owner>rogerm@chromium.org</owner>
+    units="cards" expires_after="2024-01-31">
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
