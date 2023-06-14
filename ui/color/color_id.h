@@ -245,6 +245,7 @@
   E_CPONLY(kColorBubbleBorderWhenShadowPresent) \
   E_CPONLY(kColorBubbleFooterBackground) \
   E_CPONLY(kColorBubbleFooterBorder) \
+  E_CPONLY(kColorButtonFeatureAttentionHighlight) \
   E_CPONLY(kColorButtonBackground) \
   E_CPONLY(kColorButtonBackgroundPressed) \
   E_CPONLY(kColorButtonBackgroundProminent) \
@@ -253,6 +254,7 @@
   E_CPONLY(kColorButtonBackgroundTonal) \
   E_CPONLY(kColorButtonBackgroundTonalDisabled) \
   E_CPONLY(kColorButtonBackgroundTonalFocused) \
+  E_CPONLY(kColorButtonBackgroundWithAttention) \
   E_CPONLY(kColorButtonBorder) \
   E_CPONLY(kColorButtonBorderDisabled) \
   E_CPONLY(kColorButtonForeground) \
