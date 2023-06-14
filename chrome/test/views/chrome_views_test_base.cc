@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "content/public/test/browser_task_environment.h"
+#include "ui/color/color_provider_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
