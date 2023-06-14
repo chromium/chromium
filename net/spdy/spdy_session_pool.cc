@@ -537,7 +537,8 @@ void SpdySessionPool::OnSSLConfigChanged(
   };
 }
 
-void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {
+void SpdySessionPool::OnSSLConfigForServersChanged(
+    const base::flat_set<HostPortPair>& servers) {
   WeakSessionList current_sessions = GetCurrentSessions();
   for (base::WeakPtr<SpdySession>& session : current_sessions) {
     if (!session)
@@ -545,9 +546,9 @@ void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {
 
     const ProxyServer& proxy_server =
         session->spdy_session_key().proxy_server();
-    if (session->host_port_pair() == server ||
+    if (servers.contains(session->host_port_pair()) ||
         (proxy_server.is_http_like() && !proxy_server.is_http() &&
-         proxy_server.host_port_pair() == server)) {
+         servers.contains(proxy_server.host_port_pair()))) {
       session->MakeUnavailable();
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.

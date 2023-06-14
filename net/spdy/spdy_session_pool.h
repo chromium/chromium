@@ -313,7 +313,8 @@ class NET_EXPORT SpdySessionPool
   // Makes all sessions using |server|'s SSL configuration unavailable, meaning
   // they will not be used to service new streams. Does not close any existing
   // streams.
-  void OnSSLConfigForServerChanged(const HostPortPair& server) override;
+  void OnSSLConfigForServersChanged(
+      const base::flat_set<HostPortPair>& servers) override;
 
   void set_network_quality_estimator(
       NetworkQualityEstimator* network_quality_estimator) {

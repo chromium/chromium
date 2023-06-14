@@ -1395,7 +1395,8 @@ class HangingCertVerifier : public CertVerifier {
 class MockSSLClientContextObserver : public SSLClientContext::Observer {
  public:
   MOCK_METHOD1(OnSSLConfigChanged, void(SSLClientContext::SSLConfigChangeType));
-  MOCK_METHOD1(OnSSLConfigForServerChanged, void(const HostPortPair&));
+  MOCK_METHOD1(OnSSLConfigForServersChanged,
+               void(const base::flat_set<HostPortPair>&));
 };
 
 }  // namespace
@@ -3763,11 +3764,13 @@ TEST_F(SSLClientSocketTest, ClearSessionCacheOnClientCertDatabaseChange) {
 
   HostPortPair host_port_pair2("example.com", 42);
   testing::StrictMock<MockSSLClientContextObserver> observer;
-  EXPECT_CALL(observer, OnSSLConfigForServerChanged(host_port_pair()));
-  EXPECT_CALL(observer, OnSSLConfigForServerChanged(host_port_pair2));
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair()})));
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair2})));
   EXPECT_CALL(observer,
-              OnSSLConfigChanged(
-                  SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged));
+              OnSSLConfigForServersChanged(base::flat_set<HostPortPair>(
+                  {host_port_pair(), host_port_pair2})));
 
   context_->AddObserver(&observer);
 
@@ -3810,8 +3813,10 @@ TEST_F(SSLClientSocketTest, DontClearSessionCacheOnServerCertDatabaseChange) {
 
   HostPortPair host_port_pair2("example.com", 42);
   testing::StrictMock<MockSSLClientContextObserver> observer;
-  EXPECT_CALL(observer, OnSSLConfigForServerChanged(host_port_pair()));
-  EXPECT_CALL(observer, OnSSLConfigForServerChanged(host_port_pair2));
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair()})));
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair2})));
   EXPECT_CALL(observer,
               OnSSLConfigChanged(
                   SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged));

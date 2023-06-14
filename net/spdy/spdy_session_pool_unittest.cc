@@ -1772,7 +1772,7 @@ static const struct {
      false},
 };
 
-// Tests the OnSSLConfigForServerChanged() method matches SpdySessions as
+// Tests the OnSSLConfigForServersChanged() method matches SpdySessions as
 // expected.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   const MockConnect connect_data(SYNCHRONOUS, OK);
@@ -1810,8 +1810,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
     EXPECT_TRUE(sessions[i]->IsAvailable());
   }
 
-  spdy_session_pool_->OnSSLConfigForServerChanged(
-      HostPortPair(kSSLServerTestHost, 443));
+  spdy_session_pool_->OnSSLConfigForServersChanged(
+      {HostPortPair(kSSLServerTestHost, 443)});
   base::RunLoop().RunUntilIdle();
 
   // Sessions were inactive, so the unavailable sessions are closed.
@@ -1826,7 +1826,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   }
 }
 
-// Tests the OnSSLConfigForServerChanged() method when there are streams open.
+// Tests the OnSSLConfigForServersChanged() method when there are streams open.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   // Set up a SpdySession with an active, created, and pending stream.
   SpdyTestUtil spdy_util;
@@ -1898,7 +1898,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   EXPECT_TRUE(session->is_active());
   EXPECT_TRUE(session->IsAvailable());
 
-  spdy_session_pool_->OnSSLConfigForServerChanged(HostPortPair::FromURL(url));
+  spdy_session_pool_->OnSSLConfigForServersChanged(
+      {HostPortPair::FromURL(url)});
   base::RunLoop().RunUntilIdle();
 
   // The active stream is still alive, so the session is still active.
@@ -1922,7 +1923,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   // after a RunUntilIdle(), but it is not.
 }
 
-// Tests the OnSSLConfigForServerChanged() method when there only pending
+// Tests the OnSSLConfigForServersChanged() method when there only pending
 // streams active.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
   // Set up a SpdySession that accepts no streams.
@@ -1971,7 +1972,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
                                   TRAFFIC_ANNOTATION_FOR_TESTS),
       IsError(ERR_IO_PENDING));
 
-  spdy_session_pool_->OnSSLConfigForServerChanged(HostPortPair::FromURL(url));
+  spdy_session_pool_->OnSSLConfigForServersChanged(
+      {HostPortPair::FromURL(url)});
   base::RunLoop().RunUntilIdle();
 
   // The pending stream is cancelled.
