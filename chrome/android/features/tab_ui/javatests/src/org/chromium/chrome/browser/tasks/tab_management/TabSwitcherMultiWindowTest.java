@@ -39,6 +39,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -95,6 +96,7 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1454902")
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         // Initially, we have 4 normal tabs (including the one created at activity start) and 3
         // incognito tabs in mCta1.
@@ -178,6 +180,7 @@ public class TabSwitcherMultiWindowTest {
     @Test
     @LargeTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @DisabledTest(message = "https://crbug.com/1454902")
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
         // Initially, we have 5 normal tabs (including the one created at activity start) and 5
         // incognito tabs in mCta1.
