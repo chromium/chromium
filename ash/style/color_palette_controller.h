@@ -8,11 +8,13 @@
 #include <tuple>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_manager.h"
@@ -77,7 +79,7 @@ struct ASH_EXPORT SampleColorScheme {
 // observe ColorProviderSource or NativeTheme instead. Events from this class
 // will fire before either of those. Also, NativeTheme can change independently
 // of this class.
-class ASH_EXPORT ColorPaletteController {
+class ASH_EXPORT ColorPaletteController : public SessionObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -89,16 +91,18 @@ class ASH_EXPORT ColorPaletteController {
 
   static std::unique_ptr<ColorPaletteController> Create(
       DarkLightModeController* dark_light_mode_controller,
-      WallpaperControllerImpl* wallpaper_controller);
+      WallpaperControllerImpl* wallpaper_controller,
+      PrefService* local_state);
 
   ColorPaletteController() = default;
 
   ColorPaletteController(const ColorPaletteController&) = delete;
   ColorPaletteController& operator=(ColorPaletteController&) = delete;
 
-  virtual ~ColorPaletteController() = default;
+  ~ColorPaletteController() override = default;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -134,6 +138,10 @@ class ASH_EXPORT ColorPaletteController {
   // Iff a static color is the currently selected scheme, returns that color.
   virtual absl::optional<SkColor> GetStaticColor(
       const AccountId& account_id) const = 0;
+
+  // Updates the system colors with the given account's color prefs. Used for
+  // the login screen.
+  virtual void SelectLocalAccount(const AccountId& account_id) = 0;
 
   // Generates a tri-color SampleColorScheme based on the current configuration
   // for the provided `scheme`. i.e. uses the current seed_color and color_mode

@@ -547,6 +547,18 @@ SkColor WallpaperControllerImpl::GetKMeanColor() const {
                             : kInvalidWallpaperColor;
 }
 
+absl::optional<SkColor> WallpaperControllerImpl::GetCachedWallpaperColorForUser(
+    const AccountId& account_id) const {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return {};
+  }
+  WallpaperInfo info;
+  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &info)) {
+    return {};
+  }
+  return pref_manager_->GetCelebiColor(info.location);
+}
+
 gfx::ImageSkia WallpaperControllerImpl::GetWallpaper() const {
   return current_wallpaper_ ? current_wallpaper_->image() : gfx::ImageSkia();
 }

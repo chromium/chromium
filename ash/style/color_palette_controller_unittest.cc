@@ -6,6 +6,8 @@
 
 #include <ostream>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
@@ -13,11 +15,13 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_manager/known_user.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -27,6 +31,9 @@ namespace {
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
+const ColorScheme kLocalColorScheme = ColorScheme::kVibrant;
+const ColorScheme kDefaultColorScheme = ColorScheme::kTonalSpot;
+const SkColor kDefaultWallpaperColor = gfx::kGoogleBlue400;
 
 // A nice magenta that is in the acceptable lightness range for dark and light.
 // Hue: 281, Saturation: 100, Lightness: 50%.
@@ -108,13 +115,14 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
 };
 
 TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
-  EXPECT_EQ(ColorScheme::kTonalSpot,
+  EXPECT_EQ(kDefaultColorScheme,
             color_palette_controller()->GetColorScheme(kAccountId));
   EXPECT_EQ(absl::nullopt,
             color_palette_controller()->GetStaticColor(kAccountId));
 }
 
-TEST_F(ColorPaletteControllerTest, SetColorScheme_JellyDisabled_AlwaysTonal) {
+TEST_F(ColorPaletteControllerTest,
+       SetColorScheme_JellyDisabled_UsesDefaultScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(chromeos::features::kJelly);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
@@ -124,23 +132,23 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme_JellyDisabled_AlwaysTonal) {
   color_palette_controller()->SetColorScheme(ColorScheme::kStatic, kAccountId,
                                              base::DoNothing());
   EXPECT_EQ(
-      ColorScheme::kTonalSpot,
+      kDefaultColorScheme,
       color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
 
   color_palette_controller()->SetColorScheme(ColorScheme::kExpressive,
                                              kAccountId, base::DoNothing());
   EXPECT_EQ(
-      ColorScheme::kTonalSpot,
+      kDefaultColorScheme,
       color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
 }
 
 TEST_F(ColorPaletteControllerTest, SetColorScheme) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  SimulateUserLogin(kAccountId);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
-
-  ColorScheme color_scheme = ColorScheme::kExpressive;
+  const ColorScheme color_scheme = ColorScheme::kExpressive;
 
   color_palette_controller()->SetColorScheme(color_scheme, kAccountId,
                                              base::DoNothing());
@@ -152,11 +160,17 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
   auto color_palette_seed =
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
   EXPECT_EQ(color_scheme, color_palette_seed->scheme);
+  // Verify that the color scheme was saved to local state.
+  auto local_color_scheme =
+      user_manager::KnownUser(local_state())
+          .FindIntPath(kAccountId, prefs::kDynamicColorColorScheme);
+  EXPECT_EQ(color_scheme, static_cast<ColorScheme>(local_color_scheme.value()));
 }
 
 TEST_F(ColorPaletteControllerTest, SetStaticColor) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-  SkColor static_color = SK_ColorGRAY;
+  SimulateUserLogin(kAccountId);
+  const SkColor static_color = SK_ColorGRAY;
 
   color_palette_controller()->SetStaticColor(static_color, kAccountId,
                                              base::DoNothing());
@@ -169,6 +183,17 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
   EXPECT_EQ(ColorScheme::kStatic, color_palette_seed->scheme);
   EXPECT_EQ(static_color, color_palette_seed->seed_color);
+  auto local_color_scheme =
+      user_manager::KnownUser(local_state())
+          .FindIntPath(kAccountId, prefs::kDynamicColorColorScheme);
+  EXPECT_EQ(ColorScheme::kStatic,
+            static_cast<ColorScheme>(local_color_scheme.value()));
+  const base::Value* value =
+      user_manager::KnownUser(local_state())
+          .FindPath(kAccountId, prefs::kDynamicColorSeedColor);
+  // Verify that the color was saved to local state.
+  const auto local_static_color = base::ValueToInt64(value);
+  EXPECT_EQ(static_color, static_cast<SkColor>(local_static_color.value()));
 }
 
 // If the Jelly flag is off, we always return the KMeans color from the
@@ -364,6 +389,123 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
                           .primary = SkColorSetRGB(0x00, 0xc3, 0x82),
                           .secondary = SkColorSetRGB(0x00, 0x88, 0x59),
                           .tertiary = SkColorSetRGB(0x70, 0xb7, 0xb7)}));
+}
+
+class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
+ public:
+  void SetUp() override {
+    ColorPaletteControllerTest::SetUp();
+    GetSessionControllerClient()->Reset();
+  }
+
+  //  Sets the local ColorScheme to kVibrant. The synced color scheme remains
+  //  the default, kTonalSpot.
+  void SetUpLocalPrefs() {
+    user_manager::KnownUser(local_state())
+        .SetIntegerPref(kAccountId, prefs::kDynamicColorColorScheme,
+                        static_cast<int>(kLocalColorScheme));
+  }
+
+  ColorScheme GetLocalColorScheme() {
+    auto local_color_scheme =
+        user_manager::KnownUser(local_state())
+            .FindIntPath(kAccountId, prefs::kDynamicColorColorScheme);
+    return static_cast<ColorScheme>(local_color_scheme.value());
+  }
+
+  void UpdateWallpaperColor(SkColor color) {
+    WallpaperControllerTestApi wallpaper(wallpaper_controller());
+    wallpaper.SetCalculatedColors(
+        WallpaperCalculatedColors({}, kKMeanColor, color));
+    base::RunLoop().RunUntilIdle();
+  }
+};
+
+TEST_F(ColorPaletteControllerLocalPrefTest, OnUserLogin_UpdatesLocalPrefs) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  SetUpLocalPrefs();
+  const auto wallpaper_color = SK_ColorGRAY;
+  UpdateWallpaperColor(wallpaper_color);
+  EXPECT_EQ(kLocalColorScheme, GetLocalColorScheme());
+
+  SimulateUserLogin(kAccountId);
+
+  // Expect that the local prefs are updated when the user logs in.
+  EXPECT_EQ(kDefaultColorScheme, GetLocalColorScheme());
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       SelectLocalAccount_NotifiesObservers) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  SetUpLocalPrefs();
+  SessionController::Get()->SetClient(nullptr);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
+                            &ColorPaletteSeed::scheme, kLocalColorScheme)))
+      .Times(1);
+
+  color_palette_controller()->SelectLocalAccount(kAccountId);
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       SelectLocalAccount_NoLocalState_NotifiesObserversWithDefault) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  SessionController::Get()->SetClient(nullptr);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(
+      observer,
+      OnColorPaletteChanging(testing::AllOf(
+          testing::Field(&ColorPaletteSeed::scheme, kDefaultColorScheme),
+          testing::Field(&ColorPaletteSeed::seed_color,
+                         kDefaultWallpaperColor))))
+      .Times(1);
+
+  color_palette_controller()->SelectLocalAccount(kAccountId);
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       SelectLocalAccount_JellyDisabled_SkipsNotification) {
+  SessionController::Get()->SetClient(nullptr);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(0);
+
+  color_palette_controller()->SelectLocalAccount(kAccountId);
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       UpdateWallpaperColor_WithSession_NotifiesObservers) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  SetUpLocalPrefs();
+  SimulateUserLogin(kAccountId);
+  color_palette_controller()->SetColorScheme(kLocalColorScheme, kAccountId,
+                                             base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
+                            &ColorPaletteSeed::scheme, kLocalColorScheme)))
+      .Times(1);
+
+  UpdateWallpaperColor(SK_ColorWHITE);
 }
 
 // Helper to print better matcher errors.

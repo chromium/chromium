@@ -133,6 +133,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // Returns the k mean color of the current wallpaper.
   SkColor GetKMeanColor() const;
 
+  // Returns the sampled color of the given user's wallpaper.
+  absl::optional<SkColor> GetCachedWallpaperColorForUser(
+      const AccountId& account_id) const;
+
   // Returns the set of calculated colors. If the colors have not yet been
   // calculated yet, returns an empty object.
   const absl::optional<WallpaperCalculatedColors>& calculated_colors() const {

@@ -1267,8 +1267,9 @@ void Shell::Init(
 
   dark_light_mode_controller_ = std::make_unique<DarkLightModeControllerImpl>();
 
-  color_palette_controller_ = ColorPaletteController::Create(
-      dark_light_mode_controller_.get(), wallpaper_controller_.get());
+  color_palette_controller_ =
+      ColorPaletteController::Create(dark_light_mode_controller_.get(),
+                                     wallpaper_controller_.get(), local_state_);
 
   // Privacy Screen depends on the display manager, so initialize it after
   // display manager was properly initialized.

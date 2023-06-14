@@ -45,6 +45,7 @@ class TestColorPaletteController : public ash::ColorPaletteController {
   void SetStaticColor(SkColor seed_color,
                       const AccountId& account_id,
                       base::OnceClosure on_complete) override {}
+  void SelectLocalAccount(const AccountId& account_id) override {}
   absl::optional<ash::ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     return seed_;

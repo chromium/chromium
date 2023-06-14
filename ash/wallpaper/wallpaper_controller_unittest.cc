@@ -1170,6 +1170,45 @@ TEST_F(WallpaperControllerTest, SaveCelebiColorWhenJellyActive) {
   EXPECT_EQ(kWallpaperColor, pref_manager_->GetCelebiColor(location));
 }
 
+TEST_F(WallpaperControllerTest, GetCachedWallpaperColorForUser) {
+  base::test::ScopedFeatureList features(chromeos::features::kJelly);
+  // Cache some wallpapers and store that in the local prefs. Otherwise, we
+  // can't cache colors.
+  base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = relative_path.value();
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, info));
+
+  // Store colors in local prefs simulating cache behavior.
+  pref_manager_->CacheCelebiColor(relative_path.value(), kWallpaperColor);
+
+  // Reset to login screen.
+  GetSessionControllerClient()->RequestSignOut();
+
+  // User's wallpaper colors are accessible from login screen.
+  EXPECT_EQ(kWallpaperColor,
+            controller_->GetCachedWallpaperColorForUser(kAccountId1));
+}
+
+TEST_F(WallpaperControllerTest, GetCachedWallpaperColorForUser_JellyDisabled) {
+  // Cache some wallpapers and store that in the local prefs. Otherwise, we
+  // can't cache colors.
+  base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = relative_path.value();
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, info));
+
+  // Store colors in local prefs simulating cache behavior.
+  pref_manager_->CacheCelebiColor(relative_path.value(), kWallpaperColor);
+
+  // Reset to login screen.
+  GetSessionControllerClient()->RequestSignOut();
+
+  // User's celebi color is only retrieved when Jelly is enabled.
+  EXPECT_FALSE(
+      controller_->GetCachedWallpaperColorForUser(kAccountId1).has_value());
+}
+
 TEST_F(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, observer.colors_changed_count());
