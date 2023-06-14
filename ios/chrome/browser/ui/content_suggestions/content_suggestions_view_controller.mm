@@ -455,6 +455,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
     for (SetUpListItemViewData* data in items) {
       data.compactLayout = shouldShowCompactedSetUpListModule;
+      data.heroCellMagicStackLayout = !shouldShowCompactedSetUpListModule;
       SetUpListItemView* view = [[SetUpListItemView alloc] initWithData:data];
       view.tapDelegate = self;
       ContentSuggestionsModuleType type =
@@ -587,6 +588,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     SetUpListItemViewData* allSetData =
         [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
                                            complete:NO];
+    allSetData.heroCellMagicStackLayout =
+        !set_up_list_utils::ShouldShowCompactedSetUpListModule();
     SetUpListItemView* view =
         [[SetUpListItemView alloc] initWithData:allSetData];
     MagicStackModuleContainer* allSetModule = [[MagicStackModuleContainer alloc]

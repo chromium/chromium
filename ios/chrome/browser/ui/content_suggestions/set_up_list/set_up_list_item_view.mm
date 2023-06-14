@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
@@ -54,6 +55,7 @@ NSAttributedString* Strikethrough(NSString* text) {
 // Holds all the configurable attributes of this view.
 struct ViewConfig {
   BOOL compact_layout;
+  BOOL hero_layout;
   int signin_sync_description;
   int default_browser_description;
   int autofill_description;
@@ -66,6 +68,7 @@ struct ViewConfig {
 
 @implementation SetUpListItemView {
   SetUpListItemIcon* _icon;
+  UIView* _iconContainerView;
   CrossfadeLabel* _title;
   CrossfadeLabel* _description;
   UIStackView* _contentStack;
@@ -78,23 +81,7 @@ struct ViewConfig {
   if (self) {
     _type = data.type;
     _complete = data.complete;
-    if (!data.compactLayout) {
-      // Normal ViewConfig.
-      const int syncString =
-          base::FeatureList::IsEnabled(
-              password_manager::features::kEnablePasswordsAccountStorage)
-              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION_NO_PASSWORDS
-              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
-      _config = {
-          NO,
-          syncString,
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
-          IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
-          UIFontTextStyleSubheadline,
-          UIFontTextStyleFootnote,
-          kTextSpacing,
-      };
-    } else {
+    if (data.compactLayout) {
       // ViewConfig for a compact layout.
       const int syncString =
           base::FeatureList::IsEnabled(
@@ -103,12 +90,42 @@ struct ViewConfig {
               : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION;
       _config = {
           YES,
+          NO,
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
           UIFontTextStyleFootnote,
           UIFontTextStyleCaption2,
           kCompactTextSpacing,
+      };
+
+    } else if (data.heroCellMagicStackLayout) {
+      _config = {
+          NO,
+          YES,
+          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
+          UIFontTextStyleSubheadline,
+          UIFontTextStyleFootnote,
+          kTextSpacing,
+      };
+    } else {
+      // Normal ViewConfig.
+      const int syncString =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kEnablePasswordsAccountStorage)
+              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION_NO_PASSWORDS
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
+      _config = {
+          NO,
+          NO,
+          syncString,
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
+          UIFontTextStyleSubheadline,
+          UIFontTextStyleFootnote,
+          kTextSpacing,
       };
     }
   }
@@ -193,9 +210,28 @@ struct ViewConfig {
     self.accessibilityTraits += UIAccessibilityTraitNotEnabled;
   }
 
+  BOOL putIconInSquareBackground =
+      _config.hero_layout && _type != SetUpListItemType::kAllSet;
   _icon = [[SetUpListItemIcon alloc] initWithType:_type
                                          complete:_complete
-                                    compactLayout:_config.compact_layout];
+                                    compactLayout:_config.compact_layout
+                                         inSquare:putIconInSquareBackground];
+  if (putIconInSquareBackground) {
+    _icon.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconContainerView = [[UIView alloc] init];
+    _iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    _iconContainerView.layer.cornerRadius = 12;
+    _iconContainerView.layer.masksToBounds = NO;
+    _iconContainerView.clipsToBounds = YES;
+    [_iconContainerView addSubview:_icon];
+    AddSameCenterConstraints(_icon, _iconContainerView);
+    [NSLayoutConstraint activateConstraints:@[
+      [_iconContainerView.widthAnchor constraintEqualToConstant:56],
+      [_iconContainerView.widthAnchor
+          constraintEqualToAnchor:_iconContainerView.heightAnchor],
+    ]];
+  }
+
   _title = [self createTitle];
   _description = [self createDescription];
 
@@ -207,8 +243,11 @@ struct ViewConfig {
   textStack.spacing = _config.text_spacing;
 
   // Add a horizontal stack to contain the icon(s) and the text stack.
+  NSArray* arrangedSubviews = putIconInSquareBackground
+                                  ? @[ _iconContainerView, textStack ]
+                                  : @[ _icon, textStack ];
   _contentStack =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ _icon, textStack ]];
+      [[UIStackView alloc] initWithArrangedSubviews:arrangedSubviews];
   _contentStack.translatesAutoresizingMaskIntoConstraints = NO;
   _contentStack.alignment = UIStackViewAlignmentCenter;
   _contentStack.spacing = kPadding;
@@ -229,7 +268,11 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label.text = [self titleText];
   label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.font = [UIFont preferredFontForTextStyle:_config.title_font];
+  label.font =
+      _config.hero_layout
+          ? CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold)
+          : [UIFont preferredFontForTextStyle:_config.title_font];
+  label.adjustsFontForContentSizeCategory = YES;
   if (_complete) {
     label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
@@ -311,6 +354,9 @@ struct ViewConfig {
 // Sets the various subview properties that should be animated.
 - (void)setAnimations {
   [_icon markComplete];
+  if (_iconContainerView) {
+    _iconContainerView.backgroundColor = [UIColor clearColor];
+  }
   [_title crossfade];
   [_description crossfade];
 }

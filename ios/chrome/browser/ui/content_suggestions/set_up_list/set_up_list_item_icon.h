@@ -16,10 +16,12 @@ class TimeDelta;
 @interface SetUpListItemIcon : UIView
 
 // Instantiates a `SetUpListItemItemIcon` for the given `type` with the
-// given `complete` state and whether to configure with a `compactLayout`.
+// given `complete` state, whether to configure with a `compactLayout`, and
+// whether it should be placed `inSquare` container.
 - (instancetype)initWithType:(SetUpListItemType)type
                     complete:(BOOL)complete
-               compactLayout:(BOOL)compactLayout;
+               compactLayout:(BOOL)compactLayout
+                    inSquare:(BOOL)inSquare;
 
 // Plays the "sparkle" animation with the given `duration`, after the given
 // `delay`.
