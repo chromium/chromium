@@ -381,7 +381,7 @@ bool ShoppingService::CheckIsPDPFromMetaOnly(
   }
 
   const std::string* currency = on_page_meta_map.FindString(kOgPriceCurrency);
-  const std::string* amount = on_page_meta_map.FindString(kOgPriceCurrency);
+  const std::string* amount = on_page_meta_map.FindString(kOgPriceAmount);
   const std::string* image = on_page_meta_map.FindString(kOgImage);
 
   if (currency && amount && image) {
