@@ -1082,9 +1082,13 @@ D3DImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  return SkiaGLImageRepresentation::Create(
-      ProduceGLTexturePassthrough(manager, tracker), std::move(context_state),
-      manager, this, tracker);
+  auto gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+  if (!gl_representation) {
+    return nullptr;
+  }
+  return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                           std::move(context_state), manager,
+                                           this, tracker);
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>
