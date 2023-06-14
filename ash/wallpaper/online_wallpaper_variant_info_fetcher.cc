@@ -10,11 +10,13 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -165,8 +167,17 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
     return;
   }
 
-  // For requests from existing WallpaperInfo, location is always populated.
-  DCHECK(!info.location.empty());
+  // For requests from existing WallpaperInfo, location should always be
+  // populated. In the event of very old wallpapers, treat them as failure.
+  if (info.location.empty()) {
+    LOG(WARNING)
+        << "Failed to determine wallpaper url. This should only happen for "
+           "very old wallpapers.";
+    base::UmaHistogramEnumeration("Ash.Wallpaper.Online.Result",
+                                  SetWallpaperResult::kInvalidState);
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
 
   bool daily = IsDaily(info);
   auto request = std::make_unique<OnlineWallpaperRequest>(

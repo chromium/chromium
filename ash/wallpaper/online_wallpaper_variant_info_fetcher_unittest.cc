@@ -8,10 +8,12 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
@@ -81,6 +83,7 @@ class OnlineWallpaperVariantInfoFetcherTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 
   TestWallpaperControllerClient client_;
   std::unique_ptr<OnlineWallpaperVariantInfoFetcher> wallpaper_fetcher_;
@@ -343,6 +346,24 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
   wallpaper_fetcher_->FetchOnlineWallpaper(
       kAccount1, info, ScheduleCheckpoint::kSunset, test_future.GetCallback());
   EXPECT_FALSE(test_future.Get());
+}
+
+TEST_F(OnlineWallpaperVariantInfoFetcherTest,
+       FetchOnlineWallpaper_FromInfo_NoLocation) {
+  WallpaperInfo info = WallpaperInfo(/*in_location=*/"",
+                                     WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
+                                     WallpaperType::kOnline, base::Time::Now());
+
+  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  wallpaper_fetcher_->FetchOnlineWallpaper(
+      kAccount1, info, ScheduleCheckpoint::kSunset, test_future.GetCallback());
+
+  // Callback is called
+  auto result = test_future.Get();
+  EXPECT_FALSE(result);
+
+  histogram_tester_.ExpectBucketCount("Ash.Wallpaper.Online.Result",
+                                      SetWallpaperResult::kInvalidState, 1);
 }
 
 }  // namespace
