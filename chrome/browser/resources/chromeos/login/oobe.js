@@ -155,7 +155,15 @@ function startOobe() {
     fontLink.rel = 'stylesheet';
     fontLink.href = 'chrome://theme/typography.css';
     document.head.appendChild(fontLink);
+  } else {
+    // Add refresh color if D/L mode updated for the dynamic illustrations
+    const lightDarkMQL = window.matchMedia('(prefers-color-scheme: light)');
+    lightDarkMQL.addEventListener('change', async () => {
+      const updater = ColorChangeUpdater.forDocument();
+      updater.refreshColorsCss();
+    });
   }
+
 
   // Add OOBE or LOGIN screens to the document.
   const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
