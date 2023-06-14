@@ -3046,7 +3046,7 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
   ui_test_utils::WaitForBrowserToClose(browser());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Skip for ChromeOS because the keep alive is not created for ChromeOS.
 // See https://crbug.com/1174627.
 class KeepAliveDevToolsTest : public InProcessBrowserTest {
@@ -3072,7 +3072,7 @@ IN_PROC_BROWSER_TEST_F(KeepAliveDevToolsTest, KeepsAliveUntilBrowserClose) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::REMOTE_DEBUGGING));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class DevToolsPolicyTest : public InProcessBrowserTest {
  protected:
