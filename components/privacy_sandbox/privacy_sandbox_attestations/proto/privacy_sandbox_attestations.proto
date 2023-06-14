@@ -1,0 +1,34 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package privacy_sandbox;
+
+// Mirrors the C++ enum `PrivacySandboxAttestationsGatedAPI`.
+// Protobuf enums use the first value as the default for unexpected values,
+// so we use UNKNOWN to handle forward compatibility.
+enum PrivacySandboxAttestationsGatedAPIProto {
+  UNKNOWN = 0;
+  TOPICS = 1;
+  PROTECTED_AUDIENCE = 2;
+  PRIVATE_AGGREGATION = 3;
+  ATTRIBUTION_REPORTING = 4;
+  SHARED_STORAGE = 5;
+}
+
+message PrivacySandboxAttestationsProto {
+  message PrivacySandboxAttestedAPIsProto {
+    repeated PrivacySandboxAttestationsGatedAPIProto attested_apis = 1;
+  }
+  // A definition of what "all APIs" means for the current version.
+  repeated PrivacySandboxAttestationsGatedAPIProto all_apis = 1;
+
+  // A list of sites attested for all APIs.
+  repeated string sites_attested_for_all_apis = 2;
+
+  // A map from sites to lists of attested APIs. (Should only be used for sites
+  // that are not attested for all APIs.)
+  map<string, PrivacySandboxAttestedAPIsProto> site_attestations = 3;
+}

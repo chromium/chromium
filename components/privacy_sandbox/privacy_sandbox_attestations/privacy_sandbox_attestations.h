@@ -11,6 +11,11 @@
 
 namespace privacy_sandbox {
 
+// When a new enum value is added:
+// 1. Update kMaxValue to match it.
+// 2. Update `PrivacySandboxAttestationsGatedAPIProto` in
+//    `privacy_sandbox_attestations.proto`.
+// 3. Update `AllowAPI` in `privacy_sandbox_attestations_parser.cc`.
 enum class PrivacySandboxAttestationsGatedAPI {
   kTopics,
   kProtectedAudience,
@@ -18,7 +23,6 @@ enum class PrivacySandboxAttestationsGatedAPI {
   kAttributionReporting,
   kSharedStorage,
 
-  // Update this value whenever a new API is added.
   kMaxValue = kSharedStorage,
 };
 
@@ -27,6 +31,8 @@ using PrivacySandboxAttestationsGatedAPISet =
                   PrivacySandboxAttestationsGatedAPI::kTopics,
                   PrivacySandboxAttestationsGatedAPI::kMaxValue>;
 
+// TODO(crbug.com/1454847): Add a concise representation for "this site is
+// attested for all APIs".
 using PrivacySandboxAttestationsMap =
     base::flat_map<net::SchemefulSite, PrivacySandboxAttestationsGatedAPISet>;
 
