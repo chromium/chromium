@@ -22,11 +22,13 @@ enum class PrivacySandboxAttestationsGatedAPI {
   kMaxValue = kSharedStorage,
 };
 
-using PrivacySandboxAttestationsMap = base::flat_map<
-    net::SchemefulSite,
+using PrivacySandboxAttestationsGatedAPISet =
     base::EnumSet<PrivacySandboxAttestationsGatedAPI,
                   PrivacySandboxAttestationsGatedAPI::kTopics,
-                  PrivacySandboxAttestationsGatedAPI::kMaxValue>>;
+                  PrivacySandboxAttestationsGatedAPI::kMaxValue>;
+
+using PrivacySandboxAttestationsMap =
+    base::flat_map<net::SchemefulSite, PrivacySandboxAttestationsGatedAPISet>;
 
 class PrivacySandboxAttestations {
  public:
@@ -36,7 +38,7 @@ class PrivacySandboxAttestations {
   PrivacySandboxAttestations(PrivacySandboxAttestations&) = delete;
 
   // Returns whether `site` is enrolled and attested for `invoking_api`.
-  // (If the `kEnforcePrivacySandboxAttestations` flag is enabled, returns
+  // (If the `kEnforcePrivacySandboxAttestations` flag is disabled, returns
   // true unconditionally.)
   bool IsSiteAttested(net::SchemefulSite site,
                       PrivacySandboxAttestationsGatedAPI invoking_api) const;

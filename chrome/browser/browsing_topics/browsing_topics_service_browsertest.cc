@@ -30,6 +30,8 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
@@ -41,6 +43,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -482,6 +485,10 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
 
   const BrowsingTopicsState& browsing_topics_state() {
     return browsing_topics_service()->browsing_topics_state();
+  }
+
+  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
+    return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -2335,6 +2342,83 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   EXPECT_EQ(api_usage_contexts[2].hashed_main_frame_host,
             HashMainFrameHostForStorage("foo1.com"));
   EXPECT_EQ(api_usage_contexts[2].hashed_context_domain, HashedDomain(1));
+}
+
+// Tests that the Topics API abides by the Privacy Sandbox Enrollment framework.
+class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
+ public:
+  AttestationBrowsingTopicsBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kBrowsingTopics, blink::features::kBrowsingTopicsXHR,
+         blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
+         features::kPrivacySandboxAdsAPIsOverride,
+         privacy_sandbox::kEnforcePrivacySandboxAttestations},
+        /*disabled_features=*/{});
+  }
+
+  ~AttestationBrowsingTopicsBrowserTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Site a.test is attested for Topics, so it should receive a valid response.
+IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
+                       AttestedSiteCanGetBrowsingTopics) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(
+      net::SchemefulSite(GURL("https://a.test")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
+  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  std::string result = InvokeTopicsAPI(web_contents());
+  EXPECT_EQ(result, kExpectedApiResult);
+}
+
+// Site b.test is not attested for Topics, so it should receive no topics. Note:
+// Attestation failure works differently from other failure modes like operating
+// in an insecure context. In this case, the API is still exposed, but handling
+// will exit before any topics are filled.
+IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
+                       UnattestedSiteCannotGetBrowsingTopics) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(
+      net::SchemefulSite(GURL("https://a.test")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
+  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/one_iframe_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
+}
+
+// Site a.test is attested, but not for Topics, so no topics should be returned.
+IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
+                       AttestedSiteCannotGetBrowsingTopicsWithMismatchedMap) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(net::SchemefulSite(GURL("https://a.test")),
+                       privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+                           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                               kProtectedAudience});
+  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
 }
 
 }  // namespace browsing_topics

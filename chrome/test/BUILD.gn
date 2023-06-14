@@ -1526,6 +1526,7 @@ if (!is_android) {
       "//components/privacy_sandbox",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
       "//components/privacy_sandbox:test_support",
+      "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/proxy_config",
       "//components/reading_list/core",
       "//components/reading_list/features:flags",
