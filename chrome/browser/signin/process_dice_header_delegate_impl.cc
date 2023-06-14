@@ -39,31 +39,61 @@ DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
 
 }  // namespace
 
-ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
+// static
+std::unique_ptr<ProcessDiceHeaderDelegateImpl>
+ProcessDiceHeaderDelegateImpl::Create(
     content::WebContents* web_contents,
     EnableSyncCallback enable_sync_callback,
-    ShowSigninErrorCallback show_signin_error_callback)
-    : web_contents_(web_contents->GetWeakPtr()),
-      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      enable_sync_callback_(std::move(enable_sync_callback)),
-      show_signin_error_callback_(std::move(show_signin_error_callback)) {
-  DCHECK(profile_);
+    ShowSigninErrorCallback show_signin_error_callback) {
+  bool is_sync_signin_tab = false;
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+  signin_metrics::PromoAction promo_action =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  signin_metrics::Reason reason = signin_metrics::Reason::kUnknownReason;
+  GURL redirect_url;
 
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
   if (tab_helper) {
-    is_sync_signin_tab_ = tab_helper->IsSyncSigninInProgress();
-    redirect_url_ = tab_helper->redirect_url();
-    access_point_ = tab_helper->signin_access_point();
-    promo_action_ = tab_helper->signin_promo_action();
-    reason_ = tab_helper->signin_reason();
+    is_sync_signin_tab = tab_helper->IsSyncSigninInProgress();
+    redirect_url = tab_helper->redirect_url();
+    access_point = tab_helper->signin_access_point();
+    promo_action = tab_helper->signin_promo_action();
+    reason = tab_helper->signin_reason();
+  } else {
+    access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
   }
+  return std::make_unique<ProcessDiceHeaderDelegateImpl>(
+      web_contents, is_sync_signin_tab, access_point, promo_action, reason,
+      std::move(redirect_url), std::move(enable_sync_callback),
+      std::move(show_signin_error_callback));
 }
+
+ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
+    content::WebContents* web_contents,
+    bool is_sync_signin_tab,
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::PromoAction promo_action,
+    signin_metrics::Reason reason,
+    GURL redirect_url,
+    EnableSyncCallback enable_sync_callback,
+    ShowSigninErrorCallback show_signin_error_callback)
+    : web_contents_(web_contents->GetWeakPtr()),
+      profile_(raw_ref<Profile>::from_ptr(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+      is_sync_signin_tab_(is_sync_signin_tab),
+      access_point_(access_point),
+      promo_action_(promo_action),
+      reason_(reason),
+      redirect_url_(std::move(redirect_url)),
+      enable_sync_callback_(std::move(enable_sync_callback)),
+      show_signin_error_callback_(std::move(show_signin_error_callback)) {}
 
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
 
 bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
-  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync)) {
+  if (IdentityManagerFactory::GetForProfile(&profile_.get())
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     VLOG(1) << "Do not start sync after web sign-in [already authenticated].";
     return false;
   }
@@ -84,7 +114,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
   // that was opened from a "Enable Sync" Chrome UI. Usually this is indeed a
   // sync signin, but it is not always the case: the user may abandon the sync
   // signin and do a simple web signin in the same tab instead.
-  DiceWebSigninInterceptorFactory::GetForProfile(profile_)
+  DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get())
       ->MaybeInterceptWebSignin(web_contents_.get(), account_id, is_new_account,
                                 is_sync_signin_tab_);
 }
@@ -104,7 +134,7 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
   content::WebContents* web_contents = web_contents_.get();
   VLOG(1) << "Start sync after web sign-in.";
   std::move(enable_sync_callback_)
-      .Run(profile_.get(), access_point_, promo_action_, reason_, web_contents,
+      .Run(&profile_.get(), access_point_, promo_action_, reason_, web_contents,
            account_id);
 
   if (!web_contents)
@@ -141,6 +171,6 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
   // Show the error even if the WebContents was closed, because the user may be
   // signed out of the web.
   std::move(show_signin_error_callback_)
-      .Run(profile_.get(), web_contents,
+      .Run(&profile_.get(), web_contents,
            SigninUIError::FromGoogleServiceAuthError(email, error));
 }

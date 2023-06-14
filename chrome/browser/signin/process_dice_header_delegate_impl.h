@@ -37,10 +37,22 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   using ShowSigninErrorCallback = base::OnceCallback<
       void(Profile*, content::WebContents*, const SigninUIError&)>;
 
+  // Helper function for creating `ProcessDiceHeaderDelegateImpl` from a
+  // `content::WebContents`.
+  static std::unique_ptr<ProcessDiceHeaderDelegateImpl> Create(
+      content::WebContents* web_contents,
+      EnableSyncCallback enable_sync_callback,
+      ShowSigninErrorCallback show_signin_error_callback);
+
   // |is_sync_signin_tab| is true if a sync signin flow has been started in that
   // tab.
   ProcessDiceHeaderDelegateImpl(
       content::WebContents* web_contents,
+      bool is_sync_signin_tab,
+      signin_metrics::AccessPoint access_point,
+      signin_metrics::PromoAction promo_action,
+      signin_metrics::Reason reason,
+      GURL redirect_url,
       EnableSyncCallback enable_sync_callback,
       ShowSigninErrorCallback show_signin_error_callback);
 
@@ -62,16 +74,14 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   bool ShouldEnableSync();
 
   const base::WeakPtr<content::WebContents> web_contents_;
-  raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
+  const bool is_sync_signin_tab_;
+  const signin_metrics::AccessPoint access_point_;
+  const signin_metrics::PromoAction promo_action_;
+  const signin_metrics::Reason reason_;
+  const GURL redirect_url_;
   EnableSyncCallback enable_sync_callback_;
   ShowSigninErrorCallback show_signin_error_callback_;
-  bool is_sync_signin_tab_ = false;
-  signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
-  signin_metrics::PromoAction promo_action_ =
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  signin_metrics::Reason reason_ = signin_metrics::Reason::kUnknownReason;
-  GURL redirect_url_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_

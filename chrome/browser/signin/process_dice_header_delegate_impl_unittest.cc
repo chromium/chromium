@@ -143,7 +143,7 @@ class ProcessDiceHeaderDelegateImplTest
     }
     simulator->Commit();
     DCHECK_EQ(signin_url_, web_contents()->GetVisibleURL());
-    return std::make_unique<ProcessDiceHeaderDelegateImpl>(
+    return ProcessDiceHeaderDelegateImpl::Create(
         web_contents(),
         base::BindOnce(&ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
                        base::Unretained(this)),

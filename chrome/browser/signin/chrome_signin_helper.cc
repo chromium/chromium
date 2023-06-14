@@ -413,7 +413,7 @@ void ProcessDiceHeader(
   DiceResponseHandler* dice_response_handler =
       DiceResponseHandler::GetForProfile(profile);
   dice_response_handler->ProcessDiceHeader(
-      dice_params, std::make_unique<ProcessDiceHeaderDelegateImpl>(
+      dice_params, ProcessDiceHeaderDelegateImpl::Create(
                        web_contents, base::BindOnce(&CreateTurnSyncOnHelper),
                        base::BindOnce(&ShowDiceSigninError)));
 }
