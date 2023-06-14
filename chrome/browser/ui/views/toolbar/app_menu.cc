@@ -128,8 +128,9 @@ const int kZoomLabelHorizontalPadding = 2;
 
 // Returns true if |command_id| identifies a bookmark menu item.
 bool IsBookmarkCommand(int command_id) {
-  return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-         (command_id % AppMenuModel::kNumUnboundedMenuTypes == 0);
+  return command_id == IDC_SHOW_BOOKMARK_SIDE_PANEL ||
+         (command_id >= IDC_FIRST_UNBOUNDED_MENU &&
+          (command_id % AppMenuModel::kNumUnboundedMenuTypes == 0));
 }
 
 // Returns true if |command_id| identifies a recent tabs menu item.
