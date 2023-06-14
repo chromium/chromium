@@ -40,6 +40,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -120,17 +121,49 @@ bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
          !HoldingSpaceItem::IsSuggestionType(item->type());
 }
 
+// Creates a model representing a foreground `tray` image with the specified
+// `vector_icon`. Note that when Jelly is enabled, the image must be repainted
+// on changes to `tray` activation.
+ui::ImageModel CreateForegroundImageModel(const HoldingSpaceTray* tray,
+                                          const gfx::VectorIcon& vector_icon) {
+  // When Jelly is disabled, `tray` activation does not affect color.
+  if (!chromeos::features::IsJellyEnabled()) {
+    return ui::ImageModel::FromVectorIcon(
+        vector_icon, kColorAshIconColorPrimary, kHoldingSpaceTrayIconSize);
+  }
+
+  // When Jelly is enabled, `tray` activation affects color.
+  ui::ImageModel active = ui::ImageModel::FromVectorIcon(
+      vector_icon, cros_tokens::kCrosSysSystemOnPrimaryContainer,
+      kHoldingSpaceTrayIconSize);
+  ui::ImageModel inactive = ui::ImageModel::FromVectorIcon(
+      vector_icon, cros_tokens::kCrosSysOnSurface, kHoldingSpaceTrayIconSize);
+
+  // Create a model which considers `tray` activation during rasterization.
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](const HoldingSpaceTray* tray, const ui::ImageModel& active,
+             const ui::ImageModel& inactive,
+             const ui::ColorProvider* color_provider) {
+            return (tray->is_active() ? active : inactive)
+                .Rasterize(color_provider);
+          },
+          base::Unretained(tray), base::OwnedRef(std::move(active)),
+          base::OwnedRef(std::move(inactive))),
+      gfx::Size(kHoldingSpaceTrayIconSize, kHoldingSpaceTrayIconSize));
+}
+
 // Creates the default tray icon.
-std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
+std::unique_ptr<views::ImageView> CreateDefaultTrayIcon(
+    const HoldingSpaceTray* tray) {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(kHoldingSpaceTrayDefaultIconId);
   icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
-                                               : kHoldingSpaceIcon,
-      kColorAshIconColorPrimary, kHoldingSpaceTrayIconSize));
+  icon->SetImage(CreateForegroundImageModel(
+      tray, features::IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
+                                                     : kHoldingSpaceIcon));
   return icon;
 }
 
@@ -138,7 +171,8 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
 // Creates the icon to be parented by the drop target overlay to indicate that
 // the parent view is a drop target and is capable of handling the current drag
 // payload.
-std::unique_ptr<views::ImageView> CreateDropTargetIcon() {
+std::unique_ptr<views::ImageView> CreateDropTargetIcon(
+    const HoldingSpaceTray* tray) {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -146,8 +180,7 @@ std::unique_ptr<views::ImageView> CreateDropTargetIcon() {
       gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, kColorAshIconColorPrimary, kHoldingSpaceIconSize));
+  icon->SetImage(CreateForegroundImageModel(tray, views::kUnpinIcon));
   return icon;
 }
 
@@ -198,7 +231,8 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   }
 
   // Default icon.
-  default_tray_icon_ = tray_container()->AddChildView(CreateDefaultTrayIcon());
+  default_tray_icon_ =
+      tray_container()->AddChildView(CreateDefaultTrayIcon(this));
 
   // Previews icon.
   previews_tray_icon_ = tray_container()->AddChildView(
@@ -215,7 +249,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
 
   // Drop target icon.
   drop_target_icon_ =
-      drop_target_overlay_->AddChildView(CreateDropTargetIcon());
+      drop_target_overlay_->AddChildView(CreateDropTargetIcon(this));
 
   // Progress indicator.
   // NOTE: The `progress_indicator_` will only be visible when:
@@ -542,6 +576,12 @@ HoldingSpaceTray::CreateContextMenuModel() {
   }
 
   return context_menu_model;
+}
+
+// TODO(http://b/287151663): Fix progress indicator.
+void HoldingSpaceTray::UpdateTrayItemColor(bool is_active) {
+  default_tray_icon_->SchedulePaint();
+  drop_target_icon_->SchedulePaint();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
