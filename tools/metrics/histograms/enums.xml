@@ -61083,6 +61083,7 @@ from previous Chrome versions.
   <int value="-1024644761" label="OmniboxShortcutBoost:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
+  <int value="-1022290134" label="WebApkInstallFailureRetry:disabled"/>
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
   <int value="-1022165708" label="BreakingNewsPush:disabled"/>
   <int value="-1021097344" label="PolicyAtomicGroup:disabled"/>
@@ -61515,6 +61516,7 @@ from previous Chrome versions.
   <int value="-800301139" label="VCLightIntensity:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
+  <int value="-799444168" label="WebApkInstallFailureNotification:enabled"/>
   <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
   <int value="-798521418" label="ArcInputOverlayBeta:disabled"/>
   <int value="-798200573" label="NotificationInteractionHistory:disabled"/>
@@ -62164,6 +62166,7 @@ from previous Chrome versions.
   <int value="-460062351" label="VariationsGoogleGroupFiltering:disabled"/>
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
+  <int value="-458726025" label="WebApkInstallFailureNotification:disabled"/>
   <int value="-458406186" label="UserBypassUI:disabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
   <int value="-458090289" label="CrOSLateBootMissiveStorage:disabled"/>
@@ -62781,6 +62784,7 @@ from previous Chrome versions.
   <int value="-128289378" label="EnableFamilyInfoFeedback:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>
   <int value="-127231994" label="VrBrowsingNativeAndroidUi:disabled"/>
+  <int value="-126945286" label="WebApkInstallFailureRetry:enabled"/>
   <int value="-125941743" label="EnableLogControllerForDiagnosticsApp:enabled"/>
   <int value="-124604747" label="WebViewRestrictSensitiveContent:disabled"/>
   <int value="-123599761" label="IncludeIpcOverheadInNavigationStart:disabled"/>

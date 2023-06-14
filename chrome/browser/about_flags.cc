@@ -10533,6 +10533,18 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSafetyCheckExtensions)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"webapk-install-failure-notification",
+     flag_descriptions::kWebApkInstallFailureNotificationName,
+     flag_descriptions::kWebApkInstallFailureNotificationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kWebApkInstallFailureNotification)},
+    {"webapk-install-failure-retry",
+     flag_descriptions::kWebApkInstallFailureRetryName,
+     flag_descriptions::kWebApkInstallFailureRetryDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kWebApkInstallFailureRetry)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

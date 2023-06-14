@@ -7906,6 +7906,16 @@
     "expiry_milestone": 124
   },
   {
+    "name": "webapk-install-failure-notification",
+    "owners": [ "eirage"],
+    "expiry_milestone": 119
+  },
+  {
+    "name": "webapk-install-failure-retry",
+    "owners": [ "eirage"],
+    "expiry_milestone": 119
+  },
+  {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120
