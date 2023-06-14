@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
