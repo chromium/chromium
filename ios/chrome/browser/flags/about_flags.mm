@@ -517,10 +517,10 @@ const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
     {"(will not show again after user interacts with keyboard accessories)",
      kAutofillBrandingIOSDismissWhenInteractedNoAnimation,
      std::size(kAutofillBrandingIOSDismissWhenInteractedNoAnimation), nullptr},
-    {"(shows and fades to the left every time)",
+    {"(shows and fades to leading edge every time)",
      kAutofillBrandingIOSAlwaysShowAndDismiss,
      std::size(kAutofillBrandingIOSAlwaysShowAndDismiss), nullptr},
-    {"(fades to the left after user interacts with keyboard accessories)",
+    {"(fades to leading edge after user interacts with keyboard accessories)",
      kAutofillBrandingIOSDismissWhenInteractedWithAnimation,
      std::size(kAutofillBrandingIOSDismissWhenInteractedWithAnimation),
      nullptr}};

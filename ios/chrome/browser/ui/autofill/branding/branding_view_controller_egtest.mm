@@ -315,33 +315,6 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
   CheckBrandingHasVisiblity(NO);
 }
 
-// Tests that when the "always show and dismiss" variation is turned on, the
-// autofill branding icon shows until the user interacts with it.
-- (void)testBrandingAlwaysSlideToLeadingEdgeOnPhone {
-  AppLaunchConfiguration config = ConfigWithBrandingEnabledWithFrequencyType(
-      /*phone=*/autofill::features::
-          kAutofillBrandingIOSParamFrequencyTypeAlwaysShowAndDismiss,
-      /*tablet=*/autofill::features::
-          kAutofillBrandingIOSParamFrequencyTypeAlways);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  EnableManualFillButtonForPassword();
-  // First time.
-  BringUpKeyboard();
-  CheckBrandingHasVisiblity(YES);
-  // TODO(crbug.com/1447909): Icon should have slid away from the leading edge.
-  // CheckBrandingHasVisiblity([ChromeEarlGrey isIPadIdiom]);
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-  DismissKeyboard();
-  // Second time: branding is still visible after user interacts with a keyboard
-  // accessory element.
-  BringUpKeyboard();
-  CheckBrandingHasVisiblity(YES);
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
-  // TODO(crbug.com/1447909): Icon should have slid away from the leading edge.
-  // CheckBrandingHasVisiblity([ChromeEarlGrey isIPadIdiom]);
-}
-
 // Tests that when the "dismiss when interacted" variation is turned on, the
 // autofill branding icon shows until the user interacts with it.
 - (void)testBrandingSlideToLeadingEdgeWhenInteractedOnPhone {
@@ -361,9 +334,11 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
   CheckBrandingHasVisiblity(YES);
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       performAction:grey_tap()];
+  // On iPhone, the branding should be sliding away from the leading edge after
+  // a slight wait time.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
-  // TODO(crbug.com/1447909): Icon should have slid away from the leading edge.
-  // CheckBrandingHasVisiblity([ChromeEarlGrey isIPadIdiom]);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  CheckBrandingHasVisiblity([ChromeEarlGrey isIPadIdiom]);
   DismissKeyboard();
   // Third time: branding should not be visible on iPhone, but visible on iPad.
   BringUpKeyboard();
