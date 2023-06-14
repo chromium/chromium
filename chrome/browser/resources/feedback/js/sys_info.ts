@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {createLogsMapTable} from './logs_map_page.js';
@@ -21,7 +21,7 @@ function getSystemInformation():
 function configureJellyColors() {
   if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
     document.body.classList.add('jelly-enabled');
-    startColorChangeUpdater();
+    ColorChangeUpdater.forDocument().start();
   }
 }
 

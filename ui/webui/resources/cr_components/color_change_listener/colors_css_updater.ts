@@ -115,6 +115,7 @@ export class ColorChangeUpdater {
   }
 }
 
+// <if expr="chromeos_ash">
 /**
  * Starts listening for ColorProvider changes from the browser and updates the
  * top level HTML document whenever changes occur.
@@ -122,3 +123,4 @@ export class ColorChangeUpdater {
 export function startColorChangeUpdater() {
   ColorChangeUpdater.forDocument().start();
 }
+// </if>

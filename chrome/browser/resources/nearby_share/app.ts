@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
 import {NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
 import {CloseReason} from '/shared/types.js';
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -134,7 +134,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       fontLink.rel = 'stylesheet';
       fontLink.href = 'chrome://theme/typography.css';
       document.head.appendChild(fontLink);
-      startColorChangeUpdater();
+      ColorChangeUpdater.forDocument().start();
     }
   }
 

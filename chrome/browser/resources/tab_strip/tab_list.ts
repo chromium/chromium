@@ -6,7 +6,7 @@ import './strings.m.js';
 import './tab.js';
 import './tab_group.js';
 
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -262,7 +262,7 @@ export class TabListElement extends CustomElement implements
     const dragManager = new DragManager(this);
     dragManager.startObserving();
 
-    startColorChangeUpdater();
+    ColorChangeUpdater.forDocument().start();
   }
 
   private addAnimationPromise_(promise: Promise<void>) {

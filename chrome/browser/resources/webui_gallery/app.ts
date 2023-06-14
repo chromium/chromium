@@ -8,7 +8,7 @@ import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 
-import {COLORS_CSS_SELECTOR, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -174,7 +174,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
 
   override ready() {
     super.ready();
-    startColorChangeUpdater();
+    ColorChangeUpdater.forDocument().start();
   }
 
   private async onPathChanged_() {

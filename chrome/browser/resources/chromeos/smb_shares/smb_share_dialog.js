@@ -6,7 +6,7 @@ import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -22,9 +22,12 @@ Polymer({
 
   behaviors: [I18nBehavior],
 
-  /** @override */
+  /**
+   * @suppress {checkTypes}
+   * @override
+   */
   created() {
-    startColorChangeUpdater();
+    ColorChangeUpdater.forDocument().start();
   },
 
   /** @private */

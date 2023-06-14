@@ -5,7 +5,7 @@
 import '//resources/cr_components/omnibox/realbox_dropdown.js';
 import './strings.m.js';
 
-import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {AutocompleteResult, PageCallbackRouter} from '//resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from '//resources/cr_components/omnibox/realbox_browser_proxy.js';
 import {RealboxDropdownElement} from '//resources/cr_components/omnibox/realbox_dropdown.js';
@@ -70,7 +70,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
   constructor() {
     super();
     this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
-    startColorChangeUpdater();
+    ColorChangeUpdater.forDocument().start();
   }
 
   override connectedCallback() {
