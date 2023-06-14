@@ -414,4 +414,25 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define LOGICALLY_CONST
 #endif
 
+// preserve_most clang's calling convention. Reduces register pressure for the
+// caller and as such can be used for cold calls. Support for the
+// "preserve_most" attribute is limited:
+// - 32-bit platforms do not implement it,
+// - component builds fail because _dl_runtime_resolve() clobbers registers,
+// - there are crashes on arm64 on Windows (https://crbug.com/v8/14065), which
+//   can hopefully be fixed in the future.
+// Additionally, the initial implementation in clang <= 16 overwrote the return
+// register(s) in the epilogue of a preserve_most function, so we only use
+// preserve_most in clang >= 17 (see https://reviews.llvm.org/D143425).
+// See https://clang.llvm.org/docs/AttributeReference.html#preserve-most for
+// more details.
+#if defined(ARCH_CPU_64_BITS) &&                       \
+    !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) && \
+    !defined(COMPONENT_BUILD) && defined(__clang__) && \
+    __clang_major__ >= 17 && HAS_ATTRIBUTE(preserve_most)
+#define PRESERVE_MOST __attribute__((preserve_most))
+#else
+#define PRESERVE_MOST
+#endif
+
 #endif  // BASE_COMPILER_SPECIFIC_H_

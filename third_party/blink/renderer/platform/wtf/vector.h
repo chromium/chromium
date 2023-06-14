@@ -1448,7 +1448,7 @@ class Vector
   template <typename U>
   U* ExpandCapacity(wtf_size_t new_min_capacity, U*);
   template <typename U>
-  void AppendSlowCase(U&&);
+  NOINLINE PRESERVE_MOST void AppendSlowCase(U&&);
 
   bool HasInlineBuffer() const {
     return INLINE_CAPACITY && !this->HasOutOfLineBuffer();
@@ -1967,7 +1967,8 @@ void Vector<T, inlineCapacity, Allocator>::Append(const U* data,
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 template <typename U>
-NOINLINE void Vector<T, inlineCapacity, Allocator>::AppendSlowCase(U&& val) {
+NOINLINE PRESERVE_MOST void
+Vector<T, inlineCapacity, Allocator>::AppendSlowCase(U&& val) {
   DCHECK_EQ(size(), capacity());
 
   typename std::remove_reference<U>::type* ptr = &val;
