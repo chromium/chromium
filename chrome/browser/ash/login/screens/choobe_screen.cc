@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -68,6 +69,8 @@ bool ChoobeScreen::MaybeSkip(WizardContext& context) {
     if (!pref->IsManaged() && !pref->IsRecommended()) {
       ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
           prefs::kDarkModeEnabled, false);
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->SetInteger(
+          prefs::kDarkModeScheduleType, static_cast<int>(ScheduleType::kNone));
     }
     return false;
   }
