@@ -316,6 +316,13 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   [self populateConsumerItems];
 }
 
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  DCHECK_EQ(_webStateList, webStateList);
+
+  _scopedWebStateListObservation.reset();
+  _webStateList = nullptr;
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {
