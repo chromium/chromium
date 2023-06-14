@@ -17,6 +17,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 
