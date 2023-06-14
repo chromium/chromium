@@ -20,6 +20,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "printing/backend/print_backend.h"
+#include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -109,11 +111,14 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
 
   // PDFExtensionTestBase:
   void SetUp() override {
-    // Avoid using a real PrintingContext, which can show modal print dialogs.
+    // Avoid using a real PrintBackend / PrintingContext, as they can show modal
+    // print dialogs.
     // Called here in SetUp() because it must be reset in TearDown(), as
     // resetting in TearDownOnMainThread() is too early. The MessagePump may
     // still process messages after TearDownOnMainThread(), which can trigger
     // PrintingContext calls.
+    printing::PrintBackend::SetPrintBackendForTesting(
+        test_print_backend_.get());
     printing::PrintingContext::SetPrintingContextFactoryForTest(
         &test_printing_context_factory_);
     PDFExtensionTestBase::SetUp();
@@ -131,6 +136,7 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
   void TearDown() override {
     PDFExtensionTestBase::TearDown();
     printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
+    printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     if (UseService()) {
@@ -148,11 +154,12 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
  private:
   bool UseService() const { return GetParam(); }
 
+  scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
+      base::MakeRefCounted<printing::TestPrintBackend>();
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
 };
 
-// Flaky. See crbug.com/1258561
-IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
