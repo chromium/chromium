@@ -419,6 +419,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://parent-access",
     "chrome://password-change",
     "chrome://power",
+    "chrome://print-management",
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
