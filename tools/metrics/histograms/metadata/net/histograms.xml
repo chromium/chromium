@@ -2229,25 +2229,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Prefetch.HitBytes" units="bytes" expires_after="M87">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Bytes read for requests that were served from a cache entry whose
-    unused_since_prefetch bit is true.
-  </summary>
-</histogram>
-
-<histogram name="Net.Prefetch.PrefilterBytesReadFromNetwork" units="bytes"
-    expires_after="M85">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Number of bytes read from the network on behalf of prefetch requests. This
-    is prefilter, so before any decompression.
-
-    This applies to requests with RESOURCE_TYPE_PREFETCH.
-  </summary>
-</histogram>
-
 <histogram name="Net.ProxyScriptFetcher.FirstByteDuration" units="ms"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
