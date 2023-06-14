@@ -1085,6 +1085,11 @@ void BaseRenderingContext2D::DrawPathInternal(
     InflateStrokeRect(bounds);
 
   if (path.IsLine()) {
+    if (UNLIKELY(paint_type == CanvasRenderingContext2DState::kFillPaintType)) {
+      // Filling a line is a no-op.
+      // Also, SKCanvas::drawLine() ignores paint type and always strokes.
+      return;
+    }
     auto line = path.line();
     Draw<OverdrawOp::kNone>(
         [line](cc::PaintCanvas* c,
