@@ -5173,7 +5173,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
   <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
   <suffix name="WEB_RTC_SIGNALING_FRAME" label="Web RTC Signalling Message"/>
-  <affected-histogram name="Sharing.MessageHandlerTime"/>
   <affected-histogram name="Sharing.SendMessageResult"/>
   <affected-histogram name="Sharing.SendMessageResult.Android"/>
   <affected-histogram name="Sharing.SendMessageResult.ChromeOS"/>

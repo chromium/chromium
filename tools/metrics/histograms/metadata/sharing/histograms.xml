@@ -127,38 +127,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.DeviceRegistrationResult"
-    enum="SharingDeviceRegistrationResult" expires_after="M97">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of Sharing device registration. Logged after Sharing registration is
-    attempted.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.DeviceUnregistrationResult"
-    enum="SharingDeviceRegistrationResult" expires_after="M97">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of Sharing device un-registration. Logged after Sharing
-    un-registration is attempted.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.MessageHandlerTime" units="ms" expires_after="M97">
-<!-- Name completed by histogram_suffix name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time from receiving a SharingMessage in SharingFCMHandler until an ack
-    is sent back. Recorded when SendAckMessage callback is run in
-    SharingMessageHandler.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
     expires_after="2023-12-10">
   <owner>mvanouwerkerk@chromium.org</owner>

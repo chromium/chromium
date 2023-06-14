@@ -175,14 +175,6 @@ void LogSharingMessageReceived(
                                 chrome_browser_sharing::MessageType_ARRAYSIZE);
 }
 
-void LogSharingRegistrationResult(SharingDeviceRegistrationResult result) {
-  base::UmaHistogramEnumeration("Sharing.DeviceRegistrationResult", result);
-}
-
-void LogSharingUnregistrationResult(SharingDeviceRegistrationResult result) {
-  base::UmaHistogramEnumeration("Sharing.DeviceUnregistrationResult", result);
-}
-
 void LogSharingDevicesToShow(SharingFeatureName feature,
                              const char* histogram_suffix,
                              int count) {
@@ -234,15 +226,6 @@ void LogSharingSelectedIndex(SharingFeatureName feature,
   base::UmaHistogramExactLinear(base::StrCat({name, ".", histogram_suffix}),
                                 index,
                                 /*value_max=*/20);
-}
-
-void LogSharingMessageHandlerTime(
-    chrome_browser_sharing::MessageType message_type,
-    base::TimeDelta time_taken) {
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"Sharing.MessageHandlerTime.",
-                    SharingMessageTypeToString(message_type)}),
-      time_taken);
 }
 
 void LogSharingDialogShown(SharingFeatureName feature, SharingDialogType type) {

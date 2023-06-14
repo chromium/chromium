@@ -90,7 +90,6 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
       absl::optional<chrome_browser_sharing::ServerChannelConfiguration>
           server_channel,
       SharingDevicePlatform sender_device_type,
-      base::TimeTicks message_received_time,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
   void OnAckMessageSent(
