@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -462,20 +464,24 @@ TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
 TEST_F(SyncPrefsTest, SetBookmarksAndReadingListAccountStorageOptInPrefChange) {
   // Default value disabled.
   EXPECT_FALSE(
-      sync_prefs_->IsOptedInForBookmarksAndReadingListAccountStorage());
+      sync_prefs_
+          ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
 
   // Enable bookmarks and reading list account storage pref.
   sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
 
   // Check pref change to enabled.
-  EXPECT_TRUE(sync_prefs_->IsOptedInForBookmarksAndReadingListAccountStorage());
+  EXPECT_TRUE(
+      sync_prefs_
+          ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
 
   // Clear pref.
   sync_prefs_->ClearBookmarksAndReadingListAccountStorageOptIn();
 
   // Default value applied after clearing the pref.
   EXPECT_FALSE(
-      sync_prefs_->IsOptedInForBookmarksAndReadingListAccountStorage());
+      sync_prefs_
+          ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
 }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -525,9 +531,229 @@ class SyncPrefsMigrationTest : public testing::Test {
     }
   }
 
+  const char* kBookmarksPref =
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kBookmarks);
+  const char* kReadingListPref =
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kReadingList);
+  const char* kPasswordsPref =
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPasswords);
+  const char* kAutofillPref =
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kAutofill);
+  const char* kPreferencesPref =
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPreferences);
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
 };
+
+TEST_F(SyncPrefsMigrationTest,
+       ReplacingSyncWithSignin_NoMigrationForSignedOutUser) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Even though the user is signed out, some prefs are set (e.g. because the
+  // user was previously syncing).
+  SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
+  SetBooleanUserPrefValue(kReadingListPref, PREF_FALSE);
+
+  // The migration runs for a signed-out user. This should do nothing.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kNotSignedIn);
+
+  // Everything should be unchanged.
+  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_TRUE));
+  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
+  EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       ReplacingSyncWithSignin_NoMigrationForSyncingUser) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Some data type prefs are set.
+  SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
+  SetBooleanUserPrefValue(kReadingListPref, PREF_FALSE);
+
+  // The migration runs for a syncing user. This should do nothing.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kSyncing);
+
+  // Everything should be unchanged.
+  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_TRUE));
+  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
+  EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+}
+
+TEST_F(SyncPrefsMigrationTest, ReplacingSyncWithSignin_RunsOnlyOnce) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // The migration initially runs for a new user (not signed in yet). This does
+  // not change any actual prefs, but marks the migration as "done".
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kNotSignedIn);
+  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+
+  // Later, the user signs in. When the migration function gets triggered again
+  // (typically at the next browser startup), it should *not* migrate anything.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // Nothing happened - pref is still unset.
+  EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       ReplacingSyncWithSignin_RunsAgainAfterFeatureReenabled) {
+  // Initial state: Preferences are enabled.
+  SetBooleanUserPrefValue(kPreferencesPref, PREF_TRUE);
+
+  // The feature gets enabled for the first time, and the migration runs.
+  {
+    base::test::ScopedFeatureList feature_list(
+        kReplaceSyncPromosWithSignInPromos);
+
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForReplacingSyncWithSignin(
+            SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+    // Preferences got migrated to false.
+    ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
+  }
+
+  // Reset Preferences to true so we can check whether the migration happened
+  // again.
+  SetBooleanUserPrefValue(kPreferencesPref, PREF_TRUE);
+
+  // The feature gets disabled, and the migration logic gets triggered again on
+  // the next browser startup.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForReplacingSyncWithSignin(
+            SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+    // Since the feature is disabled now, this didn't do anything - Preferences
+    // is still true.
+    ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_TRUE));
+  }
+
+  // The feature gets enabled for the second time, and the migration runs.
+  // Since it was disabled in the between, the migration should run again
+  {
+    base::test::ScopedFeatureList feature_list(
+        kReplaceSyncPromosWithSignInPromos);
+
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForReplacingSyncWithSignin(
+            SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+    // Preferences should have been migrated to false again.
+    EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
+  }
+}
+
+TEST_F(SyncPrefsMigrationTest, ReplacingSyncWithSignin_TurnsPreferencesOff) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+
+  // Run the migration for a pre-existing signed-in non-syncing user.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // Preferences should have been set to false.
+  EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       ReplacingSyncWithSignin_MigratesBookmarksOptedIn) {
+  // Bookmarks and ReadingList are enabled (by default - the actual prefs are
+  // not set explicitly). On iOS, an additional opt-in pref is required.
+  ASSERT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
+  ASSERT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
+#if BUILDFLAG(IS_IOS)
+  SetBooleanUserPrefValue(
+      prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, PREF_TRUE);
+#endif  // BUILDFLAG(IS_IOS)
+  ASSERT_TRUE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+          .HasAll({UserSelectableType::kBookmarks,
+                   UserSelectableType::kReadingList}));
+
+  // Now (on the next browser restart) the feature gets enabled, and the
+  // migration runs.
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // Bookmarks and ReadingList should still be enabled (by default).
+  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
+  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
+  EXPECT_TRUE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+          .HasAll({UserSelectableType::kBookmarks,
+                   UserSelectableType::kReadingList}));
+}
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsMigrationTest,
+       ReplacingSyncWithSignin_MigratesBookmarksNotOptedIn) {
+  // The regular Bookmarks and ReadingList prefs are enabled, but the additional
+  // opt-in pref is not.
+  SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
+  SetBooleanUserPrefValue(kReadingListPref, PREF_TRUE);
+  ASSERT_EQ(GetBooleanUserPrefValue(
+                prefs::internal::kBookmarksAndReadingListAccountStorageOptIn),
+            PREF_UNSET);
+  ASSERT_FALSE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+          .HasAny({UserSelectableType::kBookmarks,
+                   UserSelectableType::kReadingList}));
+
+  // Now (on the next browser restart) the feature gets enabled, and the
+  // migration runs.
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Sanity check: Without the migration, Bookmarks and ReadingList would now be
+  // considered enabled.
+  ASSERT_TRUE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+          .HasAll({UserSelectableType::kBookmarks,
+                   UserSelectableType::kReadingList}));
+
+  // Run the migration!
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForReplacingSyncWithSignin(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // After the migration, bookmarks should be disabled.
+  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_FALSE));
+  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
+  EXPECT_FALSE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+          .HasAny({UserSelectableType::kBookmarks,
+                   UserSelectableType::kReadingList}));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
 

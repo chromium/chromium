@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -18,8 +19,19 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
+
+namespace {
+
+// Whether MaybeMigratePrefsForReplacingSyncWithSignin() has run in this
+// profile. Should be cleaned up after
+// MaybeMigratePrefsForReplacingSyncWithSignin() itself is gone.
+constexpr char kReplacingSyncWithSigninMigrated[] =
+    "sync.replacing_sync_with_signin_migrated";
+
+}  // namespace
 
 namespace syncer {
 
@@ -73,6 +85,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   registry->RegisterBooleanPref(prefs::internal::kSyncAppsEnabledByOs, false);
 #endif
+
+  registry->RegisterBooleanPref(kReplacingSyncWithSigninMigrated, false);
 
   // The encryption bootstrap token represents a user-entered passphrase.
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
@@ -160,7 +174,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
           // additional opt-in.
           // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an
           // additional opt in for Bookmarks and Reading Lists.
-          if ((type == UserSelectableType::kBookmarks ||
+          if (!base::FeatureList::IsEnabled(
+                  kReplaceSyncPromosWithSignInPromos) &&
+              (type == UserSelectableType::kBookmarks ||
                type == UserSelectableType::kReadingList) &&
               !pref_service_->GetBoolean(
                   prefs::internal::
@@ -236,7 +252,7 @@ void SyncPrefs::SetBookmarksAndReadingListAccountStorageOptIn(bool value) {
   }
 }
 
-bool SyncPrefs::IsOptedInForBookmarksAndReadingListAccountStorage() {
+bool SyncPrefs::IsOptedInForBookmarksAndReadingListAccountStorageForTesting() {
   return pref_service_->GetBoolean(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn);
 }
@@ -443,6 +459,60 @@ void SyncPrefs::SetPassphrasePromptMutedProductVersion(int major_version) {
 void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
   pref_service_->ClearPref(
       prefs::internal::kSyncPassphrasePromptMutedProductVersion);
+}
+
+void SyncPrefs::MaybeMigratePrefsForReplacingSyncWithSignin(
+    SyncAccountState account_state) {
+  if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+    // Ensure that the migration runs again when the feature gets enabled.
+    pref_service_->ClearPref(kReplacingSyncWithSigninMigrated);
+    return;
+  }
+
+  // Don't migrate again if this profile was previously migrated.
+  if (pref_service_->GetBoolean(kReplacingSyncWithSigninMigrated)) {
+    return;
+  }
+  pref_service_->SetBoolean(kReplacingSyncWithSigninMigrated, true);
+
+  switch (account_state) {
+    case SyncAccountState::kNotSignedIn:
+    case SyncAccountState::kSyncing: {
+      // Nothing to migrate for signed-out or syncing users.
+      break;
+    }
+    case SyncAccountState::kSignedInNotSyncing: {
+      // For pre-existing signed-in users, some state needs to be migrated:
+
+      // Settings aka preferences remains off by default.
+      pref_service_->SetBoolean(
+          GetPrefNameForType(UserSelectableType::kPreferences), false);
+
+      // Addresses remains enabled only if passwords is enabled (i.e. the user
+      // didn't opt out for passwords).
+      // TODO(crbug.com/1447020): Verify whether this is the intended behavior,
+      // and then add tests for it.
+      if (!pref_service_->GetBoolean(
+              GetPrefNameForType(UserSelectableType::kPasswords))) {
+        pref_service_->SetBoolean(
+            GetPrefNameForType(UserSelectableType::kAutofill), false);
+      }
+
+#if BUILDFLAG(IS_IOS)
+      // Bookmarks and reading list remain enabled only if the user previously
+      // explicitly opted in.
+      if (!pref_service_->GetBoolean(
+              prefs::internal::kBookmarksAndReadingListAccountStorageOptIn)) {
+        pref_service_->SetBoolean(
+            GetPrefNameForType(UserSelectableType::kBookmarks), false);
+        pref_service_->SetBoolean(
+            GetPrefNameForType(UserSelectableType::kReadingList), false);
+      }
+#endif  // BUILDFLAG(IS_IOS)
+
+      break;
+    }
+  }
 }
 
 }  // namespace syncer
