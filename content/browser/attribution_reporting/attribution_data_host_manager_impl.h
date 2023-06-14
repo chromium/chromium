@@ -110,7 +110,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       bool is_final_response) override;
 
  private:
-  class ReceiverContext;
+  class RegistrationContext;
 
   struct DeferredReceiverTimeout;
   struct DeferredReceiver;
@@ -134,8 +134,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void OsSourceDataAvailable(std::vector<GURL> registration_urls) override;
   void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override;
 
-  const ReceiverContext* GetReceiverContextForSource();
-  const ReceiverContext* GetReceiverContextForTrigger();
+  const RegistrationContext* GetReceiverRegistrationContextForSource();
+  const RegistrationContext* GetReceiverRegistrationContextForTrigger();
 
   void OnReceiverDisconnected();
 
@@ -165,7 +165,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // Owns `this`.
   raw_ptr<AttributionManager> attribution_manager_;
 
-  mojo::ReceiverSet<blink::mojom::AttributionDataHost, ReceiverContext>
+  mojo::ReceiverSet<blink::mojom::AttributionDataHost, RegistrationContext>
       receivers_;
 
   // Map which stores pending receivers for data hosts which are going to

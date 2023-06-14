@@ -119,32 +119,63 @@ struct PendingWebDecode {
         reporting_origin(std::move(reporting_origin)) {}
 };
 
+class RegistrationNavigationContext {
+ public:
+  RegistrationNavigationContext(int64_t navigation_id,
+                                AttributionInputEvent input_event)
+      : navigation_id_(navigation_id), input_event_(std::move(input_event)) {}
+
+  ~RegistrationNavigationContext() = default;
+
+  RegistrationNavigationContext(const RegistrationNavigationContext&) = delete;
+  RegistrationNavigationContext& operator=(
+      const RegistrationNavigationContext&) = delete;
+
+  RegistrationNavigationContext(RegistrationNavigationContext&&) = default;
+  RegistrationNavigationContext& operator=(RegistrationNavigationContext&&) =
+      default;
+
+  int64_t navigation_id() const { return navigation_id_; }
+
+  const AttributionInputEvent& input_event() const { return input_event_; }
+
+ private:
+  // We store the navigation_id on the registration context to support trigger
+  // buffering. Will not change over the course of the redirect chain.
+  // Logically const.
+  int64_t navigation_id_;
+
+  // Input event associated with the navigation for navigation source data
+  // hosts. The underlying Java object will be null for event sources.
+  // Logically const.
+  AttributionInputEvent input_event_;
+};
+
 }  // namespace
 
-class AttributionDataHostManagerImpl::ReceiverContext {
+class AttributionDataHostManagerImpl::RegistrationContext {
  public:
-  ReceiverContext(SuitableOrigin context_origin,
-                  RegistrationType registration_type,
-                  bool is_within_fenced_frame,
-                  AttributionInputEvent input_event,
-                  GlobalRenderFrameHostId render_frame_id,
-                  absl::optional<int64_t> navigation_id)
+  RegistrationContext(SuitableOrigin context_origin,
+                      RegistrationType registration_type,
+                      bool is_within_fenced_frame,
+                      GlobalRenderFrameHostId render_frame_id,
+                      absl::optional<RegistrationNavigationContext> navigation)
       : context_origin_(std::move(context_origin)),
         registration_type_(registration_type),
         is_within_fenced_frame_(is_within_fenced_frame),
-        input_event_(std::move(input_event)),
         render_frame_id_(render_frame_id),
-        navigation_id_(navigation_id) {
-    DCHECK(!navigation_id_ || registration_type_ == RegistrationType::kSource);
+        navigation_(std::move(navigation)) {
+    CHECK(!navigation_.has_value() ||
+          registration_type_ == RegistrationType::kSource);
   }
 
-  ~ReceiverContext() = default;
+  ~RegistrationContext() = default;
 
-  ReceiverContext(const ReceiverContext&) = delete;
-  ReceiverContext& operator=(const ReceiverContext&) = delete;
+  RegistrationContext(const RegistrationContext&) = delete;
+  RegistrationContext& operator=(const RegistrationContext&) = delete;
 
-  ReceiverContext(ReceiverContext&&) = default;
-  ReceiverContext& operator=(ReceiverContext&&) = default;
+  RegistrationContext(RegistrationContext&&) = default;
+  RegistrationContext& operator=(RegistrationContext&&) = default;
 
   const SuitableOrigin& context_origin() const { return context_origin_; }
 
@@ -152,11 +183,11 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
-  absl::optional<int64_t> navigation_id() const { return navigation_id_; }
-
   GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
 
-  const AttributionInputEvent& input_event() const { return input_event_; }
+  const absl::optional<RegistrationNavigationContext>& navigation() const {
+    return navigation_;
+  }
 
  private:
   // Top-level origin the data host was created in.
@@ -170,18 +201,13 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   // Logically const.
   bool is_within_fenced_frame_;
 
-  // Input event associated with the navigation for navigation source data
-  // hosts. The underlying Java object will be null for event sources.
-  // Logically const.
-  AttributionInputEvent input_event_;
-
   // The ID of the topmost render frame host.
   // Logically const.
   GlobalRenderFrameHostId render_frame_id_;
 
-  // When the receiver is tied to a navigation, we store the navigation_id
-  // to be able to bind deferred receivers when it disconnects.
-  absl::optional<int64_t> navigation_id_;
+  // When the registration is tied to a navigation, we store additional context
+  // on the navigation.
+  absl::optional<RegistrationNavigationContext> navigation_;
 };
 
 struct AttributionDataHostManagerImpl::DeferredReceiverTimeout {
@@ -195,7 +221,7 @@ struct AttributionDataHostManagerImpl::DeferredReceiverTimeout {
 
 struct AttributionDataHostManagerImpl::DeferredReceiver {
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
-  ReceiverContext context;
+  RegistrationContext context;
   base::TimeTicks initial_registration_time = base::TimeTicks::Now();
 };
 
@@ -206,30 +232,8 @@ struct AttributionDataHostManagerImpl::NavigationDataHost {
 
 class AttributionDataHostManagerImpl::SourceRegistrations {
  public:
-  struct ForegroundNavigation {
-    blink::AttributionSrcToken attribution_src_token;
-
-    // Will not change over the course of the redirect chain.
-    int64_t navigation_id;
-  };
-
-  struct Beacon {
-    BeaconId id;
-    absl::optional<int64_t> navigation_id;
-  };
-
-  using Data = absl::variant<ForegroundNavigation, Beacon>;
-
-  SourceRegistrations(SuitableOrigin source_origin,
-                      bool is_within_fenced_frame,
-                      AttributionInputEvent input_event,
-                      GlobalRenderFrameHostId render_frame_id,
-                      Data data)
-      : source_origin_(std::move(source_origin)),
-        is_within_fenced_frame_(is_within_fenced_frame),
-        input_event_(std::move(input_event)),
-        render_frame_id_(render_frame_id),
-        data_(data) {}
+  SourceRegistrations(SourceRegistrationsId id, RegistrationContext context)
+      : id_(id), context_(std::move(context)) {}
 
   SourceRegistrations(const SourceRegistrations&) = delete;
   SourceRegistrations& operator=(const SourceRegistrations&) = delete;
@@ -237,7 +241,9 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
   SourceRegistrations(SourceRegistrations&&) = default;
   SourceRegistrations& operator=(SourceRegistrations&&) = default;
 
-  const SuitableOrigin& source_origin() const { return source_origin_; }
+  const SuitableOrigin& source_origin() const {
+    return context_.context_origin();
+  }
 
   bool has_pending_decodes() const {
     return !pending_os_decodes_.empty() || !pending_web_decodes_.empty();
@@ -245,23 +251,29 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
 
   bool registrations_complete() const { return registrations_complete_; }
 
-  bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
-
-  absl::optional<int64_t> navigation_id() const {
-    return absl::visit(
-        base::Overloaded{
-            [](const ForegroundNavigation& navigation) {
-              return absl::make_optional(navigation.navigation_id);
-            },
-            [](const Beacon& beacon) { return beacon.navigation_id; }},
-        data_);
+  bool is_within_fenced_frame() const {
+    return context_.is_within_fenced_frame();
   }
 
-  const AttributionInputEvent& input_event() const { return input_event_; }
+  absl::optional<int64_t> navigation_id() const {
+    if (context_.navigation().has_value()) {
+      return context_.navigation()->navigation_id();
+    }
 
-  GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
+    return absl::nullopt;
+  }
 
-  const Data& data() const { return data_; }
+  const AttributionInputEvent* input_event() const {
+    if (context_.navigation().has_value()) {
+      return &context_.navigation()->input_event();
+    }
+
+    return nullptr;
+  }
+
+  GlobalRenderFrameHostId render_frame_id() const {
+    return context_.render_frame_id();
+  }
 
   const base::circular_deque<PendingWebDecode>& pending_web_decodes() const {
     return pending_web_decodes_;
@@ -298,41 +310,19 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
     return a < b.Id();
   }
 
-  SourceRegistrationsId Id() const {
-    return absl::visit(
-        base::Overloaded{
-            [](const ForegroundNavigation& navigation) {
-              return SourceRegistrationsId(navigation.attribution_src_token);
-            },
-            [](const Beacon& beacon) {
-              return SourceRegistrationsId(beacon.id);
-            },
-        },
-        data_);
-  }
+  SourceRegistrationsId Id() const { return id_; }
 
  private:
-  // Source origin to use for all registrations on a navigation redirect or
-  // beacon chain. Will not change over the course of the chain.
-  SuitableOrigin source_origin_;
-
   // True if navigation or beacon has completed.
   bool registrations_complete_ = false;
 
-  // Whether the registration was initiated within a fenced frame.
-  bool is_within_fenced_frame_;
-
-  // Input event associated with the navigation.
-  // The underlying Java object will be null for event beacons.
-  AttributionInputEvent input_event_;
-
-  GlobalRenderFrameHostId render_frame_id_;
-
-  Data data_;
+  SourceRegistrationsId id_;
 
   base::circular_deque<PendingWebDecode> pending_web_decodes_;
 
   base::circular_deque<std::string> pending_os_decodes_;
+
+  RegistrationContext context_;
 };
 
 struct AttributionDataHostManagerImpl::RegistrarAndHeader {
@@ -399,10 +389,9 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     RegistrationType registration_type,
     GlobalRenderFrameHostId render_frame_id,
     int64_t last_navigation_id) {
-  ReceiverContext receiver_context(
+  RegistrationContext receiver_context(
       std::move(context_origin), registration_type, is_within_fenced_frame,
-      /*input_event=*/AttributionInputEvent(), render_frame_id,
-      /*navigation_id=*/absl::nullopt);
+      render_frame_id, /*navigation=*/absl::nullopt);
 
   switch (registration_type) {
     case RegistrationType::kTrigger:
@@ -537,11 +526,13 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     DCHECK(inserted);
     MaybeSetupDeferredReceivers(navigation_id);
 
-    receivers_.Add(this, std::move(it->second.data_host),
-                   ReceiverContext(source_origin, RegistrationType::kSource,
-                                   is_within_fenced_frame,
-                                   std::move(it->second.input_event),
-                                   render_frame_id, navigation_id));
+    receivers_.Add(
+        this, std::move(it->second.data_host),
+        RegistrationContext(
+            /*context_origin=*/source_origin, RegistrationType::kSource,
+            is_within_fenced_frame, render_frame_id,
+            RegistrationNavigationContext(navigation_id,
+                                          std::move(it->second.input_event))));
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -566,12 +557,12 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
                    network::AttributionReportingRuntimeFeature::kCrossAppWeb));
   if (header.has_value()) {
     auto [it, inserted] = registrations_.emplace(
-        source_origin, is_within_fenced_frame, std::move(input_event),
-        render_frame_id,
-        SourceRegistrations::ForegroundNavigation{
-            .attribution_src_token = attribution_src_token,
-            .navigation_id = navigation_id,
-        });
+        SourceRegistrationsId(attribution_src_token),
+        RegistrationContext(/*context_origin=*/source_origin,
+                            RegistrationType::kSource, is_within_fenced_frame,
+                            render_frame_id,
+                            RegistrationNavigationContext(
+                                navigation_id, std::move(input_event))));
     DCHECK(!it->registrations_complete());
 
     // We defer trigger registrations until source parsing completes.
@@ -603,9 +594,9 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
   return header.has_value();
 }
 
-const AttributionDataHostManagerImpl::ReceiverContext*
-AttributionDataHostManagerImpl::GetReceiverContextForSource() {
-  const ReceiverContext& context = receivers_.current_context();
+const AttributionDataHostManagerImpl::RegistrationContext*
+AttributionDataHostManagerImpl::GetReceiverRegistrationContextForSource() {
+  const RegistrationContext& context = receivers_.current_context();
 
   if (context.registration_type() == RegistrationType::kTrigger) {
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for source.");
@@ -615,9 +606,9 @@ AttributionDataHostManagerImpl::GetReceiverContextForSource() {
   return &context;
 }
 
-const AttributionDataHostManagerImpl::ReceiverContext*
-AttributionDataHostManagerImpl::GetReceiverContextForTrigger() {
-  const ReceiverContext& context = receivers_.current_context();
+const AttributionDataHostManagerImpl::RegistrationContext*
+AttributionDataHostManagerImpl::GetReceiverRegistrationContextForTrigger() {
+  const RegistrationContext& context = receivers_.current_context();
 
   if (context.registration_type() == RegistrationType::kSource) {
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for trigger.");
@@ -633,13 +624,14 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 
-  const ReceiverContext* context = GetReceiverContextForSource();
+  const RegistrationContext* context =
+      GetReceiverRegistrationContextForSource();
   if (!context) {
     return;
   }
 
   auto source_type = SourceType::kEvent;
-  if (context->navigation_id().has_value()) {
+  if (context->navigation().has_value()) {
     source_type = SourceType::kNavigation;
   }
 
@@ -657,7 +649,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 
-  const ReceiverContext* context = GetReceiverContextForTrigger();
+  const RegistrationContext* context =
+      GetReceiverRegistrationContextForTrigger();
   if (!context) {
     return;
   }
@@ -672,22 +665,27 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     std::vector<GURL> registration_urls) {
-  const ReceiverContext* context = GetReceiverContextForSource();
+  const RegistrationContext* context =
+      GetReceiverRegistrationContextForSource();
   if (!context) {
     return;
   }
 
+  AttributionInputEvent input_event;
+  if (context->navigation().has_value()) {
+    input_event = context->navigation()->input_event();
+  }
   for (GURL& url : registration_urls) {
     attribution_manager_->HandleOsRegistration(
-        OsRegistration(std::move(url), context->context_origin(),
-                       context->input_event()),
+        OsRegistration(std::move(url), context->context_origin(), input_event),
         context->render_frame_id());
   }
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     std::vector<GURL> registration_urls) {
-  const ReceiverContext* context = GetReceiverContextForTrigger();
+  const RegistrationContext* context =
+      GetReceiverRegistrationContextForTrigger();
   if (!context) {
     return;
   }
@@ -701,14 +699,14 @@ void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
-  const ReceiverContext& context = receivers_.current_context();
+  const RegistrationContext& context = receivers_.current_context();
 
-  if (context.navigation_id().has_value()) {
+  if (context.navigation().has_value()) {
     if (auto it = ongoing_background_registrations_.find(
-            context.navigation_id().value());
+            context.navigation()->navigation_id());
         it != ongoing_background_registrations_.end()) {
       ongoing_background_registrations_.erase(it);
-      MaybeBindDeferredReceivers(context.navigation_id().value(),
+      MaybeBindDeferredReceivers(context.navigation()->navigation_id(),
                                  /*due_to_timeout=*/false);
     }
   }
@@ -721,18 +719,19 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     bool is_within_fenced_frame,
     AttributionInputEvent input_event,
     GlobalRenderFrameHostId render_frame_id) {
+  absl::optional<RegistrationNavigationContext> navigation;
   if (navigation_id.has_value()) {
     MaybeSetupDeferredReceivers(navigation_id.value());
+    navigation = RegistrationNavigationContext(navigation_id.value(),
+                                               std::move(input_event));
   }
 
-  auto [it, inserted] =
-      registrations_.emplace(std::move(source_origin), is_within_fenced_frame,
-                             std::move(input_event), render_frame_id,
-                             SourceRegistrations::Beacon{
-                                 .id = beacon_id,
-                                 .navigation_id = navigation_id,
-                             });
-  DCHECK(inserted);
+  auto [it, inserted] = registrations_.emplace(
+      SourceRegistrationsId(beacon_id),
+      RegistrationContext(/*context_origin=*/std::move(source_origin),
+                          RegistrationType::kSource, is_within_fenced_frame,
+                          render_frame_id, std::move(navigation)));
+  CHECK(inserted);
 }
 
 void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
@@ -788,12 +787,9 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
   {
     const auto& pending_decode = registrations->pending_web_decodes().front();
 
-    auto source_type = SourceType::kNavigation;
-    if (const auto* beacon =
-            absl::get_if<SourceRegistrations::Beacon>(&registrations->data());
-        beacon && !beacon->navigation_id.has_value()) {
-      source_type = SourceType::kEvent;
-    }
+    auto source_type = registrations->navigation_id().has_value()
+                           ? SourceType::kNavigation
+                           : SourceType::kEvent;
 
     auto source =
         [&]() -> base::expected<StorableSource, SourceRegistrationError> {
@@ -846,10 +842,13 @@ void AttributionDataHostManagerImpl::OnOsSourceParsed(SourceRegistrationsId id,
       std::vector<GURL> registration_urls =
           attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
 
+      AttributionInputEvent input_event = registrations->input_event()
+                                              ? *registrations->input_event()
+                                              : AttributionInputEvent();
       for (GURL& url : registration_urls) {
         attribution_manager_->HandleOsRegistration(
             OsRegistration(std::move(url), registrations->source_origin(),
-                           registrations->input_event()),
+                           input_event),
             registrations->render_frame_id());
       }
     }
