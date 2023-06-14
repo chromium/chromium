@@ -43037,6 +43037,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Sign in to IDP static"/>
 </enum>
 
+<enum name="FedCmShowPopupWindowResult">
+  <int value="0" label="Successfully opened"/>
+  <int value="1" label="Invalid URL"/>
+  <int value="2" label="Failed for other reasons"/>
+</enum>
+
 <enum name="FedCmSignInStateMatchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="IdpClaimedSignIn"/>
