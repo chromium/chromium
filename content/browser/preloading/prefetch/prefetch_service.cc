@@ -418,7 +418,7 @@ void PrefetchService::PrefetchUrl(
   // If this happens, then we just delete the old prefetch and add the new
   // prefetch to |all_prefetches_|.
   auto prefetch_iter = all_prefetches_.find(prefetch_container_key);
-  if (prefetch_iter != all_prefetches_.end()) {
+  if (prefetch_iter != all_prefetches_.end() && prefetch_iter->second) {
     ResetPrefetch(prefetch_iter->second);
   }
   all_prefetches_[prefetch_container_key] = prefetch_container;
@@ -918,6 +918,10 @@ void PrefetchService::EvictPrefetch(
   DCHECK(prefetch_container);
   prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
   ResetPrefetch(prefetch_container);
+  if (active_prefetches_.size() <
+      PrefetchServiceMaximumNumberOfConcurrentPrefetches()) {
+    Prefetch();
+  }
 }
 
 void PrefetchService::StartSinglePrefetch(
@@ -935,6 +939,10 @@ void PrefetchService::StartSinglePrefetch(
   }
 
   TakeOwnershipOfPrefetch(prefetch_container);
+
+  // Note: This must be called before CanPrefetchNow() below to prevent
+  // re-entrancy.
+  active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
 
   const bool is_above_limit =
       (PrefetchNewLimitsEnabled() &&
@@ -965,8 +973,6 @@ void PrefetchService::StartSinglePrefetch(
   }
 
   MakePrefetchRequest(prefetch_container, prefetch_container->GetURL());
-
-  active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
 
   PrefetchDocumentManager* prefetch_document_manager =
       prefetch_container->GetPrefetchDocumentManager();

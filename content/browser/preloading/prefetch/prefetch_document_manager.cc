@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -193,6 +194,30 @@ void PrefetchDocumentManager::ProcessCandidates(
                          network::mojom::NoVarySearchPtr,
                          blink::mojom::SpeculationInjectionWorld>>
       prefetches;
+
+  // Evicts an existing prefetch if there is no longer a matching speculation
+  // candidate for it. Note: A matching candidate is not necessarily the
+  // candidate that originally triggered the prefetch, but is any prefetch
+  // candidate that has the same URL.
+  if (PrefetchNewLimitsEnabled()) {
+    std::vector<GURL> urls_from_candidates;
+    urls_from_candidates.reserve(candidates.size());
+    for (const auto& candidate_ptr : candidates) {
+      if (candidate_ptr->action == blink::mojom::SpeculationAction::kPrefetch) {
+        urls_from_candidates.push_back(candidate_ptr->url);
+      }
+    }
+    base::flat_set<GURL> url_set(std::move(urls_from_candidates));
+    std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_evict;
+    for (const auto& [url, prefetch] : all_prefetches_) {
+      if (prefetch && !base::Contains(url_set, url)) {
+        prefetches_to_evict.push_back(prefetch);
+      }
+    }
+    for (const auto& prefetch : prefetches_to_evict) {
+      EvictPrefetch(prefetch);
+    }
+  }
 
   auto should_process_entry =
       [&](const blink::mojom::SpeculationCandidatePtr& candidate) {
@@ -414,13 +439,11 @@ bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
     DCHECK(GetPrefetchService());
     base::WeakPtr<PrefetchContainer> oldest_prefetch =
         completed_non_eager_prefetches_.front();
-    auto oldest_prefetch_key = oldest_prefetch->GetPrefetchContainerKey();
     // TODO(crbug.com/1445086): We should also be checking if the prefetch is
     // currently being used to serve a navigation. In that scenario, evicting
     // doesn't make sense.
-    GetPrefetchService()->EvictPrefetch(oldest_prefetch_key);
+    EvictPrefetch(oldest_prefetch);
     completed_non_eager_prefetches_.pop_front();
-    prefetch_eviction_callback_.Run(oldest_prefetch_key.second);
     return true;
   }
 }
@@ -428,6 +451,20 @@ bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
 void PrefetchDocumentManager::SetPrefetchEvictionCallback(
     PrefetchEvictionCallback callback) {
   prefetch_eviction_callback_ = std::move(callback);
+}
+
+void PrefetchDocumentManager::EvictPrefetch(
+    base::WeakPtr<PrefetchContainer> prefetch) {
+  DCHECK(prefetch);
+  const GURL url = prefetch->GetURL();
+  if (auto it = owned_prefetches_.find(url); it != owned_prefetches_.end()) {
+    owned_prefetches_.erase(it);
+  } else {
+    DCHECK(GetPrefetchService());
+    GetPrefetchService()->EvictPrefetch(prefetch->GetPrefetchContainerKey());
+  }
+  all_prefetches_.erase(url);
+  prefetch_eviction_callback_.Run(url);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

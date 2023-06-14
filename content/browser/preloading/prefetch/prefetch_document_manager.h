@@ -120,6 +120,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // See documentation for |prefetch_eviction_callback_|.
   void SetPrefetchEvictionCallback(PrefetchEvictionCallback callback);
 
+  // Destroys |prefetch|. |prefetch| could either be owned by |this| or by
+  // PrefetchService.
+  void EvictPrefetch(base::WeakPtr<PrefetchContainer> prefetch);
+
   base::WeakPtr<PrefetchDocumentManager> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
   }

@@ -5847,6 +5847,12 @@ class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
     MakePrefetchOnMainFrame(
         url, PrefetchType(/*use_prefetch_proxy=*/false, eagerness));
     base::RunLoop().RunUntilIdle();
+    return CompleteExistingPrefetch(url);
+  }
+
+  // Unlike the above method, this expects the prefetch for |url| to have
+  // already been triggered.
+  base::WeakPtr<PrefetchContainer> CompleteExistingPrefetch(GURL url) {
     VerifyCommonRequestState(url,
                              /*use_prefetch_proxy=*/false);
     MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
@@ -6005,6 +6011,186 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
                                                     expected_attempts);
   }
+}
+
+TEST_F(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
+  const GURL url_1 = GURL("https://example.com/one");
+  const GURL url_2 = GURL("https://example.com/two");
+  const GURL url_3 = GURL("https://example.com/three");
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/3));
+
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+  auto candidate_2 = candidate_1.Clone();
+  candidate_2->url = url_2;
+  auto candidate_3 = candidate_1.Clone();
+  candidate_3->url = url_3;
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  ASSERT_TRUE(prefetch_document_manager);
+
+  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
+  EXPECT_CALL(mock_eviction_callback, Run(url_2)).Times(1);
+  prefetch_document_manager->SetPrefetchEvictionCallback(
+      mock_eviction_callback.Get());
+
+  // Send 3 candidates to PrefetchDocumentManager.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_2.Clone());
+  candidates.push_back(candidate_3.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+  VerifyCommonRequestState(url_1, /*use_prefetch_proxy=*/false);
+
+  // Remove |url_2| from the list of candidates while a prefetch for |url_1| is
+  // in progress.
+  candidates.clear();
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_3.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+
+  // Finish prefetch of |url_1|.
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  // PrefetchService skips |url_2| because its candidate was removed, and starts
+  // prefetching |url_3| instead.
+  VerifyCommonRequestState(url_3, /*use_prefetch_proxy=*/false);
+  // Finish prefetch of |url_2|.
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  // There should be no pending prefetch requests.
+  EXPECT_EQ(RequestCount(), 0);
+}
+
+TEST_F(PrefetchServiceNewLimitsTest,
+       InProgressPrefetchWithNoCandidateIsCancelled) {
+  const GURL url_1 = GURL("https://example.com/one");
+  const GURL url_2 = GURL("https://example.com/two");
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/2));
+
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+  auto candidate_2 = candidate_1.Clone();
+  candidate_2->url = url_2;
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  ASSERT_TRUE(prefetch_document_manager);
+
+  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
+  EXPECT_CALL(mock_eviction_callback, Run(url_1)).Times(1);
+  prefetch_document_manager->SetPrefetchEvictionCallback(
+      mock_eviction_callback.Get());
+
+  // Send 2 candidates to PrefetchDocumentManager.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_2.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  // Prefetch for |url_1| should have started.
+  VerifyCommonRequestState(url_1, /*use_prefetch_proxy=*/false);
+
+  // Remove |candidate_1|.
+  candidates.clear();
+  candidates.push_back(candidate_2.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  // The prefetch for |url_1| should be cancelled, and prefetch for |url_2|
+  // should have started.
+
+  EXPECT_EQ(test_url_loader_factory_.pending_requests()->size(), 2u);
+  // The client for the first request should be disconnected.
+  EXPECT_FALSE(
+      test_url_loader_factory_.GetPendingRequest(0)->client.is_connected());
+  // Clears out first request.
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  VerifyCommonRequestState(url_2, /*use_prefetch_proxy=*/false);
+  base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
+      GetPrefetchToServe(url_1);
+  EXPECT_FALSE(serveable_prefetch_container);
+}
+
+TEST_F(PrefetchServiceNewLimitsTest,
+       CompletedPrefetchWithNoCandidateIsEvicted) {
+  const GURL url_1 = GURL("https://example.com/one");
+  const GURL url_2 = GURL("https://example.com/two");
+  const GURL url_3 = GURL("https://example.com/three");
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/2));
+
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+  auto candidate_2 = candidate_1.Clone();
+  candidate_2->url = url_2;
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  ASSERT_TRUE(prefetch_document_manager);
+
+  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
+  EXPECT_CALL(mock_eviction_callback, Run(url_1)).Times(1);
+  prefetch_document_manager->SetPrefetchEvictionCallback(
+      mock_eviction_callback.Get());
+
+  // Send 2 candidates to PrefetchDocumentManager.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_2.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  // Complete prefetches for |url_1| and |url_2|.
+  base::WeakPtr<PrefetchContainer> prefetch_1 = CompleteExistingPrefetch(url_1);
+  ASSERT_TRUE(prefetch_1);
+  base::WeakPtr<PrefetchContainer> prefetch_2 = CompleteExistingPrefetch(url_2);
+  ASSERT_TRUE(prefetch_2);
+
+  // Remove |candidate_1|.
+  candidates.clear();
+  candidates.push_back(candidate_2.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+  // |prefetch_1| should have been removed.
+  EXPECT_FALSE(prefetch_1);
+  EXPECT_TRUE(prefetch_2);
 }
 
 }  // namespace
