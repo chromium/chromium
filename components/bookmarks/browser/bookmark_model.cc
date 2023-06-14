@@ -450,7 +450,8 @@ void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
   base::Time last_used_time = node->date_last_used();
   UpdateLastUsedTimeImpl(node, time);
   if (just_opened) {
-    metrics::RecordBookmarkOpened(time, last_used_time, node->date_added());
+    metrics::RecordBookmarkOpened(time, last_used_time, node->date_added(),
+                                  client_->GetStorageStateForUma());
   }
 }
 

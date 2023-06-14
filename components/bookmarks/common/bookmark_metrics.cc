@@ -61,14 +61,18 @@ void RecordBookmarkRemoved(BookmarkEditSource source) {
 
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,
-                          base::Time date_added) {
+                          base::Time date_added,
+                          StorageStateForUma storage_state) {
   if (date_last_used != base::Time()) {
     base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceLastUsed",
                                   (now - date_last_used).InDays());
   }
   base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceAdded",
                                 (now - date_added).InDays());
+
   base::RecordAction(base::UserMetricsAction("Bookmarks.Opened"));
+  base::RecordComputedAction(base::StrCat(
+      {"Bookmarks.Opened", GetStorageStateSuffixForMetrics(storage_state)}));
 }
 
 void RecordBookmarkMovedTo(BookmarkFolderTypeForUMA new_parent) {
