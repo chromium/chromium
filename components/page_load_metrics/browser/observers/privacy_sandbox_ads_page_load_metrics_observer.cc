@@ -54,8 +54,11 @@ std::string PrivacySandboxAdsPageLoadMetricsObserver::GetHistogramName(
     case PrivacySandboxAdsApi::kFencedFrames:
       suffix = "FencedFrames";
       break;
-    case PrivacySandboxAdsApi::kFledge:
-      suffix = "Fledge";
+    case PrivacySandboxAdsApi::kProtectedAudiencesRunAdAuction:
+      suffix = "ProtectedAudiencesRunAdAuction";
+      break;
+    case PrivacySandboxAdsApi::kProtectedAudiencesJoinAdInterestGroup:
+      suffix = "ProtectedAudiencesJoinAdInterestGroup";
       break;
     case PrivacySandboxAdsApi::kPrivateAggregation:
       suffix = "PrivateAggregation";
@@ -152,8 +155,10 @@ void PrivacySandboxAdsPageLoadMetricsObserver::OnFeaturesUsageObserved(
         api = PrivacySandboxAdsApi::kFencedFrames;
         break;
       case WebFeature::kV8Navigator_RunAdAuction_Method:
+        api = PrivacySandboxAdsApi::kProtectedAudiencesRunAdAuction;
+        break;
       case WebFeature::kV8Navigator_JoinAdInterestGroup_Method:
-        api = PrivacySandboxAdsApi::kFledge;
+        api = PrivacySandboxAdsApi::kProtectedAudiencesJoinAdInterestGroup;
         break;
       case WebFeature::kPrivateAggregationApiAll:
         api = PrivacySandboxAdsApi::kPrivateAggregation;

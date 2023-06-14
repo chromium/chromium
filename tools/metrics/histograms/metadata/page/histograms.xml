@@ -45,8 +45,9 @@ chromium-metrics-reviews@google.com.
 <variants name="PrivacySandboxAdsApi">
   <variant name="AttributionReporting"/>
   <variant name="FencedFrames"/>
-  <variant name="Fledge"/>
   <variant name="PrivateAggregation"/>
+  <variant name="ProtectedAudiencesJoinAdInterestGroup"/>
+  <variant name="ProtectedAudiencesRunAdAuction"/>
   <variant name="SharedStorage"/>
   <variant name="Topics"/>
 </variants>
