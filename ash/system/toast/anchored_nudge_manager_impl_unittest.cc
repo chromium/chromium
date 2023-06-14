@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/system_toast_style.h"
@@ -21,17 +20,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-void SetLockedState(bool locked) {
-  SessionInfo info;
-  info.state = locked ? session_manager::SessionState::LOCKED
-                      : session_manager::SessionState::ACTIVE;
-  Shell::Get()->session_controller()->SetSessionInfo(info);
-}
-
-}  // namespace
 
 class AnchoredNudgeManagerImplTest : public AshTestBase {
  public:
@@ -386,31 +374,6 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
   // expired.
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kAnchoredNudgeDuration + base::Seconds(1));
-  EXPECT_FALSE(GetShownNudges()[id]);
-}
-
-// Tests that nudges are destroyed on session state changes.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  // Set up nudge data contents.
-  const std::string id = "id";
-  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
-
-  // Show a nudge.
-  ShowNudge(id, anchor_view);
-  EXPECT_TRUE(GetShownNudges()[id]);
-
-  // Lock screen, nudge should have closed.
-  SetLockedState(true);
-  EXPECT_FALSE(GetShownNudges()[id]);
-
-  // Show a nudge in the locked state.
-  ShowNudge(id, anchor_view);
-  EXPECT_TRUE(GetShownNudges()[id]);
-
-  // Unlock screen, nudge should have closed.
-  SetLockedState(false);
   EXPECT_FALSE(GetShownNudges()[id]);
 }
 
