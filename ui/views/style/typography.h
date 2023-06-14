@@ -7,6 +7,7 @@
 
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/platform_font.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -118,6 +119,24 @@ enum TextStyle {
   // Active tab in a tabbed pane.
   STYLE_TAB_ACTIVE,
 
+  // CR2023 typography tokens.
+  // These styles override the style specified by TextContext.
+  STYLE_OVERRIDE_TYPOGRAPHY_START,
+  STYLE_HEADLINE_1,
+  STYLE_HEADLINE_2,
+  STYLE_HEADLINE_3,
+  STYLE_HEADLINE_4,
+  STYLE_HEADLINE_5,
+  STYLE_BODY_1,
+  STYLE_BODY_2,
+  STYLE_BODY_3,
+  STYLE_BODY_4,
+  STYLE_BODY_5,
+  STYLE_CAPTION,
+  STYLE_BUTTON,
+  STYLE_LABEL,
+  STYLE_OVERRIDE_TYPOGRAPHY_END,
+
   // Embedders must start TextStyle enum values from here.
   VIEWS_TEXT_STYLE_END
 };
@@ -132,6 +151,9 @@ VIEWS_EXPORT const gfx::FontList& GetFont(int context, int style);
 VIEWS_EXPORT int GetLineHeight(int context, int style);
 
 VIEWS_EXPORT ui::ColorId GetColorId(int context, int style);
+
+VIEWS_EXPORT int GetFontSizeDeltaIgnoringUserOrLocaleSettings(
+    int desired_font_size);
 
 }  // namespace views::style
 

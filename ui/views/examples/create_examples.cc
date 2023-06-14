@@ -45,6 +45,7 @@
 #include "ui/views/examples/throbber_example.h"
 #include "ui/views/examples/toggle_button_example.h"
 #include "ui/views/examples/tree_view_example.h"
+#include "ui/views/examples/typography_example.h"
 #include "ui/views/examples/vector_example.h"
 #include "ui/views/examples/widget_example.h"
 
@@ -97,6 +98,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<ToggleButtonExample>());
   examples.push_back(std::make_unique<ThrobberExample>());
   examples.push_back(std::make_unique<TreeViewExample>());
+  examples.push_back(std::make_unique<TypographyExample>());
   examples.push_back(std::make_unique<VectorExample>());
   examples.push_back(std::make_unique<WidgetExample>());
   return examples;

@@ -44,6 +44,13 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
       << "context: " << context << " style: " << style;
 
   ui::ResourceBundle::FontDetails details;
+
+  if (style > views::style::STYLE_OVERRIDE_TYPOGRAPHY_START &&
+      style < views::style::STYLE_OVERRIDE_TYPOGRAPHY_END) {
+    details = TypographyProvider::GetFontDetails(context, style);
+    return details;
+  }
+
   details.size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

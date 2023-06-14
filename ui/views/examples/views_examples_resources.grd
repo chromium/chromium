@@ -523,6 +523,17 @@
         Edit
       </message>
 
+      <!-- typography example -->
+      <message translateable="false" name="IDS_TYPOGRAPHY_SELECT_LABEL">
+        Typography
+      </message>
+      <message translateable="false" name="IDS_TYPOGRAPHY_HEADLINE_PLACEHOLDER_TEXT">
+        The quick brown fox jumps over the lazy dog
+      </message>
+      <message translateable="false" name="IDS_TYPOGRAPHY_BODY_PLACEHOLDER_TEXT">
+        The quick brown fox jumps over the lazy dog&#10;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+      </message>
+
       <!-- vector example -->
       <message translateable="false" name="IDS_VECTOR_FILE_SELECT_LABEL">
         Enter a file or folder to read

@@ -17,8 +17,8 @@
 
 int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
                                              int desired_font_size) {
-  int size_delta =
-      GetFontSizeDeltaIgnoringUserOrLocaleSettings(desired_font_size);
+  int size_delta = views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
+      desired_font_size);
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font = bundle.GetFontListWithDelta(size_delta);
 
@@ -29,28 +29,6 @@ int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
       size_delta + gfx::PlatformFont::kDefaultBaseFontSize - desired_font_size;
   base_font = base_font.DeriveWithHeightUpperBound(available_height);
 
-  return base_font.GetFontSize() - gfx::PlatformFont::kDefaultBaseFontSize +
-         user_or_locale_delta;
-}
-
-int GetFontSizeDeltaIgnoringUserOrLocaleSettings(int desired_font_size) {
-  int size_delta = desired_font_size - gfx::PlatformFont::kDefaultBaseFontSize;
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  gfx::FontList base_font = bundle.GetFontListWithDelta(size_delta);
-
-  // The ResourceBundle's default font may not actually be kDefaultBaseFontSize
-  // if, for example, the user has changed their system font sizes or the
-  // current locale has been overridden to use a different default font size.
-  // Adjust for the difference in default font sizes.
-  int user_or_locale_delta = 0;
-  if (base_font.GetFontSize() != desired_font_size) {
-    user_or_locale_delta = desired_font_size - base_font.GetFontSize();
-    base_font = bundle.GetFontListWithDelta(size_delta + user_or_locale_delta);
-  }
-  DCHECK_EQ(desired_font_size, base_font.GetFontSize());
-
-  // To ensure a subsequent request from the ResourceBundle ignores the delta
-  // due to user or locale settings, include it here.
   return base_font.GetFontSize() - gfx::PlatformFont::kDefaultBaseFontSize +
          user_or_locale_delta;
 }
@@ -70,7 +48,8 @@ void ApplyCommonFontStyles(int context,
       break;
     }
     case CONTEXT_TAB_COUNTER: {
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta =
+          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     }
@@ -119,16 +98,19 @@ void ApplyCommonFontStyles(int context,
       break;
 #endif
     case CONTEXT_IPH_BUBBLE_TITLE:
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
+      details.size_delta =
+          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
       if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
         details.weight = gfx::Font::Weight::MEDIUM;
       }
       break;
     case CONTEXT_IPH_BUBBLE_BODY:
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta =
+          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       break;
     case CONTEXT_SIDE_PANEL_TITLE:
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+      details.size_delta =
+          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;
   }
 }
