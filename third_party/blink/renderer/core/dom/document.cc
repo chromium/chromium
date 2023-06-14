@@ -6487,14 +6487,11 @@ void Document::OnGotExistingStorageAccessPermissionState(
   DCHECK(script_state);
   ScriptState::Scope scope(script_state);
 
-  if (previous_status != mojom::blink::PermissionStatus::ASK) {
-    // Permission state already exists, resolve with the existing value.
-    ProcessStorageAccessPermissionState(resolver, /*use_existing_status=*/true,
-                                        previous_status);
-    return;
-  }
-  // Proceed to request permission.
-  if (!has_user_gesture) {
+  // TODO(crbug.com/1433644): We can avoid querying the current permission state
+  // by handling the user gesture requirement in
+  // StorageAccessGrantPermissionContext::DecidePermission
+  if (previous_status == mojom::blink::PermissionStatus::ASK &&
+      !has_user_gesture) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,

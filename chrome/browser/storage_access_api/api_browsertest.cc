@@ -22,9 +22,11 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -43,6 +45,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/dns/mock_host_resolver.h"
@@ -56,11 +59,15 @@
 
 using content::BrowserThread;
 using testing::Gt;
+using testing::IsEmpty;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 namespace {
 
 constexpr char kHostA[] = "a.test";
 constexpr char kOriginA[] = "https://a.test";
+constexpr char kOriginB[] = "https://b.test";
 constexpr char kUrlA[] = "https://a.test/random.path";
 constexpr char kHostASubdomain[] = "subdomain.a.test";
 constexpr char kHostB[] = "b.test";
@@ -429,6 +436,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return prompt_factory_.get();
   }
 
+  content_settings::PageSpecificContentSettings* content_settings() {
+    return content_settings::PageSpecificContentSettings::GetForFrame(
+        GetPrimaryMainFrame());
+  }
+
  private:
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
@@ -482,15 +494,90 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryGranted) {
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
 
+  EXPECT_THAT(content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+
   // Grant initial permission.
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+
+  EXPECT_THAT(
+      content_settings()->GetTwoSiteRequests(
+          ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(Pair(net::SchemefulSite(GURL(kOriginB)), true)));
 
   // Ensure that after a navigation the permission state is preserved.
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/echoheader?cookie");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+
+  EXPECT_THAT(content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+
+  // And the permission is regranted without prompt.
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::NONE);
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_THAT(
+      content_settings()->GetTwoSiteRequests(
+          ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(Pair(net::SchemefulSite(GURL(kOriginB)), true)));
+}
+
+// Test that permissions.query changes to "denied" when a storage access
+// request was denied.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryDenied) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  EXPECT_THAT(content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+
+  // Deny initial permission.
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  EXPECT_THAT(
+      content_settings()->GetTwoSiteRequests(
+          ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(Pair(net::SchemefulSite(GURL(kOriginB)), false)));
+
+  // Ensure that after a navigation the permission state is preserved.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  EXPECT_THAT(content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+
+  // And the permission is denied without prompt.
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::NONE);
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_THAT(
+      content_settings()->GetTwoSiteRequests(
+          ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(Pair(net::SchemefulSite(GURL(kOriginB)), false)));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
@@ -921,15 +1008,15 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, ThirdPartyGrantsExpiry) {
   histogram_tester.ExpectUniqueSample(kRequestOutcomeHistogram,
                                       RequestOutcome::kGrantedByUser, 1);
 
-  // The nested iframe reuses the existing grant without requesting.
+  // The nested iframe reuses the existing grant without prompting.
   EXPECT_TRUE(
       storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostC),
             CookieBundle("cross-site=c.test"));
 
-  // We don't get to record a sample for the "reuse" case, so that histogram
-  // still only has 1 sample in total.
-  histogram_tester.ExpectTotalCount(kRequestOutcomeHistogram, 1);
+  histogram_tester.ExpectTotalCount(kRequestOutcomeHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      kRequestOutcomeHistogram, RequestOutcome::kReusedPreviousDecision, 1);
 
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(EchoCookiesURL(kHostC));

@@ -259,10 +259,10 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
   ContentSetting existing_setting =
       PermissionContextBase::GetPermissionStatusInternal(rfh, requesting_origin,
                                                          embedding_origin);
-  if (existing_setting == CONTENT_SETTING_BLOCK) {
+  if (existing_setting != CONTENT_SETTING_ASK) {
     NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                 std::move(callback),
-                                /*persist=*/false, CONTENT_SETTING_BLOCK,
+                                /*persist=*/false, existing_setting,
                                 RequestOutcome::kReusedPreviousDecision);
     return;
   }
