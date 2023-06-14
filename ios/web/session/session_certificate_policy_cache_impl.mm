@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
+#import "ios/web/public/session/proto/session.pb.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/session/session_certificate.h"
@@ -41,6 +42,25 @@ SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl(
     : SessionCertificatePolicyCache(browser_state) {}
 
 SessionCertificatePolicyCacheImpl::~SessionCertificatePolicyCacheImpl() {}
+
+SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl(
+    BrowserState* browser_state,
+    const proto::CertificatesCacheStorage& storage)
+    : SessionCertificatePolicyCacheImpl(browser_state) {
+  for (const proto::CertificateStorage& cert_storage : storage.certs()) {
+    SessionCertificate certificate(cert_storage);
+    if (certificate.certificate() && !certificate.host().empty()) {
+      allowed_certs_.insert(SessionCertificate(cert_storage));
+    }
+  }
+}
+
+void SessionCertificatePolicyCacheImpl::SerializeToProto(
+    proto::CertificatesCacheStorage& storage) const {
+  for (const SessionCertificate& cert : allowed_certs_) {
+    cert.SerializeToProto(*storage.add_certs());
+  }
+}
 
 void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache() const {
   DCHECK_CURRENTLY_ON(WebThread::UI);

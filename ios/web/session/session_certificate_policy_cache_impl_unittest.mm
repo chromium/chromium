@@ -8,11 +8,12 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
-#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
+#import "ios/web/public/session/proto/session.pb.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/session/session_certificate.h"
 #import "net/cert/x509_certificate.h"
 #import "net/test/cert_test_util.h"
 #import "net/test/test_data_directory.h"
@@ -24,7 +25,6 @@
 #endif
 
 using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForJSCompletionTimeout;
 
 namespace {
 // Synchronously checks `cache` for the specified cert and returns the judgment.
@@ -48,68 +48,95 @@ web::CertPolicy::Judgment GetJudgmenet(
   return judgement;
 }
 
+// Returns a test session certificate.
+web::SessionCertificate CreateTestSessionCertificate(
+    const std::string& filename,
+    const std::string& host,
+    net::CertStatus status) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(), filename);
+  return web::SessionCertificate(cert, host, status);
+}
+
 }  // namespace
 
 // Test fixture to test SessionCertificatePolicyCacheImpl class.
 class SessionCertificatePolicyCacheImplTest : public PlatformTest {
  protected:
   SessionCertificatePolicyCacheImplTest()
-      : task_environment_(web::WebTaskEnvironment::Options::REAL_IO_THREAD),
-        cache_(&browser_state_),
-        cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
-                                      "ok_cert.pem")),
-        host_("test.com"),
-        status_(net::CERT_STATUS_REVOKED) {
-    // Check that the default value for the CertPolicyJudgment in
-    // web::CertificatePolicyCache is UNKNOWN before registering it.
-    EXPECT_EQ(web::CertPolicy::Judgment::UNKNOWN,
-              GetJudgmenet(
-                  web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                  cert_, host_, status_));
-    cache_.RegisterAllowedCertificate(cert_, host_, status_);
-  }
+      : task_environment_(web::WebTaskEnvironment::Options::REAL_IO_THREAD) {}
 
   web::WebTaskEnvironment task_environment_;
   web::FakeBrowserState browser_state_;
-  web::SessionCertificatePolicyCacheImpl cache_;
-  scoped_refptr<net::X509Certificate> cert_;
-  std::string host_;
-  net::CertStatus status_;
 };
 
 // Tests that registering an allowed certificate will successfully create an
-// accurate CRWSessionCertificateStorage in the allowed certs set.
-TEST_F(SessionCertificatePolicyCacheImplTest, RegisterAllowedCert) {
-  // Verify that the cert information is added to the cache.
-  EXPECT_EQ(1U, cache_.GetAllowedCerts().count);
-  CRWSessionCertificateStorage* cert_storage =
-      [cache_.GetAllowedCerts() anyObject];
-  EXPECT_EQ(cert_.get(), cert_storage.certificate);
-  EXPECT_EQ(host_, cert_storage.host);
-  EXPECT_EQ(status_, cert_storage.status);
-  // Verify that the CertificatePolicyCache gets updated.
-  scoped_refptr<web::CertificatePolicyCache> cache =
-      web::BrowserState::GetCertificatePolicyCache(&browser_state_);
+// accurate SessionCertificate in the allowed certs set.
+TEST_F(SessionCertificatePolicyCacheImplTest, RegisterAllowedCertificate) {
+  const web::SessionCertificate cert = CreateTestSessionCertificate(
+      "ok_cert.pem", "test.com", net::CERT_STATUS_REVOKED);
+
+  // Check that the default value for the CertPolicyJudgment in
+  // web::CertificatePolicyCache is UNKNOWN before registering it.
+  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
+            GetJudgmenet(
+                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                cert.certificate(), cert.host(), cert.status()));
+
+  // Check that creating the SessionCertificatePolicyCacheImpl does not
+  // register the certificate.
+  web::SessionCertificatePolicyCacheImpl cache(&browser_state_);
+  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
+            GetJudgmenet(
+                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                cert.certificate(), cert.host(), cert.status()));
+
+  // Verify that calling RegisterAllowedCertificate() register the certificate.
+  cache.RegisterAllowedCertificate(cert.certificate(), cert.host(),
+                                   cert.status());
   EXPECT_EQ(web::CertPolicy::Judgment::ALLOWED,
-            GetJudgmenet(cache, cert_, host_, status_));
+            GetJudgmenet(
+                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                cert.certificate(), cert.host(), cert.status()));
+
+  // Verify that there is one certificate in the serialisation, and that it
+  // corresponds to the registered certificate.
+  web::proto::CertificatesCacheStorage storage;
+  cache.SerializeToProto(storage);
+
+  ASSERT_EQ(storage.certs_size(), 1);
+  const web::SessionCertificate decoded(storage.certs()[0]);
+  EXPECT_EQ(cert, decoded);
 }
 
 // Tests that UpdateCertificatePolicyCache() successfully transfers the allowed
 // certificate information to a CertificatePolicyCache.
-//
-// TODO(crbug.com/1040566): Delete this test when UpdateCertificatePolicyCache
-// is deleted. Currently disabled since RegisterAllowedCertificate already
-// updates the CertificatePolicyCache.
-TEST_F(SessionCertificatePolicyCacheImplTest,
-       DISABLED_UpdateCertificatePolicyCache) {
-  // Create a CertificatePolicyCache.
-  scoped_refptr<web::CertificatePolicyCache> cache =
-      web::BrowserState::GetCertificatePolicyCache(&browser_state_);
-  EXPECT_EQ(web::CertPolicy::Judgment::UNKNOWN,
-            GetJudgmenet(cache, cert_, host_, status_));
-  // Add allowed certificates to the CertificatePolicyCache and verify that it's
-  // now allowed by the CertificatePolicyCache.
-  cache_.UpdateCertificatePolicyCache();
+TEST_F(SessionCertificatePolicyCacheImplTest, UpdateCertificatePolicyCache) {
+  const web::SessionCertificate cert = CreateTestSessionCertificate(
+      "ok_cert.pem", "test.com", net::CERT_STATUS_REVOKED);
+
+  // Check that the default value for the CertPolicyJudgment in
+  // web::CertificatePolicyCache is UNKNOWN before registering it.
+  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
+            GetJudgmenet(
+                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                cert.certificate(), cert.host(), cert.status()));
+
+  // Create a fake serialised state.
+  web::proto::CertificatesCacheStorage storage;
+  cert.SerializeToProto(*storage.add_certs());
+
+  // Check that creating the SessionCertificatePolicyCacheImpl from
+  // serialized state does not register the certificate.
+  web::SessionCertificatePolicyCacheImpl cache(&browser_state_, storage);
+  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
+            GetJudgmenet(
+                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                cert.certificate(), cert.host(), cert.status()));
+
+  // Verify that calling RegisterAllowedCertificate() register the certificate.
+  cache.UpdateCertificatePolicyCache();
   EXPECT_EQ(web::CertPolicy::Judgment::ALLOWED,
-            GetJudgmenet(cache, cert_, host_, status_));
+            GetJudgmenet(
+                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                cert.certificate(), cert.host(), cert.status()));
 }

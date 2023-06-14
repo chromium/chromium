@@ -17,6 +17,9 @@ class X509Certificate;
 }
 
 namespace web {
+namespace proto {
+class CertificatesCacheStorage;
+}  // namespace proto
 
 // Concrete implementation of SessionCertificatePolicyCache.
 class SessionCertificatePolicyCacheImpl final
@@ -24,6 +27,14 @@ class SessionCertificatePolicyCacheImpl final
  public:
   explicit SessionCertificatePolicyCacheImpl(BrowserState* browser_state);
   ~SessionCertificatePolicyCacheImpl() final;
+
+  // Creates a SessionCertificatePolicyCacheImpl from serialized representation.
+  SessionCertificatePolicyCacheImpl(
+      BrowserState* browser_state,
+      const proto::CertificatesCacheStorage& storage);
+
+  // Serializes the SessionCertificatePolicyCacheImpl into `storage`.
+  void SerializeToProto(proto::CertificatesCacheStorage& storage) const;
 
   // SessionCertificatePolicyCache:
   void UpdateCertificatePolicyCache() const final;
