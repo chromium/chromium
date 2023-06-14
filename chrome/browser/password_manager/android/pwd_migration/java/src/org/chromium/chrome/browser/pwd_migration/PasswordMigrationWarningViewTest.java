@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pwd_migration;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -36,6 +37,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -147,11 +149,65 @@ public class PasswordMigrationWarningViewTest {
                                         R.id.password_migration_cancel_button)
                         != null);
         onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
-        RadioButtonWithDescription signInOrSyncButton =
-                mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
-        assertTrue(signInOrSyncButton.isChecked());
+        runOnUiThreadBlocking(() -> {
+            RadioButtonWithDescription signInOrSyncButton =
+                    mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
+            assertTrue(signInOrSyncButton.isChecked());
+        });
         onView(withId(R.id.password_migration_next_button)).check(matches(isDisplayed()));
         onView(withId(R.id.password_migration_cancel_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testNextButtonPropagatesSyncOption() {
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // Setting the options screen.
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
+        // The test waits for the fragment containing the button to be attached.
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.password_migration_cancel_button)
+                        != null);
+        onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
+
+        // Verify that the sync button is checked by default.
+        runOnUiThreadBlocking(() -> {
+            RadioButtonWithDescription signInOrSyncButton =
+                    mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
+            assertTrue(signInOrSyncButton.isChecked());
+        });
+
+        onView(withId(R.id.password_migration_next_button)).perform(click());
+        verify(mOnClickHandler).onNext(MigrationOption.SYNC_PASSWORDS);
+    }
+
+    @Test
+    @MediumTest
+    public void testNextButtonPropagatesExportOption() {
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // Setting the options screen.
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
+        // The test waits for the fragment containing the button to be attached.
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.password_migration_cancel_button)
+                        != null);
+        onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
+
+        // Select the export button.
+        runOnUiThreadBlocking(() -> {
+            RadioButtonWithDescription exportButton =
+                    mActivityTestRule.getActivity().findViewById(R.id.radio_password_export);
+            exportButton.setChecked(true);
+        });
+
+        onView(withId(R.id.password_migration_next_button)).perform(click());
+        verify(mOnClickHandler).onNext(MigrationOption.EXPORT_AND_DELETE);
     }
 
     /**

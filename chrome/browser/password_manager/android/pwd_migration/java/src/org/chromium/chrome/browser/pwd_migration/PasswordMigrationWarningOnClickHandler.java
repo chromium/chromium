@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
@@ -28,8 +29,10 @@ interface PasswordMigrationWarningOnClickHandler {
     /**
      * Starts the sign-in/sync flow or the export flow depending on the user
      * choice in the screen with more options.
+     *
+     * @param selectedOption is the flow that the user wants to proceed with.
      */
-    void onNext();
+    void onNext(@MigrationOption int selectedOption);
 
     /**
      * Closes the sheet when the "Cancel" button is clicked, but doesn't mark

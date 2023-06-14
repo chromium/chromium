@@ -11,6 +11,8 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 
 /**
@@ -21,12 +23,14 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
  */
 public class PasswordMigrationWarningOptionsFragment extends Fragment {
     private Context mContext;
-    private Runnable mNextCallback;
+    private Callback<Integer> mNextCallback;
     private Runnable mCancelCallback;
     private String mChannelString;
+    private RadioButtonWithDescription mSignInOrSyncButton;
+    private RadioButtonWithDescription mPasswordExportButton;
 
-    public PasswordMigrationWarningOptionsFragment(
-            Context context, Runnable nextCallback, Runnable cancelCallback, String channelString) {
+    public PasswordMigrationWarningOptionsFragment(Context context, Callback<Integer> nextCallback,
+            Runnable cancelCallback, String channelString) {
         super(R.layout.pwd_migration_warning_options);
         mContext = context;
         mNextCallback = nextCallback;
@@ -36,18 +40,24 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        RadioButtonWithDescription signInOrSyncButton =
-                view.findViewById(R.id.radio_sign_in_or_sync);
-        RadioButtonWithDescription passwordExportButton =
-                view.findViewById(R.id.radio_password_export);
+        mSignInOrSyncButton = view.findViewById(R.id.radio_sign_in_or_sync);
+        mPasswordExportButton = view.findViewById(R.id.radio_password_export);
         Button nextButton = view.findViewById(R.id.password_migration_next_button);
         Button cancelButton = view.findViewById(R.id.password_migration_cancel_button);
 
-        signInOrSyncButton.setChecked(true);
-        passwordExportButton.setDescriptionText(
+        mSignInOrSyncButton.setChecked(true);
+        mPasswordExportButton.setDescriptionText(
                 mContext.getString(R.string.password_migration_warning_password_export_subtitle)
                         .replace("%1$s", mChannelString));
-        nextButton.setOnClickListener((unusedView) -> mNextCallback.run());
+        nextButton.setOnClickListener((unusedView) -> handleOptionSelected());
         cancelButton.setOnClickListener((unusedView) -> mCancelCallback.run());
+    }
+
+    private void handleOptionSelected() {
+        if (mSignInOrSyncButton.isChecked()) {
+            mNextCallback.onResult(MigrationOption.SYNC_PASSWORDS);
+        } else if (mPasswordExportButton.isChecked()) {
+            mNextCallback.onResult(MigrationOption.EXPORT_AND_DELETE);
+        }
     }
 }

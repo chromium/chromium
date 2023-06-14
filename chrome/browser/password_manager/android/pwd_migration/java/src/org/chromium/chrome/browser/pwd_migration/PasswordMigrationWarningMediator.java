@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pwd_migration;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -47,7 +48,8 @@ class PasswordMigrationWarningMediator implements PasswordMigrationWarningOnClic
     }
 
     @Override
-    public void onNext() {
+    public void onNext(@MigrationOption int selectedOption) {
+        mModel.set(VISIBLE, false);
         // TODO(crbug.com/1445065): Launch the password Export flow.
     }
 

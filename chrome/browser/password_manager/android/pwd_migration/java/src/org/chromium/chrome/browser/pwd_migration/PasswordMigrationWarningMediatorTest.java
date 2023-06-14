@@ -26,6 +26,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -90,13 +91,25 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testOnAcknowledgeHidesTheSheet() {
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        assertTrue(mModel.get(VISIBLE));
         mMediator.onAcknowledge(mBottomSheetController);
         assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnCancelHidesTheSheet() {
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        assertTrue(mModel.get(VISIBLE));
         mMediator.onCancel(mBottomSheetController);
+        assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testOnNextDismissesTheSheet() {
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        assertTrue(mModel.get(VISIBLE));
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
         assertFalse(mModel.get(VISIBLE));
     }
 }

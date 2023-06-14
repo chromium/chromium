@@ -19,6 +19,13 @@ import java.lang.annotation.RetentionPolicy;
  * Properties defined here reflect the visible state of the local passwords migration warning.
  */
 class PasswordMigrationWarningProperties {
+    @IntDef({MigrationOption.SYNC_PASSWORDS, MigrationOption.EXPORT_AND_DELETE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MigrationOption {
+        int SYNC_PASSWORDS = 0;
+        int EXPORT_AND_DELETE = 1;
+    }
+
     /**
      * The different screens that can be shown on the sheet.
      */
