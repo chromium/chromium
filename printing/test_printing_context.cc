@@ -111,11 +111,11 @@ void TestPrintingContext::AskUserForSettings(int max_pages,
 }
 
 mojom::ResultCode TestPrintingContext::UseDefaultSettings() {
-  scoped_refptr<PrintBackend> print_backend =
-      PrintBackend::CreateInstance(/*locale=*/std::string());
   if (use_default_settings_fails_)
     return mojom::ResultCode::kFailed;
 
+  scoped_refptr<PrintBackend> print_backend =
+      PrintBackend::CreateInstance(/*locale=*/std::string());
   std::string printer_name;
   mojom::ResultCode result = print_backend->GetDefaultPrinterName(printer_name);
   if (result != mojom::ResultCode::kSuccess)

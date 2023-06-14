@@ -34,6 +34,9 @@ class TestPrintingContextDelegate : public PrintingContext::Delegate {
   std::string GetAppLocale() override;
 };
 
+// Note that TestPrintingContext uses a PrintBackend internally, so tests that
+// want to avoid using a real PrintingContext will also want to use
+// PrintBackend::SetPrintBackendForTesting() to avoid using a real PrintBackend.
 class TestPrintingContext : public PrintingContext {
  public:
   using OnNewDocumentCallback =
@@ -139,7 +142,7 @@ class TestPrintingContext : public PrintingContext {
   bool render_document_blocked_by_permissions_ = false;
   bool document_done_blocked_by_permissions_ = false;
 
-  // Called every time `NewDocument` is called.  Provides a copy of the
+  // Called every time `NewDocument()` is called.  Provides a copy of the
   // effective device context settings.
   OnNewDocumentCallback on_new_document_callback_;
 };
