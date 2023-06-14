@@ -123,6 +123,11 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   struct AggregateStatistics {
     int prewalked_surface_count = 0;
     int copied_surface_count = 0;
+    // True if the current frame contains a pixel-moving foreground filter
+    // render pass.
+    bool has_pixel_moving_filter = false;
+    // True if the current frame contains a unembedded render pass.
+    bool has_unembedded_pass = false;
 
     base::TimeDelta prewalk_time;
     base::TimeDelta copy_time;

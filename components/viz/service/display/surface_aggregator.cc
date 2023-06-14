@@ -1647,6 +1647,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   if (render_pass.filters.HasFilterThatMovesPixels() ||
       (parent_pass && parent_pass->aggregation().in_pixel_moving_filter_pass)) {
     resolved_pass.aggregation().in_pixel_moving_filter_pass = true;
+    stats_->has_pixel_moving_filter = true;
   }
 
   const FrameDamageType damage_type = resolved_frame.GetFrameDamageType();
@@ -1971,6 +1972,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
     // pass, but other attributes related to the embedding hierarchy are still
     // important to propagate.
     if (resolved_pass.IsUnembedded()) {
+      stats_->has_unembedded_pass = true;
       PrewalkRenderPass(resolved_frame, resolved_pass,
                         /*damage_from_parent=*/gfx::Rect(),
                         /*target_to_root_transform=*/gfx::Transform(),
@@ -2278,6 +2280,18 @@ void SurfaceAggregator::RecordStatHistograms() {
       "Compositing.SurfaceAggregator.DeclareResourcesUs",
       stats_->declare_resources_time, kHistogramMinTime, kHistogramMaxTime,
       kHistogramTimeBuckets);
+
+  UMA_HISTOGRAM_BOOLEAN("Compositing.SurfaceAggregator.HasCopyRequestsPerFrame",
+                        has_copy_requests_);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.SurfaceAggregator.HasPixelMovingFiltersPerFrame",
+      stats_->has_pixel_moving_filter);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.SurfaceAggregator.HasPixelMovingBackdropFiltersPerFrame",
+      has_pixel_moving_backdrop_filter_);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.SurfaceAggregator.HasUnembeddedRenderPassesPerFrame",
+      stats_->has_unembedded_pass);
 
   stats_.reset();
 }
