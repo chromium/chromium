@@ -235,6 +235,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
+    enum="ContentSetting" expires_after="2024-04-16">
+  <owner>ryankalla@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default Auto-verify setting at profile open. This histogram is only
+    recorded for regular profiles.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
     enum="ContentSetting" expires_after="2023-10-22">
   <owner>tungnh@chromium.org</owner>
