@@ -109,6 +109,7 @@ source_set("settings") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
+    "//components/sync/base",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/url_formatter",

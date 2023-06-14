@@ -693,7 +693,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                           prefService:_browserState
                                                           ->GetPrefs()] &&
       !syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
-  return shouldDisplay && !base::FeatureList::IsEnabled(kHideSettingsSyncPromo);
+  return shouldDisplay &&
+         !base::FeatureList::IsEnabled(kHideSettingsSyncPromo) &&
+         !base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 #pragma mark - Model Items
