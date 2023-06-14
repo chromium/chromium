@@ -18,8 +18,10 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/platform_window/platform_window.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -375,6 +377,75 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
     EXPECT_NE(host_platform->window_children_.find(host_platform3),
               host_platform->window_children_.end());
   }
+}
+
+class TestWidgetDelegate : public WidgetDelegate {
+ public:
+  TestWidgetDelegate() = default;
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate operator=(const TestWidgetDelegate&) = delete;
+  ~TestWidgetDelegate() override = default;
+
+  void GetAccessiblePanes(std::vector<View*>* panes) override {
+    base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
+  }
+
+  void AddAccessiblePane(View* pane) { accessible_panes_.push_back(pane); }
+
+ private:
+  std::vector<View*> accessible_panes_;
+};
+
+TEST_F(DesktopWindowTreeHostPlatformTest, OnRotateFocus) {
+  using Direction = ui::PlatformWindowDelegate::RotateDirection;
+
+  auto delegate = std::make_unique<TestWidgetDelegate>();
+  Widget::InitParams widget_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  widget_params.bounds = gfx::Rect(110, 110, 100, 100);
+  widget_params.delegate = delegate.get();
+  widget_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  auto widget = std::make_unique<Widget>();
+  widget->Init(std::move(widget_params));
+
+  View* views[2];
+  for (auto*& view : views) {
+    auto child_view = std::make_unique<View>();
+    child_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+    auto pane = std::make_unique<AccessiblePaneView>();
+    delegate->AddAccessiblePane(pane.get());
+    view = pane->AddChildView(std::move(child_view));
+    widget->GetContentsView()->AddChildView(std::move(pane));
+  }
+  widget->Show();
+  ASSERT_TRUE(widget->IsActive());
+
+  auto* focus_manager = widget->GetFocusManager();
+
+  // Start rotating from start.
+  EXPECT_TRUE(DesktopWindowTreeHostPlatform::RotateFocusForWidget(
+      *widget, Direction::kForward, true));
+  EXPECT_EQ(views[0], focus_manager->GetFocusedView());
+
+  EXPECT_TRUE(DesktopWindowTreeHostPlatform::RotateFocusForWidget(
+      *widget, Direction::kForward, false));
+  EXPECT_EQ(views[1], focus_manager->GetFocusedView());
+
+  EXPECT_TRUE(DesktopWindowTreeHostPlatform::RotateFocusForWidget(
+      *widget, Direction::kBackward, false));
+  EXPECT_EQ(views[0], focus_manager->GetFocusedView());
+
+  // Attempting to rotate again without resetting should notify that we've
+  // reached the end.
+  EXPECT_FALSE(DesktopWindowTreeHostPlatform::RotateFocusForWidget(
+      *widget, Direction::kBackward, false));
+  EXPECT_EQ(views[0], focus_manager->GetFocusedView());
+
+  // Restart rotating from back.
+  EXPECT_TRUE(DesktopWindowTreeHostPlatform::RotateFocusForWidget(
+      *widget, Direction::kBackward, true));
+  EXPECT_EQ(views[1], focus_manager->GetFocusedView());
 }
 
 }  // namespace views

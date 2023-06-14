@@ -152,6 +152,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void OnCloseRequest() override;
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override;
   void OnWillDestroyAcceleratedWidget() override;
+  bool OnRotateFocus(ui::PlatformWindowDelegate::RotateDirection direction,
+                     bool reset) override;
   void OnActivationChanged(bool active) override;
   absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
   absl::optional<gfx::Size> GetMaximumSizeForWindow() override;
@@ -202,6 +204,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
                            UpdateWindowShapeFromWindowMask);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
                            MakesParentChildRelationship);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest, OnRotateFocus);
 
   void ScheduleRelayout();
 
@@ -219,6 +222,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   // Helper method that returns the display for the |window()|.
   display::Display GetDisplayNearestRootWindow() const;
+
+  // Impl for rotation logic.
+  static bool RotateFocusForWidget(
+      Widget& widget,
+      ui::PlatformWindowDelegate::RotateDirection direction,
+      bool reset);
 
   const base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;

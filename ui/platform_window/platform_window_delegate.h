@@ -148,6 +148,15 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnImmersiveModeChanged(bool immersive) {}
 #endif
 
+  enum RotateDirection {
+    kForward,
+    kBackward,
+  };
+  // Rotates the focus within the window. The method will return true if there
+  // are more views left after rotation and false otherwise. Reset will restart
+  // the focus and focus on the first view for the given direction.
+  virtual bool OnRotateFocus(RotateDirection direction, bool reset);
+
   virtual void OnLostCapture() = 0;
 
   virtual void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) = 0;
