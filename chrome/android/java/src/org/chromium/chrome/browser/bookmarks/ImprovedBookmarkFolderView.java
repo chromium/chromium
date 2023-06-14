@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -23,9 +24,10 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 /**
- * Common logic for improved bookmark and folder rows.
+ * Draws the image at the start of a bookmark folder row. This may contains elements from the
+ * folder's children bookmarks, such as thumbnail or count.
  */
-// TODO(crbug.com/1448907): Create coordinator for this view.
+// TODO(https://crbug.com/1448907): Create coordinator for this view.
 public class ImprovedBookmarkFolderView extends FrameLayout {
     private final RoundedCornerOutlineProvider mPrimaryImageOutline;
     private final RoundedCornerOutlineProvider mSecondaryImageOutline;
@@ -50,33 +52,27 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     public ImprovedBookmarkFolderView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mPrimaryImageOutline =
-                new RoundedCornerOutlineProvider(context.getResources().getDimensionPixelSize(
-                        R.dimen.improved_bookmark_row_outer_corner_radius));
+        Resources resources = context.getResources();
+        int outerRadius =
+                resources.getDimensionPixelSize(R.dimen.improved_bookmark_row_outer_corner_radius);
+        int innerRadius =
+                resources.getDimensionPixelSize(R.dimen.improved_bookmark_row_inner_corner_radius);
 
-        mSecondaryImageOutline =
-                new RoundedCornerOutlineProvider(context.getResources().getDimensionPixelSize(
-                        R.dimen.improved_bookmark_row_outer_corner_radius));
+        mPrimaryImageOutline = new RoundedCornerOutlineProvider(outerRadius);
+
+        mSecondaryImageOutline = new RoundedCornerOutlineProvider(outerRadius);
         mSecondaryImageOutline.setRoundingEdges(false, true, true, false);
 
-        mChildTextBackgroundOutlineOneImageTop =
-                new RoundedCornerOutlineProvider(context.getResources().getDimensionPixelSize(
-                        R.dimen.improved_bookmark_row_inner_corner_radius));
+        mChildTextBackgroundOutlineOneImageTop = new RoundedCornerOutlineProvider(innerRadius);
         mChildTextBackgroundOutlineOneImageTop.setRoundingEdges(true, true, false, false);
 
-        mChildTextBackgroundOutlineOneImageBot =
-                new RoundedCornerOutlineProvider(context.getResources().getDimensionPixelSize(
-                        R.dimen.improved_bookmark_row_outer_corner_radius));
+        mChildTextBackgroundOutlineOneImageBot = new RoundedCornerOutlineProvider(outerRadius);
         mChildTextBackgroundOutlineOneImageBot.setRoundingEdges(false, false, true, true);
 
-        mChildTextContainerOutlineOneImage =
-                new RoundedCornerOutlineProvider(context.getResources().getDimensionPixelSize(
-                        R.dimen.improved_bookmark_row_inner_corner_radius));
+        mChildTextContainerOutlineOneImage = new RoundedCornerOutlineProvider(innerRadius);
         mChildTextContainerOutlineOneImage.setRoundingEdges(true, true, false, false);
 
-        mChildTextContainerOutlineTwoImages =
-                new RoundedCornerOutlineProvider(context.getResources().getDimensionPixelSize(
-                        R.dimen.improved_bookmark_row_outer_corner_radius));
+        mChildTextContainerOutlineTwoImages = new RoundedCornerOutlineProvider(outerRadius);
         mChildTextContainerOutlineTwoImages.setRoundingEdges(false, false, true, true);
     }
 
@@ -84,8 +80,14 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        LayoutInflater.from(getContext())
-                .inflate(R.layout.improved_bookmark_row_folder_view_layout, this);
+        Context context = getContext();
+        final @ColorInt int surface0 =
+                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);
+        final @ColorInt int surface1 =
+                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
+
+        LayoutInflater.from(context).inflate(
+                R.layout.improved_bookmark_row_folder_view_layout, this);
 
         mPrimaryImage = findViewById(R.id.primary_image);
         mPrimaryImage.setOutlineProvider(mPrimaryImageOutline);
@@ -102,35 +104,30 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         mSecondaryImage.setClipToOutline(true);
 
         mSecondaryImageContainer = findViewById(R.id.secondary_image_container);
-        mSecondaryImageContainer.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_0));
+        mSecondaryImageContainer.setBackgroundColor(surface0);
 
         // Setup the background for the child count view when there's one image present.
         mChildCountBackgroundOneImage = findViewById(R.id.child_count_background_one_image);
         View childCountBackgroundOneImageTop =
                 findViewById(R.id.child_count_background_one_image_top);
-        childCountBackgroundOneImageTop.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+        childCountBackgroundOneImageTop.setBackgroundColor(surface1);
         childCountBackgroundOneImageTop.setOutlineProvider(mChildTextBackgroundOutlineOneImageTop);
         childCountBackgroundOneImageTop.setClipToOutline(true);
         View childCountBackgroundOneImageBot =
                 findViewById(R.id.child_count_background_one_image_bot);
-        childCountBackgroundOneImageBot.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+        childCountBackgroundOneImageBot.setBackgroundColor(surface1);
         childCountBackgroundOneImageBot.setOutlineProvider(mChildTextBackgroundOutlineOneImageBot);
         childCountBackgroundOneImageBot.setClipToOutline(true);
 
         // Setup the background for the child count view when there's two images present.
         mChildCountBackgroundTwoImages = findViewById(R.id.child_count_background_two_images);
-        mChildCountBackgroundTwoImages.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+        mChildCountBackgroundTwoImages.setBackgroundColor(surface1);
         mChildCountBackgroundTwoImages.setOutlineProvider(mChildTextContainerOutlineTwoImages);
         mChildCountBackgroundTwoImages.setClipToOutline(true);
 
         // The container which separates the child text from the images.
         mChildCountContainer = findViewById(R.id.child_count_container);
-        mChildCountContainer.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_0));
+        mChildCountContainer.setBackgroundColor(surface0);
         mChildCountContainer.setClipToOutline(true);
 
         mChildCount = findViewById(R.id.child_count_text);
@@ -158,7 +155,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         mChildCountContainer.setVisibility(View.GONE);
 
         if (primaryDrawable == null && secondaryDrawable == null) {
-            // Placehodler folder image case.
+            // Placeholder folder image case.
             mNoImagePlaceholder.setVisibility(View.VISIBLE);
         } else if (primaryDrawable != null && secondaryDrawable == null) {
             // 1-image case.
