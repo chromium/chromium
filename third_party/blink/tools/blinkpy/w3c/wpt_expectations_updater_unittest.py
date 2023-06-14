@@ -4,6 +4,7 @@
 
 import copy
 import json
+import textwrap
 import unittest
 
 from blinkpy.common.host_mock import MockHost
@@ -21,6 +22,7 @@ from blinkpy.w3c.wpt_manifest import (
 
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
@@ -81,10 +83,23 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             },
         })
 
+        fs = host.filesystem
+        port = host.port_factory.get()
+        for path in ('TestExpectations', 'FlagExpectations/fake-flag'):
+            fs.write_text_file(
+                fs.join(port.web_tests_dir(), path),
+                textwrap.dedent("""\
+                    # tags: [ Mac10.10 Mac10.11 Mac Trusty Precise Linux Win7 Win10 Win ]
+                    # results: [ Timeout Crash Pass Failure Skip ]
+                    """))
+        fs.write_text_file(fs.join(port.web_tests_dir(), 'FlagSpecificConfig'),
+                           json.dumps([{
+                               'name': 'fake-flag',
+                               'args': [],
+                           }]))
         # Write a dummy manifest file, describing what tests exist.
-        host.filesystem.write_text_file(
-            host.port_factory.get().web_tests_dir() + 'external/' +
-            BASE_MANIFEST_NAME,
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'external', BASE_MANIFEST_NAME),
             json.dumps({
                 'items': {
                     'reftest': {
@@ -179,10 +194,16 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
     def test_run_inherited_results(self):
         host = self.mock_host()
         # Fill in an initial value for TestExpectations
-        expectations_path = \
-            host.port_factory.get().path_to_generic_test_expectations_file()
+        port = host.port_factory.get()
+        expectations_path = port.path_to_generic_test_expectations_file()
         host.filesystem.write_text_file(
-            expectations_path, WPTExpectationsUpdater.MARKER_COMMENT + '\n')
+            expectations_path,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac Trusty Precise Linux Win7 Win10 Win ]
+                # results: [ Timeout Crash Pass Failure Skip ]
+
+                # ====== New tests from wpt-importer added here ======
+                """))
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
         updater.git_cl = MockGitCL(
@@ -224,9 +245,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(0, updater.run())
         self.assertEqual(
             host.filesystem.read_text_file(expectations_path),
-            '# ====== New tests from wpt-importer added here ======\n'
-            'crbug.com/626703 [ Mac ] external/wpt/test/path.html [ Timeout ]\n'
-        )
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac Trusty Precise Linux Win7 Win10 Win ]
+                # results: [ Timeout Crash Pass Failure Skip ]
+
+                # ====== New tests from wpt-importer added here ======
+                crbug.com/626703 [ Mac ] external/wpt/test/path.html [ Timeout ]
+                """))
 
     def test_run_single_flag_specific_failure(self):
         """Tests the main run method in a case where one test fails on one
@@ -457,66 +482,72 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         # Positional arguments of SimpleTestResult: (expected, actual, bug)
         self.assertEqual(
             updater.get_expectations(SimpleTestResult('FAIL', 'PASS', 'bug')),
-            {'Pass'})
+            {'PASS'})
         self.assertEqual(
             updater.get_expectations(
-                SimpleTestResult('FAIL', 'PASS PASS', 'bug')), {'Pass'})
+                SimpleTestResult('FAIL', 'PASS PASS', 'bug')), {'PASS'})
         self.assertEqual(
-            updater.get_expectations(
-                SimpleTestResult('FAIL', 'TIMEOUT', 'bug')), {'Timeout'})
+            updater.get_expectations(SimpleTestResult('FAIL', 'TIMEOUT',
+                                                      'bug')), {'TIMEOUT'})
         self.assertEqual(
             updater.get_expectations(
                 SimpleTestResult('FAIL', 'TIMEOUT TIMEOUT', 'bug')),
-            {'Timeout'})
+            {'TIMEOUT'})
+        self.assertEqual(
+            updater.get_expectations(SimpleTestResult('TIMEOUT', 'PASS',
+                                                      'bug')), {'PASS'})
         self.assertEqual(
             updater.get_expectations(
-                SimpleTestResult('TIMEOUT', 'PASS', 'bug')), {'Pass'})
-        self.assertEqual(
-            updater.get_expectations(
-                SimpleTestResult('TIMEOUT', 'PASS PASS', 'bug')), {'Pass'})
+                SimpleTestResult('TIMEOUT', 'PASS PASS', 'bug')), {'PASS'})
         self.assertEqual(
             updater.get_expectations(
                 SimpleTestResult('PASS', 'TEXT PASS', 'bug')),
-            {'Pass', 'Failure'})
+            {'PASS', 'FAIL'})
         self.assertEqual(
             updater.get_expectations(
                 SimpleTestResult('PASS', 'TIMEOUT CRASH TEXT', 'bug')),
-            {'Crash', 'Failure', 'Timeout'})
+            {'CRASH', 'FAIL', 'TIMEOUT'})
         self.assertEqual(
             updater.get_expectations(
                 SimpleTestResult('SLOW CRASH FAIL TIMEOUT', 'PASS', 'bug')),
-            {'Pass'})
+            {'PASS'})
         self.assertEqual(
             updater.get_expectations(
                 SimpleTestResult('PASS', 'IMAGE+TEXT IMAGE IMAGE', 'bug')),
-            {'Failure'})
+            {'FAIL'})
+        self.assertEqual(
+            updater.get_expectations(SimpleTestResult('PASS', 'MISSING',
+                                                      'bug')), {'SKIP'})
         self.assertEqual(
             updater.get_expectations(
-                SimpleTestResult('PASS', 'MISSING', 'bug')), {'Skip'})
+                SimpleTestResult('PASS', 'MISSING MISSING', 'bug')), {'SKIP'})
         self.assertEqual(
-            updater.get_expectations(
-                SimpleTestResult('PASS', 'MISSING MISSING', 'bug')), {'Skip'})
-        self.assertEqual(
-            updater.get_expectations(
-                SimpleTestResult('PASS', 'FAIL', 'bug'),
-                test_name='external/wpt/webdriver/foo/a'), {'Failure'})
+            updater.get_expectations(SimpleTestResult('PASS', 'FAIL', 'bug'),
+                                     test_name='external/wpt/webdriver/foo/a'),
+            {'FAIL'})
 
     def test_remove_configurations(self):
         host = self.mock_host()
 
-        initial_expectations = (
-            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]\n'
-            + '# results: [ Timeout Crash Pass Failure Skip ]\n' +
-            'crbug.com/1234 test/foo.html [ Failure ]\n' +
-            'crbug.com/1235 [ Win ] test/bar.html [ Timeout ]\n')
+        initial_expectations = textwrap.dedent("""\
+            # tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]
+            # results: [ Timeout Crash Pass Failure Skip ]
+            crbug.com/1234 external/wpt/test/foo.html [ Failure ]
+            crbug.com/1235 [ Win ] external/wpt/test/bar.html [ Timeout ]
+            """)
 
-        final_expectations = (
-            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]\n'
-            + '# results: [ Timeout Crash Pass Failure Skip ]\n' +
-            'crbug.com/1234 [ Linux ] test/foo.html [ Failure ]\n' +
-            'crbug.com/1234 [ Mac ] test/foo.html [ Failure ]\n' +
-            'crbug.com/1234 [ Win10 ] test/foo.html [ Failure ]\n' +
-            'crbug.com/1235 [ Win10 ] test/bar.html [ Timeout ]\n')
+        final_expectations = textwrap.dedent("""\
+            # tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]
+            # results: [ Timeout Crash Pass Failure Skip ]
+            crbug.com/1234 [ Linux ] external/wpt/test/foo.html [ Failure ]
+            crbug.com/1234 [ Mac ] external/wpt/test/foo.html [ Failure ]
+            crbug.com/1234 [ Win10 ] external/wpt/test/foo.html [ Failure ]
+            crbug.com/1235 [ Win10 ] external/wpt/test/bar.html [ Timeout ]
+
+            # ====== New tests from wpt-importer added here ======
+            crbug.com/123 [ Win7 ] external/wpt/test/bar.html [ Failure Timeout ]
+            crbug.com/123 [ Win7 ] external/wpt/test/foo.html [ Failure Timeout ]
+            """)
 
         # Fill in an initial value for TestExpectations
         expectations_path = \
@@ -524,11 +555,20 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host.filesystem.write_text_file(expectations_path, initial_expectations)
 
         updater = WPTExpectationsUpdater(host)
-        configs_to_remove = {
-            'test/foo.html': set(['win7']),
-            'test/bar.html': set(['win7'])
-        }
-        updater.remove_configurations(configs_to_remove)
+        updater.write_to_test_expectations({
+            'external/wpt/test/foo.html': {
+                (DesktopConfig(port_name='test-win-win7'), ):
+                SimpleTestResult(expected='FAIL',
+                                 actual='FAIL TIMEOUT',
+                                 bug='crbug.com/123'),
+            },
+            'external/wpt/test/bar.html': {
+                (DesktopConfig(port_name='test-win-win7'), ):
+                SimpleTestResult(expected='TIMEOUT',
+                                 actual='FAIL TIMEOUT',
+                                 bug='crbug.com/123'),
+            },
+        })
 
         value = host.filesystem.read_text_file(expectations_path)
         self.assertMultiLineEqual(value, final_expectations)
@@ -550,52 +590,71 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host.filesystem.write_text_file(expectations_path, content)
 
         updater = WPTExpectationsUpdater(host)
-
         results = {
             'external/wpt/reftest.html': {
-                tuple([DesktopConfig(port_name='one')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='FAIL', bug='crbug.com/test'),
+                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                SimpleTestResult(expected='FAIL',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
             },
             'external/wpt/test/path.html': {
-                tuple([DesktopConfig(port_name='one')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='CRASH', bug='crbug.com/test'),
+                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                SimpleTestResult(expected='FAIL',
+                                 actual='CRASH',
+                                 bug='crbug.com/123'),
             },
             'external/wpt/test/zzzz.html': {
-                tuple([DesktopConfig(port_name='one')]):
-                SimpleTestResult(
-                    expected='PASS', actual='CRASH', bug='crbug.com/test'),
+                tuple([DesktopConfig(port_name='test-linux-trusty')]):
+                SimpleTestResult(expected='PASS',
+                                 actual='CRASH',
+                                 bug='crbug.com/123'),
             }
         }
-        generic_expectations = TestExpectations(port)
-        line_dict, configs_to_remove = updater.create_line_dict_for_flag_specific(
-            results,
-            generic_expectations)
+
+        updater.write_to_test_expectations(results, 'fake-flag')
+        port.set_option_default('flag_specific', 'fake-flag')
+        expectations = TestExpectations(port)
         self.assertEqual(
-            line_dict, {
-                'external/wpt/test/path.html': [
-                    'crbug.com/test external/wpt/test/path.html [ Crash ]'],
-                'external/wpt/test/zzzz.html': [
-                    'crbug.com/test external/wpt/test/zzzz.html [ Crash ]']})
-        self.assertEqual(configs_to_remove, {})
+            expectations.get_expectations_from_file(
+                expectations_path, 'external/wpt/test/zzzz.html'), [])
+
+        expectations_path = port.path_to_flag_specific_expectations_file(
+            'fake-flag')
+        self.assertEqual(
+            expectations.get_expectations_from_file(
+                expectations_path, 'external/wpt/reftest.html'), [])
+        (line, ) = expectations.get_expectations_from_file(
+            expectations_path, 'external/wpt/test/path.html')
+        self.assertEqual(line.reason, 'crbug.com/123')
+        self.assertEqual(line.tags, set())
+        self.assertEqual(line.results, {ResultType.Crash})
+        (line, ) = expectations.get_expectations_from_file(
+            expectations_path, 'external/wpt/test/zzzz.html')
+        self.assertEqual(line.reason, 'crbug.com/123')
+        self.assertEqual(line.tags, set())
+        self.assertEqual(line.results, {ResultType.Crash})
 
     def test_create_line_dict_old_tests(self):
         # In this example, there are two failures that are not in wpt.
         updater = WPTExpectationsUpdater(self.mock_host())
         results = {
             'fake/test/path.html': {
-                tuple([DesktopConfig(port_name='one')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='PASS', bug='crbug.com/test'),
+                tuple([DesktopConfig(port_name='test-mac-mac10.10')]):
+                SimpleTestResult(expected='FAIL',
+                                 actual='PASS',
+                                 bug='crbug.com/123'),
                 tuple([DesktopConfig(port_name='two')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='PASS', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='PASS',
+                                 bug='crbug.com/123'),
             }
         }
-        line_dict, configs_to_remove = updater.create_line_dict(results)
-        self.assertEqual(line_dict, {})
-        self.assertEqual(configs_to_remove, {})
+        updater.write_to_test_expectations(results)
+        expectations = TestExpectations(updater.port)
+        path = updater.port.path_to_generic_test_expectations_file()
+        self.assertEqual(
+            expectations.get_expectations_from_file(path,
+                                                    'fake/test/path.html'), [])
 
     def test_create_line_dict_new_tests(self):
         # In this example, there are three unexpected results for wpt tests.
@@ -604,39 +663,45 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         results = {
             'external/wpt/test/zzzz.html': {
                 tuple([DesktopConfig(port_name='test-mac-mac10.10')]):
-                SimpleTestResult(
-                    expected='PASS', actual='TEXT', bug='crbug.com/test'),
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123'),
             },
             'virtual/foo/external/wpt/test/zzzz.html': {
                 tuple([DesktopConfig(port_name='test-linux-trusty')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='PASS', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='PASS',
+                                 bug='crbug.com/123'),
                 tuple([DesktopConfig(port_name='test-mac-mac10.11')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='TIMEOUT', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='TIMEOUT',
+                                 bug='crbug.com/123'),
             },
             'unrelated/test.html': {
                 tuple([DesktopConfig(port_name='test-linux-trusty')]):
-                SimpleTestResult(
-                    expected='FAIL', actual='PASS', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='PASS',
+                                 bug='crbug.com/123'),
             },
         }
-        line_dict, configs_to_remove = updater.create_line_dict(results)
-        self.assertEqual(
-            line_dict, {
-                'external/wpt/test/zzzz.html': [
-                    'crbug.com/test [ Mac10.10 ] external/wpt/test/zzzz.html [ Failure ]'
-                ],
-                'virtual/foo/external/wpt/test/zzzz.html': [
-                    'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/zzzz.html [ Pass ]',
-                    'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/zzzz.html [ Timeout ]',
-                ],
-            })
-        self.assertEqual(
-            configs_to_remove, {
-                'external/wpt/test/zzzz.html': set(['Mac10.10']),
-                'virtual/foo/external/wpt/test/zzzz.html': set(['Trusty', 'Mac10.11'])
-            })
+        updater.write_to_test_expectations(results)
+        expectations = TestExpectations(updater.port)
+        path = updater.port.path_to_generic_test_expectations_file()
+        (line, ) = expectations.get_expectations_from_file(
+            path, 'external/wpt/test/zzzz.html')
+        self.assertEqual(line.reason, 'crbug.com/123')
+        self.assertEqual(line.tags, {'mac10.10'})
+        self.assertEqual(line.results, {ResultType.Failure})
+        lines = expectations.get_expectations_from_file(
+            path, 'virtual/foo/external/wpt/test/zzzz.html')
+        self.assertEqual(len(lines), 2)
+        line1, line2 = sorted(lines, key=lambda line: line.tags)
+        self.assertEqual(line1.reason, 'crbug.com/123')
+        self.assertEqual(line1.tags, {'trusty'})
+        self.assertEqual(line1.results, {ResultType.Pass})
+        self.assertEqual(line2.reason, 'crbug.com/123')
+        self.assertEqual(line2.tags, {'mac10.11'})
+        self.assertEqual(line2.results, {ResultType.Timeout})
 
     def test_create_line_dict_with_asterisks(self):
         # Literal asterisks in test names need to be escaped in expectations.
@@ -645,31 +710,50 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'external/wpt/html/dom/interfaces.https.html?exclude=(Document.*|HTML.*)':
             {
                 tuple([DesktopConfig(port_name='test-linux-trusty')]):
-                SimpleTestResult(
-                    expected='PASS', actual='FAIL', bug='crbug.com/test'),
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
             },
         }
-        line_dict, _ = updater.create_line_dict(results)
+        line_dict = updater.write_to_test_expectations(results)
         self.assertEqual(
             line_dict, {
                 'external/wpt/html/dom/interfaces.https.html?exclude=(Document.*|HTML.*)':
                 [
-                    'crbug.com/test [ Trusty ] external/wpt/html/dom/interfaces.https.html?exclude=(Document.\*|HTML.\*) [ Failure ]',
+                    'crbug.com/123 [ Trusty ] external/wpt/html/dom/'
+                    'interfaces.https.html?exclude=(Document.\*|HTML.\*) '
+                    '[ Failure ]',
                 ],
             })
 
-    def test_normalized_specifiers(self):
+    def test_unsimplifiable_specifiers(self):
         updater = WPTExpectationsUpdater(self.mock_host())
-        self.assertEqual(
-            updater.normalized_specifiers('x/y.html', [DesktopConfig(port_name='test-mac-mac10.10')]),
-            ['Mac10.10'])
-        self.assertEqual(updater.normalized_specifiers('x/y.html', []), [''])
+        updater.write_to_test_expectations({
+            'external/wpt/x/y.html': {
+                (DesktopConfig(port_name='test-mac-mac10.10'), ):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+            },
+            'external/wpt/x/z.html': {
+                (
+                    DesktopConfig(port_name='test-mac-mac10.10'),
+                    DesktopConfig(port_name='test-win-win7'),
+                ):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+            },
+        })
 
-        self.assertEqual(
-            updater.normalized_specifiers(
-                'x/y.html', [DesktopConfig(port_name='test-mac-mac10.10'),
-                             DesktopConfig(port_name='test-win-win7')]),
-            ['Mac10.10', 'Win7'])
+        expectations = TestExpectations(updater.port)
+        path = updater.port.path_to_generic_test_expectations_file()
+        (line, ) = expectations.get_expectations_from_file(
+            path, 'external/wpt/x/y.html')
+        self.assertEqual(line.tags, {'mac10.10'})
+        line1, line2 = expectations.get_expectations_from_file(
+            path, 'external/wpt/x/z.html')
+        self.assertEqual(line1.tags | line2.tags, {'win7', 'mac10.10'})
 
     def test_skipped_specifiers_when_test_is_skip(self):
         host = self.mock_host()
@@ -696,65 +780,42 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
-        self.assertTrue(
-            updater.specifiers_can_extend_to_all_platforms(
-                ['Mac10.10', 'Mac10.11', 'Win7', 'Win10'],
-                'external/wpt/test.html'))
-        self.assertFalse(
-            updater.specifiers_can_extend_to_all_platforms(
-                ['Mac10.10', 'Win7', 'Win10'], 'external/wpt/test.html'))
 
-    def test_simplify_specifiers(self):
-        host = self.mock_host()
-        updater = WPTExpectationsUpdater(host)
-        macros = {
-            'mac': ['Mac10.10', 'mac10.11'],
-            'win': ['Win7', 'win10'],
-            'Linux': ['Trusty'],
-        }
-        self.assertEqual(
-            updater.simplify_specifiers(['mac10.10', 'mac10.11'], macros),
-            ['Mac'])
-        self.assertEqual(
-            updater.simplify_specifiers(['Mac10.10', 'Mac10.11', 'Trusty'],
-                                        macros), ['Linux', 'Mac'])
-        self.assertEqual(
-            updater.simplify_specifiers(
-                ['Mac10.10', 'Mac10.11', 'Trusty', 'Win7', 'Win10'], macros),
-            [])
-        self.assertEqual(
-            updater.simplify_specifiers(['Mac', 'Win', 'Linux'], macros), [])
+        updater.write_to_test_expectations({
+            'external/wpt/test.html': {
+                (
+                    DesktopConfig('test-mac-mac10.10'),
+                    DesktopConfig('test-win-win7'),
+                    DesktopConfig('test-win-win10'),
+                ):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+            },
+        })
+        expectations = TestExpectations(updater.port)
+        path = updater.port.path_to_generic_test_expectations_file()
+        line1, line2 = expectations.get_expectations_from_file(
+            path, 'external/wpt/test.html')
+        self.assertEqual(line1.tags | line2.tags, {'mac10.10', 'win'})
 
-    def test_simplify_specifiers_uses_specifiers_in_builder_list(self):
-        # Even if there are extra specifiers in the macro dictionary, we can simplify specifier
-        # lists if they contain all of the specifiers the are represented in the builder list.
-        # This way specifier simplification can still be done while a new platform is being added.
-        host = self.mock_host()
-        updater = WPTExpectationsUpdater(host)
-        macros = {
-            'mac': ['Mac10.10', 'mac10.11', 'mac10.14'],
-            'win': ['Win7', 'win10'],
-            'Linux': ['Trusty'],
-        }
-        self.assertEqual(
-            updater.simplify_specifiers(['mac10.10', 'mac10.11'], macros),
-            ['Mac'])
-        self.assertEqual(
-            updater.simplify_specifiers(
-                ['Mac10.10', 'Mac10.11', 'Trusty', 'Win7', 'Win10'], macros),
-            [])
-
-    def test_simplify_specifiers_port_not_tested_by_trybots(self):
-        host = self.mock_host()
-        updater = WPTExpectationsUpdater(host)
-        macros = {
-            'mac': ['Mac10.10', 'mac10.11'],
-            'win': ['win10'],
-            'foo': ['bar'],
-        }
-        self.assertEqual(
-            updater.simplify_specifiers(['mac10.10', 'mac10.11'], macros),
-            ['Mac'])
+        updater.write_to_test_expectations({
+            'external/wpt/test.html': {
+                (
+                    DesktopConfig('test-mac-mac10.10'),
+                    DesktopConfig('test-mac-mac10.11'),
+                    DesktopConfig('test-win-win7'),
+                    DesktopConfig('test-win-win10'),
+                ):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+            },
+        })
+        expectations = TestExpectations(updater.port)
+        (line, ) = expectations.get_expectations_from_file(
+            path, 'external/wpt/test.html')
+        self.assertEqual(line.tags, set())
 
     def test_normalized_specifiers_with_skipped_test(self):
         host = self.mock_host()
@@ -768,23 +829,36 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
-        self.assertEqual(
-            updater.normalized_specifiers(
-                'external/wpt/test.html',
-                [DesktopConfig(port_name='test-mac-mac10.10'),
-                 DesktopConfig(port_name='test-win-win7'),
-                 DesktopConfig(port_name='test-win-win10')]),
-            [''])
-        self.assertEqual(
-            updater.normalized_specifiers('external/wpt/test.html',
-                                          [DesktopConfig(port_name='test-win-win7'),
-                                           DesktopConfig(port_name='test-win-win10')]),
-            ['Win'])
-        self.assertEqual(
-            updater.normalized_specifiers('external/wpt/another.html',
-                                          [DesktopConfig('test-win-win7'),
-                                           DesktopConfig('test-win-win10')]),
-            ['Win'])
+        updater.write_to_test_expectations({
+            'external/wpt/test.html': {
+                (
+                    DesktopConfig(port_name='test-win-win7'),
+                    DesktopConfig(port_name='test-win-win10'),
+                    DesktopConfig(port_name='test-mac-mac10.10'),
+                ):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+            },
+            'external/wpt/another.html': {
+                (
+                    DesktopConfig(port_name='test-win-win7'),
+                    DesktopConfig(port_name='test-win-win10'),
+                ):
+                SimpleTestResult(expected='PASS',
+                                 actual='FAIL',
+                                 bug='crbug.com/123'),
+            },
+        })
+
+        expectations = TestExpectations(updater.port)
+        path = updater.port.path_to_generic_test_expectations_file()
+        (line, ) = expectations.get_expectations_from_file(
+            path, 'external/wpt/test.html')
+        self.assertEqual(line.tags, set())
+        (line, ) = expectations.get_expectations_from_file(
+            path, 'external/wpt/another.html')
+        self.assertEqual(line.tags, {'win'})
 
     def test_merge_dicts_with_differing_status_is_merged(self):
         updater = WPTExpectationsUpdater(self.mock_host())
@@ -892,9 +966,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         exp_dict = updater.write_to_test_expectations(test_expectations)
         self.assertEqual(exp_dict, {})
         logs = ''.join(self.logMessages()).lower()
-        self.assertIn(
-            'no lines to write to testexpectations or webdriverexpectations.',
-            logs)
+        self.assertIn('no lines to write to testexpectations.', logs)
 
     def test_cleanup_outside_affected_expectations_in_cl(self):
         host = self.mock_host()
@@ -981,10 +1053,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.write_to_test_expectations(test_expectations)
         value = host.filesystem.read_text_file(expectations_path)
         self.assertMultiLineEqual(
-            value, ('# tags: [ Win Linux ]\n' +
-                    '# results: [ Pass Failure ]\n\n' +
-                    WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
-                    'crbug.com/123 [ Trusty ] external/wpt/fake/file/path.html [ Pass ]'))
+            value,
+            textwrap.dedent("""\
+                # tags: [ Win Linux ]
+                # results: [ Pass Failure ]
+
+                # ====== New tests from wpt-importer added here ======
+                crbug.com/123 [ Trusty ] external/wpt/fake/file/path.html [ Pass ]
+                """))
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
@@ -1068,6 +1144,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
+    @unittest.skip(
+        "The webdriver test runner doesn't upload results to ResultDB; "
+        'see crbug.com/1414565')
     def test_write_to_test_expectations_with_webdriver_lines(self):
         host = self.mock_host()
 
@@ -1122,12 +1201,17 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         updater.write_to_test_expectations(test_expectations)
         value = host.filesystem.read_text_file(expectations_path)
-
         self.assertMultiLineEqual(
-            value, (raw_exps + '\n' +
-                    'crbug.com/111 [ Trusty ] foo/bar.html [ Failure ]\n'
-                    '\n' + WPTExpectationsUpdater.MARKER_COMMENT + '\n'
-                    'crbug.com/123 [ Trusty ] external/wpt/fake/file/path.html [ Pass ]'))
+            value,
+            textwrap.dedent("""\
+                # tags: [ Trusty ]
+                # results: [ Pass Failure ]
+
+                crbug.com/111 [ Trusty ] foo/bar.html [ Failure ]
+
+                # ====== New tests from wpt-importer added here ======
+                crbug.com/123 [ Trusty ] external/wpt/fake/file/path.html [ Pass ]
+                """))
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
@@ -1190,14 +1274,17 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         two = {
             'external/wpt/reftest.html': {
                 'one':
-                SimpleTestResult(
-                    expected='FAIL', actual='PASS', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='PASS',
+                                 bug='crbug.com/123'),
                 'two':
-                SimpleTestResult(
-                    expected='FAIL', actual='TIMEOUT', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='TIMEOUT',
+                                 bug='crbug.com/123'),
                 'three':
-                SimpleTestResult(
-                    expected='FAIL', actual='PASS', bug='crbug.com/test'),
+                SimpleTestResult(expected='FAIL',
+                                 actual='PASS',
+                                 bug='crbug.com/123'),
             }
         }
         tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(two)
@@ -1308,13 +1395,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     DesktopConfig('test-win-win7'),
                     DesktopConfig('test-win-win10'),
                 ):
-                SimpleTestResult(
-                    expected='PASS', actual='MISSING', bug='crbug.com/test')
+                SimpleTestResult(expected='PASS', actual='MISSING', bug='')
             }
         }
         tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(results)
         self.assertEqual(tests_to_rebaseline, [])
-        line_dict, _ = updater.create_line_dict(results)
+        line_dict = updater.write_to_test_expectations(results)
         self.assertEqual(
             line_dict, {
                 'external/wpt/x-manual.html':
@@ -1337,19 +1423,16 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 ):
                 SimpleTestResult(expected='PASS',
                                  actual='TEXT',
-                                 bug='crbug.com/test')
+                                 bug='crbug.com/123')
             }
         }
-        updater.configs_with_no_results = [
-            DesktopConfig(port_name='test-mac-mac10.10')
-        ]
-        line_dict, _ = updater.create_line_dict(results)
+        line_dict = updater.write_to_test_expectations(results)
         self.assertEqual(
             line_dict, {
                 'external/wpt/x.html': [
-                    'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
-                    'crbug.com/test [ Mac10.10 ] external/wpt/x.html [ Failure ]',
-                ]
+                    'crbug.com/123 [ Linux ] external/wpt/x.html [ Failure ]',
+                    'crbug.com/123 [ Mac10.10 ] external/wpt/x.html [ Failure ]',
+                ],
             })
 
     def test_cleanup_all_deleted_tests_in_expectations_files(self):
@@ -1482,18 +1565,19 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     DesktopConfig('test-mac-mac10.11'),
                     DesktopConfig('test-win-win7'),
                 ):
-                SimpleTestResult(
-                    expected='PASS', actual='TEXT', bug='crbug.com/test')
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/123')
             }
         }
-        line_dict, _ = updater.create_line_dict(results)
+        line_dict = updater.write_to_test_expectations(results)
         self.assertEqual(
             line_dict, {
                 'external/wpt/x.html': [
-                    'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
-                    'crbug.com/test [ Mac ] external/wpt/x.html [ Failure ]',
-                    'crbug.com/test [ Win7 ] external/wpt/x.html [ Failure ]',
-                ]
+                    'crbug.com/123 [ Linux ] external/wpt/x.html [ Failure ]',
+                    'crbug.com/123 [ Mac ] external/wpt/x.html [ Failure ]',
+                    'crbug.com/123 [ Win7 ] external/wpt/x.html [ Failure ]',
+                ],
             })
 
     def test_inheriting_results(self):

@@ -25,21 +25,17 @@ from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models.test_expectations import (
-    ParseError, SystemConfigurationEditor, TestExpectations)
+    ExpectationsChange,
+    ParseError,
+    SystemConfigurationEditor,
+    TestExpectations,
+)
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
 
 
-# TODO(crbug.com/1149035): Investigate reusing
-# `web_tests.models.test_expectations` and alike in this module.
-#
-# That module has functionality to update existing lines, or group lines
-# affecting the same test. Neither is possible currently; only new lines can be
-# added.
-
 SimpleTestResult = namedtuple('SimpleTestResult', ['expected', 'actual', 'bug'])
-
 DesktopConfig = namedtuple('DesktopConfig', ['port_name'])
 
 
@@ -517,203 +513,16 @@ class WPTExpectationsUpdater:
         # add a Missing expectation (this is not allowed), but no other
         # expectation is correct.
         if 'MISSING' in actual_results:
-            return {'Skip'}
+            return {ResultType.Skip}
         expectations = set()
         failure_types = {'TEXT', 'IMAGE+TEXT', 'IMAGE', 'AUDIO', 'FAIL'}
         other_types = {'TIMEOUT', 'CRASH', 'PASS'}
         for actual in actual_results:
             if actual in failure_types:
-                expectations.add('Failure')
+                expectations.add(ResultType.Failure)
             if actual in other_types:
-                expectations.add(actual.capitalize())
+                expectations.add(actual)
         return expectations
-
-    def remove_configurations(self, configs_to_remove):
-        """Removes configs from test expectations files for some tests
-
-        Args:
-            configs_to_remove: A dict maps test names to set of os versions:
-                {
-                    'test-with-failing-result': ['os1', 'os2', ...]
-                }
-        Returns: None
-        """
-        # SystemConfigurationEditor now only works on generic test expectations
-        # files. This is good enough for now
-        path = self.port.path_to_generic_test_expectations_file()
-        test_expectations = TestExpectations(
-            self.port,
-            expectations_dict={
-                path: self.host.filesystem.read_text_file(path),
-            })
-        system_remover = SystemConfigurationEditor(test_expectations)
-        for test, versions in configs_to_remove.items():
-            system_remover.remove_os_versions(test, versions)
-        system_remover.update_expectations()
-
-    def create_line_dict_for_flag_specific(self, merged_results, generic_expectations):
-        """Creates list of test expectations lines for flag specific builder.
-
-        Traverses through the given |merged_results| dictionary and parses the
-        value to create one test expectations line per key. If a test expectation
-        from generic expectations can be inherited, we will reuse that expectation
-        so that we can keep the file size small. Flag specific expectations
-        does not use platform tag, so we don't need handle conflicts either.
-
-        Test expectation lines have the following format:
-            ['BUG_URL TEST_NAME [EXPECTATION(S)]']
-
-        Args:
-            merged_results: A dictionary with the format:
-                {
-                    'test-with-failing-result': {
-                        (config1,): SimpleTestResult
-                    }
-                }
-
-        Returns:
-            line_dict: A dictionary from test names to a list of test
-                       expectation lines
-                       (each SimpleTestResult turns into a line).
-            configs_to_remove: An empty dictionary
-        """
-        line_dict = defaultdict(list)
-        for test_name, test_results in sorted(merged_results.items()):
-            if not self._is_wpt_test(test_name):
-                _log.warning(
-                    'Non-WPT test "%s" unexpectedly passed to create_line_dict.',
-                    test_name)
-                continue
-            expectation_line = generic_expectations.get_expectations(test_name)
-            expectations = expectation_line.results
-            for configs, result in sorted(test_results.items()):
-                new_expectations = self.get_expectations(result, test_name)
-                if 'Failure' in new_expectations:
-                    new_expectations.remove('Failure')
-                    new_expectations.add('FAIL')
-                if new_expectations != expectations:
-                    line_dict[test_name].extend(
-                        self._create_lines(test_name, [], result))
-                # for flag-specific builders, we always have one config for each
-                # test, so quit the loop here
-                break
-
-        return line_dict, {}
-
-    def create_line_dict(self, merged_results):
-        """Creates list of test expectations lines.
-
-        Traverses through the given |merged_results| dictionary and parses the
-        value to create one test expectations line per key.
-
-        Test expectation lines have the following format:
-            ['BUG_URL [PLATFORM(S)] TEST_NAME [EXPECTATION(S)]']
-
-        Args:
-            merged_results: A dictionary with the format:
-                {
-                    'test-with-failing-result': {
-                        (config1, config2): SimpleTestResult,
-                        (config3,): SimpleTestResult
-                    }
-                }
-
-        Returns:
-            line_dict: A dictionary from test names to a list of test
-                       expectation lines
-                       (each SimpleTestResult turns into a line).
-            configs_to_remove: A dictionary from test names to a set
-                               of os specifiers
-        """
-        line_dict = defaultdict(list)
-        configs_to_remove = defaultdict(set)
-        for test_name, test_results in sorted(merged_results.items()):
-            if not self._is_wpt_test(test_name):
-                _log.warning(
-                    'Non-WPT test "%s" unexpectedly passed to create_line_dict.',
-                    test_name)
-                continue
-            for configs, result in sorted(test_results.items()):
-                line_dict[test_name].extend(
-                    self._create_lines(test_name, configs, result))
-                for config in configs:
-                    configs_to_remove[test_name].add(
-                        self.host.builders.version_specifier_for_port_name(
-                            config.port_name))
-
-        return line_dict, configs_to_remove
-
-    def _create_lines(self, test_name, configs, result):
-        """Constructs test expectation line strings.
-
-        Args:
-            test_name: The test name string.
-            configs: A list of full configs that the line should apply to.
-            result: A SimpleTestResult.
-
-        Returns:
-            A list of strings which each is a line of test expectation for given
-            |test_name|.
-        """
-        lines = []
-
-        expectations = '[ %s ]' % \
-            ' '.join(self.get_expectations(result, test_name))
-        for specifier in self.normalized_specifiers(test_name, configs):
-            line_parts = []
-            if specifier:
-                line_parts.append('[ %s ]' % specifier)
-            # Escape literal asterisks for typ (https://crbug.com/1036130).
-            # TODO(weizhong): consider other escapes we added recently
-            line_parts.append(test_name.replace('*', '\\*'))
-            line_parts.append(expectations)
-
-            # Only add the bug link if the expectations do not include SKIP.
-            if 'Skip' not in expectations and result.bug:
-                line_parts.insert(0, result.bug)
-
-            lines.append(' '.join(line_parts))
-        return lines
-
-    def normalized_specifiers(self, test_name, configs):
-        """Converts and simplifies ports into platform specifiers.
-
-        Args:
-            test_name: The test name string.
-            configs: A list of full configs that the line should apply to.
-
-        Returns:
-            A list of specifier string, e.g. ["Mac", "Win"].
-            [''] will be returned if the line should apply to all platforms.
-        """
-        if not configs:
-            return ['']
-
-        specifiers = []
-        for config in configs:
-            specifiers.append(
-                self.host.builders.version_specifier_for_port_name(
-                    config.port_name))
-
-        if self.specifiers_can_extend_to_all_platforms(specifiers, test_name):
-            return ['']
-
-        specifiers = self.simplify_specifiers(
-            specifiers, self.port.configuration_specifier_macros())
-        if not specifiers:
-            return ['']
-        return specifiers
-
-    def specifiers_can_extend_to_all_platforms(self, specifiers, test_name):
-        """Tests whether a list of specifiers can be extended to all platforms.
-
-        Tries to add skipped platform specifiers to the list and tests if the
-        extended list covers all platforms.
-        """
-        extended_specifiers = specifiers + self.skipped_specifiers(test_name)
-        # If the list is simplified to empty, then all platforms are covered.
-        return not self.simplify_specifiers(
-            extended_specifiers, self.port.configuration_specifier_macros())
 
     def skipped_specifiers(self, test_name):
         """Returns a list of platform specifiers for which the test is skipped."""
@@ -733,48 +542,10 @@ class WPTExpectationsUpdater:
             for name in self._get_try_bots()
         ]
 
-    def simplify_specifiers(self, specifiers, specifier_macros):
-        """Simplifies the specifier part of an expectation line if possible.
-
-        "Simplifying" means finding the shortest list of platform specifiers
-        that is equivalent to the given list of specifiers. This can be done
-        because there are "macro specifiers" that stand in for multiple version
-        specifiers, and an empty list stands in for "all platforms".
-
-        Args:
-            specifiers: A collection of specifiers (case insensitive).
-            specifier_macros: A dict mapping "macros" for groups of specifiers
-                to lists of version specifiers. e.g. {"win": ["win10", "win11"]}.
-                If there are versions in this dict for that have no corresponding
-                try bots, they are ignored.
-
-        Returns:
-            A shortened list of specifiers (capitalized). For example, ["win10",
-            "win11"] would be converted to ["Win"]. If the given list covers
-            all supported platforms, then an empty list is returned.
-        """
-        specifiers = {s.lower() for s in specifiers}
-        covered_by_try_bots = self._platform_specifiers_covered_by_try_bots()
-        for macro, versions in specifier_macros.items():
-            macro = macro.lower()
-
-            # Only consider version specifiers that have corresponding try bots.
-            versions = {
-                s.lower()
-                for s in versions if s.lower() in covered_by_try_bots
-            }
-            if len(versions) == 0:
-                continue
-            if versions <= specifiers:
-                specifiers -= versions
-                specifiers.add(macro)
-        if specifiers == {macro.lower() for macro in specifier_macros}:
-            return []
-        return sorted(specifier.capitalize() for specifier in specifiers)
-
-    def _platform_specifiers_covered_by_try_bots(self):
+    def _platform_specifiers_covered_by_try_bots(
+            self, flag_specific: Optional[str] = None):
         all_platform_specifiers = set()
-        for builder_name in self._get_try_bots():
+        for builder_name in self._get_try_bots(flag_specific):
             all_platform_specifiers.add(
                 self.host.builders.platform_specifier_for_builder(
                     builder_name).lower())
@@ -795,66 +566,62 @@ class WPTExpectationsUpdater:
         Returns:
             Dictionary mapping test names to lists of test expectation strings.
         """
+        covered_versions = self._platform_specifiers_covered_by_try_bots(
+            flag_specific)
+        port = self.host.port_factory.get()
         if flag_specific:
-            line_dict, configs_to_remove = self.create_line_dict_for_flag_specific(
-                test_expectations, TestExpectations(self.port))
+            port.set_option_default('flag_specific', flag_specific)
+            path = port.path_to_flag_specific_expectations_file(flag_specific)
         else:
-            line_dict, configs_to_remove = self.create_line_dict(test_expectations)
-        if not line_dict:
-            _log.info('No lines to write to %s or WebdriverExpectations.',
-                      flag_specific or 'TestExpectations')
-            return {}
-
-        if configs_to_remove:
-            _log.info('Clean up stale expectations that'
-                      ' could conflict with new expectations')
-            self.remove_configurations(configs_to_remove)
-
-        line_list = []
-        webdriver_list = []
-        # CQ/CI always skips manual tests, so writing them to `NeverFixTests`
-        # is unnecessary. See also: crrev.com/c/3658291.
-        for lines in line_dict.values():
-            for line in lines:
-                if self.finder.webdriver_prefix() in line:
-                    webdriver_list.append(line)
-                else:
-                    line_list.append(line)
-
-        if flag_specific:
-            list_to_expectation = {
-                self.port.path_to_flag_specific_expectations_file(flag_specific): line_list
+            path = port.path_to_generic_test_expectations_file()
+        expectations, change = TestExpectations(port), ExpectationsChange()
+        for test in sorted(filter(self._is_wpt_test, test_expectations)):
+            skipped_versions = {
+                version.lower()
+                for version in self.skipped_specifiers(test)
             }
-        else:
-            list_to_expectation = {
-                self.port.path_to_generic_test_expectations_file(): line_list,
-                self.port.path_to_webdriver_expectations_file(): webdriver_list
+            # Find version specifiers needed to promote versions to their OS
+            # (covered versions that are not skipped). For flag-specific
+            # expectations, there should only be one covered version at most
+            # that will automatically be promoted to a generic line.
+            macros = {
+                os: [
+                    version for version in versions
+                    if version in covered_versions - skipped_versions
+                ]
+                for os, versions in
+                self.port.configuration_specifier_macros().items()
             }
-        for expectations_file_path, lines in list_to_expectation.items():
-            if not lines:
-                continue
-
-            _log.info('Lines to write to %s:\n %s', expectations_file_path,
-                      '\n'.join(lines))
-            # Writes to TestExpectations file.
-            file_contents = self.host.filesystem.read_text_file(
-                expectations_file_path)
-
-            marker_comment_index = file_contents.find(self.MARKER_COMMENT)
-            if marker_comment_index == -1:
-                file_contents += '\n%s\n' % self.MARKER_COMMENT
-                file_contents += '\n'.join(lines)
-            else:
-                end_of_marker_line = (file_contents[marker_comment_index:].
-                                      find('\n')) + marker_comment_index
-                file_contents = (
-                    file_contents[:end_of_marker_line + 1] + '\n'.join(lines) +
-                    file_contents[end_of_marker_line:])
-
-            self.host.filesystem.write_text_file(expectations_file_path,
-                                                 file_contents)
-
-        return line_dict
+            editor = SystemConfigurationEditor(expectations, path, macros)
+            for configs, result in test_expectations[test].items():
+                versions = set()
+                for config in configs:
+                    specifier = self.host.builders.version_specifier_for_port_name(
+                        config.port_name)
+                    if specifier:
+                        versions.add(specifier)
+                statuses = self.get_expectations(result, test)
+                # Avoid writing flag-specific expectations redundant with
+                # generic ones.
+                if flag_specific and statuses == expectations.get_expectations(
+                        test).results:
+                    continue
+                change += editor.update_versions(
+                    test,
+                    versions,
+                    statuses,
+                    reason=result.bug,
+                    marker=self.MARKER_COMMENT[len('# '):])
+                change += editor.merge_versions(test)
+        if not change.lines_added:
+            _log.info(
+                'No lines to write to %s.',
+                self.host.filesystem.relpath(path, self.port.web_tests_dir()))
+        expectations.commit_changes()
+        new_lines = defaultdict(list)
+        for line in change.lines_added:
+            new_lines[line.test].append(line.to_string())
+        return {test: sorted(lines) for test, lines in new_lines.items()}
 
     def skip_slow_timeout_tests(self, port):
         """Skip any Slow and Timeout tests found in TestExpectations.
@@ -1162,6 +929,8 @@ class WPTExpectationsUpdater:
         return self.finder.is_webdriver_test_path(test_name)
 
     @memoized
-    def _get_try_bots(self):
+    def _get_try_bots(self, flag_specific: Optional[str] = None):
         return self.host.builders.filter_builders(
-            is_try=True, exclude_specifiers={'android'})
+            is_try=True,
+            exclude_specifiers={'android'},
+            flag_specific=flag_specific)
