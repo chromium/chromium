@@ -7,7 +7,7 @@
 <body>
 
 <script type="module">
-import {set_fedcm_cookie, set_alt_fedcm_cookie, default_request_options, default_alt_request_options} from '../support/fedcm-helper.sub.js';
+import {set_fedcm_cookie, set_alt_fedcm_cookie, request_options_with_mediation_required, default_alt_request_options} from '../support/fedcm-helper.sub.js';
 
 let cookies_promise = Promise.all([set_fedcm_cookie(), set_alt_fedcm_cookie()]);
 let has_window_loaded = false;
@@ -22,7 +22,7 @@ promise_test(async t => {
   let first_cred_resolved = false;
   assert_false(has_window_loaded);
   // First navigator.credentials.get() is called prior to window.onload
-  const first_cred = navigator.credentials.get(default_request_options()).finally(() => { first_cred_resolved = true; });
+  const first_cred = navigator.credentials.get(request_options_with_mediation_required()).finally(() => { first_cred_resolved = true; });
   await Promise.all([cookies_promise, window_loaded]);
   assert_true(has_window_loaded);
   assert_false(first_cred_resolved);
