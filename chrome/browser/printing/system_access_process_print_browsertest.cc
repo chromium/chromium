@@ -2483,8 +2483,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
   ASSERT_EQ(new_document_called_count(), 0);
 }
 
+// Test is flaky on linux-ubsan-vptr for the parameters where
+// `!content_analysis_allows_print()`.
+// TODO(crbug.com/1454426): Re-enabled when fixed.
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_SystemPrintFromPrintPreview DISABLED_SystemPrintFromPrintPreview
+#else
+#define MAYBE_SystemPrintFromPrintPreview SystemPrintFromPrintPreview
+#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
-                       SystemPrintFromPrintPreview) {
+                       MAYBE_SystemPrintFromPrintPreview) {
   AddPrinter("printer_name");
 
   ASSERT_TRUE(embedded_test_server()->Started());
