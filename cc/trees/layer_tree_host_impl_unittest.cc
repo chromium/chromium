@@ -11326,13 +11326,8 @@ class FakeDrawableLayerImpl : public LayerImpl {
 // submitted to the LayerTreeFrameSink, where it should request to swap only
 // the sub-buffer that is damaged.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
-  auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-  scoped_refptr<viz::TestContextProvider> context_provider(
-      viz::TestContextProvider::Create(std::move(gl_owned)));
-  context_provider->BindToCurrentSequence();
-
-  std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink(
-      FakeLayerTreeFrameSink::Create3d(context_provider));
+  std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink =
+      FakeLayerTreeFrameSink::Create3d();
   FakeLayerTreeFrameSink* fake_layer_tree_frame_sink =
       layer_tree_frame_sink.get();
 

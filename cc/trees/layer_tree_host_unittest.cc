@@ -8248,11 +8248,8 @@ class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
       scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
-    auto gl = std::make_unique<viz::TestGLES2Interface>();
-    gl->set_have_extension_egl_image(true);
-    auto provider = viz::TestContextProvider::Create(std::move(gl));
     return LayerTreeTest::CreateLayerTreeFrameSink(
-        renderer_settings, refresh_rate, std::move(provider),
+        renderer_settings, refresh_rate, std::move(compositor_context_provider),
         std::move(worker_context_provider));
   }
 

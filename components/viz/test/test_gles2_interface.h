@@ -125,7 +125,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   }
   void set_context_lost(bool context_lost) { context_lost_ = context_lost; }
 
-  void set_have_extension_egl_image(bool have);
   void set_support_texture_format_bgra8888(bool support);
   void set_support_sync_query(bool support);
   void set_support_texture_half_float_linear(bool support);

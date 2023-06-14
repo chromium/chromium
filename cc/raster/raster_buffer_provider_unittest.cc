@@ -333,15 +333,14 @@ class RasterBufferProviderTest
 
  private:
   void Create3dResourceProvider() {
-    auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-    gl_owned->set_support_sync_query(true);
-    context_provider_ = viz::TestContextProvider::Create(std::move(gl_owned));
+    context_provider_ = viz::TestContextProvider::Create();
     context_provider_->BindToCurrentSequence();
 
     worker_context_provider_ = viz::TestContextProvider::CreateWorker();
     DCHECK(worker_context_provider_);
 
-    layer_tree_frame_sink_ = FakeLayerTreeFrameSink::Create3d();
+    layer_tree_frame_sink_ = FakeLayerTreeFrameSink::Create3d(
+        context_provider_, worker_context_provider_);
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
     pending_raster_queries_ =

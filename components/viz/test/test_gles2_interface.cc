@@ -31,7 +31,7 @@ static unsigned NextContextId() {
 
 TestGLES2Interface::TestGLES2Interface() : context_id_(NextContextId()) {
   // For stream textures.
-  set_have_extension_egl_image(true);
+  test_capabilities_.egl_image_external = true;
   set_max_texture_size(2048);
 }
 
@@ -421,10 +421,6 @@ GLenum TestGLES2Interface::GetGraphicsResetStatusKHR() {
   if (IsContextLost())
     return GL_UNKNOWN_CONTEXT_RESET_KHR;
   return GL_NO_ERROR;
-}
-
-void TestGLES2Interface::set_have_extension_egl_image(bool have) {
-  test_capabilities_.egl_image_external = have;
 }
 
 void TestGLES2Interface::set_support_texture_format_bgra8888(bool support) {
