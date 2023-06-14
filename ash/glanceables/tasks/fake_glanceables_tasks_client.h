@@ -33,6 +33,8 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
       delete;
   ~FakeGlanceablesTasksClient() override;
 
+  std::vector<std::string> completed_tasks() const { return completed_tasks_; }
+
   // GlanceablesTasksClient:
   void GetTaskLists(GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
@@ -47,6 +49,9 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
 
   // All available task lists.
   std::unique_ptr<ui::ListModel<GlanceablesTaskList>> task_lists_;
+
+  // Tracks completed tasks and the task list they belong to.
+  std::vector<std::string> completed_tasks_;
 
   // All available tasks grouped by task list id.
   base::flat_map<std::string, std::unique_ptr<ui::ListModel<GlanceablesTask>>>

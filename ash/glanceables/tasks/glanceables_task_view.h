@@ -5,6 +5,8 @@
 #ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
 #define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/memory/raw_ptr.h"
@@ -35,12 +37,14 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(GlanceablesTaskView);
 
-  explicit GlanceablesTaskView(const GlanceablesTask* task);
+  GlanceablesTaskView(const std::string& task_list_id,
+                      const GlanceablesTask* task);
   GlanceablesTaskView(const GlanceablesTaskView&) = delete;
   GlanceablesTaskView& operator=(const GlanceablesTaskView&) = delete;
   ~GlanceablesTaskView() override;
 
   void ButtonPressed();
+  void MarkedAsCompleted(bool success);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -58,6 +62,12 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
 
   // Whether the task shown by this view is being marked as completed.
   bool completed_ = false;
+  // ID for the task list that owns this task.
+  const std::string task_list_id_;
+  // ID for the task represented by this view.
+  const std::string task_id_;
+
+  base::WeakPtrFactory<GlanceablesTaskView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

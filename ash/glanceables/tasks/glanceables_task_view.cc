@@ -4,6 +4,9 @@
 
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 
+#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/tasks/glanceables_tasks_client.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -36,7 +39,9 @@ views::Label* SetupLabel(views::FlexLayoutView* parent) {
 
 namespace ash {
 
-GlanceablesTaskView::GlanceablesTaskView(const GlanceablesTask* task) {
+GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
+                                         const GlanceablesTask* task)
+    : task_list_id_(task_list_id), task_id_(task->id) {
   button_ =
       AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
           &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
@@ -75,16 +80,24 @@ GlanceablesTaskView::GlanceablesTaskView(const GlanceablesTask* task) {
 GlanceablesTaskView::~GlanceablesTaskView() = default;
 
 void GlanceablesTaskView::ButtonPressed() {
-  if (completed_) {
+  ash::Shell::Get()
+      ->glanceables_v2_controller()
+      ->GetTasksClient()
+      ->MarkAsCompleted(task_list_id_, task_id_,
+                        base::BindOnce(&GlanceablesTaskView::MarkedAsCompleted,
+                                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlanceablesTaskView::MarkedAsCompleted(bool success) {
+  if (!success) {
     return;
   }
   completed_ = true;
+  // TODO(b:277268122): Update icons and styling.
   button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kAccountCircleIcon,
                                      cros_tokens::kFocusRingColor, kIconSize));
-  // TODO(b:277268122): propagate selection status to backend, update icons and
-  // styling.
 }
 
 gfx::Size GlanceablesTaskView::CalculatePreferredSize() const {

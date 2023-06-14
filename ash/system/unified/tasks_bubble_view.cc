@@ -128,15 +128,17 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
   GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
-      active_task_list->id, base::BindOnce(&TasksBubbleView::UpdateTasksList,
-                                           weak_ptr_factory_.GetWeakPtr()));
+      active_task_list->id,
+      base::BindOnce(&TasksBubbleView::UpdateTasksList,
+                     weak_ptr_factory_.GetWeakPtr(), active_task_list->id));
 }
 
-void TasksBubbleView::UpdateTasksList(ui::ListModel<GlanceablesTask>* tasks) {
+void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
+                                      ui::ListModel<GlanceablesTask>* tasks) {
   for (const auto& task : *tasks) {
     if (!task->completed) {
       auto* view = task_items_container_view_->AddChildView(
-          std::make_unique<GlanceablesTaskView>(task.get()));
+          std::make_unique<GlanceablesTaskView>(task_list_id, task.get()));
       view->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
       view->SetOrientation(views::LayoutOrientation::kHorizontal);
     }

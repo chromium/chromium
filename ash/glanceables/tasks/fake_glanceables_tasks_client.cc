@@ -7,6 +7,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 
 namespace ash {
 
@@ -32,7 +33,8 @@ void FakeGlanceablesTasksClient::MarkAsCompleted(
     const std::string& task_list_id,
     const std::string& task_id,
     MarkAsCompletedCallback callback) {
-  // TODO(b:277268122): Add once UI is further along and ready to test.
+  completed_tasks_.push_back(base::JoinString({task_list_id, task_id}, ":"));
+  std::move(callback).Run(/*success=*/true);
 }
 
 void FakeGlanceablesTasksClient::PopulateTasks() {

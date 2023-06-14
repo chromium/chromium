@@ -156,6 +156,10 @@ class DateTrayTest
     return AccountId::FromUserEmail(std::string(email));
   }
 
+  FakeGlanceablesTasksClient* fake_glanceables_tasks_client() {
+    return fake_glanceables_tasks_client_.get();
+  }
+
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
@@ -260,8 +264,12 @@ TEST_P(DateTrayTest, MarkTaskAsComplete) {
     ASSERT_TRUE(task_view);
     task_view->GetWidget()->LayoutRootViewIfNecessary();
     ASSERT_FALSE(task_view->GetCompletedForTest());
+    ASSERT_EQ(0u, fake_glanceables_tasks_client()->completed_tasks().size());
     GestureTapOn(task_view->GetButtonForTest());
     ASSERT_TRUE(task_view->GetCompletedForTest());
+    ASSERT_EQ(1u, fake_glanceables_tasks_client()->completed_tasks().size());
+    ASSERT_EQ("TaskListID1:TaskListItem1",
+              fake_glanceables_tasks_client()->completed_tasks().front());
   }
 }
 

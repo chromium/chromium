@@ -88,7 +88,8 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();
   void ScheduleUpdateTasksList();
-  void UpdateTasksList(ui::ListModel<GlanceablesTask>* tasks);
+  void UpdateTasksList(const std::string& task_list_id,
+                       ui::ListModel<GlanceablesTask>* tasks);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
