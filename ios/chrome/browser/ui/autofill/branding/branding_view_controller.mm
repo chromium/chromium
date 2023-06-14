@@ -40,12 +40,12 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   // A constraint of the view that should be activated when the branding is
   // invisible.
   NSLayoutConstraint* _constraintToHideView;
+  // A boolean representing visibility of the keyboard.
+  BOOL _keyboardVisible;
 }
 
 @synthesize visible = _visible;
 @synthesize shouldPerformPopAnimation = _shouldPerformPopAnimation;
-
-#pragma mark - Life Cycle
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -70,14 +70,29 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   // settled.
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(onKeyboardAnimationStart)
+         selector:@selector(keyboardWillShow)
              name:UIKeyboardWillShowNotification
            object:nil];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(onKeyboardAnimationComplete)
+         selector:@selector(keyboardDidShow)
              name:UIKeyboardDidShowNotification
            object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(keyboardDidHide)
+             name:UIKeyboardDidHideNotification
+           object:nil];
+}
+
+- (void)notifyFormInputAccessoryTapped {
+  [self.delegate keyboardAccessoryDidTap];
+}
+
+#pragma mark - BrandingConsumer
+
+- (void)slideAwayFromLeadingEdge {
+  // TODO(crbug.com/1447909): Implement "exit to the leading edge" animation.
 }
 
 #pragma mark - Keyboard Event Handlers
@@ -85,7 +100,15 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 // Called right before the keyboard is visible. This method adds the autofill
 // branding to the view if it should be visible, and otherwise remove it from
 // the view hierarchy.
-- (void)onKeyboardAnimationStart {
+- (void)keyboardWillShow {
+  // Early return if the keyboard was not hidden prior to the animation. Note
+  // that this method may still be called if the user consecutively taps on two
+  // input fields.
+  if (_keyboardVisible) {
+    return;
+  }
+
+  // Add or remove the branding icon to keyboard accessories accordingly.
   if (!_constraintToHideView) {
     _constraintToHideView = [self.view.widthAnchor constraintEqualToConstant:0];
   }
@@ -102,13 +125,22 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   }
 }
 
-// Check if the branding icon is visible and should perform an animation, and do
-// so if it should.
-- (void)onKeyboardAnimationComplete {
-  // Early return if branding is invisible.
-  if (self.view.window == nil || _brandingIcon.hidden) {
+// Update keybaord visibility, check if the branding icon is visible and should
+// perform an animation, and do so if it should.
+- (void)keyboardDidShow {
+  // Early return if the keyboard was not hidden prior to the animation. Note
+  // that this method may still be called if the user consecutively taps on two
+  // input fields.
+  if (_keyboardVisible) {
     return;
   }
+  _keyboardVisible = YES;
+
+  // Early return if branding is invisible.
+  if (self.view.window == nil || _brandingIcon.superview == nil) {
+    return;
+  }
+  [self.delegate brandingIconDidShow];
   const base::TimeTicks lastAnimationStartTime = _lastAnimationStartTime;
   BOOL shouldPerformPopAnimation =
       self.shouldPerformPopAnimation &&
@@ -127,11 +159,16 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   }
 }
 
+// Updates keyboard visibility when the keyboard is hidden.
+- (void)keyboardDidHide {
+  _keyboardVisible = NO;
+}
+
 #pragma mark - Private
 
 // Method that is invoked when the user taps the branding icon.
 - (void)onBrandingTapped {
-  [_delegate brandingIconPressed];
+  [_delegate brandingIconDidPress];
 }
 
 // Performs the "pop" animation. This includes a quick enlarging of the icon
@@ -163,7 +200,5 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
             }];
       }];
 }
-
-// TODO(crbug.com/1447909): Implement method for "exit to the left" animation.
 
 @end

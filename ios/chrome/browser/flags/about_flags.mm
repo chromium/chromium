@@ -496,10 +496,10 @@ const FeatureEntry::FeatureParam
     kAutofillBrandingIOSDismissWhenInteractedNoAnimation[] = {
         {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
          autofill::features::
-             kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted},
+             kAutofillBrandingIOSParamFrequencyTypeUntilInteracted},
         {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
          autofill::features::
-             kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted}};
+             kAutofillBrandingIOSParamFrequencyTypeUntilInteracted}};
 const FeatureEntry::FeatureParam kAutofillBrandingIOSAlwaysShowAndDismiss[] = {
     {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
      autofill::features::

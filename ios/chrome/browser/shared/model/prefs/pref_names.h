@@ -92,7 +92,10 @@ extern const char kNewTabPageLocationOverride[];
 extern const char kHttpsOnlyModeEnabled[];
 extern const char kMixedContentAutoupgradeEnabled[];
 
-extern const char kAutofillBrandingIconAnimationRemainingCountPrefName[];
+extern const char kAutofillBrandingIconAnimationRemainingCount[];
+extern const char kAutofillBrandingIconDisplayCount[];
+extern const char kAutofillBrandingKeyboardAccessoriesTapped[];
+
 extern const char kPriceNotificationsHasBeenShown[];
 
 }  // namespace prefs

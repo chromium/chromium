@@ -9,10 +9,16 @@
 @protocol BrandingViewControllerDelegate
 
 // Invoked when the user has tapped on the branding icon.
-- (void)brandingIconPressed;
+- (void)brandingIconDidPress;
+
+// Invoked if the branding icon is visible when the keyboard pops up.
+- (void)brandingIconDidShow;
 
 // Invoked when the branding icon has performed the "pop" animation.
 - (void)brandingIconDidPerformPopAnimation;
+
+// Invoked when the user has tapped on any action in the keyboard accessory.
+- (void)keyboardAccessoryDidTap;
 
 @end
 

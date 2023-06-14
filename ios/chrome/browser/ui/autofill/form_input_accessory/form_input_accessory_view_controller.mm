@@ -271,18 +271,21 @@
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenProfiles",
                            self.formSuggestionView.suggestions.count);
   [self.manualFillAccessoryViewControllerDelegate accountButtonPressed:sender];
+  [self.brandingViewController notifyFormInputAccessoryTapped];
 }
 
 - (void)cardButtonPressed:(UIButton*)sender {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenCreditCards",
                            self.formSuggestionView.suggestions.count);
   [self.manualFillAccessoryViewControllerDelegate cardButtonPressed:sender];
+  [self.brandingViewController notifyFormInputAccessoryTapped];
 }
 
 - (void)passwordButtonPressed:(UIButton*)sender {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenPasswords",
                            self.formSuggestionView.suggestions.count);
   [self.manualFillAccessoryViewControllerDelegate passwordButtonPressed:sender];
+  [self.brandingViewController notifyFormInputAccessoryTapped];
 }
 
 #pragma mark - FormSuggestionViewDelegate
@@ -290,6 +293,7 @@
 - (void)formSuggestionView:(FormSuggestionView*)formSuggestionView
        didAcceptSuggestion:(FormSuggestion*)suggestion {
   [self.formSuggestionClient didSelectSuggestion:suggestion];
+  [self.brandingViewController notifyFormInputAccessoryTapped];
 }
 
 - (void)formSuggestionViewShouldResetFromPull:

@@ -223,7 +223,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // animation should perform. Defaults to 2, which is the maximum number of
   // times a user should see autofill branding animation after installation.
   registry->RegisterIntegerPref(
-      prefs::kAutofillBrandingIconAnimationRemainingCountPrefName, 2);
+      prefs::kAutofillBrandingIconAnimationRemainingCount, 2);
+  // Register other autofill branding prefs.
+  registry->RegisterIntegerPref(prefs::kAutofillBrandingIconDisplayCount, 0);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillBrandingKeyboardAccessoriesTapped, false);
 
   registry->RegisterDictionaryPref(kLocalConsentsDictionary);
 

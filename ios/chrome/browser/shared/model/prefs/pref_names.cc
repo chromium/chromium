@@ -335,8 +335,18 @@ const char kMixedContentAutoupgradeEnabled[] =
 
 // An int counting the remaining number of times the autofill branding icon
 // should show inside form input accessories.
-const char kAutofillBrandingIconAnimationRemainingCountPrefName[] =
+const char kAutofillBrandingIconAnimationRemainingCount[] =
     "ios.autofill.branding.animation.remaining_count";
+
+// An integer representing the number of times the autofill branding icon has
+// displayed.
+const char kAutofillBrandingIconDisplayCount[] =
+    "ios.autofill.branding.display_count";
+
+// A boolean used to track whether the user has tapped on any of the keyboard
+// accessories when the autofill branding is visible.
+const char kAutofillBrandingKeyboardAccessoriesTapped[] =
+    "ios.autofill.branding.keyboard_accessory_tapped";
 
 // A boolean used to determine if the Price Tracking UI has been shown.
 const char kPriceNotificationsHasBeenShown[] =
