@@ -536,14 +536,14 @@ TEST_F(KcerNssTest, ObserveExternalNotification) {
   EXPECT_EQ(observer_1.Notifications(), 0u);
 
   // Check that it receives a notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/1));
 
   // Add one more observer.
   auto subscription_2 = kcer->AddObserver(observer_2.GetCallback());
 
   // Check that both of them receive a notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/2));
   EXPECT_TRUE(observer_2.WaitUntil(/*notifications=*/1));
 
@@ -552,7 +552,7 @@ TEST_F(KcerNssTest, ObserveExternalNotification) {
   subscription_1 = base::CallbackListSubscription();
 
   // Check that only the second observer receives a notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   EXPECT_TRUE(observer_2.WaitUntil(/*notifications=*/2));
   EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/2));
 }

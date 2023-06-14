@@ -178,6 +178,11 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   // observers.
   bool ClearClientCertificate(const HostPortPair& server);
 
+  base::flat_set<HostPortPair> GetClientCertificateCachedServersForTesting()
+      const {
+    return ssl_client_auth_cache_.GetCachedServers();
+  }
+
   // Add an observer to be notified when configuration has changed.
   // RemoveObserver() must be called before |observer| is destroyed.
   void AddObserver(Observer* observer);
@@ -192,7 +197,8 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   void OnCertVerifierChanged() override;
 
   // CertDatabase::Observer:
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
+  void OnClientCertStoreChanged() override;
 
  private:
   void NotifySSLConfigChanged(SSLConfigChangeType change_type);

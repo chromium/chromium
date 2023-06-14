@@ -177,8 +177,12 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   net::NSSCertDatabase* nss_database() { return nss_database_; }
 
   // net::CertDatabase::Observer
-  void OnCertDBChanged() override {
-    VLOG(1) << "OnCertDBChanged";
+  void OnTrustStoreChanged() override {
+    VLOG(1) << "OnTrustStoreChanged";
+    LoadCertificates(/*initial_load=*/false);
+  }
+  void OnClientCertStoreChanged() override {
+    VLOG(1) << "OnClientCertStoreChanged";
     LoadCertificates(/*initial_load=*/false);
   }
 

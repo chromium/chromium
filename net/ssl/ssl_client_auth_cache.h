@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
@@ -49,6 +50,10 @@ class NET_EXPORT_PRIVATE SSLClientAuthCache {
 
   // Removes all cached client certificate decisions.
   void Clear();
+
+  // Returns a list of all the HostPortPairs that have cached client
+  // certificate decisions.
+  base::flat_set<HostPortPair> GetCachedServers() const;
 
  private:
   typedef HostPortPair AuthCacheKey;

@@ -753,8 +753,12 @@ void NetworkService::GetNetworkList(
                      std::move(callback)));
 }
 
-void NetworkService::OnCertDBChanged() {
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+void NetworkService::OnTrustStoreChanged() {
+  net::CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
+}
+
+void NetworkService::OnClientCertStoreChanged() {
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
 }
 
 void NetworkService::SetEncryptionKey(const std::string& encryption_key) {

@@ -383,7 +383,7 @@ CertStoreService::~CertStoreService() {
     net::CertDatabase::GetInstance()->RemoveObserver(this);
 }
 
-void CertStoreService::OnCertDBChanged() {
+void CertStoreService::OnClientCertStoreChanged() {
   UpdateCertificates();
 }
 

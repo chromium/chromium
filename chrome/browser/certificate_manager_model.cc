@@ -208,7 +208,11 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
   ~CertsSourcePlatformNSS() override = default;
 
   // net::CertDatabase::Observer
-  void OnCertDBChanged() override {
+  void OnTrustStoreChanged() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    Refresh();
+  }
+  void OnClientCertStoreChanged() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Refresh();
   }

@@ -573,7 +573,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     // becomes available for networks. Production code does this through
     // NSSCertDatabase::ImportUserCert.
     ScopedNetworkCertLoaderRefreshWaiter network_cert_loader_refresh_waiter;
-    net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+    net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
     network_cert_loader_refresh_waiter.Wait();
   }
 

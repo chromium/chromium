@@ -3001,7 +3001,8 @@ EVENT_TYPE(SPECIFIC_NETWORK_MADE_DEFAULT)
 
 // This event is emitted whenever CertDatabase determines that the certificate
 // database has changed.
-EVENT_TYPE(CERTIFICATE_DATABASE_CHANGED)
+EVENT_TYPE(CERTIFICATE_DATABASE_TRUST_STORE_CHANGED)
+EVENT_TYPE(CERTIFICATE_DATABASE_CLIENT_CERT_STORE_CHANGED)
 
 // ------------------------------------------------------------------------
 // Exponential back-off throttling events

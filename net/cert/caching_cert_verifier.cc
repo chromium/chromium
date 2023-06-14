@@ -187,7 +187,7 @@ void CachingCertVerifier::OnCertVerifierChanged() {
   ClearCache();
 }
 
-void CachingCertVerifier::OnCertDBChanged() {
+void CachingCertVerifier::OnTrustStoreChanged() {
   config_id_++;
   ClearCache();
 }

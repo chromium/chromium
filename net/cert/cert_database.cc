@@ -28,14 +28,24 @@ void CertDatabase::RemoveObserver(Observer* observer) {
   observer_list_->RemoveObserver(observer);
 }
 
-void CertDatabase::NotifyObserversCertDBChanged() {
+void CertDatabase::NotifyObserversTrustStoreChanged() {
   // Log to NetLog as it may help debug issues like https://crbug.com/915463
   // This isn't guarded with net::NetLog::Get()->IsCapturing()) because an
   // AddGlobalEntry() call without much computation is really cheap.
   net::NetLog::Get()->AddGlobalEntry(
-      NetLogEventType::CERTIFICATE_DATABASE_CHANGED);
+      NetLogEventType::CERTIFICATE_DATABASE_TRUST_STORE_CHANGED);
 
-  observer_list_->Notify(FROM_HERE, &Observer::OnCertDBChanged);
+  observer_list_->Notify(FROM_HERE, &Observer::OnTrustStoreChanged);
+}
+
+void CertDatabase::NotifyObserversClientCertStoreChanged() {
+  // Log to NetLog as it may help debug issues like https://crbug.com/915463
+  // This isn't guarded with net::NetLog::Get()->IsCapturing()) because an
+  // AddGlobalEntry() call without much computation is really cheap.
+  net::NetLog::Get()->AddGlobalEntry(
+      NetLogEventType::CERTIFICATE_DATABASE_CLIENT_CERT_STORE_CHANGED);
+
+  observer_list_->Notify(FROM_HERE, &Observer::OnClientCertStoreChanged);
 }
 
 CertDatabase::CertDatabase()

@@ -62,7 +62,7 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
   void Initialize(crypto::ScopedPK11Slot nss_slot);
 
   // Implements net::CertDatabase::Observer.
-  void OnCertDBChanged() override;
+  void OnClientCertStoreChanged() override;
 
   // Implements KcerToken.
   void GenerateRsaKey(uint32_t modulus_length_bits,

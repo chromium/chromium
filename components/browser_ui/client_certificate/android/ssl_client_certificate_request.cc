@@ -359,7 +359,7 @@ static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
 }
 
 static void NotifyClientCertificatesChanged() {
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
 }
 
 static void

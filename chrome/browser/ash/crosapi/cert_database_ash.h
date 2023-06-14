@@ -42,7 +42,8 @@ class CertDatabaseAsh : public mojom::CertDatabase, ash::LoginState::Observer {
   void GetCertDatabaseInfo(GetCertDatabaseInfoCallback callback) override;
 
   // mojom::CertDatabase
-  void OnCertsChangedInLacros() override;
+  void OnCertsChangedInLacros(
+      mojom::CertDatabaseChangeType change_type) override;
   void AddAshCertDatabaseObserver(
       mojo::PendingRemote<mojom::AshCertDatabaseObserver> observer) override;
   void SetCertsProvidedByExtension(
@@ -52,7 +53,7 @@ class CertDatabaseAsh : public mojom::CertDatabase, ash::LoginState::Observer {
 
   // Notifies observers that were added with `AddAshCertDatabaseObserver` about
   // cert changes in Ash.
-  void NotifyCertsChangedInAsh();
+  void NotifyCertsChangedInAsh(mojom::CertDatabaseChangeType change_type);
 
  private:
   // ash::LoginState::Observer

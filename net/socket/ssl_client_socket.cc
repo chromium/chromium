@@ -142,8 +142,12 @@ void SSLClientContext::OnCertVerifierChanged() {
   NotifySSLConfigChanged(SSLConfigChangeType::kCertVerifierChanged);
 }
 
-void SSLClientContext::OnCertDBChanged() {
-  // Both the trust store and client certificate store may have changed.
+void SSLClientContext::OnTrustStoreChanged() {
+  NotifySSLConfigChanged(SSLConfigChangeType::kCertDatabaseChanged);
+}
+
+void SSLClientContext::OnClientCertStoreChanged() {
+  // TODO(https://crbug.com/915463): limit to only the servers using client auth
   ssl_client_auth_cache_.Clear();
   if (ssl_client_session_cache_) {
     ssl_client_session_cache_->Flush();

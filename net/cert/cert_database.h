@@ -44,9 +44,13 @@ class NET_EXPORT CertDatabase {
 
     // Called whenever the Cert Database is known to have changed.
     // Typically, this will be in response to a CA certificate being added,
-    // removed, or its trust changed, but may also signal on client
-    // certificate events when they can be reliably detected.
-    virtual void OnCertDBChanged() {}
+    // removed, or its trust changed.
+    virtual void OnTrustStoreChanged() {}
+
+    // Called when a potential change to client certificates is detected. (Some
+    // platforms don't provide precise notifications and this may be notified
+    // on unrelated changes.)
+    virtual void OnClientCertStoreChanged() {}
 
    protected:
     Observer() = default;
@@ -77,7 +81,8 @@ class NET_EXPORT CertDatabase {
   // Synthetically injects notifications to all observers. In general, this
   // should only be called by the creator of the CertDatabase. Used to inject
   // notifications from other DB interfaces.
-  void NotifyObserversCertDBChanged();
+  void NotifyObserversTrustStoreChanged();
+  void NotifyObserversClientCertStoreChanged();
 
  private:
   friend struct base::DefaultSingletonTraits<CertDatabase>;

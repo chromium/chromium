@@ -2125,8 +2125,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
       browser(), GURL("about:blank"), 1);
   EXPECT_EQ("", tab->GetLastCommittedURL().ref());
 
-  // Send a CertDBChanged notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  // Send an OnClientCertStoreChanged notification.
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   content::FlushNetworkServiceInstanceForTesting();
 
   // Visiting the page which requires client certs should fail, as the socket
@@ -5807,7 +5807,7 @@ class TestCertDatabaseObserver : public net::CertDatabase::Observer {
     cert_db->AddObserver(this);
   }
   ~TestCertDatabaseObserver() override = default;
-  void OnCertDBChanged() override { run_loop.Quit(); }
+  void OnTrustStoreChanged() override { run_loop.Quit(); }
   void WaitForCertDBChange() { run_loop.Run(); }
 
  private:

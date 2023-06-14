@@ -84,7 +84,7 @@ void TrustStoreAndroid::ObserveCertDBChanges() {
   }
 }
 
-void TrustStoreAndroid::OnCertDBChanged() {
+void TrustStoreAndroid::OnTrustStoreChanged() {
   // Increment the generation number. This will regenerate the impl_ next time
   // it is fetched. It would be neater to regenerate the impl_ here but
   // complications around blocking of threads prevents this from being easily
@@ -98,7 +98,7 @@ TrustStoreAndroid::MaybeInitializeAndGetImpl() {
   // It is possible that generation_ might be incremented in between the various
   // statements here, but that's okay as the worst case is that we will cause a
   // bit of extra work in reloading the android trust store if we get many
-  // OnCertDBChanged() calls in rapid succession.
+  // OnTrustStoreChanged() calls in rapid succession.
   int current_generation = generation_.load();
   if (!impl_ || impl_->generation() != current_generation) {
     impl_ = base::MakeRefCounted<TrustStoreAndroid::Impl>(current_generation);

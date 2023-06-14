@@ -965,7 +965,7 @@ base::WeakPtr<KcerTokenImplNss> KcerTokenImplNss::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void KcerTokenImplNss::OnCertDBChanged() {
+void KcerTokenImplNss::OnClientCertStoreChanged() {
   state_ = State::kCacheOutdated;
 
   // If task queue is not blocked, trigger cache update immediately.
@@ -1398,7 +1398,7 @@ void KcerTokenImplNss::OnCertsModified(Kcer::StatusCallback callback,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (did_modify) {
-    net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+    net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   }
   // The Notify... above will post a task to invalidate the cache. Calling the
   // original callback for a request will automatically trigger updating cache

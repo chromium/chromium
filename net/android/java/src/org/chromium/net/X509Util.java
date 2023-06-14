@@ -59,17 +59,15 @@ public class X509Util {
         public void onReceive(Context context, Intent intent) {
             boolean shouldReloadTrustManager = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (KeyChain.ACTION_KEYCHAIN_CHANGED.equals(intent.getAction())
-                        || KeyChain.ACTION_TRUST_STORE_CHANGED.equals(intent.getAction())) {
-                    // TODO(davidben): ACTION_KEYCHAIN_CHANGED indicates client certificates
-                    // changed, not the trust store. The two signals within CertDatabase are
-                    // identical, so we are reloading more than needed. But note b/36492171.
+                if (KeyChain.ACTION_TRUST_STORE_CHANGED.equals(intent.getAction())) {
                     shouldReloadTrustManager = true;
+                } else if (KeyChain.ACTION_KEYCHAIN_CHANGED.equals(intent.getAction())) {
+                    X509UtilJni.get().notifyClientCertStoreChanged();
                 } else if (KeyChain.ACTION_KEY_ACCESS_CHANGED.equals(intent.getAction())
                         && !intent.getBooleanExtra(KeyChain.EXTRA_KEY_ACCESSIBLE, false)) {
                     // We lost access to a client certificate key. Reload all client certificate
                     // state as we are not currently able to forget an individual identity.
-                    shouldReloadTrustManager = true;
+                    X509UtilJni.get().notifyClientCertStoreChanged();
                 }
             } else {
                 @SuppressWarnings("deprecation")
@@ -77,7 +75,10 @@ public class X509Util {
                 // Before Android O, KeyChain only emitted a coarse-grained intent. This fires much
                 // more often than it should (https://crbug.com/381912), but there are no APIs to
                 // distinguish the various cases.
-                shouldReloadTrustManager = action.equals(intent.getAction());
+                if (action.equals(intent.getAction())) {
+                    shouldReloadTrustManager = true;
+                    X509UtilJni.get().notifyClientCertStoreChanged();
+                }
             }
 
             if (shouldReloadTrustManager) {
@@ -311,7 +312,7 @@ public class X509Util {
             sSystemTrustAnchorCache = null;
             ensureInitializedLocked();
         }
-        X509UtilJni.get().notifyKeyChainChanged();
+        X509UtilJni.get().notifyTrustStoreChanged();
     }
 
     /**
@@ -640,6 +641,7 @@ public class X509Util {
         /**
          * Notify the native net::CertDatabase instance that the system database has been updated.
          */
-        void notifyKeyChainChanged();
+        void notifyTrustStoreChanged();
+        void notifyClientCertStoreChanged();
     }
 }

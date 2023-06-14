@@ -153,8 +153,12 @@ NetworkServiceClient::~NetworkServiceClient() {
   }
 }
 
-void NetworkServiceClient::OnCertDBChanged() {
-  GetNetworkService()->OnCertDBChanged();
+void NetworkServiceClient::OnTrustStoreChanged() {
+  GetNetworkService()->OnTrustStoreChanged();
+}
+
+void NetworkServiceClient::OnClientCertStoreChanged() {
+  GetNetworkService()->OnClientCertStoreChanged();
 }
 
 void NetworkServiceClient::OnMemoryPressure(

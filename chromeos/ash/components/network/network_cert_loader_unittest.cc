@@ -137,8 +137,8 @@ class TestNSSCertDatabase : public net::NSSCertDatabaseChromeOS {
   ~TestNSSCertDatabase() override = default;
 
   // Make this method visible in the public interface.
-  void NotifyObserversCertDBChanged() {
-    NSSCertDatabaseChromeOS::NotifyObserversCertDBChanged();
+  void NotifyObserversClientCertStoreChanged() {
+    NSSCertDatabaseChromeOS::NotifyObserversClientCertStoreChanged();
   }
 };
 
@@ -255,7 +255,7 @@ class NetworkCertLoaderTest : public testing::Test,
     net::ImportClientCertAndKeyFromFile(
         net::GetTestCertsDirectory(), test_cert.cert_pem_filename,
         test_cert.key_pk8_filename, slot_to_use, &client_cert);
-    database_to_notify->NotifyObserversCertDBChanged();
+    database_to_notify->NotifyObserversClientCertStoreChanged();
     return client_cert;
   }
 

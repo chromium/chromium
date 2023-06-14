@@ -38,7 +38,7 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore,
                             base::SupportsUserData* debug_data) override;
 
   // CertDatabase::Observer:
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
 
   // Have this object start listening for CertDatabase changes.
   // This function is not thread safe, and must be called from a sequence.

@@ -38,11 +38,18 @@ struct CertInfo {
   array<uint16> supported_algorithms@1;
 };
 
+[Stable, Extensible]
+enum CertDatabaseChangeType {
+  [Default] kUnknown,
+  kTrustStore,
+  kClientCertStore,
+};
+
 // This interface is implemented by Lacros-Chrome.
 [Stable, Uuid="e48d9c66-98b4-4049-9b85-dc98c854d54c"]
 interface AshCertDatabaseObserver {
   // Ash calls this to notify Lacros about new changes to certificates.
-  OnCertsChangedInAsh@0();
+  OnCertsChangedInAsh@0([MinVersion=1] CertDatabaseChangeType change_type);
 };
 
 // This interface is implemented by Ash-Chrome.
@@ -55,7 +62,7 @@ interface CertDatabase {
 
   // Lacros calls this to notify Ash about new changes to certificates.
   [MinVersion=2]
-  OnCertsChangedInLacros@1();
+  OnCertsChangedInLacros@1([MinVersion=4] CertDatabaseChangeType change_type);
 
   // Adds a new observer about certificate changes in Ash. The interface is not
   // symmetrical because Lacros can assume that Ash always exists, but not the

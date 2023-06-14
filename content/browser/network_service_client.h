@@ -55,7 +55,8 @@ class NetworkServiceClient
   void OnNetworkServiceInitialized(network::mojom::NetworkService* service);
 
   // net::CertDatabase::Observer implementation:
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
+  void OnClientCertStoreChanged() override;
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_presure_level);

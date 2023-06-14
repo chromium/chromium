@@ -1686,14 +1686,14 @@ void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
     set_is_quic_known_to_work_on_current_network(false);
 }
 
-void QuicStreamFactory::OnCertDBChanged() {
+void QuicStreamFactory::OnTrustStoreChanged() {
   // We should flush the sessions if we removed trust from a
   // cert, because a previously trusted server may have become
   // untrusted.
   //
   // We should not flush the sessions if we added trust to a cert.
   //
-  // Since the OnCertDBChanged method doesn't tell us what
+  // Since the OnTrustStoreChanged method doesn't tell us what
   // kind of change it is, we have to flush the socket
   // pools to be safe.
   MarkAllActiveSessionsGoingAway(kCertDBChanged);

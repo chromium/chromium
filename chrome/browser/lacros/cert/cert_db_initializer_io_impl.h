@@ -76,7 +76,8 @@ class CertDbInitializerIOImpl : public net::NSSCertDatabase::Observer {
   void InitializeReadOnlyNssCertDatabase(base::OnceClosure init_callback);
 
   // net::NSSCertDatabase::Observer
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
+  void OnClientCertStoreChanged() override;
 
  private:
   void DidLoadSoftwareNssDb(base::OnceClosure load_callback,

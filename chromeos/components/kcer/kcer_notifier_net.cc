@@ -22,7 +22,7 @@ base::CallbackListSubscription KcerNotifierNet::AddObserver(
   return observers_.Add(std::move(callback));
 }
 
-void KcerNotifierNet::OnCertDBChanged() {
+void KcerNotifierNet::OnClientCertStoreChanged() {
   observers_.Notify();
 }
 

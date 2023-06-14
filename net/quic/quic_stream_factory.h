@@ -417,7 +417,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // CertDatabase::Observer methods:
 
   // We close all sessions when certificate database is changed.
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
 
   // CertVerifier::Observer:
   // We close all sessions when certificate verifier settings have changed.

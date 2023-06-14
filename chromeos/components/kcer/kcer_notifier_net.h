@@ -27,7 +27,7 @@ class KcerNotifierNet : public net::CertDatabase::Observer {
   base::CallbackListSubscription AddObserver(base::RepeatingClosure callback);
 
   // Implements net::CertDatabase::Observer
-  void OnCertDBChanged() override;
+  void OnClientCertStoreChanged() override;
 
  private:
   base::RepeatingCallbackList<void()> observers_;

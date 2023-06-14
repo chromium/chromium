@@ -74,7 +74,8 @@ class CertDbInitializerImpl : public CertDbInitializer,
 
   // Called when there's a change in certificate database in Ash.
   // Forwards the notification to the CertDatabase.
-  void OnCertsChangedInAsh() override;
+  void OnCertsChangedInAsh(
+      crosapi::mojom::CertDatabaseChangeType change_type) override;
 
  private:
   void InitializeForMainProfile();

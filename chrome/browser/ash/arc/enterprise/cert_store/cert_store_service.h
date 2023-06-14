@@ -49,7 +49,7 @@ class CertStoreService : public KeyedService,
   CertStoreService& operator=(const CertStoreService&) = delete;
 
   // CertDatabase::Observer overrides.
-  void OnCertDBChanged() override;
+  void OnClientCertStoreChanged() override;
 
   std::vector<std::string> get_required_cert_names() const {
     return certificate_cache_.get_required_cert_names();

@@ -136,8 +136,8 @@ class WebTrustedCertsChangedObserver
   base::RunLoop run_loop_;
 };
 
-// Allows waiting until the |CertDatabase| notifies its observers that it has
-// changd.
+// Allows waiting until the |CertDatabase| notifies its observers that a client
+// cert change has occurred.
 class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
  public:
   CertDatabaseChangedObserver() {}
@@ -146,7 +146,7 @@ class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
   CertDatabaseChangedObserver& operator=(const CertDatabaseChangedObserver&) =
       delete;
 
-  void OnCertDBChanged() override { run_loop_.Quit(); }
+  void OnClientCertStoreChanged() override { run_loop_.Quit(); }
 
   void Wait() { run_loop_.Run(); }
 

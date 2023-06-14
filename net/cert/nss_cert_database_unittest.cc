@@ -26,11 +26,13 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/log/net_log_with_source.h"
@@ -74,6 +76,65 @@ const NSSCertDatabase::CertInfo* FindCertInfoForCert(
   return nullptr;
 }
 
+class MockCertDatabaseObserver : public CertDatabase::Observer {
+ public:
+  MockCertDatabaseObserver() { CertDatabase::GetInstance()->AddObserver(this); }
+
+  ~MockCertDatabaseObserver() override {
+    CertDatabase::GetInstance()->RemoveObserver(this);
+  }
+
+  void OnTrustStoreChanged() override { trust_store_changes_++; }
+
+  void OnClientCertStoreChanged() override { client_cert_store_changes_++; }
+
+  int trust_store_changes_ = 0;
+  int client_cert_store_changes_ = 0;
+};
+
+class MockNSSCertDatabaseObserver : public NSSCertDatabase::Observer {
+ public:
+  explicit MockNSSCertDatabaseObserver(NSSCertDatabase* nss_cert_database)
+      : nss_cert_database_(nss_cert_database) {
+    nss_cert_database_->AddObserver(this);
+  }
+
+  ~MockNSSCertDatabaseObserver() override {
+    nss_cert_database_->RemoveObserver(this);
+  }
+
+  void OnTrustStoreChanged() override { trust_store_changes_++; }
+
+  void OnClientCertStoreChanged() override { client_cert_store_changes_++; }
+
+  int trust_store_changes() const {
+    // Also check that the NSSCertDatabase notifications were mirrored to the
+    // CertDatabase observers.
+    EXPECT_EQ(global_db_observer_.trust_store_changes_, trust_store_changes_);
+
+    return trust_store_changes_;
+  }
+
+  int client_cert_store_changes() const {
+    // Also check that the NSSCertDatabase notifications were mirrored to the
+    // CertDatabase observers.
+    EXPECT_EQ(global_db_observer_.client_cert_store_changes_,
+              client_cert_store_changes_);
+
+    return client_cert_store_changes_;
+  }
+
+  int all_changes() const {
+    return trust_store_changes() + client_cert_store_changes();
+  }
+
+ private:
+  raw_ptr<NSSCertDatabase> nss_cert_database_;
+  MockCertDatabaseObserver global_db_observer_;
+  int trust_store_changes_ = 0;
+  int client_cert_store_changes_ = 0;
+};
+
 }  // namespace
 
 class CertDatabaseNSSTest : public TestWithTaskEnvironment {
@@ -85,6 +146,7 @@ class CertDatabaseNSSTest : public TestWithTaskEnvironment {
             PK11_ReferenceSlot(test_nssdb_.slot())) /* public slot */,
         crypto::ScopedPK11Slot(
             PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */);
+    observer_ = std::make_unique<MockNSSCertDatabaseObserver>(cert_db_.get());
     public_slot_ = cert_db_->GetPublicSlot();
     crl_set_ = CRLSet::BuiltinCRLSet();
 
@@ -143,6 +205,7 @@ class CertDatabaseNSSTest : public TestWithTaskEnvironment {
   }
 
   std::unique_ptr<NSSCertDatabase> cert_db_;
+  std::unique_ptr<MockNSSCertDatabaseObserver> observer_;
   // When building with libstdc++, |empty_cert_list_| does not have a default
   // constructor.  Initialize it explicitly so that CertDatabaseNSSTest gets a
   // default constructor.
@@ -326,6 +389,9 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12WrongPassword) {
 
   // Test db should still be empty.
   EXPECT_EQ(0U, ListCerts().size());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->all_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsExtractableAndExportAgain) {
@@ -335,6 +401,10 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsExtractableAndExportAgain) {
             cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
                                        true,  // is_extractable
                                        nullptr));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, observer_->client_cert_store_changes());
+  EXPECT_EQ(0, observer_->trust_store_changes());
 
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
@@ -346,6 +416,10 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsExtractableAndExportAgain) {
             cert_db_->ExportToPKCS12(cert_list, u"exportpw", &exported_data));
   ASSERT_LT(0U, exported_data.size());
   // TODO(mattm): further verification of exported data?
+
+  base::RunLoop().RunUntilIdle();
+  // Exporting should not cause an observer notification.
+  EXPECT_EQ(1, observer_->all_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12Twice) {
@@ -357,6 +431,10 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12Twice) {
                                        nullptr));
   EXPECT_EQ(1U, ListCerts().size());
 
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, observer_->client_cert_store_changes());
+  EXPECT_EQ(0, observer_->trust_store_changes());
+
   // NSS has a SEC_ERROR_PKCS12_DUPLICATE_DATA error, but it doesn't look like
   // it's ever used.  This test verifies that.
   EXPECT_EQ(OK,
@@ -364,6 +442,12 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12Twice) {
                                        true,  // is_extractable
                                        nullptr));
   EXPECT_EQ(1U, ListCerts().size());
+
+  base::RunLoop().RunUntilIdle();
+  // Theoretically it should not send another notification for re-importing the
+  // same thing, but probably not worth the effort to try to detect this case.
+  EXPECT_EQ(2, observer_->client_cert_store_changes());
+  EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsUnextractableAndExportAgain) {
@@ -472,6 +556,10 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_SSLTrust) {
       cert->trust->sslFlags);
   EXPECT_EQ(unsigned(CERTDB_VALID_CA), cert->trust->emailFlags);
   EXPECT_EQ(unsigned(CERTDB_VALID_CA), cert->trust->objectSigningFlags);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACert_EmailTrust) {
@@ -501,6 +589,12 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_EmailTrust) {
       unsigned(CERTDB_VALID_CA | CERTDB_TRUSTED_CA | CERTDB_TRUSTED_CLIENT_CA),
       cert->trust->emailFlags);
   EXPECT_EQ(unsigned(CERTDB_VALID_CA), cert->trust->objectSigningFlags);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  // Theoretically we could avoid notifying for changes that aren't relevant
+  // for server auth, but probably not worth the effort.
+  EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACert_ObjSignTrust) {
@@ -530,6 +624,12 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_ObjSignTrust) {
   EXPECT_EQ(
       unsigned(CERTDB_VALID_CA | CERTDB_TRUSTED_CA | CERTDB_TRUSTED_CLIENT_CA),
       cert->trust->objectSigningFlags);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  // Theoretically we could avoid notifying for changes that aren't relevant
+  // for server auth, but probably not worth the effort.
+  EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCA_NotCACert) {
@@ -578,6 +678,10 @@ TEST_F(CertDatabaseNSSTest, ImportCACertHierarchy) {
   EXPECT_EQ("B CA - Multi-root", GetSubjectCN(cert_list[0].get()));
   EXPECT_EQ("D Root CA - Multi-root", GetSubjectCN(cert_list[1].get()));
   EXPECT_EQ("C CA - Multi-root", GetSubjectCN(cert_list[2].get()));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyDupeRoot) {
@@ -618,6 +722,10 @@ TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyDupeRoot) {
   EXPECT_EQ("B CA - Multi-root", GetSubjectCN(cert_list[0].get()));
   EXPECT_EQ("D Root CA - Multi-root", GetSubjectCN(cert_list[1].get()));
   EXPECT_EQ("C CA - Multi-root", GetSubjectCN(cert_list[2].get()));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(2, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyUntrusted) {
@@ -639,6 +747,12 @@ TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyUntrusted) {
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
   EXPECT_EQ("D Root CA - Multi-root", GetSubjectCN(cert_list[0].get()));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  // We generate a notification even if not trusting the root. The certs could
+  // still affect trust decisions by affecting path building.
+  EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyTree) {
@@ -747,6 +861,10 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
       empty_cert_list_, &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
@@ -781,6 +899,10 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
       empty_cert_list_, &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
@@ -821,6 +943,12 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
   }
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  // TODO(mattm): this should be 1, but ImportServerCert doesn't currently
+  // generate notifications.
+  EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert) {
@@ -916,6 +1044,10 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {
                                       &failed));
   EXPECT_EQ(0U, failed.size());
 
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(1, observer_->trust_store_changes());
+
   ScopedCERTCertificateList intermediate_certs =
       CreateCERTCertificateListFromFile(GetTestCertsDirectory(),
                                         "2048-rsa-intermediate.pem",
@@ -926,6 +1058,10 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {
   EXPECT_TRUE(cert_db_->ImportCACerts(intermediate_certs,
                                       NSSCertDatabase::TRUSTED_SSL, &failed));
   EXPECT_EQ(0U, failed.size());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, observer_->client_cert_store_changes());
+  EXPECT_EQ(2, observer_->trust_store_changes());
 
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "2048-rsa-ee-by-2048-rsa-intermediate.pem",

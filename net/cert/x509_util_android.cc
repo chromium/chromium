@@ -9,8 +9,12 @@ using base::android::JavaParamRef;
 
 namespace net {
 
-void JNI_X509Util_NotifyKeyChainChanged(JNIEnv* env) {
-  CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+void JNI_X509Util_NotifyTrustStoreChanged(JNIEnv* env) {
+  CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
+}
+
+void JNI_X509Util_NotifyClientCertStoreChanged(JNIEnv* env) {
+  CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
 }
 
 }  // namespace net

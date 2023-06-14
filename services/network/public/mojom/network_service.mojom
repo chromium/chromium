@@ -280,8 +280,11 @@ interface NetworkService {
   // network interfaces. Corresponds to enum net::HostAddressSelectionPolicy.
   GetNetworkList(uint32 policy) => (array<NetworkInterface>? networks);
 
-  // Notification that the certificate database has been modified.
-  OnCertDBChanged();
+  // Notification that the certificate trust store has been modified.
+  OnTrustStoreChanged();
+
+  // Notification that the client certificate store has been modified.
+  OnClientCertStoreChanged();
 
   // Send the encryption key to the network service to use for AES encryption.
   SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
