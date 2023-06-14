@@ -29,10 +29,12 @@ SkColor GetWallpaperShieldColor(const views::Widget* widget) {
     color = chromeos::features::IsJellyrollEnabled()
                 ? cros_tokens::kCrosSysScrim2
                 : static_cast<ui::ColorId>(kColorAshShieldAndBase60);
+  } else if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    color = kColorAshShieldAndBase80;
   } else {
-    color = Shell::Get()->session_controller()->IsUserSessionBlocked()
-                ? kColorAshShieldAndBase80
-                : kColorAshShieldAndBase40;
+    color = chromeos::features::IsJellyrollEnabled()
+                ? cros_tokens::kCrosSysScrim2
+                : static_cast<ui::ColorId>(kColorAshShieldAndBase40);
   }
 
   DCHECK(widget);
