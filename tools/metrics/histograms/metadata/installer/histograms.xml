@@ -104,6 +104,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Installer.Postinstall.ESPMountRetries" units="retries"
+    expires_after="2024-01-20">
+  <owner>khionu@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    How many retries were necessary when attempting to mount the boot Partition
+    after partition updates. Reported once during postinstall. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Installer.Postinstall.ManagedEfiBootEntryCount"
     units="entries" expires_after="2023-12-10">
   <owner>tbrandston@google.com</owner>
