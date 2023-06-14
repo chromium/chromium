@@ -168,6 +168,7 @@
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
+#include "chrome/browser/ui/media_router/cast_notification_controller_lacros_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
@@ -744,6 +745,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
     media_history::MediaHistoryKeyedServiceFactory::GetInstance();
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  media_router::CastNotificationControllerLacrosFactory::GetInstance();
+#endif
   media_router::ChromeLocalPresentationManagerFactory::GetInstance();
   media_router::ChromeMediaRouterFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

@@ -8012,6 +8012,7 @@ test("unit_tests") {
       "../browser/performance_manager/policies/oom_score_policy_lacros_unittest.cc",
       "../browser/policy/restricted_mgs_policy_provider_lacros_unittest.cc",
       "../browser/signin/signin_ui_delegate_impl_lacros_unittest.cc",
+      "../browser/ui/media_router/cast_notification_controller_lacros_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_unittest.cc",
       "../common/chrome_paths_lacros_unittest.cc",
     ]

@@ -3692,6 +3692,10 @@ static_library("ui") {
 
   if (is_chromeos_lacros) {
     sources += [
+      "media_router/cast_notification_controller_lacros.cc",
+      "media_router/cast_notification_controller_lacros.h",
+      "media_router/cast_notification_controller_lacros_factory.cc",
+      "media_router/cast_notification_controller_lacros_factory.h",
       "startup/silent_sync_enabler.cc",
       "startup/silent_sync_enabler.h",
       "views/chrome_browser_main_extra_parts_views_lacros.cc",

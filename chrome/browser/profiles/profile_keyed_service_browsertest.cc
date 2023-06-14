@@ -340,6 +340,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BookmarksApiWatcher",
     "BrailleDisplayPrivateAPI",
     "BrowsingTopicsService",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "CastNotificationControllerLacros",
+#endif  // BUIDLFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ChildAccountService",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
