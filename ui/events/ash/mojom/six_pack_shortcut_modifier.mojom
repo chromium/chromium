@@ -11,4 +11,5 @@ module ui.mojom;
 enum SixPackShortcutModifier {
   kAlt = 0,
   kSearch = 1,
+  kNone = 2,
 };
