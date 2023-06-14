@@ -14893,6 +14893,9 @@ regressions. -->
     <variant name="ShowDownloads"/>
     <variant name="ShowHistory"/>
     <variant name="ShowKaleidoscope"/>
+    <variant name="ShowSigninWhenPaused"/>
+    <variant name="ShowSyncSettings"/>
+    <variant name="ShowTurnOnSync"/>
     <variant name="SiteSettings"/>
     <variant name="TaskManager"/>
     <variant name="ViewSource"/>

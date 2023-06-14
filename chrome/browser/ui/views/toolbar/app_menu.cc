@@ -28,8 +28,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -38,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1257,9 +1256,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
           item->SetSelectedColorId(
               ui::kColorAppMenuProfileRowBackgroundHovered);
           ProfileAttributesEntry* profile_attributes =
-              g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(browser_->profile()->GetPath());
+              GetProfileAttributesFromProfile(browser_->profile());
           views::Label* profile_chip_label;
           views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
           const MenuConfig& config = MenuConfig::instance();

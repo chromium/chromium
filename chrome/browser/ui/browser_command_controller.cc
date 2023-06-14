@@ -32,6 +32,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -76,6 +77,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -636,6 +638,18 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_SAVE_AUTOFILL_ADDRESS:
       SaveAutofillAddress(browser_);
+      break;
+    case IDC_SHOW_SYNC_SETTINGS:
+      chrome::ShowSettingsSubPage(browser_, chrome::kSyncSetupSubPage);
+      break;
+    case IDC_TURN_ON_SYNC:
+      signin_ui_util::EnableSyncFromSingleAccountPromo(
+          browser_->profile(), GetAccountInfoFromProfile(browser_->profile()),
+          signin_metrics::AccessPoint::ACCESS_POINT_MENU);
+      break;
+    case IDC_SHOW_SIGNIN_WHEN_PAUSED:
+      signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+          browser_->profile(), signin_metrics::AccessPoint::ACCESS_POINT_MENU);
       break;
     case IDC_SHOW_PASSWORD_MANAGER:
       ShowPasswordManager(browser_);
@@ -1234,6 +1248,9 @@ void BrowserCommandController::InitCommandState() {
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PAYMENT_METHODS,
                                         !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_SYNC_SETTINGS, true);
+  command_updater_.UpdateCommandEnabled(IDC_TURN_ON_SYNC, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN_WHEN_PAUSED, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_ADDRESSES, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);

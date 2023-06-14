@@ -1168,6 +1168,21 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito window
           </message>
+          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="Label that let's the user know what email they are signed into their profile as.">
+            Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
+          </message>
+          <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="The text label of a menu item that notifies the user that sync is on.">
+            &amp;Sync is on
+          </message>
+          <message name="IDS_PROFILE_ROW_TURN_ON_SYNC" desc="The text label of a menu item that prompts the user to turn on sync.">
+            Turn on &amp;sync...
+          </message>
+          <message name="IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE" desc="The text label of a menu item that prompts the user to fix the profile sync issue.">
+            Fix &amp;sync issue
+          </message>
+           <message name="IDS_PROFILE_ROW_SIGN_IN_AGAIN" desc="The text label of a menu item that prompts the user to sign in again.">
+            &amp;Sign in again
+          </message>
           <message name="IDS_EDIT2" desc="The text label before the cut/copy/paste buttons in the merged menu">
             Edit
           </message>
@@ -1280,6 +1295,21 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito Window
+          </message>
+          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="In Title Case: Label that let's the user know what email they are signed into their profile as.">
+            Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
+          </message>
+          <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="In Title Case: The text label of a menu item that notifies the user that sync is on.">
+            &amp;Sync is On
+          </message>
+          <message name="IDS_PROFILE_ROW_TURN_ON_SYNC" desc="In Title Case: The text label of a menu item that prompts the user to turn on sync.">
+            Turn on &amp;Sync...
+          </message>
+          <message name="IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE" desc="In Title Case: The text label of a menu item that prompts the user to fix the profile sync issue.">
+            Fix &amp;Sync Issue
+          </message>
+           <message name="IDS_PROFILE_ROW_SIGN_IN_AGAIN" desc="In Title Case: The text label of a menu item that prompts the user to sign in again.">
+            &amp;Sign in Again
           </message>
           <message name="IDS_EDIT2" desc="In Title Case: The text label before the cut/copy/paste buttons in the merged menu">
             Edit

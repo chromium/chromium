@@ -312,6 +312,9 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_NTP_LINK:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromNTP"));
       break;
+    case AccessPoint::ACCESS_POINT_MENU:
+      base::RecordAction(base::UserMetricsAction("Signin_Signin_FromMenu"));
+      break;
     case AccessPoint::ACCESS_POINT_SETTINGS:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromSettings"));
       break;
@@ -490,6 +493,9 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_NTP_LINK:
       base::RecordAction(base::UserMetricsAction("Signin_Impression_FromNTP"));
       break;
+    case AccessPoint::ACCESS_POINT_MENU:
+      base::RecordAction(base::UserMetricsAction("Signin_Impression_FromMenu"));
+      break;
     case AccessPoint::ACCESS_POINT_SETTINGS:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSettings"));
@@ -634,6 +640,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     // But not these access points.
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
+    case AccessPoint::ACCESS_POINT_MENU:
     case AccessPoint::ACCESS_POINT_SETTINGS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:

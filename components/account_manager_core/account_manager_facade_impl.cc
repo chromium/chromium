@@ -102,6 +102,7 @@ bool GetIsAvailableInArcBySource(
         kChromeSyncPromoAddAccount:
     case AccountManagerFacade::AccountAdditionSource::
         kChromeSettingsTurnOnSyncButton:
+    case AccountManagerFacade::AccountAdditionSource::kChromeMenuTurnOnSync:
       return false;
     // These are reauthentication cases. ARC visibility shouldn't change for
     // reauthentication.

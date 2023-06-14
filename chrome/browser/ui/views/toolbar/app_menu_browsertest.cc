@@ -18,6 +18,7 @@
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -96,6 +98,7 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
         {"find_and_edit", IDC_FIND_AND_EDIT_MENU},
         {"save_and_share", IDC_SAVE_AND_SHARE_MENU},
         {"profile_menu_in_app", IDC_PROFILE_MENU_IN_APP_MENU},
+        {"signin_not_allowed", IDC_PROFILE_MENU_IN_APP_MENU},
   });
   const auto* const id_entry = kSubmenus.find(name);
   if (id_entry == kSubmenus.end()) {
@@ -209,6 +212,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main) {
+  ShowAndVerifyUi();
+}
+
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main_guest) {
 // TODO(crbug.com/1427667): ChromeOS specific profile logic still needs to be
 // updated, setup this test for a Guest user session with appropriate command
@@ -270,5 +277,12 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
                             signin::ConsentLevel::kSignin);
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_signin_not_allowed) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  ShowAndVerifyUi();
+}
+
 #endif
 }  // namespace

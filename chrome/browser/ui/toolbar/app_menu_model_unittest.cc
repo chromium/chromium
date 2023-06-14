@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -31,6 +32,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -398,14 +402,50 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
   check_for_icons(u"<Root Menu>", &model);
 }
 
-TEST_F(TestAppMenuModelCR2023, LogProfileMenuMetrics) {
+// Profile row does not show on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+class TestAppMenuModelCR2023MetricsTest
+    : public TestAppMenuModelCR2023,
+      public testing::WithParamInterface<int> {
+ public:
+  TestAppMenuModelCR2023MetricsTest() = default;
+};
+
+TEST_P(TestAppMenuModelCR2023MetricsTest, LogProfileMenuMetrics) {
+  int command_id = GetParam();
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
-  model.ExecuteCommand(IDC_MANAGE_GOOGLE_ACCOUNT, 0);
-  model.ExecuteCommand(IDC_CLOSE_PROFILE, 0);
-  model.ExecuteCommand(IDC_CUSTOMIZE_CHROME, 0);
-  EXPECT_EQ(3, model.log_metrics_count_);
+  model.ExecuteCommand(command_id, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TestAppMenuModelCR2023MetricsTest,
+                         testing::Values(IDC_MANAGE_GOOGLE_ACCOUNT,
+                                         IDC_CLOSE_PROFILE,
+                                         IDC_CUSTOMIZE_CHROME,
+                                         IDC_SHOW_SIGNIN_WHEN_PAUSED,
+                                         IDC_SHOW_SYNC_SETTINGS,
+                                         IDC_TURN_ON_SYNC));
+
+TEST_F(TestAppMenuModelCR2023, ProfileSyncOnTest) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSync);
+  signin::SetRefreshTokenForPrimaryAccount(identity_manager);
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+  const size_t sync_settings_index =
+      profile_menu->GetIndexOfCommandId(IDC_SHOW_SYNC_SETTINGS).value();
+  EXPECT_TRUE(profile_menu->IsEnabledAt(sync_settings_index));
+}
+
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests settings menu items is disabled in the app menu when

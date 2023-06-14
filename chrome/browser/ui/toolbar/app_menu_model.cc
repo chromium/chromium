@@ -29,12 +29,12 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -82,6 +82,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -214,27 +215,6 @@ bool IsPasswordManagerPage(const GURL& url) {
          url.DomainIs(password_manager::kChromeUIPasswordManagerHost);
 }
 
-ProfileAttributesEntry* GetProfileAttributesFromProfile(
-    const Profile* profile) {
-  return g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile->GetPath());
-}
-
-AccountInfo GetAccountInfoFromProfile(const Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  // IdentityManager may be null if one is not mapped to the profile through the
-  // KeyedServiceFactory. We do not create one if it doesn't already exist and
-  // simply return an empty AccountInfo object.
-  if (!identity_manager) {
-    return AccountInfo();
-  }
-  CoreAccountInfo account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  return identity_manager->FindExtendedAccountInfo(account);
-}
-
 class ProfileSubMenuModel : public ui::SimpleMenuModel {
  public:
   ProfileSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
@@ -250,14 +230,17 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel {
   const std::u16string& profile_name() const { return profile_name_; }
 
  private:
+  bool BuildSyncSection();
+
   ui::ImageModel avatar_image_model_;
   std::u16string profile_name_;
+  raw_ptr<Profile> profile_;
 };
 
 ProfileSubMenuModel::ProfileSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
     Profile* profile)
-    : SimpleMenuModel(delegate) {
+    : SimpleMenuModel(delegate), profile_(profile) {
   const int avatar_icon_size =
       GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
@@ -269,6 +252,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
   } else if (profile->IsGuestSession()) {
     profile_name_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
   } else {
+    if (BuildSyncSection()) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+    }
     ProfileAttributesEntry* profile_attributes =
         GetProfileAttributesFromProfile(profile);
     // If the profile is being deleted, profile_attributes may be null.
@@ -326,6 +312,64 @@ ProfileSubMenuModel::ProfileSubMenuModel(
         ui::ImageModel::FromVectorIcon(manage_account_icon, ui::kColorMenuIcon,
                                        kDefaultIconSize));
   }
+}
+
+bool ProfileSubMenuModel::BuildSyncSection() {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    return false;
+  }
+
+  if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
+    return false;
+  }
+
+  const AccountInfo account_info = GetAccountInfoFromProfile(profile_);
+
+  const std::u16string signed_in_status =
+      (IsSyncPaused(profile_) || account_info.IsEmpty())
+          ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
+          : l10n_util::GetStringFUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE,
+                                       {base::UTF8ToUTF16(account_info.email)});
+
+  AddTitle(signed_in_status);
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  const bool is_sync_feature_enabled =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  // First, check for sync errors. They may exist even if sync-the-feature is
+  // disabled and only sync-the-transport is running.
+  const absl::optional<AvatarSyncErrorType> error =
+      GetAvatarSyncErrorType(profile_);
+  if (error.has_value()) {
+    if (error == AvatarSyncErrorType::kSyncPaused) {
+      // If sync is paused the menu item will be specific to the paused error.
+      AddItemWithStringIdAndIcon(IDC_SHOW_SIGNIN_WHEN_PAUSED,
+                                 IDS_PROFILE_ROW_SIGN_IN_AGAIN,
+                                 ui::ImageModel::FromVectorIcon(
+                                     vector_icons::kSyncOffChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+    } else {
+      // All remaining errors will have the same menu item.
+      AddItemWithStringIdAndIcon(
+          IDC_SHOW_SYNC_SETTINGS, IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE,
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kSyncProblemChromeRefreshIcon, ui::kColorMenuIcon,
+              kDefaultIconSize));
+    }
+    return true;
+  }
+  if (is_sync_feature_enabled) {
+    AddItemWithStringIdAndIcon(
+        IDC_SHOW_SYNC_SETTINGS, IDS_PROFILE_ROW_SYNC_IS_ON,
+        ui::ImageModel::FromVectorIcon(vector_icons::kSyncChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+  } else {
+    AddItemWithStringIdAndIcon(
+        IDC_TURN_ON_SYNC, IDS_PROFILE_ROW_TURN_ON_SYNC,
+        ui::ImageModel::FromVectorIcon(vector_icons::kSyncOffChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+  }
+  return true;
 }
 
 class PasswordsAndAutofillSubMenuModel : public ui::SimpleMenuModel {
@@ -1102,6 +1146,29 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_MANAGE_GOOGLE_ACCOUNT);
       break;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    case IDC_SHOW_SYNC_SETTINGS:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSyncSettings",
+                                   delta);
+      }
+      LogMenuAction(MENU_SHOW_SYNC_SETTINGS);
+      break;
+    case IDC_TURN_ON_SYNC:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowTurnOnSync",
+                                   delta);
+      }
+      LogMenuAction(MENU_TURN_ON_SYNC);
+      break;
+    case IDC_SHOW_SIGNIN_WHEN_PAUSED:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowSigninWhenPaused", delta);
+      }
+      LogMenuAction(MENU_SHOW_SIGNIN_WHEN_PAUSED);
+      break;
+#endif
   }
 
   if (!uma_action_recorded_) {

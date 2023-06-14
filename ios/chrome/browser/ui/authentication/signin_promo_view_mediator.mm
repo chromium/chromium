@@ -69,6 +69,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
       return true;
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -145,6 +146,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -225,6 +227,7 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -305,6 +308,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -369,6 +373,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -433,6 +438,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
