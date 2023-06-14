@@ -363,15 +363,20 @@ void MediaNotificationService::OnStartPresentationContextCreated(
     return;
   }
 
-  // If there exists a cast notification / tab mirroring session associated with
-  // `web_contents`, delete `context` because users should not start a new
-  // presentation at this time.
+  // If there exists a cast notification associated with `web_contents`, delete
+  // `context` because users should not start a new presentation at this time.
   if (HasCastNotificationsForWebContents(web_contents)) {
     CancelRequest(std::move(context), "A presentation has already started.");
-  } else if (HasTabMirroringSessionForWebContents(web_contents)) {
-    CancelRequest(std::move(context),
-                  "A tab mirroring session has already started.");
   } else if (HasActiveControllableSessionForWebContents(web_contents)) {
+    // If there exists a media session notification and a tab mirroring session,
+    // both, associated with `web_contents`, delete `context` because users
+    // should not start a new presentation at this time.
+    if (HasTabMirroringSessionForWebContents(web_contents)) {
+      CancelRequest(std::move(context),
+                    "A tab mirroring session has already started.");
+      return;
+    }
+
     // If there exists a media session notification associated with
     // |web_contents|, hold onto the context for later use.
     context_ = std::move(context);
