@@ -355,7 +355,20 @@ GuestViewBase* GuestViewManager::GetGuestFromWebContents(
 
 void GuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {
   embedders_observed_.erase(embedder_process_id);
+
+  // We can't just call std::multimap::erase here because destroying a guest
+  // could trigger the destruction of another guest which is also owned by
+  // `owned_guests_`. Recursively calling std::multimap::erase is unsafe (see
+  // https://crbug.com/1450397). So we take ownership of all of the guests that
+  // will be destroyed before erasing the entries from the map.
+  std::vector<std::unique_ptr<GuestViewBase>> guests_to_destroy;
+  const auto destroy_range = owned_guests_.equal_range(embedder_process_id);
+  for (auto it = destroy_range.first; it != destroy_range.second; ++it) {
+    guests_to_destroy.push_back(std::move(it->second));
+  }
   owned_guests_.erase(embedder_process_id);
+  guests_to_destroy.clear();
+
   CallViewDestructionCallbacks(embedder_process_id);
 }
 

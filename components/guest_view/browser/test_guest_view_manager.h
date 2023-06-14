@@ -119,7 +119,6 @@ class TestGuestViewManager : public GuestViewManager {
   size_t num_guests_created_;
   size_t expected_num_guests_created_;
   int num_views_garbage_collected_;
-  bool waiting_for_guests_created_;
 
   // Tracks the life time of the GuestView's main FrameTreeNode. The main FTN
   // has the same lifesspan as the GuestView.
