@@ -63,9 +63,16 @@ void FakeLocalDeviceDataProvider::SetIsUserRegistrationInfoSaved(
   is_user_registration_info_saved_ = is_user_registration_info_saved;
 }
 
-// Not implemented
+void FakeLocalDeviceDataProvider::SetUpdatePersistedSharedCredentialsCallback(
+    base::OnceClosure callback) {
+  on_persist_credentials_callback_ = std::move(callback);
+}
+
 void FakeLocalDeviceDataProvider::UpdatePersistedSharedCredentials(
     const std::vector<::nearby::internal::SharedCredential>&
-        shared_credentials) {}
+        shared_credentials) {
+  CHECK(on_persist_credentials_callback_);
+  std::move(on_persist_credentials_callback_).Run();
+}
 
 }  // namespace ash::nearby::presence

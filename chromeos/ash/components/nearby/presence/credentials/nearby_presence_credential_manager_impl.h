@@ -31,6 +31,10 @@ namespace ash::nearby::proto {
 class UpdateDeviceResponse;
 }  // namespace ash::nearby::proto
 
+namespace nearby::internal {
+class SharedCredential;
+}  // namespace nearby::internal
+
 namespace ash::nearby::presence {
 
 class LocalDeviceDataProvider;
@@ -72,6 +76,7 @@ class NearbyPresenceCredentialManagerImpl
 
   // Callbacks for server registration UpdateDevice RPC via
   // |RegisterPresence|.
+  void HandleFirstTimeRegistrationTimeout();
   void HandleFirstTimeRegistrationFailure();
   void OnRegistrationRpcSuccess(
       const ash::nearby::proto::UpdateDeviceResponse& response);
@@ -87,6 +92,36 @@ class NearbyPresenceCredentialManagerImpl
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       mojom::StatusCode status);
 
+  // Callback for first time credential upload/download during first time
+  // server registration.
+  void OnFirstTimeCredentialUpload(bool success);
+  void ScheduleUploadCredentials(
+      std::vector<::nearby::internal::SharedCredential>
+          proto_shared_credentials);
+
+  // Helper functions to trigger uploading credentials in the NP server. The
+  // helper functions are used for first time server registration to upload
+  // newly generated credentials, daily syncs with the server to upload
+  // credentials if they have changed. These helper functions are also used in
+  // `UpdateCredentials` flows.
+  //
+  // They take a repeating callback because UploadCredentials must be bound as a
+  // RepeatingCallback itself as a task in a NearbyScheduler.
+  void UploadCredentials(
+      std::vector<::nearby::internal::SharedCredential> credentials,
+      base::RepeatingCallback<void(bool)> upload_credentials_result_callback);
+  void HandleUploadCredentialsResult(
+      base::RepeatingCallback<void(bool)> upload_credentials_callback,
+      bool success);
+  void OnUploadCredentialsTimeout(
+      base::RepeatingCallback<void(bool)> upload_credentials_callback);
+  void OnUploadCredentialsSuccess(
+      base::RepeatingCallback<void(bool)> upload_credentials_callback,
+      const ash::nearby::proto::UpdateDeviceResponse& response);
+  void OnUploadCredentialsFailure(
+      base::RepeatingCallback<void(bool)> upload_credentials_callback,
+      ash::nearby::NearbyHttpError error);
+
   // Constructed per RPC request, and destroyed on RPC response (server
   // interaction completed). This field is reused by multiple RPCs during the
   // lifetime of the NearbyPresenceCredentialManagerImpl object.
@@ -97,9 +132,18 @@ class NearbyPresenceCredentialManagerImpl
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::OneShotTimer server_response_timer_;
-  std::unique_ptr<NearbyScheduler> first_time_registration_on_demand_scheduler_;
   const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Schedulers used to schedule immediate tasks to communicate with the
+  // server during the first time registration flow. Initialized during the
+  // first time registration flow kicked off in `RegisterPresence()`. Not
+  // expected to be a valid pointer unless used during the first time
+  // registration flow.
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      first_time_registration_on_demand_scheduler_;
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      first_time_upload_on_demand_scheduler_;
 
   // Callback to return the result of the first time registration. Not
   // guaranteed to be a valid callback, as this is set only during first time

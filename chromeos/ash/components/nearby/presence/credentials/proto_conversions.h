@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
 
+#include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
+#include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
@@ -28,6 +30,12 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata);
     mojom::IdentityType identity_type);
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
     mojom::SharedCredential* shared_credential);
+
+ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
+    ::nearby::internal::SharedCredential shared_credential);
+ash::nearby::proto::TrustType TrustTypeFromIdentityType(
+    ::nearby::internal::IdentityType identity_type);
+int64_t MillisecondsToSeconds(int64_t milliseconds);
 
 }  // namespace ash::nearby::presence
 

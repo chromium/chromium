@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_FAKE_LOCAL_DEVICE_DATA_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_FAKE_LOCAL_DEVICE_DATA_PROVIDER_H_
 
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/metadata.pb.h"
@@ -42,6 +43,7 @@ class FakeLocalDeviceDataProvider : public LocalDeviceDataProvider {
   void SetDeviceMetadata(::nearby::internal::Metadata metadata);
   void SetAccountName(std::string account_name);
   void SetIsUserRegistrationInfoSaved(bool is_user_registration_info_saved);
+  void SetUpdatePersistedSharedCredentialsCallback(base::OnceClosure callback);
 
  private:
   // LocalDeviceDataProvider:
@@ -54,6 +56,7 @@ class FakeLocalDeviceDataProvider : public LocalDeviceDataProvider {
   std::string device_id_;
   ::nearby::internal::Metadata metadata_;
   std::string account_name_;
+  base::OnceClosure on_persist_credentials_callback_;
 };
 
 }  // namespace ash::nearby::presence

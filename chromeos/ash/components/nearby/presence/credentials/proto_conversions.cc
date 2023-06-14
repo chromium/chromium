@@ -103,4 +103,42 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   return proto;
 }
 
+ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
+    ::nearby::internal::SharedCredential shared_credential) {
+  ash::nearby::proto::PublicCertificate certificate;
+  certificate.set_secret_id(shared_credential.secret_id());
+  certificate.set_secret_key(shared_credential.key_seed());
+  certificate.set_public_key(
+      shared_credential.connection_signature_verification_key());
+  certificate.mutable_start_time()->set_seconds(
+      MillisecondsToSeconds(shared_credential.start_time_millis()));
+  certificate.mutable_end_time()->set_seconds(
+      MillisecondsToSeconds(shared_credential.end_time_millis()));
+  certificate.set_encrypted_metadata_bytes(
+      shared_credential.encrypted_metadata_bytes_v0());
+  certificate.set_metadata_encryption_key_tag(
+      shared_credential.metadata_encryption_key_unsigned_adv_tag());
+  certificate.set_trust_type(
+      TrustTypeFromIdentityType(shared_credential.identity_type()));
+  return certificate;
+}
+
+ash::nearby::proto::TrustType TrustTypeFromIdentityType(
+    ::nearby::internal::IdentityType identity_type) {
+  switch (identity_type) {
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
+      return ash::nearby::proto::TrustType::TRUST_TYPE_UNSPECIFIED;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
+      return ash::nearby::proto::TrustType::TRUST_TYPE_PRIVATE;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
+      return ash::nearby::proto::TrustType::TRUST_TYPE_TRUSTED;
+    default:
+      return ash::nearby::proto::TrustType::TRUST_TYPE_UNSPECIFIED;
+  }
+}
+
+int64_t MillisecondsToSeconds(int64_t milliseconds) {
+  return milliseconds / 1000.0;
+}
+
 }  // namespace ash::nearby::presence
