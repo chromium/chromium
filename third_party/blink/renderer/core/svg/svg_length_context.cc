@@ -102,7 +102,8 @@ SVGLengthConversionData::SVGLengthConversionData(const Element& context,
     : CSSToLengthConversionData(style,
                                 &style,
                                 RootElementStyle(context),
-                                context.GetDocument().GetLayoutView(),
+                                CSSToLengthConversionData::ViewportSize(
+                                    context.GetDocument().GetLayoutView()),
                                 CSSToLengthConversionData::ContainerSizes(
                                     context.ParentOrShadowHostElement()),
                                 1.0f,

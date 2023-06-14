@@ -126,6 +126,10 @@ void PageTestBase::SetUp() {
 
   // Use desktop page scale limits by default.
   GetPage().SetDefaultPageScaleLimits(1, 4);
+
+  // We do a lot of one-offs in unit tests, so update this so that every
+  // single test doesn't have to.
+  GetStyleEngine().UpdateViewportSize();
 }
 
 void PageTestBase::SetUp(gfx::Size size) {
@@ -142,6 +146,10 @@ void PageTestBase::SetUp(gfx::Size size) {
 
   // Use desktop page scale limits by default.
   GetPage().SetDefaultPageScaleLimits(1, 4);
+
+  // We do a lot of one-offs in unit tests, so update this so that every
+  // single test doesn't have to.
+  GetStyleEngine().UpdateViewportSize();
 }
 
 void PageTestBase::SetupPageWithClients(
@@ -165,6 +173,10 @@ void PageTestBase::SetupPageWithClients(
 
   // Use desktop page scale limits by default.
   GetPage().SetDefaultPageScaleLimits(1, 4);
+
+  // We do a lot of one-offs in unit tests, so update this so that every
+  // single test doesn't have to.
+  GetStyleEngine().UpdateViewportSize();
 }
 
 void PageTestBase::TearDown() {

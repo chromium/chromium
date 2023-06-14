@@ -226,6 +226,7 @@ class TestCascade {
   Element* Body() const { return GetDocument().body(); }
 
   static StyleResolverState& InitState(StyleResolverState& state) {
+    state.GetDocument().GetStyleEngine().UpdateViewportSize();
     state.SetStyle(*InitialStyle(state.GetDocument()));
     state.SetParentStyle(InitialStyle(state.GetDocument()));
     state.SetOldStyle(state.GetElement().GetComputedStyle());

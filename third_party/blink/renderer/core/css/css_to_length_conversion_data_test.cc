@@ -52,7 +52,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     return CSSToLengthConversionData(
         div->ComputedStyleRef(), GetDocument().body()->GetComputedStyle(),
         GetDocument().documentElement()->GetComputedStyle(),
-        GetDocument().GetLayoutView(),
+        CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(),
         data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()), flags);
   }

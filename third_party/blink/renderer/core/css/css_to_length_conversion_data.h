@@ -138,6 +138,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
           dynamic_height_(height) {}
 
     explicit ViewportSize(const LayoutView*);
+    bool operator==(const ViewportSize&) const = default;
 
     // v*
     double Width() const { return LargeWidth(); }
@@ -240,7 +241,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   CSSToLengthConversionData(const ComputedStyleOrBuilder& element_style,
                             const ComputedStyle* parent_style,
                             const ComputedStyle* root_style,
-                            const LayoutView* layout_view,
+                            const ViewportSize& viewport_size,
                             const ContainerSizes& container_sizes,
                             float zoom,
                             Flags& flags)
@@ -250,7 +251,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
             LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
                                         : element_style.GetFontSizeStyle(),
                            root_style),
-            ViewportSize(layout_view),
+            viewport_size,
             container_sizes,
             zoom,
             flags) {}

@@ -2249,6 +2249,7 @@ FilterOperations StyleResolver::ComputeFilterOperations(
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(parent.get()));
 
+  GetDocument().GetStyleEngine().UpdateViewportSize();
   state.SetStyle(*parent);
 
   StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), state,
@@ -2429,6 +2430,7 @@ Font StyleResolver::ComputeFont(Element& element,
   StyleResolverState state(GetDocument(), element,
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(&style));
+  GetDocument().GetStyleEngine().UpdateViewportSize();
   state.SetStyle(style);
   if (const ComputedStyle* parent_style = element.GetComputedStyle()) {
     state.SetParentStyle(parent_style);

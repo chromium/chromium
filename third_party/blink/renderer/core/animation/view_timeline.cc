@@ -150,7 +150,8 @@ Length InsetValueToLength(const CSSValue* inset_value,
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData length_conversion_data(
         subject->ComputedStyleRef(), element_resolve_context.ParentStyle(),
-        element_resolve_context.RootElementStyle(), document.GetLayoutView(),
+        element_resolve_context.RootElementStyle(),
+        CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(subject),
         subject->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 

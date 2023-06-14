@@ -215,6 +215,9 @@ StyleEngine::StyleEngine(Document& document)
       WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
   UpdateForcedBackgroundColor();
   UpdateColorScheme();
+
+  // Mostly for the benefit of unit tests.
+  UpdateViewportSize();
 }
 
 StyleEngine::~StyleEngine() = default;
@@ -3149,6 +3152,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   if (cq_data->SkippedStyleRecalc()) {
     DecrementSkippedContainerRecalc();
   }
+  UpdateViewportSize();
   RecalcStyleForContainer(container, change);
 
   if (container.NeedsReattachLayoutTree()) {
@@ -3329,6 +3333,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
   UpdateViewportStyle();
 
   if (GetDocument().documentElement()) {
+    UpdateViewportSize();
     NthIndexCache nth_index_cache(GetDocument());
     if (NeedsStyleRecalc()) {
       TRACE_EVENT0("blink,blink_style", "Document::recalcStyle");
@@ -3954,6 +3959,11 @@ const CSSValue* StyleEngine::GetCachedFillOrClipPathURIValue(
 
 void StyleEngine::BaseURLChanged() {
   fill_or_clip_path_uri_value_cache_.clear();
+}
+
+void StyleEngine::UpdateViewportSize() {
+  viewport_size_ =
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView());
 }
 
 }  // namespace blink
