@@ -9,7 +9,11 @@ namespace ash::nearby::presence {
 NearbyPresenceService::NearbyPresenceService() = default;
 NearbyPresenceService::~NearbyPresenceService() = default;
 
-NearbyPresenceService::ScanFilter::ScanFilter() = default;
+NearbyPresenceService::ScanFilter::ScanFilter(
+    IdentityType identity_type,
+    const std::vector<ActionType>& actions)
+    : identity_type_(identity_type), actions_(actions) {}
+
 NearbyPresenceService::ScanFilter::~ScanFilter() = default;
 
 NearbyPresenceService::ScanFilter::ScanFilter(const ScanFilter& scan_filter) {

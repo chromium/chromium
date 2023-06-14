@@ -81,9 +81,9 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
   if (service) {
     NS_LOG(VERBOSE) << __func__
                     << ": NearbyPresenceService was retrieved successfully";
-    ash::nearby::presence::NearbyPresenceService::ScanFilter filter;
-    filter.identity_type_ =
-        ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate;
+    ash::nearby::presence::NearbyPresenceService::ScanFilter filter(
+        ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+        /*actions=*/{});
     service->StartScan(
         filter, /*scan_delegate=*/this,
         base::BindOnce(&NearbyInternalsPresenceHandler::OnScanStarted,

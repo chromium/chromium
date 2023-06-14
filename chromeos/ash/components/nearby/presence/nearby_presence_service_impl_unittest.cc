@@ -109,9 +109,10 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/1451251): Re-enable this test
-TEST_F(NearbyPresenceServiceImplTest, DISABLED_StartScan) {
-  NearbyPresenceService::ScanFilter filter;
+TEST_F(NearbyPresenceServiceImplTest, StartScan) {
+  NearbyPresenceService::ScanFilter filter(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      /*actions=*/{});
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
   // Call start scan and verify it calls the OnPresenceDeviceFound delegate
@@ -134,9 +135,11 @@ TEST_F(NearbyPresenceServiceImplTest, DISABLED_StartScan) {
   EXPECT_TRUE(IsScanSessionActive());
 }
 
-// TODO(crbug.com/1451251): Re-enable this test
-TEST_F(NearbyPresenceServiceImplTest, DISABLED_EndScan) {
-  NearbyPresenceService::ScanFilter filter;
+TEST_F(NearbyPresenceServiceImplTest, EndScan) {
+  NearbyPresenceService::ScanFilter filter(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      /*actions=*/{});
+
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
 
@@ -167,9 +170,10 @@ TEST_F(NearbyPresenceServiceImplTest, DISABLED_EndScan) {
   EXPECT_TRUE(nearby_presence_.WasOnDisconnectCalled());
 }
 
-// TODO(crbug.com/1451251): Re-enable this test
-TEST_F(NearbyPresenceServiceImplTest, DISABLED_EndScanBeforeStart) {
-  NearbyPresenceService::ScanFilter filter;
+TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
+  NearbyPresenceService::ScanFilter filter(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      /*actions=*/{});
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
 
@@ -191,7 +195,9 @@ TEST_F(NearbyPresenceServiceImplTest, DISABLED_EndScanBeforeStart) {
 }
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
-  NearbyPresenceService::ScanFilter filter;
+  NearbyPresenceService::ScanFilter filter(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      /*actions=*/{});
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
 

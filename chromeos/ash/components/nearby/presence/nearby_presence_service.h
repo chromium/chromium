@@ -69,7 +69,8 @@ class NearbyPresenceService {
   };
 
   struct ScanFilter {
-    ScanFilter();
+    ScanFilter(IdentityType identity_type,
+               const std::vector<ActionType>& actions);
     ScanFilter(const ScanFilter&);
     ~ScanFilter();
 
