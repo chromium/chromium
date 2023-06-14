@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/view.h"
 
 // static
 void MockShoppingListUiTabHelper::CreateForWebContents(
@@ -33,6 +34,10 @@ MockShoppingListUiTabHelper::MockShoppingListUiTabHelper(
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
+
+  ON_CALL(*this, CreateShoppingInsightsWebView).WillByDefault([]() {
+    return std::make_unique<views::View>();
+  });
 }
 
 MockShoppingListUiTabHelper::~MockShoppingListUiTabHelper() = default;

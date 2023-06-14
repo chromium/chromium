@@ -12,6 +12,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class View;
+}  // namespace views
+
 class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
  public:
   static void CreateForWebContents(content::WebContents* content);
@@ -31,6 +35,10 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
               (bool enable,
                bool is_new_bookmark,
                base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(std::unique_ptr<views::View>,
+              CreateShoppingInsightsWebView,
+              (),
               (override));
 
  private:

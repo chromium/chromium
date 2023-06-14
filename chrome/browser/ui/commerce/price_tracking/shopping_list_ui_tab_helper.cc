@@ -306,6 +306,15 @@ void ShoppingListUiTabHelper::SetPriceTrackingState(
   }
 }
 
+void ShoppingListUiTabHelper::ShowShoppingInsightsSidePanel() {
+  auto* side_panel_ui = GetSidePanelUI();
+  auto* registry = SidePanelRegistry::Get(web_contents());
+  DCHECK(side_panel_ui && registry->GetEntryForKey(SidePanelEntry::Key(
+                              SidePanelEntry::Id::kShoppingInsights)));
+
+  side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
+}
+
 void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
   if (!cluster_id_for_page_.has_value())
     return;

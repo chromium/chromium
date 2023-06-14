@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -43,8 +45,15 @@ void PriceInsightsIconView::UpdateImpl() {
 
 void PriceInsightsIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  // TODO(meiliang): Open price insights side panel.
-  NOTIMPLEMENTED();
+  auto* web_contents = GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+  auto* tab_helper =
+      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+
+  tab_helper->ShowShoppingInsightsSidePanel();
 }
 
 bool PriceInsightsIconView::ShouldShow() const {

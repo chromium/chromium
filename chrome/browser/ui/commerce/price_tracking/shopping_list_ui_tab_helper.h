@@ -90,6 +90,7 @@ class ShoppingListUiTabHelper
   virtual void SetPriceTrackingState(bool enable,
                                      bool is_new_bookmark,
                                      base::OnceCallback<void(bool)> callback);
+  void ShowShoppingInsightsSidePanel();
 
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
@@ -98,6 +99,8 @@ class ShoppingListUiTabHelper
                           image_fetcher::ImageFetcher* image_fetcher);
 
   const absl::optional<bool>& GetPendingTrackingStateForTesting();
+
+  virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
 
  private:
   friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
@@ -133,8 +136,6 @@ class ShoppingListUiTabHelper
   // ShoppingInsights side panel is currently showing, close the side panel
   // first.
   void MakeShoppingInsightsSidePanelUnavailable();
-
-  std::unique_ptr<views::View> CreateShoppingInsightsWebView();
 
   SidePanelUI* GetSidePanelUI() const;
 
