@@ -392,7 +392,12 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kPrefPromoObject);
 
   // Register pref storing whether Web Inspector support is enabled.
+#if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
+  // Enable it by default on debug builds
+  registry->RegisterBooleanPref(prefs::kWebInspectorEnabled, true);
+#else
   registry->RegisterBooleanPref(prefs::kWebInspectorEnabled, false);
+#endif
 
   // Register prerender network prediction preferences.
   registry->RegisterIntegerPref(
