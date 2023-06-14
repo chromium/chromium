@@ -2800,6 +2800,20 @@ const FeatureEntry::FeatureVariation kBackForwardCacheVariations[] = {
      std::size(kBackForwardCache_ForceCaching), nullptr},
 };
 
+const FeatureEntry::FeatureParam kRenderDocument_Subframe[] = {
+    {"level", "subframe"}};
+const FeatureEntry::FeatureParam kRenderDocument_AllFrames[] = {
+    {"level", "all-frames"}};
+
+const FeatureEntry::FeatureVariation kRenderDocumentVariations[] = {
+    {"Swap RenderFrameHosts on same-site navigations from subframes and "
+     "crashed frames (experimental)",
+     kRenderDocument_Subframe, std::size(kRenderDocument_Subframe), nullptr},
+    {"Swap RenderFrameHosts on same-site navigations from any frame "
+     "(experimental)",
+     kRenderDocument_AllFrames, std::size(kRenderDocument_AllFrames), nullptr},
+};
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kWebOtpBackendChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -10475,6 +10489,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrosBatterySaverAlwaysOnDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBatterySaverAlwaysOn)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    {"render-document", flag_descriptions::kRenderDocumentName,
+     flag_descriptions::kRenderDocumentDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRenderDocument,
+                                    kRenderDocumentVariations,
+                                    "RenderDocument")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

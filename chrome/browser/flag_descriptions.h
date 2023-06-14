@@ -1582,6 +1582,9 @@ extern const char kPWAsDefaultOfflinePageDescription[];
 extern const char kPwaUpdateDialogForAppIconName[];
 extern const char kPwaUpdateDialogForAppIconDescription[];
 
+extern const char kRenderDocumentName[];
+extern const char kRenderDocumentDescription[];
+
 extern const char kQuicName[];
 extern const char kQuicDescription[];
 

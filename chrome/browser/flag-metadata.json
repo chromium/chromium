@@ -6661,6 +6661,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "render-document",
+    "owners": [ "rakina" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "replace-sync-promos-with-sign-in-promos",
     "owners": [ "treib", "mastiz", "jood@google.com", "bling-flags@google.com", "chrome-sync-dev@google.com", "chrome-signin-team"],
     "expiry_milestone": 119

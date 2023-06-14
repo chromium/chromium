@@ -61779,6 +61779,7 @@ from previous Chrome versions.
   <int value="-648925189" label="ExploreSites:enabled"/>
   <int value="-648593261" label="Memories:enabled"/>
   <int value="-648383814" label="WebViewXRequestedWithHeaderControl:disabled"/>
+  <int value="-647550540" label="RenderDocument:enabled"/>
   <int value="-647223968" label="CrostiniQtImeSupport:enabled"/>
   <int value="-645772961" label="EnableFakeKeyboardHeuristic:enabled"/>
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
@@ -64378,6 +64379,7 @@ from previous Chrome versions.
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>
+  <int value="723384042" label="RenderDocument:disabled"/>
   <int value="723385329" label="SystemEmojiPickerClipboard:enabled"/>
   <int value="723619383" label="TopSitesFromSiteEngagement:enabled"/>
   <int value="724052572" label="EnableFilesystemInIncognito"/>

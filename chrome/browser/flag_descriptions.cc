@@ -2821,6 +2821,10 @@ const char kPwaUpdateDialogForAppIconName[] =
 const char kPwaUpdateDialogForAppIconDescription[] =
     "Enable a confirmation dialog that shows up when a PWA changes its icon";
 
+const char kRenderDocumentName[] = "Enable RenderDocument";
+const char kRenderDocumentDescription[] =
+    "Enable swapping RenderFrameHosts on same-site navigations";
+
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 
