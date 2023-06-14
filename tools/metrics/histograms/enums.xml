@@ -29474,10 +29474,10 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="DownloadFileUIGoogleDrive">
-  <int value="0" label="Google drive is already installed"/>
-  <int value="1" label="Google drive is not installed"/>
-  <int value="2" label="Google drive installation started"/>
-  <int value="3" label="Google drive was installed after showing installator"/>
+  <int value="0" label="Google Drive is already installed"/>
+  <int value="1" label="Google Drive is not installed"/>
+  <int value="2" label="Google Drive installation started"/>
+  <int value="3" label="Google Drive was installed after showing installator"/>
 </enum>
 
 <enum name="DownloadFrameGesture">
@@ -48402,6 +48402,20 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Not Available, Regular mode"/>
   <int value="2" label="Available, Incognito mode"/>
   <int value="3" label="Not Available, Incognito mode"/>
+</enum>
+
+<enum name="GoogleDrive.BulkPinning.Stage">
+  <int value="0" label="Stopped"/>
+  <int value="1" label="Paused Because Offline"/>
+  <int value="2" label="Paused Because Of BatterySaver"/>
+  <int value="3" label="Getting Free Space"/>
+  <int value="4" label="Listing Files"/>
+  <int value="5" label="Syncing"/>
+  <int value="6" label="Success"/>
+  <int value="7" label="Not Enough Space"/>
+  <int value="8" label="Cannot Get Free Space"/>
+  <int value="9" label="Cannot List Files"/>
+  <int value="10" label="Cannot Enable Docs Offline"/>
 </enum>
 
 <enum name="GoogleFaviconServerRequestStatus">

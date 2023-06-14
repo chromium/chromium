@@ -485,6 +485,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.Enabled"
+    enum="BooleanEnabled" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Tracks whether the Google Drive bulk-pinning feature is enabled on eligible
+    devices. This is sampled once per hour, and on eligible devices only.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.Listing.Error"
+    enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The final error state that the Google Drive bulk-pinning feature reached
+    while listing files.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.Syncing.Error"
+    enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The final error state that the Google Drive bulk-pinning feature reached
+    while syncing files.
+  </summary>
+</histogram>
+
 <histogram
     name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
     units="ms" expires_after="2023-11-12">
