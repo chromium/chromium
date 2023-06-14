@@ -86,11 +86,11 @@ struct CompanionScriptBuilder {
   // to the postmessage.
   absl::optional<PromoType> promo_type;
   absl::optional<PromoAction> promo_action;
-  absl::optional<std::string> exps_promo_url;
   absl::optional<PhFeedback> ph_feedback;
-  absl::optional<std::string> reporting_url;
   absl::optional<bool> is_exps_opted_in;
   absl::optional<std::string> url_for_open_in_new_tab;
+  absl::optional<std::string> url_to_open;
+  absl::optional<bool> use_new_tab;
   absl::optional<UiSurface> ui_surface;
   absl::optional<int> ui_surface_position;
   absl::optional<int> child_element_available_count;
@@ -126,18 +126,10 @@ struct CompanionScriptBuilder {
          << ";";
     }
 
-    if (exps_promo_url.has_value()) {
-      ss << "message['expsPromoUrl'] = '" << exps_promo_url.value() << "';";
-    }
-
     if (ph_feedback.has_value()) {
       ss << "message['phFeedback'] = "
          << base::NumberToString(static_cast<size_t>(ph_feedback.value()))
          << ";";
-    }
-
-    if (reporting_url.has_value()) {
-      ss << "message['reportingUrl'] = '" << reporting_url.value() << "';";
     }
 
     if (is_exps_opted_in.has_value()) {
@@ -148,6 +140,15 @@ struct CompanionScriptBuilder {
     if (url_for_open_in_new_tab.has_value()) {
       ss << "message['urlForOpenInNewTab'] = '"
          << url_for_open_in_new_tab.value() << "';";
+    }
+
+    if (url_to_open.has_value()) {
+      ss << "message['urlToOpen'] = '" << url_to_open.value() << "';";
+    }
+
+    if (use_new_tab.has_value()) {
+      ss << "message['useNewTab'] = '"
+         << base::NumberToString(use_new_tab.value()) << "';";
     }
 
     if (ui_surface.has_value()) {
@@ -817,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
                  static_cast<int>(companion::PromoEvent::kMsbbRejected));
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ExpsPromoURLLoadsInNewTab) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenUrlInBrowser) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Load a page on the active tab.
   ASSERT_TRUE(
@@ -835,10 +836,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ExpsPromoURLLoadsInNewTab) {
             SidePanelEntry::Id::kSearchCompanion);
 
   // Show exps promo, user accepts it.
-  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
-  builder.promo_type = PromoType::kExps;
-  builder.promo_action = PromoAction::kAccepted;
-  builder.exps_promo_url = kExpectedExpsPromoUrl;
+  CompanionScriptBuilder builder(MethodType::kOpenUrlInBrowser);
+  builder.url_to_open = kExpectedExpsPromoUrl;
+  builder.use_new_tab = true;
   EXPECT_TRUE(ExecJs(builder.Build()));
 
   // Verify that a new tab opens up to load the exps URL.
@@ -1005,8 +1005,12 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
   // Show exps promo, user accepts it.
   CompanionScriptBuilder builder(MethodType::kOnPhFeedback);
   builder.ph_feedback = PhFeedback::kReportContent;
-  builder.reporting_url = kPhReportingUrl;
   EXPECT_TRUE(ExecJs(builder.Build()));
+
+  CompanionScriptBuilder builder2(MethodType::kOpenUrlInBrowser);
+  builder2.url_to_open = kPhReportingUrl;
+  builder2.use_new_tab = true;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
 
   // Verify that a new tab opens up to load the exps URL.
   WaitForTabCount(2);

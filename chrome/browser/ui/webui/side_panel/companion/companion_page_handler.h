@@ -48,8 +48,7 @@ class CompanionPageHandler
   // side_panel::mojom::CompanionPageHandler:
   void ShowUI() override;
   void OnPromoAction(side_panel::mojom::PromoType promo_type,
-                     side_panel::mojom::PromoAction promo_action,
-                     const absl::optional<GURL>& exps_promo_url) override;
+                     side_panel::mojom::PromoAction promo_action) override;
   void OnRegionSearchClicked() override;
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) override;
   void OnOpenInNewTabButtonURLChanged(const GURL& url_to_open) override;
@@ -61,9 +60,10 @@ class CompanionPageHandler
                               int32_t click_position) override;
   void OnCqCandidatesAvailable(
       const std::vector<std::string>& text_directives) override;
-  void OnPhFeedback(side_panel::mojom::PhFeedback ph_feedback,
-                    const absl::optional<GURL>& reporting_url) override;
+  void OnPhFeedback(side_panel::mojom::PhFeedback ph_feedback) override;
   void OnCqJumptagClicked(const std::string& text_directive) override;
+  void OpenUrlInBrowser(const absl::optional<GURL>& url_to_open,
+                        bool use_new_tab) override;
 
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(

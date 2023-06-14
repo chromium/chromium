@@ -39,6 +39,9 @@ enum MethodType {
   // Method corresponding to `CompanionPageHandler.OnCqJumptagClicked`.
   kOnCqJumptagClicked = 9,
 
+  // Method corresponding to `CompanionPageHandler.OpenUrlInBrowser`.
+  kOpenUrlInBrowser = 10,
+
   // Methods used in browser -> renderer communication.
   // Method corresponding to `CompanionPage.UpdateCompanionPage`.
   kUpdateCompanionPage = 31,
@@ -143,10 +146,7 @@ interface CompanionPageHandler {
 
   // Called to notify the browser about user action of type `promo_action` on a
   // promo of type `promo_type`.
-  // `exps_promo_url` is optionally used to pass the URL to be loaded for exps
-  // opt-in.
-  OnPromoAction(PromoType promo_type, PromoAction promo_action,
-                                      url.mojom.Url? exps_promo_url);
+  OnPromoAction(PromoType promo_type, PromoAction promo_action);
 
   // Called to notify the browser that user has clicked on region search button.
   OnRegionSearchClicked();
@@ -184,14 +184,16 @@ interface CompanionPageHandler {
   OnCqCandidatesAvailable(array<string> text_directives);
 
   // Called in response to user feedback action on the PH surface.
-  // `reporting_url` is optionally used to pass the URL to use for reporting
-  // content.
-  OnPhFeedback(PhFeedback ph_feedback, url.mojom.Url? reporting_url);
+  OnPhFeedback(PhFeedback ph_feedback);
 
   // Called to notify the browser that the user has clicked on a jumptag.
   // `text_directive` is the URL fragment for highlighting and scrolling-to.
   // Ref: https://wicg.github.io/scroll-to-text-fragment/#syntax.
   OnCqJumptagClicked(string text_directive);
+
+  // Generic method that can be used to open a URL in the browser. Ignored if
+  // `url_to_open` is invalid.
+  OpenUrlInBrowser(url.mojom.Url? url_to_open, bool use_new_tab);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

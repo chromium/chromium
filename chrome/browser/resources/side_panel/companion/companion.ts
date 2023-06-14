@@ -32,11 +32,9 @@ enum ParamType {
   // Arguments for MethodType.kOnPromoAction.
   PROMO_ACTION = 'promoAction',
   PROMO_TYPE = 'promoType',
-  EXPS_PROMO_URL = 'expsPromoUrl',
 
   // Arguments for MethodType.kOnPhFeedback.
   PH_FEEDBACK = 'phFeedback',
-  REPORTING_URL = 'reportingUrl',
 
   // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
@@ -54,6 +52,10 @@ enum ParamType {
 
   // Arguments for MethodType.kOnCqJamptagClicked.
   CQ_JUMPTAG_TEXT = 'cqJumptagText',
+
+  // Arguments for MethodType.kOpenUrlInBrowser
+  URL_TO_OPEN = 'urlToOpen',
+  USE_NEW_TAB = 'useNewTab',
 
   // Arguments for browser -> iframe communication.
   COMPANION_UPDATE_PARAMS = 'companionUpdateParams',
@@ -185,11 +187,8 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnPromoAction) {
     const promoType = data[ParamType.PROMO_TYPE];
     const promoAction = data[ParamType.PROMO_ACTION];
-    const expsPromoUrl = new Url();
-    expsPromoUrl.url = data[ParamType.EXPS_PROMO_URL] || '';
     if (validatePromoArguments(promoType, promoAction)) {
-      companionProxy.handler.onPromoAction(
-          promoType, promoAction, expsPromoUrl);
+      companionProxy.handler.onPromoAction(promoType, promoAction);
     }
   } else if (methodType === MethodType.kOnExpsOptInStatusAvailable) {
     companionProxy.handler.onExpsOptInStatusAvailable(
@@ -215,12 +214,14 @@ function onCompanionMessageEvent(event: MessageEvent) {
     companionProxy.handler.onCqCandidatesAvailable(
         data[ParamType.CQ_TEXT_DIRECTIVES]);
   } else if (methodType === MethodType.kOnPhFeedback) {
-    const reportingUrl = new Url();
-    reportingUrl.url = data[ParamType.REPORTING_URL] || '';
-    companionProxy.handler.onPhFeedback(
-        data[ParamType.PH_FEEDBACK], reportingUrl);
+    companionProxy.handler.onPhFeedback(data[ParamType.PH_FEEDBACK]);
   } else if (methodType === MethodType.kOnCqJumptagClicked) {
     companionProxy.handler.onCqJumptagClicked(data[ParamType.CQ_JUMPTAG_TEXT]);
+  } else if (methodType === MethodType.kOpenUrlInBrowser) {
+    const urlToOpen = new Url();
+    urlToOpen.url = data[ParamType.URL_TO_OPEN] || '';
+    companionProxy.handler.openUrlInBrowser(
+        urlToOpen, data[ParamType.USE_NEW_TAB]);
   }
 }
 

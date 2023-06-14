@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
-#include "url/gurl.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -39,15 +38,12 @@ class PromoHandler {
 
   // Called in response to the mojo call from renderer. Takes necessary action
   // to handle the user action on the promo.
-  void OnPromoAction(PromoType promo_type,
-                     PromoAction promo_action,
-                     const absl::optional<GURL>& exps_promo_url);
+  void OnPromoAction(PromoType promo_type, PromoAction promo_action);
 
  private:
   void OnSigninPromo(PromoAction promo_action);
   void OnMsbbPromo(PromoAction promo_action);
-  void OnExpsPromo(PromoAction promo_action,
-                   const absl::optional<GURL>& exps_promo_url);
+  void OnExpsPromo(PromoAction promo_action);
   void IncrementPref(const std::string& pref_name);
 
   // Lifetime of the PrefService is bound to profile which outlives the lifetime

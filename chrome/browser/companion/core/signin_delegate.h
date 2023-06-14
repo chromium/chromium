@@ -32,8 +32,8 @@ class SigninDelegate {
   // Enable the setting for make searches and browsing better.
   virtual void EnableMsbb(bool enable_msbb) = 0;
 
-  // Loads URL in the browser in a new tab.
-  virtual void LoadUrlInNewTab(const GURL& url) = 0;
+  // Opens URL in the browser.
+  virtual void OpenUrlInBrowser(const GURL& url, bool use_new_tab) = 0;
 
   // Returns whether region search IPH should be shown.
   virtual bool ShouldShowRegionSearchIPH() = 0;

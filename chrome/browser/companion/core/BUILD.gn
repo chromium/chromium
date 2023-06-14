@@ -40,6 +40,8 @@ source_set("unit_tests") {
   sources = [
     "companion_metrics_logger_unittest.cc",
     "companion_url_builder_unittest.cc",
+    "mock_signin_delegate.cc",
+    "mock_signin_delegate.h",
     "promo_handler_unittest.cc",
     "utils_unittest.cc",
   ]

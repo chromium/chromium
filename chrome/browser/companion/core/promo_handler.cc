@@ -30,8 +30,7 @@ void PromoHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void PromoHandler::OnPromoAction(PromoType promo_type,
-                                 PromoAction promo_action,
-                                 const absl::optional<GURL>& exps_promo_url) {
+                                 PromoAction promo_action) {
   switch (promo_type) {
     case PromoType::kSignin:
       OnSigninPromo(promo_action);
@@ -40,7 +39,7 @@ void PromoHandler::OnPromoAction(PromoType promo_type,
       OnMsbbPromo(promo_action);
       return;
     case PromoType::kExps:
-      OnExpsPromo(promo_action, exps_promo_url);
+      OnExpsPromo(promo_action);
       return;
     default:
       return;
@@ -69,16 +68,11 @@ void PromoHandler::OnMsbbPromo(PromoAction promo_action) {
   }
 }
 
-void PromoHandler::OnExpsPromo(PromoAction promo_action,
-                               const absl::optional<GURL>& exps_promo_url) {
+void PromoHandler::OnExpsPromo(PromoAction promo_action) {
   if (promo_action == PromoAction::kShown) {
     IncrementPref(kExpsPromoShownCountPref);
   } else if (promo_action == PromoAction::kRejected) {
     IncrementPref(kExpsPromoDeclinedCountPref);
-  } else if (promo_action == PromoAction::kAccepted) {
-    if (exps_promo_url.has_value()) {
-      signin_delegate_->LoadUrlInNewTab(exps_promo_url.value());
-    }
   }
 }
 
