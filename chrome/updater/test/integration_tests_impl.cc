@@ -825,6 +825,22 @@ void ExpectCleanProcesses() {
   }
 }
 
+#if !BUILDFLAG(IS_WIN)
+void RunOfflineInstall(UpdaterScope scope,
+                       bool is_legacy_install,
+                       bool is_silent_install) {
+  // TODO(crbug.com/1281688).
+  NOTREACHED();
+}
+
+void RunOfflineInstallOsNotSupported(UpdaterScope scope,
+                                     bool is_legacy_install,
+                                     bool is_silent_install) {
+  // TODO(crbug.com/1281688).
+  NOTREACHED();
+}
+#endif  // IS_WIN
+
 void DMDeregisterDevice(UpdaterScope scope) {
   if (!IsSystemInstall(GetTestScope())) {
     return;

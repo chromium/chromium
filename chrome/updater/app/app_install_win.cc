@@ -61,6 +61,7 @@
 #include "chrome/updater/win/ui/splash_screen.h"
 #pragma clang diagnostic pop
 
+#include "components/update_client/protocol_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -396,10 +397,12 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // These functions are called on the main updater sequence.
   void DoInstallApp();
-  void DoInstallAppOffline(const std::string& installer_version,
-                           const base::FilePath& installer_path,
-                           const std::string& install_args,
-                           const std::string& install_data);
+  void DoInstallAppOffline(
+      const update_client::ProtocolParser::Results& results,
+      const std::string& installer_version,
+      const base::FilePath& installer_path,
+      const std::string& install_args,
+      const std::string& install_data);
   void HandleOsNotSupported();
   void InstallComplete(UpdateService::Result result);
 
@@ -571,14 +574,10 @@ void AppInstallControllerImpl::InstallAppOffline(
                            base::FilePath /*installer_path*/,
                            std::string /*arguments*/,
                            std::string /*install_data*/>& result) {
-                      if (!IsOsSupported(std::get<0>(result))) {
-                        self->HandleOsNotSupported();
-                        return;
-                      }
-
                       self->DoInstallAppOffline(
-                          std::get<1>(result), std::get<2>(result),
-                          std::get<3>(result), std::get<4>(result));
+                          std::get<0>(result), std::get<1>(result),
+                          std::get<2>(result), std::get<3>(result),
+                          std::get<4>(result));
                     },
                     self));
           },
@@ -586,6 +585,7 @@ void AppInstallControllerImpl::InstallAppOffline(
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
+    const update_client::ProtocolParser::Results& results,
     const std::string& installer_version,
     const base::FilePath& installer_path,
     const std::string& install_args,
@@ -601,6 +601,11 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   // The UI thread runs the observer.
   install_progress_observer_ipc_ = std::make_unique<InstallProgressObserverIPC>(
       observer_.get(), ui_thread_id_);
+
+  if (!IsOsSupported(results)) {
+    HandleOsNotSupported();
+    return;
+  }
 
   base::Value::Dict install_settings_dict;
   install_settings_dict.Set(kInstallerVersion, installer_version);

@@ -130,10 +130,10 @@ class IntegrationTestCommands
   virtual void ExpectLastChecked() const = 0;
   virtual void ExpectLastStarted() const = 0;
   virtual void UninstallApp(const std::string& app_id) const = 0;
-
   virtual void RunOfflineInstall(bool is_legacy_install,
                                  bool is_silent_install) = 0;
-
+  virtual void RunOfflineInstallOsNotSupported(bool is_legacy_install,
+                                               bool is_silent_install) = 0;
   virtual void DMDeregisterDevice() = 0;
   virtual void DMCleanup() = 0;
 

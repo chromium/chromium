@@ -280,6 +280,10 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install);
 
+void RunOfflineInstallOsNotSupported(UpdaterScope scope,
+                                     bool is_legacy_install,
+                                     bool is_silent_install);
+
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
 void DMDeregisterDevice(UpdaterScope scope);

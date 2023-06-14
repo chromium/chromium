@@ -412,6 +412,12 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunOfflineInstall(is_legacy_install, is_silent_install);
   }
 
+  void RunOfflineInstallOsNotSupported(bool is_legacy_install,
+                                       bool is_silent_install) {
+    test_commands_->RunOfflineInstallOsNotSupported(is_legacy_install,
+                                                    is_silent_install);
+  }
+
   void DMDeregisterDevice() { test_commands_->DMDeregisterDevice(); }
 
   void DMCleanup() { test_commands_->DMCleanup(); }
@@ -1141,6 +1147,8 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1281688): standalone installers are supported on Windows only.
 TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -1149,7 +1157,16 @@ TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, SilentOfflineInstall) {
+TEST_F(IntegrationTest, OfflineInstallOsNotSupported) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(
+      RunOfflineInstallOsNotSupported(/*is_legacy_install=*/false,
+                                      /*is_silent_install=*/false));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallSilent) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
@@ -1157,13 +1174,32 @@ TEST_F(IntegrationTest, SilentOfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
+TEST_F(IntegrationTest, OfflineInstallOsNotSupportedSilent) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(
+      RunOfflineInstallOsNotSupported(/*is_legacy_install=*/false,
+                                      /*is_silent_install=*/true));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallSilentLegacy) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/true,
                                             /*is_silent_install=*/true));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+TEST_F(IntegrationTest, OfflineInstallOsNotSupportedSilentLegacy) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(
+      RunOfflineInstallOsNotSupported(/*is_legacy_install=*/true,
+                                      /*is_silent_install=*/true));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)

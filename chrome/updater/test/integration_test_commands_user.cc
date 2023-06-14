@@ -335,6 +335,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                                      is_silent_install);
   }
 
+  void RunOfflineInstallOsNotSupported(bool is_legacy_install,
+                                       bool is_silent_install) override {
+    updater::test::RunOfflineInstallOsNotSupported(
+        updater_scope_, is_legacy_install, is_silent_install);
+  }
+
   void DMDeregisterDevice() override {
     updater::test::DMDeregisterDevice(updater_scope_);
   }

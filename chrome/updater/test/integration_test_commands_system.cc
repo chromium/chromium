@@ -371,6 +371,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                 Param("silent", is_silent_install ? "true" : "false")});
   }
 
+  void RunOfflineInstallOsNotSupported(bool is_legacy_install,
+                                       bool is_silent_install) override {
+    RunCommand("run_offline_install_os_not_supported",
+               {Param("legacy_install", is_legacy_install ? "true" : "false"),
+                Param("silent", is_silent_install ? "true" : "false")});
+  }
+
   void DMDeregisterDevice() override { RunCommand("dm_deregister_device"); }
   void DMCleanup() override { RunCommand("dm_cleanup"); }
 

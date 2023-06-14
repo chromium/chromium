@@ -385,6 +385,10 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("silent",
                 WithSwitch("legacy_install",
                            WithSystemScope(Wrap(&RunOfflineInstall))))},
+    {"run_offline_install_os_not_supported",
+     WithSwitch("silent", WithSwitch("legacy_install",
+                                     WithSystemScope(Wrap(
+                                         &RunOfflineInstallOsNotSupported))))},
     {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
     {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
   };

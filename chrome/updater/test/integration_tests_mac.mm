@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
@@ -348,12 +349,6 @@ void InstallApp(UpdaterScope scope, const std::string& app_id) {
 void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   SetExistenceCheckerPath(scope, app_id,
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
-}
-
-void RunOfflineInstall(UpdaterScope scope,
-                       bool is_legacy_install,
-                       bool is_silent_install) {
-  // TODO(crbug.com/1286574).
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {
