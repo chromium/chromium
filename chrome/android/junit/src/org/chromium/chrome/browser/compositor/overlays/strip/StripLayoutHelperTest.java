@@ -741,8 +741,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button position.
-        // tabWidth(237) + tabOverLapWidth(28) + folioXOffset(8) = 273
-        assertEquals("New tab button position is not as expected", 273.f,
+        // tabWidth(237) + tabOverLapWidth(28) = 265
+        assertEquals("New tab button position is not as expected", 265.f,
                 mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
 
         assertEquals("Unexpected incognito button color.",

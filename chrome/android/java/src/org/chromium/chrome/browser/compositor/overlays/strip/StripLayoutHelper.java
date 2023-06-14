@@ -1887,7 +1887,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // For TSI, NTB touch target offset is skewed towards the end of strip and then visually
             // placed correctly in the cc layer. Since we do not skew NTB touch target offset for
             // TSR here, so revert.
-            if (TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()) {
+            if (isNewTabButtonAnchorDisabled()) {
                 offset += getNewTabButtonTouchTargetOffset();
             }
 
