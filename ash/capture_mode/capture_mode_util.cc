@@ -29,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/point.h"
