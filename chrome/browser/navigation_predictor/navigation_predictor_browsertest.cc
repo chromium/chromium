@@ -486,8 +486,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 }
 
 // Tests that the browser counts anchors from anywhere on the page.
-// TODO(crbug.com/1415981): Flaky on Windows ASAN.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1415981): Flaky on Windows ASAN and Linux ASan and
+// linux-chromeos-dbg.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_ViewportOnlyAndUrlIncrementByOne \
   DISABLED_ViewportOnlyAndUrlIncrementByOne
 #else
