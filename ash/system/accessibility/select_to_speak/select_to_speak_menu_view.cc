@@ -112,6 +112,13 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                       .SetVectorIcon(kSelectToSpeakPauseIcon)
                       .SetTooltipText(l10n_util::GetStringUTF16(
                           IDS_ASH_SELECT_TO_SPEAK_PAUSE))
+                      // Setting the accessible name means that ChromeVox will
+                      // read this rather than the play/pause tooltip. This
+                      // ensures that ChromeVox doesn't immediately interrupt
+                      // reading to announce that the button tooltip text
+                      // changed.
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_ASH_SELECT_TO_SPEAK_TOGGLE_PLAYBACK))
                       .SetCallback(base::BindRepeating(
                           &SelectToSpeakMenuView::OnButtonPressed,
                           base::Unretained(this),

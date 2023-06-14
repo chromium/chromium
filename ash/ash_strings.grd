@@ -1167,6 +1167,9 @@ Style notes:
       <message name="IDS_ASH_SELECT_TO_SPEAK_RESUME" desc="The label for the Select-to-speak resume button, that allows users to continue text-to-speech playback.">
         Continue
       </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_TOGGLE_PLAYBACK" is_accessibility_with_no_ui="true" desc="The label for the Select-to-speak pause/resume button as read by screen readers. This button allows users to toggle text-to-speech playback. It is used for both the 'play' and 'pause' states.">
+        Toggle playback
+      </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_READING_SPEED" desc="The label for the Select-to-speak reading speed button, that allows users to update the rate of text-to-speech playback.">
         Reading speed
       </message>
