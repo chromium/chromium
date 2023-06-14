@@ -26,6 +26,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CrossOriginOpenerPolicy final {
   CrossOriginOpenerPolicy& operator=(CrossOriginOpenerPolicy&&);
   bool operator==(const CrossOriginOpenerPolicy&) const;
 
+  bool IsEqualExcludingOrigin(const CrossOriginOpenerPolicy& other) const;
+
   mojom::CrossOriginOpenerPolicyValue value =
       mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
   absl::optional<std::string> reporting_endpoint;
