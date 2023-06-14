@@ -411,6 +411,8 @@ static_library("test_support") {
     "cloud/mock_cloud_external_data_manager.h",
     "cloud/mock_cloud_policy_client.cc",
     "cloud/mock_cloud_policy_client.h",
+    "cloud/mock_cloud_policy_manager.cc",
+    "cloud/mock_cloud_policy_manager.h",
     "cloud/mock_cloud_policy_service.cc",
     "cloud/mock_cloud_policy_service.h",
     "cloud/mock_cloud_policy_store.cc",
@@ -485,7 +487,10 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//services/network:test_support",
+  ]
 }
 
 source_set("common_constants") {

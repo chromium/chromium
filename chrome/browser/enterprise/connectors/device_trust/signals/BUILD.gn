@@ -4,6 +4,7 @@
 
 source_set("signals") {
   public = [
+    "dependency_factory.h",
     "signals_filterer.h",
     "signals_service.h",
   ]
@@ -17,6 +18,8 @@ source_set("signals") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_dependency_factory.cc",
+    "mock_dependency_factory.h",
     "mock_signals_filterer.cc",
     "mock_signals_filterer.h",
     "mock_signals_service.cc",

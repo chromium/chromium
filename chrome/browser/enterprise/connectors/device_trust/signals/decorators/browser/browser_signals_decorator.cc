@@ -13,12 +13,14 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/dependency_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -29,7 +31,12 @@ namespace {
 constexpr char kLatencyHistogramVariant[] = "Browser";
 
 absl::optional<std::string> TryGetEnrollmentDomain(
-    policy::CloudPolicyStore* store) {
+    policy::CloudPolicyManager* manager) {
+  policy::CloudPolicyStore* store = nullptr;
+  if (manager && manager->core() && manager->core()->store()) {
+    store = manager->core()->store();
+  }
+
   if (store && store->has_policy()) {
     const auto* policy = store->policy();
     return policy->has_managed_by() ? policy->managed_by()
@@ -41,12 +48,14 @@ absl::optional<std::string> TryGetEnrollmentDomain(
 }  // namespace
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
-    policy::CloudPolicyStore* browser_cloud_policy_store,
-    policy::CloudPolicyStore* user_cloud_policy_store,
+    policy::CloudPolicyManager* browser_cloud_policy_manager,
+    std::unique_ptr<DependencyFactory> dependency_factory,
     device_signals::SignalsAggregator* signals_aggregator)
-    : browser_cloud_policy_store_(browser_cloud_policy_store),
-      user_cloud_policy_store_(user_cloud_policy_store),
-      signals_aggregator_(signals_aggregator) {}
+    : browser_cloud_policy_manager_(browser_cloud_policy_manager),
+      dependency_factory_(std::move(dependency_factory)),
+      signals_aggregator_(signals_aggregator) {
+  CHECK(dependency_factory_);
+}
 
 BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
 
@@ -55,14 +64,14 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
   auto start_time = base::TimeTicks::Now();
 
   const auto device_enrollment_domain =
-      TryGetEnrollmentDomain(browser_cloud_policy_store_);
+      TryGetEnrollmentDomain(browser_cloud_policy_manager_);
   if (device_enrollment_domain) {
     signals.Set(device_signals::names::kDeviceEnrollmentDomain,
                 device_enrollment_domain.value());
   }
 
   const auto user_enrollment_domain =
-      TryGetEnrollmentDomain(user_cloud_policy_store_);
+      TryGetEnrollmentDomain(dependency_factory_->GetUserCloudPolicyManager());
   if (user_enrollment_domain) {
     signals.Set(device_signals::names::kUserEnrollmentDomain,
                 user_enrollment_domain.value());
