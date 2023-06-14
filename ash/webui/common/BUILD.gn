@@ -44,6 +44,17 @@ source_set("trusted_types_util") {
   ]
 }
 
+source_set("trusted_types_test_util") {
+  testonly = true
+
+  sources = [
+    "trusted_types_test_util.cc",
+    "trusted_types_test_util.h",
+  ]
+
+  deps = [ "//content/test:test_support" ]
+}
+
 group("closure_compile") {
   deps = [ "resources:closure_compile" ]
 }

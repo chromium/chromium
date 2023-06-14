@@ -20,6 +20,9 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "lottie-worker-script-loader "
       // Add TrustedTypes policies used during tests.
       "webui-test-script webui-test-html "
+      // Add TrustedTypes policy used during Ash WebUI tests created in
+      // `//ash/webui/common/trusted_types_test_util.h`.
+      "ash-webui-test-script "
       // Add TrustedTypes policy for creating the PDF plugin.
       "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
