@@ -33,10 +33,15 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
           privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck),
+      base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsXHR),
+      base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsDocumentAPI),
+      browsing_topics::CurrentConfigVersion(),
+      base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsParameters),
       blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get(),
       blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get(),
       blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get(),
       blink::features::kBrowsingTopicsUseRandomTopicProbabilityPercent.Get(),
+      blink::features::kBrowsingTopicsMaxEpochIntroductionDelay.Get(),
       blink::features::
           kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering.Get(),
       blink::features::
@@ -46,8 +51,8 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
       blink::features::
           kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad
               .Get(),
-      blink::features::kBrowsingTopicsConfigVersion.Get(),
-      blink::features::kBrowsingTopicsTaxonomyVersion.Get());
+      blink::features::kBrowsingTopicsTaxonomyVersion.Get(),
+      blink::features::kBrowsingTopicsDisabledTopicsList.Get());
 
   std::move(callback).Run(std::move(config));
 }

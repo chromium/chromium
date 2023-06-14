@@ -1166,13 +1166,6 @@ const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad{
         &kBrowsingTopicsParameters,
         "max_number_of_api_usage_context_domains_to_store_per_page_load", 30};
-// Encodes the configuration parameters above. A version number can be used for
-// multiple configurations as long as they are compatible (from both Chrome's
-// and users/websites' perspective). For a configuration that's incompatible
-// with previous ones, a new dedicated version number should be used.
-const base::FeatureParam<int> kBrowsingTopicsConfigVersion{
-    &kBrowsingTopicsParameters, "config_version",
-    kBrowsingTopicsConfigVersionDefault};
 // The taxonomy version. This only affects the topics classification that occurs
 // during this browser session, and doesn't affect the pre-existing epochs.
 const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{

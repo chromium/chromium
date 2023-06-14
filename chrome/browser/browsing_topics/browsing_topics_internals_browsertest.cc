@@ -354,16 +354,21 @@ PrivacySandboxAdsAPIsOverride: disabled
 PrivacySandboxSettings3: disabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
+BrowsingTopicsXHR: disabled
+BrowsingTopicsDocumentAPI: enabled
+Configuration version: 1
+BrowsingTopicsParameters: enabled
 BrowsingTopicsParameters:number_of_epochs_to_expose: 3
 BrowsingTopicsParameters:time_period_per_epoch: 7d-0h-0m-0s
 BrowsingTopicsParameters:number_of_top_topics_per_epoch: 5
 BrowsingTopicsParameters:use_random_topic_probability_percent: 5
+BrowsingTopicsParameters:max_epoch_introduction_delay: 2d-0h-0m-0s
 BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filtering: 3
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
 BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopicsParameters:config_version: 1
 BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
 
@@ -465,16 +470,21 @@ PrivacySandboxAdsAPIsOverride: enabled
 PrivacySandboxSettings3: enabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
+BrowsingTopicsXHR: disabled
+BrowsingTopicsDocumentAPI: enabled
+Configuration version: 1
+BrowsingTopicsParameters: enabled
 BrowsingTopicsParameters:number_of_epochs_to_expose: 3
 BrowsingTopicsParameters:time_period_per_epoch: 0d-0h-0m-15s
 BrowsingTopicsParameters:number_of_top_topics_per_epoch: 2
 BrowsingTopicsParameters:use_random_topic_probability_percent: 5
+BrowsingTopicsParameters:max_epoch_introduction_delay: 2d-0h-0m-0s
 BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filtering: 3
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
 BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopicsParameters:config_version: 1
 BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
 

@@ -20,8 +20,6 @@
 namespace blink {
 namespace features {
 
-constexpr int kBrowsingTopicsConfigVersionDefault = 1;
-
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 1;
 
 BLINK_COMMON_EXPORT
@@ -506,8 +504,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsConfigVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsTaxonomyVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>

@@ -341,8 +341,8 @@ TEST_F(
 TEST_F(BrowsingTopicsUtilTest,
        DeriveTopicsHeaderValue_LengthExceedsDefaultMax_NoPadding) {
   std::string config_version = base::StrCat(
-      {"chrome.", base::NumberToString(
-                      blink::features::kBrowsingTopicsConfigVersion.Get())});
+      {"chrome.",
+       base::NumberToString(browsing_topics::ConfigVersion::kMaxValue)});
   std::string taxonomy_version = base::NumberToString(
       blink::features::kBrowsingTopicsTaxonomyVersion.Get());
 

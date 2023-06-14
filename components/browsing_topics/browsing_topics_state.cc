@@ -246,8 +246,7 @@ base::Value::Dict BrowsingTopicsState::ToDictValue() const {
   std::string hex_encoded_hmac_key = base::HexEncode(hmac_key_);
   result_dict.Set(kHexEncodedHmacKeyNameKey, base::HexEncode(hmac_key_));
 
-  result_dict.Set(kConfigVersionNameKey,
-                  blink::features::kBrowsingTopicsConfigVersion.Get());
+  result_dict.Set(kConfigVersionNameKey, CurrentConfigVersion());
 
   return result_dict;
 }
@@ -322,8 +321,7 @@ BrowsingTopicsState::ParseResult BrowsingTopicsState::ParseValue(
     return ParseResult{.success = false, .should_save_state_to_file = true};
 
   // If the config is has been updated, start with a fresh `epoch_`.
-  if (*config_version_in_storage !=
-      blink::features::kBrowsingTopicsConfigVersion.Get()) {
+  if (*config_version_in_storage != CurrentConfigVersion()) {
     return ParseResult{.success = true, .should_save_state_to_file = true};
   }
 
