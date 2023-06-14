@@ -16,11 +16,20 @@
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
 namespace password_manager {
+
+size_t GetMinPasswordLengthToCheck() {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kEvaluateProtectedPasswordLengthMinimum)) {
+    return safe_browsing::kEvaluateProtectedPasswordLengthMinimumValue.Get();
+  }
+  return kMinPasswordLengthToCheck;
+}
 
 namespace {
 // Returns true iff |suffix_candidate| is a suffix of |str|.
@@ -133,7 +142,7 @@ void PasswordReuseDetector::CheckReuse(
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
-  if (input.size() < kMinPasswordLengthToCheck) {
+  if (input.size() < GetMinPasswordLengthToCheck()) {
     consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
                                SavedPasswordsCount(), std::string(), 0);
     return;
@@ -339,8 +348,9 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
 
 void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (form.password_value.size() < kMinPasswordLengthToCheck)
+  if (form.password_value.size() < GetMinPasswordLengthToCheck()) {
     return;
+  }
 
   passwords_with_matching_reused_credentials_[form.password_value].insert(
       {form.signon_realm, form.username_value, form.in_store});
@@ -348,8 +358,9 @@ void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
 
 void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (form.password_value.size() < kMinPasswordLengthToCheck)
+  if (form.password_value.size() < GetMinPasswordLengthToCheck()) {
     return;
+  }
 
   MatchingReusedCredential credential_criteria = {
       form.signon_realm, form.username_value, form.in_store};

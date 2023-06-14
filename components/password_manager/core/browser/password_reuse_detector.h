@@ -24,6 +24,11 @@ namespace password_manager {
 // is quite likely that they are parts of common words.
 constexpr size_t kMinPasswordLengthToCheck = 8;
 
+// When kEvaluateProtectedPasswordLengthMinimum is enabled, return our
+// experimental minimum password length value. When it is not enabled, return
+// kMinPasswordLengthToCheck.
+size_t GetMinPasswordLengthToCheck();
+
 class PasswordReuseDetectorConsumer;
 
 // Comparator that compares reversed strings.

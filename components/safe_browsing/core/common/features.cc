@@ -90,6 +90,14 @@ const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph{
 const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableCollapse{
     &kEsbIphBubbleAndCollapseSettings, "EnableEsbSettingCollapse", true};
 
+BASE_FEATURE(kEvaluateProtectedPasswordLengthMinimum,
+             "EvaluateProtectedPasswordLengthMinimum",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kEvaluateProtectedPasswordLengthMinimumValue{
+    &kEvaluateProtectedPasswordLengthMinimum, "MinimumValue",
+    /*default_value=*/4};
+
 BASE_FEATURE(kExtensionTelemetry,
              "SafeBrowsingExtensionTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -338,6 +346,7 @@ constexpr struct {
     {&kDownloadBubble, true},
     {&kDownloadBubbleV2, true},
     {&kDownloadTailoredWarnings, true},
+    {&kEvaluateProtectedPasswordLengthMinimum, false},
     {&kExtensionTelemetry, true},
     {&kExtensionTelemetryCookiesGetAllSignal, true},
     {&kExtensionTelemetryCookiesGetSignal, true},

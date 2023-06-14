@@ -86,6 +86,13 @@ extern const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph;
 extern const base::FeatureParam<bool>
     kEsbIphBubbleAndCollapseSettingsEnableCollapse;
 
+// Enables decreased Phishguard password length minimum.
+BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
+
+// Specifies the minimum password length for password protection.
+extern const base::FeatureParam<int>
+    kEvaluateProtectedPasswordLengthMinimumValue;
+
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetry);

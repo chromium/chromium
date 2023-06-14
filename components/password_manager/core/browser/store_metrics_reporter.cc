@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -427,7 +428,7 @@ void ReportPasswordProtectedMetrics(
     if (!form->blocked_by_user && form->password_value.size() > 0) {
       metrics_util::LogIsPasswordProtected(
           form->password_value.size() >=
-          password_manager::kMinPasswordLengthToCheck);
+          password_manager::GetMinPasswordLengthToCheck());
     }
   }
 }
