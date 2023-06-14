@@ -65,21 +65,20 @@ ExtensionAppsRunInOSAndStandaloneBrowserAllowlist() {
 base::span<const base::StringPiece> ExtensionsRunInOSOnlyAllowlist() {
   static const base::StringPiece kKeeplist[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    extension_misc::kAccessibilityCommonExtensionId,
+    extension_misc::kEnhancedNetworkTtsExtensionId,
     extension_misc::kEspeakSpeechSynthesisExtensionId,
     extension_misc::kGoogleSpeechSynthesisExtensionId,
-    extension_misc::kEnhancedNetworkTtsExtensionId,
-    extension_misc::kSelectToSpeakExtensionId,
-    extension_misc::kAccessibilityCommonExtensionId,
-    extension_misc::kSwitchAccessExtensionId,
-    extension_misc::kSigninProfileTestExtensionId,
     extension_misc::kGuestModeTestExtensionId,
     extension_misc::kHelpAppExtensionId,
-    extension_misc::kAutotestPrivateTestExtensionId,
+    extension_misc::kSelectToSpeakExtensionId,
+    extension_misc::kSigninProfileTestExtensionId,
+    extension_misc::kSwitchAccessExtensionId,
     file_manager::kImageLoaderExtensionId,
 #endif
-    extension_misc::kKeyboardExtensionId,
-    extension_misc::kChromeVoxExtensionId,
     extension_misc::kBruSecurityKeyForwarderExtensionId,
+    extension_misc::kChromeVoxExtensionId,
+    extension_misc::kKeyboardExtensionId,
   };
 
   return base::make_span(kKeeplist);
@@ -91,10 +90,10 @@ base::span<const base::StringPiece> ExtensionAppsRunInOSOnlyAllowlist() {
     arc::kPlayStoreAppId,
     extension_misc::kFilesManagerAppId,
 #endif
-    extension_misc::kGoogleKeepAppId,
     extension_misc::kCalculatorAppId,
+    extension_misc::kGoogleKeepAppId,
+    extension_misc::kIdentityApiUiAppId,
     extension_misc::kInAppPaymentsSupportAppId,
-    extension_misc::kIdentityApiUiAppId
   };
 
   return base::make_span(kKeeplist);

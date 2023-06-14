@@ -184,8 +184,6 @@ extern const char kAccessibilityCommonExtensionPath[];
 extern const char kAccessibilityCommonManifestFilename[];
 // The guest manifest filename of the Accessibility Common extension.
 extern const char kAccessibilityCommonGuestManifestFilename[];
-// Extension ID of the autotest_private test extension.
-extern const char kAutotestPrivateTestExtensionId[];
 // Path to preinstalled ChromeVox screen reader extension (relative to
 // |chrome::DIR_RESOURCES|).
 extern const char kChromeVoxExtensionPath[];

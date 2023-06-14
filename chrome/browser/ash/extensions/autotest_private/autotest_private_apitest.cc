@@ -513,7 +513,9 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
             ash::features::kLacrosOnly,
             ash::features::kLacrosProfileMigrationForceOff,
         },
-        {});
+        // Disable ash extension keeplist so that the test extension will not
+        // be blocked in Ash.
+        {ash::features::kEnforceAshExtensionKeeplist});
     crosapi::BrowserManager::DisableForTesting();
   }
   ~AutotestPrivateLacrosTest() override {
