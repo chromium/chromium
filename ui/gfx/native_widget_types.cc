@@ -4,11 +4,10 @@
 
 #include "ui/gfx/native_widget_types.h"
 
-// TODO(https://crbug.com/1443009): ui::PlatformEvent has its own version of
-// this function. When unifying, remove one of these copies.
-
 namespace gfx {
 
+// TODO(https://crbug.com/1443009): ui::PlatformEvent has its own version of
+// this function. When unifying, remove one of these copies.
 GFX_EXPORT bool IsNativeEventValid(const NativeEvent& event) {
 #if BUILDFLAG(IS_APPLE)
   return event.IsValid();

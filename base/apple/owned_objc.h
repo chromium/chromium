@@ -38,24 +38,27 @@
 #define OWNED_TYPE_DECL_OBJC_ADDITIONS(name, objctype)
 #endif  // __OBJC__
 
-#define OWNED_OBJC_DECL(name, objctype)                      \
-  namespace base::apple {                                    \
-  class BASE_EXPORT Owned##name {                            \
-   public:                                                   \
-    /* Default-construct in a null state. */                 \
-    Owned##name();                                           \
-    ~Owned##name();                                          \
-    Owned##name(const Owned##name&);                         \
-    Owned##name& operator=(const Owned##name&);              \
-    /* Returns whether the object contains a valid object.*/ \
-    bool IsValid() const;                                    \
-    /* Objective-C-only constructor and getter. */           \
-    OWNED_TYPE_DECL_OBJC_ADDITIONS(name, objctype)           \
-                                                             \
-   private:                                                  \
-    struct ObjCStorage;                                      \
-    std::unique_ptr<ObjCStorage> objc_storage_;              \
-  };                                                         \
+#define OWNED_OBJC_DECL(name, objctype)                       \
+  namespace base::apple {                                     \
+  class BASE_EXPORT Owned##name {                             \
+   public:                                                    \
+    /* Default-construct in a null state. */                  \
+    Owned##name();                                            \
+    ~Owned##name();                                           \
+    Owned##name(const Owned##name&);                          \
+    Owned##name& operator=(const Owned##name&);               \
+    /* Returns whether the object contains a valid object. */ \
+    bool IsValid() const;                                     \
+    /* Comparisons. */                                        \
+    bool operator==(const Owned##name& other) const;          \
+    bool operator!=(const Owned##name& other) const;          \
+    /* Objective-C-only constructor and getter. */            \
+    OWNED_TYPE_DECL_OBJC_ADDITIONS(name, objctype)            \
+                                                              \
+   private:                                                   \
+    struct ObjCStorage;                                       \
+    std::unique_ptr<ObjCStorage> objc_storage_;               \
+  };                                                          \
   }  // namespace base::apple
 
 #define GENERATE_OWNED_OBJC_TYPE(name) OWNED_OBJC_DECL(name, name*)

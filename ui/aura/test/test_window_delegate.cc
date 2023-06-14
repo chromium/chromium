@@ -52,7 +52,7 @@ void TestWindowDelegate::OnBoundsChanged(const gfx::Rect& old_bounds,
 }
 
 gfx::NativeCursor TestWindowDelegate::GetCursor(const gfx::Point& point) {
-  return gfx::kNullCursor;
+  return gfx::NativeCursor{};
 }
 
 int TestWindowDelegate::GetNonClientComponent(const gfx::Point& point) const {

@@ -157,11 +157,11 @@ gfx::NativeCursor MouseCursorOverlayController::GetCurrentCursorOrDefault()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  NSCursor* cursor = [NSCursor currentCursor];
+  NSCursor* cursor = NSCursor.currentCursor;
   if (!cursor) {
-    cursor = [NSCursor arrowCursor];
+    cursor = NSCursor.arrowCursor;
   }
-  return cursor;
+  return base::apple::OwnedNSCursor(cursor);
 }
 
 gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
@@ -180,11 +180,12 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
   }
 
   if (target_size.GetArea()) {
+    NSCursor* ns_cursor = cursor.Get();
     // The documentation on NSCursor reference states that the hot spot is in
     // flipped coordinates which, from the perspective of the Aura coordinate
     // system, means it's not flipped.
-    const NSPoint hotspot = [cursor hotSpot];
-    const NSSize size = [[cursor image] size];
+    const NSPoint hotspot = ns_cursor.hotSpot;
+    const NSSize size = ns_cursor.image.size;
     return gfx::ScaleRect(
         gfx::RectF(location_aura.x() - hotspot.x, location_aura.y() - hotspot.y,
                    size.width, size.height),
@@ -208,7 +209,8 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
   return skia::NSImageToSkBitmapWithColorSpace(
-      [cursor image], /*is_opaque=*/false, base::mac::GetSystemColorSpace());
+      cursor.Get().image, /*is_opaque=*/false,
+      base::mac::GetSystemColorSpace());
 }
 
 }  // namespace content

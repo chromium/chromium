@@ -1302,7 +1302,7 @@ void WebContentsViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
 }
 
 gfx::NativeCursor WebContentsViewAura::GetCursor(const gfx::Point& point) {
-  return gfx::kNullCursor;
+  return gfx::NativeCursor{};
 }
 
 int WebContentsViewAura::GetNonClientComponent(const gfx::Point& point) const {

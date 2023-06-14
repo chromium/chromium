@@ -33,6 +33,12 @@
   bool Owned##name::IsValid() const {                                  \
     return objc_storage_->obj != nil;                                  \
   }                                                                    \
+  bool Owned##name::operator==(const Owned##name& other) const {       \
+    return objc_storage_->obj == other.objc_storage_->obj;             \
+  }                                                                    \
+  bool Owned##name::operator!=(const Owned##name& other) const {       \
+    return !this->operator==(other);                                   \
+  }                                                                    \
   objctype Owned##name::Get() const {                                  \
     return objc_storage_->obj;                                         \
   }                                                                    \
