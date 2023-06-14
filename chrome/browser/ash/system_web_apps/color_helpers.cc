@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/native_theme/native_theme.h"
 
 SkColor ash::GetSystemThemeColor() {
