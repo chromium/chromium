@@ -1569,24 +1569,9 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     return;
   }
 
-  const LengthPoint& anchor = OffsetAnchor();
   const LengthPoint& position = OffsetPosition();
   const StyleOffsetRotation& rotate = OffsetRotate();
   CoordBox coord_box = offset_path->GetCoordBox();
-
-  float origin_shift_x = 0;
-  float origin_shift_y = 0;
-  // If the offset-position and offset-anchor properties are not yet enabled,
-  // they will have the default value, auto.
-  gfx::PointF anchor_point(origin_x, origin_y);
-  if (!anchor.X().IsAuto()) {
-    anchor_point = PointForLengthPoint(anchor, bounding_box.size());
-    anchor_point += bounding_box.OffsetFromOrigin();
-
-    // Shift the origin from transform-origin to offset-anchor.
-    origin_shift_x = anchor_point.x() - origin_x;
-    origin_shift_y = anchor_point.y() - origin_y;
-  }
 
   PointAndTangent path_position;
   if (const auto* shape_operation =
@@ -1693,14 +1678,19 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     path_position.tangent_in_degrees = 0;
   }
 
-  transform.Translate(
-      path_position.point.x() - anchor_point.x() + origin_shift_x,
-      path_position.point.y() - anchor_point.y() + origin_shift_y);
+  transform.Translate(path_position.point.x() - origin_x,
+                      path_position.point.y() - origin_y);
   transform.Rotate(path_position.tangent_in_degrees + rotate.angle);
 
+  const LengthPoint& anchor = OffsetAnchor();
   if (!anchor.X().IsAuto()) {
-    // Shift the origin back to transform-origin.
-    transform.Translate(-origin_shift_x, -origin_shift_y);
+    gfx::PointF anchor_point = PointForLengthPoint(anchor, bounding_box.size());
+    anchor_point += bounding_box.OffsetFromOrigin();
+
+    // Shift the origin back to transform-origin and then move it based on the
+    // anchor.
+    transform.Translate(origin_x - anchor_point.x(),
+                        origin_y - anchor_point.y());
   }
 }
 
