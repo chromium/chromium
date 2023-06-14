@@ -38,6 +38,9 @@ constexpr CGFloat kMargin = 14;
 // The padding used inside the list.
 constexpr CGFloat kPadding = 15;
 
+// The spacing between items in the list.
+constexpr CGFloat kItemSpacing = 18;
+
 // The spacing used between title and description in the "All Set" View.
 constexpr CGFloat kAllSetSpacing = 10;
 
@@ -280,7 +283,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
       [[UIStackView alloc] initWithArrangedSubviews:initialItems];
   stack.axis = UILayoutConstraintAxisVertical;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
-  stack.spacing = kPadding;
+  stack.spacing = kItemSpacing;
   stack.layer.masksToBounds = YES;
   stack.layer.cornerRadius = kBorderRadius;
   stack.layer.borderWidth = kBorderWidth;
