@@ -762,6 +762,57 @@ public class RealtimeEngagementSignalObserverUnitTest {
         verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(50));
     }
 
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void doesNotSendSignalsBeforeDownScroll() {
+        initializeTabForTest();
+        GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
+
+        // Assume we started further down on the page and scroll up.
+        listener.onScrollStarted(50, SCROLL_EXTENT, true);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
+        listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
+        listener.onScrollEnded(30, SCROLL_EXTENT);
+        // We shouldn't get any signals.
+        verify(env.connection, never()).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+        // Now scroll down from here.
+        listener.onScrollStarted(30, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(45);
+        listener.onScrollOffsetOrExtentChanged(45, SCROLL_EXTENT);
+        listener.onScrollEnded(45, SCROLL_EXTENT);
+        // We should get signals as if we've only scrolled down to this %.
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(45));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void doesNotSendSignalsBeforeDownScroll_AfterNavigation() {
+        initializeTabForTest();
+        GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
+
+        // Scroll down.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(25);
+        listener.onScrollOffsetOrExtentChanged(25, SCROLL_EXTENT);
+        listener.onScrollEnded(25, SCROLL_EXTENT);
+        // We should get signals as usual.
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(25));
+        // Now, navigate to another page.
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+        LoadCommittedDetails details = new LoadCommittedDetails(0, JUnitTestGURLs.getGURL(URL_1),
+                false, /*isSameDocument=*/false, /*isMainFrame=*/true, 200);
+        webContentsObserver.navigationEntryCommitted(details);
+        // Scroll up from some point in the page, e.g. back navigation or anchor fragment on page.
+        // We shouldn't get any (more) signals.
+        verify(env.connection, times(1)).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
+        verify(env.connection, times(1))
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+    }
+
     private void advanceTime(long millis) {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }
