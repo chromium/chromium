@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_access {
