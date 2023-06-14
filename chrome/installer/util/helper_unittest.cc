@@ -4,7 +4,10 @@
 
 #include "chrome/installer/util/helper.h"
 
+#include <windows.h>
+
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
@@ -20,6 +23,35 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace installer {
+
+namespace {
+
+// A helper that overrides an environment variable for the lifetime of an
+// instance.
+class ScopedEnvironmentOverride {
+ public:
+  ScopedEnvironmentOverride(base::WStringPiece name, const wchar_t* new_value)
+      : name_(name) {
+    std::array<wchar_t, MAX_PATH> value;
+    value[0] = L'\0';
+    DWORD len =
+        ::GetEnvironmentVariableW(name_.c_str(), value.data(), value.size());
+    if (len > 0 && len < value.size()) {
+      old_value_.emplace(value.data(), len);
+    }
+    ::SetEnvironmentVariableW(name_.c_str(), new_value);
+  }
+  ~ScopedEnvironmentOverride() {
+    ::SetEnvironmentVariableW(name_.c_str(),
+                              old_value_ ? old_value_->c_str() : nullptr);
+  }
+
+ private:
+  const std::wstring name_;
+  absl::optional<std::wstring> old_value_;
+};
+
+}  // namespace
 
 struct Params {
   Params(bool system_level, absl::optional<int> target_dir_key)
@@ -101,6 +133,26 @@ TEST_P(GetChromeInstallPathTest, NoRegistryValue) {
 }
 
 TEST_P(GetChromeInstallPathTest, RegistryValueSet) {
+  const base::FilePath install_path =
+      random_path()
+          .Append(install_static::GetChromeInstallSubDirectory())
+          .Append(kInstallBinaryDir);
+  ASSERT_TRUE(base::CreateDirectory(install_path));
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(client_state_key.WriteValue(
+                kUninstallStringField,
+                install_path.AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                    .value()
+                    .c_str()),
+            ERROR_SUCCESS);
+
+  base::win::RegKey client_key(GetClientsRegKey());
+  ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPath(is_system_level()), install_path);
+}
+
+TEST_P(GetChromeInstallPathTest, NoDirectory) {
   base::win::RegKey client_state_key(GetClientStateRegKey());
   ASSERT_EQ(client_state_key.WriteValue(
                 kUninstallStringField,
@@ -116,9 +168,64 @@ TEST_P(GetChromeInstallPathTest, RegistryValueSet) {
   ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
             ERROR_SUCCESS);
   EXPECT_EQ(GetChromeInstallPath(is_system_level()),
-            random_path()
-                .Append(install_static::GetChromeInstallSubDirectory())
-                .Append(kInstallBinaryDir));
+            GetExpectedPath(is_system_level()));
+}
+
+TEST_P(GetChromeInstallPathTest, ReferencesParent) {
+  const base::FilePath install_path =
+      random_path()
+          .Append(install_static::GetChromeInstallSubDirectory())
+          .Append(kInstallBinaryDir);
+  ASSERT_TRUE(base::CreateDirectory(install_path));
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(client_state_key.WriteValue(
+                kUninstallStringField,
+                install_path
+                    .AppendASCII("1.0.0.0\\Installer\\..\\Installer\\setup.exe")
+                    .value()
+                    .c_str()),
+            ERROR_SUCCESS);
+
+  base::win::RegKey client_key(GetClientsRegKey());
+  ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPath(is_system_level()),
+            GetExpectedPath(is_system_level()));
+}
+
+TEST_P(GetChromeInstallPathTest, NotAbsolute) {
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(client_state_key.WriteValue(
+                kUninstallStringField,
+                base::FilePath(install_static::GetChromeInstallSubDirectory())
+                    .Append(kInstallBinaryDir)
+                    .AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                    .value()
+                    .c_str()),
+            ERROR_SUCCESS);
+
+  base::win::RegKey client_key(GetClientsRegKey());
+  ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPath(is_system_level()),
+            GetExpectedPath(is_system_level()));
+}
+
+TEST_P(GetChromeInstallPathTest, AtRoot) {
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(
+      client_state_key.WriteValue(
+          kUninstallStringField,
+          base::FilePath(FILE_PATH_LITERAL("C:\\1.0.0.0\\Installer\\setup.exe"))
+              .value()
+              .c_str()),
+      ERROR_SUCCESS);
+
+  base::win::RegKey client_key(GetClientsRegKey());
+  ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPath(is_system_level()),
+            GetExpectedPath(is_system_level()));
 }
 
 TEST_P(GetChromeInstallPathTest, RegistryValueSetWrongScope) {
@@ -151,6 +258,34 @@ TEST_P(GetChromeInstallPathTest, RegistryValueSetNoProductVersion) {
                     .value()
                     .c_str()),
             ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPath(is_system_level()),
+            GetExpectedPath(is_system_level()));
+}
+
+// Tests that the environment variable fallback is used if the PathService
+// returns a path that doesn't exist.
+TEST_P(GetChromeInstallPathTest, EnvironmentFallback) {
+  // Override the relevant paths with directories that do not exist so that the
+  // env var fallback is reached.
+  base::ScopedPathOverride bad_program_files_override(
+      base::DIR_PROGRAM_FILES, program_files_path().AppendASCII("doesnotexist"),
+      /*is_absolute=*/true, /*create=*/false);
+  base::ScopedPathOverride bad_program_files_x86_override(
+      base::DIR_PROGRAM_FILESX86,
+      program_files_x86_path().AppendASCII("doesnotexist"),
+      /*is_absolute=*/true, /*create=*/false);
+  base::ScopedPathOverride bad_local_ap_data_override(
+      base::DIR_LOCAL_APP_DATA,
+      local_app_data_path().AppendASCII("doesnotexist"),
+      /*is_absolute=*/true, /*create=*/false);
+
+  ScopedEnvironmentOverride program_files_env(
+      L"PROGRAMFILES", program_files_path().value().c_str());
+  ScopedEnvironmentOverride program_files_x86_env(
+      L"PROGRAMFILES(X86)", program_files_x86_path().value().c_str());
+  ScopedEnvironmentOverride local_app_data_env(
+      L"LOCALAPPDATA", local_app_data_path().value().c_str());
+
   EXPECT_EQ(GetChromeInstallPath(is_system_level()),
             GetExpectedPath(is_system_level()));
 }
@@ -206,13 +341,15 @@ TEST_P(GetChromeInstallPathWithPrefsTest, NoRegistryValue) {
 }
 
 TEST_P(GetChromeInstallPathWithPrefsTest, RegistryValueSet) {
+  const base::FilePath install_path =
+      random_path()
+          .Append(install_static::GetChromeInstallSubDirectory())
+          .Append(kInstallBinaryDir);
+  ASSERT_TRUE(base::CreateDirectory(install_path));
   base::win::RegKey client_state_key(GetClientStateRegKey());
   ASSERT_EQ(client_state_key.WriteValue(
                 kUninstallStringField,
-                random_path()
-                    .Append(install_static::GetChromeInstallSubDirectory())
-                    .Append(kInstallBinaryDir)
-                    .AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                install_path.AppendASCII("1.0.0.0\\Installer\\setup.exe")
                     .value()
                     .c_str()),
             ERROR_SUCCESS);
@@ -222,9 +359,7 @@ TEST_P(GetChromeInstallPathWithPrefsTest, RegistryValueSet) {
             ERROR_SUCCESS);
   EXPECT_EQ(GetChromeInstallPathWithPrefs(is_system_level(),
                                           InitialPreferences(prefs_json())),
-            random_path()
-                .Append(install_static::GetChromeInstallSubDirectory())
-                .Append(kInstallBinaryDir));
+            install_path);
 }
 
 TEST_P(GetChromeInstallPathWithPrefsTest, RegistryValueSetWrongScope) {
