@@ -9,6 +9,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -25,7 +26,9 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -47,6 +50,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -234,7 +238,7 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
         assertSettingsExists("autofill_addresses", AutofillProfilesFragment.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (supportNotificationSettings()) {
             assertSettingsExists(MainSettings.PREF_NOTIFICATIONS, null);
         } else {
             Assert.assertNull("Notification setting should be hidden",
@@ -270,6 +274,9 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.addTestAccount();
         launchSettingsActivity();
 
+        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText(R.string.sync_promo_turn_on_sync))));
         onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
 
         verify(mMockSyncConsentActivityLauncher)
@@ -283,6 +290,9 @@ public class MainSettingsFragmentTest {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
 
+        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText(R.string.sync_category_title))));
         onView(withText(R.string.sync_category_title)).perform(click());
 
         verify(mMockSyncConsentActivityLauncher)
@@ -658,5 +668,11 @@ public class MainSettingsFragmentTest {
             throw new AssertionError("Pref fragment <" + pref.getFragment() + "> is not found.");
         }
         return pref;
+    }
+
+    private boolean supportNotificationSettings() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
+        return PackageManagerUtils.canResolveActivity(
+                new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
     }
 }
