@@ -94,8 +94,11 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             @Override
             public void evaluate() throws Throwable {
                 setUp();
-                base.evaluate();
-                tearDown();
+                try {
+                    base.evaluate();
+                } finally {
+                    tearDown();
+                }
             }
         }, description);
     }
