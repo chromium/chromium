@@ -13,6 +13,8 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -2132,4 +2134,35 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
   map->GetSettingsForOneType(persistent_type, &settings,
                              content_settings::SessionModel::UserSession);
   ASSERT_EQ(1u, settings.size());
+}
+
+TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {
+  const ContentSettingsType type = ContentSettingsType::STORAGE_ACCESS;
+  const GURL url1("https://example1.com");
+  const GURL url2("https://example2.com");
+  const GURL url3("https://example3.com");
+  const GURL url4("https://example4.com");
+
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  map->SetContentSettingDefaultScope(url1, url1, type, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url2, url1, type, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url2, url2, type, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url3, url1, type, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url3, url2, type, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url3, url3, type, CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(url4, url1, type, CONTENT_SETTING_BLOCK);
+
+  base::HistogramTester t;
+  auto map2 = base::MakeRefCounted<HostContentSettingsMap>(
+      profile.GetPrefs(), false, true, true, true);
+  map2->ShutdownOnUIThread();
+
+  std::string base_histogram =
+      "ContentSettings.RegularProfile.Exceptions.storage-access";
+  t.ExpectUniqueSample(base_histogram, 7, 1);
+  t.ExpectUniqueSample(base_histogram + ".Allow", 5, 1);
+  t.ExpectUniqueSample(base_histogram + ".Block", 2, 1);
+  t.ExpectUniqueSample(base_histogram + ".MaxRequester", 3, 1);
+  t.ExpectUniqueSample(base_histogram + ".MaxTopLevel", 4, 1);
 }

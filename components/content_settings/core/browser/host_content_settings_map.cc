@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -219,6 +220,19 @@ bool ShouldCollectFineGrainedExceptionHistograms(ContentSettingsType type) {
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::ADS:
+    case ContentSettingsType::STORAGE_ACCESS:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Returns whether information about the maximum number of exceptions per
+// embedder/requester should be recorded. Only relevant for setting types that
+// are keyed to both requester and embedder.
+bool ShouldCollectRequesterAndEmbedderHistograms(ContentSettingsType type) {
+  switch (type) {
+    case ContentSettingsType::STORAGE_ACCESS:
       return true;
     default:
       return false;
@@ -667,6 +681,30 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
             histogram_with_suffix, num_exceptions_with_setting[content_setting],
             1, 1000, 30);
       }
+    }
+    if (ShouldCollectRequesterAndEmbedderHistograms(content_type)) {
+      std::map<ContentSettingsPattern, int> num_requester;
+      std::map<ContentSettingsPattern, int> num_toplevel;
+      for (const ContentSettingPatternSource& setting : settings) {
+        if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
+            setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
+          continue;
+        }
+        num_requester[setting.primary_pattern]++;
+        num_toplevel[setting.secondary_pattern]++;
+      }
+      auto get_value = [](const std::pair<ContentSettingsPattern, int>& p) {
+        return p.second;
+      };
+      bool empty = num_requester.empty();
+      int max_requester =
+          empty ? 0 : base::ranges::max(num_requester, {}, get_value).second;
+      base::UmaHistogramCounts1000(histogram_name + ".MaxRequester",
+                                   max_requester);
+      int max_toplevel =
+          empty ? 0 : base::ranges::max(num_toplevel, {}, get_value).second;
+      base::UmaHistogramCounts1000(histogram_name + ".MaxTopLevel",
+                                   max_toplevel);
     }
     if (content_type == ContentSettingsType::COOKIES) {
       base::UmaHistogramCustomCounts(

@@ -756,6 +756,7 @@ chromium-metrics-reviews@google.com.
     <variant name="site-engagement" summary="Site engagement exceptions"/>
     <variant name="sound" summary="Sound exceptions"/>
     <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
+    <variant name="storage-access" summary="Storage Access exceptions"/>
     <variant name="subresource-filter" summary="Subresource filter exceptions"/>
     <variant name="subresource-filter-data" summary="Subresource filter data"/>
     <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>

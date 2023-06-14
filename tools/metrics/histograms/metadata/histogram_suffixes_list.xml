@@ -1044,6 +1044,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="Ask" label="Ask"/>
   <suffix name="Block" label="Block"/>
   <suffix name="DetectImportantContent" label="Detect important content"/>
+  <suffix name="MaxRequester"
+      label="Maximum number of exceptions per requester"/>
+  <suffix name="MaxTopLevel"
+      label="Maximum number of exceptions per top-level"/>
   <suffix name="SessionOnly" label="Session only"/>
   <affected-histogram name="ContentSettings.Exceptions.cookies">
     <obsolete>
@@ -1066,6 +1070,8 @@ chromium-metrics-reviews@google.com.
   </affected-histogram>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
+  <affected-histogram
+      name="ContentSettings.RegularProfile.Exceptions.storage-access"/>
   <affected-histogram
       name="ContentSettings.RegularProfile.Exceptions.subresource-filter"/>
 </histogram_suffixes>
