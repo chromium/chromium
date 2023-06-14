@@ -32,6 +32,18 @@ source_set("chrome_os_webui_config") {
   ]
 }
 
+source_set("trusted_types_util") {
+  sources = [
+    "trusted_types_util.cc",
+    "trusted_types_util.h",
+  ]
+
+  deps = [
+    "//content/public/browser",
+    "//services/network/public/mojom:url_loader_base",
+  ]
+}
+
 group("closure_compile") {
   deps = [ "resources:closure_compile" ]
 }
