@@ -6,7 +6,9 @@ import("//build/config/arm.gni")
 import("//testing/test.gni")
 
 # If fixed point implementation shall be used (otherwise float).
-use_opus_fixed_point = current_cpu == "arm" || current_cpu == "arm64"
+# Disabled on Mac with Apple silicon.
+use_opus_fixed_point =
+    current_cpu == "arm" || (current_cpu == "arm64" && !is_mac)
 
 # If ARM optimizations shall be used to accelerate performance.
 use_opus_arm_optimization =
