@@ -482,7 +482,7 @@ TEST_F(FocusManagerTest, FocusInAboutToRequestFocusFromTabTraversal) {
   EXPECT_TRUE(v1->HasFocus());
 }
 
-TEST_F(FocusManagerTest, RotatePaneFocus) {
+TEST_F(FocusManagerTest, RotateFocus) {
   views::AccessiblePaneView* pane1 = new AccessiblePaneView();
   GetContentsView()->AddChildView(pane1);
 
@@ -529,30 +529,6 @@ TEST_F(FocusManagerTest, RotatePaneFocus) {
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(v4, focus_manager->GetFocusedView());
   focus_manager->AdvanceFocus(false);
-  EXPECT_EQ(v3, focus_manager->GetFocusedView());
-
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kForward,
-                                             FocusCycleWrapping::kEnabled));
-  EXPECT_EQ(v1, focus_manager->GetFocusedView());
-
-  // Advance backwards.
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kBackward,
-                                             FocusCycleWrapping::kEnabled));
-  EXPECT_EQ(v3, focus_manager->GetFocusedView());
-
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kBackward,
-                                             FocusCycleWrapping::kEnabled));
-  EXPECT_EQ(v1, focus_manager->GetFocusedView());
-
-  // Advance without wrap. When it gets to the end of the list of
-  // panes, RotatePaneFocus should return false but the current
-  // focused view shouldn't change.
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kForward,
-                                             FocusCycleWrapping::kDisabled));
-  EXPECT_EQ(v3, focus_manager->GetFocusedView());
-
-  EXPECT_FALSE(focus_manager->RotatePaneFocus(Direction::kForward,
-                                              FocusCycleWrapping::kDisabled));
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
 }
 

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="55">
+  <interface name="zaura_shell" version="56">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -764,7 +764,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="55">
+  <interface name="zaura_toplevel" version="56">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1157,13 +1157,73 @@
       <arg name="region" type="object" interface="wl_region" allow-null="true"/>
     </request>
 
-    <!-- Version 55 additions -->
     <request name="set_top_inset" since="55">
       <description summary="set top inset to the surface">
         Sets the top inset to the surface. This represents the header height
         and should be non negative.
       </description>
       <arg name="height" type="int" summary="Top inset of client window. Should be non negative."/>
+    </request>
+
+    <!-- Version 56 additions -->
+    <enum name="rotate_direction">
+      <entry name="backward" value="0" />
+      <entry name="forward" value="1" />
+    </enum>
+
+    <enum name="rotate_restart_state">
+      <entry name="no_restart" value="0" />
+      <entry name="restart" value="1" />
+    </enum>
+
+    <event name="rotate_focus" since="56">
+      <description summary="rotate focus within window">
+        Rotates focus within the toplevel window. The window must sort its
+        focusable view into a stable and linearly traversable order. Prior to
+        rotating focus, the surface should already be activated and have
+        keyboard focus. If the surface has not been activated or does not have
+        keyboard focus, the server should first activate and enter keyboard
+        focus for the window. An example of event order could be:
+
+        1. activate surface
+        2. enter keyboard focus
+        3. rotate focus
+
+        If the window is not activated or does not have keyboard focus, the
+        client should respond with a "not handled" and not perform any
+        operation.
+
+        To start a new series rotation, the server will set the "restart" arg
+        to true. If the "restart" arg is set to true, the window should set the
+        focus on the first UI element for the given direction and not perform
+        any rotation.
+
+        The client should respond with whether the rotation was successful via
+        the "handled" field in the "ack_rotate_focus" request. The client should
+        pass on the event serial and direction within the ack message.
+      </description>
+      <arg name="serial" type="uint" summary="serial for the rotation event" />
+      <arg name="direction" type="uint" enum="rotate_direction" summary="the direction for linear traversal" />
+      <arg name="restart" type="uint" enum="rotate_restart_state" summary="whether or not to restart traversal" />
+    </event>
+
+    <enum name="rotate_handled_state">
+      <entry name="not_handled" value="0" />
+      <entry name="handled" value="1" />
+    </enum>
+
+    <request name="ack_rotate_focus" since="56">
+      <description summary="status of rotate focus event">
+        If the focus has been successfully rotated between UI elements inside
+        surface, client replies with 'handled'. If the focus didn't rotate, the
+        client reply with 'not_handled'. A server may use this to move the focus
+        to next focusable surface.
+
+        Note that a delay in processing in the client could result in stale acks
+        received by the server.
+      </description>
+      <arg name="serial" type="uint" summary="serial for the original; rotation event" />
+      <arg name="handled" type="uint" enum="rotate_handled_state" summary="whether or not the rotation was successful" />
     </request>
   </interface>
 

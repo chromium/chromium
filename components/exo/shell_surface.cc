@@ -259,6 +259,22 @@ void ShellSurface::SetPopup() {
   is_popup_ = true;
 }
 
+void ShellSurface::AckRotateFocus(uint32_t serial, bool handled) {
+  CHECK(!rotate_focus_inflight_requests_.empty())
+      << "unexpected ack received, no requests currently inflight";
+
+  auto request = rotate_focus_inflight_requests_.front();
+  rotate_focus_inflight_requests_.pop();
+  CHECK(request.serial == serial)
+      << "unexpected ack requests, expected acks to be received in order. Got: "
+      << serial << ", expected: " << request.serial;
+
+  if (!handled) {
+    ash::Shell::Get()->focus_cycler()->RotateFocus(
+        request.direction, /*move_to_next_widget=*/true);
+  }
+}
+
 void ShellSurface::Grab() {
   DCHECK(is_popup_);
   DCHECK(!widget_);
@@ -272,6 +288,25 @@ void ShellSurface::StartMove() {
     return;
 
   AttemptToStartDrag(HTCAPTION);
+}
+
+bool ShellSurface::RotatePaneFocusFromView(views::View* focused_view,
+                                           bool forward,
+                                           bool enable_wrapping) {
+  if (rotate_focus_callback_.is_null()) {
+    VLOG(1) << "no callback provided, falling back to default behaviour";
+    return WidgetDelegate::RotatePaneFocusFromView(focused_view, forward,
+                                                   enable_wrapping);
+  }
+
+  auto direction =
+      forward ? ash::FocusCycler::FORWARD : ash::FocusCycler::BACKWARD;
+  auto serial = rotate_focus_callback_.Run(direction, enable_wrapping);
+  rotate_focus_inflight_requests_.push({
+      serial,
+      direction,
+  });
+  return true;
 }
 
 void ShellSurface::StartResize(int component) {
