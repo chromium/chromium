@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -151,8 +154,11 @@ class BrowserManagerTest : public testing::Test {
   ~BrowserManagerTest() override = default;
 
   void SetUp() override {
-    // Enable Lacros by setting the appropriate flag.
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
+        {});
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal(), &local_state_);
@@ -278,6 +284,14 @@ class BrowserManagerTest : public testing::Test {
 };
 
 TEST_F(BrowserManagerTest, LacrosKeepAlive) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   AddUser(UserType::kRegularUser);
 
   using State = BrowserManagerFake::State;
@@ -312,6 +326,14 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
 }
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   AddUser(UserType::kRegularUser);
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
@@ -340,6 +362,14 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
 }
 
 TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   AddUser(UserType::kRegularUser);
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
@@ -365,6 +395,14 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 }
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_)).Times(0);
   AddUser(UserType::kRegularUser);
 

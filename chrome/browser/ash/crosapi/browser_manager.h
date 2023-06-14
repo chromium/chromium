@@ -486,6 +486,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                            LacrosKeepAliveReloadsWhenUpdateAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
                            LacrosKeepAliveDoesNotBlockRestart);
+  FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
+                           NewWindowReloadsWhenUpdateAvailable);
   friend class apps::StandaloneBrowserExtensionApps;
   // App service require the lacros-chrome to keep alive for web apps to:
   // 1. Have lacros-chrome running before user open the browser so we can
