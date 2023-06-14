@@ -176,6 +176,17 @@ crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/get_element_pro
 crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/properties.py>>test_content_attribute [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_seen_nodes[capabilities0-http] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_seen_nodes[capabilities0-https* [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_seen_nodes[capabilities0-https] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/forward/forward.py>>test_seen_nodes[capabilities0-http] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/forward/forward.py>>test_seen_nodes[capabilities0-https* [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/forward/forward.py>>test_seen_nodes[capabilities0-https] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/navigate_to/navigate.py>>test_seen_nodes[http] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/navigate_to/navigate.py>>test_seen_nodes[https* [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/navigate_to/navigate.py>>test_seen_nodes[https] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py>>test_special_key_sends_keydown[EQUALS-expected12] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py>>test_special_key_sends_keydown[PAUSE-expected45] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/element_clear/clear.py>>test_contenteditable [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/element_clear/clear.py>>test_input[color-#ff0000-#000000] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/element_clear/clear.py>>test_input[date-2017-12-26-] [ Failure ]
