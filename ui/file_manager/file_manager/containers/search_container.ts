@@ -5,15 +5,18 @@
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
+import {metrics} from '../common/js/metrics.js';
 import {str, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
+import {changeDirectory} from '../state/actions/current_directory.js';
 import {clearSearch, updateSearch} from '../state/actions/search.js';
+import {FileKey} from '../state/file_key.js';
 import {getDefaultSearchOptions, getStore, Store} from '../state/store.js';
-import {XfPathDisplayElement} from '../widgets/xf_path_display.js';
+import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
 import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
 import {XfOption} from '../widgets/xf_select.js';
 
@@ -188,7 +191,9 @@ export class SearchContainer extends EventTarget {
   // The container used to display the path of the currently selected file.
   private pathContainer_: HTMLElement;
   // The element that shows the path of the currently selected file.
-  private pathDisplay_: XfPathDisplayElement|null = null;
+  private breadcrumb_: XfBreadcrumb|null = null;
+  // The parts of the path of the selected result or empty.
+  private pathComponents_: FileKey[] = [];
   // Volume manager, used by us to resolve paths of selected entries.
   private volumeManager_: VolumeManager;
 
@@ -381,36 +386,37 @@ export class SearchContainer extends EventTarget {
     if (!search || !search.query) {
       return;
     }
-    if (!this.pathDisplay_) {
+    if (!this.breadcrumb_) {
       this.showPathDisplayElement_();
     }
-    const path = this.getSelectedPath_(state);
+    const parts = this.getPathComponentsOfSelectedEntry_(state);
+    const path = parts.map(p => p.name).join('/');
+    this.pathComponents_ = parts.map(p => p.getKey());
     if (path) {
-      this.pathDisplay_!.removeAttribute('hidden');
-      this.pathDisplay_!.path = path;
+      this.breadcrumb_!.removeAttribute('hidden');
+      this.breadcrumb_!.path = path;
     } else {
-      this.pathDisplay_!.path = '';
-      this.pathDisplay_!.setAttribute('hidden', '');
+      this.breadcrumb_!.path = '';
+      this.breadcrumb_!.setAttribute('hidden', '');
     }
   }
 
   /**
-   * Helper function that converts information stored in State
-   * a path of the selected file or directory.
+   * Helper function that converts information stored in State to an array
+   * of PathComponents of the selected entry. If there are multiple entries
+   * selected or no entries selected, this method returns an empty array.
    */
-  private getSelectedPath_(state: State): string {
+  private getPathComponentsOfSelectedEntry_(state: State): PathComponent[] {
     const keys = state.currentDirectory?.selection?.keys;
     if (!keys || keys.length !== 1) {
-      return '';
+      return [];
     }
     const entry = state.allEntries[keys[0]!]?.entry;
     if (!entry) {
-      return '';
+      return [];
     }
     // TODO(b:274559834): Improve efficiency of these computations.
-    const parts: PathComponent[] =
-        PathComponent.computeComponentsFromEntry(entry, this.volumeManager_);
-    return parts.map(p => p.name).join('/');
+    return PathComponent.computeComponentsFromEntry(entry, this.volumeManager_);
   }
 
   /**
@@ -435,37 +441,58 @@ export class SearchContainer extends EventTarget {
     element.hidden = false;
   }
 
-  private hidePathDisplayElement_() {
-    const element = this.getPathDisplayElement_();
+  private hideBreadcrumbElement_() {
+    const element = this.getBreadcrumbElement_();
     if (element) {
       element.hidden = true;
     }
   }
 
   private showPathDisplayElement_() {
-    let element = this.getPathDisplayElement_();
+    let element = this.getBreadcrumbElement_();
     if (!element) {
-      element = this.createPathDisplayElement_();
+      element = this.createBreadcrumbElement_();
     }
     element.hidden = false;
   }
 
   /**
-   * Returns the path display element by either retuning the cached instance,
+   * Returns the breadcrumb element by either retuning the cached instance,
    * or fetching it by its tag. May return null.
    */
-  private getPathDisplayElement_(): XfPathDisplayElement|null {
-    if (!this.pathDisplay_) {
-      this.pathDisplay_ = document.querySelector('xf-path-display');
+  private getBreadcrumbElement_(): XfBreadcrumb|null {
+    if (!this.breadcrumb_) {
+      this.breadcrumb_ = document.querySelector('xf-breadcumb');
     }
-    return this.pathDisplay_;
+    return this.breadcrumb_;
   }
 
-  private createPathDisplayElement_(): XfPathDisplayElement {
-    const element = document.createElement('xf-path-display');
+  private createBreadcrumbElement_(): XfBreadcrumb {
+    const element = new XfBreadcrumb();
+    // Increase the default maxPathParts to allow for longer path display.
+    element.maxPathParts = 100;
+    element.id = 'search-breadcrumb';
+    element.addEventListener(
+        XfBreadcrumb.events.BREADCRUMB_CLICKED,
+        this.breadcrumbClick_.bind(this));
     this.pathContainer_.appendChild(element);
-    this.pathDisplay_ = element;
+    this.breadcrumb_ = element;
     return element;
+  }
+
+  private breadcrumbClick_(event: BreadcrumbClickedEvent) {
+    const index = Number(event.detail.partIndex);
+    if (isNaN(index) || index < 0) {
+      return;
+    }
+    // The leaf path isn't clickable.
+    if (index >= this.pathComponents_.length - 1) {
+      return;
+    }
+
+    this.store_.dispatch(
+        changeDirectory({toKey: this.pathComponents_[index] as FileKey}));
+    metrics.recordUserAction('ClickBreadcrumbs');
   }
 
   /**
@@ -663,7 +690,7 @@ export class SearchContainer extends EventTarget {
         this.searchWrapper_.setAttribute('collapsed', '');
       }, {once: true, passive: true, capture: true});
       this.hideOptionsElement_();
-      this.hidePathDisplayElement_();
+      this.hideBreadcrumbElement_();
       this.store_.dispatch(clearSearch());
       this.inputElement_.tabIndex = -1;
       this.inputElement_.disabled = true;

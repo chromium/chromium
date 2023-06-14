@@ -717,39 +717,39 @@ testcase.selectionPath = async () => {
     ENTRIES.deeplyBurriedSmallJpeg,
   ]));
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
-  const singleSelectionPath = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+  const breadcrumbSingleSelection = await remoteCall.waitForElement(appId, [
+    '#search-breadcrumb',
   ]);
-  chrome.test.assertFalse(singleSelectionPath.hidden);
+  chrome.test.assertFalse(breadcrumbSingleSelection.hidden);
   chrome.test.assertEq(
       'My files/Downloads/' + ENTRIES.hello.nameText,
-      singleSelectionPath.attributes.path);
+      breadcrumbSingleSelection.attributes.path);
   // Select now the desktop entry, too. Two or more selected files,
   // regardless of the directory in which they sit, result in no path.
   await remoteCall.waitAndClickElement(
       appId, `#file-list [file-name="${ENTRIES.desktop.nameText}"]`,
       {ctrl: true});
-  const twoFilesSelectedPath = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+  const breadcrumbDoubleSelection = await remoteCall.waitForElement(appId, [
+    '#search-breadcrumb',
   ]);
-  chrome.test.assertTrue(twoFilesSelectedPath.hidden);
-  chrome.test.assertEq('', twoFilesSelectedPath.attributes.path);
+  chrome.test.assertTrue(breadcrumbDoubleSelection.hidden);
+  chrome.test.assertEq('', breadcrumbDoubleSelection.attributes.path);
   await remoteCall.waitAndClickElement(
       appId,
       `#file-list [file-name="${ENTRIES.deeplyBurriedSmallJpeg.nameText}"]`,
       {ctrl: true});
-  const threeFilesSelectedPath = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+  const breadcrumbTripleSelection = await remoteCall.waitForElement(appId, [
+    '#search-breadcrumb',
   ]);
-  chrome.test.assertTrue(threeFilesSelectedPath.hidden);
-  chrome.test.assertEq('', threeFilesSelectedPath.attributes.path);
+  chrome.test.assertTrue(breadcrumbTripleSelection.hidden);
+  chrome.test.assertEq('', breadcrumbTripleSelection.attributes.path);
 
   // Close search. Select any file. Confirm that the path display is not shown,
   // now that the search is inactive.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
   const pathDisplayWhileNotSearching = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+    '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(pathDisplayWhileNotSearching.hidden);
 };

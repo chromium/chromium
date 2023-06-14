@@ -20,6 +20,9 @@ export class XfBreadcrumb extends XfBase {
   /** A path is a "/" separated string. */
   @property({type: String, reflect: true}) path = '';
 
+  /** The maximum number of path elements shown. */
+  @property({type: Number, reflect: true}) maxPathParts = 4;
+
   static get events() {
     return {
       /** emits when any part of the breadcrumb is changed. */
@@ -48,7 +51,7 @@ export class XfBreadcrumb extends XfBase {
       return html``;
     }
     const parts = this.path.split('/');
-    const showElider = parts.length > 4;
+    const showElider = parts.length > this.maxPathParts;
     const partBeforeElider = parts[0];
     const eliderParts = showElider ? parts.slice(1, parts.length - 2) : [];
     const afterEliderIndex = showElider ? parts.length - 2 : 1;
