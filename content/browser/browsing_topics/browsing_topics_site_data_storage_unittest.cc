@@ -489,7 +489,7 @@ class BrowsingTopicsSiteDataStorageMaxEntriesToLoadTest
  public:
   BrowsingTopicsSiteDataStorageMaxEntriesToLoadTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kBrowsingTopics,
+        blink::features::kBrowsingTopicsParameters,
         {{"max_number_of_api_usage_context_entries_to_load_per_epoch", "1"}});
   }
 

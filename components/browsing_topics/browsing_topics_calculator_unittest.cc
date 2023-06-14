@@ -218,7 +218,8 @@ class BrowsingTopicsCalculatorUnsupporedTaxonomyVersionTest
  public:
   BrowsingTopicsCalculatorUnsupporedTaxonomyVersionTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kBrowsingTopics, {{"taxonomy_version", "999"}});
+        blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "999"}});
   }
 
  private:
@@ -878,7 +879,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicBlockedByFinch) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kBrowsingTopics,
+      blink::features::kBrowsingTopicsParameters,
       {{"browsing_topics_disabled_topics_list", "6,4"}});
 
   EpochTopics result = CalculateTopics();

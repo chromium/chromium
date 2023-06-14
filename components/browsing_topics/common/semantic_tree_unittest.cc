@@ -110,7 +110,7 @@ TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdValidTopic) {
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTaxonomy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kBrowsingTopics, {{"taxonomy_version", "0"}});
+      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "0"}});
   absl::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
   EXPECT_FALSE(message_id.has_value());

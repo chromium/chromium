@@ -486,6 +486,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowURNsInIframes);
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopics);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsParameters);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kBrowsingTopicsTimePeriodPerEpoch;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
@@ -510,12 +512,13 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsTaxonomyVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsDisabledTopicsList;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kBrowsingTopicsBypassIPIsPubliclyRoutableCheck);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsXHR);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsDocumentAPI);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBrowsingTopicsBypassIPIsPubliclyRoutableCheck);
 
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.

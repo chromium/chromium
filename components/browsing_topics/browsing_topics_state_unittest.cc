@@ -70,7 +70,8 @@ class BrowsingTopicsStateTest : public testing::Test {
       : task_environment_(new base::test::TaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
     feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kBrowsingTopics, {{"config_version", "123"}});
+        blink::features::kBrowsingTopicsParameters,
+        {{"config_version", "123"}});
 
     OverrideHmacKeyForTesting(kTestKey);
 

@@ -167,7 +167,8 @@ class BrowsingTopicsServiceImplTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kBrowsingTopics,
+        {{blink::features::kBrowsingTopics, {}},
+         {blink::features::kBrowsingTopicsParameters,
           {{"time_period_per_epoch",
             base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
            {"browsing_topics_max_epoch_introduction_delay",
@@ -2062,7 +2063,8 @@ TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics,
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
         {{"time_period_per_epoch",
           base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
          {"browsing_topics_max_epoch_introduction_delay",
