@@ -1028,6 +1028,7 @@ class SSLUITestHSTS : public SSLUITest {
     ssl_test_util::SetHSTSForHostName(browser()->profile(), kHstsTestHostName);
   }
 };
+
 class SSLUITestReduceSubresourceNotifications : public SSLUITestBase {
  public:
   SSLUITestReduceSubresourceNotifications() {
@@ -1036,8 +1037,10 @@ class SSLUITestReduceSubresourceNotifications : public SSLUITestBase {
         /* disabled_features */ {blink::features::kMixedContentAutoupgrade});
   }
 
-  SSLUITestReduceSubresourceNotifications(const SSLUITest&) = delete;
-  SSLUITestReduceSubresourceNotifications& operator=(const SSLUITest&) = delete;
+  SSLUITestReduceSubresourceNotifications(
+      const SSLUITestReduceSubresourceNotifications&) = delete;
+  SSLUITestReduceSubresourceNotifications& operator=(
+      const SSLUITestReduceSubresourceNotifications&) = delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
