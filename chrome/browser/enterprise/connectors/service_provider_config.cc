@@ -69,6 +69,10 @@ constexpr ReportingConfig kGoogleReportingConfig = {
 }  // namespace
 
 const ServiceProviderConfig* GetServiceProviderConfig() {
+  // The policy schema validates that the provider name is an expected value, so
+  // when one is added to this dictionary it also needs to be added to the
+  // corresponding policy definitions.
+  // LINT.IfChange
   static constexpr ServiceProviderConfig kServiceProviderConfig =
       base::MakeFixedFlatMap<base::StringPiece, ServiceProvider>({
           {
@@ -106,6 +110,13 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
               },
           },
       });
+  // LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Miscellaneous)
+  // The following policies should have their service_provider entries updated:
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnBulkDataEntryEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnFileAttachedEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnFileDownloadedEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnPrintEnterpriseConnector.yaml
+  // )
   return &kServiceProviderConfig;
 }
 
