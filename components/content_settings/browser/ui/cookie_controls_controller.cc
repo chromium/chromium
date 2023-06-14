@@ -65,6 +65,9 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
       observer.OnStatusChanged(status.status, status.enforcement,
                                status.expiration);
       observer.OnSitesCountChanged(allowed_sites, blocked_sites);
+      // TODO(crbug.com/1446230): Return the actual confidence level.
+      observer.OnBreakageConfidenceLevelChanged(
+          CookieControlsBreakageConfidenceLevel::kMedium);
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();

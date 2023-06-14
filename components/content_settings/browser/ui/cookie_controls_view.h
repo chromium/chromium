@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,6 +47,12 @@ class CookieControlsObserver : public base::CheckedObserver {
   // are blocked from accessing site data. There might be reasons other than
   // 3PCB to why a site is blocked or allowed (ex. site data exceptions).
   virtual void OnSitesCountChanged(int allowed_sites, int blocked_sites) = 0;
+
+  // Called wherever the site breakage confidence level changes. It takes into
+  // account blocked third-party cookie access, exceptions lifecycle, site
+  // engagement index and recent user activity (like frequent page reloads).
+  virtual void OnBreakageConfidenceLevelChanged(
+      CookieControlsBreakageConfidenceLevel level) = 0;
 };
 
 }  // namespace content_settings

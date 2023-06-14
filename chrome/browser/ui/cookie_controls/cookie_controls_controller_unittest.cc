@@ -12,6 +12,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -45,6 +46,9 @@ class MockCookieControlsObserver
                CookieControlsEnforcement,
                absl::optional<base::Time>));
   MOCK_METHOD(void, OnSitesCountChanged, (int, int));
+  MOCK_METHOD(void,
+              OnBreakageConfidenceLevelChanged,
+              (CookieControlsBreakageConfidenceLevel));
 };
 
 }  // namespace
