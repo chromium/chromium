@@ -44,18 +44,26 @@ String FontPalette::ToString() const {
       return palette_values_name_.GetString();
     case kInterpolablePalette:
       DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
-      DCHECK(operation_.hasValue());
       StringBuilder builder;
-      builder.Append(operation_.ToString());
-      builder.Append("(");
-      builder.Append(start_->ToString());
-      if (operation_.type != kScalePalette) {
-        builder.Append(", ");
-        builder.Append(end_->ToString());
+      builder.Append("palette-mix(in ");
+      if (hue_interpolation_method_.has_value()) {
+        builder.Append(Color::SerializeInterpolationSpace(
+            color_interpolation_space_, *hue_interpolation_method_));
+      } else {
+        builder.Append(
+            Color::SerializeInterpolationSpace(color_interpolation_space_));
       }
-      if (operation_.type != kAddPalettes) {
-        builder.Append(", ");
-        builder.Append(String::Number(operation_.param));
+      builder.Append(", ");
+      builder.Append(start_->ToString());
+      builder.Append(", ");
+      builder.Append(end_->ToString());
+      if (percentage_) {
+        builder.Append(" ");
+        double normalize_percentage = percentage_ * 100;
+        builder.AppendNumber(normalize_percentage);
+        builder.Append("%");
+      } else {
+        builder.Append(" 50%");
       }
       builder.Append(")");
       return builder.ToString();
@@ -70,7 +78,10 @@ bool FontPalette::operator==(const FontPalette& other) const {
   if (IsInterpolablePalette() && other.IsInterpolablePalette()) {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return *start_.get() == *other.start_.get() &&
-           *end_.get() == *other.end_.get() && operation_ == other.operation_;
+           *end_.get() == *other.end_.get() &&
+           percentage_ == other.percentage_ &&
+           color_interpolation_space_ == other.color_interpolation_space_ &&
+           hue_interpolation_method_ == other.hue_interpolation_method_;
   }
   return palette_keyword_ == other.palette_keyword_ &&
          palette_values_name_ == other.palette_values_name_ &&

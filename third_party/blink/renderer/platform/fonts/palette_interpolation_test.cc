@@ -123,7 +123,8 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesAtHalfTime) {
   //   rgba(0, 255, 255, 255) = oklab(90.5%, -37.25%, -9.75%) }
 
   scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.5);
+      FontPalette::Mix(palette_start, palette_end, 0.5,
+                       Color::ColorSpace::kOklab, absl::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be half-way between palette_start and palette_end
@@ -171,7 +172,8 @@ TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
   //   rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%) }
 
   scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.5);
+      FontPalette::Mix(palette_start, palette_end, 0.5,
+                       Color::ColorSpace::kOklab, absl::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be half-way between palette_start and normal
@@ -202,7 +204,8 @@ TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
   palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 17});
 
   scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.5);
+      FontPalette::Mix(palette_start, palette_end, 0.5,
+                       Color::ColorSpace::kOklab, absl::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // Since both of the endpoints are equal and have color records from normal
@@ -220,55 +223,7 @@ TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
   ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
 }
 
-TEST_F(PaletteInterpolationTest, MixScaledAndAddedPalettes) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
-  PaletteInterpolation palette_interpolation(color_palette_typeface_);
-  scoped_refptr<FontPalette> palette_start =
-      FontPalette::Add(FontPalette::Create(FontPalette::kDarkPalette),
-                       FontPalette::Create(FontPalette::kLightPalette));
-  // palette_start has the following list of color records:
-  // { rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
-  //   rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
-  //   rgba(255, 0, 255, 255) = oklab(70.2%, 68.75%, -42.25%),
-  //   rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
-  //   rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
-  //   rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
-  //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
-  //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%) }
-
-  scoped_refptr<FontPalette> palette_end =
-      FontPalette::Scale(FontPalette::Create(), 0.1);
-  // palette_end has the following list of color records:
-  // { rgba(0, 0, 0, 26) = oklab(0%, 0%, 0% / 0.1),
-  //   rgba(26, 0, 0, 26) = oklab(62.8%, 56.25%, 31.5% / 0.1),
-  //   rgba(0, 26, 0, 26) = oklab(86.6%, -58.5%, 44.75% / 0.1),
-  //   rgba(26, 26, 0, 26) = oklab(96.8%, -17.75%, 49.75% / 0.1),
-  //   rgba(0, 0, 26, 26) = oklab(45.2%, -8%, -78% / 0.1),
-  //   rgba(26, 0, 26, 26) = oklab(70.2%, 68.75%, -42.25% / 0.1),
-  //   rgba(0, 26, 26, 26) = oklab(90.5%, -37.25%, -9.75% / 0.1),
-  //   rgba(26, 26, 26, 26) = oklab(100%, 0%, 0% / 0.1) }
-
-  scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.5);
-  Vector<FontPalette::FontPaletteOverride> actual_color_records =
-      palette_interpolation.ComputeInterpolableFontPalette(palette.get());
-  // We expect each color to be half-way between palette_start and palette_end
-  // after interpolation in the Oklab interpolation color space and conversion
-  // back to sRGB.
-  Vector<FontPalette::FontPaletteOverride> expected_color_records = {
-      {0, Color::FromRGBA(123, 255, 0, 141)},
-      {1, Color::FromRGBA(112, 245, 255, 141)},
-      {2, Color::FromRGBA(255, 47, 255, 141)},
-      {3, Color::FromRGBA(254, 188, 255, 141)},
-      {4, Color::FromRGBA(72, 255, 255, 141)},
-      {5, Color::FromRGBA(228, 226, 228, 141)},
-      {6, Color::FromRGBA(227, 15, 7, 141)},
-      {7, Color::FromRGBA(255, 214, 0, 141)},
-  };
-  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
-}
-
-TEST_F(PaletteInterpolationTest, MixCustomPalettes) {
+TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
   scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
@@ -296,12 +251,12 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettes) {
   //   rgba(0, 255, 255, 255) = oklab(90.5%, -37.25%, -9.75%) }
 
   scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.3);
+      FontPalette::Mix(palette_start, palette_end, 0.3,
+                       Color::ColorSpace::kOklab, absl::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be equal palette_start * 0.7 + palette_end * 0.3
-  // after interpolation in the Oklab interpolation color space and conversion
-  // back to sRGB.
+  // after interpolation in the sRGB interpolation color space.
   Vector<FontPalette::FontPaletteOverride> expected_color_records = {
       {0, Color::FromRGBA(254, 255, 131, 255)},
       {1, Color::FromRGBA(0, 0, 158, 255)},
@@ -311,6 +266,53 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettes) {
       {5, Color::FromRGBA(0, 0, 46, 255)},
       {6, Color::FromRGBA(254, 39, 112, 255)},
       {7, Color::FromRGBA(0, 255, 128, 255)},
+  };
+  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
+}
+
+TEST_F(PaletteInterpolationTest, MixCustomPalettesInSRGB) {
+  ScopedFontPaletteAnimationForTest scoped_feature(true);
+  PaletteInterpolation palette_interpolation(color_palette_typeface_);
+  scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
+  palette_start->SetBasePalette({FontPalette::kIndexBasePalette, 3});
+  // palette_start has the following list of color records:
+  // { rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
+  //   rgba(0, 0, 255, 255) = oklab(45.2%, -8%, -78%),
+  //   rgba(255, 0, 255, 255) = oklab(70.2%, 68.75%, -42.25%),
+  //   rgba(0, 255, 255, 255) = oklab(90.5%, -37.25%, -9.75%),
+  //   rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
+  //   rgba(0, 0, 0, 255) = oklab(0%, 0%, 0%),
+  //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
+  //   rgba(0, 255, 0, 255) = oklab(86.6%, -58.5%, 44.75%) }
+
+  scoped_refptr<FontPalette> palette_end = FontPalette::Create("palette2");
+  palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 7});
+  // palette_end has the following list of color records:
+  // { rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
+  //   rgba(0, 0, 0, 255) = oklab(0%, 0%, 0%),
+  //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
+  //   rgba(0, 255, 0, 255) = oklab(86.6%, -58.5%, 44.75%),
+  //   rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
+  //   rgba(0, 0, 255, 255) = oklab(45.2%, -8%, -78%),
+  //   rgba(255, 0, 255, 255) = oklab(70.2%, 68.75%, -42.25%),
+  //   rgba(0, 255, 255, 255) = oklab(90.5%, -37.25%, -9.75%) }
+
+  scoped_refptr<FontPalette> palette = FontPalette::Mix(
+      palette_start, palette_end, 0.3, Color::ColorSpace::kSRGB, absl::nullopt);
+  Vector<FontPalette::FontPaletteOverride> actual_color_records =
+      palette_interpolation.ComputeInterpolableFontPalette(palette.get());
+  // We expect each color to be equal palette_start * 0.7 + palette_end * 0.3
+  // after interpolation in the Oklab interpolation color space and conversion
+  // back to sRGB.
+  Vector<FontPalette::FontPaletteOverride> expected_color_records = {
+      {0, Color::FromRGBA(255, 255, 77, 255)},
+      {1, Color::FromRGBA(0, 0, 179, 255)},
+      {2, Color::FromRGBA(255, 0, 179, 255)},
+      {3, Color::FromRGBA(0, 255, 179, 255)},
+      {4, Color::FromRGBA(255, 255, 179, 255)},
+      {5, Color::FromRGBA(0, 0, 77, 255)},
+      {6, Color::FromRGBA(255, 0, 77, 255)},
+      {7, Color::FromRGBA(0, 255, 77, 255)},
   };
   ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
 }

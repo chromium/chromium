@@ -84,47 +84,27 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
       return MakeGarbageCollected<CSSCustomIdentValue>(
           palette->GetPaletteValuesName());
     case blink::FontPalette::kInterpolablePalette: {
+      // TODO(crbug.com/1400620): Change the serialization of palette-mix()
+      // function to match color-mix(), i.e.: palette-mix() =
+      // palette-mix(<color-interpolation-method> , [ [normal | light | dark |
+      // <palette-identifier> | <palette-mix()> ] && <percentage [0,100]>?
+      // ]#{2})
       DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
-      CSSFunctionValue* result = nullptr;
-      blink::FontPalette::InterpolablePaletteOperationType type =
-          palette->GetOperation().type;
-      switch (type) {
-        case blink::FontPalette::kMixPalettes:
-          result =
-              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteMix);
-          break;
-        case blink::FontPalette::kAddPalettes:
-          result =
-              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteAdd);
-          break;
-        case blink::FontPalette::kScalePalette:
-          result =
-              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteScale);
-          break;
-        case blink::FontPalette::kNoInterpolation:
-          NOTREACHED();
-      }
+      CSSFunctionValue* result =
+          MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteMix);
+
       CSSValue* start = ConvertFontPaletteToCSSValue(palette->GetStart().get());
       result->Append(*start);
 
-      if (type != blink::FontPalette::kScalePalette) {
-        CSSValue* end = ConvertFontPaletteToCSSValue(palette->GetEnd().get());
-        if (*start == *end && type == blink::FontPalette::kMixPalettes) {
-          return start;
-        }
-        result->Append(*end);
+      CSSValue* end = ConvertFontPaletteToCSSValue(palette->GetEnd().get());
+      if (*start == *end) {
+        return start;
       }
+      result->Append(*end);
 
-      if (type != blink::FontPalette::kAddPalettes) {
-        CSSValue* param = CSSNumericLiteralValue::Create(
-            palette->GetOperation().param,
-            CSSPrimitiveValue::UnitType::kNumber);
-        if (palette->GetOperation().param == 1 &&
-            type == blink::FontPalette::kScalePalette) {
-          return start;
-        }
-        result->Append(*param);
-      }
+      CSSValue* param = CSSNumericLiteralValue::Create(
+          palette->GetPercentage(), CSSPrimitiveValue::UnitType::kNumber);
+      result->Append(*param);
 
       return result;
     }

@@ -127,6 +127,8 @@ test(t => {
     { fontPalette: ['normal', 'dark'] },
     {
       duration: 1000,
+      /* Should not affect anything, since <Color> type is not additive,
+         compare: https://drafts.csswg.org/css-values-4/#combine-colors. */
       composite: "add"
     }
   );
@@ -135,8 +137,7 @@ test(t => {
     animation.currentTime = 500;
   });
   assert_equals(getComputedStyle(target).fontPalette,
-                "palette-add(palette-mix(light, normal, 0.5)," +
-                " palette-mix(normal, dark, 0.5))");
+                "palette-mix(light, normal, 0.5)");
 }, "Test additive animations");
 
 </script>

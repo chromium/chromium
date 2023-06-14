@@ -194,8 +194,6 @@
     // font-palette animation
     //
     "palette-mix",
-    "palette-add",
-    "palette-scale",
 
     //
     // *-color

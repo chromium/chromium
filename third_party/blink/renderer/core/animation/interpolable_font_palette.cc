@@ -43,18 +43,6 @@ bool InterpolableFontPalette::Equals(const InterpolableValue& other) const {
   return *font_palette_ == *other_palette.font_palette_;
 }
 
-void InterpolableFontPalette::Scale(double scale) {
-  font_palette_ = FontPalette::Scale(font_palette_, scale);
-}
-
-void InterpolableFontPalette::Add(const InterpolableValue& other) {
-  const InterpolableFontPalette& other_interpolable_palette =
-      To<InterpolableFontPalette>(other);
-  scoped_refptr<FontPalette> other_palette =
-      other_interpolable_palette.font_palette_;
-  font_palette_ = FontPalette::Add(font_palette_, other_palette);
-}
-
 void InterpolableFontPalette::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   DCHECK(other.IsFontPalette());
@@ -72,8 +60,12 @@ void InterpolableFontPalette::Interpolate(const InterpolableValue& to,
   } else if (progress == 1) {
     result_palette.font_palette_ = to_palette.font_palette_;
   } else {
+    // Since there is no way for user to specify which color space should be
+    // used for interpolation, it defaults to Oklab.
+    // https://www.w3.org/TR/css-color-4/#interpolation-space
     result_palette.font_palette_ =
-        FontPalette::Mix(font_palette_, to_palette.font_palette_, progress);
+        FontPalette::Mix(font_palette_, to_palette.font_palette_, progress,
+                         Color::ColorSpace::kOklab, absl::nullopt);
   }
 }
 

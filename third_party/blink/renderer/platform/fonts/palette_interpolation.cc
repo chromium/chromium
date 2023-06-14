@@ -9,64 +9,12 @@
 
 namespace blink {
 
-Color PaletteInterpolation::InterpolateColor(Color start_color,
-                                             Color end_color,
-                                             double progress) {
-  float alpha = ClampTo<double>(
-      start_color.Alpha() * (1 - progress) + end_color.Alpha() * progress, 0,
-      1);
-
-  const auto interpolate_param = [&start_color, &end_color, &alpha, &progress](
-                                     double start_param, double end_param) {
-    return (start_param * start_color.Alpha() * (1 - progress) +
-            end_param * end_color.Alpha() * progress) /
-           alpha;
-  };
-
-  float param0 = interpolate_param(start_color.Param0(), end_color.Param0());
-  float param1 = interpolate_param(start_color.Param1(), end_color.Param1());
-  float param2 = interpolate_param(start_color.Param2(), end_color.Param2());
-
-  Color result_color = Color::FromColorSpace(Color::ColorSpace::kOklab, param0,
-                                             param1, param2, alpha);
-  return result_color;
-}
-
-Color PaletteInterpolation::AddColors(Color start_color, Color end_color) {
-  float alpha = ClampTo<double>(start_color.Alpha() + end_color.Alpha(), 0, 1);
-
-  const auto add_params = [&start_color, &end_color, &alpha](double start_param,
-                                                             double end_param) {
-    return (start_param * start_color.Alpha() + end_param * end_color.Alpha()) /
-           alpha;
-  };
-
-  float param0 = add_params(start_color.Param0(), end_color.Param0());
-  float param1 = add_params(start_color.Param1(), end_color.Param1());
-  float param2 = add_params(start_color.Param2(), end_color.Param2());
-
-  Color result_color = Color::FromColorSpace(Color::ColorSpace::kOklab, param0,
-                                             param1, param2, alpha);
-  return result_color;
-}
-
-Color PaletteInterpolation::ScaleColor(Color color, double scale) {
-  float alpha = ClampTo<double>(color.Alpha() * scale, 0, 1);
-
-  float param0 = color.Param0() * scale;
-  float param1 = color.Param1() * scale;
-  float param2 = color.Param2() * scale;
-
-  Color result_color = Color::FromColorSpace(Color::ColorSpace::kOklab, param0,
-                                             param1, param2, alpha);
-  return result_color;
-}
-
-Vector<FontPalette::FontPaletteOverride>
-PaletteInterpolation::ApplyOperationToColorRecords(
+Vector<FontPalette::FontPaletteOverride> PaletteInterpolation::MixColorRecords(
     Vector<FontPalette::FontPaletteOverride>&& start_color_records,
     Vector<FontPalette::FontPaletteOverride>&& end_color_records,
-    FontPalette::InterpolablePaletteOperation operation) {
+    double percentage,
+    Color::ColorSpace color_interpolation_space,
+    absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
   Vector<FontPalette::FontPaletteOverride> result_color_records;
 
   DCHECK_EQ(start_color_records.size(), end_color_records.size());
@@ -74,28 +22,15 @@ PaletteInterpolation::ApplyOperationToColorRecords(
   wtf_size_t color_records_cnt = start_color_records.size();
   for (wtf_size_t i = 0; i < color_records_cnt; i++) {
     DCHECK_EQ(start_color_records[i].index, end_color_records[i].index);
-    // Since there is no way for user to specify which color space should be
-    // used for interpolation, it defaults to Oklab.
-    // https://www.w3.org/TR/css-color-4/#interpolation-space
+
     Color start_color = start_color_records[i].color;
-    start_color.ConvertToColorSpace(Color::ColorSpace::kOklab);
+    start_color.ConvertToColorSpace(color_interpolation_space);
     Color end_color = end_color_records[i].color;
-    end_color.ConvertToColorSpace(Color::ColorSpace::kOklab);
-    Color result_color = start_color;
-    switch (operation.type) {
-      case FontPalette::kMixPalettes:
-        result_color =
-            InterpolateColor(start_color, end_color, operation.param);
-        break;
-      case FontPalette::kAddPalettes:
-        result_color = AddColors(start_color, end_color);
-        break;
-      case FontPalette::kScalePalette:
-        result_color = ScaleColor(start_color, operation.param);
-        break;
-      case FontPalette::kNoInterpolation:
-        NOTREACHED();
-    }
+    end_color.ConvertToColorSpace(color_interpolation_space);
+
+    Color result_color = Color::InterpolateColors(
+        color_interpolation_space, hue_interpolation_method, start_color,
+        end_color, percentage);
 
     FontPalette::FontPaletteOverride result_color_record(i, result_color);
     result_color_records.push_back(result_color_record);
@@ -177,13 +112,12 @@ PaletteInterpolation::ComputeInterpolableFontPalette(
   Vector<FontPalette::FontPaletteOverride> start_color_records =
       ComputeInterpolableFontPalette(palette->GetStart().get());
   Vector<FontPalette::FontPaletteOverride> end_color_records =
-      (palette->GetOperation().type != FontPalette::kScalePalette)
-          ? ComputeInterpolableFontPalette(palette->GetEnd().get())
-          : start_color_records;
+      ComputeInterpolableFontPalette(palette->GetEnd().get());
   Vector<FontPalette::FontPaletteOverride> result_color_records =
-      ApplyOperationToColorRecords(std::move(start_color_records),
-                                   std::move(end_color_records),
-                                   palette->GetOperation());
+      MixColorRecords(std::move(start_color_records),
+                      std::move(end_color_records), palette->GetPercentage(),
+                      palette->GetColorInterpolationSpace(),
+                      palette->GetHueInterpolationMethod());
   return result_color_records;
 }
 

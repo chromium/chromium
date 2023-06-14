@@ -27,15 +27,12 @@ class PLATFORM_EXPORT PaletteInterpolation {
   Vector<FontPalette::FontPaletteOverride> RetrieveColorRecords(
       const FontPalette* palette,
       unsigned int palette_index) const;
-  static Vector<FontPalette::FontPaletteOverride> ApplyOperationToColorRecords(
+  static Vector<FontPalette::FontPaletteOverride> MixColorRecords(
       Vector<FontPalette::FontPaletteOverride>&& start_color_records,
       Vector<FontPalette::FontPaletteOverride>&& end_color_records,
-      FontPalette::InterpolablePaletteOperation operation);
-  static Color ScaleColor(Color color, double scale);
-  static Color AddColors(Color start_color, Color end_color);
-  static Color InterpolateColor(Color start_color,
-                                Color end_color,
-                                double progress);
+      double percentage,
+      Color::ColorSpace color_interpolation_space,
+      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method);
   sk_sp<SkTypeface> typeface_;
 };
 

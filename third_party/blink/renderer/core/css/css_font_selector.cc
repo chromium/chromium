@@ -90,11 +90,8 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
   }
   scoped_refptr<FontPalette> start_palette = ResolveInterpolableFontPalette(
       font_palette->GetStart(), style_engine, family_name);
-  scoped_refptr<FontPalette> end_palette =
-      (font_palette->GetOperation().type != FontPalette::kScalePalette)
-          ? ResolveInterpolableFontPalette(font_palette->GetEnd(), style_engine,
-                                           family_name)
-          : start_palette;
+  scoped_refptr<FontPalette> end_palette = ResolveInterpolableFontPalette(
+      font_palette->GetEnd(), style_engine, family_name);
 
   /* Since we use normal font-palette with the current family_name if we were
    * unable to retrieve font-palette-values for current family_name, then
@@ -102,30 +99,16 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
   DCHECK_EQ(start_palette->GetMatchFamilyName(),
             end_palette->GetMatchFamilyName());
 
-  FontPalette::InterpolablePaletteOperation operation =
-      font_palette->GetOperation();
   // If two endpoints of the interpolation are equal, we can simplify the tree
-  if (operation.type == FontPalette::kMixPalettes &&
-      *start_palette.get() == *end_palette.get()) {
+  if (*start_palette.get() == *end_palette.get()) {
     return start_palette;
   }
 
   scoped_refptr<FontPalette> new_palette;
-  switch (operation.type) {
-    case FontPalette::kMixPalettes:
-      new_palette =
-          FontPalette::Mix(start_palette, end_palette, operation.param);
-      break;
-    case FontPalette::kAddPalettes:
-      new_palette = FontPalette::Add(start_palette, end_palette);
-      break;
-    case FontPalette::kScalePalette:
-      new_palette = FontPalette::Scale(start_palette, operation.param);
-      break;
-    default:
-      NOTREACHED();
-  }
-
+  new_palette = FontPalette::Mix(start_palette, end_palette,
+                                 font_palette->GetPercentage(),
+                                 font_palette->GetColorInterpolationSpace(),
+                                 font_palette->GetHueInterpolationMethod());
   new_palette->SetMatchFamilyName(start_palette->GetMatchFamilyName());
   return new_palette;
 }
