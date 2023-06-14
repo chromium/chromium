@@ -25,7 +25,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -44,6 +43,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 /**
  * Integration test for {@link HomepagePolicyManager}.
@@ -99,7 +99,6 @@ public class HomepagePolicyIntegrationTest {
     @Test
     @MediumTest
     @Feature({"Homepage"})
-    @DisabledTest(message = "crbug.com/1133544")
     public void testStartUpPage() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -109,10 +108,11 @@ public class HomepagePolicyIntegrationTest {
         // The first time when the page starts, the homepage is fetched from shared preference
         // So the homepage policy is not enforced yet at this point.
         // Instead, we verify the shared preference to see if right policy URL were stored.
+        String homepageGurlSerialized = SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, "");
+        GURL homepageGurl = GURL.deserialize(homepageGurlSerialized);
         Assert.assertEquals("URL stored in shared preference should be the same as policy setting",
-                TEST_URL,
-                SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, ""));
+                TEST_URL, homepageGurl.getSpec());
 
         // METRICS_HOMEPAGE_LOCATION_TYPE is recorded once in deferred start up tasks.
         Assert.assertEquals("Settings.Homepage.LocationType should record POLICY_OTHER once.", 1,
