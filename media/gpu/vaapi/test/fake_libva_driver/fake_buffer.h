@@ -11,14 +11,14 @@
 
 namespace media::internal {
 
-// Class used for tracking a VABuffer and all information relevant to it. All //
-// objects of this class are immutable in the sense that none of the members //
-// change in value throughout the lifetime of the object. However, the //
+// Class used for tracking a VABuffer and all information relevant to it. All
+// objects of this class are immutable in the sense that none of the members
+// change in value throughout the lifetime of the object. However, the
 // underlying buffer data may be changed by users of a FakeBuffer by using the
-// // pointer returned by GetData(). Such changes must be synchronized
-// externally, // but calls to the FakeBuffer public methods themselves are
-// thread-safe. Users // of FakeBuffer must not free the memory pointed to by
-// the pointer that // GetData() returns.
+// pointer returned by GetData(). Such changes must be synchronized
+// externally, but calls to the FakeBuffer public methods themselves are
+// thread-safe. Users of FakeBuffer must not free the memory pointed to by
+// the pointer that GetData() returns.
 class FakeBuffer {
  public:
   using IdType = VABufferID;
