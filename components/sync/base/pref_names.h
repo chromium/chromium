@@ -44,10 +44,6 @@ inline constexpr char kBookmarksAndReadingListAccountStorageOptIn[] =
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Boolean pref that records whether OS sync preferences were migrated due to
-// SyncSettingsCategorization rollout.
-// TODO(crbug.com/1249845): Remove after 2023-06 (see also crbug.com/1255724).
-inline constexpr char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
 
 // Boolean specifying whether to automatically sync all Chrome OS specific data
 // types (including future ones). This includes types like printers, OS-only

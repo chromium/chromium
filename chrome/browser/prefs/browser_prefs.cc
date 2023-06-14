@@ -883,6 +883,11 @@ const char kWebAppCalculatorAppErasureFixAppliedPref[] =
 // Deprecated 06/2023.
 const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 
+// Deprecated 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1255,6 +1260,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 06/2023.
   registry->RegisterDictionaryPref(kWebAppsExtensionIDs);
+
+  // Deprecated 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kOsSyncPrefsMigrated, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2359,6 +2369,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 06/2023.
   profile_prefs->ClearPref(kWebAppsExtensionIDs);
+
+  // Added 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kOsSyncPrefsMigrated);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
