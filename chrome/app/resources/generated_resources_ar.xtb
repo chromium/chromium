@@ -937,7 +937,7 @@
 <translation id="1792619191750875668">شاشة تم توسيعها</translation>
 <translation id="1794051631868188691">عدم عرض <ph name="MERCHANT" /> مرة أخرى</translation>
 <translation id="1794212650797661990">إخفاء كلمة المرور لـ <ph name="DOMAIN" /></translation>
-<translation id="1794791083288629568">يمكنك إرسال تعليقات لمساعدتنا في إصلاح هذه المشكلة.</translation>
+<translation id="1794791083288629568">يمكنك إرسال ملاحظات لمساعدتنا في إصلاح هذه المشكلة.</translation>
 <translation id="1795214765651529549">استخدام المظهر الكلاسيكي</translation>
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1797117170091578105">‏يمكنك اللعب باستخدام لوحة مفاتيح Chromebook. ويمكنك تخصيص مفاتيح لتنفيذ إجراءات محدَّدة.</translation>
@@ -3072,7 +3072,7 @@
 <translation id="3630995161997703415">أضف الموقع الإلكتروني هذا إلى الرف لاستخدامه في أي وقت.</translation>
 <translation id="3634652306074934350">انتهت صلاحية طلب الإذن.</translation>
 <translation id="3635199270495525546">‏تم رصد وحدة نظام أساسي موثوق به (TPM)</translation>
-<translation id="3635353578505343390">‏إرسال تعليقات إلى Google</translation>
+<translation id="3635353578505343390">‏إرسال ملاحظات إلى Google</translation>
 <translation id="3635960017746711110">‏إعدادات USB المُفضَّلة في نظام التشغيل Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> وقت متبقٍ</translation>
 <translation id="3636940436873918441">اللغات المفضّلة</translation>
@@ -5351,7 +5351,7 @@
 <translation id="5653154844073528838">يتوفّر لديك <ph name="PRINTER_COUNT" /> طابعة محفوظة.</translation>
 <translation id="565515993087783098">في حال حذف هذه الشبكة، ستتم أيضًا إزالة الاشتراك في "نقطة مرور" والشبكات المرتبطة بها.</translation>
 <translation id="5655296450510165335">تسجيل الجهاز</translation>
-<translation id="5656845498778518563">‏إرسال تعليقات إلى Google</translation>
+<translation id="5656845498778518563">‏إرسال ملاحظات إلى Google</translation>
 <translation id="5657156137487675418">السماح بملفّات تعريف الارتباط كلّها</translation>
 <translation id="5657667036353380798">‏تتطلب الإضافة الخارجية تثبيت chrome الإصدار <ph name="MINIMUM_CHROME_VERSION" /> أو أعلى.</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
@@ -8097,7 +8097,7 @@
 <translation id="8037117027592400564">قراءة جميع النصوص المنطوقة باستخدام الكلام المركب</translation>
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>
-<translation id="8041089156583427627">إرسال تعليقات</translation>
+<translation id="8041089156583427627">إرسال ملاحظات</translation>
 <translation id="8041267120753677077">بث تطبيقات هاتفك</translation>
 <translation id="8042142357103597104">درجة تعتيم النص</translation>
 <translation id="8042331986490021244">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
@@ -9495,7 +9495,7 @@
 <translation id="940212040923880623">بحث وتعديل</translation>
 <translation id="942532530371314860">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome والصوت.</translation>
 <translation id="944799160843436808">‏حدثت مشكلة أثناء إعداد تطبيق Steam on Chromebook</translation>
-<translation id="945522503751344254">إرسال تعليقات</translation>
+<translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="947156494302904893">يمكن للمواقع الإلكترونية التي تزورها التأكّد من أنّك مستخدِم حقيقي ولست برنامج تتبُّع.</translation>
 <translation id="947329552760389097">وعناصر الفحص</translation>
 <translation id="947526284350604411">إجابتك</translation>

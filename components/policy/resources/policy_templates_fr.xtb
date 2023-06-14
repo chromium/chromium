@@ -2698,11 +2698,11 @@ Si une extension spécifiée dans cette règle n'est pas installée, la navigati
 <translation id="3442589735857147823">Autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
 <translation id="3445364060482221648">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
 
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racine du système.
 
-Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
+Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racine du système peuvent être utilisés indifféremment.
 
-Il est prévu que cette règle soit supprimée dans la version 120 de <ph name="PRODUCT_OS_NAME" /> et <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" /> et <ph name="ANDROID_NAME" />, car les certificats racines fournis par la plate-forme ne seront plus pris en charge.
+Il est prévu que cette règle soit supprimée dans la version 120 de <ph name="PRODUCT_OS_NAME" /> et <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" /> et <ph name="ANDROID_NAME" />, car les certificats racine fournis par la plate-forme ne seront plus pris en charge.
 
 Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, car l'outil de vérification des certificats et les racines fournis par la plate-forme ne sont plus pris en charge.</translation>
 <translation id="3450649825886735618">Ne pas utiliser de services Web Google pour corriger les fautes d'orthographe</translation>
