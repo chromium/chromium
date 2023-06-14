@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/system/toast/anchored_nudge.h"
@@ -25,7 +26,8 @@ namespace ash {
 struct AnchoredNudgeData;
 
 // Class managing anchored nudge requests.
-class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager {
+class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
+                                            public SessionObserver {
  public:
   AnchoredNudgeManagerImpl();
   AnchoredNudgeManagerImpl(const AnchoredNudgeManagerImpl&) = delete;
@@ -45,6 +47,9 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager {
 
   // AnchoredNudge::Delegate:
   void OnNudgeHoverStateChanged(const std::string& nudge_id, bool is_hovering);
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // Returns true if `id` is stored in `shown_nudges_`.
   bool IsNudgeShown(const std::string& id);
