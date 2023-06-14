@@ -60,6 +60,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/fake/fake_display_delegate.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/util/display_util.h"
@@ -343,6 +344,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
     shell_init_params.quick_pair_mediator_factory =
         std::make_unique<quick_pair::FakeQuickPairMediatorFactory>();
   }
+  shell_init_params.native_display_delegate =
+      std::make_unique<display::FakeDisplayDelegate>();
   Shell::CreateInstance(std::move(shell_init_params));
   Shell* shell = Shell::Get();
 

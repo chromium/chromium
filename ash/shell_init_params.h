@@ -47,6 +47,9 @@ struct ASH_EXPORT ShellInitParams {
   // Bus used by dbus clients. May be null in tests or when not running on a
   // device, in which case fake clients will be created.
   scoped_refptr<dbus::Bus> dbus_bus;
+
+  // A native display delegate used in the shell.
+  std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate;
 };
 
 }  // namespace ash

@@ -4312,6 +4312,7 @@ static_library("test_support") {
     "//ui/color:mixers",
     "//ui/compositor:test_support",
     "//ui/display",
+    "//ui/display/fake",
     "//ui/display/types",
     "//ui/events:events_base",
     "//ui/events:test_support",

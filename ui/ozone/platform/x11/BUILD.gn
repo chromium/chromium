@@ -70,7 +70,6 @@ source_set("x11") {
     "//ui/base/ime",
     "//ui/base/x",
     "//ui/base/x:gl",
-    "//ui/display/fake",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",

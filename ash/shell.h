@@ -872,12 +872,14 @@ class ASH_EXPORT Shell : public SessionObserver,
   explicit Shell(std::unique_ptr<ShellDelegate> shell_delegate);
   ~Shell() override;
 
-  void Init(ui::ContextFactory* context_factory,
-            PrefService* local_state,
-            std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
-            std::unique_ptr<ash::quick_pair::Mediator::Factory>
-                quick_pair_mediator_factory,
-            scoped_refptr<dbus::Bus> dbus_bus);
+  void Init(
+      ui::ContextFactory* context_factory,
+      PrefService* local_state,
+      std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
+      std::unique_ptr<ash::quick_pair::Mediator::Factory>
+          quick_pair_mediator_factory,
+      scoped_refptr<dbus::Bus> dbus_bus,
+      std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate);
 
   // Initializes the display manager and related components.
   void InitializeDisplayManager();
@@ -1185,6 +1187,8 @@ class ASH_EXPORT Shell : public SessionObserver,
       federated_service_controller_;
 
   std::unique_ptr<quick_pair::Mediator> quick_pair_mediator_;
+
+  std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate_;
 
   base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 
