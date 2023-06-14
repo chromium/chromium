@@ -525,18 +525,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [self updateFakeOmniboxForScrollPosition];
 }
 
-- (void)updateHeightAboveFeedAndScrollToTopIfNeeded {
-  if (self.viewDidFinishLoading &&
-      !self.hasSavedOffsetFromPreviousScrollState) {
-    // Do not scroll to the top if there is a saved scroll state. Also,
-    // `-setContentOffsetToTop` potentially updates constaints, and if
-    // viewDidLoad has not finished, some views may not in the view hierarchy
-    // yet.
-    [self updateFeedInsetsForContentAbove];
-    [self setContentOffsetToTop];
-  }
-}
-
 - (void)updateHeightAboveFeed {
   if (self.viewDidFinishLoading) {
     CGFloat oldHeightAboveFeed = self.collectionView.contentInset.top;
@@ -1410,6 +1398,22 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)updateModularHomeBackgroundColorForUserInterfaceStyle:
     (UIUserInterfaceStyle)style {
   _backgroundGradientView.hidden = style == UIUserInterfaceStyleLight;
+}
+
+// Signal to the ViewController that the height above the feed needs to be
+// recalculated and thus also likely needs to be scrolled up to accommodate for
+// the new height. Nothing may happen if the ViewController determines that the
+// current scroll state should not change.
+- (void)updateHeightAboveFeedAndScrollToTopIfNeeded {
+  if (self.viewDidFinishLoading &&
+      !self.hasSavedOffsetFromPreviousScrollState) {
+    // Do not scroll to the top if there is a saved scroll state. Also,
+    // `-setContentOffsetToTop` potentially updates constaints, and if
+    // viewDidLoad has not finished, some views may not in the view hierarchy
+    // yet.
+    [self updateFeedInsetsForContentAbove];
+    [self setContentOffsetToTop];
+  }
 }
 
 #pragma mark - Helpers

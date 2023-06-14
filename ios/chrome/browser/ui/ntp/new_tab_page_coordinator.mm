@@ -792,7 +792,7 @@
 #pragma mark - NewTabPageHeaderCommands
 
 - (void)updateForHeaderSizeChange {
-  [self.NTPViewController updateHeightAboveFeedAndScrollToTopIfNeeded];
+  [self.NTPViewController updateHeightAboveFeed];
 }
 
 - (void)fakeboxTapped {
