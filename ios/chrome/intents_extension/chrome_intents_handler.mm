@@ -4,6 +4,8 @@
 
 #import "ios/chrome/intents_extension/chrome_intents_handler.h"
 
+#import <Foundation/Foundation.h>
+
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"

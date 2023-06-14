@@ -598,11 +598,6 @@ template("ios_app_bundle") {
       visibility += [ ":${_variant.target_name}" ]
     }
 
-    if (!defined(frameworks)) {
-      frameworks = []
-    }
-    frameworks += [ "UIKit.framework" ]
-
     if (target_environment == "simulator") {
       if (!defined(deps)) {
         deps = []

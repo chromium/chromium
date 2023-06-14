@@ -10,5 +10,8 @@ source_set("intents") {
   ]
   deps = [ "//ios/chrome/common/intents" ]
 
-  frameworks = [ "Intents.framework" ]
+  frameworks = [
+    "Intents.framework",
+    "Foundation.framework",
+  ]
 }
