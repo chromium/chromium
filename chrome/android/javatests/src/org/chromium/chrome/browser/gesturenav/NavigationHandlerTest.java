@@ -173,19 +173,8 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeNavigateOnRenderedPage() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, false));
-        testSwipeNavigateOnRenderedPageInternal();
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/1426201")
-    public void testSwipeNavigateOnRenderedPage_withBackForwardTransition() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
-        testSwipeNavigateOnRenderedPageInternal();
-    }
-
-    private void testSwipeNavigateOnRenderedPageInternal() {
+        // TODO(crbug.com/1426201): Write a test variation running with
+        //     ChromeFeatureList.BACK_FORWARD_TRANSITIONS enabled when the feature is completed.
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
