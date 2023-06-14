@@ -47,6 +47,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/test_native_theme.h"

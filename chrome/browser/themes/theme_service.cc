@@ -66,6 +66,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
