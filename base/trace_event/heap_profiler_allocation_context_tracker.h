@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_HEAP_PROFILER_ALLOCATION_CONTEXT_TRACKER_H_
 
 #include <atomic>
+#include <cstdint>
 #include <vector>
 
 #include "base/base_export.h"
