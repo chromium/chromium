@@ -792,26 +792,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "ArcVmmSwapPolicy",
-                        "ArcvmSwapoutKeyboardShortcut"
-                    ],
-                    "min_os_version": "15485.0.0"
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
                     "name": "Enabled",
                     "enable_features": [
-                        "ArcVmmSwapPolicy"
+                        "ArcVmmSwapPolicy",
+                        "ArcVmmSwapoutGhostWindow",
+                        "ArcvmSwapoutKeyboardShortcut"
                     ],
-                    "min_os_version": "15485.0.0"
+                    "min_os_version": "15489.0.0"
                 }
             ]
         }
