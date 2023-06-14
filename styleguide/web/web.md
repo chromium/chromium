@@ -296,8 +296,7 @@ For properties that don't have an RTL-friendly alternatives, use
 
 ## JavaScript/TypeScript
 
-New WebUI code (except for ChromeOS specific code) should be written in
-TypeScript.
+New WebUI code should be written in TypeScript.
 
 ### Style
 
@@ -341,10 +340,11 @@ if (!enterKey) {
   feature when the code needs to handle null/undefined gracefully.
 
 
-### Closure compiler (ChromeOS Ash code only)
+### Closure compiler (legacy ChromeOS Ash code only)
 
-* Closure compiler can only be used on ChromeOS Ash. All other platforms
-  are required to use TypeScript to add type checking.
+* Closure compiler can only be used on legacy ChromeOS Ash code. All other
+  platforms and new ChromeOS code are required to use TypeScript to add type
+  checking.
 
 * Use the [closure
   compiler](https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md)
