@@ -49,6 +49,14 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   }
 
   // views::View:
+  // The TabSearchButton and NewTabButton may need to be rendered above the
+  // TabStrip, but FlexLayout needs the children to be stored in the correct
+  // order in the view.
+  views::View::Views GetChildrenInZOrder() override;
+
+  // Calls the parent Layout, but in some cases may also need to manually
+  // position the TabSearchButton to layer over the TabStrip.
+  void Layout() override;
 
   // These system drag & drop methods forward the events to TabDragController to
   // support its fallback tab dragging mode in the case where the platform
@@ -84,6 +92,11 @@ class TabStripRegionView final : public views::AccessiblePaneView {
       tab_strip_scroll_container_ = nullptr;
   raw_ptr<NewTabButton, DanglingUntriaged> new_tab_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
+
+  // On some platforms for Chrome Refresh, the TabSearchButton should be
+  // laid out before the TabStrip. Storing this configuration prevents
+  // rechecking the child order on every layout.
+  const bool render_tab_search_before_tab_strip_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
