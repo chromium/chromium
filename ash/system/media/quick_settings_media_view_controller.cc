@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/media/media_color_theme.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/quick_settings_media_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -49,11 +50,19 @@ QuickSettingsMediaViewController::QuickSettingsMediaViewController(
 
   media_item_manager_->AddObserver(this);
   media_item_manager_->AddItemProducer(media_session_item_producer_.get());
+
+  Shell::Get()->media_notification_provider()->AddMediaItemManagerToCastService(
+      media_item_manager_.get());
 }
 
 QuickSettingsMediaViewController::~QuickSettingsMediaViewController() {
   media_item_manager_->SetDialogDelegate(nullptr);
   media_item_manager_->RemoveObserver(this);
+  if (Shell::Get()->media_notification_provider()) {
+    Shell::Get()
+        ->media_notification_provider()
+        ->RemoveMediaItemManagerFromCastService(media_item_manager_.get());
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,7 +72,7 @@ global_media_controls::MediaItemUI*
 QuickSettingsMediaViewController::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  DCHECK(media_view_);
+  CHECK(media_view_);
   auto media_item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
       /*notification_theme=*/absl::nullopt, GetCrosMediaColorTheme(),
@@ -75,8 +84,11 @@ QuickSettingsMediaViewController::ShowMediaItem(
 }
 
 void QuickSettingsMediaViewController::HideMediaItem(const std::string& id) {
-  DCHECK(media_view_);
-  media_view_->HideItem(id);
+  // This can be called during MediaNotificationItem destruction when the media
+  // view is already removed.
+  if (media_view_) {
+    media_view_->HideItem(id);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

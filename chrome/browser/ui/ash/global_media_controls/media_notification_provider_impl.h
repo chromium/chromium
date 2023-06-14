@@ -20,6 +20,7 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class CastMediaNotificationProducerKeyedService;
 class Profile;
 
 namespace global_media_controls {
@@ -62,6 +63,10 @@ class ASH_EXPORT MediaNotificationProviderImpl
       const media_message_center::NotificationTheme& color_theme) override;
   global_media_controls::MediaItemManager* GetMediaItemManager() override;
   void OnPrimaryUserSessionStarted() override;
+  void AddMediaItemManagerToCastService(
+      global_media_controls::MediaItemManager* media_item_manager) override;
+  void RemoveMediaItemManagerFromCastService(
+      global_media_controls::MediaItemManager* media_item_manager) override;
 
   // global_media_controls::MediaDialogDelegate:
   global_media_controls::MediaItemUI* ShowMediaItem(
@@ -128,6 +133,8 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   global_media_controls::GlobalMediaControlsEntryPoint entry_point_{
       global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray};
+
+  raw_ptr<CastMediaNotificationProducerKeyedService> cast_service_ = nullptr;
 
   raw_ptr<Profile> profile_for_testing_ = nullptr;
   raw_ptr<global_media_controls::mojom::DeviceService>

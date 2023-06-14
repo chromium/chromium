@@ -35,6 +35,14 @@ CastMediaNotificationProducerKeyedServiceFactory::GetInstance() {
   return factory.get();
 }
 
+// static
+CastMediaNotificationProducerKeyedService*
+CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<CastMediaNotificationProducerKeyedService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
 KeyedService*
 CastMediaNotificationProducerKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

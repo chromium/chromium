@@ -244,7 +244,9 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
 }
 
 MediaNotificationViewAshImpl::~MediaNotificationViewAshImpl() {
-  item_->SetView(nullptr);
+  if (item_) {
+    item_->SetView(nullptr);
+  }
 }
 
 MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(

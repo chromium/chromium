@@ -7,6 +7,8 @@
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+class CastMediaNotificationProducerKeyedService;
+
 namespace content {
 class BrowserContext;
 }
@@ -22,6 +24,9 @@ class CastMediaNotificationProducerKeyedServiceFactory
   ~CastMediaNotificationProducerKeyedServiceFactory() override;
 
   static CastMediaNotificationProducerKeyedServiceFactory* GetInstance();
+
+  static CastMediaNotificationProducerKeyedService* GetForProfile(
+      Profile* profile);
 
  private:
   // BrowserContextKeyedServiceFactory:

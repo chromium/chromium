@@ -69,6 +69,14 @@ class ASH_EXPORT MediaNotificationProvider {
   // Performs initialization that must be done after the user session is
   // initialized.
   virtual void OnPrimaryUserSessionStarted() {}
+
+  // Use MediaNotificationProvider as a bridge to add/remove a given
+  // MediaItemManager to/from CastMediaNotificationProducerKeyedService, since
+  // the service lives on chrome/browser/ui/ash.
+  virtual void AddMediaItemManagerToCastService(
+      global_media_controls::MediaItemManager* media_item_manager) {}
+  virtual void RemoveMediaItemManagerFromCastService(
+      global_media_controls::MediaItemManager* media_item_manager) {}
 };
 
 }  // namespace ash

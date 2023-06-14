@@ -366,10 +366,12 @@ MediaSessionNotificationItem::GetMediaSessionActions() const {
 }
 
 bool MediaSessionNotificationItem::ShouldShowNotification() const {
-  // If the |is_controllable| bit is set in MediaSessionInfo then we should show
-  // a media notification.
-  if (!session_info_ || !session_info_->is_controllable)
+  // We do not show the media notification if it is not controllable or it
+  // already has a presentation of another cast media notification.
+  if (!session_info_ || !session_info_->is_controllable ||
+      session_info_->has_presentation) {
     return false;
+  }
 
   // If we do not have a title then we should hide the notification.
   if (session_metadata_.title.empty())

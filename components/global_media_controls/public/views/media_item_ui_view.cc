@@ -132,6 +132,7 @@ MediaItemUIView::MediaItemUIView(
     view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
         this, std::move(item), media_color_theme.value(),
         media_display_page.value());
+    UpdateFooterView(std::move(footer_view));
   } else {
     gfx::Size dismiss_button_size =
         has_notification_theme_ ? kCrOSDismissButtonSize : kDismissButtonSize;

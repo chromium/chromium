@@ -16,6 +16,8 @@
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service.h"
+#include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/supplemental_device_picker_producer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
@@ -55,7 +57,7 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
 MediaNotificationProviderImpl::MediaNotificationProviderImpl(
     media_session::MediaSessionService* service)
     : item_manager_(global_media_controls::MediaItemManager::Create()) {
-  DCHECK_EQ(nullptr, MediaNotificationProvider::Get());
+  CHECK_EQ(nullptr, MediaNotificationProvider::Get());
   MediaNotificationProvider::Set(this);
 
   item_manager_->AddObserver(this);
@@ -84,10 +86,12 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
 }
 
 MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
-  DCHECK_EQ(this, MediaNotificationProvider::Get());
+  CHECK_EQ(this, MediaNotificationProvider::Get());
   MediaNotificationProvider::Set(nullptr);
 
+  RemoveMediaItemManagerFromCastService(item_manager_.get());
   item_manager_->RemoveObserver(this);
+
   if (crosapi::CrosapiManager::IsInitialized()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
@@ -125,8 +129,8 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness,
     bool should_clip_height,
     const std::string& item_id) {
-  DCHECK(item_manager_);
-  DCHECK(color_theme_);
+  CHECK(item_manager_);
+  CHECK(color_theme_);
   auto notification_list_view =
       std::make_unique<global_media_controls::MediaItemUIListView>(
           global_media_controls::MediaItemUIListView::SeparatorStyle(
@@ -166,6 +170,15 @@ void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
       !crosapi::CrosapiManager::IsInitialized()) {
     return;
   }
+
+  // Since user profile is now active, we can create a
+  // CastMediaNotificationProducer for the MediaItemManager to access media
+  // items being casted.
+  cast_service_ =
+      CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
+          GetProfile());
+  AddMediaItemManagerToCastService(item_manager_.get());
+
   supplemental_device_picker_producer_ =
       std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
   item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
@@ -176,6 +189,21 @@ void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
   for (const auto& device_service : media_ui->device_services()) {
     device_service.second->SetDevicePickerProvider(
         supplemental_device_picker_producer_->PassRemote());
+  }
+}
+
+void MediaNotificationProviderImpl::AddMediaItemManagerToCastService(
+    global_media_controls::MediaItemManager* media_item_manager) {
+  // Cast service will not be created in tests.
+  if (cast_service_) {
+    cast_service_->AddMediaItemManager(media_item_manager);
+  }
+}
+
+void MediaNotificationProviderImpl::RemoveMediaItemManagerFromCastService(
+    global_media_controls::MediaItemManager* media_item_manager) {
+  if (cast_service_) {
+    cast_service_->RemoveMediaItemManager(media_item_manager);
   }
 }
 
