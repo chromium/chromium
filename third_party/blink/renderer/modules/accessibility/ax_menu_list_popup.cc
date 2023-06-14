@@ -59,8 +59,10 @@ AXRestriction AXMenuListPopup::Restriction() const {
 bool AXMenuListPopup::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   // Base whether the menupopup is ignored on the containing <select>.
-  if (parent_)
+  if (parent_) {
+    parent_->UpdateCachedAttributeValuesIfNeeded();
     return parent_->ComputeAccessibilityIsIgnored(ignored_reasons);
+  }
 
   return kIgnoreObject;
 }
@@ -71,6 +73,7 @@ AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
   DCHECK(IsA<HTMLOptionElement>(*element));
 
   AXObject* ax_object = AXObjectCache().GetOrCreate(element, this);
+  ax_object->SetParent(this);
 
   return DynamicTo<AXMenuListOption>(ax_object);
 }

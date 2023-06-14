@@ -9,3 +9,6 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='done'
 ++++++++++++inlineTextBox name='done'
+++++++group ignored invisible
+++++++++mark ignored invisible
+++++++++++staticText ignored invisible name='text'

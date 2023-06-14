@@ -253,6 +253,10 @@ void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
     aria_owned_child_to_owner_mapping_.erase(removed_child_id);
 
     if (removed_child) {
+      // Invalidating ensures that cached "included in tree" state is recomputed
+      // on objects with changed ownership -- owned children must always be
+      // included in the tree.
+      removed_child->InvalidateCachedValues();
       // If the child still exists, find its "real" parent, and reparent it
       // back to its real parent in the tree by detaching it from its current
       // parent and calling childrenChanged on its real parent.
@@ -281,6 +285,11 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     AXObject* added_child = ObjectFromAXID(added_child_id);
     DCHECK(added_child);
     DCHECK(!added_child->IsDetached());
+
+    // Invalidating ensures that cached "included in tree" state is recomputed
+    // on objects with changed ownership -- owned children must always be
+    // included in the tree.
+    added_child->InvalidateCachedValues();
 
     // Add this child to the mapping from child to owner.
     aria_owned_child_to_owner_mapping_.Set(added_child_id, owner->AXObjectID());
@@ -441,8 +450,9 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
     return;
 
   Vector<AXID> validated_owned_child_axids;
-  for (auto& child : validated_owned_children_result)
+  for (auto& child : validated_owned_children_result) {
     validated_owned_child_axids.push_back(child->AXObjectID());
+  }
 
   // Compare this to the current list of owned children, and exit early if
   // there are no changes.
@@ -458,11 +468,6 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       (!force || previously_owned_child_ids.empty())) {
     return;
   }
-
-  // Incrementing the modification count ensures that cached "included in tree"
-  // state is recomputed on objects with changed ownership -- owned children
-  // must always be included in the tree.
-  object_cache_->IncrementModificationCount();
 
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned
@@ -580,8 +585,10 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     GetReverseRelated(current_node, id_attr_to_text_relation_mapping_,
                       related_sources);
     for (AXObject* related : related_sources) {
-      if (related && related->AccessibilityIsIncludedInTree())
+      if (related && related->AccessibilityIsIncludedInTree() &&
+          !related->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
+      }
     }
 
     // Ancestors that may derive their accessible name from descendant content
@@ -589,7 +596,8 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     if (current_node != node) {
       AXObject* obj = Get(current_node);
       if (obj && obj->AccessibilityIsIncludedInTree() &&
-          obj->SupportsNameFromContents(/*recursive=*/false)) {
+          obj->SupportsNameFromContents(/*recursive=*/false) &&
+          !obj->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
         break;  // Unlikely/unusual to need multiple name/description changes.
       }

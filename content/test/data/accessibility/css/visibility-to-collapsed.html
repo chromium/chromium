@@ -8,10 +8,12 @@
   </span>
   <div><code>pending</code></div>
 </div>
+<div role="group" id="collapsed2" style='visibility: visible'><mark>text</mark></div>
 
 <script>
   setTimeout(()=> {
     document.getElementById('collapsed').style.visibility = 'collapsed';
+    document.getElementById('collapsed2').style.visibility = 'collapsed';
     document.querySelector('code').innerText = 'done';
   }, 200);
 </script>

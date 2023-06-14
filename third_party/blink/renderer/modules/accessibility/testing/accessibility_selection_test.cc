@@ -438,7 +438,12 @@ void AccessibilitySelectionTest::RunSelectionTest(
     actual_ax_file_contents += GetCurrentSelectionText();
   }
 
-  EXPECT_EQ(ax_file_contents, actual_ax_file_contents);
+  EXPECT_TRUE(ax_file_contents == actual_ax_file_contents)
+      << "\nSelection does not match expectations. Legend: ^=selection start  "
+         "|=selection end"
+      << "\n\nExpected:\n--------\n"
+      << ax_file_contents << "\n\nActual:\n------\n"
+      << actual_ax_file_contents;
 
   // Uncomment these lines to write the output to the expectations file.
   // TODO(dmazzoni): make this a command-line parameter.

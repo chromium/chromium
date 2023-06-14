@@ -915,8 +915,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 // Select controls behave differently on Mac/Android, this test doesn't apply.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       // TODO(crbug.com/1446550): Re-enable this test
-                       DISABLED_SelectWithOptgroupActiveDescendant) {
+                       SelectWithOptgroupActiveDescendant) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
