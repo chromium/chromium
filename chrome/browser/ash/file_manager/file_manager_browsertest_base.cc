@@ -3441,6 +3441,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "isFilesExperimentalEnabled") {
+    *output = options.files_experimental ? "true" : "false";
+    return;
+  }
+
   if (name == "switchLanguage") {
     const std::string* language = value.FindString("language");
     ASSERT_TRUE(language);
