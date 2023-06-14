@@ -66,13 +66,21 @@
 }
 
 - (void)start {
+  [super start];
   [self.unifiedConsentMediator start];
 }
 
 - (void)stop {
   [self.identityChooserCoordinator stop];
+  self.identityChooserCoordinator = nil;
   [self.unifiedConsentMediator disconnect];
   self.unifiedConsentMediator = nil;
+  self.unifiedConsentViewController = nil;
+  [super stop];
+}
+
+- (void)dealloc {
+  CHECK(!self.unifiedConsentMediator);
 }
 
 - (void)scrollToBottom {
