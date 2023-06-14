@@ -33,10 +33,6 @@ buildflag_header("buildflags") {
 # External-facing config for dependent code.
 config("skia_config") {
   defines = [
-    "SK_CODEC_DECODES_PNG",
-    "SK_CODEC_DECODES_WEBP",
-    "SK_ENCODE_PNG",
-    "SK_ENCODE_WEBP",
     "SK_ENABLE_SKSL",
     "SK_UNTIL_CRBUG_1187654_IS_FIXED",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
@@ -55,10 +51,19 @@ config("skia_config") {
   if (use_blink) {
     defines += [
       "SK_CODEC_DECODES_JPEG",
+      "SK_CODEC_DECODES_PNG",
+      "SK_CODEC_DECODES_WEBP",
       "SK_ENCODE_JPEG",
+      "SK_ENCODE_PNG",
+      "SK_ENCODE_WEBP",
       "SK_HAS_WUFFS_LIBRARY",
     ]
     include_dirs += [ "//third_party/wuffs/src/release/c" ]
+  } else {
+    # Decoder sources are only added when use_blink == true, but SkCodec.cpp is
+    # always present.  SK_DISABLE_LEGACY_INIT_DECODERS ensures that SkCodec.cpp
+    # is not attempting to reference inexistent codec code.
+    defines += [ "SK_DISABLE_LEGACY_INIT_DECODERS" ]
   }
 
   if (is_component_build) {
