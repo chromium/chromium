@@ -64,6 +64,11 @@
 - (void)stop {
   self.delegate = nil;
   self.viewController = nil;
+  [super stop];
+}
+
+- (void)dealloc {
+  CHECK(!self.viewController);
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
