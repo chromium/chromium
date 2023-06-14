@@ -14576,7 +14576,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "CrOSLateBootAudioAPNoiseCancellation",
                         "CrOSLateBootAudioFlexibleLoopback",
+                        "CrosPrivacyHubV2",
                         "SpeakOnMuteEnabled",
                         "SystemLiveCaption",
                         "VideoConference"
