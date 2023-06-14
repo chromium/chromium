@@ -9,9 +9,9 @@ from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
 
 
 class FuzzyMatchingAnalyzerTest(unittest.TestCase):
-    def test_run_analyzer_in_image_num_threshold(self) -> None:
+    def test_run_analyzer_in_image_diff_num_threshold(self) -> None:
         fuzzy_match_analyzer = analyzer.FuzzyMatchingAnalyzer(
-            fuzzy_match_image_num_threshold=4,
+            fuzzy_match_image_diff_num_threshold=4,
             fuzzy_match_distinct_diff_num_threshold=5)
 
         test_data = \
@@ -26,12 +26,12 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
                     10, 40, 'http://ci.chromium.org/b/3333')],
         }
         actual_result = fuzzy_match_analyzer.run_analyzer(test_data)
-        expected_result = 'Total image number is less than 4, no result'
+        expected_result = 'Total image diff number is less than 4, no result'
         self.assertEqual(actual_result, expected_result)
 
     def test_run_analyzer_in_distinct_diff_num_threshold(self) -> None:
         fuzzy_match_analyzer = analyzer.FuzzyMatchingAnalyzer(
-            fuzzy_match_image_num_threshold=3,
+            fuzzy_match_image_diff_num_threshold=3,
             fuzzy_match_distinct_diff_num_threshold=4)
 
         test_data = \
@@ -56,7 +56,7 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
     def test_run_analyzer_in_fuzzy_match_range_in_different_platform(
             self) -> None:
         fuzzy_match_analyzer = analyzer.FuzzyMatchingAnalyzer(
-            fuzzy_match_image_num_threshold=3,
+            fuzzy_match_image_diff_num_threshold=3,
             fuzzy_match_distinct_diff_num_threshold=3)
 
         test_data = \
@@ -87,7 +87,7 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
     def test_run_analyzer_in_fuzzy_match_range_with_large_even_number_tests(
             self) -> None:
         fuzzy_match_analyzer = analyzer.FuzzyMatchingAnalyzer(
-            fuzzy_match_image_num_threshold=3,
+            fuzzy_match_image_diff_num_threshold=3,
             fuzzy_match_distinct_diff_num_threshold=3)
         image_diffs = []
         for i in range(1, 101):
@@ -109,7 +109,7 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
     def test_run_analyzer_in_fuzzy_match_range_with_large_odd_number_tests(
             self) -> None:
         fuzzy_match_analyzer = analyzer.FuzzyMatchingAnalyzer(
-            fuzzy_match_image_num_threshold=3,
+            fuzzy_match_image_diff_num_threshold=3,
             fuzzy_match_distinct_diff_num_threshold=3)
         image_diffs = []
         for i in range(1, 102):
@@ -132,10 +132,10 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         # Test negative number.
         with self.assertRaises(AssertionError):
             analyzer.FuzzyMatchingAnalyzer(
-                fuzzy_match_image_num_threshold=-1,
+                fuzzy_match_image_diff_num_threshold=-1,
                 fuzzy_match_distinct_diff_num_threshold=0)
         # Test negative number.
         with self.assertRaises(AssertionError):
             analyzer.FuzzyMatchingAnalyzer(
-                fuzzy_match_image_num_threshold=0,
+                fuzzy_match_image_diff_num_threshold=0,
                 fuzzy_match_distinct_diff_num_threshold=-1)
