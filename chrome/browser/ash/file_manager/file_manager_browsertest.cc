@@ -2192,7 +2192,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("selectionPath").EnableSearchV2(),
         TestCase("searchHierarchy").EnableSearchV2(),
         TestCase("hideSearchInTrash").EnableSearchV2(),
+// TODO(b/287169303): test is flaky on ChromiumOS MSan
+#if !defined(MEMORY_SANITIZER)
         TestCase("searchTrashedFiles").EnableSearchV2(),
+#endif
         TestCase("matchDriveFilesByName").EnableSearchV2(),
         TestCase("searchSharedWithMe").EnableSearchV2(),
         TestCase("searchDocumentsProvider")
