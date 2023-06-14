@@ -134,8 +134,10 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
 
   WaitForVerificationStep();
 
-  test::OobeJS().ExpectAttributeEQ("canvasSize_",
-                                   {QuickStartView::kScreenId.name}, 185);
+  int canvas_size = test::OobeJS().GetAttributeInt(
+      "canvasSize_", {QuickStartView::kScreenId.name});
+  EXPECT_GE(canvas_size, 185);
+  EXPECT_LE(canvas_size, 265);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {

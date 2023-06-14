@@ -64,7 +64,7 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
 
 // Base64 representation of kSharedSecret.
 constexpr char kSharedSecretBase64[] =
-    "VL1Az4p8L2rKFVnP8-sxCJBz79qH1CPAVdWDWwQoSfI";
+    "VL1Az4p8L2rKFVnP8%2BsxCJBz79qH1CPAVdWDWwQoSfI%3D";
 
 // Arbitrary string to use as the endpoint id.
 constexpr char kEndpointId[] = "endpoint_id";

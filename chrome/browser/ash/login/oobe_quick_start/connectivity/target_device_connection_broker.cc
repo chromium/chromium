@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
-#include "base/base64url.h"
+#include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "url/url_util.h"
 
 namespace ash::quick_start {
 
@@ -50,12 +51,16 @@ std::vector<uint8_t> TargetDeviceConnectionBroker::GetQrCodeData(
     const SharedSecret shared_secret) const {
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
   std::string shared_secret_base64;
-  base::Base64UrlEncode(shared_secret_str,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &shared_secret_base64);
+  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
+  url::EncodeURIComponent(shared_secret_base64.data(),
+                          shared_secret_base64.size(),
+                          &shared_secret_base64_uriencoded);
 
   std::string url = "https://signin.google/qs/" + random_session_id.ToString() +
-                    "?key=" + shared_secret_base64;
+                    "?key=" +
+                    std::string(shared_secret_base64_uriencoded.data(),
+                                shared_secret_base64_uriencoded.length());
 
   return std::vector<uint8_t>(url.begin(), url.end());
 }
