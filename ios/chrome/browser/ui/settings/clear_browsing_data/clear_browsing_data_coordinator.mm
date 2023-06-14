@@ -63,6 +63,11 @@
   self.viewController.delegate = nil;
   self.viewController.dispatcher = nil;
   self.viewController = nil;
+  [super stop];
+}
+
+- (void)dealloc {
+  CHECK(!self.viewController);
 }
 
 #pragma mark - ClearBrowsingDataUIDelegate
