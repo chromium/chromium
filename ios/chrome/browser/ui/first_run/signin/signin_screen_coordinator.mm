@@ -139,6 +139,11 @@
   self.mediator = nil;
   self.accountManagerService = nil;
   self.authenticationService = nil;
+  [super stop];
+}
+
+- (void)dealloc {
+  CHECK(!self.authenticationService);
 }
 
 #pragma mark - Private
