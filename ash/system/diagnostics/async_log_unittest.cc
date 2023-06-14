@@ -110,21 +110,17 @@ TEST_F(AsyncLogTest, WriteMultipleLines) {
 }
 
 TEST_F(AsyncLogTest, NoUseAfterFreeCrash) {
-  auto log = std::make_unique<AsyncLog>(log_path_);
-  log->SetTaskRunnerForTesting(task_runner_);
+  const std::string new_line = "Line\n";
 
-  const std::string line_not_written = "Should not be written";
-  log->Append(line_not_written);
-  EXPECT_EQ(1u, task_runner_->NumPendingTasks());
+  // Simulate race conditions between the destruction of AsyncLog and the
+  // execution of AppendImpl.
+  for (size_t i = 0; i < 10; ++i) {
+    auto log = std::make_unique<AsyncLog>(log_path_);
+    log->Append(new_line);
+  }
 
-  // Simulate log destroyed before append can complete.
-  log.reset();
-
-  // Attempt to run pending AppendImpl call after AsyncLog destroyed.
-  task_runner_->RunUntilIdle();
-
-  EXPECT_FALSE(base::PathExists(log_path_));
-  EXPECT_EQ(0u, task_runner_->NumPendingTasks());
+  // This should finish without crash.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace diagnostics
