@@ -443,10 +443,14 @@ void EasyUnlockService::OnScreenDidUnlock(
     RecordEasyUnlockScreenUnlockEvent(event);
 
     if (will_authenticate_using_easy_unlock()) {
+      SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
+          SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock);
       RecordAuthResult(/*failure_reason=*/absl::nullopt);
       RecordEasyUnlockScreenUnlockDuration(base::TimeTicks::Now() -
                                            lock_screen_last_shown_timestamp_);
     } else {
+      SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
+          SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kOther);
       SmartLockMetricsRecorder::RecordAuthMethodChoiceUnlockPasswordState(
           GetSmartUnlockPasswordAuthEvent());
       OnUserEnteredPassword();

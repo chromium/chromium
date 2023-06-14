@@ -97933,9 +97933,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SmartLockAuthMethodChoice">
-  <obsolete>
-    Deprecated on 05/2023.
-  </obsolete>
   <int value="0" label="Smart Lock"/>
   <int value="1" label="Other"/>
 </enum>

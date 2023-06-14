@@ -37,6 +37,16 @@ class SmartLockMetricsRecorder {
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
   // change one without changing the other). Entries should be never modified
   // or deleted. Only additions possible.
+  enum class SmartLockAuthMethodChoice {
+    kSmartLock = 0,
+    kOther = 1,
+    kMaxValue = kOther
+  };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
   enum class SmartLockAuthEventPasswordState {
     kUnknownState = 0,
     // kNoPairing = 1, (obsolete)
@@ -60,6 +70,9 @@ class SmartLockMetricsRecorder {
     kPrimaryUserAbsent = 19,
     kMaxValue = kPrimaryUserAbsent
   };
+
+  static void RecordSmartLockUnlockAuthMethodChoice(
+      SmartLockAuthMethodChoice auth_method_choice);
 
   static void RecordAuthResultUnlockSuccess(bool success = true);
   static void RecordAuthResultUnlockFailure(
