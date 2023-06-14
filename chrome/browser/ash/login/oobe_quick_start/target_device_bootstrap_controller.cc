@@ -100,7 +100,7 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 
   status_.step = Step::ADVERTISING;
   connection_broker_->StartAdvertising(
-      this, /*use_pin_authentication=*/true,
+      this, /*use_pin_authentication=*/false,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyObservers();
