@@ -602,13 +602,14 @@
   },
 
   "The Wasm code cache test requires access to V8 internals, so only the",
-  "virtual test should be run.",
+  "virtual test should be run. Additionally the tiering budget is reduced to",
+  "speed up the test.",
   {
     "prefix": "wasm-code-caching",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/wasm/caching"],
     "exclusive_tests": "ALL",
-    "args": ["--js-flags=--allow-natives-syntax"],
+    "args": ["--js-flags=--wasm-tiering-budget=100 --allow-natives-syntax"],
     "expires": "Jul 1, 2024"
   },
 
