@@ -287,6 +287,7 @@
   <div class="side-padding">
     <div id="tabs" on-scroll="onGroupsScroll">
       <cr-icon-button id="left-chevron" class="chevron"
+        aria-label$="[[getLeftChevronAriaLabel(gifSupport)]]"
         on-click="onLeftChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_left">
       </cr-icon-button>
@@ -373,6 +374,7 @@
         </template>
       </template>
       <cr-icon-button id="right-chevron" class="chevron"
+        aria-label$="[[getRightChevronAriaLabel(gifSupport)]]"
         on-click="onRightChevronClick"
         on-keydown="onRightChevronKeyDown"
         iron-icon="emoji_picker:keyboard_arrow_right">

@@ -1485,6 +1485,14 @@ export class EmojiPicker extends PolymerElement {
     }
     return '';
   }
+
+  private getLeftChevronAriaLabel(gifSupport: boolean): string | undefined {
+    return gifSupport ? 'Previous' : undefined;
+  }
+
+  private getRightChevronAriaLabel(gifSupport: boolean): string | undefined {
+    return gifSupport ? 'Next': undefined;
+  }
 }
 
 declare global {
