@@ -54,8 +54,9 @@ export class Page {
 
     this.mainSection = getRequiredElement('main-section');
 
-    // Place the initial focus on the filter input field.
-    const filterElement = getRequiredElement('filter') as HTMLInputElement;
+    // Place the initial focus on the search input field.
+    const filterElement =
+        getRequiredElement('search-field-input') as HTMLInputElement;
     filterElement.focus();
 
     filterElement.addEventListener('search', () => {

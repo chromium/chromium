@@ -12,11 +12,19 @@
 
 <body>
   <header>
-    <div class="header-row">
-      <h1>$i18n{title}</h1>
-      <input id="filter" class="search-field-container" type="search"
-          placeholder="$i18n{filterPlaceholder}"
-          aria-label="$i18n{filterPlaceholder}" incremental>
+    <div id="topbar" class="header-row">
+      <div id="left-content" class="topbar-item">
+        <h1>$i18n{title}</h1>
+      </div>
+      <div id="middle-content" class="topbar-item">
+        <div id="search-field-container">
+          <div id="search-field-icon"></div>
+          <input id="search-field-input" type="search"
+            placeholder="$i18n{filterPlaceholder}"
+            aria-label="$i18n{filterPlaceholder}" incremental>
+        </div>
+      </div>
+      <div id="right-content" class="topbar-item"></div>
     </div>
     <div class="header-row">
       <button id="reload-policies">$i18n{reloadPolicies}</button>

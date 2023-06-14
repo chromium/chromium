@@ -32,7 +32,7 @@ body > main {
 
 body > header {
   align-items: center;
-  padding: 12px;
+  padding: 0 12px 12px 12px;
 }
 
 .header-row {
@@ -41,10 +41,62 @@ body > header {
   height: 56px;
 }
 
-.show-unset-checkbox,
-.search-field-container {
+.show-unset-checkbox {
   flex: 0 1 200px;
   margin-inline-start: auto;
+}
+
+#topbar {
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.topbar-item {
+  flex: 1;
+}
+
+#left-content {
+  justify-content: flex-start;
+}
+
+#middle-content {
+  align-items: center;
+  display: flex;
+  flex-basis: 680px;
+  justify-content: center;
+}
+
+#search-field-container {
+  align-items: center;
+  background: rgb(241, 243, 244); /* Google grey 100 */
+  border-radius: 46px;
+  display: flex;
+  flex: 0 1;
+  flex-basis: inherit;
+  height: 40px;
+}
+
+#search-field-icon {
+  background-image: url(chrome://resources/images/dark/icon_search.svg);
+  background-size: cover;
+  fill: rgb(95,99,104); /* Google grey 700 */
+  height: 20px;
+  margin-left: 12px;
+  min-width: 20px;
+  width: 20px;
+}
+
+#search-field-input {
+  background: 0 0;
+  border: none;
+  caret-color: rgb(25, 103, 210); /* Google blue 700 */
+  color: rgb(32, 33, 36);
+  margin: 0 12px 0 12px;
+  outline: 0;
+  padding: 0;
+  width: 100%;
+  line-height: 185%;
+  -webkit-font-smoothing: antialiased;
 }
 
 .show-unset-checkbox > label {
@@ -71,5 +123,9 @@ a {
 <if expr="is_android or is_ios">
 body > main {
   padding: 0;
+}
+
+#search-field-container {
+  height: 36px;
 }
 </if>
