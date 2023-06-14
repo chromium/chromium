@@ -101,7 +101,6 @@
 
 - (void)setLocationBarViewController:
     (UIViewController*)locationBarViewController {
-  CHECK(_started);
   self.viewController.locationBarViewController = locationBarViewController;
 }
 

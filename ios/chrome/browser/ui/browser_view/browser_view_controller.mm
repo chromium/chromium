@@ -1741,9 +1741,6 @@ enum HeaderBehaviour {
       self.fullscreenController->ResizeHorizontalViewport();
     }
   }
-  // TODO(crbug.com/1329087): Remove this and let `ToolbarCoordinator` call the
-  // update, somehow.
-  [self.toolbarCoordinator updateToolbar];
 
   [self updateWebStateVisibility:YES];
 }

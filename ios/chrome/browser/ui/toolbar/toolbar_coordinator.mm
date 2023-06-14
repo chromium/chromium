@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
@@ -65,7 +66,10 @@
 
 @end
 
-@implementation ToolbarCoordinator
+@implementation ToolbarCoordinator {
+  /// Type of toolbar containing the omnibox.
+  ToolbarType _omniboxPosition;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   CHECK(browser);
@@ -86,6 +90,8 @@
     return;
   }
   self.enableAnimationsForOmniboxFocus = YES;
+  // Set a default position, overriden by `setInitialOmniboxPosition` below.
+  _omniboxPosition = ToolbarType::kPrimary;
 
   Browser* browser = self.browser;
   [browser->GetCommandDispatcher()
@@ -98,8 +104,9 @@
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
           ->GetPrefs();
-  self.toolbarMediator =
-      [[ToolbarMediator alloc] initWithWebStateList:browser->GetWebStateList()];
+  self.toolbarMediator = [[ToolbarMediator alloc]
+      initWithWebStateList:browser->GetWebStateList()
+               isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
   self.toolbarMediator.prefService = prefs;
 
@@ -123,9 +130,13 @@
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
 
-  [self.primaryToolbarCoordinator
-      setLocationBarViewController:self.locationBarCoordinator
-                                       .locationBarViewController];
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self.toolbarMediator setInitialOmniboxPosition];
+  } else {
+    [self.primaryToolbarCoordinator
+        setLocationBarViewController:self.locationBarCoordinator
+                                         .locationBarViewController];
+  }
 
   [self updateToolbarsLayout];
   _prerenderService = PrerenderServiceFactory::GetForBrowserState(
@@ -224,6 +235,7 @@
       UIUserInterfaceSizeClassUnspecified) {
     return;
   }
+  [self.toolbarMediator locationBarFocusChangedTo:focused];
 
   [self.orchestrator
       transitionToStateOmniboxFocused:focused
@@ -375,6 +387,8 @@
 
 - (void)viewControllerTraitCollectionDidChange:
     (UITraitCollection*)previousTraitCollection {
+  [self.toolbarMediator
+      toolbarTraitCollectionChangedTo:self.traitEnvironment.traitCollection];
   [self updateToolbarsLayout];
 }
 
@@ -409,6 +423,26 @@
 - (void)triggerToolbarSlideInAnimation {
   for (id<ToolbarCommands> coordinator in self.coordinators) {
     [coordinator triggerToolbarSlideInAnimation];
+  }
+}
+
+#pragma mark - ToolbarMediatorDelegate
+
+- (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
+  _omniboxPosition = toolbarType;
+  switch (toolbarType) {
+    case ToolbarType::kPrimary:
+      [self.primaryToolbarCoordinator
+          setLocationBarViewController:self.locationBarCoordinator
+                                           .locationBarViewController];
+      [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
+      break;
+    case ToolbarType::kSecondary:
+      [self.secondaryToolbarCoordinator
+          setLocationBarViewController:self.locationBarCoordinator
+                                           .locationBarViewController];
+      [self.primaryToolbarCoordinator setLocationBarViewController:nil];
+      break;
   }
 }
 
