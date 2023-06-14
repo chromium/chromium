@@ -248,7 +248,7 @@ public class CustomTabBottomBarDelegate
             return 0;
         }
         if (mBottomBarHeightOverride != -1) return mBottomBarHeightOverride;
-        return mBottomBarView.getChildAt(1).getHeight();
+        return mBottomBarView.getHeight();
     }
 
     /**
