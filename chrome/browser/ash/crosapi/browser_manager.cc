@@ -67,7 +67,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
@@ -79,6 +78,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -459,8 +459,9 @@ void WarnThatLacrosNotAllowedToLaunch() {
 }
 
 void RecordDataVerForPrimaryUser() {
-  const std::string user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
-      ProfileManager::GetPrimaryUserProfile());
+  const std::string user_id_hash =
+      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
+          ProfileManager::GetPrimaryUserProfile());
   crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
                                        user_id_hash,
                                        version_info::GetVersion());
@@ -1657,7 +1658,7 @@ void BrowserManager::HandleGoToFiles() {
   // If "Go to files" on the migration error page was clicked, launch it here.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   std::string user_id_hash =
-      ash::ProfileHelper::GetUserIdHashFromProfile(profile);
+      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile);
   if (browser_util::WasGotoFilesClicked(g_browser_process->local_state(),
                                         user_id_hash)) {
     files_app_launcher_ = std::make_unique<FilesAppLauncher>(
@@ -1677,7 +1678,8 @@ void BrowserManager::PrepareLacrosPolicies() {
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD: {
-      Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+      Profile* profile = Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
       DCHECK(profile);
       policy::CloudPolicyManager* user_cloud_policy_manager =
           profile->GetUserCloudPolicyManagerAsh();
