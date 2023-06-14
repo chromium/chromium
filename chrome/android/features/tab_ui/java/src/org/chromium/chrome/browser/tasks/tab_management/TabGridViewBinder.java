@@ -12,7 +12,6 @@ import android.graphics.Matrix;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
@@ -136,7 +135,6 @@ class TabGridViewBinder {
             view.setLayoutParams(view.getLayoutParams());
             TabGridThumbnailView thumbnail =
                     (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
-            thumbnail.getLayoutParams().height = LayoutParams.MATCH_PARENT;
             updateThumbnail(view, model);
         }
     }
@@ -288,7 +286,7 @@ class TabGridViewBinder {
         final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         // To GC on hide remove the thumbnail and set a background color.
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
-        thumbnail.setColorThumbnailPlaceHolder(model.get(TabProperties.IS_INCOGNITO), isSelected);
+        thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
         thumbnail.setImageDrawable(null);
         if (fetcher == null) {
             return;
@@ -421,7 +419,7 @@ class TabGridViewBinder {
         titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));
 
-        thumbnail.setColorThumbnailPlaceHolder(isIncognito, isSelected);
+        thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected);
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
             ViewCompat.setBackgroundTintList(backgroundView,

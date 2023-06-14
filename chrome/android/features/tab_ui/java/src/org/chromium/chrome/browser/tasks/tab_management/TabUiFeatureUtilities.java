@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -79,6 +80,9 @@ public class TabUiFeatureUtilities {
                     TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM, false);
 
     private static boolean sTabSelectionEditorLongPressEntryEnabled;
+
+    public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
 
     /**
      * Set whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.

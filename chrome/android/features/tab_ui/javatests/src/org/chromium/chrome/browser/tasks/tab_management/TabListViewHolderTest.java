@@ -443,7 +443,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         TabGridThumbnailView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         assertNull("Thumbnail should be set to no drawable.", thumbnail.getDrawable());
         assertNotNull("Thumbnail should have a background drawable.", thumbnail.getBackground());
-        assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceHolder());
+        assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceholder());
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
         Assert.assertNull("Thumbnail should be release when thumbnail fetcher is set to null.",
                 thumbnail.getDrawable());
@@ -453,7 +453,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         assertThat("Thumbnail should be set.", thumbnail.getDrawable(),
                 instanceOf(BitmapDrawable.class));
         assertNull("Thumbnail should not have a background drawable.", thumbnail.getBackground());
-        assertFalse("Thumbnail should not be set to a place holder.", thumbnail.isPlaceHolder());
+        assertFalse("Thumbnail should not be set to a place holder.", thumbnail.isPlaceholder());
         Assert.assertEquals(2, mThumbnailFetchedCount.get());
     }
 
@@ -465,19 +465,19 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         TabGridThumbnailView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         assertNull("Thumbnail should be set to no drawable.", thumbnail.getDrawable());
         assertNotNull("Thumbnail should have a background drawable.", thumbnail.getBackground());
-        assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceHolder());
+        assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceholder());
 
         mShouldReturnBitmap = true;
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertNull("Thumbnail should be set to no drawable.", thumbnail.getDrawable());
         assertNotNull("Thumbnail should have a background drawable.", thumbnail.getBackground());
-        assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceHolder());
+        assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceholder());
         mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertThat("Thumbnail should be set.", thumbnail.getDrawable(),
                 instanceOf(BitmapDrawable.class));
         assertNull("Thumbnail should not have a background drawable.", thumbnail.getBackground());
-        assertFalse("Thumbnail should not be set to a place holder.", thumbnail.isPlaceHolder());
+        assertFalse("Thumbnail should not be set to a place holder.", thumbnail.isPlaceholder());
         Assert.assertEquals(2, mThumbnailFetchedCount.get());
     }
 

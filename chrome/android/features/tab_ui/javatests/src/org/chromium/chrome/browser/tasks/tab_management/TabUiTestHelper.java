@@ -589,7 +589,7 @@ public class TabUiTestHelper {
                 // Some items may not be cards or may not have thumbnails.
                 if (thumbnail == null) continue;
 
-                if (thumbnail.isPlaceHolder()
+                if (thumbnail.isPlaceholder()
                         || !(thumbnail.getDrawable() instanceof BitmapDrawable)
                         || ((BitmapDrawable) thumbnail.getDrawable()).getBitmap() == null) {
                     allFetched = false;

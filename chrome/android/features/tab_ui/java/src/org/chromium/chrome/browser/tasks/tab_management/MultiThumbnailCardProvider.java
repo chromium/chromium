@@ -301,11 +301,11 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mEmptyThumbnailPaint.setStyle(Paint.Style.FILL);
         mEmptyThumbnailPaint.setAntiAlias(true);
         mEmptyThumbnailPaint.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(context, false, false));
+                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(context, false, false));
 
         mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
         mSelectedEmptyThumbnailPaint.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(context, false, true));
+                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(context, false, true));
 
         // Paint used to set base for thumbnails, in case mEmptyThumbnailPaint has transparency.
         mThumbnailBasePaint = new Paint(mEmptyThumbnailPaint);
@@ -346,7 +346,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 boolean isIncognito = newModel.isIncognito();
-                mEmptyThumbnailPaint.setColor(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
+                mEmptyThumbnailPaint.setColor(TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
                         context, isIncognito, false));
                 mTextPaint.setColor(
                         TabUiThemeProvider.getTabGroupNumberTextColor(context, isIncognito, false));
@@ -356,7 +356,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                         TabUiThemeProvider.getFaviconBackgroundColor(context, isIncognito));
 
                 mSelectedEmptyThumbnailPaint.setColor(
-                        TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
+                        TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
                                 context, isIncognito, true));
                 mSelectedTextPaint.setColor(
                         TabUiThemeProvider.getTabGroupNumberTextColor(context, isIncognito, true));

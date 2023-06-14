@@ -7407,6 +7407,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "thumbnail-placeholder",
+    "owners": [ "ckitagawa", "fredmello" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "time-of-day-screen-saver",
     "owners": [ "esum", "jasontt", "assistive-eng@google.com" ],
     "expiry_milestone": 120

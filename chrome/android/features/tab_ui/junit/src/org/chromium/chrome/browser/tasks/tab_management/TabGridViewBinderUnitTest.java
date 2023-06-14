@@ -119,7 +119,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
@@ -130,7 +130,6 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageBitmap(mBitmap);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
-        verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
@@ -153,7 +152,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).setColorThumbnailPlaceHolder(false, false);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, false);
         verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
@@ -164,7 +163,6 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageBitmap(mBitmap);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
-        verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
@@ -189,7 +187,7 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
@@ -201,7 +199,6 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageBitmap(mBitmap);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
-        verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
@@ -225,7 +222,7 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
-        verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
@@ -237,7 +234,6 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageBitmap(mBitmap);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
-        verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.

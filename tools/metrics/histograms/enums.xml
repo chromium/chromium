@@ -59286,6 +59286,7 @@ from previous Chrome versions.
   <int value="-1942730618" label="WebAuthenticationTouchId:disabled"/>
   <int value="-1942518189" label="HeavyAdIntervention:disabled"/>
   <int value="-1942419166" label="SyncPseudoUSSApps:disabled"/>
+  <int value="-1942058396" label="ThumbnailPlaceholder:enabled"/>
   <int value="-1942057472" label="ExperimentalAccessibilityLabels:enabled"/>
   <int value="-1941852572" label="floating-virtual-keyboard"/>
   <int value="-1940806558" label="enable-syncfs-directory-operation"/>
@@ -67086,6 +67087,7 @@ from previous Chrome versions.
   <int value="2129814401" label="SyncTrustedVaultPassphrasePromo:enabled"/>
   <int value="2129929643" label="enable-use-zoom-for-dsf"/>
   <int value="2130479056" label="CCTResizableSideSheet:disabled"/>
+  <int value="2132018256" label="ThumbnailPlaceholder:disabled"/>
   <int value="2132335798" label="EcheSWA:disabled"/>
   <int value="2132595171" label="OmniboxSearchEngineLogo:enabled"/>
   <int value="2133594095" label="CryptAuthV2DeviceActivityStatus:disabled"/>

@@ -21,6 +21,7 @@ import com.google.android.material.elevation.ElevationOverlayProvider;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Utility class that provides theme related attributes for Tab UI.
@@ -171,6 +172,48 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the color to use for the thumbnail placeholder icon based on the state of the card.
+     *
+     * @param context {@link Context} to access resources.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
+     * @return The color to tint the globe icon drawable.
+     */
+    @ColorInt
+    public static int getThumbnailPlaceholderIconColor(
+            Context context, boolean isIncognito, boolean isSelected) {
+        if (isIncognito) {
+            @ColorRes
+            final int colorRes = isSelected ? R.color.incognito_placeholder_icon_selected_color
+                                            : R.color.incognito_placeholder_icon_color;
+            @ColorInt
+            final int color = context.getColor(colorRes);
+            // 40% if selected, 25% if not selected
+            return isSelected ? applyAlpha(0x66, color) : applyAlpha(0x40, color);
+        }
+        final boolean isDarkTheme = ColorUtils.inNightMode(context);
+        if (isDarkTheme) {
+            // colorOnPrimary == default_icon_color_on_accent_1.
+            @ColorInt
+            int color = isSelected ? MaterialColors.getColor(
+                                context, org.chromium.chrome.R.attr.colorOnPrimary, TAG)
+                                   : SemanticColorUtils.getDefaultIconColor(context);
+            // 40% if selected. 25% if not selected.
+            return isSelected ? applyAlpha(0x66, color) : applyAlpha(0x40, color);
+        }
+        @ColorInt
+        int color = isSelected ? SemanticColorUtils.getDefaultIconColorAccent1(context)
+                               : SemanticColorUtils.getDefaultIconColor(context);
+        // 100% if selected, 20% if not selected.
+        return isSelected ? color : applyAlpha(0x33, color);
+    }
+
+    @ColorInt
+    private static int applyAlpha(int alpha, @ColorInt int color) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
+    }
+
+    /**
      * Returns the mini-thumbnail placeholder color for the multi-thumbnail tab grid card based on
      * the incognito mode.
      *
@@ -180,7 +223,7 @@ public class TabUiThemeProvider {
      * @return The mini-thumbnail placeholder color.
      */
     @ColorInt
-    public static int getMiniThumbnailPlaceHolderColor(
+    public static int getMiniThumbnailPlaceholderColor(
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             @ColorRes
@@ -193,16 +236,16 @@ public class TabUiThemeProvider {
                             : R.integer.tab_thumbnail_placeholder_color_alpha);
 
             @StyleRes
-            int styleRes = isSelected ? R.style.TabThumbnailPlaceHolderStyle_Selected
-                                      : R.style.TabThumbnailPlaceHolderStyle;
+            int styleRes = isSelected ? R.style.TabThumbnailPlaceholderStyle_Selected
+                                      : R.style.TabThumbnailPlaceholderStyle;
             TypedArray ta =
-                    context.obtainStyledAttributes(styleRes, R.styleable.TabThumbnailPlaceHolder);
+                    context.obtainStyledAttributes(styleRes, R.styleable.TabThumbnailPlaceholder);
 
             @ColorInt
             int baseColor = ta.getColor(
-                    R.styleable.TabThumbnailPlaceHolder_colorTileBase, Color.TRANSPARENT);
+                    R.styleable.TabThumbnailPlaceholder_colorTileBase, Color.TRANSPARENT);
             float tileSurfaceElevation =
-                    ta.getDimension(R.styleable.TabThumbnailPlaceHolder_elevationTileBase, 0);
+                    ta.getDimension(R.styleable.TabThumbnailPlaceholder_elevationTileBase, 0);
 
             ta.recycle();
             if (tileSurfaceElevation != 0) {

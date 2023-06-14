@@ -2493,6 +2493,9 @@ extern const char kSurfacePolishDescription[];
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 
+extern const char kThumbnailPlaceholderName[];
+extern const char kThumbnailPlaceholderDescription[];
+
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];
 

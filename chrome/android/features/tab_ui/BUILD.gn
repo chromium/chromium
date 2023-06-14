@@ -39,6 +39,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_rating_star_half.xml",
     "java/res/drawable/ic_rating_star_outline.xml",
     "java/res/drawable/ic_select_all_24dp.xml",
+    "java/res/drawable/ic_tab_placeholder.xml",
     "java/res/drawable/iph_drag_and_drop_animated_drawable.xml",
     "java/res/drawable/iph_drag_and_drop_drawable.xml",
     "java/res/drawable/price_card_background.xml",

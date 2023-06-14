@@ -8,18 +8,22 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Icon;
+import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -38,6 +42,32 @@ public class TabGridThumbnailView extends ImageView {
     private static final boolean SUPPORTS_ANTI_ALIAS_CLIP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
 
+    /**
+     * Placeholder drawable constants.
+     */
+    private static final float SIZE_PERCENTAGE = 0.42f;
+    private static Integer sVerticalOffsetPx;
+
+    /**
+     * To prevent {@link TabGridThumbnailView#updateImage()} from running during inflation.
+     */
+    private boolean mInitialized;
+
+    /**
+     * Placeholder icon drawable to use if there is no thumbnail. This is drawn on-top of the
+     * {@link mBackgroundDrawable} which defines the shape of the thumbnail. There are two
+     * separate layers because the background scales with the thumbnail size whereas the icon
+     * will be the SIZE_PERCENTAGE of the minimum side length of the thumbnail size centered
+     * and adjusted upwards.
+     */
+    private VectorDrawable mIconDrawable;
+    private Matrix mIconMatrix;
+    private int mIconColor;
+
+    /**
+     * Background drawable which is present while in placeholder mode.
+     * Once a thumbnail is set this will be removed.
+     */
     private final GradientDrawable mBackgroundDrawable;
 
     // Pre-allocate to avoid repeat calls during {@link onDraw}.
@@ -54,11 +84,18 @@ public class TabGridThumbnailView extends ImageView {
 
     public TabGridThumbnailView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        if (sVerticalOffsetPx == null) {
+            sVerticalOffsetPx = context.getResources().getDimensionPixelSize(
+                    R.dimen.tab_thumbnail_placeholder_vertical_offset);
+        }
+
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(1);
         mPath = new Path();
         mRectF = new RectF();
+        mIconMatrix = new Matrix();
         mBackgroundDrawable = new GradientDrawable();
 
         TypedArray a =
@@ -75,25 +112,31 @@ public class TabGridThumbnailView extends ImageView {
 
         setRoundedCorners(radiusTopStart, radiusTopEnd, radiusBottomStart, radiusBottomEnd);
         setBackground(mBackgroundDrawable);
+        mInitialized = true;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (!mInitialized) return;
 
         int measuredWidth = getMeasuredWidth();
         int measureHeight = getMeasuredHeight();
 
         // TODO(crbug/1434775): Consider fixing the aspect ratio and cropping/resizing the Drawable
         // to fit.
-        int expectedHeight =
-                (int) (measuredWidth * 1.0 / TabUtils.getTabThumbnailAspectRatio(getContext()));
-        if (isPlaceHolder()) {
+        // Don't force a size if the placeholder drawable is in use.
+        if (isPlaceholder()) {
+            final int expectedHeight =
+                    (int) (measuredWidth * 1.0 / TabUtils.getTabThumbnailAspectRatio(getContext()));
             measureHeight = expectedHeight;
         }
 
         setMeasuredDimension(measuredWidth, measureHeight);
         mRectF.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+        if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
+            resizeIconDrawable();
+        }
     }
 
     @Override
@@ -128,6 +171,10 @@ public class TabGridThumbnailView extends ImageView {
 
     @Override
     public void onDraw(Canvas canvas) {
+        if (!mInitialized) {
+            super.onDraw(canvas);
+            return;
+        }
         mPath.reset();
         mPath.addRoundRect(mRectF, mRadii, Path.Direction.CW);
         canvas.save();
@@ -142,20 +189,53 @@ public class TabGridThumbnailView extends ImageView {
     }
 
     private void updateImage() {
-        if (isPlaceHolder()) {
-            // If the drawable is empty, display a placeholder.
+        if (!mInitialized) return;
+        // If the drawable is empty, display a placeholder image.
+        if (isPlaceholder()) {
             setBackground(mBackgroundDrawable);
+
+            if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
+                updateIconDrawable();
+            }
             return;
         }
-        // Remove the background as multi-thumbnails have transparency.
+
+        clearColorFilter();
+        mIconDrawable = null;
+        // Remove the background drawable as mini group thumbnails have a transparent space between
+        // them and normal thumbnails are opaque.
         setBackground(null);
+    }
+
+    private void updateIconDrawable() {
+        if (mIconDrawable == null) {
+            mIconDrawable = (VectorDrawable) AppCompatResources.getDrawable(
+                    getContext(), R.drawable.ic_tab_placeholder);
+        }
+        setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
+        // External callers either change this or use MATRIX there is no need to reset this.
+        // See {@link TabGridViewBinder#updateThumbnail()}.
+        setScaleType(ImageView.ScaleType.MATRIX);
+        resizeIconDrawable();
+        super.setImageDrawable(mIconDrawable);
     }
 
     /**
      * @return whether the image drawable is a placeholder.
      */
-    boolean isPlaceHolder() {
-        return getDrawable() == null;
+    boolean isPlaceholder() {
+        if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
+            // The drawable can only be null if we just removed the drawable and need to set the
+            // mIconDrawable.
+            if (getDrawable() == null) return true;
+
+            // Otherwise there should always be a thumbnail or placeholder drawable.
+            if (mIconDrawable == null) return false;
+            return getDrawable() == mIconDrawable;
+        } else {
+            // There is only a drawable when the thumbnail is set.
+            return getDrawable() == null;
+        }
     }
 
     /**
@@ -163,13 +243,26 @@ public class TabGridThumbnailView extends ImageView {
      * @param isIncognito Whether the thumbnail is on an incognito tab.
      * @param isSelected Whether the thumbnail is on a selected tab.
      */
-    void setColorThumbnailPlaceHolder(boolean isIncognito, boolean isSelected) {
-        mBackgroundDrawable.setColor(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
+    void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
+        // Step 1: Background color.
+        mBackgroundDrawable.setColor(TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
                 getContext(), isIncognito, isSelected));
-        int oldColor = mPaint.getColor();
-        mPaint.setColor(TabUiThemeProvider.getCardViewBackgroundColor(
-                getContext(), isIncognito, isSelected));
-        if (!SUPPORTS_ANTI_ALIAS_CLIP && oldColor != mPaint.getColor()) {
+        final int oldColor = mPaint.getColor();
+        final int newColor = TabUiThemeProvider.getCardViewBackgroundColor(
+                getContext(), isIncognito, isSelected);
+        mPaint.setColor(newColor);
+
+        // Step 2: Placeholder icon.
+        // Make property changes outside the flag intentionally in the event the flag flips status
+        // these will have no material effect on the UI and are safe.
+        mIconColor = TabUiThemeProvider.getThumbnailPlaceholderIconColor(
+                getContext(), isIncognito, isSelected);
+        if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled() && mIconDrawable != null) {
+            setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
+        }
+
+        // Step 3: Invalidate for versions earlier than Android P.
+        if (!SUPPORTS_ANTI_ALIAS_CLIP && !isPlaceholder() && oldColor != newColor) {
             invalidate();
         }
     }
@@ -196,5 +289,27 @@ public class TabGridThumbnailView extends ImageView {
         }
 
         mBackgroundDrawable.setCornerRadii(mRadii);
+    }
+
+    private void resizeIconDrawable() {
+        if (mIconDrawable != null) {
+            final int width = getWidth();
+            final int height = getHeight();
+
+            // Vector graphic is square so width or height doesn't matter.
+            final int vectorEdgeLength = mIconDrawable.getIntrinsicWidth();
+
+            // Shortest edge of thumbnail region * SIZE_PERCENTAGE.
+            final int edgeLength = Math.round(SIZE_PERCENTAGE * Math.min(width, height));
+            final float scale = (float) edgeLength / (float) vectorEdgeLength;
+            mIconMatrix.reset();
+            mIconMatrix.postScale(scale, scale);
+
+            // Center and offset vertically by sVerticalOffsetPx to account for optical illusion of
+            // centering.
+            mIconMatrix.postTranslate((float) (width - edgeLength) / 2f,
+                    (float) (height - edgeLength) / 2f - sVerticalOffsetPx);
+            setImageMatrix(mIconMatrix);
+        }
     }
 }
