@@ -41,6 +41,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -293,7 +294,9 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
+  return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                            ? kUserAccountAvatarRefreshIcon
+                                            : kUserAccountAvatarIcon,
                                         ui::kColorAvatarIconGuest, size);
 }
 

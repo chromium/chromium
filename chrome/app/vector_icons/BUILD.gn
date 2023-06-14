@@ -229,6 +229,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "ungroup.icon",
     "usb_cable.icon",
     "user_account_avatar.icon",
+    "user_account_avatar_refresh.icon",
     "user_menu_guest.icon",
     "user_menu_right_arrow.icon",
     "web.icon",
