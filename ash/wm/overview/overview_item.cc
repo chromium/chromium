@@ -1202,7 +1202,9 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   // Do not set transform for drop target, set bounds instead.
   if (overview_grid_->IsDropTargetWindow(window)) {
     const gfx::Rect drop_target_bounds =
-        ToStableSizeRoundedRect(GetWindowTargetBoundsWithInsets());
+        ToStableSizeRoundedRect(chromeos::features::IsJellyrollEnabled()
+                                    ? target_bounds_
+                                    : GetWindowTargetBoundsWithInsets());
     SetWidgetBoundsAndMaybeAnimateTransform(
         overview_grid_->drop_target_widget(), drop_target_bounds,
         animation_type, /*observer=*/nullptr);

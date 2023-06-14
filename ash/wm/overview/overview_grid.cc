@@ -76,7 +76,6 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/animation_builder.h"
@@ -282,14 +281,21 @@ class DropTargetView : public views::View {
   DropTargetView() {
     SetUseDefaultFillLayout(true);
 
-    int top_corner_radius = GetCornerRadius().first;
-    int bottom_corner_radius = GetCornerRadius().second;
+    const int corner_radius =
+        chromeos::features::IsJellyrollEnabled()
+            ? kOverviewItemCornerRadius
+            : views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                  views::Emphasis::kLow);
 
     background_view_ = AddChildView(std::make_unique<views::View>());
     // TODO(b/280330100): Replace the color token once the new color token is
     // added.
     background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase20, top_corner_radius, bottom_corner_radius, 0));
+        kColorAshShieldAndBase20, corner_radius, /*for_border_thickness=*/0));
+
+    SetBorder(views::CreateThemedRoundedRectBorder(
+        kDropTargetBorderThickness, corner_radius,
+        cros_tokens::kCrosSysSystemBaseElevated));
   }
   DropTargetView(const DropTargetView&) = delete;
   DropTargetView& operator=(const DropTargetView&) = delete;
@@ -299,46 +305,6 @@ class DropTargetView : public views::View {
   // drop target is selected in overview.
   void UpdateBackgroundVisibility(bool visible) {
     background_view_->SetVisible(visible);
-  }
-
-  // Paint the border for the drop target view. The reason we don't use the
-  // existing Border class here is the Border class only accepts one corner
-  // radius for all four corners, in our use case, the top corner radius could
-  // be different than the bottom corner radius.
-  void OnPaintBorder(gfx::Canvas* canvas) override {
-    gfx::Rect rect(GetLocalBounds());
-    rect.Inset(kDropTargetBorderThickness / 2);
-    float top_corner_radius = GetCornerRadius().first;
-    float bottom_corner_radius = GetCornerRadius().second;
-
-    SkScalar sk_radii[8] = {top_corner_radius,    top_corner_radius,
-                            top_corner_radius,    top_corner_radius,
-                            bottom_corner_radius, bottom_corner_radius,
-                            bottom_corner_radius, bottom_corner_radius};
-    SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(rect), sk_radii);
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setStrokeWidth(kDropTargetBorderThickness);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    // TODO(b/280330100): Replace the color token once the new color token is
-    // added.
-    flags.setColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
-    canvas->DrawPath(path, flags);
-  }
-
- private:
-  std::pair<float, float> GetCornerRadius() const {
-    if (chromeos::features::IsJellyrollEnabled()) {
-      return {0.f, kOverviewItemCornerRadius};
-    }
-
-    const float corner_radius =
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kLow);
-    return {corner_radius, corner_radius};
   }
 
   raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
