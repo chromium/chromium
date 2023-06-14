@@ -860,8 +860,16 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
 }
 
+// TODO(crbug.com/1454793): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DiscardPrerenderedPageCookieClientAccess \
+  DISABLED_DiscardPrerenderedPageCookieClientAccess
+#else
+#define MAYBE_DiscardPrerenderedPageCookieClientAccess \
+  DiscardPrerenderedPageCookieClientAccess
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       DiscardPrerenderedPageCookieClientAccess) {
+                       MAYBE_DiscardPrerenderedPageCookieClientAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
 
