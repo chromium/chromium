@@ -54,6 +54,9 @@ enum AttestationCertificateProfile {
   // A profile for certificates intended for setting up ChromeOS devices using
   // other authenticated devices.
   PROFILE_DEVICE_SETUP_CERTIFICATE = 11,
+  // A profile for certificates intended for using the Device Trust Connector on
+  // unmanaged devices.
+  PROFILE_DEVICE_TRUST_USER_CERTIFICATE = 14,
 };
 
 // Status for operations involving an attestation server.
