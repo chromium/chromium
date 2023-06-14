@@ -200,6 +200,104 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
 }
 
 template <typename T>
+struct ElementWiseUnaryTester {
+  ElementWiseUnaryKind kind;
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper, V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    MLOperand* output_operand = nullptr;
+    switch (kind) {
+      case ElementWiseUnaryKind::kAbs:
+        output_operand = builder->abs(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kCeil:
+        output_operand =
+            builder->ceil(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kFloor:
+        output_operand =
+            builder->floor(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kNeg:
+        output_operand = builder->neg(input_operand, scope.GetExceptionState());
+        break;
+    }
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, ElementWiseUnaryTest) {
+  V8TestingScope scope;
+  {
+    // Test element-wise abs operator for a 1-D tensor.
+    // The expected results should be the absolute value of the input tensor,
+    // element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kAbs,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1.0, -2.0}},
+        .expected = {1.0, 2.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise ceil operator for a 2-D tensor.
+    // The expected results should be the ceiling of the input tensor,
+    // element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kCeil,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2},
+                  .values = {1.1, -2.2}},
+        .expected = {2.0, -2.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise floor operator for a 3-D tensor.
+    // The expected results should be the floor of the input tensor,
+    // element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kFloor,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2},
+                  .values = {1.1, -2.2, 3.3, -4.4}},
+        .expected = {1.0, -3.0, 3.0, -5.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise neg operator for a 4-D tensor.
+    // The expected results should be the numerical negative value of the input
+    // tensor, element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kNeg,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1.0, -2.0, 3.0, -4.0}},
+        .expected = {-1.0, 2.0, -3.0, 4.0}}
+        .Test(*this, scope);
+  }
+}
+
+template <typename T>
 struct PReluTester {
   OperandInfo<T> input;
   OperandInfo<T> slope;

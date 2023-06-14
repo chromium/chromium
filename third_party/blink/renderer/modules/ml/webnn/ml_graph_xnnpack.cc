@@ -960,6 +960,43 @@ xnn_status DefineXnnNodeForElementWiseBinary(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForElementWiseUnary(
+    xnn_subgraph_t subgraph,
+    const MLOperator* unary,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(unary, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(unary, operand_value_id_map);
+  const uint32_t flags = 0;
+  switch (unary->Kind()) {
+    case MLOperator::OperatorKind::kAbs: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_abs(subgraph, input_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kCeil: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_ceiling(subgraph, input_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kFloor: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_floor(subgraph, input_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kNeg: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_negate(subgraph, input_id, output_id, flags));
+      break;
+    }
+    default:
+      NOTREACHED_NORETURN() << "Unsupported element-wise unary operator.";
+  }
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForElu(xnn_subgraph_t subgraph,
                                const MLOperator* elu,
                                const OperandValueIdMap& operand_value_id_map,
@@ -1518,6 +1555,15 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case MLOperator::OperatorKind::kMax:
     case MLOperator::OperatorKind::kMin: {
       XNN_CHECK_STATUS(DefineXnnNodeForElementWiseBinary(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    // Define XNNPACK Node for element-wise unary operators.
+    case MLOperator::OperatorKind::kAbs:
+    case MLOperator::OperatorKind::kCeil:
+    case MLOperator::OperatorKind::kFloor:
+    case MLOperator::OperatorKind::kNeg: {
+      XNN_CHECK_STATUS(DefineXnnNodeForElementWiseUnary(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
