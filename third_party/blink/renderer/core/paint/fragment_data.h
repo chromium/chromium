@@ -98,7 +98,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   ObjectPaintProperties& EnsurePaintProperties() {
     EnsureRareData();
     if (!rare_data_->paint_properties)
-      rare_data_->paint_properties = std::make_unique<ObjectPaintProperties>();
+      rare_data_->paint_properties = ObjectPaintProperties::Create();
     return *rare_data_->paint_properties;
   }
   void ClearPaintProperties() {

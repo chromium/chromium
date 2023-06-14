@@ -107,6 +107,7 @@ blink_core_sources_paint = [
   "object_painter.h",
   "object_paint_invalidator.cc",
   "object_paint_invalidator.h",
+  "object_paint_properties.cc",
   "object_paint_properties.h",
   "object_paint_properties_impl.h",
   "outline_painter.cc",
