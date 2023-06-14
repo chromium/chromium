@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
       GenerateManifestIdFromStartUrlOnly(start_url));
   const WebApp* app = provider.registrar_unsafe().GetAppById(app_id);
 
-  ASSERT_TRUE(app);
+  ASSERT_TRUE(app) << provider.registrar_unsafe().AsDebugValue();
   EXPECT_EQ(app->management_to_external_config_map(),
             (WebApp::ExternalConfigMap{{WebAppManagement::Type::kPolicy,
                                         {/*is_placeholder=*/false,
