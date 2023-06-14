@@ -63,17 +63,9 @@ class AddressField : public FormField {
                          const LanguageCode& page_language,
                          PatternSource pattern_source);
 
-  bool ParseCountry(AutofillScanner* scanner,
-                    const LanguageCode& page_language,
-                    PatternSource pattern_source);
-
   bool ParseZipCode(AutofillScanner* scanner,
                     const LanguageCode& page_language,
                     PatternSource pattern_source);
-
-  bool ParseDependentLocality(AutofillScanner* scanner,
-                              const LanguageCode& page_language,
-                              PatternSource pattern_source);
 
   bool ParseCity(AutofillScanner* scanner,
                  const LanguageCode& page_language,
@@ -82,18 +74,6 @@ class AddressField : public FormField {
   bool ParseState(AutofillScanner* scanner,
                   const LanguageCode& page_language,
                   PatternSource pattern_source);
-
-  bool ParseLandmark(AutofillScanner* scanner,
-                     const LanguageCode& page_language,
-                     PatternSource pattern_source);
-
-  bool ParseBetweenStreets(AutofillScanner* scanner,
-                           const LanguageCode& page_language,
-                           PatternSource pattern_source);
-
-  bool ParseAdminLevel2(AutofillScanner* scanner,
-                        const LanguageCode& page_language,
-                        PatternSource pattern_source);
 
   // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
