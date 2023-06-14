@@ -1,9 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="500" height="300">
-  <rect fill="rgb(50%,50%,50%)" stroke="green" x="20" y="20" width="75" height="75"/>
-  <rect fill="rgb(50%,50%,50%)" stroke="green" x="186" y="20" width="54" height="75"/>
-  <rect fill="rgb(50%,50%,50%)" stroke="green" x="304" y="64" width="56" height="56"/>
+  <!--The gray-filled rectangles represent the expected output of the
+      displacement filter effect. Small variation is acceptable tue to
+      image sampling and fractional color values interpreted as vectors.
 
-  <rect fill="rgb(50%,50%,50%)" stroke="green" x="44" y="164" width="76" height="76"/>
-  <rect fill="rgb(50%,50%,50%)" stroke="green" x="140" y="140" width="75" height="75"/>
-  <rect fill="rgb(50%,50%,50%)" stroke="green" x="287" y="167" width="73" height="73"/>
+      The green stroked rectangles must exactly match the original SVG,
+      which are not affected by a filter.-->
+  <rect fill="rgb(50%,50%,50%)" stroke="none" x="20" y="20" width="75" height="75"/>
+  <rect fill="none" stroke="green" x="20" y="20" width="75" height="75"/>
+
+  <rect fill="rgb(50%,50%,50%)" stroke="none" x="187" y="20" width="53" height="75"/>
+  <rect fill="none" stroke="green" x="186" y="20" width="54" height="75"/>
+
+  <rect fill="rgb(50%,50%,50%)" stroke="none" x="305" y="65" width="55" height="55"/>
+  <rect fill="none" stroke="green" x="304" y="64" width="56" height="56"/>
+
+  <rect fill="rgb(50%,50%,50%)" stroke="none" x="45" y="165" width="75" height="75"/>
+  <rect fill="none" stroke="green" x="44" y="164" width="76" height="76"/>
+
+  <rect fill="rgb(50%,50%,50%)" stroke="none" x="140" y="140" width="75" height="75"/>
+  <rect fill="none" stroke="green" x="140" y="140" width="75" height="75"/>
+
+  <rect fill="rgb(50%,50%,50%)" stroke="none" x="288" y="168" width="72" height="72"/>
+  <rect fill="none" stroke="green" x="287" y="167" width="73" height="73"/>
 </svg>
