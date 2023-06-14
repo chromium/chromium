@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,6 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_error_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -79,12 +82,13 @@ const std::u16string GetDestination(DlpFileDestination destination) {
 }
 }  // namespace
 
+FilesPolicyDialogFactory* factory_;
+
 FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
                                      DlpFileDestination destination,
                                      dlp::FileAction action,
                                      gfx::NativeWindow modal_parent)
     : destination_(destination), action_(action), file_count_(file_count) {
-  // TODO(b/279397364): Confirm behavior if we cannot open Files App.
   ui::ModalType modal =
       modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
   SetModalType(modal);
@@ -97,6 +101,49 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
 }
 
 FilesPolicyDialog::~FilesPolicyDialog() = default;
+
+views::Widget* FilesPolicyDialog::CreateWarnDialog(
+    OnDlpRestrictionCheckedCallback callback,
+    const std::vector<DlpConfidentialFile>& files,
+    DlpFileDestination destination,
+    dlp::FileAction action,
+    gfx::NativeWindow modal_parent) {
+  if (factory_) {
+    return factory_->CreateWarnDialog(std::move(callback), files, destination,
+                                      action, modal_parent);
+  }
+
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      std::make_unique<FilesPolicyWarnDialog>(
+          std::move(callback), files, destination, action, modal_parent),
+      /*context=*/nullptr, /*parent=*/modal_parent);
+  widget->Show();
+  return widget;
+}
+
+views::Widget* FilesPolicyDialog::CreateErrorDialog(
+    const std::map<DlpConfidentialFile, Policy>& files,
+    DlpFileDestination destination,
+    dlp::FileAction action,
+    gfx::NativeWindow modal_parent) {
+  if (factory_) {
+    return factory_->CreateErrorDialog(std::move(files), destination, action,
+                                       modal_parent);
+  }
+
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      std::make_unique<FilesPolicyErrorDialog>(std::move(files), destination,
+                                               action, modal_parent),
+      /*context=*/nullptr, /*parent=*/modal_parent);
+  widget->Show();
+  return widget;
+}
+
+// static
+void FilesPolicyDialog::SetFactory(FilesPolicyDialogFactory* factory) {
+  delete factory_;
+  factory_ = factory;
+}
 
 void FilesPolicyDialog::AddGeneralInformation() {
   SetupUpperPanel(GetTitle(), GetMessage());

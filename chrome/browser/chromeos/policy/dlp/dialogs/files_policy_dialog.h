@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace policy {
 
@@ -25,10 +26,30 @@ enum class FilesDialogType {
   kError,    // Error dialog - overview of blocked files.
 };
 
-// Type of policy. Used for warning type dialogs.
+// Type of policy.
 enum class Policy {
   kDlp,                   // Data Leak Prevention policy.
   kEnterpriseConnectors,  // Enterprise Connectors policy.
+};
+
+// Interface for creating warn and error FilesPolicyDialogs.
+// Used in tests.
+class FilesPolicyDialogFactory {
+ public:
+  virtual ~FilesPolicyDialogFactory() = default;
+
+  virtual views::Widget* CreateWarnDialog(
+      OnDlpRestrictionCheckedCallback callback,
+      const std::vector<DlpConfidentialFile>& files,
+      DlpFileDestination destination,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent) = 0;
+
+  virtual views::Widget* CreateErrorDialog(
+      const std::map<DlpConfidentialFile, Policy>& files,
+      DlpFileDestination destination,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent) = 0;
 };
 
 // FilesPolicyDialog is a window modal dialog used to show detailed overview of
@@ -45,6 +66,25 @@ class FilesPolicyDialog : public PolicyDialogBase {
   FilesPolicyDialog(const FilesPolicyDialog& other) = delete;
   FilesPolicyDialog& operator=(const FilesPolicyDialog& other) = delete;
   ~FilesPolicyDialog() override;
+
+  // Creates and shows an instance of FilesPolicyWarnDialog. Returns owning
+  // Widget.
+  static views::Widget* CreateWarnDialog(
+      OnDlpRestrictionCheckedCallback callback,
+      const std::vector<DlpConfidentialFile>& files,
+      DlpFileDestination destination,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent);
+
+  // Creates and shows an instance of FilesPolicyErrorDialog. Returns owning
+  // Widget.
+  static views::Widget* CreateErrorDialog(
+      const std::map<DlpConfidentialFile, Policy>& files,
+      DlpFileDestination destination,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent);
+
+  static void SetFactory(FilesPolicyDialogFactory* factory);
 
  protected:
   DlpFileDestination destination_;

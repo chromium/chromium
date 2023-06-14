@@ -413,7 +413,6 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
     return;
   }
 
-  views::Widget* widget;
   switch (type) {
     case FilesDialogType::kUnknown:
       LOG(WARNING) << "Unknown FilesDialogType passed";
@@ -422,12 +421,11 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       if (!HasBlockedFiles(task_id)) {
         return;
       }
-      widget = views::DialogDelegate::CreateDialogWidget(
-          std::make_unique<FilesPolicyErrorDialog>(
-              std::move(io_tasks_.at(task_id).blocked_files),
-              DlpFileDestination(""), io_tasks_.at(task_id).action,
-              modal_parent),
-          /*context=*/nullptr, /*parent=*/modal_parent);
+      // TODO(b/285568353): Remove destination.
+      FilesPolicyDialog::CreateErrorDialog(
+          io_tasks_.at(task_id).blocked_files,
+          DlpFileDestination("https://example.com"),
+          io_tasks_.at(task_id).action, modal_parent);
       break;
     case FilesDialogType::kWarning:
       if (!HasWarning(task_id)) {
@@ -437,16 +435,14 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
           &FilesPolicyNotificationManager::OnWarningDialogClicked,
           weak_factory_.GetWeakPtr(), task_id,
           io_tasks_.at(task_id).warning_info->warning_reason);
-      widget = views::DialogDelegate::CreateDialogWidget(
-          std::make_unique<FilesPolicyWarnDialog>(
-              std::move(callback),
-              std::move(io_tasks_.at(task_id).warning_info->files),
-              DlpFileDestination(""), io_tasks_.at(task_id).action,
-              modal_parent),
-          /*context=*/nullptr, /*parent=*/modal_parent);
+      // TODO(b/285568353): Remove destination.
+      FilesPolicyDialog::CreateWarnDialog(
+          std::move(callback),
+          std::move(io_tasks_.at(task_id).warning_info->files),
+          DlpFileDestination("https://example.com"),
+          io_tasks_.at(task_id).action, modal_parent);
       break;
   }
-  widget->Show();
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }
 
@@ -672,16 +668,12 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  auto* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyWarnDialog>(
-          std::move(callback),
-          std::vector<DlpConfidentialFile>{warning_files.begin(),
-                                           warning_files.end()},
-          destination, action,
-          /*modal_parent=*/nullptr),
-      /*context=*/nullptr,
-      /*parent=*/nullptr);
-  widget->Show();
+  FilesPolicyDialog::CreateWarnDialog(
+      std::move(callback),
+      std::vector<DlpConfidentialFile>{warning_files.begin(),
+                                       warning_files.end()},
+      destination, action,
+      /*modal_parent=*/nullptr);
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }
 

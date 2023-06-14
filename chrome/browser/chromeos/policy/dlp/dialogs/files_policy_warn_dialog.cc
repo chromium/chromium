@@ -17,11 +17,8 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     DlpFileDestination destination,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(),
-                        std::move(destination),
-                        action,
-                        modal_parent),
-      files_(std::move(files)) {
+    : FilesPolicyDialog(files.size(), destination, action, modal_parent),
+      files_(files) {
   SetOnDlpRestrictionCheckedCallback(std::move(callback));
   MaybeAddConfidentialRows();
 }

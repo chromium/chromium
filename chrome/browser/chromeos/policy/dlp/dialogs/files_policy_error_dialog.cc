@@ -10,16 +10,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace policy {
+
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
-    std::map<DlpConfidentialFile, Policy> files,
+    const std::map<DlpConfidentialFile, Policy>& files,
     DlpFileDestination destination,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(),
-                        std::move(destination),
-                        action,
-                        modal_parent),
-      files_(std::move(files)) {
+    : FilesPolicyDialog(files.size(), destination, action, modal_parent),
+      files_(files) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenHelpPage,

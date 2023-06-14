@@ -23,7 +23,7 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   METADATA_HEADER(FilesPolicyErrorDialog);
 
   FilesPolicyErrorDialog() = delete;
-  FilesPolicyErrorDialog(std::map<DlpConfidentialFile, Policy> files,
+  FilesPolicyErrorDialog(const std::map<DlpConfidentialFile, Policy>& files,
                          DlpFileDestination destination,
                          dlp::FileAction action,
                          gfx::NativeWindow modal_parent);
