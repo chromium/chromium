@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -375,6 +376,8 @@ void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
   const base::TimeDelta delay = playout_time - now;
   CheckTimeDeltaRange(delay, base::Seconds(10));
 
+  UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                            delay.InMilliseconds());
   // Supply the input data and render the output data.
   source_->OnMoreData(delay, now, glitch_info_accumulator_.GetAndReset(), dest);
   dest->Scale(volume_);

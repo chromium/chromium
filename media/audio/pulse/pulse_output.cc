@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -171,9 +172,11 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
     }
 
     size_t unwritten_frames_in_bus = audio_bus_->frames();
+    const base::TimeDelta delay = pulse::GetHardwareLatency(pa_stream_);
+    UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                              delay.InMilliseconds());
     size_t frames_filled = source_callback_->OnMoreData(
-        pulse::GetHardwareLatency(pa_stream_), base::TimeTicks::Now(), {},
-        audio_bus_.get());
+        delay, base::TimeTicks::Now(), {}, audio_bus_.get());
 
     // Zero any unfilled data so it plays back as silence.
     if (frames_filled < unwritten_frames_in_bus) {

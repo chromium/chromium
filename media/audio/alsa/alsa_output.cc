@@ -43,6 +43,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -790,8 +791,11 @@ int AlsaPcmOutputStream::RunDataCallback(base::TimeDelta delay,
                                          AudioBus* audio_bus) {
   TRACE_EVENT0("audio", "AlsaPcmOutputStream::RunDataCallback");
 
-  if (source_callback_)
+  if (source_callback_) {
+    UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                              delay.InMilliseconds());
     return source_callback_->OnMoreData(delay, delay_timestamp, {}, audio_bus);
+  }
 
   return 0;
 }

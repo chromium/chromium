@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
@@ -336,6 +337,8 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
   const base::TimeDelta delay =
       std::max(base::TimeDelta::FromTimeSpec(*latency_ts), base::TimeDelta());
 
+  UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                            delay.InMilliseconds());
   int frames_filled = source_callback_->OnMoreData(
       delay, base::TimeTicks::Now(), glitch_info_accumulator_.GetAndReset(),
       output_bus_.get());

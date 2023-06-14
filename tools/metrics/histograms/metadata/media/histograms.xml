@@ -1077,6 +1077,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Render.SystemDelay" units="ms"
+    expires_after="2024-06-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The delay between audio being delivered to the OS-specific implementation of
+    AudioOutputStream and the audio being played out by the speakers. Reported
+    every time the AudioOutputStream calls AudioSourceCallback::OnMoreData.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.TabAudioMuted" enum="Boolean"
     expires_after="2023-11-12">
   <owner>evliu@google.com</owner>

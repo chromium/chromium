@@ -797,6 +797,9 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       delay_timestamp = base::TimeTicks::Now();
     }
 
+    UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                              delay.InMilliseconds());
+
     // Read a data packet from the registered client source and
     // deliver a delay estimate in the same callback to the client.
 
