@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -1000,18 +1001,17 @@ void PinManager::Complete(const Stage stage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(stage));
 
-  progress_.stage = stage;
   switch (stage) {
     case Stage::kSuccess:
       VLOG(1) << "Finished with success";
       break;
 
     case Stage::kPausedOffline:
-      VLOG(1) << "Paused offline";
+      VLOG(1) << "Paused because offline";
       break;
 
     case Stage::kPausedBatterySaver:
-      VLOG(1) << "Paused battery saver";
+      VLOG(1) << "Paused because of battery saver";
       break;
 
     case Stage::kStopped:
@@ -1020,7 +1020,24 @@ void PinManager::Complete(const Stage stage) {
 
     default:
       LOG(ERROR) << "Finished with error: " << Quote(stage);
+
+      switch (progress_.stage) {
+        case Stage::kListingFiles:
+          base::UmaHistogramEnumeration(
+              "FileBrowser.GoogleDrive.BulkPinning.Listing.Error", stage);
+          break;
+
+        case Stage::kSyncing:
+          base::UmaHistogramEnumeration(
+              "FileBrowser.GoogleDrive.BulkPinning.Syncing.Error", stage);
+          break;
+
+        default:
+          break;
+      }
   }
+
+  progress_.stage = stage;
 
   if (progress_.stage == Stage::kNotEnoughSpace) {
     StartMonitoringSpace();
