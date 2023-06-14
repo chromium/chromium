@@ -969,11 +969,6 @@ config("compiler") {
     # to compile dylibs on Android, such as for constructing unit test APKs.
     "-Cdefault-linker-libraries",
 
-    # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
-    # an error by default eventually; see
-    # https://github.com/rust-lang/rust/issues/71668
-    "-Dunsafe_op_in_unsafe_fn",
-
     # To make Rust .d files compatible with ninja
     "-Zdep-info-omit-d-target",
 
@@ -1783,6 +1778,13 @@ config("default_warnings") {
       }
     }
   }
+
+  # Rust warnings
+
+  # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
+  # an error by default eventually; see
+  # https://github.com/rust-lang/rust/issues/71668
+  rustflags = [ "-Dunsafe_op_in_unsafe_fn" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------
