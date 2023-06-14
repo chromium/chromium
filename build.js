@@ -94,7 +94,9 @@ for (let i = 0; i < driverContents.length; i++) {
 }
 driverString = driverString.join("");
 
-const buildSuffix = process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
+const buildSuffix = process.env["BUILDKITE"]
+  ? "-buildkite"
+  : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
 const buildId = `${computeBuildId(driverDate, driverRevision)}${buildSuffix}`;
 
 fs.writeFileSync(
