@@ -256,7 +256,8 @@ google_apis::RequestSender* GlanceablesTasksClientImpl::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ = std::move(create_request_sender_callback_)
-                          .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope},
+                          .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope,
+                                GaiaConstants::kTasksOAuth2Scope},
                                kTrafficAnnotationTag);
     CHECK(request_sender_);
   }
