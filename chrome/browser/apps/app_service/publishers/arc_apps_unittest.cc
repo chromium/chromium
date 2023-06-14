@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
 #include <functional>
+#include <memory>
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
@@ -134,6 +135,8 @@ class ArcAppsPublisherTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
+    profile_ = MakeProfile();
+
     // Do not destroy the ArcServiceManager during TearDown, so that Arc
     // KeyedServices can be correctly destroyed during profile shutdown.
     arc_test_.set_persist_service_manager(true);
@@ -155,7 +158,7 @@ class ArcAppsPublisherTest : public testing::Test {
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-    app_service_test_.SetUp(&profile_);
+    app_service_test_.SetUp(profile_.get());
     apps::ArcAppsFactory::GetForProfile(profile());
     // Ensure that the PreferredAppsList is fully initialized before running the
     // test.
@@ -166,6 +169,10 @@ class ArcAppsPublisherTest : public testing::Test {
     arc_test_.StopArcInstance();
     apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile());
     arc_test_.TearDown();
+  }
+
+  virtual std::unique_ptr<TestingProfile> MakeProfile() {
+    return std::make_unique<TestingProfile>();
   }
 
   void VerifyIntentFilters(const std::string& app_id,
@@ -193,7 +200,7 @@ class ArcAppsPublisherTest : public testing::Test {
     arc::WaitForInstanceReady(arc_bridge_service->file_system());
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   apps::AppServiceProxy* app_service_proxy() {
     return apps::AppServiceProxyFactory::GetForProfile(profile());
@@ -229,7 +236,7 @@ class ArcAppsPublisherTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcAppTest arc_test_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
   raw_ptr<arc::ArcIntentHelperBridge, ExperimentalAsh> intent_helper_;
   std::unique_ptr<arc::FakeFileSystemInstance> file_system_instance_;
@@ -355,6 +362,38 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsPlayStoreDefault) {
 
   ASSERT_EQ(arc::kPlayStoreAppId, preferred_apps().FindPreferredAppForUrl(
                                       GURL("https://play.google.com/foo")));
+}
+
+class ArcAppsPublisherManagedProfileTest : public ArcAppsPublisherTest {
+ public:
+  std::unique_ptr<TestingProfile> MakeProfile() override {
+    TestingProfile::Builder builder;
+    builder.OverridePolicyConnectorIsManagedForTesting(true);
+    return builder.Build();
+  }
+};
+
+// Verifies that a call to set the default supported links preference from the
+// ARC system changes the app service setting, for a managed profile.
+TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksByDefault) {
+  constexpr char kTestAuthority[] = "www.example.com";
+  const auto& fake_apps = arc_test()->fake_apps();
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+
+  // Update intent filters and supported links for the app, as if it was just
+  // installed.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name, CreateFilterList(package_name, {kTestAuthority}));
+  VerifyIntentFilters(app_id, {kTestAuthority});
+  intent_helper()->OnSupportedLinksChanged(
+      CreateSupportedLinks(package_name), {},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
+
+  ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
+                        GURL("https://www.example.com/foo")));
 }
 
 // Verifies that ARC permissions are published to App Service correctly.

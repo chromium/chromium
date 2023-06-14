@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -458,11 +459,19 @@ bool IntentHasFilesAndMimeTypes(const apps::IntentPtr& intent) {
 }
 
 // Returns true if the app with the given |app_id| should open supported links
-// inside the browser by default.
-bool AppShouldDefaultHandleLinksInBrowser(const std::string& app_id) {
+// inside the app by default.
+bool AppShouldDefaultHandleLinksInApp(const std::string& app_id) {
   // Play Store provides core system functionality and should handle links
   // inside the app rather than in the browser.
-  return app_id != arc::kPlayStoreAppId;
+  return app_id == arc::kPlayStoreAppId;
+}
+
+// Returns true if the given `profile` should open supported links inside the
+// app by default.
+bool ProfileShouldDefaultHandleLinksInApp(Profile* profile) {
+  // TODO(crbug.com/1454381): Remove once we have policy control over link
+  // capturing behavior.
+  return profile->GetProfilePolicyConnector()->IsManaged();
 }
 
 // Returns the hard-coded Play Store intent filters. This is a stop-gap solution
@@ -1198,16 +1207,19 @@ void ArcApps::OnArcSupportedLinksChanged(
       continue;
     }
 
-    // Ignore any requests from the ARC system to set an app as handling
-    // supported links by default. We allow requests if they were initiated by
-    // user action, or if the app already has a non-default setting on the Ash
-    // side.
-    bool should_ignore_update =
-        AppShouldDefaultHandleLinksInBrowser(app_id) &&
-        source == arc::mojom::SupportedLinkChangeSource::kArcSystem &&
-        !proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
+    // ARC apps may handle links by default on the ARC side, but do not handle
+    // links by default on the Ash side. Therefore, we ignore any requests from
+    // the ARC system to change the default setting. We allow changes if they
+    // were initiated by user action, if the app already has a non-default
+    // setting on the Ash side, or if the app/profile should have an exception
+    // to the default behavior.
+    bool allow_update =
+        source == arc::mojom::SupportedLinkChangeSource::kUserPreference ||
+        proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
+        AppShouldDefaultHandleLinksInApp(app_id) ||
+        ProfileShouldDefaultHandleLinksInApp(profile_);
 
-    if (should_ignore_update) {
+    if (!allow_update) {
       continue;
     }
 
