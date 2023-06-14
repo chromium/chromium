@@ -5639,6 +5639,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-cr23-suggestion-hover-fill-shape",
+    "owners": [ "khalidpeer", "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-cr23-umbrella",
     "owners": [ "manukh", "yohanes", "khalid", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

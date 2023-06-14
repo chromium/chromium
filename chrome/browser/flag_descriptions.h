@@ -1251,6 +1251,9 @@ extern const char kOmniboxCR23ExpandedStateSuggestIconsDescription[];
 extern const char kOmniboxCR23SteadyStateIconsName[];
 extern const char kOmniboxCR23SteadyStateIconsDescription[];
 
+extern const char kOmniboxCR23SuggestionHoverFillShapeName[];
+extern const char kOmniboxCR23SuggestionHoverFillShapeDescription[];
+
 extern const char kOmniboxIgnoreIntermediateResultsName[];
 extern const char kOmniboxIgnoreIntermediateResultsDescription[];
 

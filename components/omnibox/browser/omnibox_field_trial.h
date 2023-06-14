@@ -383,6 +383,11 @@ bool IsChromeRefreshSuggestIconsEnabled();
 // Returns true if the feature to enable CR23 action chip icons is enabled.
 bool IsChromeRefreshActionChipIconsEnabled();
 
+// Omnibox CR23 - suggestion hover fill shape.
+// Returns true if the feature to enable CR23 suggestion hover fill shape is
+// enabled.
+bool IsChromeRefreshSuggestHoverFillShapeEnabled();
+
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();

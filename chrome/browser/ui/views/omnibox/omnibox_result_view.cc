@@ -51,6 +51,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
@@ -239,6 +240,15 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
   // always have a background.
   if (part_state == OmniboxPartState::NORMAL && !prefers_contrast)
     return nullptr;
+
+  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
+    views::Radii radii = {
+        .top_right = static_cast<float>(view->height()),
+        .bottom_right = static_cast<float>(view->height()),
+    };
+    return views::CreateThemedRoundedRectBackground(
+        GetOmniboxBackgroundColorId(part_state), radii, 0);
+  }
 
   return views::CreateThemedSolidBackground(
       GetOmniboxBackgroundColorId(part_state));
