@@ -156,23 +156,29 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         };
 
         if (mLastActiveTab != null) {
-            mLastActiveTabObserver = new EmptyTabObserver() {
-                @Override
-                public void onClosingStateChanged(Tab tab, boolean closing) {
-                    if (closing) {
-                        updateTrackingTab(null);
-                        setVisibility(false);
-                        mLastActiveTab.removeObserver(mLastActiveTabObserver);
-                        mLastActiveTab = null;
-                        mLastActiveTabObserver = null;
-                        if (mSnapshotParentViewRunnable != null) {
-                            mSnapshotParentViewRunnable.run();
-                        }
+            beginObserving();
+        }
+    }
+
+    private void beginObserving() {
+        if (mLastActiveTab == null) return;
+
+        mLastActiveTabObserver = new EmptyTabObserver() {
+            @Override
+            public void onClosingStateChanged(Tab tab, boolean closing) {
+                if (closing) {
+                    updateTrackingTab(null);
+                    setVisibility(false);
+                    mLastActiveTab.removeObserver(mLastActiveTabObserver);
+                    mLastActiveTab = null;
+                    mLastActiveTabObserver = null;
+                    if (mSnapshotParentViewRunnable != null) {
+                        mSnapshotParentViewRunnable.run();
                     }
                 }
-            };
-            mLastActiveTab.addObserver(mLastActiveTabObserver);
-        }
+            }
+        };
+        mLastActiveTab.addObserver(mLastActiveTabObserver);
     }
 
     // TabSwitcher implementation.
@@ -231,7 +237,12 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
      */
     public boolean updateTrackingTab(Tab tabToTrack) {
         assert mIsTablet;
-        return mMediatorOnTablet.setTab(tabToTrack);
+        boolean hasTabToTrack = mMediatorOnTablet.setTab(tabToTrack);
+        if (hasTabToTrack && mLastActiveTab == null) {
+            mLastActiveTab = tabToTrack;
+            beginObserving();
+        }
+        return hasTabToTrack;
     }
 
     public void destroy() {
