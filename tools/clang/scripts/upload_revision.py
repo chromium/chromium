@@ -17,8 +17,8 @@ import subprocess
 import sys
 import urllib.request
 
-from build import (CheckoutGitRepo, GetCommitDescription, LLVM_DIR,
-                   LLVM_GIT_URL, RunCommand)
+from build import (CheckoutGitRepo, GetCommitDescription, GetLatestLLVMCommit,
+                   LLVM_DIR, LLVM_GIT_URL, RunCommand)
 from update import CHROMIUM_DIR, DownloadAndUnpack
 
 # Access to //tools/rust
@@ -26,7 +26,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
                  'rust'))
 
-from build_rust import RUST_GIT_URL, RUST_SRC_DIR
+from build_rust import RUST_GIT_URL, RUST_SRC_DIR, GetLatestRustCommit
 
 # Path constants.
 THIS_DIR = os.path.dirname(__file__)
@@ -35,11 +35,6 @@ CLANG_UPDATE_PY_PATH = os.path.join(THIS_DIR, 'update.py')
 RUST_UPDATE_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust',
                                    'update_rust.py')
 BUILD_RUST_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust', 'build_rust.py')
-
-# Constants for finding HEAD.
-CLANG_URL = 'https://api.github.com/repos/llvm/llvm-project/git/refs/heads/main'
-RUST_URL = 'https://api.github.com/repos/rust-lang/rust/git/refs/heads/master'
-HEAD_SHA_REGEX = b'"sha":"([^"]+)"'
 
 # Bots where we build Clang + Rust.
 BUILD_CLANG_BOTS = [
@@ -134,12 +129,6 @@ class ClangVersion:
   def __eq__(self, o) -> bool:
     return (self.git_describe == o.git_describe
             and self.sub_revision == o.sub_revision)
-
-
-def GetLatestGitHash(url):
-  with urllib.request.urlopen(url) as response:
-    m = re.search(HEAD_SHA_REGEX, response.read())
-    return m.group(1).decode('utf-8')
 
 
 def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:
@@ -307,7 +296,7 @@ def main():
     if args.clang_git_hash:
       clang_git_hash = args.clang_git_hash
     else:
-      clang_git_hash = GetLatestGitHash(CLANG_URL)
+      clang_git_hash = GetLatestLLVMCommit()
     # To `GetCommitDescription()`, we need a checkout. On success, the
     # CheckoutLLVM() makes `LLVM_DIR` be the current working directory, so that
     # we can GetCommitDescription() without changing directory.
@@ -322,7 +311,7 @@ def main():
     if args.rust_git_hash:
       rust_git_hash = args.rust_git_hash
     else:
-      rust_git_hash = GetLatestGitHash(RUST_URL)
+      rust_git_hash = GetLatestRustCommit()
     CheckoutGitRepo("Rust", RUST_GIT_URL, rust_git_hash, RUST_SRC_DIR)
     rust_version = RustVersion(rust_git_hash, args.rust_sub_revision)
     os.chdir(CHROMIUM_DIR)
