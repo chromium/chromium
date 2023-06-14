@@ -176,7 +176,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
-  if (create_bubble) {
+  if (create_bubble || should_show_bubble_widget_) {
     bubble_widget_->Show();
     input_protector_->VisibilityChanged(true);
   }

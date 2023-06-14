@@ -748,3 +748,33 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Widget should be closed.
   EXPECT_TRUE(widget_->IsClosed());
 }
+
+// Test that the mismatch dialog can be shown again after the pop-up window is
+// closed.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpSigninStatusMismatchDialogReshown) {
+  // Trigger IdP sign-in status mismatch failure dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowFailureDialog();
+
+  // Emulate user clicking on "Continue" button in the failure dialog.
+  CreateAndShowPopupWindow(*controller);
+
+  // Mismatch dialog should be hidden because pop-up window is open.
+  EXPECT_FALSE(widget_->IsVisible());
+
+  // Emulate IdentityProvider.close() being called in the pop-up window.
+  controller->CloseModalDialog();
+
+  // Failure dialog should remain hidden because it has not been updated to an
+  // accounts dialog yet.
+  EXPECT_FALSE(widget_->IsVisible());
+
+  // Emulate another mismatch so we need to show the mismatch dialog again.
+  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
+                                kIdpEtldPlusOne,
+                                content::IdentityProviderMetadata());
+
+  // Mismatch dialog is visible again.
+  EXPECT_TRUE(widget_->IsVisible());
+}
