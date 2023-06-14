@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/signin/signin_browser_test_base.h"
+
 namespace base {
 class CommandLine;
 class ScopedEnvironmentVariableOverride;
@@ -18,8 +20,11 @@ class ScopedFeatureList;
 }  // namespace test
 }  // namespace base
 
+namespace signin {
+class IdentityTestEnvironment;
+}
+
 struct AccountInfo;
-class Profile;
 
 // Parameters that are used for most of the pixel tests. These params
 // will be used to create combinations with the test name as `test_suffix` and
@@ -40,9 +45,10 @@ enum class AccountManagementStatus {
 };
 
 // Used to create a dummy account and sign it it as a primary account.
-AccountInfo SignInWithPrimaryAccount(Profile* profile,
-                                     AccountManagementStatus management_status =
-                                         AccountManagementStatus::kNonManaged);
+AccountInfo SignInWithPrimaryAccount(
+    signin::IdentityTestEnvironment& identity_test_env,
+    AccountManagementStatus management_status =
+        AccountManagementStatus::kNonManaged);
 
 // Sets up the parameters that are passed to the command line. For example,
 // to enable dark mode, we need to pass `kForceDarkMode` to the command line.
@@ -60,5 +66,29 @@ void InitPixelTestFeatures(
     base::test::ScopedFeatureList& feature_list,
     std::vector<base::test::FeatureRef>& enabled_features,
     std::vector<base::test::FeatureRef>& disabled_features);
+
+// Base class for pixel tests for profiles-related features.
+//
+// Provides helpers to set up the primary account, see
+// `SignInWithPrimaryAccount()`.
+template <typename T,
+          typename =
+              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+class ProfilesPixelTestBaseT : public SigninBrowserTestBaseT<T> {
+ public:
+  template <typename... Args>
+  explicit ProfilesPixelTestBaseT(Args&&... args)
+      : SigninBrowserTestBaseT<T>(std::forward<Args>(args)...) {}
+
+  ~ProfilesPixelTestBaseT() override = default;
+
+  // Used to create a dummy account and sign it it as a primary account.
+  AccountInfo SignInWithPrimaryAccount(
+      AccountManagementStatus management_status =
+          AccountManagementStatus::kNonManaged) {
+    return ::SignInWithPrimaryAccount(*this->identity_test_env(),
+                                      management_status);
+  }
+};
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILES_PIXEL_TEST_UTILS_H_

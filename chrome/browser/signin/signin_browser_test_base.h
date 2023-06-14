@@ -6,31 +6,45 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_TEST_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-// Base class for browser tests that rely on accounts.
+// Template for adding account management utilities to any test fixture which is
+// derived from InProcessBrowserTest.
 //
 // Sets up the test environment and account consistency to simplify the
 // management of accounts and cookies state.
-class SigninBrowserTestBase : public InProcessBrowserTest {
+//
+// If you don't need to derive from some existing test class, prefer to use
+// `SigninBrowserTestBase`.
+template <typename T,
+          typename =
+              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+class SigninBrowserTestBaseT : public T {
  public:
   // `use_main_profile` controls whether the main profile is used (the default
-  // `Profile` created by InProcessBrowserTest). On Lacros the main profile
+  // `Profile` created by `InProcessBrowserTest`). On Lacros the main profile
   // behaves differently, and signout is not allowed.
-  explicit SigninBrowserTestBase(bool use_main_profile);
+  explicit SigninBrowserTestBaseT(bool use_main_profile = true)
+      : use_main_profile_(use_main_profile) {}
 
-  ~SigninBrowserTestBase() override;
+  ~SigninBrowserTestBaseT() override = default;
 
   // Sets accounts in the environment to new ones based on the given `emails`,
   // and makes the first one primary.
   // Returns `AccountInfo`s for each added account, in the same order as
   // `emails`.
-  std::vector<AccountInfo> SetAccounts(const std::vector<std::string>& emails);
+  std::vector<AccountInfo> SetAccounts(const std::vector<std::string>& emails) {
+    return identity_test_env()->MakeAccountsAvailableWithCookies(emails);
+  }
 
   // Returns the profile attached to the `signin::IdentityTestEnvironment`. This
   // may not be the same as `browser()->profile()`.
@@ -50,12 +64,61 @@ class SigninBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   // InProcessBrowserTest:
-  void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
-  void SetUpInProcessBrowserTestFixture() override;
+  void SetUpOnMainThread() override {
+    T::SetUpOnMainThread();
+
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath profile_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    profile_ = use_main_profile_ ? this->browser()->profile()
+                                 : &profiles::testing::CreateProfileSync(
+                                       profile_manager, profile_path);
+
+    DCHECK(GetProfile());
+#if (IS_CHROMEOS_LACROS)
+    DCHECK_EQ(GetProfile()->IsMainProfile(), use_main_profile_);
+#endif
+
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
+    identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
+  }
+
+  void TearDownOnMainThread() override {
+    // Must be destroyed before the Profile.
+    identity_test_env_profile_adaptor_.reset();
+
+    T::TearDownOnMainThread();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    T::SetUpInProcessBrowserTestFixture();
+
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &SigninBrowserTestBaseT::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
 
   virtual void OnWillCreateBrowserContextServices(
-      content::BrowserContext* context);
+      content::BrowserContext* context) {
+    signin::AccountConsistencyMethod account_consistency_method =
+#if BUILDFLAG(ENABLE_MIRROR)
+        signin::AccountConsistencyMethod::kMirror;
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+        signin::AccountConsistencyMethod::kDice;
+#else
+        signin::AccountConsistencyMethod::kDisabled;
+#endif
+
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(
+            context, account_consistency_method);
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     &test_url_loader_factory_));
+  }
 
  private:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -66,5 +129,11 @@ class SigninBrowserTestBase : public InProcessBrowserTest {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
+
+// Base class for browser tests that rely on accounts.
+//
+// Sets up the test environment and account consistency to simplify the
+// management of accounts and cookies state.
+using SigninBrowserTestBase = SigninBrowserTestBaseT<InProcessBrowserTest>;
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_TEST_BASE_H_

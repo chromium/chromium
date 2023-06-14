@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+
 #include <memory>
+
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -14,7 +18,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -141,7 +144,7 @@ void InitFeatures(const SyncConfirmationTestParam& params,
 }  // namespace
 
 class SyncConfirmationUIWindowPixelTest
-    : public UiBrowserTest,
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<SyncConfirmationTestParam> {
  public:
   SyncConfirmationUIWindowPixelTest() {
@@ -159,8 +162,7 @@ class SyncConfirmationUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(browser()->profile(),
-                             GetParam().account_management_status);
+    SignInWithPrimaryAccount(GetParam().account_management_status);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -213,7 +215,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          &ParamToTestSuffix);
 
 class SyncConfirmationUIDialogPixelTest
-    : public DialogBrowserTest,
+    : public ProfilesPixelTestBaseT<DialogBrowserTest>,
       public testing::WithParamInterface<SyncConfirmationTestParam> {
  public:
   SyncConfirmationUIDialogPixelTest() {
@@ -227,8 +229,7 @@ class SyncConfirmationUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(browser()->profile(),
-                             GetParam().account_management_status);
+    SignInWithPrimaryAccount(GetParam().account_management_status);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
       url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);

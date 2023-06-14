@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -131,7 +132,7 @@ class EnterpriseWelcomeStepControllerForTest
 }  // namespace
 
 class EnterpriseWelcomeUIWindowPixelTest
-    : public UiBrowserTest,
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
  public:
   EnterpriseWelcomeUIWindowPixelTest() {
@@ -151,8 +152,8 @@ class EnterpriseWelcomeUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    auto account_info = SignInWithPrimaryAccount(
-        browser()->profile(), AccountManagementStatus::kManaged);
+    auto account_info =
+        SignInWithPrimaryAccount(AccountManagementStatus::kManaged);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -207,7 +208,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          &ParamToTestSuffix);
 
 class EnterpriseWelcomeUIDialogPixelTest
-    : public DialogBrowserTest,
+    : public ProfilesPixelTestBaseT<DialogBrowserTest>,
       public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
  public:
   EnterpriseWelcomeUIDialogPixelTest() {
@@ -222,8 +223,8 @@ class EnterpriseWelcomeUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    auto account_info = SignInWithPrimaryAccount(
-        browser()->profile(), AccountManagementStatus::kManaged);
+    auto account_info =
+        SignInWithPrimaryAccount(AccountManagementStatus::kManaged);
     auto url = GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL);
 
     // Wait for the web content to load to be able to properly render the
