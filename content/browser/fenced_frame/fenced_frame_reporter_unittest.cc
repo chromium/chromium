@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
@@ -20,6 +21,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "net/base/isolation_info.h"
@@ -81,6 +83,11 @@ auto ElementsAreRequests(Ts&... requests) {
 
 class FencedFrameReporterTest : public RenderViewHostTestHarness {
  public:
+  FencedFrameReporterTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAttributionFencedFrameReportingBeacon);
+  }
+
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory() {
     return test_url_loader_factory_.GetSafeWeakWrapper();
   }
@@ -146,6 +153,9 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
   TestInterestGroupPrivateAggregationManager private_aggregation_manager_{
       main_frame_origin_};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // ReportingDestination has no map.

@@ -5852,6 +5852,92 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                               "Attribution-Reporting-Support"));
 }
 
+class FencedFrameReportEventAttributionDisabledBrowserTest
+    : public FencedFrameReportEventBrowserTest {
+ public:
+  FencedFrameReportEventAttributionDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAttributionFencedFrameReportingBeacon);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventAttributionDisabledBrowserTest,
+                       FeatureDisabled_EligibleHeaderNotSet) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kReportingURL);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+
+  // Create a FencedFrameReporter and pass it reporting metadata.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  GURL reporting_url(https_server()->GetURL("a.test", kReportingURL));
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  // Get the urn mapping object.
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+
+  // Add url and its reporting metadata to fenced frame url mapping.
+  auto urn_uuid = test::AddAndVerifyFencedFrameURL(&url_mapping, https_url,
+                                                   fenced_frame_reporter);
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(
+      fenced_frame_root_node->current_frame_host());
+
+  // Navigate the fenced frame.
+  EXPECT_TRUE(ExecJs(
+      root, JsReplace("f.config = new FencedFrameConfig($1);", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
+
+  // Perform the reportEvent call, with a unique body.
+  std::string event_data = "this is a click";
+  std::string report_event_script = JsReplace(R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: $1,
+          destination: ['buyer'],
+        });
+      )",
+                                              event_data);
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
+
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, event_data);
+  EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                              "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                              "Attribution-Reporting-Support"));
+}
+
 class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
     : public FencedFrameReportEventBrowserTest {
  public:

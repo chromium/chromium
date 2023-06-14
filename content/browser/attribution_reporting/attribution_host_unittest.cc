@@ -592,9 +592,9 @@ TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
   fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://fencedframe.example"), fenced_frame);
 
-  attribution_host()->NotifyFencedFrameReportingBeaconStarted(
+  EXPECT_FALSE(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
       kBeaconId, kNavigationId,
-      static_cast<RenderFrameHostImpl*>(fenced_frame));
+      static_cast<RenderFrameHostImpl*>(fenced_frame)));
 }
 
 TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
@@ -636,9 +636,10 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
     fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
         GURL("https://fencedframe.example"), fenced_frame);
 
-    attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-        kBeaconId, kNavigationId,
-        static_cast<RenderFrameHostImpl*>(fenced_frame));
+    EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
+                  kBeaconId, kNavigationId,
+                  static_cast<RenderFrameHostImpl*>(fenced_frame)),
+              test_case.expected_valid);
   }
 }
 
@@ -685,9 +686,10 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
     simulator->Commit();
     fenced_frame = simulator->GetFinalRenderFrameHost();
 
-    attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-        kBeaconId, /*navigation_id=*/absl::nullopt,
-        static_cast<RenderFrameHostImpl*>(fenced_frame));
+    EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
+                  kBeaconId, /*navigation_id=*/absl::nullopt,
+                  static_cast<RenderFrameHostImpl*>(fenced_frame)),
+              test_case.expected);
   }
 }
 
