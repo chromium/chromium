@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
+#include "k_anonymity_service_client.h"
 
 namespace {
 ProfileSelections BuildKAnonymityServiceProfileSelections() {
@@ -61,7 +62,7 @@ KAnonymityServiceFactory::~KAnonymityServiceFactory() = default;
 KeyedService* KAnonymityServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile || profile->IsChild()) {
+  if (!KAnonymityServiceClient::CanUseKAnonymityService(profile)) {
     return nullptr;
   }
   return new KAnonymityServiceClient(Profile::FromBrowserContext(context));
