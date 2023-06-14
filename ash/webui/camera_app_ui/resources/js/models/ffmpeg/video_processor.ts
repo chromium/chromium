@@ -333,7 +333,7 @@ class FFMpegVideoProcessor {
         return '/js/lib/ffmpeg.wasm';
       },
       noFSInit: true,  // It would be setup in preRun().
-      preRun: () => {
+      preRun: [() => {
         // The FS property are injected by emscripten at runtime.
         /* eslint-disable-next-line
              @typescript-eslint/naming-convention,
@@ -360,7 +360,7 @@ class FFMpegVideoProcessor {
         assert(stdin.fd === 0);
         assert(stdout.fd === 1);
         assert(stderr.fd === 2);
-      },
+      }],
       waitReadable: (callback: ReadableCallback) => {
         this.inputDevice.setReadableCallback(callback);
       },

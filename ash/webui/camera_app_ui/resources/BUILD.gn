@@ -86,6 +86,7 @@ ts_library("build_ts") {
 
   definitions = [
     "js/externs/types.d.ts",
+    "js/lib/ffmpeg.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
 

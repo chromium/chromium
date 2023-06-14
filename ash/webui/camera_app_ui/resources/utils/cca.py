@@ -194,8 +194,6 @@ def generate_tsconfig(board):
     tsconfig['compilerOptions']['rootDir'] = cca_root
     tsconfig['compilerOptions']['noEmit'] = True
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
-    # TODO(b:269971867): Remove this once we have type definition for ffmpeg.js
-    tsconfig['compilerOptions']['allowJs'] = True
     tsconfig['compilerOptions']['plugins'] = [{
         "name": "ts-lit-plugin",
         "strict": True

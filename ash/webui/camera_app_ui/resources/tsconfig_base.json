@@ -5,6 +5,7 @@
     "types": [
       "dom-mediacapture-transform",
       "dom-webcodecs",
+      "emscripten",
       "google.analytics",
       "offscreencanvas",
       "trusted-types",
