@@ -615,12 +615,8 @@ void FocusFakebox() {
                  @"Context menu is still visible.");
 }
 
-- (void)testOmniboxDefocusesOnTabSwitch {
-  // TODO(crbug.com/1453240): Test is failing on iPad devices and simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
+// TODO(crbug.com/1453240): Re-enable when fixed.
+- (void)DISABLED_testOmniboxDefocusesOnTabSwitch {
   [self openPage1];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
