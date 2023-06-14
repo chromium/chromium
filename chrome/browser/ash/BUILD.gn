@@ -4251,6 +4251,10 @@ static_library("user_event_reporter_helper_test_support") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "accessibility/accessibility_test_utils.cc",
+    "accessibility/accessibility_test_utils.h",
+    "accessibility/autoclick_test_utils.cc",
+    "accessibility/autoclick_test_utils.h",
     "accessibility/caret_bounds_changed_waiter.cc",
     "accessibility/caret_bounds_changed_waiter.h",
     "accessibility/html_test_utils.cc",

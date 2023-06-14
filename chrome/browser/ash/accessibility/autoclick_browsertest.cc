@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell.h"
-#include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
-#include "ash/system/accessibility/autoclick_menu_view.h"
 #include "base/test/bind.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/autoclick_test_utils.h"
 #include "chrome/browser/ash/accessibility/caret_bounds_changed_waiter.h"
 #include "chrome/browser/ash/accessibility/html_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,8 +27,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_host_test_helper.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
@@ -44,43 +38,27 @@ class AutoclickBrowserTest : public InProcessBrowserTest {
   AutoclickBrowserTest(const AutoclickBrowserTest&) = delete;
   AutoclickBrowserTest& operator=(const AutoclickBrowserTest&) = delete;
 
-  void OnFocusRingChanged() {
-    if (loop_runner_ && loop_runner_->running()) {
-      loop_runner_->Quit();
-    }
-  }
-
  protected:
   AutoclickBrowserTest() = default;
   ~AutoclickBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    ASSERT_FALSE(AccessibilityManager::Get()->IsAutoclickEnabled());
-    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
-        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
-
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
-
-    SetAutoclickDelayMs(5);
-
-    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    pref_change_registrar_->Init(browser()->profile()->GetPrefs());
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityAutoclickEventType,
-        base::BindRepeating(&AutoclickBrowserTest::OnEventTypePrefChanged,
-                            GetWeakPtr()));
-
+    autoclick_test_utils_ =
+        std::make_unique<AutoclickTestUtils>(browser()->profile());
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
-  void TearDownOnMainThread() override { pref_change_registrar_.reset(); }
+  void TearDownOnMainThread() override { autoclick_test_utils_.reset(); }
 
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+  PrefService* GetPrefs() { return browser()->profile()->GetPrefs(); }
 
   // Loads a page with the given URL and then starts up Autoclick.
   void LoadURLAndAutoclick(const std::string& url) {
@@ -89,115 +67,15 @@ class AutoclickBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
     ASSERT_TRUE(waiter.WaitForNotification());
 
-    extensions::ExtensionHostTestHelper host_helper(
-        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
-    AccessibilityManager::Get()->EnableAutoclick(true);
-    Shell::Get()
-        ->autoclick_controller()
-        ->GetMenuBubbleControllerForTesting()
-        ->SetAnimateForTesting(false);
-    host_helper.WaitForHostCompletedFirstLoad();
-    WaitForAutoclickReady();
+    autoclick_test_utils_->LoadAutoclick();
   }
 
-  void WaitForAutoclickReady() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    std::string script = base::StringPrintf(R"JS(
-      (async function() {
-        window.accessibilityCommon.setFeatureLoadCallbackForTest('autoclick',
-            () => {
-              chrome.test.sendScriptResult('ready');
-            });
-      })();
-    )JS");
-    base::Value result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-            browser()->profile(),
-            extension_misc::kAccessibilityCommonExtensionId, script);
-    ASSERT_EQ("ready", result);
-  }
-
-  void SetAutoclickDelayMs(int ms) {
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetInteger(prefs::kAccessibilityAutoclickDelayMs, ms);
-  }
-
-  void OnEventTypePrefChanged() {
-    if (pref_change_waiter_)
-      std::move(pref_change_waiter_).Run();
-  }
-
-  // Performs a hover over the autoclick menu to change the event type.
-  void SetAutoclickEventType(AutoclickEventType type) {
-    // Check if we already have the right type selected.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    if (prefs->GetInteger(prefs::kAccessibilityAutoclickEventType) ==
-        static_cast<int>(type)) {
-      return;
-    }
-
-    // Find the menu button.
-    AutoclickMenuView::ButtonId button_id;
-    switch (type) {
-      case AutoclickEventType::kLeftClick:
-        button_id = AutoclickMenuView::ButtonId::kLeftClick;
-        break;
-      case AutoclickEventType::kRightClick:
-        button_id = AutoclickMenuView::ButtonId::kRightClick;
-        break;
-      case AutoclickEventType::kDoubleClick:
-        button_id = AutoclickMenuView::ButtonId::kDoubleClick;
-        break;
-      case AutoclickEventType::kDragAndDrop:
-        button_id = AutoclickMenuView::ButtonId::kDragAndDrop;
-        break;
-      case AutoclickEventType::kScroll:
-        button_id = AutoclickMenuView::ButtonId::kScroll;
-        break;
-      case AutoclickEventType::kNoAction:
-        button_id = AutoclickMenuView::ButtonId::kPause;
-        break;
-    }
-    AutoclickMenuView* menu_view = Shell::Get()
-                                       ->autoclick_controller()
-                                       ->GetMenuBubbleControllerForTesting()
-                                       ->menu_view_;
-    ASSERT_NE(nullptr, menu_view);
-    auto* button_view = menu_view->GetViewByID(static_cast<int>(button_id));
-    ASSERT_NE(nullptr, button_view);
-
-    // Hover over it.
-    const gfx::Rect bounds = button_view->GetBoundsInScreen();
-    generator_->MoveMouseTo(bounds.CenterPoint());
-
-    // Wait for the pref change, indicating the button was pressed.
-    base::RunLoop runner;
-    pref_change_waiter_ = runner.QuitClosure();
-    runner.Run();
-  }
-
-  void HoverOverHtmlElement(const std::string& element) {
-    const gfx::Rect bounds = GetControlBoundsInRoot(GetWebContents(), element);
-    generator_->MoveMouseTo(bounds.CenterPoint());
-  }
-
-  void WaitForFocusRingChanged() {
-    loop_runner_ = std::make_unique<base::RunLoop>();
-    loop_runner_->Run();
-  }
-
-  base::WeakPtr<AutoclickBrowserTest> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  std::unique_ptr<ui::test::EventGenerator> generator_;
+  ui::test::EventGenerator* generator() { return generator_.get(); }
+  AutoclickTestUtils* utils() { return autoclick_test_utils_.get(); }
 
  private:
-  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  base::OnceClosure pref_change_waiter_;
-  std::unique_ptr<base::RunLoop> loop_runner_;
-  base::WeakPtrFactory<AutoclickBrowserTest> weak_ptr_factory_{this};
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+  std::unique_ptr<AutoclickTestUtils> autoclick_test_utils_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LeftClickButtonOnHover) {
@@ -208,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LeftClickButtonOnHover) {
       )");
   // No need to change click type: Default should be right-click.
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
-  HoverOverHtmlElement("test_button");
+  utils()->HoverOverHtmlElement(GetWebContents(), generator(), "test_button");
   tab_waiter.Wait();
 }
 
@@ -218,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, DoubleClickHover) {
       <input type="text" id="text_field"
              value="peanutbuttersandwichmadewithjam">
       )");
-  SetAutoclickEventType(AutoclickEventType::kDoubleClick);
+  utils()->SetAutoclickEventTypeWithHover(generator(),
+                                          AutoclickEventType::kDoubleClick);
 
   content::AccessibilityNotificationWaiter selection_waiter(
       browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
@@ -227,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, DoubleClickHover) {
 
   // Double-clicking over the text field should result in the text being
   // selected.
-  HoverOverHtmlElement("text_field");
+  utils()->HoverOverHtmlElement(GetWebContents(), generator(), "text_field");
 
   bounding_box_waiter.Wait();
   ASSERT_TRUE(selection_waiter.WaitForNotification());
@@ -239,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, ClickAndDrag) {
       <input type="text" id="text_field"
              value="peanutbuttersandwichmadewithjam">
       )");
-  SetAutoclickEventType(AutoclickEventType::kDragAndDrop);
+  utils()->SetAutoclickEventTypeWithHover(generator(),
+                                          AutoclickEventType::kDragAndDrop);
 
   const gfx::Rect bounds =
       GetControlBoundsInRoot(GetWebContents(), "text_field");
@@ -251,14 +131,14 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, ClickAndDrag) {
   // First hover causes a down click even that changes the caret.
   CaretBoundsChangedWaiter caret_waiter(
       browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
-  generator_->MoveMouseTo(
+  generator()->MoveMouseTo(
       gfx::Point(bounds.left_center().y(), bounds.x() + 10));
   caret_waiter.Wait();
   ASSERT_TRUE(selection_waiter.WaitForNotification());
 
   // Second hover causes a selection.
   content::BoundingBoxUpdateWaiter bounding_box_waiter(GetWebContents());
-  generator_->MoveMouseTo(bounds.right_center());
+  generator()->MoveMouseTo(bounds.right_center());
   bounding_box_waiter.Wait();
   ASSERT_TRUE(selection_waiter.WaitForNotification());
 }
@@ -269,12 +149,13 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
       data:text/html;charset=utf-8,
       <input type="text" id="text_field" value="stop copying me">
       )");
-  SetAutoclickEventType(AutoclickEventType::kRightClick);
+  utils()->SetAutoclickEventTypeWithHover(generator(),
+                                          AutoclickEventType::kRightClick);
 
   ContextMenuWaiter context_menu_waiter;
 
   // Right clicking over the text field should result in a context menu.
-  HoverOverHtmlElement("text_field");
+  utils()->HoverOverHtmlElement(GetWebContents(), generator(), "text_field");
 
   context_menu_waiter.WaitForMenuOpenAndClose();
 
@@ -287,9 +168,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
                        ScrollHoverHighlightsScrollableArea) {
-  // Create a callback for the focus ring observer.
-  AccessibilityManager::Get()->SetFocusRingObserverForTest(base::BindRepeating(
-      &AutoclickBrowserTest::OnFocusRingChanged, GetWeakPtr()));
+  utils()->ObserveFocusRings();
 
   LoadURLAndAutoclick(R"(
       data:text/html;charset=utf-8,
@@ -308,10 +187,11 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
   // No focus rings to start.
   EXPECT_EQ(nullptr, focus_ring_group);
 
-  SetAutoclickEventType(AutoclickEventType::kScroll);
+  utils()->SetAutoclickEventTypeWithHover(generator(),
+                                          AutoclickEventType::kScroll);
 
-  HoverOverHtmlElement("test_textarea");
-  WaitForFocusRingChanged();
+  utils()->HoverOverHtmlElement(GetWebContents(), generator(), "test_textarea");
+  utils()->WaitForFocusRingChanged();
 
   focus_ring_group = controller->GetFocusRingGroupForTesting(focus_ring_id);
   ASSERT_NE(nullptr, focus_ring_group);
@@ -321,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
-  SetAutoclickDelayMs(500);
+  utils()->SetAutoclickDelayMs(500);
   LoadURLAndAutoclick(R"(
         data:text/html;charset=utf-8,
         <input type="button" id="test_button"
@@ -330,23 +210,24 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
 
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
   base::ElapsedTimer timer;
-  HoverOverHtmlElement("test_button");
+  utils()->HoverOverHtmlElement(GetWebContents(), generator(), "test_button");
   tab_waiter.Wait();
   EXPECT_GT(timer.Elapsed().InMilliseconds(), 500);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, PauseAutoclick) {
-  SetAutoclickDelayMs(5);
+  utils()->SetAutoclickDelayMs(5);
   LoadURLAndAutoclick(R"(
         data:text/html;charset=utf-8,
         <input type="button" id="test_button"
                onclick="window.open();" value="click me">
       )");
-  SetAutoclickEventType(AutoclickEventType::kNoAction);
+  utils()->SetAutoclickEventTypeWithHover(generator(),
+                                          AutoclickEventType::kNoAction);
 
   base::OneShotTimer timer;
   base::RunLoop runner;
-  HoverOverHtmlElement("test_button");
+  utils()->HoverOverHtmlElement(GetWebContents(), generator(), "test_button");
   timer.Start(FROM_HERE, base::Milliseconds(500),
               base::BindLambdaForTesting([&runner, this]() {
                 runner.Quit();
