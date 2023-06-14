@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
+#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 #include "url/gurl.h"
@@ -80,6 +81,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
   SharedDictionaryStorageInMemory(
       base::WeakPtr<SharedDictionaryManagerInMemory> manager,
+      const net::SharedDictionaryStorageIsolationKey& isolation_key,
       base::ScopedClosureRunner on_deleted_closure_runner);
 
   SharedDictionaryStorageInMemory(const SharedDictionaryStorageInMemory&) =
@@ -124,6 +126,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                            const net::SHA256HashValue& hash);
 
   base::WeakPtr<SharedDictionaryManagerInMemory> manager_;
+  const net::SharedDictionaryStorageIsolationKey isolation_key_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
 
   std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>

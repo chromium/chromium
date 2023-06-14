@@ -18,8 +18,10 @@ namespace network {
 
 SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
     base::WeakPtr<SharedDictionaryManagerInMemory> manager,
+    const net::SharedDictionaryStorageIsolationKey& isolation_key,
     base::ScopedClosureRunner on_deleted_closure_runner)
     : manager_(manager),
+      isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {}
 
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
@@ -92,6 +94,7 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
       DictionaryInfo(url, response_time, expiration, match,
                      /*last_used_time=*/base::Time::Now(), data, size, hash)));
   if (manager_) {
+    manager_->MaybeRunCacheEvictionPerSite(isolation_key_.top_frame_site());
     manager_->MaybeRunCacheEviction();
   }
 }

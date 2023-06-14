@@ -43,12 +43,41 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     kInvalidTotalDictSize,
     kFailedToGetTotalDictSize,
     kFailedToSetTotalDictSize,
+    kTooBigDictionary,
   };
-  struct RegisterDictionaryResult {
-    int64_t primary_key_in_database;
-    absl::optional<base::UnguessableToken> disk_cache_key_token_to_be_removed;
-    uint64_t total_dictionary_size;
-    uint64_t total_dictionary_count;
+  class COMPONENT_EXPORT(NET_EXTRAS) RegisterDictionaryResult {
+   public:
+    RegisterDictionaryResult(
+        int64_t primary_key_in_database,
+        absl::optional<base::UnguessableToken> replaced_disk_cache_key_token,
+        std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
+        uint64_t total_dictionary_size,
+        uint64_t total_dictionary_count);
+    ~RegisterDictionaryResult();
+
+    RegisterDictionaryResult(const RegisterDictionaryResult& other);
+    RegisterDictionaryResult(RegisterDictionaryResult&& other);
+    RegisterDictionaryResult& operator=(const RegisterDictionaryResult& other);
+    RegisterDictionaryResult& operator=(RegisterDictionaryResult&& other);
+
+    int64_t primary_key_in_database() const { return primary_key_in_database_; }
+    const absl::optional<base::UnguessableToken>&
+    replaced_disk_cache_key_token() const {
+      return replaced_disk_cache_key_token_;
+    }
+    const std::set<base::UnguessableToken>& evicted_disk_cache_key_tokens()
+        const {
+      return evicted_disk_cache_key_tokens_;
+    }
+    uint64_t total_dictionary_size() const { return total_dictionary_size_; }
+    uint64_t total_dictionary_count() const { return total_dictionary_count_; }
+
+   private:
+    int64_t primary_key_in_database_;
+    absl::optional<base::UnguessableToken> replaced_disk_cache_key_token_;
+    std::set<base::UnguessableToken> evicted_disk_cache_key_tokens_;
+    uint64_t total_dictionary_size_;
+    uint64_t total_dictionary_count_;
   };
 
   using RegisterDictionaryResultOrError =
@@ -79,6 +108,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void RegisterDictionary(
       const SharedDictionaryStorageIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
+      const uint64_t max_size_per_site,
+      const uint64_t max_count_per_site,
       base::OnceCallback<void(RegisterDictionaryResultOrError)> callback);
   void GetDictionaries(
       const SharedDictionaryStorageIsolationKey& isolation_key,

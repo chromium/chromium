@@ -465,6 +465,8 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
                                  /*primary_key_in_database=*/absl::nullopt);
   metadata_store_.RegisterDictionary(
       isolation_key, info,
+      /*max_size_per_site*/ cache_max_size_ / 2,
+      /*max_count_per_site*/ cache_max_count_ / 2,
       base::BindOnce(
           &SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase,
           weak_factory_.GetWeakPtr(), info, std::move(callback)));
@@ -482,28 +484,32 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
     return;
   }
 
-  base::UmaHistogramCustomCounts(
-      "Net.SharedDictionaryManagerOnDisk.DictionarySize", info.size(), 1,
-      100000000, 50);
-  base::UmaHistogramCustomCounts(
-      "Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeWhenAdded",
-      result.value().total_dictionary_size, 1, 200000000, 50);
+  base::UmaHistogramMemoryKB(
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB", info.size());
+  base::UmaHistogramMemoryKB(
+      "Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeKBWhenAdded",
+      result.value().total_dictionary_size());
   base::UmaHistogramCounts1000(
       "Net.SharedDictionaryManagerOnDisk.TotalDictionaryCountWhenAdded",
-      result.value().total_dictionary_count);
-  info.set_primary_key_in_database(result.value().primary_key_in_database);
-  if (result.value().disk_cache_key_token_to_be_removed) {
+      result.value().total_dictionary_count());
+  info.set_primary_key_in_database(result.value().primary_key_in_database());
+
+  if (result.value().replaced_disk_cache_key_token()) {
     disk_cache_.DoomEntry(
-        result.value().disk_cache_key_token_to_be_removed->ToString(),
+        result.value().replaced_disk_cache_key_token()->ToString(),
         base::DoNothing());
+  }
+  if (!result.value().evicted_disk_cache_key_tokens().empty()) {
+    OnDictionaryDeleted(result.value().evicted_disk_cache_key_tokens(),
+                        /*need_to_doom_disk_cache_entries=*/true);
   }
   std::move(callback).Run(std::move(info));
 
   MaybePostExpiredDictionaryDeletionTask();
 
   if ((cache_max_size_ == 0 ||
-       result.value().total_dictionary_size <= cache_max_size_) &&
-      result.value().total_dictionary_count <= cache_max_count_) {
+       result.value().total_dictionary_size() <= cache_max_size_) &&
+      result.value().total_dictionary_count() <= cache_max_count_) {
     return;
   }
   MaybePostCacheEvictionTask();

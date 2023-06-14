@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       shell(), FetchType::kLinkRelDictionary,
       GURL("https://shared-dictionary.test/blank.html"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
-      "Net.SharedDictionaryManagerOnDisk.DictionarySize",
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
       /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
 }
 
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       shell(), FetchType::kLinkRelDictionary,
       GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
-      "Net.SharedDictionaryManagerOnDisk.DictionarySize",
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
       /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
 }
 
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest, FetchApi) {
       shell(), FetchType::kFetchApi,
       GURL("https://shared-dictionary.test/blank.html"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
-      "Net.SharedDictionaryManagerOnDisk.DictionarySize",
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
       /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
 }
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       shell(), FetchType::kFetchApi,
       GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
-      "Net.SharedDictionaryManagerOnDisk.DictionarySize",
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
       /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
 }
 
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
       embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/true);
 }
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
       embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/true);
 }
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       embedded_test_server()->GetURL("www.test",
                                      "/shared_dictionary/test.dict"),
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/false);
 }
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       embedded_test_server()->GetURL("www.test",
                                      "/shared_dictionary/test.dict"),
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/false);
 }
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
       embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
       embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/true);
 

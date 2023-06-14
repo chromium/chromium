@@ -86,7 +86,7 @@ scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerInMemory::CreateStorage(
     const net::SharedDictionaryStorageIsolationKey& isolation_key) {
   return base::MakeRefCounted<SharedDictionaryStorageInMemory>(
-      weak_factory_.GetWeakPtr(),
+      weak_factory_.GetWeakPtr(), isolation_key,
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
                          GetWeakPtr(), isolation_key)));
@@ -115,10 +115,29 @@ void SharedDictionaryManagerInMemory::ClearData(
   std::move(callback).Run();
 }
 
+void SharedDictionaryManagerInMemory::MaybeRunCacheEvictionPerSite(
+    const net::SchemefulSite& top_frame_site) {
+  RunCacheEvictionImpl(top_frame_site, cache_max_size_ / 2, cache_max_size_ / 2,
+                       cache_max_count_ / 2, cache_max_count_ / 2);
+}
+
 void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
+  RunCacheEvictionImpl(absl::nullopt, cache_max_size_, cache_max_size_ * 0.9,
+                       cache_max_count_, cache_max_count_ * 0.9);
+}
+
+void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
+    absl::optional<net::SchemefulSite> top_frame_site,
+    uint64_t max_size,
+    uint64_t size_low_watermark,
+    uint64_t max_count,
+    uint64_t count_low_watermark) {
   uint64_t total_size = 0u;
   size_t dictionary_count = 0u;
   for (const auto& it1 : storages()) {
+    if (top_frame_site && it1.first.top_frame_site() != *top_frame_site) {
+      continue;
+    }
     SharedDictionaryStorageInMemory* storage =
         reinterpret_cast<SharedDictionaryStorageInMemory*>(it1.second.get());
     for (const auto& it2 : storage->GetDictionaryMap()) {
@@ -129,14 +148,17 @@ void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
     }
   }
 
-  if ((cache_max_size_ == 0 || total_size <= cache_max_size_) &&
-      dictionary_count <= cache_max_count_) {
+  if ((max_size == 0 || total_size <= max_size) &&
+      dictionary_count <= max_count) {
     return;
   }
 
   std::vector<DictionaryReference> dictionaries;
   dictionaries.reserve(dictionary_count);
   for (auto& it1 : storages()) {
+    if (top_frame_site && it1.first.top_frame_site() != *top_frame_site) {
+      continue;
+    }
     SharedDictionaryStorageInMemory* storage =
         reinterpret_cast<SharedDictionaryStorageInMemory*>(it1.second.get());
     for (auto& it2 : storage->GetDictionaryMap()) {
@@ -148,8 +170,6 @@ void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
 
   std::sort(dictionaries.begin(), dictionaries.end(), LastUsedTimeLess{});
 
-  uint64_t size_low_watermark = cache_max_size_ * 0.9;
-  uint64_t count_low_watermark = cache_max_count_ * 0.9;
   uint64_t to_be_removed_count = 0;
   if (dictionary_count > count_low_watermark) {
     to_be_removed_count = dictionary_count - count_low_watermark;
@@ -161,7 +181,7 @@ void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
     eviction_candidates.emplace_back(
         dict_ref.storage(), url::SchemeHostPort(dict_ref.dict()->url()),
         dict_ref.dict()->match());
-    if ((cache_max_size_ == 0 || size_low_watermark >= total_size) &&
+    if ((max_size == 0 || size_low_watermark >= total_size) &&
         eviction_candidates.size() >= to_be_removed_count) {
       break;
     }

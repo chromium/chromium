@@ -16,10 +16,10 @@ namespace content {
 
 namespace {
 
-const uint64_t kDefaultCacheMaxSizeForInMemory = 10 * 1024 * 1024;  // 10 MiB;
-const uint64_t kMaxCacheMaxSizeForInMemory = 200 * 1024 * 1024;     // 200 MiB;
-const uint64_t kDefaultCacheMaxSizeForOnDisk = 150 * 1024 * 1024;   // 150 MiB;
-const uint64_t kMaxCacheMaxSizeForOnDisk = 200 * 1024 * 1024;       // 200 MiB;
+const uint64_t kDefaultCacheMaxSizeForInMemory = 20 * 1024 * 1024;  // 20 MiB;
+const uint64_t kMaxCacheMaxSizeForInMemory = 400 * 1024 * 1024;     // 400 MiB;
+const uint64_t kDefaultCacheMaxSizeForOnDisk = 300 * 1024 * 1024;   // 300 MiB;
+const uint64_t kMaxCacheMaxSizeForOnDisk = 400 * 1024 * 1024;       // 400 MiB;
 
 uint64_t CaliculateCacheMaxSizeForInMemory() {
   uint64_t cache_max_size = kDefaultCacheMaxSizeForInMemory;
@@ -28,8 +28,8 @@ uint64_t CaliculateCacheMaxSizeForInMemory() {
     return cache_max_size;
   }
 
-  // We want to use up to 1% of the computer's memory, with a limit of 200 MB,
-  // reached on system with more than 20 GB of RAM.
+  // We want to use up to 1% of the computer's memory, with a limit of 400 MB,
+  // reached on system with more than 40 GB of RAM.
   cache_max_size = total_memory / 100;
   if (cache_max_size > kMaxCacheMaxSizeForInMemory) {
     cache_max_size = kMaxCacheMaxSizeForInMemory;
@@ -45,8 +45,8 @@ uint64_t CaliculateCacheMaxSizeForOnDisk(const base::FilePath& path) {
     return cache_max_size;
   }
 
-  // We want to use up to 1% of the available disk space, with a limit of 200
-  // MB, reached on system with more than 20 GB of available disk space.
+  // We want to use up to 1% of the available disk space, with a limit of 400
+  // MB, reached on system with more than 40 GB of available disk space.
   cache_max_size = available_disk_space / 100;
   if (cache_max_size > kMaxCacheMaxSizeForOnDisk) {
     cache_max_size = kMaxCacheMaxSizeForOnDisk;

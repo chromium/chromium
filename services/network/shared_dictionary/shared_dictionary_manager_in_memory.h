@@ -8,6 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace network {
 
 class SharedDictionaryStorage;
@@ -33,9 +37,19 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
                  base::OnceClosure callback) override;
 
+  void MaybeRunCacheEvictionPerSite(const net::SchemefulSite& top_frame_site);
   void MaybeRunCacheEviction();
 
  private:
+  // Performs a cache eviction using the specified params. If `top_frame_site`
+  // is nullopt, performs the cache eviction for the all storages. Otherwise,
+  // performs the cache eviction for the specified `top_frame_site`'s storages.
+  void RunCacheEvictionImpl(absl::optional<net::SchemefulSite> top_frame_site,
+                            uint64_t max_size,
+                            uint64_t size_low_watermark,
+                            uint64_t max_count,
+                            uint64_t count_low_watermark);
+
   uint64_t cache_max_size_;
   const uint64_t cache_max_count_;
   base::WeakPtrFactory<SharedDictionaryManagerInMemory> weak_factory_{this};

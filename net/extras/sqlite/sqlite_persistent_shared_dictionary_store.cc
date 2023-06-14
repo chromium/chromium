@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_isolation_key.h"
@@ -62,6 +63,13 @@ bool CreateV1Schema(sql::Database* db, sql::MetaTable* meta_table) {
           "match)";
   // clang-format on
 
+  // This index is used for the size and count limitation per top_frame_site.
+  static constexpr char kCreateTopFrameSiteIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX top_frame_site_index ON dictionaries("
+          "top_frame_site)";
+  // clang-format on
+
   // This index is used for GetDictionaries().
   static constexpr char kCreateIsolationIndexQuery[] =
       // clang-format off
@@ -96,6 +104,7 @@ bool CreateV1Schema(sql::Database* db, sql::MetaTable* meta_table) {
 
   if (!db->Execute(kCreateTableQuery) ||
       !db->Execute(kCreateUniqueIndexQuery) ||
+      !db->Execute(kCreateTopFrameSiteIndexQuery) ||
       !db->Execute(kCreateIsolationIndexQuery) ||
       !db->Execute(kCreateTokenIndexQuery) ||
       !db->Execute(kCreateExpirationTimeIndexQuery) ||
@@ -140,6 +149,36 @@ base::OnceCallback<void(ResultType)> WrapCallbackWithWeakPtrCheck(
 }
 
 }  // namespace
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
+    RegisterDictionaryResult(
+        int64_t primary_key_in_database,
+        absl::optional<base::UnguessableToken> replaced_disk_cache_key_token,
+        std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
+        uint64_t total_dictionary_size,
+        uint64_t total_dictionary_count)
+    : primary_key_in_database_(primary_key_in_database),
+      replaced_disk_cache_key_token_(std::move(replaced_disk_cache_key_token)),
+      evicted_disk_cache_key_tokens_(std::move(evicted_disk_cache_key_tokens)),
+      total_dictionary_size_(total_dictionary_size),
+      total_dictionary_count_(total_dictionary_count) {}
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
+    ~RegisterDictionaryResult() = default;
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
+    RegisterDictionaryResult(const RegisterDictionaryResult& other) = default;
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
+    RegisterDictionaryResult(RegisterDictionaryResult&& other) = default;
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult&
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::operator=(
+    const RegisterDictionaryResult& other) = default;
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult&
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::operator=(
+    RegisterDictionaryResult&& other) = default;
 
 class SQLitePersistentSharedDictionaryStore::Backend
     : public SQLitePersistentStoreBackendBase {
@@ -204,7 +243,9 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
   RegisterDictionaryResultOrError RegisterDictionaryImpl(
       const SharedDictionaryStorageIsolationKey& isolation_key,
-      const SharedDictionaryInfo& dictionary_info);
+      const SharedDictionaryInfo& dictionary_info,
+      uint64_t max_size_per_site,
+      uint64_t max_count_per_site);
   DictionaryListOrError GetDictionariesImpl(
       const SharedDictionaryStorageIsolationKey& isolation_key);
   DictionaryMapOrError GetAllDictionariesImpl();
@@ -288,6 +329,24 @@ class SQLitePersistentSharedDictionaryStore::Backend
   // dictionarie's size.
   base::expected<uint64_t, Error> DeleteDictionaryByDiskCacheToken(
       const base::UnguessableToken& disk_cache_key_token);
+
+  Error MaybeEvictDictionariesForPerSiteLimit(
+      const net::SchemefulSite& top_frame_site,
+      uint64_t max_size_per_site,
+      uint64_t max_count_per_site,
+      std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
+      uint64_t* total_dictionary_size_out);
+  base::expected<uint64_t, Error> GetDictionaryCountPerSite(
+      const net::SchemefulSite& top_frame_site);
+  base::expected<uint64_t, Error> GetDictionarySizePerSite(
+      const net::SchemefulSite& top_frame_site);
+  Error SelectCandidatesForPerSiteEviction(
+      const net::SchemefulSite& top_frame_site,
+      uint64_t max_size_per_site,
+      uint64_t max_count_per_site,
+      std::vector<int64_t>* primary_keys_out,
+      std::vector<base::UnguessableToken>* tokens_out,
+      int64_t* total_candidate_dictionary_size_out);
 
   // Total number of pending last used time update operations (may not match the
   // size of `pending_last_used_time_updates_`, due to operation coalescing).
@@ -385,11 +444,21 @@ SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionarySizeImpl() {
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResultOrError
 SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     const SharedDictionaryStorageIsolationKey& isolation_key,
-    const SharedDictionaryInfo& dictionary_info) {
+    const SharedDictionaryInfo& dictionary_info,
+    uint64_t max_size_per_site,
+    uint64_t max_count_per_site) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  CHECK_NE(0u, max_count_per_site);
+  if (max_size_per_site != 0 && dictionary_info.size() > max_size_per_site) {
+    return base::unexpected(Error::kTooBigDictionary);
+  }
+
   if (!InitializeDatabase()) {
     return base::unexpected(Error::kFailedToInitializeDatabase);
   }
+
+  // Commit `pending_last_used_time_updates_`.
+  DoCommit();
 
   sql::Transaction transaction(db());
   if (!transaction.Begin()) {
@@ -397,12 +466,12 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
   }
 
   int64_t size_of_removed_dict = 0;
-  absl::optional<base::UnguessableToken> disk_cache_key_token_of_removed_dict;
+  absl::optional<base::UnguessableToken> replaced_disk_cache_key_token;
   int64_t size_delta = dictionary_info.size();
   if (GetExistingDictionarySizeAndDiskCacheKeyToken(
           isolation_key, url::SchemeHostPort(dictionary_info.url()),
           dictionary_info.match(), &size_of_removed_dict,
-          &disk_cache_key_token_of_removed_dict)) {
+          &replaced_disk_cache_key_token)) {
     size_delta -= size_of_removed_dict;
   }
 
@@ -460,6 +529,14 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     return base::unexpected(error);
   }
 
+  std::vector<base::UnguessableToken> evicted_disk_cache_key_tokens;
+  error = MaybeEvictDictionariesForPerSiteLimit(
+      isolation_key.top_frame_site(), max_size_per_site, max_count_per_site,
+      &evicted_disk_cache_key_tokens, &total_dictionary_size);
+  if (error != Error::kOk) {
+    return base::unexpected(error);
+  }
+
   base::expected<uint64_t, Error> total_dictionary_count_result =
       GetTotalDictionaryCount();
   if (!total_dictionary_count_result.has_value()) {
@@ -470,11 +547,185 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     return base::unexpected(Error::kFailedToCommitTransaction);
   }
   return base::ok(RegisterDictionaryResult{
-      .primary_key_in_database = id,
-      .disk_cache_key_token_to_be_removed =
-          disk_cache_key_token_of_removed_dict,
-      .total_dictionary_size = total_dictionary_size,
-      .total_dictionary_count = total_dictionary_count_result.value()});
+      id, replaced_disk_cache_key_token,
+      std::set<base::UnguessableToken>(evicted_disk_cache_key_tokens.begin(),
+                                       evicted_disk_cache_key_tokens.end()),
+      total_dictionary_size, total_dictionary_count_result.value()});
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    MaybeEvictDictionariesForPerSiteLimit(
+        const net::SchemefulSite& top_frame_site,
+        uint64_t max_size_per_site,
+        uint64_t max_count_per_site,
+        std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
+        uint64_t* total_dictionary_size_out) {
+  std::vector<int64_t> primary_keys;
+  int64_t total_candidate_dictionary_size = 0;
+  Error error = SelectCandidatesForPerSiteEviction(
+      top_frame_site, max_size_per_site, max_count_per_site, &primary_keys,
+      evicted_disk_cache_key_tokens, &total_candidate_dictionary_size);
+  if (error != Error::kOk) {
+    return error;
+  }
+  CHECK_EQ(primary_keys.size(), evicted_disk_cache_key_tokens->size());
+  if (primary_keys.empty()) {
+    return Error::kOk;
+  }
+  for (int64_t primary_key : primary_keys) {
+    error = DeleteDictionaryByPrimaryKey(primary_key);
+    if (error != Error::kOk) {
+      return error;
+    }
+  }
+  error = UpdateTotalDictionarySizeInMetaTable(-total_candidate_dictionary_size,
+                                               total_dictionary_size_out);
+  if (error != Error::kOk) {
+    return error;
+  }
+  return Error::kOk;
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    SelectCandidatesForPerSiteEviction(
+        const net::SchemefulSite& top_frame_site,
+        uint64_t max_size_per_site,
+        uint64_t max_count_per_site,
+        std::vector<int64_t>* primary_keys_out,
+        std::vector<base::UnguessableToken>* tokens_out,
+        int64_t* total_size_of_candidates_out) {
+  CHECK(primary_keys_out->empty());
+  CHECK(tokens_out->empty());
+  CHECK_EQ(0, *total_size_of_candidates_out);
+  base::expected<uint64_t, Error> size_per_site =
+      GetDictionarySizePerSite(top_frame_site);
+  if (!size_per_site.has_value()) {
+    return size_per_site.error();
+  }
+  base::expected<uint64_t, Error> count_per_site =
+      GetDictionaryCountPerSite(top_frame_site);
+  if (!count_per_site.has_value()) {
+    return count_per_site.error();
+  }
+
+  base::UmaHistogramMemoryKB(
+      "Net.SharedDictionaryStore.DictionarySizeKBPerSiteWhenAdded",
+      size_per_site.value());
+  base::UmaHistogramCounts1000(
+      "Net.SharedDictionaryStore.DictionaryCountPerSiteWhenAdded",
+      count_per_site.value());
+
+  if ((max_size_per_site == 0 || size_per_site.value() <= max_size_per_site) &&
+      count_per_site.value() <= max_count_per_site) {
+    return Error::kOk;
+  }
+
+  uint64_t to_be_removed_count = 0;
+  if (count_per_site.value() > max_count_per_site) {
+    to_be_removed_count = count_per_site.value() - max_count_per_site;
+  }
+
+  int64_t to_be_removed_size = 0;
+  if (max_size_per_site != 0 && size_per_site.value() > max_size_per_site) {
+    to_be_removed_size = size_per_site.value() - max_size_per_site;
+  }
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "size,"
+          "token_high,"
+          "token_low FROM dictionaries "
+          "WHERE top_frame_site=? "
+          "ORDER BY last_used_time";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindString(0, top_frame_site.Serialize());
+
+  base::CheckedNumeric<int64_t> checked_total_size_of_candidates;
+  while (statement.Step()) {
+    const int64_t primary_key_in_database = statement.ColumnInt64(0);
+    const size_t size = statement.ColumnInt64(1);
+    const int64_t token_high = statement.ColumnInt64(2);
+    const int64_t token_low = statement.ColumnInt64(3);
+
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    checked_total_size_of_candidates += size;
+
+    if (!checked_total_size_of_candidates.IsValid()) {
+      base::debug::DumpWithoutCrashing();
+      return Error::kInvalidTotalDictSize;
+    }
+
+    *total_size_of_candidates_out =
+        checked_total_size_of_candidates.ValueOrDie();
+    primary_keys_out->emplace_back(primary_key_in_database);
+    tokens_out->emplace_back(*disk_cache_key_token);
+
+    if (*total_size_of_candidates_out >= to_be_removed_size &&
+        tokens_out->size() >= to_be_removed_count) {
+      break;
+    }
+  }
+
+  return Error::kOk;
+}
+
+base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
+SQLitePersistentSharedDictionaryStore::Backend::GetDictionaryCountPerSite(
+    const net::SchemefulSite& top_frame_site) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "COUNT(id) FROM dictionaries "
+          "WHERE top_frame_site=?";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindString(0, top_frame_site.Serialize());
+  uint64_t count_per_site = 0;
+  if (statement.Step()) {
+    count_per_site = statement.ColumnInt64(0);
+  }
+  return base::ok(count_per_site);
+}
+
+base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
+SQLitePersistentSharedDictionaryStore::Backend::GetDictionarySizePerSite(
+    const net::SchemefulSite& top_frame_site) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "SUM(size) FROM dictionaries "
+          "WHERE top_frame_site=?";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindString(0, top_frame_site.Serialize());
+  uint64_t size_per_site = 0;
+  if (statement.Step()) {
+    size_per_site = statement.ColumnInt64(0);
+  }
+  return base::ok(size_per_site);
 }
 
 SQLitePersistentSharedDictionaryStore::DictionaryListOrError
@@ -960,7 +1211,6 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
   }
 
   sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
-  std::vector<base::UnguessableToken> tokens;
   while (statement.Step()) {
     const int64_t primary_key_in_database = statement.ColumnInt64(0);
     const size_t size = statement.ColumnInt64(1);
@@ -1251,11 +1501,14 @@ void SQLitePersistentSharedDictionaryStore::GetTotalDictionarySize(
 void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
     const SharedDictionaryStorageIsolationKey& isolation_key,
     SharedDictionaryInfo dictionary_info,
+    const uint64_t max_size_per_site,
+    const uint64_t max_count_per_site,
     base::OnceCallback<void(RegisterDictionaryResultOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->RegisterDictionary(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
-      isolation_key, std::move(dictionary_info));
+      isolation_key, std::move(dictionary_info), max_size_per_site,
+      max_count_per_site);
 }
 
 void SQLitePersistentSharedDictionaryStore::GetDictionaries(
