@@ -1467,6 +1467,19 @@
     "expires": "Aug 10, 2023"
   },
   {
+    "prefix": "private-aggregation",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/private-aggregation"
+    ],
+    "exclusive_tests": [
+      "external/wpt/private-aggregation"
+    ],
+    "args": [
+      "--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivateAggregationApi"],
+    "expires": "Jan 1, 2024"
+  },
+  {
     "prefix": "shared-storage-fenced-frame-mparch",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
