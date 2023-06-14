@@ -8244,6 +8244,10 @@ static_library("test_support") {
 
   if (safe_browsing_mode == 1) {
     sources += [
+      "enterprise/connectors/analysis/fake_content_analysis_delegate.cc",
+      "enterprise/connectors/analysis/fake_content_analysis_delegate.h",
+      "enterprise/connectors/analysis/fake_files_request_handler.cc",
+      "enterprise/connectors/analysis/fake_files_request_handler.h",
       "extensions/fake_safe_browsing_database_manager.cc",
       "extensions/fake_safe_browsing_database_manager.h",
     ]

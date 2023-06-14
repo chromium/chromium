@@ -29,8 +29,8 @@
 #include "chrome/browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -620,9 +620,9 @@ class CopyOrMoveIOTaskWithScansTest
     // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
     // It is also required for FileTransferAnalysisDelegate::IsEnabled() to
     // return a meaningful result.
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
-        kBlockingScansForDlpAndMalware);
+    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
+                                        enterprise_connectors::FILE_TRANSFER,
+                                        kBlockingScansForDlpAndMalware);
 
     source_destination_testing_helper_ =
         std::make_unique<enterprise_connectors::SourceDestinationTestingHelper>(

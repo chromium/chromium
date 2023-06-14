@@ -26,12 +26,12 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -360,9 +360,9 @@ class DeepScanningRequestFeaturesEnabledTest : public DeepScanningRequestTest {
 };
 
 TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      kScanForDlpAndMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
 
   // Try each request with settings indicating both DLP and Malware requests
   // should be sent to show features work correctly.
@@ -416,9 +416,9 @@ class DeepScanningRequestAllFeaturesEnabledTest
 TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
        GeneratesCorrectRequestFromPolicy) {
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-        kScanForDlpAndMalware);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
+                         kScanForDlpAndMalware);
     base::RunLoop run_loop;
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -462,9 +462,9 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
 
   {
     base::RunLoop run_loop;
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-        kScanForMalware);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
+                         kScanForMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
@@ -489,9 +489,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
 
   {
     base::RunLoop run_loop;
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-        kScanForDlp);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, kScanForDlp);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
@@ -515,8 +514,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
 
   {
     base::RunLoop run_loop;
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, kNoScan);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, kNoScan);
     EXPECT_FALSE(settings().has_value());
     enterprise_connectors::AnalysisSettings analysis_settings;
     analysis_settings.block_until_verdict =
@@ -590,17 +589,16 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
 
-    enterprise_connectors::test::SetOnSecurityEventReporting(
-        profile_->GetPrefs(), true);
+    SetOnSecurityEventReporting(profile_->GetPrefs(), true);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(
         ash::system::kSerialNumberKeyForTest, "fake_serial_number");
 #endif
 
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-        kScanForDlpAndMalware);
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
+                         kScanForDlpAndMalware);
   }
 
   void TearDown() override {
@@ -662,7 +660,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -733,7 +731,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -796,7 +794,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -857,7 +855,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -922,7 +920,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -978,7 +976,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1034,7 +1032,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1095,7 +1093,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1172,7 +1170,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectNoReport();
 
     request.Start();
@@ -1241,7 +1239,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1335,7 +1333,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1401,7 +1399,7 @@ TEST_F(DeepScanningReportingTest, Timeout) {
       download_path_, BinaryUploadService::Result::TIMEOUT,
       enterprise_connectors::ContentAnalysisResponse());
 
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  EventReportValidator validator(client_.get());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "https://example.com/download.exe",
       /*source*/ "",
@@ -1490,9 +1488,8 @@ INSTANTIATE_TEST_SUITE_P(
         DownloadPrefs::DownloadRestriction::MALICIOUS_FILES));
 
 TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      kScanForMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
   {
     base::RunLoop run_loop;
 
@@ -1527,7 +1524,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(expected_final_action());
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1588,7 +1585,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1641,7 +1638,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1699,7 +1696,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
-    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*source*/ "",
@@ -1730,9 +1727,8 @@ class DeepScanningRequestConnectorsFeatureTest
 
 TEST_F(DeepScanningRequestConnectorsFeatureTest,
        ShouldUploadBinary_MalwareListPolicy) {
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      kScanForMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
   content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
   EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(download_url_));
@@ -1747,10 +1743,10 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
 
   // With the new malware policy list set, the item should not be uploaded since
   // DeepScanningRequest honours that policy.
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      base::StringPrintf(
-          R"({
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       base::StringPrintf(
+                           R"({
                             "service_provider": "google",
                             "enable": [
                               {"url_list": ["*"], "tags": ["malware"]}
@@ -1760,14 +1756,14 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
                             ],
                             "block_until_verdict": 1
                           })",
-          download_url_.host().c_str()));
+                           download_url_.host().c_str()));
   EXPECT_FALSE(settings().has_value());
 }
 
 TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      kScanForDlpAndMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
 
   content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
 
@@ -1791,9 +1787,9 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
 }
 
 TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      kScanForDlpAndMalware);
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
 
   base::RunLoop run_loop;
   DeepScanningRequest request(

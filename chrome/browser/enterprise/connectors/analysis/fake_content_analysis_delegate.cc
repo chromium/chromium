@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace enterprise_connectors::test {
+namespace enterprise_connectors {
 
 namespace {
 
@@ -43,9 +47,8 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
       dm_token_(std::move(dm_token)) {}
 
 FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
-  if (!delete_closure_.is_null()) {
+  if (!delete_closure_.is_null())
     delete_closure_.Run();
-  }
 }
 
 // static
@@ -101,26 +104,29 @@ void FakeContentAnalysisDelegate::SetResponseDelay(base::TimeDelta delay) {
 }
 
 // static
-ContentAnalysisResponse FakeContentAnalysisDelegate::SuccessfulResponse(
+enterprise_connectors::ContentAnalysisResponse
+FakeContentAnalysisDelegate::SuccessfulResponse(
     const std::set<std::string>& tags) {
-  ContentAnalysisResponse response;
+  enterprise_connectors::ContentAnalysisResponse response;
 
   auto* result = response.mutable_results()->Add();
-  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-  for (const std::string& tag : tags) {
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  for (const std::string& tag : tags)
     result->set_tag(tag);
-  }
 
   return response;
 }
 
 // static
-ContentAnalysisResponse FakeContentAnalysisDelegate::MalwareResponse(
-    TriggeredRule::Action action) {
-  ContentAnalysisResponse response;
+enterprise_connectors::ContentAnalysisResponse
+FakeContentAnalysisDelegate::MalwareResponse(
+    enterprise_connectors::TriggeredRule::Action action) {
+  enterprise_connectors::ContentAnalysisResponse response;
 
   auto* result = response.mutable_results()->Add();
-  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
   result->set_tag("malware");
 
   auto* rule = result->add_triggered_rules();
@@ -130,11 +136,12 @@ ContentAnalysisResponse FakeContentAnalysisDelegate::MalwareResponse(
 }
 
 // static
-ContentAnalysisResponse FakeContentAnalysisDelegate::DlpResponse(
-    ContentAnalysisResponse::Result::Status status,
+enterprise_connectors::ContentAnalysisResponse
+FakeContentAnalysisDelegate::DlpResponse(
+    enterprise_connectors::ContentAnalysisResponse::Result::Status status,
     const std::string& rule_name,
-    TriggeredRule::Action action) {
-  ContentAnalysisResponse response;
+    enterprise_connectors::TriggeredRule::Action action) {
+  enterprise_connectors::ContentAnalysisResponse response;
 
   auto* result = response.mutable_results()->Add();
   result->set_status(status);
@@ -148,15 +155,17 @@ ContentAnalysisResponse FakeContentAnalysisDelegate::DlpResponse(
 }
 
 // static
-ContentAnalysisResponse FakeContentAnalysisDelegate::MalwareAndDlpResponse(
-    TriggeredRule::Action malware_action,
-    ContentAnalysisResponse::Result::Status dlp_status,
+enterprise_connectors::ContentAnalysisResponse
+FakeContentAnalysisDelegate::MalwareAndDlpResponse(
+    enterprise_connectors::TriggeredRule::Action malware_action,
+    enterprise_connectors::ContentAnalysisResponse::Result::Status dlp_status,
     const std::string& dlp_rule_name,
-    TriggeredRule::Action dlp_action) {
-  ContentAnalysisResponse response;
+    enterprise_connectors::TriggeredRule::Action dlp_action) {
+  enterprise_connectors::ContentAnalysisResponse response;
 
   auto* malware_result = response.add_results();
-  malware_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
   malware_result->set_tag("malware");
   auto* malware_rule = malware_result->add_triggered_rules();
   malware_rule->set_action(malware_action);
@@ -181,7 +190,7 @@ void FakeContentAnalysisDelegate::Response(
   auto response =
       (status_callback_.is_null() ||
        result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
-          ? ContentAnalysisResponse()
+          ? enterprise_connectors::ContentAnalysisResponse()
           : status_callback_.Run(contents, path);
   if (request->IsAuthRequest()) {
     StringRequestCallback(result_, response);
@@ -324,4 +333,4 @@ FakeContentAnalysisDelegate::GetBinaryUploadService() {
   return nullptr;
 }
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise_connectors

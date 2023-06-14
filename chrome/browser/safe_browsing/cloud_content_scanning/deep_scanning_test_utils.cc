@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -31,7 +31,7 @@
 using extensions::SafeBrowsingPrivateEventRouter;
 using ::testing::_;
 
-namespace enterprise_connectors::test {
+namespace safe_browsing {
 
 EventReportValidator::EventReportValidator(
     policy::MockCloudPolicyClient* client)
@@ -166,7 +166,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_trigger,
-    const ContentAnalysisResponse::Result& expected_dlp_verdict,
+    const enterprise_connectors::ContentAnalysisResponse::Result&
+        expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
     absl::optional<int64_t> expected_content_size,
     const std::string& expected_result,
@@ -206,7 +207,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     const std::vector<std::string>& expected_filenames,
     const std::vector<std::string>& expected_sha256s,
     const std::string& expected_trigger,
-    const std::vector<ContentAnalysisResponse::Result>& expected_dlp_verdicts,
+    const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
+        expected_dlp_verdicts,
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::vector<std::string>& expected_results,
@@ -248,7 +250,8 @@ void EventReportValidator::
         const std::string& expected_sha256,
         const std::string& expected_threat_type,
         const std::string& expected_trigger,
-        const ContentAnalysisResponse::Result& expected_dlp_verdict,
+        const enterprise_connectors::ContentAnalysisResponse::Result&
+            expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
         int64_t expected_content_size,
         const std::string& expected_result,
@@ -298,7 +301,8 @@ void EventReportValidator::
         const std::string& expected_sha256,
         const std::string& expected_threat_type,
         const std::string& expected_trigger,
-        const ContentAnalysisResponse::Result& expected_dlp_verdict,
+        const enterprise_connectors::ContentAnalysisResponse::Result&
+            expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
         int64_t expected_content_size,
         const std::string& expected_result,
@@ -457,8 +461,10 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
                 unscanned_reason_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
                 username_);
-  ValidateField(event, RealtimeReportingClient::kKeyProfileIdentifier,
-                profile_identifier_);
+  ValidateField(
+      event,
+      enterprise_connectors::RealtimeReportingClient::kKeyProfileIdentifier,
+      profile_identifier_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyIsFederated,
                 is_federated_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyLoginUserName,
@@ -528,7 +534,7 @@ void EventReportValidator::ValidateMimeType(const base::Value::Dict* value) {
 
 void EventReportValidator::ValidateDlpVerdict(
     const base::Value::Dict* value,
-    const ContentAnalysisResponse::Result& result) {
+    const enterprise_connectors::ContentAnalysisResponse::Result& result) {
   const base::Value::List* triggered_rules =
       value->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rules);
@@ -542,7 +548,8 @@ void EventReportValidator::ValidateDlpVerdict(
 
 void EventReportValidator::ValidateDlpRule(
     const base::Value::Dict* value,
-    const ContentAnalysisResponse::Result::TriggeredRule& expected_rule) {
+    const enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule&
+        expected_rule) {
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
                 expected_rule.rule_name());
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
@@ -634,7 +641,7 @@ void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {
 }
 
 void SetAnalysisConnector(PrefService* prefs,
-                          AnalysisConnector connector,
+                          enterprise_connectors::AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope) {
   ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
@@ -654,13 +661,15 @@ base::Value::List CreateOptInEventsList(
   base::Value::List enabled_opt_in_events_list;
   for (const auto& enabled_opt_in_event : enabled_opt_in_events) {
     base::Value::Dict event_value;
-    event_value.Set(kKeyOptInEventName, enabled_opt_in_event.first);
+    event_value.Set(enterprise_connectors::kKeyOptInEventName,
+                    enabled_opt_in_event.first);
 
     base::Value::List url_patterns_list;
     for (const auto& url_pattern : enabled_opt_in_event.second) {
       url_patterns_list.Append(url_pattern);
     }
-    event_value.Set(kKeyOptInEventUrlPatterns, std::move(url_patterns_list));
+    event_value.Set(enterprise_connectors::kKeyOptInEventUrlPatterns,
+                    std::move(url_patterns_list));
 
     enabled_opt_in_events_list.Append(std::move(event_value));
   }
@@ -674,38 +683,43 @@ void SetOnSecurityEventReporting(
     const std::map<std::string, std::vector<std::string>>&
         enabled_opt_in_events,
     bool machine_scope) {
-  ScopedListPrefUpdate settings_list(prefs, kOnSecurityEventPref);
+  ScopedListPrefUpdate settings_list(
+      prefs, enterprise_connectors::kOnSecurityEventPref);
   if (!enabled) {
     settings_list->clear();
-    prefs->ClearPref(kOnSecurityEventScopePref);
+    prefs->ClearPref(enterprise_connectors::kOnSecurityEventScopePref);
     return;
   }
 
   if (settings_list->empty()) {
     base::Value::Dict settings;
 
-    settings.Set(kKeyServiceProvider, base::Value("google"));
+    settings.Set(enterprise_connectors::kKeyServiceProvider,
+                 base::Value("google"));
     if (!enabled_event_names.empty()) {
       base::Value::List enabled_event_name_list;
       for (const auto& enabled_event_name : enabled_event_names) {
         enabled_event_name_list.Append(enabled_event_name);
       }
-      settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
+      settings.Set(enterprise_connectors::kKeyEnabledEventNames,
+                   std::move(enabled_event_name_list));
     }
 
     if (!enabled_opt_in_events.empty()) {
-      settings.Set(kKeyEnabledOptInEvents,
+      settings.Set(enterprise_connectors::kKeyEnabledOptInEvents,
                    CreateOptInEventsList(enabled_opt_in_events));
     }
 
     settings_list->Append(std::move(settings));
   }
   prefs->SetInteger(
-      kOnSecurityEventScopePref,
+      enterprise_connectors::kOnSecurityEventScopePref,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
-void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
+void ClearAnalysisConnector(
+    PrefService* prefs,
+    enterprise_connectors::AnalysisConnector connector) {
   ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   settings_list->clear();
   prefs->ClearPref(ConnectorScopePref(connector));
@@ -726,4 +740,4 @@ void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
 }
 #endif
 
-}  // namespace enterprise_connectors::test
+}  // namespace safe_browsing

@@ -24,8 +24,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -35,6 +33,8 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
@@ -127,7 +127,7 @@ class FakeBinaryFCMService : public BinaryFCMService {
 // Integration tests for download deep scanning behavior, only mocking network
 // traffic and FCM dependencies.
 class DownloadDeepScanningBrowserTestBase
-    : public enterprise_connectors::test::DeepScanningBrowserTestBase,
+    : public DeepScanningBrowserTestBase,
       public content::DownloadManager::Observer,
       public download::DownloadItem::Observer {
  public:
@@ -150,10 +150,10 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   void SetUpReporting() {
-    enterprise_connectors::test::SetOnSecurityEventReporting(
-        browser()->profile()->GetPrefs(),
-        /*enabled*/ true, /*enabled_event_names*/ {},
-        /*enabled_opt_in_events*/ {}, connectors_machine_scope());
+    SetOnSecurityEventReporting(browser()->profile()->GetPrefs(),
+                                /*enabled*/ true, /*enabled_event_names*/ {},
+                                /*enabled_opt_in_events*/ {},
+                                connectors_machine_scope());
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("dm_token");
 
@@ -216,14 +216,12 @@ class DownloadDeepScanningBrowserTestBase
       if (connectors_machine_scope()) {
         SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
       } else {
-        enterprise_connectors::test::SetProfileDMToken(browser()->profile(),
-                                                       "dm_token");
+        SetProfileDMToken(browser()->profile(), "dm_token");
       }
 #endif
-      enterprise_connectors::test::SetAnalysisConnector(
-          browser()->profile()->GetPrefs(),
-          enterprise_connectors::FILE_DOWNLOADED,
-          R"({
+      SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                           enterprise_connectors::FILE_DOWNLOADED,
+                           R"({
                               "service_provider": "google",
                               "enable": [
                                 {
@@ -234,7 +232,7 @@ class DownloadDeepScanningBrowserTestBase
                               "block_until_verdict": 1,
                               "block_password_protected": true
                             })",
-          connectors_machine_scope());
+                           connectors_machine_scope());
     }
   }
 
@@ -779,7 +777,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   // A single unsafe event should be recorded for this request.
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ url.spec(),
       /*source*/ "",
@@ -872,7 +870,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   // Both the DLP and malware violations generate an event.
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       /*url*/ url.spec(),
       /*source*/ "",
@@ -926,10 +924,9 @@ class DownloadRestrictionsDeepScanningBrowserTest
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kDownloadRestrictions,
         static_cast<int>(DownloadPrefs::DownloadRestriction::DANGEROUS_FILES));
-    enterprise_connectors::test::SetAnalysisConnector(
-        browser()->profile()->GetPrefs(),
-        enterprise_connectors::FILE_DOWNLOADED,
-        R"({
+    SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
+                         R"({
                               "service_provider": "google",
                               "enable": [
                                 {
@@ -939,7 +936,7 @@ class DownloadRestrictionsDeepScanningBrowserTest
                               ],
                               "block_until_verdict": 1
                             })",
-        connectors_machine_scope());
+                         connectors_machine_scope());
   }
 };
 
@@ -964,7 +961,7 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
   validator.ExpectDangerousDownloadEvent(
@@ -1283,7 +1280,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
   // That response should not trigger a security event.
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   validator.ExpectNoReport();
 
   SendFcmMessage(response);
@@ -1333,7 +1330,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   dlp_verdict->set_action(enterprise_connectors::TriggeredRule::BLOCK);
 
   // That blocking response should trigger a security event.
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
@@ -1399,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
 
   // That warning response should trigger a security event.
   base::RunLoop validator_run_loop;
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
@@ -1502,7 +1499,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
 
   // That warning response should trigger a security event.
   base::RunLoop validator_run_loop;
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
@@ -1600,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   dlp_verdict->set_action(enterprise_connectors::TriggeredRule::BLOCK);
 
   base::RunLoop validator_run_loop;
-  enterprise_connectors::test::EventReportValidator validator(client());
+  EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(

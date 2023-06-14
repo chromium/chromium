@@ -43,7 +43,6 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -54,6 +53,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
@@ -2950,8 +2950,7 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile()->GetPrefs(), true);
+  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -2963,7 +2962,7 @@ TEST_F(DownloadProtectionServiceTest,
   // This test sets the mimetype to the empty string, so pass a valid set
   // pointer, but only put the empty string in it.
   std::set<std::string> expected_mimetypes{""};
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
       "",                     // URL, not set in this test
       "a.exe",                // Simple filename without the directory
@@ -2998,8 +2997,7 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile()->GetPrefs(), true);
+  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3031,7 +3029,7 @@ TEST_F(DownloadProtectionServiceTest,
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
       "",          // source, not used for file downloads.
@@ -3058,8 +3056,7 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile()->GetPrefs(), true);
+  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3085,7 +3082,7 @@ TEST_F(DownloadProtectionServiceTest,
   // This test sets the mimetype to the empty string, so pass a valid set
   // pointer, but only put the empty string in it.
   std::set<std::string> expected_mimetypes{""};
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
       "",                     // URL, not set in this test
       "a.exe",                // Simple filename without the directory
@@ -3111,8 +3108,7 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile()->GetPrefs(), true);
+  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3147,7 +3143,7 @@ TEST_F(DownloadProtectionServiceTest,
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
       "",          // source, not used for file downloads.
@@ -3174,8 +3170,7 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile()->GetPrefs(), true);
+  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3210,7 +3205,7 @@ TEST_F(DownloadProtectionServiceTest,
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK));
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
       "",          // source, not used for file downloads.
@@ -3523,8 +3518,8 @@ TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3553,8 +3548,8 @@ TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
   }
 
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3610,8 +3605,8 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3633,8 +3628,8 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
   }
 
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3694,8 +3689,8 @@ TEST_F(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
       .Times(2);
 
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3717,8 +3712,8 @@ TEST_F(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
   }
 
   {
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -4551,9 +4546,9 @@ TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      R"({
+  SetAnalysisConnector(profile()->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       R"({
                             "service_provider": "google",
                             "enable": [
                               {
@@ -4605,8 +4600,8 @@ TEST_F(DeepScanningDownloadTest, PolicyDisabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  enterprise_connectors::test::ClearAnalysisConnector(
-      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED);
+  ClearAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED);
 
   TestBinaryUploadService* test_upload_service =
       static_cast<TestBinaryUploadService*>(
@@ -4658,8 +4653,8 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+    SetAnalysisConnector(profile()->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -4888,8 +4883,8 @@ TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
+  SetAnalysisConnector(profile()->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -4926,9 +4921,9 @@ TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      R"({
+  SetAnalysisConnector(profile()->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       R"({
                            "service_provider": "google",
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
@@ -4974,9 +4969,9 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
-      R"({
+  SetAnalysisConnector(profile()->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       R"({
                            "service_provider": "google",
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}

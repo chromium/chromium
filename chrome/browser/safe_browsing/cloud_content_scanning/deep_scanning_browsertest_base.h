@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_BROWSERTEST_BASE_H_
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
-namespace enterprise_connectors::test {
+namespace safe_browsing {
 
 // Base test class for deep scanning browser tests. Common utility functions
 // used by browser tests should be added to this class.
@@ -33,16 +33,19 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
   void CallQuitClosure();
 
   // Set what StatusCallback returns.
-  void SetStatusCallbackResponse(ContentAnalysisResponse response);
+  void SetStatusCallbackResponse(
+      enterprise_connectors::ContentAnalysisResponse response);
 
   // Callbacks used to set up the fake delegate factory.
-  ContentAnalysisResponse StatusCallback(const std::string& contents,
-                                         const base::FilePath& path);
+  enterprise_connectors::ContentAnalysisResponse StatusCallback(
+      const std::string& contents,
+      const base::FilePath& path);
 
   // Creates temporary files for testing in |temp_dir_|, and add them to |data|.
-  void CreateFilesForTest(const std::vector<std::string>& paths,
-                          const std::vector<std::string>& contents,
-                          ContentAnalysisDelegate::Data* data);
+  void CreateFilesForTest(
+      const std::vector<std::string>& paths,
+      const std::vector<std::string>& contents,
+      enterprise_connectors::ContentAnalysisDelegate::Data* data);
 
   const std::vector<base::FilePath>& created_file_paths() const;
 
@@ -51,11 +54,12 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
 
  private:
   base::RepeatingClosure quit_closure_;
-  ContentAnalysisResponse connector_status_callback_response_;
+  enterprise_connectors::ContentAnalysisResponse
+      connector_status_callback_response_;
   base::ScopedTempDir temp_dir_;
   std::vector<base::FilePath> created_file_paths_;
 };
 
-}  // namespace enterprise_connectors::test
+}  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_BROWSERTEST_BASE_H_
