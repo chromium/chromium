@@ -2512,6 +2512,9 @@ void NavigationRequest::BeginNavigationImpl() {
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
       const net::SchemefulSite site = net::SchemefulSite(origin);
+
+      // Set the COOP origin in the policy container builder via the mutable
+      // reference before FinalPolicies() is called.
       absl::optional<url::Origin>& coop_origin =
           policy_container_builder_->GetPolicyContainerHost()
               ->cross_origin_opener_policy()
@@ -3085,6 +3088,8 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+  // Set the COOP origin in the policy container builder via the mutable
+  // reference before coop is sent to EnforceCOOP.
   network::CrossOriginOpenerPolicy& coop =
       response()->parsed_headers->cross_origin_opener_policy;
   coop.origin = origin;
@@ -3915,6 +3920,8 @@ void NavigationRequest::OnResponseStarted(
   // can be determined. This is needed for enforcing COOP below.
 
   {
+    // Set the COOP origin in the policy container builder before
+    // FinalPolicies() is called.
     const url::Origin origin = GetOriginForURLLoaderFactoryBeforeResponse(
         policy_container_builder_->FinalPolicies().sandbox_flags);
     policy_container_builder_->GetPolicyContainerHost()
@@ -4489,6 +4496,8 @@ void NavigationRequest::OnRequestFailedInternal(
   ComputePoliciesToCommitForError();
 
   const auto origin = url::Origin();
+  // Set the COOP origin in the policy container builder before FinalPolicies()
+  // is called.
   policy_container_builder_->GetPolicyContainerHost()
       ->cross_origin_opener_policy()
       .origin = origin;
