@@ -106,9 +106,9 @@ public class TabStripSceneLayerTest {
                      mTabStripSceneLayer, ChromeFeatureList.sTabStripRedesign.isEnabled(), false))
                 .thenReturn(1L);
         mModelSelectorButton = new TintedCompositorButton(
-                mContext, 36.f, 36.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button);
+                mContext, 32.f, 32.f, mCompositorOnClickHandler, R.drawable.ic_incognito);
         mNewTabButton = new TintedCompositorButton(
-                mContext, 36.f, 36.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button);
+                mContext, 32.f, 32.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button_tsr);
         mStripLayoutTab = new StripLayoutTab(mContext, 1, mStripLayoutTabDelegate,
                 mTabLoadTrackerCallback, mLayoutRenderHost, mLayoutUpdateHost, false);
         mTabStripSceneLayer.initializeNativeForTesting();

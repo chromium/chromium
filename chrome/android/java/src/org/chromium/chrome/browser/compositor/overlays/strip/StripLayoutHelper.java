@@ -311,7 +311,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // different size.
             mNewTabButton = new TintedCompositorButton(context,
                     NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_TSR, NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP_TSR,
-                    newTabClickHandler, R.drawable.ic_new_tab_button);
+                    newTabClickHandler, R.drawable.ic_new_tab_button_tsr);
             mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
             // Primary container for default bg color.

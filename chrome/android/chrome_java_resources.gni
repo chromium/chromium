@@ -397,6 +397,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_incognito_reauth_promo_icon.xml",
   "java/res/drawable/ic_install_webapp.xml",
   "java/res/drawable/ic_new_tab_button.xml",
+  "java/res/drawable/ic_new_tab_button_tsr.xml",
   "java/res/drawable/ic_new_window.xml",
   "java/res/drawable/ic_offer_tag.xml",
   "java/res/drawable/ic_open_in_browser.xml",
