@@ -308,6 +308,7 @@ bool RenderPassNeedsFullDamage(ResolvedPassData& resolved_pass) {
     //    frame but it's not in this frame.
     return aggregation.in_cached_render_pass ||
            aggregation.in_copy_request_pass ||
+           aggregation.in_pixel_moving_filter_pass ||
            ChangeInMergeState(resolved_pass);
   } else {
     // Returns true if |resolved_pass| needs full damage. This is because:

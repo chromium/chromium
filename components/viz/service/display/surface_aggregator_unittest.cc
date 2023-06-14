@@ -6013,9 +6013,9 @@ TEST_F(SurfaceAggregatorPartialSwapTest, AllowSkipAndIgnoreOutside) {
 
     ASSERT_EQ(4u, aggregated_pass_list.size());
 
-    EXPECT_EQ(gfx::Rect(20, 20, 2, 2), aggregated_pass_list[0]->damage_rect);
-    EXPECT_EQ(gfx::Rect(20, 20, 2, 2), aggregated_pass_list[1]->damage_rect);
-    EXPECT_EQ(gfx::Rect(20, 20, 2, 2), aggregated_pass_list[2]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), aggregated_pass_list[0]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), aggregated_pass_list[1]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), aggregated_pass_list[2]->damage_rect);
     // The filter pass does not intersects with the other damages. The root
     // damage should not increase.
     EXPECT_EQ(gfx::Rect(20, 20, 2, 2), aggregated_pass_list[3]->damage_rect);
@@ -6083,9 +6083,9 @@ TEST_F(SurfaceAggregatorPartialSwapTest, AllowSkipAndIgnoreOutside) {
 
     ASSERT_EQ(4u, aggregated_pass_list.size());
 
-    EXPECT_EQ(gfx::Rect(0, 0, 35, 35), aggregated_pass_list[0]->damage_rect);
-    EXPECT_EQ(gfx::Rect(0, 0, 35, 35), aggregated_pass_list[1]->damage_rect);
-    EXPECT_EQ(gfx::Rect(0, 0, 35, 35), aggregated_pass_list[2]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), aggregated_pass_list[0]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), aggregated_pass_list[1]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), aggregated_pass_list[2]->damage_rect);
     // The filter pass intersects with the root surface damage, the root damage
     // should increase.
     // damage_rect = original root damage (0, 0, 5, 5) + blur filter pixel
