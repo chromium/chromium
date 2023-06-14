@@ -6690,6 +6690,7 @@ crbug.com/1453772 external/wpt/window-management/multi-screen-fullscreen-compani
 
 # Gardener 2023-06-13
 crbug.com/1450287 [ Mac13-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
+crbug.com/1450287 [ Mac13-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1454498 fast/forms/accent-color/radio-accent-color-hover-dark-appearance.html [ Failure Pass ]
 crbug.com/1422685 [ Mac11-arm64 ] fast/canvas-api/offscreencanvas.transferrable-webgl-exception.html [ Failure Pass ]
 crbug.com/1422685 [ Mac12-arm64 ] fast/canvas-api/offscreencanvas.transferrable-webgl-exception.html [ Failure Pass ]
