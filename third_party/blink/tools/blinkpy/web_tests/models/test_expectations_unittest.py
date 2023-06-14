@@ -355,8 +355,10 @@ class SystemConfigurationEditorTests(Base):
             crbug.com/123 [ Mac ] failures/expected/text.html?\* [ Failure ]
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.update_versions(
+        change = self._system_config_remover.update_versions(
             'failures/expected/text.html?*', {'Mac10.11'}, {ResultType.Crash})
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 3)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -383,9 +385,11 @@ class SystemConfigurationEditorTests(Base):
             [ Mac ] failures/expected/text.html?\* [ Failure ]
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.update_versions(
+        change = self._system_config_remover.update_versions(
             'failures/expected/image.html', {'Mac10.11'}, {ResultType.Crash},
             marker='=== wpt-importer ===')
+        self.assertEqual(len(change.lines_removed), 0)
+        self.assertEqual(len(change.lines_added), 1)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -411,10 +415,12 @@ class SystemConfigurationEditorTests(Base):
             [ Mac Debug ] failures/expected/text.html?\* [ Failure ]
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.update_versions(
+        change = self._system_config_remover.update_versions(
             'failures/expected/text.html?*', {'Mac10.11'},
             {ResultType.Failure},
-            marker='does-not-exist')
+            marker='create-me')
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 3)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -426,6 +432,8 @@ class SystemConfigurationEditorTests(Base):
                 # results: [ Failure Crash ]
                 [ Debug Mac10.10 ] failures/expected/text.html?\* [ Failure ]
                 [ Debug Mac10.12 ] failures/expected/text.html?\* [ Failure ]
+
+                # create-me
                 [ Mac10.11 ] failures/expected/text.html?\* [ Failure ]
                 """))
 
@@ -438,10 +446,12 @@ class SystemConfigurationEditorTests(Base):
 
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.update_versions(
+        change = self._system_config_remover.update_versions(
             'failures/expected/text.html?*', {'Mac10.11'},
             {ResultType.Failure, ResultType.Crash},
             autotriage=False)
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 3)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -457,6 +467,24 @@ class SystemConfigurationEditorTests(Base):
                 [ Mac10.11 ] failures/expected/text.html?\* [ Crash Failure ]
                 """))
 
+    def test_update_then_merge_without_net_change(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Win7 Win10 Win ]
+            # results: [ Failure Crash ]
+            crbug.com/123 [ Win ] failures/expected/text.html?\* [ Failure ]
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        change = self._system_config_remover.update_versions(
+            'failures/expected/text.html?*', {'Win7'}, {ResultType.Failure})
+        change += self._system_config_remover.merge_versions(
+            'failures/expected/text.html?*')
+        self.assertEqual(len(change.lines_removed), 0)
+        self.assertEqual(len(change.lines_added), 0)
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(updated_exps, raw_expectations)
+
     def test_merge_versions_os(self):
         raw_expectations = textwrap.dedent("""\
             # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win ]
@@ -469,8 +497,10 @@ class SystemConfigurationEditorTests(Base):
             crbug.com/456 [ Mac10.13 ] failures/expected/text.html?\* [ Failure ]  # comment 2
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.merge_versions(
+        change = self._system_config_remover.merge_versions(
             'failures/expected/text.html?*')
+        self.assertEqual(len(change.lines_removed), 4)
+        self.assertEqual(len(change.lines_added), 1)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -496,8 +526,10 @@ class SystemConfigurationEditorTests(Base):
             crbug.com/123 [ Trusty ] failures/expected/text.html?\* [ Failure ]  # comment
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.merge_versions(
+        change = self._system_config_remover.merge_versions(
             'failures/expected/text.html?*')
+        self.assertEqual(len(change.lines_removed), 5)
+        self.assertEqual(len(change.lines_added), 1)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -519,8 +551,10 @@ class SystemConfigurationEditorTests(Base):
             crbug.com/123 [ Debug Win10 ] failures/expected/text.html?\* [ Crash ]
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.merge_versions(
+        change = self._system_config_remover.merge_versions(
             'failures/expected/text.html?*')
+        self.assertEqual(len(change.lines_removed), 2)
+        self.assertEqual(len(change.lines_added), 1)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -546,8 +580,10 @@ class SystemConfigurationEditorTests(Base):
             crbug.com/123 [ Trusty ] failures/expected/text.html?\* [ Failure ]  # comment
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.merge_versions(
+        change = self._system_config_remover.merge_versions(
             'failures/expected/text.html?*')
+        self.assertEqual(len(change.lines_removed), 4)
+        self.assertEqual(len(change.lines_added), 2)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -573,8 +609,10 @@ class SystemConfigurationEditorTests(Base):
             crbug.com/123 [ Release Win10 ] failures/expected/text.html?\* [ Failure ]
             """)
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.merge_versions(
+        change = self._system_config_remover.merge_versions(
             'failures/expected/text.html?*')
+        self.assertEqual(len(change.lines_removed), 0)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -596,8 +634,10 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation should be split\n'
             '[ Mac ] failures/expected/text.html?\* [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html?*', set(['Mac10.10']))
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 2)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -616,8 +656,10 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation should be unaffected\n'
             '[ Linux ] failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', set(['Mac10.10']))
+        self.assertEqual(len(change.lines_removed), 0)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -630,8 +672,10 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation should be split\n'
             'failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', set(['Mac10.10']))
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 4)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -652,9 +696,11 @@ class SystemConfigurationEditorTests(Base):
             '# The expectation below and this comment block should be deleted\n'
             '[ Mac ] failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html',
             {'Mac10.10', 'Mac10.11', 'Mac10.12'})
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -669,9 +715,11 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation should be split\n'
             'failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html',
             {'Mac10.10', 'Mac10.11', 'Mac10.12'})
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 2)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -690,9 +738,11 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation should be unaffected\n'
             '[ Linux ] failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html',
             {'Mac10.10', 'Mac10.11', 'Mac10.12'})
+        self.assertEqual(len(change.lines_removed), 0)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -708,8 +758,10 @@ class SystemConfigurationEditorTests(Base):
         all_versions = reduce(
             lambda x, y: x + y,
             list(self._port.configuration_specifier_macros_dict.values()))
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', all_versions)
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -728,8 +780,10 @@ class SystemConfigurationEditorTests(Base):
         all_versions = reduce(
             lambda x, y: x + y,
             list(self._port.configuration_specifier_macros_dict.values()))
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', all_versions)
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -745,8 +799,10 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation should be unaffected\n'
             '[ Mac10.11 ] failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', set(['Mac10.10']))
+        self.assertEqual(len(change.lines_removed), 0)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
@@ -759,8 +815,10 @@ class SystemConfigurationEditorTests(Base):
             '# Below Expectation as well as this comment should be deleted\n'
             '[ Mac10.10 ] failures/expected/text.html [ Failure ]\n')
         self.set_up_using_raw_expectations(raw_expectations)
-        self._system_config_remover.remove_os_versions(
+        change = self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', set(['Mac10.10']))
+        self.assertEqual(len(change.lines_removed), 1)
+        self.assertEqual(len(change.lines_added), 0)
         self._system_config_remover.update_expectations()
         updated_exps = self._port.host.filesystem.read_text_file(
             self._general_exp_filename)
