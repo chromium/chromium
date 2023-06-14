@@ -383,17 +383,23 @@ class AvatarImageView : public views::ImageView {
             .Rasterize(GetColorProvider());
     sized_avatar_image = AddCircularBackground(
         sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
-    gfx::ImageSkia sized_badge = AddCircularBackground(
-        SizeImage(root_view_->GetSyncIcon(), kBadgeSize), GetBackgroundColor(),
-        kBadgeSize + 2 * kBadgePadding);
-    gfx::ImageSkia sized_badge_with_shadow =
-        gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-            sized_badge, gfx::ShadowValue::MakeMdShadowValues(/*elevation=*/1,
-                                                              SK_ColorBLACK));
 
-    gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
-        sized_avatar_image, sized_badge_with_shadow);
-    SetImage(badged_image);
+    if (features::IsChromeRefresh2023()) {
+      SetImage(sized_avatar_image);
+    } else {
+      gfx::ImageSkia sized_badge = AddCircularBackground(
+          SizeImage(root_view_->GetSyncIcon(), kBadgeSize),
+          GetBackgroundColor(), kBadgeSize + 2 * kBadgePadding);
+      gfx::ImageSkia sized_badge_with_shadow =
+          gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+              sized_badge, gfx::ShadowValue::MakeMdShadowValues(/*elevation=*/1,
+                                                                SK_ColorBLACK));
+
+      gfx::ImageSkia badged_image =
+          gfx::ImageSkiaOperations::CreateIconWithBadge(
+              sized_avatar_image, sized_badge_with_shadow);
+      SetImage(badged_image);
+    }
   }
 
  private:
