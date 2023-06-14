@@ -22,13 +22,12 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotRevive;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -53,32 +52,48 @@ public class PersistedTabDataTest {
     }
 
     @SmallTest
-    @UiThreadTest
     @Test
-    @DisabledTest(message = "https://crbug.com/1292239")
-    @DoNotRevive(reason = "Causes other tests in batch to fail, see crbug.com/1292239")
-    // TODO(crbug.com/1292239): Unbatch this and reenable.
-    public void testCacheCallbacks() throws InterruptedException {
-        Tab tab = MockTab.createAndInitialize(1, false);
-        tab.setIsTabSaveEnabled(true);
-        MockPersistedTabData mockPersistedTabData = new MockPersistedTabData(tab, INITIAL_VALUE);
-        registerObserverSupplier(mockPersistedTabData);
-        mockPersistedTabData.save();
-        // 1
-        MockPersistedTabData.from(tab, (res) -> {
-            Assert.assertEquals(INITIAL_VALUE, res.getField());
-            registerObserverSupplier(tab.getUserDataHost().getUserData(MockPersistedTabData.class));
-            tab.getUserDataHost().getUserData(MockPersistedTabData.class).setField(CHANGED_VALUE);
-            // Caching callbacks means 2) shouldn't overwrite CHANGED_VALUE
-            // back to INITIAL_VALUE in the callback.
-            MockPersistedTabData.from(
-                    tab, (ares) -> { Assert.assertEquals(CHANGED_VALUE, ares.getField()); });
+    public void testCacheCallbacks()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab t = MockTab.createAndInitialize(1, false);
+            t.setIsTabSaveEnabled(true);
+            return t;
         });
-        // 2
-        MockPersistedTabData.from(tab, (res) -> {
-            Assert.assertEquals(CHANGED_VALUE, res.getField());
-            mockPersistedTabData.delete();
+        MockPersistedTabData mockPersistedTabData = ThreadUtils.runOnUiThreadBlocking(() -> {
+            MockPersistedTabData mptd = new MockPersistedTabData(tab, INITIAL_VALUE);
+            registerObserverSupplier(mptd);
+            mptd.save();
+            return mptd;
         });
+
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            // 1
+            MockPersistedTabData.from(tab, (res) -> {
+                Assert.assertEquals(INITIAL_VALUE, res.getField());
+                registerObserverSupplier(
+                        tab.getUserDataHost().getUserData(MockPersistedTabData.class));
+                tab.getUserDataHost()
+                        .getUserData(MockPersistedTabData.class)
+                        .setField(CHANGED_VALUE);
+                // Caching callbacks means 2) shouldn't overwrite CHANGED_VALUE
+                // back to INITIAL_VALUE in the callback.
+                MockPersistedTabData.from(tab, (ares) -> {
+                    Assert.assertEquals(CHANGED_VALUE, ares.getField());
+                    helper.notifyCalled();
+                });
+            });
+        });
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            // 2
+            MockPersistedTabData.from(tab, (res) -> {
+                Assert.assertEquals(CHANGED_VALUE, res.getField());
+                mockPersistedTabData.delete();
+                helper.notifyCalled();
+            });
+        });
+        helper.waitForCallback(0, 2);
     }
 
     @SmallTest
