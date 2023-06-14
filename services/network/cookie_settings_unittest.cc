@@ -1291,8 +1291,12 @@ TEST_P(CookieSettingsTest,
 
 TEST_P(CookieSettingsTest, ForceThirdPartyCookieBlocking) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kForceThirdPartyCookieBlocking);
+  feature_list.InitWithFeatures(
+      {
+          net::features::kForceThirdPartyCookieBlocking,
+          net::features::kThirdPartyStoragePartitioning,
+      },
+      {});
 
   CookieSettings settings;
   EXPECT_TRUE(settings.are_third_party_cookies_blocked());

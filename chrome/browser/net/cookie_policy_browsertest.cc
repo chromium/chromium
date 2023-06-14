@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -696,6 +697,37 @@ IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
   ExpectStorage(GetNestedFrame(), true);
+}
+
+class ThirdPartyCookiePhaseoutPolicyStorageBrowserTest
+    : public CookiePolicyBrowserTest {
+ protected:
+  ThirdPartyCookiePhaseoutPolicyStorageBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {
+            net::features::kForceThirdPartyCookieBlocking,
+            net::features::kThirdPartyStoragePartitioning,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
+                       ForceThirdPartyCookieBlocking) {
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
+
+  // Test that we can access storage. This feature's impact on cookies is tested
+  // separately from this file.
+  storage::test::SetStorageForFrame(GetNestedFrame(),
+                                    /*include_cookies=*/false);
+  storage::test::ExpectStorageForFrame(GetNestedFrame(),
+                                       /*include_cookies=*/false,
+                                       /*expected=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

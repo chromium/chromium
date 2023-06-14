@@ -1006,7 +1006,9 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 }
 
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {
-  return base::FeatureList::IsEnabled(features::kForceThirdPartyCookieBlocking);
+  return base::FeatureList::IsEnabled(
+             features::kForceThirdPartyCookieBlocking) &&
+         base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
 }
 
 }  // namespace net::cookie_util

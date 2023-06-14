@@ -6,8 +6,6 @@
 
 namespace network::switches {
 
-const char kBlockThirdPartyCookies[] = "block-third-party-cookies";
-
 // Forces Network Quality Estimator (NQE) to return a specific effective
 // connection type.
 const char kForceEffectiveConnectionType[] = "force-effective-connection-type";
@@ -74,6 +72,8 @@ const char kNetLogCaptureMode[] = "net-log-capture-mode";
 // https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
 // for the format.
 const char kSSLKeyLogFile[] = "ssl-key-log-file";
+
+const char kTestThirdPartyCookiePhaseout[] = "test-third-party-cookie-phaseout";
 
 // Treat given (insecure) origins as secure origins. Multiple origins can be
 // supplied as a comma-separated list. For the definition of secure contexts,

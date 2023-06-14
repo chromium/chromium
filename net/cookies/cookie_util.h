@@ -333,7 +333,7 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 
 // Returns the default third-party cookie blocking setting, which is false
 // unless you enable ForceThirdPartyCookieBlocking with the command line switch
-// --block-third-party-cookies.
+// --test-third-party-cookie-phaseout.
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
 }  // namespace cookie_util
