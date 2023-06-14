@@ -82,6 +82,12 @@ class WizardContext {
   // screens in tests. Is set by WizardController::SkipPostLoginScreensForTests.
   bool skip_post_login_screens_for_tests = false;
 
+  // Whether CHOOBE screen should be skipped. Setting this flag will force skip
+  // CHOOBE screen regardless of the number of eligible optional screens.
+  // To test an optional screen without selecting the screen from CHOOBE screen,
+  // set this flag to true before logging in as a new user.
+  bool skip_choobe_for_tests = false;
+
   // Whether user creation screen is enabled (could be disabled due to disabled
   // feature or on managed device). It determines the behavior of back button
   // for GaiaScreen and OfflineLoginScreen. Value is set to true in

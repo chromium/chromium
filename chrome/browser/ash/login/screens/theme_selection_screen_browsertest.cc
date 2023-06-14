@@ -77,6 +77,10 @@ class ThemeSelectionScreenTest
   }
 
   void ShowThemeSelectionScreen() {
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->skip_choobe_for_tests = true;
+
     login_manager_mixin_.LoginAsNewRegularUser();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     WizardController::default_controller()->AdvanceToScreen(
@@ -233,6 +237,10 @@ class ThemeSelectionScreenResumeTest
 };
 
 IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenResumeTest, PRE_ResumedScreen) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->skip_choobe_for_tests = true;
+
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginManagerMixin::TestUserInfo test_user(user_);
   login_mixin_.LoginWithDefaultContext(test_user);

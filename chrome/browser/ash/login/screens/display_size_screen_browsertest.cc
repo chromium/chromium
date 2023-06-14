@@ -54,6 +54,10 @@ class DisplaySizeScreenTest : public OobeBaseTest {
   }
 
   void ShowDisplaySizeScreen() {
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->skip_choobe_for_tests = true;
+
     login_manager_mixin_.LoginAsNewRegularUser();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     WizardController::default_controller()->AdvanceToScreen(

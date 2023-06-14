@@ -43,7 +43,8 @@ ChoobeScreen::~ChoobeScreen() = default;
 
 // to check with the ChoobeFlowController whether to skip CHOOBE screen.
 bool ChoobeScreen::MaybeSkip(WizardContext& context) {
-  if (context.skip_post_login_screens_for_tests) {
+  if (context.skip_post_login_screens_for_tests ||
+      context.skip_choobe_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
