@@ -1146,6 +1146,11 @@
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
     "expiry_milestone": 117
   },
+    {
+    "name": "clipboard-maximum-age",
+    "owners": ["pnoland", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 125
+  },
   {
     "name": "clipboard-unsanitized-content",
     "owners": [
@@ -5901,6 +5906,13 @@
       "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"
     ],
     "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-suppress-clipboard-suggestion-after-first-used",
+    "owners": [
+      "pnoland", "chrome-mobile-search@google.com"
+    ],
+    "expiry_milestone": 125
   },
   {
     "name": "omnibox-tail-suggest",

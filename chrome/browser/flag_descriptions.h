@@ -109,6 +109,9 @@ extern const char kClickToCallDescription[];
 extern const char kClipboardUnsanitizedContentName[];
 extern const char kClipboardUnsanitizedContentDescription[];
 
+extern const char kClipboardMaximumAgeName[];
+extern const char kClipboardMaximumAgeDescription[];
+
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
@@ -1326,6 +1329,10 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
 extern const char kOmniboxRedoCurrentMatchName[];
 extern const char kOmniboxRedoCurrentMatchDescription[];
+
+extern const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[];
+extern const char
+    kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[];
 
 extern const char kOmniboxWarmRecycledViewPoolName[];
 extern const char kOmniboxWarmRecycledViewPoolDescription[];

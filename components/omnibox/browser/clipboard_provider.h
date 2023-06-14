@@ -55,6 +55,7 @@ class ClipboardProvider : public AutocompleteProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(ClipboardProviderTest, MatchesImage);
   FRIEND_TEST_ALL_PREFIXES(ClipboardProviderTest, CreateURLMatchWithContent);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardProviderTest, SuppressAfterFirstUsed);
   FRIEND_TEST_ALL_PREFIXES(ClipboardProviderTest, CreateTextMatchWithContent);
   FRIEND_TEST_ALL_PREFIXES(ClipboardProviderTest, CreateImageMatchWithContent);
 
@@ -177,6 +178,10 @@ class ClipboardProvider : public AutocompleteProvider {
   bool UpdateClipboardTextContent(const std::u16string& text,
                                   AutocompleteMatch* match);
 
+  // Update the timestamp of the most recently used clipboard suggestion to the
+  // timestamp provided by the ui::Clipboard instance.
+  void UpdateMostRecentlyUsedClipboardSuggestionTimestamp();
+
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<ClipboardRecentContent> clipboard_content_;
 
@@ -184,6 +189,10 @@ class ClipboardProvider : public AutocompleteProvider {
   // Used for recording metrics.
   GURL current_url_suggested_;
   size_t current_url_suggested_times_;
+
+  // The timestamp of the most recently used clipboard suggestion. Used to
+  // suppress showing a suggestion for the same clip data after it's been used.
+  base::Time most_recently_used_clipboard_suggestion_timestamp_;
 
   // Used to cancel image construction callbacks if autocomplete Stop() is
   // called.

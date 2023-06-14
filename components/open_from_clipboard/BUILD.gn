@@ -17,6 +17,8 @@ static_library("open_from_clipboard") {
     "//url",
   ]
 
+  public_deps = [ ":feature_flags" ]
+
   if (!is_ios) {
     sources += [
       "clipboard_recent_content_generic.cc",
@@ -30,6 +32,14 @@ static_library("open_from_clipboard") {
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
   }
+}
+
+source_set("feature_flags") {
+  sources = [
+    "clipboard_recent_content_features.cc",
+    "clipboard_recent_content_features.h",
+  ]
+  deps = [ "//base" ]
 }
 
 # Helper classes used by "open_from_clipboard" target. These classes must have
@@ -83,6 +93,7 @@ source_set("unit_tests") {
   if (!is_ios) {
     sources += [ "clipboard_recent_content_generic_unittest.cc" ]
     deps += [
+      ":feature_flags",
       "//base/test:test_support",
       "//ui/base/clipboard:clipboard_test_support",
     ]

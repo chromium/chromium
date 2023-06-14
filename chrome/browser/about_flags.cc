@@ -122,6 +122,7 @@
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/open_from_clipboard/clipboard_recent_content_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_image_service/features.h"
@@ -786,6 +787,30 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      kForceDark_TransparencyAndNumColors,
      std::size(kForceDark_TransparencyAndNumColors), nullptr}};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+const FeatureEntry::FeatureParam kClipboardMaximumAge60Seconds[] = {
+    {"UIClipboardMaximumAge", "60"}};
+const FeatureEntry::FeatureParam kClipboardMaximumAge90Seconds[] = {
+    {"UIClipboardMaximumAge", "90"}};
+const FeatureEntry::FeatureParam kClipboardMaximumAge120Seconds[] = {
+    {"UIClipboardMaximumAge", "120"}};
+const FeatureEntry::FeatureParam kClipboardMaximumAge150Seconds[] = {
+    {"UIClipboardMaximumAge", "150"}};
+const FeatureEntry::FeatureParam kClipboardMaximumAge180Seconds[] = {
+    {"UIClipboardMaximumAge", "180"}};
+
+const FeatureEntry::FeatureVariation kClipboardMaximumAgeVariations[] = {
+    {"Enabled 60 seconds", kClipboardMaximumAge60Seconds,
+     std::size(kClipboardMaximumAge60Seconds), nullptr},
+    {"Enabled 90 seconds", kClipboardMaximumAge90Seconds,
+     std::size(kClipboardMaximumAge90Seconds), nullptr},
+    {"Enabled 120 seconds", kClipboardMaximumAge120Seconds,
+     std::size(kClipboardMaximumAge120Seconds), nullptr},
+    {"Enabled 150 seconds", kClipboardMaximumAge150Seconds,
+     std::size(kClipboardMaximumAge150Seconds), nullptr},
+    {"Enabled 180 seconds", kClipboardMaximumAge180Seconds,
+     std::size(kClipboardMaximumAge180Seconds), nullptr},
+};
 
 const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};
 const FeatureEntry::FeatureParam kMBIModeEnabledPerRenderProcessHost[] = {
@@ -5789,6 +5814,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
 
+    {"omnibox-suppress-clipboard-suggestion-after-first-used",
+     flag_descriptions::kOmniboxSuppressClipboardSuggestionAfterFirstUsedName,
+     flag_descriptions::
+         kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kSuppressClipboardSuggestionAfterFirstUsed)},
+
     {"omnibox-warm-recycled-view-pool",
      flag_descriptions::kOmniboxWarmRecycledViewPoolName,
      flag_descriptions::kOmniboxWarmRecycledViewPoolDescription, kOsAndroid,
@@ -9785,6 +9817,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardUnsanitizedContentName,
      flag_descriptions::kClipboardUnsanitizedContentDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kClipboardUnsanitizedContent)},
+
+    {"clipboard-maximum-age", flag_descriptions::kClipboardMaximumAgeName,
+     flag_descriptions::kClipboardMaximumAgeDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kClipboardMaximumAge,
+                                    kClipboardMaximumAgeVariations,
+                                    "ClipboardMaximumAge")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-media-dynamic-cgroup", flag_descriptions::kMediaDynamicCgroupName,

@@ -60643,6 +60643,8 @@ from previous Chrome versions.
   <int value="-1252978870" label="TextFragmentColorChange:disabled"/>
   <int value="-1252976780" label="ShillSandboxing:disabled"/>
   <int value="-1252706530" label="AutoFetchOnNetErrorPage:disabled"/>
+  <int value="-1252157900"
+      label="SuppressClipboardSuggestionAfterFirstUsed:disabled"/>
   <int value="-1251926380" label="CameraAppMultiPageDocScan:enabled"/>
   <int value="-1251411236" label="disable-new-md-input-view"/>
   <int value="-1251359563" label="SharingRenameDevices:disabled"/>
@@ -60990,6 +60992,7 @@ from previous Chrome versions.
   <int value="-1071471678" label="enable-finch-seed-delta-compression"/>
   <int value="-1071043945" label="VerticalSnap:enabled"/>
   <int value="-1069628248" label="OmniboxZeroSuggestionsOnSERP:enabled"/>
+  <int value="-1069516914" label="ClipboardMaximumAge:enabled"/>
   <int value="-1069453905" label="CCTModuleUseIntentExtras:disabled"/>
   <int value="-1068278508" label="InfoCardAcknowledgementTracking:disabled"/>
   <int value="-1068197506" label="EnhancedNetworkVoices:enabled"/>
@@ -64134,6 +64137,7 @@ from previous Chrome versions.
   <int value="578633424" label="HistoryClustersHideVisits:disabled"/>
   <int value="578695119" label="ImprovedCookieControls:disabled"/>
   <int value="578894559" label="IPH_Snooze:enabled"/>
+  <int value="580288865" label="ClipboardMaximumAge:disabled"/>
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
@@ -65570,6 +65574,8 @@ from previous Chrome versions.
   <int value="1332120969" label="ChromeDuet:disabled"/>
   <int value="1332891404"
       label="SamePartyCookiesConsideredFirstParty:disabled"/>
+  <int value="1333344850"
+      label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>

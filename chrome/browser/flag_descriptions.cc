@@ -125,6 +125,10 @@ const char kCertDualVerificationEnabledDescription[] =
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";
 
+const char kClipboardMaximumAgeName[] = "Clipboard maximum age";
+const char kClipboardMaximumAgeDescription[] =
+    "Limit the maximum age for recent clipboard content";
+
 const char kClipboardUnsanitizedContentName[] =
     "Clipboard unsanitized read and write";
 const char kClipboardUnsanitizedContentDescription[] =
@@ -2321,6 +2325,12 @@ const char kOmniboxRedoCurrentMatchName[] = "Omnibox redo current match";
 const char kOmniboxRedoCurrentMatchDescription[] =
     "Use an alternative implementation of calculating the cached omnibox "
     "current match that is valid more often.";
+
+const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[] =
+    "Suppress clipboard suggestion after first used";
+const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[] =
+    "Stops showing a clipboard suggestion for distinct clip data once it's "
+    "been clicked on";
 
 const char kOmniboxWarmRecycledViewPoolName[] =
     "Omnibox warm recycled view pool";
