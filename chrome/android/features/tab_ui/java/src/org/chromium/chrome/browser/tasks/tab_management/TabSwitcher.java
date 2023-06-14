@@ -232,6 +232,12 @@ public interface TabSwitcher {
         int getBitmapFetchCountForTesting();
 
         /**
+         * Reset the current count of thumbnail fetches for testing.
+         */
+        @VisibleForTesting
+        default void resetBitmapFetchCountForTesting(){};
+
+        /**
          * @return The soft cleanup delay for testing.
          */
         @VisibleForTesting

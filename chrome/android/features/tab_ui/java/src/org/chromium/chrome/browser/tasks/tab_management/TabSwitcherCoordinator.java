@@ -591,6 +591,12 @@ public class TabSwitcherCoordinator
 
     @Override
     @VisibleForTesting
+    public void resetBitmapFetchCountForTesting() {
+        TabListMediator.ThumbnailFetcher.sFetchCountForTesting = 0;
+    }
+
+    @Override
+    @VisibleForTesting
     public int getSoftCleanupDelayForTesting() {
         return mMediator.getSoftCleanupDelayForTesting();
     }

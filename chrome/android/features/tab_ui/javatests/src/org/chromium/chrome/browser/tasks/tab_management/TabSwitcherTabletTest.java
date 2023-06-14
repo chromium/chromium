@@ -146,6 +146,7 @@ public class TabSwitcherTabletTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             activity.getLayoutManagerSupplier().removeObserver(mLayoutManagerCallback);
         });
+        mTabListDelegate.resetBitmapFetchCountForTesting();
     }
 
     @Test
