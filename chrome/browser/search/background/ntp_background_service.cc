@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/background/ntp_background_service.h"
 
+#include "base/barrier_callback.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -111,6 +113,15 @@ void NtpBackgroundService::FetchCollectionInfo() {
           data:
             "The Backdrop protocol buffer messages. No user data is included."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+            email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-06-13"
         }
         policy {
           cookies_allowed: NO
@@ -196,6 +207,8 @@ void NtpBackgroundService::FetchCollectionImageInfo(
   if (collections_image_info_loader_ != nullptr)
     return;
 
+  pending_image_url_header_loaders_.clear();
+
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("backdrop_collection_images_download",
                                           R"(
@@ -212,6 +225,15 @@ void NtpBackgroundService::FetchCollectionImageInfo(
           data:
             "The Backdrop protocol buffer messages. No user data is included."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+            email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-06-13"
         }
         policy {
           cookies_allowed: NO
@@ -275,11 +297,112 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
     return;
   }
 
-  for (int i = 0; i < images_response.images_size(); ++i) {
-    collection_images_.push_back(CollectionImage::CreateFromProto(
-        requested_collection_id_, images_response.images(i), image_options_));
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpBackgroundImageErrorDetection)) {
+    const auto image_error_detection_callback = base::BarrierCallback<bool>(
+        images_response.images_size(),
+        base::BindOnce(&NtpBackgroundService::CollectionImagesURLsVerified,
+                       base::Unretained(this)));
+    for (int i = 0; i < images_response.images_size(); ++i) {
+      VerifyCollectionImageURL(images_response.images(i),
+                               image_error_detection_callback);
+    }
+  } else {
+    for (int i = 0; i < images_response.images_size(); ++i) {
+      collection_images_.push_back(CollectionImage::CreateFromProto(
+          requested_collection_id_, images_response.images(i), image_options_));
+    }
+    NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
+  }
+}
+
+void NtpBackgroundService::VerifyCollectionImageURL(
+    const ntp::background::Image& image,
+    base::OnceCallback<void(bool)> callback) {
+  constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("backdrop_image_link_verification",
+                                          R"(
+        semantics {
+          sender: "Desktop NTP Background Selector"
+          description:
+            "The Chrome Desktop New Tab Page background selector displays a "
+            "rich set of wallpapers for users to choose from. Each wallpaper "
+            "belongs to a collection (e.g. Arts, Landscape etc.). "
+            "This fetches a wallpaper image's link to make sure its "
+            "resource is reachable."
+          trigger:
+            "Clicking a theme collection on the New Tab page."
+          data:
+            "The HTTP headers for each background image in the "
+            "theme collection."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+            email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-06-13"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by selecting a non-Google default "
+            "search engine in Chrome settings under 'Search Engine'."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+          }
+        })");
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->method = "GET";
+  resource_request->url = GURL(image.image_url());
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  std::unique_ptr<network::SimpleURLLoader> image_url_header_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       traffic_annotation);
+  network::SimpleURLLoader* const image_url_header_loader_ptr =
+      image_url_header_loader.get();
+  image_url_header_loader_ptr->SetRetryOptions(
+      /*max_retries=*/3,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+  auto it = pending_image_url_header_loaders_.insert(
+      pending_image_url_header_loaders_.begin(),
+      std::move(image_url_header_loader));
+  image_url_header_loader_ptr->DownloadHeadersOnly(
+      url_loader_factory_.get(),
+      base::BindOnce(&NtpBackgroundService::OnImageURLHeadersFetchComplete,
+                     base::Unretained(this), std::move(it), image,
+                     std::move(callback)));
+}
+
+void NtpBackgroundService::OnImageURLHeadersFetchComplete(
+    ImageURLHeaderLoaderList::iterator it,
+    const ntp::background::Image& image,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  if (pending_image_url_header_loaders_.empty()) {
+    return;
   }
 
+  pending_image_url_header_loaders_.erase(it);
+  if (headers && headers->response_code() == net::HTTP_OK) {
+    collection_images_.push_back(CollectionImage::CreateFromProto(
+        requested_collection_id_, image, image_options_));
+    std::move(callback).Run(true);
+  } else {
+    std::move(callback).Run(false);
+  }
+}
+
+void NtpBackgroundService::CollectionImagesURLsVerified(
+    const std::vector<bool>& results) {
   NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
 }
 
@@ -307,6 +430,15 @@ void NtpBackgroundService::FetchNextCollectionImage(
             "The Backdrop protocol buffer messages. ApplicationLocale is "
             "included in the request."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+            email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-06-13"
         }
         policy {
           cookies_allowed: NO

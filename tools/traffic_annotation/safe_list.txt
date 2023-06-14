@@ -352,7 +352,6 @@ missing_new_fields,chrome/browser/browser_switcher/browser_switcher_service.cc
 missing_new_fields,chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc
 missing_new_fields,chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_fetcher_win.cc
 missing_new_fields,chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc
-missing_new_fields,chrome/browser/search/background/ntp_background_service.cc
 missing_new_fields,chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc
 missing_new_fields,chrome/browser/ui/webui/welcome/ntp_background_fetcher.cc
 missing_new_fields,components/live_caption/live_translate_controller.cc

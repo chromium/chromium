@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_H_
 
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -128,6 +130,11 @@ class NtpBackgroundService : public KeyedService {
   std::unique_ptr<network::SimpleURLLoader> collections_image_info_loader_;
   std::unique_ptr<network::SimpleURLLoader> next_image_loader_;
 
+  // Used to download the headers of an image in a collection.
+  using ImageURLHeaderLoaderList =
+      std::list<std::unique_ptr<network::SimpleURLLoader>>;
+  ImageURLHeaderLoaderList pending_image_url_header_loaders_;
+
   base::ObserverList<NtpBackgroundServiceObserver, true>::Unchecked observers_;
 
   // Callback that processes the response from the FetchCollectionInfo request,
@@ -146,6 +153,21 @@ class NtpBackgroundService : public KeyedService {
   // next_resume_token_ with server-provided data.
   void OnNextImageInfoFetchComplete(
       const std::unique_ptr<std::string> response_body);
+
+  // Verifies that the resource at a collection image's URL can be reached.
+  void VerifyCollectionImageURL(const ntp::background::Image& image,
+                                base::OnceCallback<void(bool)> callback);
+  // Callback that processes the response from VerifyCollectionImageURL request,
+  // refreshing the contents of collection_images_ with images whose resources
+  // could be reached.
+  void OnImageURLHeadersFetchComplete(
+      ImageURLHeaderLoaderList::iterator it,
+      const ntp::background::Image& image,
+      base::OnceCallback<void(bool)> callback,
+      scoped_refptr<net::HttpResponseHeaders> headers);
+  // Callback that notifies observers that fetch of CollectionImages has
+  // completed.
+  void CollectionImagesURLsVerified(const std::vector<bool>& results);
 
   enum class FetchComplete {
     // Indicates that asynchronous fetch of CollectionInfo has completed.
