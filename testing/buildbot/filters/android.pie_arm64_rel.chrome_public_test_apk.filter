@@ -74,9 +74,6 @@
 -org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testManualInitiationWithBarOpen
 -org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testStartTranslateOnManualInitiation
 
-# crbug.com/1128665
--org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Cancel__UseDownloadOfflineContentProviderEnabled
-
 # crbug.com/1165459
 -org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsEntryTest.testCaptured
 
