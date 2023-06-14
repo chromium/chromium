@@ -50,12 +50,12 @@ void CreateColorSpaceFromNames(wl_client* client,
   auto chromaticity_id = gfx::ColorSpace::PrimaryID::INVALID;
   const auto* maybe_primary = ui::wayland::kChromaticityMap.find(chromaticity);
   if (maybe_primary != ui::wayland::kChromaticityMap.end()) {
-    chromaticity_id = maybe_primary->second;
+    chromaticity_id = maybe_primary->second.primary;
   }
   auto eotf_id = gfx::ColorSpace::TransferID::INVALID;
   const auto* maybe_eotf = ui::wayland::kEotfMap.find(eotf);
   if (maybe_eotf != ui::wayland::kEotfMap.end()) {
-    eotf_id = maybe_eotf->second;
+    eotf_id = maybe_eotf->second.transfer;
   }
 
   zcr_color_space->SetGfxColorSpace(gfx::ColorSpace(chromaticity_id, eotf_id));

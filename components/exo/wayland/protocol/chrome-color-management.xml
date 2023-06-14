@@ -43,7 +43,7 @@
   over the course of our development.
   </description>
 
-  <interface name="zcr_color_manager_v1" version="4">
+  <interface name="zcr_color_manager_v1" version="5">
     <description summary="color manager singleton">
 	A global interface used for getting color management surface and color
 	management output objects as well as creating color space objects from
@@ -69,6 +69,18 @@
 	  <entry name="hlg" value="6" summary="hybrid log gamma" since="2"/>
       <entry name="bt709" value="7" summary="gamma for rec709 encoded videos" since="2"/>
       <entry name="extendedsrgb10" value="8" summary="sRGB transfer function with headroom for HDR" since="2"/>
+      <entry name="smpte170m" value="9" summary="SMPTE240M transfer function" since="5"/>
+      <entry name="smpte240m" value="10" summary="SMPTE240M transfer function" since="5"/>
+      <entry name="smptest428_1" value="11" summary="SMPTEST428_1 transfer function" since="5"/>
+      <entry name="log" value="12" summary="LOG transfer function" since="5"/>
+      <entry name="log_sqrt" value="13" summary="LOG Sqrt transfer function" since="5"/>
+      <entry name="iec61966_2_4" value="14" summary="IEC61966_2_4 transfer function" since="5"/>
+      <entry name="bt1361_ecg" value="15" summary="BT1361_ECG transfer function" since="5"/>
+      <entry name="bt2020_10" value="16" summary="BT2020_10 transfer function" since="5"/>
+      <entry name="bt2020_12" value="17" summary="BT2020_12 transfer function" since="5"/>
+      <entry name="scrgb_linear_80_nits" value="18" summary="SCRGB Linear transfer function" since="5"/>
+      <entry name="gamma18" value="19" summary="GAMMA18 transfer function" since="5"/>
+      <entry name="gamma28" value="20" summary="GAMMA28 transfer function" since="5"/>
     </enum>
 
     <enum name="chromaticity_names">
@@ -95,6 +107,20 @@
              summary="Display P3 https://developer.apple.com/reference/coregraphics/cgcolorspace/1408916-displayp3"/>
       <entry name="adobergb" value="8"
              summary="Adobe RGB https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf"/>
+      <entry name="wide_gamut_color_spin" value="9"
+             summary="" since="5"/>
+      <entry name="bt470m" value="10"
+             summary="" since="5"/>
+      <entry name="smpte240m" value="11"
+             summary="" since="5"/>
+      <entry name="xyz_d50" value="12"
+             summary="" since="5"/>
+      <entry name="smptest428_1" value="13"
+             summary="" since="5"/>
+      <entry name="smptest431_2" value="14"
+             summary="" since="5"/>
+      <entry name="film" value="15"
+             summary="" since="5"/>
     </enum>
 
     <enum name="whitepoint_names">
@@ -243,6 +269,10 @@
       <entry name="fcc" value="5" summary="FCC matrix"/>
       <entry name="smpte170m" value="6" summary="SMPTE170M matrix"/>
       <entry name="smpte240m" value="7" summary="SMPTE240M matrix"/>
+      <entry name="ydzdx" value="8" summary="YDZDX matrix" since="5"/>
+      <entry name="bt470bg" value="9" summary="BT470BG matrix" since="5"/>
+      <entry name="gbr" value="10" summary="GBR matrix" since="5"/>
+      <entry name="ycocg" value="11" summary="YCOCG matrix" since="5"/>
     </enum>
 
     <enum name="range_names">
