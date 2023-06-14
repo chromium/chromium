@@ -241,6 +241,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kIosCredentialProviderPromoLastActionTaken,
           &_prefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          set_up_list_prefs::kDisabled, &_prefChangeRegistrar);
       if (CredentialProviderPromoDismissed(_localState)) {
         set_up_list_prefs::MarkItemComplete(_localState,
                                             SetUpListItemType::kAutofill);
@@ -386,9 +388,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)disableSetUpList {
   set_up_list_prefs::DisableSetUpList(_localState);
-  [self.consumer hideSetUpListWithAnimations:^{
-    [self.feedDelegate contentSuggestionsWasUpdated];
-  }];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -895,6 +894,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       }];
 }
 
+// Hides the Set Up List with an animation.
+- (void)hideSetUpList {
+  [self.consumer hideSetUpListWithAnimations:^{
+    [self.feedDelegate contentSuggestionsWasUpdated];
+  }];
+}
 #pragma mark - Properties
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {
@@ -942,11 +947,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (IsIOSSetUpListEnabled() &&
-      preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
-      CredentialProviderPromoDismissed(_localState)) {
-    set_up_list_prefs::MarkItemComplete(_localState,
-                                        SetUpListItemType::kAutofill);
+  if (IsIOSSetUpListEnabled()) {
+    if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
+        CredentialProviderPromoDismissed(_localState)) {
+      set_up_list_prefs::MarkItemComplete(_localState,
+                                          SetUpListItemType::kAutofill);
+    } else if (preferenceName == set_up_list_prefs::kDisabled &&
+               set_up_list_prefs::IsSetUpListDisabled(_localState)) {
+      [self hideSetUpList];
+    }
   }
 }
 
