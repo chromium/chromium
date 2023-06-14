@@ -9,6 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -19,6 +21,9 @@ namespace ash {
 
 class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  public:
+  ScalableIphBrowserTestBase();
+  ~ScalableIphBrowserTestBase() override;
+
   // CustomizableTestEnvBrowserTestBase:
   void SetUp() override;
   void SetUpOnMainThread() override;
@@ -29,6 +34,11 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
     return mock_tracker_;
   }
   test::MockScalableIphDelegate* mock_delegate() { return mock_delegate_; }
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner() {
+    return task_runner_;
+  }
+
+  void ShutdownScalableIph();
 
  private:
   static void SetTestingFactories(content::BrowserContext* browser_context);
@@ -37,6 +47,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static std::unique_ptr<scalable_iph::ScalableIphDelegate>
   CreateMockDelegate();
 
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::CallbackListSubscription subscription_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   raw_ptr<test::MockScalableIphDelegate> mock_delegate_;

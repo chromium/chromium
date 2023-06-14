@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,12 +43,14 @@ class ScalableIph : public KeyedService {
       const std::vector<const base::Feature*> features);
 
  private:
+  void RecordTimeTickEvent();
   void RecordEventInternal(Event event, bool init_success);
   void CheckTriggerConditions();
   const std::vector<const base::Feature*>& GetFeatureList() const;
 
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ScalableIphDelegate> delegate_;
+  base::RepeatingTimer timer_;
 
   std::vector<const base::Feature*> feature_list_for_testing_;
 

@@ -38,10 +38,12 @@ BASE_FEATURE(kScalableIphTest,
              "ScalableIphTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr char kFiveMinTickEventName[] = "ScalableIphFiveMinTick";
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent) {
-  EXPECT_CALL(*mock_tracker(), NotifyEvent("ScalableIphFiveMinTick"));
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName));
 
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForProfile(browser()->profile());
@@ -73,6 +75,36 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
   scalable_iph->OverrideFeatureListForTesting(features);
 
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
+  // We test a timer inside ScalableIph service. Make sure that ScalableIph
+  // service is running.
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(scalable_iph);
+
+  base::TestMockTimeTaskRunner::ScopedContext context(task_runner());
+
+  // Fast forward by 3 mins. The interval of time tick event is 5 mins. No time
+  // tick event should be observed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName)).Times(0);
+  task_runner()->FastForwardBy(base::Minutes(3));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  // Fast forward by another 3 mins. The total of fast forwarded time is 6 mins.
+  // A time tick event should be observed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName)).Times(1);
+  task_runner()->FastForwardBy(base::Minutes(3));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  ShutdownScalableIph();
+
+  // Fast forward by another 6 mins after the shutdown. Shutdown should stop the
+  // timer and no time tick event should be observed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName)).Times(0);
+  task_runner()->FastForwardBy(base::Minutes(6));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
 INSTANTIATE_TEST_SUITE_P(

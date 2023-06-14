@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 
@@ -36,6 +39,8 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
   return *feature_list;
 }
 
+constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
+
 }  // namespace
 
 ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
@@ -43,11 +48,17 @@ ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
     : tracker_(tracker), delegate_(std::move(delegate)) {
   CHECK(tracker_);
   CHECK(delegate_);
+
+  timer_.Start(FROM_HERE, kTimeTickEventInterval,
+               base::BindRepeating(&ScalableIph::RecordTimeTickEvent,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 ScalableIph::~ScalableIph() = default;
 
 void ScalableIph::Shutdown() {
+  timer_.Stop();
+
   tracker_ = nullptr;
   delegate_.reset();
 }
@@ -72,6 +83,10 @@ void ScalableIph::RecordEvent(ScalableIph::Event event) {
   tracker_->AddOnInitializedCallback(
       base::BindOnce(&ScalableIph::RecordEventInternal,
                      weak_ptr_factory_.GetWeakPtr(), event));
+}
+
+void ScalableIph::RecordTimeTickEvent() {
+  RecordEvent(Event::kFiveMinTick);
 }
 
 void ScalableIph::RecordEventInternal(ScalableIph::Event event,
