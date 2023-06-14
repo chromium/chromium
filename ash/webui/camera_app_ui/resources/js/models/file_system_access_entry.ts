@@ -68,7 +68,7 @@ export class FileAccessEntry {
   }
 
   /**
-   * Moves the file to given directory and given name.
+   * Moves the file to given directory |dir| and given |name|.
    */
   async moveTo(dir: DirectoryAccessEntry, name: string): Promise<void> {
     const dirHandle = await dir.getHandle();
@@ -100,7 +100,7 @@ export interface DirectoryAccessEntry {
   getFile(name: string): Promise<FileAccessEntry|null>;
 
   /**
-   * Checks if file or directory with the target name exists.
+   * Checks if file or directory with the target |name| exists.
    */
   exists(name: string): Promise<boolean>;
 
@@ -113,7 +113,7 @@ export interface DirectoryAccessEntry {
 
   /**
    * Gets the directory given by its |name|. If the directory is not found,
-   * create one if |createIfNotExist| is true.
+   * creates one if |createIfNotExist| is true.
    * TODO(crbug.com/1127587): Split this method to getDirectory() and
    * createDirectory().
    */

@@ -121,7 +121,7 @@ export class VideoSaver {
   }
 
   /**
-   * Creates video saver for the given intent.
+   * Creates video saver for the given |intent|.
    */
   static async createForIntent(intent: Intent, videoRotation: number):
       Promise<VideoSaver> {
@@ -237,13 +237,13 @@ export class TimeLapseSaver {
   private readonly encoder: VideoEncoder;
 
   /**
-   * Map a frame's timestamp with frameNo, only store frame that's being
+   * Maps a frame's timestamp with frameNo, only storing frames being
    * encoded.
    */
   private readonly frameNoMap = new Map<number, number>();
 
   /**
-   * Store all encoded frames with its frame numbers.
+   * Maps all encoded frames with their frame numbers.
    * TODO(b/236800499): Investigate if it is OK to store number of blobs in
    * memory.
    */
@@ -313,7 +313,7 @@ export class TimeLapseSaver {
   }
 
   /**
-   * Initializes the saver with the given initial speed.
+   * Initializes the saver with the given initial |speed|.
    */
   private async init(speed: number): Promise<void> {
     this.initialSpeed = speed;
@@ -329,8 +329,8 @@ export class TimeLapseSaver {
   }
 
   /**
-   * Callback to be called when the frame is encoded. Converts an encoded chunk
-   * to Blob and stores with its frame number.
+   * Callback to be called when the frame is encoded. Converts an encoded
+   * |chunk| to Blob and stores with its frame number.
    */
   onFrameEncoded(chunk: EncodedVideoChunk): void {
     const frameNo = this.frameNoMap.get(chunk.timestamp);
@@ -343,7 +343,7 @@ export class TimeLapseSaver {
   }
 
   /**
-   * Sends the frame to the encoder.
+   * Sends the |frame| to the encoder.
    */
   write(frame: VideoFrame, frameNo: number): void {
     if (frame.timestamp === null || this.ended || this.canceled) {
@@ -429,7 +429,7 @@ export class TimeLapseSaver {
   /**
    * Manages initializing (of the new savers), writing, ending, and canceling of
    * |TimeLapseFixedSpeedSaver|. Most operations except encoding are supposed to
-   * do here to avoid race conditions.
+   * be done here to avoid race conditions.
    */
   private async manageSavers(): Promise<void> {
     try {
@@ -469,21 +469,21 @@ export class TimeLapseSaver {
   }
 
   /**
-   * Returns the time-lapse speed after the given speed.
+   * Returns the next time-lapse speed after the given |speed|.
    */
   static getNextSpeed(speed: number): number {
     return speed * 2;
   }
 
   /**
-   * Creates a saver for the specified speed.
+   * Creates a saver for the given |speed|.
    */
   async createSaver(speed: number): Promise<TimeLapseFixedSpeedSaver> {
     return TimeLapseFixedSpeedSaver.create(speed, this.resolution, this.fps);
   }
 
   /**
-   * Creates video saver with encoder using provided |encoderConfig|.
+   * Creates a video saver with encoder using given |encoderConfig|.
    */
   static async create(
       encoderConfig: VideoEncoderConfig, resolution: Resolution, fps: number,

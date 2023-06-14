@@ -21,21 +21,21 @@ import {getMaybeLazyDirectory} from './lazy_directory_entry.js';
 
 
 /**
- * Checks if the entry's name has the video prefix.
+ * Checks if the given |entry|'s name has the video prefix.
  */
 export function hasVideoPrefix(entry: FileAccessEntry): boolean {
   return entry.name.startsWith(VIDEO_PREFIX);
 }
 
 /**
- * Checks if the entry's name has the image prefix.
+ * Checks if the given |entry|'s name has the image prefix.
  */
 function hasImagePrefix(entry: FileAccessEntry): boolean {
   return entry.name.startsWith(IMAGE_PREFIX);
 }
 
 /**
- * Checks if the entry's name has the document prefix.
+ * Checks if the given |entry|'s name has the document prefix.
  */
 function hasDocumentPrefix(entry: FileAccessEntry): boolean {
   return entry.name.startsWith(DOCUMENT_PREFIX);
@@ -143,7 +143,7 @@ export async function createPrivateTempVideoFile(name = PRIVATE_TEMPFILE_NAME):
   const dir = cameraTempDir;
   assert(dir !== null);
 
-  // Delete the previous temporary file if there is any.
+  // Deletes the previous temporary file if there is any.
   await dir.removeEntry(name);
 
   const file = await dir.createFile(name);

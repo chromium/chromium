@@ -89,7 +89,7 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
   }
 
   /**
-   * Gets the directory which this entry points to. Create it if it does not
+   * Gets the directory which this entry points to. Creates it if it does not
    * exist.
    */
   private async getRealDirectory(): Promise<DirectoryAccessEntry> {

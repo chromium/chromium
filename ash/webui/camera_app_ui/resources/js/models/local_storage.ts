@@ -11,7 +11,7 @@ import {LocalStorageKey} from '../type.js';
 import {checkEnumVariant} from '../util.js';
 
 /**
- * @return The value in storage or defaultValue if not found.
+ * @return The value in storage or |defaultValue| if not found.
  */
 function getHelper(key: LocalStorageKey, defaultValue: unknown): unknown {
   const rawValue = window.localStorage.getItem(key);
@@ -22,7 +22,7 @@ function getHelper(key: LocalStorageKey, defaultValue: unknown): unknown {
 }
 
 /**
- * @return The object in storage or defaultValue if not found.
+ * @return The object in storage or |defaultValue| if not found.
  */
 export function getObject<T>(
     key: LocalStorageKey,
@@ -37,28 +37,28 @@ export function getObject<T>(
 }
 
 /**
- * @return The string in storage or defaultValue if not found.
+ * @return The string in storage or |defaultValue| if not found.
  */
 export function getString(key: LocalStorageKey, defaultValue = ''): string {
   return assertString(getHelper(key, defaultValue));
 }
 
 /**
- * @return The boolean in storage or defaultValue if not found.
+ * @return The boolean in storage or |defaultValue| if not found.
  */
 export function getBool(key: LocalStorageKey, defaultValue = false): boolean {
   return assertBoolean(getHelper(key, defaultValue));
 }
 
 /**
- * Sets the value of localStorage for the given key.
+ * Sets the |value| of localStorage for the given |key|.
  */
 export function set(key: LocalStorageKey, value: unknown): void {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
 /**
- * Removes values of localStorage for the given keys.
+ * Removes values of localStorage for the given |keys|.
  */
 export function remove(...keys: string[]): void {
   for (const key of keys) {
