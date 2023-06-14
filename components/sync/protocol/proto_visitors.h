@@ -677,6 +677,11 @@ VISIT_PROTO_FIELDS(const sync_pb::HistoryDeleteDirectiveSpecifics& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::IncomingPasswordSharingInvitationSpecifics& proto) {
   VISIT(guid);
+  VISIT(sender_info);
+  VISIT(encrypted_password_sharing_invitation_data);
+  VISIT(client_only_unencrypted_data);
+  VISIT(encrypted_key_for_recipient);
+  VISIT(recipient_key_version);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::InvalidationSpecificFields& proto) {
@@ -874,6 +879,29 @@ VISIT_PROTO_FIELDS(const sync_pb::OsPriorityPreferenceSpecifics& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::OutgoingPasswordSharingInvitationSpecifics& proto) {
   VISIT(guid);
+  VISIT(recipient_user_id);
+  VISIT(encrypted_password_sharing_invitation_data);
+  VISIT(client_only_unencrypted_data);
+  VISIT(encrypted_key_for_recipient);
+  VISIT(recipient_key_version);
+  VISIT(sender_key_version);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordSharingInvitationData& proto) {
+  VISIT(password_data);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::PasswordSharingInvitationData::PasswordData& proto) {
+  VISIT(password_value);
+  VISIT(scheme);
+  VISIT(signon_realm);
+  VISIT(origin);
+  VISIT(username_element);
+  VISIT(username_value);
+  VISIT(password_element);
+  VISIT(display_name);
+  VISIT(avatar_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
@@ -1153,6 +1181,10 @@ VISIT_PROTO_FIELDS(
   VISIT_BYTES(server);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::SharingSymmetricKey& proto) {
+  VISIT_BYTES(key_value);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::SyncCycleCompletedEventInfo& proto) {
   VISIT(num_encryption_conflicts);
   VISIT(num_hierarchy_conflicts);
@@ -1232,6 +1264,18 @@ VISIT_PROTO_FIELDS(
 // TODO(markusheintz): Remove.
 VISIT_PROTO_FIELDS(const sync_pb::GaiaPasswordReuse::PasswordCaptured& proto) {
   VISIT_ENUM(event_trigger);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::UserDisplayInfo& proto) {
+  VISIT(email);
+  VISIT(display_name);
+  VISIT(profile_image_url);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::UserInfo& proto) {
+  VISIT(user_id);
+  VISIT(user_display_info);
+  VISIT(public_key);
 }
 
 VISIT_PROTO_FIELDS(
