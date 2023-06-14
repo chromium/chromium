@@ -30,7 +30,7 @@ export function firmwareUpdateAppTest() {
   let controller = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     controller = new FakeUpdateController();
     controller.setUpdateIntervalInMs(0);
     setUpdateControllerForTesting(controller);
@@ -280,7 +280,7 @@ export function firmwareUpdateAppTest() {
     // Clear app element.
     page.remove();
     page = null;
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
 
     // Setup for jelly disabled.
     loadTimeData.overrideValues({
