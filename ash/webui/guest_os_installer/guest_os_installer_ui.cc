@@ -4,6 +4,7 @@
 
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
 
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_guest_os_installer_resources.h"
 #include "ash/webui/grit/ash_guest_os_installer_resources_map.h"
 #include "ash/webui/guest_os_installer/url_constants.h"
@@ -18,7 +19,7 @@ GuestOSInstallerUI::GuestOSInstallerUI(content::WebUI* web_ui,
       web_ui->GetWebContents()->GetBrowserContext(),
       ash::kChromeUIGuestOSInstallerHost);
 
-  source->DisableTrustedTypesCSP();
+  ash::EnableTrustedTypesCSP(source);
 
   source->AddResourcePaths(base::make_span(kAshGuestOsInstallerResources,
                                            kAshGuestOsInstallerResourcesSize));
