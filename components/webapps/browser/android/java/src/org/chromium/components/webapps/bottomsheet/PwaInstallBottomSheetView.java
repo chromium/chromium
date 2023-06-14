@@ -23,8 +23,6 @@ import org.chromium.components.webapps.WebappsIconUtils;
 public class PwaInstallBottomSheetView {
     /** The context to use. */
     private final Context mContext;
-    /** The upper part of the bottom sheet. */
-    private final View mToolbarView;
     /** The lower part of the bottom sheet. */
     private final View mContentView;
 
@@ -34,8 +32,6 @@ public class PwaInstallBottomSheetView {
 
         mContentView = LayoutInflater.from(context).inflate(
                 R.layout.pwa_install_bottom_sheet_content, /* root= */ null);
-        mToolbarView = LayoutInflater.from(context).inflate(
-                R.layout.pwa_install_bottom_sheet_toolbar, /* root= */ null);
 
         RecyclerView recyclerView = mContentView.findViewById(R.id.screenshots_container);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -60,20 +56,16 @@ public class PwaInstallBottomSheetView {
         return mContentView;
     }
 
-    public View getToolbarView() {
-        return mToolbarView;
-    }
-
     // Called through the {@link AddToHomescreenBottomSheetViewBinder} bindings
     // when the property model updates:
 
     void setTitle(String title) {
-        TextView nameView = mToolbarView.findViewById(R.id.app_name);
+        TextView nameView = mContentView.findViewById(R.id.app_name);
         nameView.setText(title);
     }
 
     void setUrl(String url) {
-        TextView originView = mToolbarView.findViewById(R.id.app_origin);
+        TextView originView = mContentView.findViewById(R.id.app_origin);
         originView.setText(url);
     }
 
@@ -84,7 +76,7 @@ public class PwaInstallBottomSheetView {
     }
 
     void setIcon(Bitmap icon, boolean isAdaptive) {
-        ImageView imageView = mToolbarView.findViewById(R.id.app_icon);
+        ImageView imageView = mContentView.findViewById(R.id.app_icon);
         if (isAdaptive && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
             imageView.setImageBitmap(WebappsIconUtils.generateAdaptiveIconBitmap(icon));
         } else {
@@ -94,12 +86,17 @@ public class PwaInstallBottomSheetView {
     }
 
     void setCanSubmit(boolean canSubmit) {
-        mToolbarView.findViewById(R.id.button_install).setEnabled(canSubmit);
+        mContentView.findViewById(R.id.button_install).setEnabled(canSubmit);
+    }
+
+    // Since toolbar is merged into content this is required for peeking state.
+    int getPeekHeight() {
+        return mContentView.findViewById(R.id.toolbar).getHeight();
     }
 
     void setOnClickListener(View.OnClickListener listener) {
-        mToolbarView.findViewById(R.id.button_install).setOnClickListener(listener);
-        mToolbarView.findViewById(R.id.drag_handlebar).setOnClickListener(listener);
+        mContentView.findViewById(R.id.button_install).setOnClickListener(listener);
+        mContentView.findViewById(R.id.drag_handlebar).setOnClickListener(listener);
     }
 
     // Testing functions:

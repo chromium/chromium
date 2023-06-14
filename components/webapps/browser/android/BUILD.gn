@@ -100,7 +100,6 @@ android_resources("java_resources") {
     "java/res/layout/add_to_homescreen_dialog.xml",
     "java/res/layout/image_zoom_view.xml",
     "java/res/layout/pwa_install_bottom_sheet_content.xml",
-    "java/res/layout/pwa_install_bottom_sheet_toolbar.xml",
     "java/res/mipmap-hdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-mdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",

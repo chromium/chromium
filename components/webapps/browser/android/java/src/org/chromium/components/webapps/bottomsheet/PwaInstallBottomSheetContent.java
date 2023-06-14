@@ -48,7 +48,12 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     @Nullable
     @Override
     public View getToolbarView() {
-        return mView.getToolbarView();
+        return null;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return mView.getPeekHeight();
     }
 
     @Override
