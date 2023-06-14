@@ -52,8 +52,8 @@ export namespace Message {
     channel?: Script.Channel;
   };
 
-  export type CommandRequest = Pick<RawCommandRequest, 'id'> & BiDiCommand;
-  export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
+  export type CommandRequest = BiDiCommand & Pick<RawCommandRequest, 'id'>;
+  export type CommandResponse = ResultData & Pick<RawCommandRequest, 'id'>;
 
   export type EmptyCommand = never;
   export type EmptyParams = Record<string, never>;
@@ -1380,23 +1380,23 @@ export namespace Input {
     value: string;
   };
 
-  export type PointerUpAction = {
+  export type PointerUpAction = PointerCommonProperties & {
     type: ActionType.PointerUp;
     button: number;
-  } & PointerCommonProperties;
+  };
 
-  export type PointerDownAction = {
+  export type PointerDownAction = PointerCommonProperties & {
     type: ActionType.PointerDown;
     button: number;
-  } & PointerCommonProperties;
+  };
 
-  export type PointerMoveAction = {
+  export type PointerMoveAction = PointerCommonProperties & {
     type: ActionType.PointerMove;
     x: number;
     y: number;
     duration?: number;
     origin?: Origin;
-  } & PointerCommonProperties;
+  };
 
   export type WheelScrollAction = {
     type: ActionType.Scroll;

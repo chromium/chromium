@@ -516,7 +516,7 @@ export class ScriptEvaluator {
       // `lineNumber` should be adjusted.
       lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
       stackTrace: {
-        callFrames: callFrames || [],
+        callFrames: callFrames ?? [],
       },
       text: text || cdpExceptionDetails.text,
     };

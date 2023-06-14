@@ -290,7 +290,7 @@ export class NetworkRequest {
           url: this.#responseReceivedEvent.response.url,
           protocol: this.#responseReceivedEvent.response.protocol ?? '',
           status:
-            this.#responseReceivedExtraInfoEvent?.statusCode ||
+            this.#responseReceivedExtraInfoEvent?.statusCode ??
             this.#responseReceivedEvent.response.status,
           statusText: this.#responseReceivedEvent.response.statusText,
           fromCache:

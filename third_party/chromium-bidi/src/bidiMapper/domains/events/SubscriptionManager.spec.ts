@@ -401,91 +401,91 @@ describe('SubscriptionManager', () => {
       ).to.deep.equal([SOME_CHANNEL]);
     });
   });
-});
 
-describe('cartesian product', () => {
-  it('should return empty array for empty array', () => {
-    expect(cartesianProduct([], [])).to.deep.equal([]);
+  describe('cartesian product', () => {
+    it('should return empty array for empty array', () => {
+      expect(cartesianProduct([], [])).to.deep.equal([]);
+    });
+
+    it('works with a single input', () => {
+      expect(cartesianProduct([1n, 2n])).to.deep.equal([1n, 2n]);
+    });
+
+    it('works with multiple inputs', () => {
+      expect(cartesianProduct([1], [2], [3])).to.deep.equal([[1, 2, 3]]);
+    });
+
+    it('happy path', () => {
+      expect(cartesianProduct([1, 2], ['A', 'B'])).to.deep.equal([
+        [1, 'A'],
+        [1, 'B'],
+        [2, 'A'],
+        [2, 'B'],
+      ]);
+    });
   });
 
-  it('works with a single input', () => {
-    expect(cartesianProduct([1n, 2n])).to.deep.equal([1n, 2n]);
-  });
+  describe('unroll events', () => {
+    it('all Browsing Context events', () => {
+      expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
+        BrowsingContext.EventNames.LoadEvent,
+        BrowsingContext.EventNames.DomContentLoadedEvent,
+        BrowsingContext.EventNames.ContextCreatedEvent,
+        BrowsingContext.EventNames.ContextDestroyedEvent,
+      ]);
+    });
 
-  it('works with multiple inputs', () => {
-    expect(cartesianProduct([1], [2], [3])).to.deep.equal([[1, 2, 3]]);
-  });
+    it('all CDP events', () => {
+      expect(unrollEvents([CDP.AllEvents])).to.deep.equal([
+        CDP.EventNames.EventReceivedEvent,
+      ]);
+    });
 
-  it('happy path', () => {
-    expect(cartesianProduct([1, 2], ['A', 'B'])).to.deep.equal([
-      [1, 'A'],
-      [1, 'B'],
-      [2, 'A'],
-      [2, 'B'],
-    ]);
-  });
-});
+    it('all Log events', () => {
+      expect(unrollEvents([Log.AllEvents])).to.deep.equal([
+        Log.EventNames.LogEntryAddedEvent,
+      ]);
+    });
 
-describe('unroll events', () => {
-  it('all Browsing Context events', () => {
-    expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
-      BrowsingContext.EventNames.LoadEvent,
-      BrowsingContext.EventNames.DomContentLoadedEvent,
-      BrowsingContext.EventNames.ContextCreatedEvent,
-      BrowsingContext.EventNames.ContextDestroyedEvent,
-    ]);
-  });
+    it('all Network events', () => {
+      expect(unrollEvents([Network.AllEvents])).to.deep.equal([
+        Network.EventNames.BeforeRequestSentEvent,
+        Network.EventNames.FetchErrorEvent,
+        Network.EventNames.ResponseStartedEvent,
+        Network.EventNames.ResponseCompletedEvent,
+      ]);
+    });
 
-  it('all CDP events', () => {
-    expect(unrollEvents([CDP.AllEvents])).to.deep.equal([
-      CDP.EventNames.EventReceivedEvent,
-    ]);
-  });
+    it('all Script events', () => {
+      expect(unrollEvents([Script.AllEvents])).to.deep.equal([
+        Script.EventNames.MessageEvent,
+      ]);
+    });
 
-  it('all Log events', () => {
-    expect(unrollEvents([Log.AllEvents])).to.deep.equal([
-      Log.EventNames.LogEntryAddedEvent,
-    ]);
-  });
-
-  it('all Network events', () => {
-    expect(unrollEvents([Network.AllEvents])).to.deep.equal([
-      Network.EventNames.BeforeRequestSentEvent,
-      Network.EventNames.FetchErrorEvent,
-      Network.EventNames.ResponseStartedEvent,
-      Network.EventNames.ResponseCompletedEvent,
-    ]);
-  });
-
-  it('all Script events', () => {
-    expect(unrollEvents([Script.AllEvents])).to.deep.equal([
-      Script.EventNames.MessageEvent,
-    ]);
-  });
-
-  it('discrete events', () => {
-    expect(
-      unrollEvents([
+    it('discrete events', () => {
+      expect(
+        unrollEvents([
+          CDP.EventNames.EventReceivedEvent,
+          Log.EventNames.LogEntryAddedEvent,
+        ])
+      ).to.deep.equal([
         CDP.EventNames.EventReceivedEvent,
         Log.EventNames.LogEntryAddedEvent,
-      ])
-    ).to.deep.equal([
-      CDP.EventNames.EventReceivedEvent,
-      Log.EventNames.LogEntryAddedEvent,
-    ]);
-  });
+      ]);
+    });
 
-  it('all and discrete events', () => {
-    expect(
-      unrollEvents([
-        CDP.AllEvents,
+    it('all and discrete events', () => {
+      expect(
+        unrollEvents([
+          CDP.AllEvents,
+          CDP.EventNames.EventReceivedEvent,
+          Log.EventNames.LogEntryAddedEvent,
+        ])
+      ).to.deep.equal([
+        CDP.EventNames.EventReceivedEvent,
         CDP.EventNames.EventReceivedEvent,
         Log.EventNames.LogEntryAddedEvent,
-      ])
-    ).to.deep.equal([
-      CDP.EventNames.EventReceivedEvent,
-      CDP.EventNames.EventReceivedEvent,
-      Log.EventNames.LogEntryAddedEvent,
-    ]);
+      ]);
+    });
   });
 });

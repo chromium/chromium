@@ -98,11 +98,6 @@ repos:
         language: pygrep
         files: \.js$|\.cjs$|\.mjs$|\.ts$|\.py$
         args: [--negate, --multiline]
-      - id: check-chai-describe-it-only
-        name: check chai describe & it `.only()`
-        entry: '\b(it|describe)\.only\('
-        language: pygrep
-        files: \.spec\.ts$
       - id: node-self
         name: check nodejs `self.`
         entry: '\bself\.'

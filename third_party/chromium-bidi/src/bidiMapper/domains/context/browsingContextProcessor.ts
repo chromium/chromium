@@ -415,10 +415,10 @@ export class BrowsingContextProcessor {
     const realm = await this.#getRealm(params.target);
     return realm.callFunction(
       params.functionDeclaration,
-      params.this || {
+      params.this ?? {
         type: 'undefined',
       }, // `this` is `undefined` by default.
-      params.arguments || [], // `arguments` is `[]` by default.
+      params.arguments ?? [], // `arguments` is `[]` by default.
       params.awaitPromise,
       params.resultOwnership ?? 'none',
       params.serializationOptions ?? {}
