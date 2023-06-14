@@ -38,43 +38,6 @@
 
 namespace content {
 
-// Test version of a NavigationThrottle that will execute a callback when
-// called.
-class DeletingNavigationThrottle : public NavigationThrottle {
- public:
-  DeletingNavigationThrottle(NavigationHandle* handle,
-                             const base::RepeatingClosure& deletion_callback)
-      : NavigationThrottle(handle), deletion_callback_(deletion_callback) {}
-  ~DeletingNavigationThrottle() override = default;
-
-  NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
-    deletion_callback_.Run();
-    return NavigationThrottle::PROCEED;
-  }
-
-  NavigationThrottle::ThrottleCheckResult WillRedirectRequest() override {
-    deletion_callback_.Run();
-    return NavigationThrottle::PROCEED;
-  }
-
-  NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
-    deletion_callback_.Run();
-    return NavigationThrottle::PROCEED;
-  }
-
-  NavigationThrottle::ThrottleCheckResult WillProcessResponse() override {
-    deletion_callback_.Run();
-    return NavigationThrottle::PROCEED;
-  }
-
-  const char* GetNameForLogging() override {
-    return "DeletingNavigationThrottle";
-  }
-
- private:
-  base::RepeatingClosure deletion_callback_;
-};
-
 class NavigationRequestTest : public RenderViewHostImplTestHarness {
  public:
   NavigationRequestTest() : callback_result_(NavigationThrottle::DEFER) {}
