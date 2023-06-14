@@ -2138,12 +2138,6 @@
           ],
         },
       },
-      'mac13-arm64-rel-tests': {
-        'ci_only': False,
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -3007,6 +3001,12 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter',
         ],
+        'swarming': {
+          'shards': 6,
+        },
+      },
+      'mac13-arm64-rel-tests': {
+        'ci_only': False,
         'swarming': {
           'shards': 6,
         },
