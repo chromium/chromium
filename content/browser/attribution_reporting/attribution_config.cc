@@ -8,6 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -40,6 +41,10 @@ bool AttributionConfig::Validate() const {
   }
 
   if (!aggregate_limit.Validate()) {
+    return false;
+  }
+
+  if (!throttler_policy.Validate()) {
     return false;
   }
 
@@ -159,6 +164,15 @@ bool AttributionConfig::AggregateLimit::Validate() const {
 
   return true;
 }
+
+AttributionConfig::AttributionConfig() = default;
+AttributionConfig::AttributionConfig(const AttributionConfig&) = default;
+AttributionConfig::AttributionConfig(AttributionConfig&&) = default;
+AttributionConfig::~AttributionConfig() = default;
+
+AttributionConfig& AttributionConfig::operator=(const AttributionConfig&) =
+    default;
+AttributionConfig& AttributionConfig::operator=(AttributionConfig&&) = default;
 
 AttributionConfig::EventLevelLimit::EventLevelLimit() = default;
 AttributionConfig::EventLevelLimit::EventLevelLimit(const EventLevelLimit&) =

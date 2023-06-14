@@ -135,6 +135,28 @@ class DestinationThrottler::SourceSiteData {
   std::map<net::SchemefulSite, DestinationSubset> reporting_destinations_;
 };
 
+bool DestinationThrottler::Policy::Validate() const {
+  if (max_per_reporting_site <= 0) {
+    return false;
+  }
+
+  if (max_total < max_per_reporting_site) {
+    return false;
+  }
+
+  if (!rate_limit_window.is_positive()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DestinationThrottler::Policy::operator==(const Policy& other) const {
+  return max_total == other.max_total &&
+         max_per_reporting_site == other.max_per_reporting_site &&
+         rate_limit_window == other.rate_limit_window;
+}
+
 DestinationThrottler::DestinationThrottler(Policy policy)
     : policy_(std::move(policy)) {}
 

@@ -54,6 +54,7 @@
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -614,6 +615,20 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
 }
 
+StorableSource::Result ThrottleResultToStorableSourceResult(
+    DestinationThrottler::Result r) {
+  switch (r) {
+    case DestinationThrottler::Result::kAllowed:
+      return StorableSource::Result::kSuccess;
+    case DestinationThrottler::Result::kHitGlobalLimit:
+      return StorableSource::Result::kDestinationGlobalLimitReached;
+    case DestinationThrottler::Result::kHitReportingLimit:
+      return StorableSource::Result::kDestinationReportingLimitReached;
+    case DestinationThrottler::Result::kHitBothLimits:
+      return StorableSource::Result::kDestinationBothLimitsReached;
+  }
+}
+
 }  // namespace
 
 AttributionStorageSql::AttributionStorageSql(
@@ -626,7 +641,8 @@ AttributionStorageSql::AttributionStorageSql(
                                .page_size = 4096,
                                .cache_size = 32}),
       delegate_(std::move(delegate)),
-      rate_limit_table_(delegate_.get()) {
+      rate_limit_table_(delegate_.get()),
+      throttler_(delegate_->GetDestinationThrottlerPolicy()) {
   DCHECK(delegate_);
 
   db_.set_histogram_tag("Conversions");
@@ -669,6 +685,14 @@ bool AttributionStorageSql::DeactivateSources(
 StoreSourceResult AttributionStorageSql::StoreSource(
     const StorableSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (StorableSource::Result result = CheckDestinationThrottler(source);
+      result != StorableSource::Result::kSuccess) {
+    StoreSourceResult store_result(result);
+    store_result.max_destinations_per_rate_limit_window_reporting_origin =
+        throttler_.GetMaxPerReportingSite();
+    return store_result;
+  }
+
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
@@ -897,6 +921,19 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           ? StorableSource::Result::kSuccess
           : StorableSource::Result::kSuccessNoised,
       min_fake_report_time);
+}
+
+StorableSource::Result AttributionStorageSql::CheckDestinationThrottler(
+    const StorableSource& source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
+      source.registration().destination_set,
+      net::SchemefulSite(source.common_info().source_origin()),
+      net::SchemefulSite(source.common_info().reporting_origin()));
+  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
+                                throttle_result);
+
+  return ThrottleResultToStorableSourceResult(throttle_result);
 }
 
 // Checks whether a new report is allowed to be stored for the given source

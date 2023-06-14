@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -144,6 +145,15 @@ struct CONTENT_EXPORT AttributionConfig {
     // should also be updated.
   };
 
+  AttributionConfig();
+
+  AttributionConfig(const AttributionConfig&);
+  AttributionConfig(AttributionConfig&&);
+  ~AttributionConfig();
+
+  AttributionConfig& operator=(const AttributionConfig&);
+  AttributionConfig& operator=(AttributionConfig&&);
+
   // Returns true if this config is valid.
   [[nodiscard]] bool Validate() const;
 
@@ -158,6 +168,7 @@ struct CONTENT_EXPORT AttributionConfig {
   RateLimitConfig rate_limit;
   EventLevelLimit event_level_limit;
   AggregateLimit aggregate_limit;
+  DestinationThrottler::Policy throttler_policy;
 
   // When adding new members, the corresponding `Validate()` definition and
   // `operator==()` definition in `attribution_interop_parser_unittest.cc`

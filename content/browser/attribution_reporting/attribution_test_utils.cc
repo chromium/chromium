@@ -94,6 +94,20 @@ AttributionConfig::RateLimitConfig RateLimitWith(
   return limit;
 }
 
+AttributionConfig::EventLevelLimit EventLevelLimitWith(
+    base::FunctionRef<void(content::AttributionConfig::EventLevelLimit&)> f) {
+  content::AttributionConfig::EventLevelLimit limit;
+  f(limit);
+  return limit;
+}
+
+AttributionConfig AttributionConfigWith(
+    base::FunctionRef<void(AttributionConfig&)> f) {
+  AttributionConfig limit;
+  f(limit);
+  return limit;
+}
+
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
 SourceBuilder::SourceBuilder(base::Time time)

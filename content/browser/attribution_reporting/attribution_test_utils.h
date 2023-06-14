@@ -71,6 +71,12 @@ absl::optional<base::Time> GetReportWindowTimeForTesting(
 AttributionConfig::RateLimitConfig RateLimitWith(
     base::FunctionRef<void(AttributionConfig::RateLimitConfig&)> f);
 
+AttributionConfig::EventLevelLimit EventLevelLimitWith(
+    base::FunctionRef<void(content::AttributionConfig::EventLevelLimit&)> f);
+
+AttributionConfig AttributionConfigWith(
+    base::FunctionRef<void(AttributionConfig&)> f);
+
 // Helper class to construct a StorableSource for tests using default data.
 // StorableSource members are not mutable after construction requiring a
 // builder pattern.

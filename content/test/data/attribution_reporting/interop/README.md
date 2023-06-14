@@ -35,6 +35,18 @@ and optional in "api_config" field.
   // Formatted as a base-10 string.
   "max_destinations_per_source_site_reporting_site": "100",
 
+  // Positive integer that controls the maximum number of distinct destinations
+  // covered by sources for a given (source site, reporting site) over
+  // a rate limiting window.
+  // Formatted as a base-10 string.
+  "max_destinations_per_rate_limit_window": "200",
+
+  // Positive integer that controls the total maximum number of distinct
+  // destinations covered by sources for a given source site over
+  // a rate limiting window.
+  // Formatted as a base-10 string.
+  "max_destinations_per_rate_limit_window_reporting_site": "50",
+
   // Positive integer that controls the rate-limiting time window in days for
   // attribution. Formatted as a base-10 string.
   "rate_limit_time_window": "30",

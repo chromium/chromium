@@ -18,7 +18,9 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -34,6 +36,7 @@ class StatementID;
 namespace content {
 
 class AttributionStorageDelegate;
+class StorableSource;
 struct AttributionInfo;
 
 enum class RateLimitResult : int;
@@ -123,6 +126,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
+
+  [[nodiscard]] attribution_reporting::mojom::StoreSourceResult
+  CheckDestinationThrottler(const StorableSource& source);
 
   void ClearAllDataAllTime(bool delete_rate_limit_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -368,6 +374,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // the NULL time.
   base::Time last_deleted_expired_sources_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  DestinationThrottler throttler_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

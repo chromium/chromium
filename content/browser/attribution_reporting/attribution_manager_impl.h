@@ -26,7 +26,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
-#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -176,6 +175,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MaybeEnqueueEvent(SourceOrTrigger);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
+  void StoreSource(StorableSource source, bool is_debug_cookie_set);
   void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
 
   void GetReportsToSend();
@@ -243,11 +243,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OnOsRegistration(bool is_debug_key_allowed,
                         const OsRegistration&,
                         bool success);
-
-  void CheckDestinationThrottlerAndStoreSource(StorableSource source,
-                                               bool is_debug_cookie_set);
-
-  DestinationThrottler throttler_;
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;

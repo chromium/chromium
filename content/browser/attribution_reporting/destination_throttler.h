@@ -24,12 +24,14 @@ namespace content {
 // keeping track of unique destinations being registered on source sites.
 class CONTENT_EXPORT DestinationThrottler {
  public:
-  struct Policy {
-    // TODO(tquintanilla): Move these parameters to `AttributionConfig` to align
-    // with other parameters.
+  struct CONTENT_EXPORT Policy {
     int max_total = 200;
     int max_per_reporting_site = 50;
     base::TimeDelta rate_limit_window = base::Minutes(1);
+
+    bool operator==(const Policy&) const;
+
+    [[nodiscard]] bool Validate() const;
   };
   explicit DestinationThrottler(Policy policy);
   ~DestinationThrottler();

@@ -73,6 +73,12 @@ int AttributionStorageDelegate::GetMaxAggregatableReportsPerSource() const {
   return config_.aggregate_limit.max_aggregatable_reports_per_source;
 }
 
+DestinationThrottler::Policy
+AttributionStorageDelegate::GetDestinationThrottlerPolicy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return config_.throttler_policy;
+}
+
 uint64_t AttributionStorageDelegate::SanitizeTriggerData(
     uint64_t trigger_data,
     SourceType source_type) const {

@@ -138,6 +138,12 @@ class AttributionInteropParser {
     ParseInt(dict, "max_destinations_per_source_site_reporting_site",
              config.max_destinations_per_source_site_reporting_site, required);
 
+    ParseInt(dict, "max_destinations_per_rate_limit_window_reporting_site",
+             config.throttler_policy.max_per_reporting_site, required);
+
+    ParseInt(dict, "max_destinations_per_rate_limit_window",
+             config.throttler_policy.max_total, required);
+
     int rate_limit_time_window;
     if (ParseInt(dict, "rate_limit_time_window", rate_limit_time_window,
                  required)) {
