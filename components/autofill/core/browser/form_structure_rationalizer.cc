@@ -624,9 +624,10 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
   for (auto current_index = field_index + 1; current_index < fields_->size();
        current_index++) {
     if ((*fields_)[current_index]->IsFocusable() ||
-        (*fields_)[current_index]->form_control_type != "select-one" ||
-        (*fields_)[current_index]->Type().GetStorableType() != old_type)
+        !(*fields_)[current_index]->IsSelectOrSelectMenuElement() ||
+        (*fields_)[current_index]->Type().GetStorableType() != old_type) {
       break;
+    }
     ApplyRationalizationsToFieldAndLog(current_index, new_type, form_signature,
                                        form_interactions_ukm_logger);
   }
@@ -637,9 +638,10 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
     return;
   for (auto current_index = field_index - 1;; current_index--) {
     if ((*fields_)[current_index]->IsFocusable() ||
-        (*fields_)[current_index]->form_control_type != "select-one" ||
-        (*fields_)[current_index]->Type().GetStorableType() != old_type)
+        !(*fields_)[current_index]->IsSelectOrSelectMenuElement() ||
+        (*fields_)[current_index]->Type().GetStorableType() != old_type) {
       break;
+    }
     ApplyRationalizationsToFieldAndLog(current_index, new_type, form_signature,
                                        form_interactions_ukm_logger);
     if (current_index == 0)

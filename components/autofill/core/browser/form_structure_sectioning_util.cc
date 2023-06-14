@@ -55,9 +55,10 @@ bool ConsecutiveSimilarFieldType(ServerFieldType current_type,
 // Sectionable fields are all the fields that are in a non-default section.
 // Generally, only focusable fields are assigned a section. As an exception,
 // unfocusable <select> elements get a section, as hidden <select> elements are
-// common in custom select elements.
+// common in custom select elements. <selectmenu> elements behave the same as
+// <select> elements for the sake of simplicity.
 bool IsSectionable(const AutofillField& field) {
-  return field.IsFocusable() || field.form_control_type == "select-one";
+  return field.IsFocusable() || field.IsSelectOrSelectMenuElement();
 }
 
 // Assign all credit card fields without a valid autocomplete attribute section

@@ -1388,6 +1388,22 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FillHiddenSelect) {
   EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
 }
 
+// Test that hidden selectmenus get filled. Selectmenus should have the same
+// autofill behaviour as selects for the sake of simplicity.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FillHiddenSelectMenu) {
+  CreateTestProfile();
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill/form_hidden_selectmenu.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+
+  // Make sure the form was filled correctly.
+  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
+  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
+  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
+  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
+}
+
 // AutofillInteractiveTest subclass which disables autofilling <selectmenu>.
 class AutofillInteractiveDisableAutofillSelectMenuTest
     : public AutofillInteractiveTest {

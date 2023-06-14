@@ -2316,10 +2316,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
     FieldTypeGroup field_group_type = autofill_field->Type().group();
 
-    // Don't fill unfocusable fields, with the exception of <select> fields, for
-    // the sake of filling the synthetic fields.
+    // Don't fill unfocusable fields, with the exception of <select> and
+    // <selectmenu> fields, for the sake of filling the synthetic fields.
     if (!autofill_field->IsFocusable()) {
-      bool skip = result.fields[i].form_control_type != "select-one";
+      bool skip = !result.fields[i].IsSelectOrSelectMenuElement();
       form_interactions_ukm_logger()
           ->LogHiddenRepresentationalFieldSkipDecision(*form_structure,
                                                        *autofill_field, skip);

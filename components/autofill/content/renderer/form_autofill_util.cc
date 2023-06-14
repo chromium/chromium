@@ -1135,7 +1135,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
         // See description for FILTER_NON_FOCUSABLE_ELEMENTS.
         ((filters & FILTER_NON_FOCUSABLE_ELEMENTS) &&
          !IsWebElementFocusableForAutofill(element) &&
-         !IsSelectElement(element))) {
+         !IsSelectOrSelectMenuElement(element))) {
       continue;
     }
 
