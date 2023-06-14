@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -601,34 +602,43 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
     dlp::FileAction action) {
   std::u16string title;
   std::u16string message;
+  std::vector<message_center::ButtonInfo> buttons;
 
-  switch (action) {
-    case dlp::FileAction::kDownload:
-      title =
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE);
-      // ignore `blocked_files.size()` for downloads.
-      message = l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE);
-      break;
-    case dlp::FileAction::kUpload:
-      title =
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE);
-      message = l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE, blocked_files.size());
-      break;
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      title = l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE);
-      message = l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE, blocked_files.size());
-      break;
-    case dlp::FileAction::kCopy:
-    case dlp::FileAction::kMove:
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:
-      // TODO(b/269609831): Show correct notification here.
-      return;
+  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+    // TODO(b/282663983): Implementation.
+  } else {
+    switch (action) {
+      case dlp::FileAction::kDownload:
+        title = l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE);
+        // ignore `blocked_files.size()` for downloads.
+        message = l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE);
+        break;
+      case dlp::FileAction::kUpload:
+        title =
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE);
+        message = l10n_util::GetPluralStringFUTF16(
+            IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE, blocked_files.size());
+        break;
+      case dlp::FileAction::kOpen:
+      case dlp::FileAction::kShare:
+        title =
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE);
+        message = l10n_util::GetPluralStringFUTF16(
+            IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE, blocked_files.size());
+        break;
+      case dlp::FileAction::kCopy:
+      case dlp::FileAction::kMove:
+      case dlp::FileAction::kTransfer:
+      case dlp::FileAction::kUnknown:
+        // TODO(b/269609831): Show correct notification here.
+        return;
+    }
+    buttons = {
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))};
   }
+
   const std::string notification_id = GetNotificationId(notification_count_++);
   auto notification = file_manager::CreateSystemNotification(
       notification_id, std::move(title), std::move(message),
@@ -636,8 +646,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
           base::BindRepeating(
               &FilesPolicyNotificationManager::OnLearnMoreButtonClicked,
               weak_factory_.GetWeakPtr(), notification_id)));
-  notification->set_buttons(
-      {message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
+  notification->set_buttons(std::move(buttons));
 
   NotificationDisplayServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context_))
@@ -650,12 +659,16 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  FilesPolicyDialog::CreateWarnDialog(
-      std::move(callback),
-      std::vector<DlpConfidentialFile>{warning_files.begin(),
-                                       warning_files.end()},
-      destination, action,
-      /*modal_parent=*/nullptr);
+  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+    // TODO(b/282663983): Implementation.
+  } else {
+    FilesPolicyDialog::CreateWarnDialog(
+        std::move(callback),
+        std::vector<DlpConfidentialFile>{warning_files.begin(),
+                                         warning_files.end()},
+        destination, action,
+        /*modal_parent=*/nullptr);
+  }
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }
 
