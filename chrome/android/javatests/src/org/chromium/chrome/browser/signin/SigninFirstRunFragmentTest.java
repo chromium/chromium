@@ -67,6 +67,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
 import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
@@ -673,7 +674,6 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447085")
     @Test
     @MediumTest
     public void testDismissButtonWhenUserIsSignedIn() {
@@ -690,9 +690,9 @@ public class SigninFirstRunFragmentTest {
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
         });
-        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
-        verify(mFirstRunPageDelegateMock)
+        waitForEvent(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        waitForEvent(mFirstRunPageDelegateMock).advanceToNextPage();
+        waitForEvent(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
     }
 
@@ -1339,5 +1339,10 @@ public class SigninFirstRunFragmentTest {
 
     private ViewAction clickOnTosLink() {
         return ViewUtils.clickOnClickableSpan(0);
+    }
+
+    private static <T> T waitForEvent(T mock) {
+        return verify(mock,
+                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 }
