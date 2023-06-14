@@ -89,6 +89,11 @@ class FakeChapsUtil : public chromeos::platform_keys::ChapsUtil {
       crypto::ScopedSECKEYPublicKey* out_public_key,
       crypto::ScopedSECKEYPrivateKey* out_private_key) override;
 
+  bool ImportPkcs12Certificate(PK11SlotInfo* slot,
+                               const std::vector<uint8_t>& pkcs12_data,
+                               const std::string& password,
+                               bool is_software_backed) override;
+
  private:
   OnKeyGenerated on_key_generated_;
 };
