@@ -97,6 +97,7 @@ source_set("capture_device_specific") {
     "//gpu/command_buffer/client",
     "//gpu/ipc/common:common",
     "//media",
+    "//media/capture:capture_switches",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
     "//media/capture/mojom:video_capture",

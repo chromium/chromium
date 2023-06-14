@@ -75,6 +75,14 @@ GPU_EXPORT bool CopyD3D11TexToMem(
     ID3D11Device* d3d11_device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture);
 
+GPU_EXPORT bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,
+                                      HANDLE dxgi_handle,
+                                      ID3D11Device* d3d11_device);
+
+GPU_EXPORT bool CopyMemToD3D11Tex(uint8_t* src_buffer,
+                                  size_t buffer_size,
+                                  ID3D11Texture2D* output_texture,
+                                  ID3D11Device* d3d11_device);
 }  // namespace gpu
 
 #endif  // GPU_IPC_COMMON_DXGI_HELPERS_H_
