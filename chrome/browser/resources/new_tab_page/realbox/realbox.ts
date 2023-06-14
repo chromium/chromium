@@ -211,6 +211,12 @@ export class RealboxElement extends PolymerElement {
         value: loadTimeData.getString('realboxWidthBehavior'),
         reflectToAttribute: true,
       },
+
+      isTall_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('realboxIsTall'),
+        reflectToAttribute: true,
+      },
     };
   }
 

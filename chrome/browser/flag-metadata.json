@@ -5490,6 +5490,11 @@
     "expiry_milestone":108
   },
   {
+    "name": "ntp-realbox-is-tall",
+    "owners": [ "tiborg", "mahmadi" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ntp-realbox-match-searchbox-theme",
     "owners": [ "mahmadi", "mfacey" ],
     "expiry_milestone": 120

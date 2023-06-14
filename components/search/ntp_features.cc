@@ -59,6 +59,11 @@ BASE_FEATURE(kRealboxWidthBehavior,
              "NtpRealboxWidthBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the realbox will be taller.
+BASE_FEATURE(kRealboxIsTall,
+             "NtpRealboxIsTall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the NTP "realbox" will have the same rounded corners as
 // searchbox.
 BASE_FEATURE(kRealboxRoundedCorners,

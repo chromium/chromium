@@ -33,6 +33,7 @@ BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
 BASE_DECLARE_FEATURE(kRealboxRoundedCorners);
 BASE_DECLARE_FEATURE(kRealboxUseGoogleGIcon);
 BASE_DECLARE_FEATURE(kRealboxWidthBehavior);
+BASE_DECLARE_FEATURE(kRealboxIsTall);
 BASE_DECLARE_FEATURE(kNtpAlphaBackgroundCollections);
 BASE_DECLARE_FEATURE(kNtpBackgroundImageErrorDetection);
 BASE_DECLARE_FEATURE(kNtpChromeCartModule);

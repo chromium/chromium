@@ -2684,6 +2684,9 @@ extern const char kNtpPhotosModuleDescription[];
 extern const char kNtpPhotosModuleSoftOptOutName[];
 extern const char kNtpPhotosModuleSoftOptOutDescription[];
 
+extern const char kNtpRealboxIsTallName[];
+extern const char kNtpRealboxIsTallDescription[];
+
 extern const char kNtpRealboxMatchSearchboxThemeName[];
 extern const char kNtpRealboxMatchSearchboxThemeDescription[];
 
