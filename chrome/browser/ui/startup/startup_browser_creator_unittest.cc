@@ -40,7 +40,10 @@ TEST(StartupBrowserCreatorTest, ShouldLoadProfileWithoutWindow) {
     // Check what happens if lacros-chrome becomes the primary browser.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
+        {});
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     auto* primary_user =
         fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
