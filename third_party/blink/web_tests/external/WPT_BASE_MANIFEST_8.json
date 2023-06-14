@@ -17209,22 +17209,6 @@
      ]
     ]
    },
-   "window-placement": {
-    "fullscreen-companion-window-manual.tentative.https.html": [
-     "10f30a1906076c1eef1476fe5686c1d93e4412cc",
-     [
-      null,
-      {}
-     ]
-    ],
-    "multi-screen-fullscreen-manual.tentative.https.html": [
-     "620cd6e507d9dbe8f3f43c59ae973733d7c78cd8",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
    "xhr": {
     "send-authentication-existing-session-manual.htm": [
      "a80efd6e8436408db15d8019beef3abc0dfd0ab9",
@@ -203548,7 +203532,7 @@
       ]
      ],
      "transform-3d-rotateY-stair-below-001.xht": [
-      "8d9b610bf030a83a60185dadd3b26c6e546af261",
+      "bcb28dbd516738fb276047e4bb636b1032845ced",
       [
        null,
        [
@@ -203564,7 +203548,7 @@
           [
            [
             0,
-            14
+            20
            ],
            [
             0,
@@ -404060,18 +404044,18 @@
      []
     ]
    },
-   "window-placement": {
+   "window-management": {
     "META.yml": [
-     "2c6d60f4e71a754754425c0b633e68429ccbca71",
+     "74f926f230fb9f7e0026dd083d3f3e9ce5ac6093",
      []
     ],
     "README.md": [
-     "d9e324c9118f59e1a39fb5f30864230d7e50aaf3",
+     "e96a8a00b8b94c92755b96dc203ade889a83bcb9",
      []
     ],
     "resources": {
      "helpers.js": [
-      "92442f913324fd46788297e6c9171ef2f0461db9",
+      "3c869f168e134cd844d1ad66585474edbdcff5ce",
       []
      ]
     }
@@ -460127,6 +460111,41 @@
        {}
       ]
      ],
+     "scrollbar-color-001.html": [
+      "c056990934466f1804ca096ec7b8f3f5b8162646",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-color-002.html": [
+      "70bfa5586d98abe9aaa882e868d221f3812eda5b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-color-003.html": [
+      "3fb42bedeafc4e0a98760d686935c5b9efd086fb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-color-004.html": [
+      "5932cc5d4e1be0b9fb1d6f390e0e3bd2c27d51a4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-color-005.html": [
+      "52d0027fba6e942fd1452402967e9fd09b5b8211",
+      [
+       null,
+       {}
+      ]
+     ],
      "scrollbar-color-parsing.html": [
       "17b649d54c8f12cb490bdd732770c95cec02273d",
       [
@@ -460192,6 +460211,55 @@
      ],
      "scrollbar-width-009.html": [
       "494ffe344693ad80568d4513643e28eae13aad5e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-010.html": [
+      "ea117030673bd022cb4e2d73795bb7586c90571c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-011.html": [
+      "a5f60dc28b0cf9d09953b714e56bab8cbf7f8b67",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-012.html": [
+      "a685d6c05b8f941d3962ae349d350846e0e4f5ae",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-013.html": [
+      "f6460a4797a6cb377dd7df03340d734813604a25",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-014.html": [
+      "f737bc366023e54c766e6b9e2281f52defb309a2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-015.html": [
+      "88a6af27bad259aceb69c3e1667097c70adece5b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-016.html": [
+      "7d64131743f18ab744246e034de8d540688178a7",
       [
        null,
        {}
@@ -615166,6 +615234,15 @@
        }
       ]
      ],
+     "document-rules.html": [
+      "2c1048d3a9cd20f481ec3de901069aeaa8d2da9a",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "fetch-blob.html": [
       "098a5a5128926a039ffa1d433c13a55ad0c2670c",
       [
@@ -662162,9 +662239,39 @@
      ]
     ]
    },
-   "window-placement": {
+   "window-management": {
+    "multi-screen-fullscreen-companion.tentative.https.html": [
+     "a4b09f3d5a8100cc8e9e21ce74678ecc84e7ca39",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "multi-screen-fullscreen-enter.tentative.https.html": [
+     "b67907807b4f71c8430241201e0b0aebe739b017",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "multi-screen-fullscreen-move.tentative.https.html": [
+     "b91ee4cdc4b619b249ea73841a501d476f6e640f",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "multi-screen-window-open.tentative.https.html": [
-     "c453107d568e79fd5a4a8cfb96e46bf1dc4a2a98",
+     "708e571c27f950ed414d5e5ea9981bfdec93880a",
      [
       null,
       {
