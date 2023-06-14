@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -86,6 +87,7 @@ public class TabContentManagerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1454653")
     public void testJpegRefetch() throws Exception {
         final String testHttpsUrl1 =
                 sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
