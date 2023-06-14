@@ -864,7 +864,7 @@ void TouchInjector::NotifyActionAdded(Action& action) {
   }
 }
 
-void TouchInjector::NotifyActionRemoved(const Action& action) {
+void TouchInjector::NotifyActionRemoved(Action& action) {
   for (auto& observer : observers_) {
     observer.OnActionRemoved(action);
   }
@@ -904,7 +904,9 @@ void TouchInjector::RemoveAction(Action* action) {
       actions_.begin(), actions_.end(),
       [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
   DCHECK(it != actions_.end());
-  NOTIMPLEMENTED();
+  actions_.erase(it);
+
+  NotifyActionRemoved(*action);
 }
 
 void TouchInjector::RecordMenuStateOnLaunch() {

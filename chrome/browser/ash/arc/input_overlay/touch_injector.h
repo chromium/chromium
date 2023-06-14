@@ -240,7 +240,7 @@ class TouchInjector : public ui::EventRewriter {
 
   // For observers.
   void NotifyActionAdded(Action& action);
-  void NotifyActionRemoved(const Action& action);
+  void NotifyActionRemoved(Action& action);
   void NotifyActionTypeChanged(const Action& action, const Action& new_action);
   void NotifyActionUpdated(const Action& action);
 

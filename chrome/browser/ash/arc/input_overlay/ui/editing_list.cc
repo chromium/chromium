@@ -128,8 +128,9 @@ void EditingList::AddHeader(views::View* container) {
 }
 
 void EditingList::AddZeroStateContent() {
-  DCHECK(scroll_content_);
+  is_zero_state_ = true;
 
+  DCHECK(scroll_content_);
   auto* content_container =
       scroll_content_->AddChildView(std::make_unique<ash::RoundedContainer>());
   content_container->SetBackground(
@@ -158,6 +159,8 @@ void EditingList::AddZeroStateContent() {
 }
 
 void EditingList::AddControlListContent() {
+  is_zero_state_ = false;
+
   // Add list content as:
   // --------------------------
   // | ---------------------- |
@@ -204,7 +207,21 @@ void EditingList::OnActionAdded(Action& action) {
 }
 
 void EditingList::OnActionRemoved(const Action& action) {
-  NOTIMPLEMENTED();
+  DCHECK(scroll_content_);
+  for (auto* child : scroll_content_->children()) {
+    auto* list_item = static_cast<ActionViewListItem*>(child);
+    DCHECK(list_item);
+    if (list_item->action() == &action) {
+      scroll_content_->RemoveChildViewT(list_item);
+      break;
+    }
+  }
+  // Set to zero-state if it is empty.
+  if (controller_->GetTouchInjectorActionsSize() == 0u) {
+    AddZeroStateContent();
+  }
+
+  SizeToPreferredSize();
 }
 
 void EditingList::OnActionTypeChanged(const Action& action,
@@ -219,6 +236,7 @@ void EditingList::OnActionUpdated(const Action& action) {
     DCHECK(list_item);
     if (list_item->action() == &action) {
       list_item->OnActionUpdated();
+      break;
     }
   }
 }

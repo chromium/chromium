@@ -364,8 +364,7 @@ void ButtonOptionsMenu::CalculatePosition() {
 }
 
 void ButtonOptionsMenu::OnTrashButtonPressed() {
-  // TODO(b/270969760): Implement close menu functionality.
-  controller_->RemoveButtonOptionsMenu();
+  controller_->RemoveAction(action_);
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
@@ -412,7 +411,8 @@ gfx::Size ButtonOptionsMenu::CalculatePreferredSize() const {
 }
 
 void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(action_, &action);
+  controller_->RemoveButtonOptionsMenu();
 }
 
 void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,

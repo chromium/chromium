@@ -53,6 +53,7 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   Action* action() const { return action_; }
 
  private:
+  friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
 
   void Init();

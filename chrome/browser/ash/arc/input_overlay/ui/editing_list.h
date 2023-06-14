@@ -33,6 +33,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   ~EditingList() override;
 
  private:
+  friend class ButtonOptionsMenuTest;
   friend class EditingListTest;
   friend class EditLabelTest;
 
@@ -41,7 +42,9 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // Add UI components to |container| as children.
   void AddHeader(views::View* container);
+  // Add the zero state view when there are no actions / controls.
   void AddZeroStateContent();
+  // Add the list view for the actions / controls.
   void AddControlListContent();
 
   // Functions related to buttons.
@@ -61,6 +64,9 @@ class EditingList : public views::View, public TouchInjectorObserver {
   raw_ptr<DisplayOverlayController> controller_;
   // It wraps ActionViewListItem.
   raw_ptr<views::View> scroll_content_;
+
+  // For test. Used to tell if the zero state view shows up.
+  bool is_zero_state_ = false;
 };
 
 }  // namespace arc::input_overlay

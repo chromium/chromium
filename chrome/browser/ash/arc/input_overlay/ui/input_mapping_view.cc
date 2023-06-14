@@ -149,7 +149,14 @@ void InputMappingView::OnActionAdded(Action& action) {
 void InputMappingView::OnActionRemoved(const Action& action) {
   // No remove function for pre-beta version.
   DCHECK(IsBeta());
-  NOTIMPLEMENTED();
+
+  for (auto* const child : children()) {
+    auto* action_view = static_cast<ActionView*>(child);
+    if (action_view->action() == &action) {
+      RemoveChildViewT(action_view);
+      break;
+    }
+  }
 }
 
 void InputMappingView::OnActionTypeChanged(const Action& action,
@@ -169,6 +176,7 @@ void InputMappingView::OnActionUpdated(const Action& action) {
     auto* action_view = static_cast<ActionView*>(child);
     if (action_view->action() == &action) {
       action_view->OnActionUpdated();
+      break;
     }
   }
 }

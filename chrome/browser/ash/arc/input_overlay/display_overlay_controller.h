@@ -74,6 +74,7 @@ class DisplayOverlayController : public ui::EventHandler,
 
   // For editor.
   void AddNewAction(ActionType action_type = ActionType::TAP);
+  void RemoveAction(Action* action);
 
   int GetTouchInjectorActionsSize();
 
