@@ -1068,24 +1068,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.DNS.DnsTransaction.Insecure.FailureTime"
-    units="ms" expires_after="2023-06-14">
+    units="ms" expires_after="2024-06-13">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Duration of time taken by an insecure DnsTransaction to fail.
   </summary>
 </histogram>
 
 <histogram base="true" name="Net.DNS.DnsTransaction.Insecure.SuccessTime"
-    units="ms" expires_after="2023-06-14">
+    units="ms" expires_after="2024-06-13">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Duration of time taken by an insecure DnsTransaction to succeed.
   </summary>
@@ -1093,12 +1093,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.FailureError"
-    enum="NetErrorCodes" expires_after="2023-06-14">
+    enum="NetErrorCodes" expires_after="2023-11-30">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Counts of specific error codes returned by secure DnsTransactions to a DoH
     server that is unavailable or has unknown availability. These transactions
@@ -1108,12 +1108,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.FailureTime" units="ms"
-    expires_after="2023-06-14">
+    expires_after="2023-11-30">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Duration of time taken by a secure DnsTransaction to a DoH server that is
     unavailable or has unknown availability to fail. These transactions may be
@@ -1123,12 +1123,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.SuccessTime" units="ms"
-    expires_after="2023-06-14">
+    expires_after="2023-11-30">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Duration of time taken by a secure DnsTransaction to a DoH server that is
     unavailable or has unknown availability to succeed. These transactions may
@@ -1138,12 +1138,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureValidated.FailureError"
-    enum="NetErrorCodes" expires_after="2023-06-14">
+    enum="NetErrorCodes" expires_after="2024-06-13">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Counts of specific error codes returned by secure DnsTransactions to an
     available DoH server. A DoH server is available if a probe has been
@@ -1154,12 +1154,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureValidated.FailureTime" units="ms"
-    expires_after="2023-06-14">
+    expires_after="2024-06-13">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Duration of time taken by a secure DnsTransaction to an available DoH server
     to fail. A DoH server is available if a probe has been successfully
@@ -1169,12 +1169,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureValidated.SuccessTime" units="ms"
-    expires_after="2023-06-14">
+    expires_after="2024-06-13">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
   <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
   <summary>
     Duration of time taken by a secure DnsTransaction to an available DoH server
     to succeed. A DoH server is available if a probe has been successfully
