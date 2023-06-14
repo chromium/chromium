@@ -5346,6 +5346,8 @@ static_library("ui") {
       "views/side_panel/side_panel_entry.cc",
       "views/side_panel/side_panel_entry.h",
       "views/side_panel/side_panel_entry_observer.h",
+      "views/side_panel/side_panel_header.cc",
+      "views/side_panel/side_panel_header.h",
       "views/side_panel/side_panel_registry.cc",
       "views/side_panel/side_panel_registry.h",
       "views/side_panel/side_panel_registry_observer.h",

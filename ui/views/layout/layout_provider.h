@@ -150,6 +150,7 @@ enum class ShapeContextTokens {
   kMenuTouchRadius,
   kOmniboxExpandedRadius,
   kTextfieldRadius,
+  kSidePanelContentRadius,
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -32,7 +33,9 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -66,6 +69,8 @@ class SidePanelBorder : public views::Border {
   SidePanelBorder(const SidePanelBorder&) = delete;
   SidePanelBorder& operator=(const SidePanelBorder&) = delete;
 
+  void SetHeaderHeight(int height) { header_height_ = height; }
+
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override {
     // Undo DSF so that we can be sure to draw an integral number of pixels for
@@ -77,10 +82,8 @@ class SidePanelBorder : public views::Border {
     gfx::RectF scaled_bounds = gfx::ConvertRectToPixels(
         view.GetLocalBounds(), view.layer()->device_scale_factor());
 
-    const float corner_radius =
-        view.GetLayoutProvider()->GetCornerRadiusMetric(
-            views::Emphasis::kMedium, view.GetContentsBounds().size()) *
-        dsf;
+    const float corner_radius = view.GetLayoutProvider()->GetCornerRadiusMetric(
+        views::ShapeContextTokens::kSidePanelContentRadius);
     gfx::InsetsF insets_in_pixels(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_bounds.Inset(insets_in_pixels);
     // Use ToEnclosedRect to make sure that the clip bounds never end up larger
@@ -105,34 +108,40 @@ class SidePanelBorder : public views::Border {
           /*translate_view_coordinates=*/true);
     }
 
-    // Paint the inner border around SidePanel content.
-    const float stroke_thickness = views::Separator::kThickness * dsf;
+    if (!features::IsChromeRefresh2023()) {
+      // Paint the inner border around SidePanel content.
+      const float stroke_thickness = views::Separator::kThickness * dsf;
 
-    cc::PaintFlags flags;
-    flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(
-        view.GetColorProvider()->GetColor(kColorSidePanelContentAreaSeparator));
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setAntiAlias(true);
+      cc::PaintFlags flags;
+      flags.setStrokeWidth(stroke_thickness);
+      flags.setColor(view.GetColorProvider()->GetColor(
+          kColorSidePanelContentAreaSeparator));
+      flags.setStyle(cc::PaintFlags::kStroke_Style);
+      flags.setAntiAlias(true);
 
-    // Outset half of the stroke thickness so that it's painted fully on the
-    // outside of the clipping region.
-    clip_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
-    canvas->DrawRoundRect(clip_bounds, corner_radius, flags);
+      // Outset half of the stroke thickness so that it's painted fully on the
+      // outside of the clipping region.
+      clip_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
+      canvas->DrawRoundRect(clip_bounds, corner_radius, flags);
+    }
   }
 
   gfx::Insets GetInsets() const override {
     // This additional inset matches the growth inside BorderView::Layout()
     // below to let us paint on top of the toolbar separator. This additional
     // inset is outside the SidePanel itself, but not outside the BorderView.
+    // If there is a header we want to increase the top inset to give room for
+    // the header to paint on top of the border area.
     return kBorderInsets +
-           gfx::Insets::TLBR(views::Separator::kThickness, 0, 0, 0);
+           gfx::Insets::TLBR(views::Separator::kThickness + header_height_, 0,
+                             0, 0);
   }
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(GetInsets().width(), GetInsets().height());
   }
 
  private:
+  int header_height_ = 0;
   const raw_ptr<BrowserView> browser_view_;
 };
 
@@ -140,9 +149,17 @@ class BorderView : public views::View {
  public:
   explicit BorderView(BrowserView* browser_view) {
     SetVisible(false);
-    SetBorder(std::make_unique<SidePanelBorder>(browser_view));
-    // Don't allow the view to process events.
+    auto border = std::make_unique<SidePanelBorder>(browser_view);
+    border_ = border.get();
+    SetBorder(std::move(border));
+    // Don't allow the view to process events. If we do allow this then events
+    // won't get passed on to the side panel hosted content.
     SetCanProcessEventsWithinSubtree(false);
+  }
+
+  void HeaderViewChanged(views::View* header_view) {
+    border_->SetHeaderHeight(
+        header_view ? header_view->GetPreferredSize().height() : 0);
   }
 
   void Layout() override {
@@ -158,6 +175,9 @@ class BorderView : public views::View {
     SchedulePaint();
     View::OnThemeChanged();
   }
+
+ private:
+  raw_ptr<SidePanelBorder> border_;
 };
 
 }  // namespace
@@ -220,6 +240,21 @@ gfx::Size SidePanel::GetMinimumSize() const {
                    min_height);
 }
 
+void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
+  // If a header view already exists make sure we remove it so that it is
+  // replaced.
+  if (header_view_) {
+    RemoveChildView(header_view_);
+  }
+  header_view_ = view.get();
+  AddChildView(std::move(view));
+  static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
+  // Update the border so that the insets include space for the header to be
+  // placed on top of the border.
+  SetBorder(views::CreateEmptyBorder(
+      kBorderInsets + gfx::Insets::TLBR(header_view_->height(), 0, 0, 0)));
+}
+
 gfx::Size SidePanel::GetContentSizeUpperBound() const {
   const int side_panel_width = width() > 0 ? width() : GetMinimumSize().width();
   const int side_panel_height =
@@ -238,6 +273,12 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
   // Reorder `border_view_` to be last so that it gets painted on top, even if
   // an added child also paints to a layer.
   ReorderChildView(border_view_, children().size());
+
+  // Reorder `header_view_` if it exists to get painted on top of the border
+  // view.
+  if (header_view_) {
+    ReorderChildView(header_view_, children().size());
+  }
   // Reorder `resize_area_` to be last so that it gets painted on top of
   // `border_view_`, for displaying the resize handle.
   ReorderChildView(resize_area_, children().size());
@@ -291,8 +332,9 @@ void SidePanel::UpdateVisibility() {
   // TODO(pbos): Iterate content instead. Requires moving the owned pointer out
   // of owned contents before resetting it.
   for (const auto* view : children()) {
-    if (view == border_view_ || view == resize_area_)
+    if (view == border_view_ || view == resize_area_ || view == header_view_) {
       continue;
+    }
 
     if (view->GetVisible()) {
       any_child_visible = true;
@@ -310,6 +352,12 @@ void SidePanel::UpdateVisibility() {
     if (any_child_visible) {
       border_view_->SetPaintToLayer();
       border_view_->layer()->SetFillsBoundsOpaquely(false);
+      if (header_view_) {
+        static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
+        SetBorder(views::CreateEmptyBorder(
+            kBorderInsets +
+            gfx::Insets::TLBR(header_view_->height(), 0, 0, 0)));
+      }
     } else {
       border_view_->DestroyLayer();
     }
