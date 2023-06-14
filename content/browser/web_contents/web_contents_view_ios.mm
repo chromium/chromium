@@ -38,7 +38,7 @@ void WebContentsViewIOS::InstallCreateHookForTests(
 // of the WebContentsViewIOS.
 class WebContentsUIViewHolder {
  public:
-  base::scoped_nsobject<UIView> view_;
+  base::scoped_nsobject<UIScrollView> view_;
 };
 
 std::unique_ptr<WebContentsView> CreateWebContentsView(
@@ -56,7 +56,9 @@ WebContentsViewIOS::WebContentsViewIOS(
     std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents), delegate_(std::move(delegate)) {
   ui_view_ = std::make_unique<WebContentsUIViewHolder>();
-  ui_view_->view_ = base::scoped_nsobject<UIView>([[UIView alloc] init]);
+  ui_view_->view_ =
+      base::scoped_nsobject<UIScrollView>([[UIScrollView alloc] init]);
+  [ui_view_->view_ setScrollEnabled:NO];
   [ui_view_->view_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleHeight];
 }

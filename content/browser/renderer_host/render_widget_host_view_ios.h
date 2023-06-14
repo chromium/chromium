@@ -52,7 +52,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       public BrowserCompositorIOSClient,
       public TextInputManager::Observer,
       public ui::GestureProviderClient,
-      public ui::CALayerFrameSink {
+      public ui::CALayerFrameSink,
+      public RenderFrameMetadataProvider::Observer {
  public:
   // The view will associate itself with the given widget. The native view must
   // be hooked up immediately to the view hierarchy, or else when it is
@@ -119,6 +120,15 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       const gfx::Size& dst_size,
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   ui::Compositor* GetCompositor() override;
+  void GestureEventAck(
+      const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultState ack_result,
+      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
+  void ChildDidAckGestureEvent(
+      const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultState ack_result,
+      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
+  void OnSynchronizedDisplayPropertiesChanged(bool rotation) override;
 
   BrowserCompositorIOS* BrowserCompositor() const {
     return browser_compositor_.get();
@@ -155,6 +165,15 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
                                     RenderWidgetHostViewBase* updated_view,
                                     bool did_update_state) override;
 
+  // RenderFrameMetadataProvider::Observer implementation.
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override;
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override {}
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
+
   void SetActive(bool active);
   void OnTouchEvent(blink::WebTouchEvent event);
   void UpdateNativeViewTree(gfx::NativeView view);
@@ -181,6 +200,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
 
   bool CanBecomeFirstResponderForTesting() const;
   bool CanResignFirstResponderForTesting() const;
+  void ContentInsetChanged();
 
  private:
   friend class MockPointerLockRenderWidgetHostView;
@@ -194,6 +214,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void SendGestureEvent(const blink::WebGestureEvent& event);
 
   bool ComputeIsViewOrSubviewFirstResponder() const;
+
+  void ApplyRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset);
 
   // Provides gesture synthesis given a stream of touch events and touch event
   // acks. This is for generating gesture events from injected touch events.
@@ -217,6 +239,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // requests surfaces be synchronized via
   // EnsureSurfaceSynchronizedForWebTest().
   uint32_t latest_capture_sequence_number_ = 0u;
+
+  absl::optional<gfx::PointF> last_root_scroll_offset_;
+  bool is_scrolling_ = false;
 
   std::unique_ptr<BrowserCompositorIOS> browser_compositor_;
   std::unique_ptr<UIViewHolder> ui_view_;

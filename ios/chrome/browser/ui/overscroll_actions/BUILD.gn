@@ -14,6 +14,7 @@ source_set("overscroll_actions") {
   ]
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/shared/public/features",

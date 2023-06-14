@@ -15,6 +15,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "build/blink_buildflags.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -460,11 +461,16 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   // If Overscroll actions are triggered and dismissed quickly, it is
   // possible to be in a state where drag is enough to be in STARTED_PULLING
   // or ACTION_READY state, but with no selectedAction.
+  // TODO: This is not quite correct for blink, the contentOffset is always
+  // positive while scrolling the main content, resetting the insets causes
+  // after scrolling is done seems wrong.
+#if !BUILDFLAG(USE_BLINK)
   if (contentOffset.y >= 0 ||
       self.overscrollState == OverscrollState::NO_PULL_STARTED ||
       self.overscrollActionView.selectedAction == OverscrollAction::NONE) {
     [self resetScrollViewTopContentInset];
   }
+#endif
 
   [self triggerActionIfNeeded];
   _allowPullingActions = NO;

@@ -20,6 +20,7 @@
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 
+@class CRCWebViewportContainerView;
 @class CRWWebViewProxy;
 
 #if !BUILDFLAG(USE_BLINK)
@@ -174,10 +175,18 @@ class ContentWebState : public WebState,
                       const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
+  int GetTopControlsHeight() override;
+  int GetTopControlsMinHeight() override;
+  int GetBottomControlsHeight() override;
+  int GetBottomControlsMinHeight() override;
+  bool ShouldAnimateBrowserControlsHeightChanges() override;
+  bool DoBrowserControlsShrinkRendererSize(
+      content::WebContents* web_contents) override;
+  bool OnlyExpandTopControlsAtPageTop() override;
 
  private:
   WebStateDelegate* delegate_ = nullptr;
-  UIScrollView* web_view_;
+  CRCWebViewportContainerView* web_view_;
   CRWSessionStorage* session_storage_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::WebContents> child_web_contents_;

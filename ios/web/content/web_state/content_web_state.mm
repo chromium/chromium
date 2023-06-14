@@ -4,6 +4,7 @@
 
 #import "ios/web/content/web_state/content_web_state.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/web_contents.h"
@@ -11,6 +12,7 @@
 #import "ios/web/content/navigation/content_navigation_context.h"
 #import "ios/web/content/web_state/content_web_state_builder.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
+#import "ios/web/content/web_state/crc_web_viewport_container_view.h"
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -96,17 +98,18 @@ ContentWebState::ContentWebState(const CreateParams& params,
       this, params.browser_state, web_contents_->GetController());
   web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
 
-  UIView* web_contents_view = web_contents_->GetNativeView();
-  web_contents_view.translatesAutoresizingMaskIntoConstraints = NO;
-  web_contents_view.layer.backgroundColor = UIColor.grayColor.CGColor;
+  UIScrollView* web_contents_view =
+      base::mac::ObjCCastStrict<UIScrollView>(web_contents_->GetNativeView());
 
-  web_view_ = [[UIScrollView alloc] init];
-  web_view_.translatesAutoresizingMaskIntoConstraints = NO;
-  web_view_.backgroundColor = UIColor.redColor;
+  web_view_ = [[CRCWebViewportContainerView alloc] init];
+  // Comment this back in to show visual glitches that might be present.
+  // web_view_.backgroundColor = UIColor.redColor;
 
   CRCWebViewProxyImpl* proxy = [[CRCWebViewProxyImpl alloc] init];
-  proxy.contentView = web_view_;
+  proxy.contentView = web_contents_view;
   web_view_proxy_ = proxy;
+
+  [web_view_ addSubview:web_contents_view];
 
   // These should be moved when the are removed from CRWWebController.
   web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
@@ -177,7 +180,7 @@ bool ContentWebState::IsWebUsageEnabled() const {
 void ContentWebState::SetWebUsageEnabled(bool enabled) {}
 
 UIView* ContentWebState::GetView() {
-  return session_storage_ ? nil : web_contents_->GetNativeView();
+  return web_view_;
 }
 
 void ContentWebState::DidCoverWebContent() {}
@@ -564,6 +567,40 @@ void ContentWebState::AddNewContents(
   delegate_->CreateNewWebState(this, target_url, GetLastCommittedURL(),
                                user_gesture);
   DCHECK(!child_web_contents_);
+}
+
+int ContentWebState::GetTopControlsHeight() {
+  return [web_view_ maxViewportInsets].top;
+}
+
+int ContentWebState::GetTopControlsMinHeight() {
+  return [web_view_ minViewportInsets].top;
+}
+
+int ContentWebState::GetBottomControlsHeight() {
+  return [web_view_ maxViewportInsets].bottom;
+}
+
+int ContentWebState::GetBottomControlsMinHeight() {
+  return [web_view_ minViewportInsets].bottom;
+}
+
+bool ContentWebState::ShouldAnimateBrowserControlsHeightChanges() {
+  return false;
+}
+
+bool ContentWebState::DoBrowserControlsShrinkRendererSize(
+    content::WebContents* web_contents) {
+  UIScrollView* web_contents_view =
+      base::mac::ObjCCastStrict<UIScrollView>(web_contents->GetNativeView());
+  if (web_contents_view.contentInset.top > GetTopControlsMinHeight()) {
+    return true;
+  }
+  return false;
+}
+
+bool ContentWebState::OnlyExpandTopControlsAtPageTop() {
+  return false;
 }
 
 }  // namespace web

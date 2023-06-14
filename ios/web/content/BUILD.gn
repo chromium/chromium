@@ -34,6 +34,8 @@ source_set("content") {
     "web_state/content_web_state_builder.mm",
     "web_state/crc_web_view_proxy_impl.h",
     "web_state/crc_web_view_proxy_impl.mm",
+    "web_state/crc_web_viewport_container_view.h",
+    "web_state/crc_web_viewport_container_view.mm",
   ]
   deps = [
     ":send_webkit_message_js",
