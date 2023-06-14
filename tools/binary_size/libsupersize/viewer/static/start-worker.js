@@ -79,6 +79,7 @@ class TreeWorker {
    * @returns {Promise<BuildTreeResults>}
    */
   buildTree() {
+    state.stFocus.set('');
     const buildOptions = state.exportToBuildOptions();
     return this._waitForResponse('buildTree', {
       buildOptions,

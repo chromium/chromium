@@ -275,6 +275,9 @@ class MainState {
     /** @public @const {!ElementUiState} */
     this.stFlagFilter = newUiState(STATE_KEY.FLAG_FILTER, g_el.rnlFlagFilter);
 
+    /** @public @const {!QueryParamUiState} */
+    this.stFocus = newUiState(STATE_KEY.FOCUS, null, true);
+
     /** @private {boolean} */
     this.diffMode = false;
   }
@@ -404,6 +407,8 @@ class MainState {
       }
       this.updateUrlParams();
     });
+
+    this.stFocus.addObserver(() => this.updateUrlParams());
   }
 }
 

@@ -21,6 +21,7 @@ const STATE_KEY = {
   EXCLUDE: 'exclude',
   TYPE: 'type',
   FLAG_FILTER: 'flag_filter',
+  FOCUS: 'focus',
 };
 
 /** Utilities for working with the DOM */

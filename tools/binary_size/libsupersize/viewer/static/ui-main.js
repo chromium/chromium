@@ -216,6 +216,26 @@
     g_el.divMetadataView.classList.toggle('active', true);
   }
 
+  /**
+   * @param {!TreeWorker} worker
+   * @return {!Promise}
+   */
+  async function planSymbolTreeFocusPathExpansionIfRequired(worker) {
+    const focusStr = state.stFocus.get();
+    if (focusStr) {
+      const focus = parseInt(focusStr, 10);
+      if (!isNaN(focus)) {
+        const ancestryResults = await worker.queryAncestryById(focus);
+        if (ancestryResults.ancestorIds?.length) {
+          _symbolTreeUi.planPathExpansion(ancestryResults.ancestorIds);
+          _symbolTreeUi.focus();
+          return;
+        }
+      }
+      state.stFocus.set('');  // Clear invalid value.
+    }
+  }
+
   /** @param {!Array<!URL>} urlsToLoad */
   async function performInitialLoad(urlsToLoad) {
     let accessToken = null;
@@ -227,6 +247,7 @@
     const worker = restartWorker(onProgressMessage);
     _progress.setValue(0.3);
     const message = await worker.loadAndBuildTree('from-url://', accessToken);
+    await planSymbolTreeFocusPathExpansionIfRequired(worker);
     processLoadTreeResponse(message);
   }
 
@@ -254,7 +275,7 @@
     input.value = '';
   });
 
-  g_el.frmOptions.addEventListener('change', event => {
+  g_el.frmOptions.addEventListener('change', (event) => {
     // Update the tree when options change.
     // Some options update the tree themselves, don't regenerate when those
     // options (marked by "data-dynamic") are changed.
@@ -263,7 +284,7 @@
       rebuildTree();
     }
   });
-  g_el.frmOptions.addEventListener('submit', event => {
+  g_el.frmOptions.addEventListener('submit', (event) => {
     event.preventDefault();
     rebuildTree();
   });
@@ -275,4 +296,11 @@
   }
   if (urlsToLoad.length > 0)
     performInitialLoad(urlsToLoad);
+
+  // By default, updating the hash portion of the URL via UI does not cause page
+  // refresh. We can intercept this for interesting navigation feature, but for
+  // now just refresh the page to be consistent with other changes to the URL.
+  window.addEventListener('hashchange', (event) => {
+    window.location.reload();
+  });
 })();
