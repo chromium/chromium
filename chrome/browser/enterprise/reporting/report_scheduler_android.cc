@@ -37,18 +37,6 @@ void ReportSchedulerAndroid::OnBrowserVersionUploaded() {
   // No-op because in-app auto-update is not supported on Android.
 }
 
-void ReportSchedulerAndroid::StartWatchingExtensionRequestIfNeeded() {
-  // No-op because extensions are not supported on Android.
-}
-
-void ReportSchedulerAndroid::StopWatchingExtensionRequest() {
-  // No-op because extensions are not supported on Android.
-}
-
-void ReportSchedulerAndroid::OnExtensionRequestUploaded() {
-  // No-op because extensions are not supported on Android.
-}
-
 policy::DMToken ReportSchedulerAndroid::GetProfileDMToken() {
   absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
   if (!dm_token || dm_token->empty())

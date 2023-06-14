@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
+#include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
@@ -721,13 +722,14 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
   enterprise_reporting::ReportingDelegateFactoryDesktop delegate_factory;
   enterprise_reporting::ReportScheduler::CreateParams params;
   params.client = client();
-  params.delegate =
-      std::make_unique<enterprise_reporting::ReportSchedulerDesktop>(profile_);
+  params.delegate = delegate_factory.GetReportSchedulerDelegate();
   params.report_generator =
       std::make_unique<enterprise_reporting::ReportGenerator>(
           &delegate_factory);
-  params.real_time_report_generator =
-      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
+
+  delegate_factory.SetProfileForRealTimeController(profile_);
+  params.real_time_report_controller =
+      std::make_unique<enterprise_reporting::RealTimeReportController>(
           &delegate_factory);
 
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(

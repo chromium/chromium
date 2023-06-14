@@ -21,6 +21,7 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
 #include "components/enterprise/browser/enterprise_switches.h"
+#include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -504,9 +505,10 @@ void ChromeBrowserCloudManagementController::CreateReportScheduler() {
   params.report_generator =
       std::make_unique<enterprise_reporting::ReportGenerator>(
           reporting_delegate_factory.get());
-  params.real_time_report_generator =
-      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
+  params.real_time_report_controller =
+      std::make_unique<enterprise_reporting::RealTimeReportController>(
           reporting_delegate_factory.get());
+
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
       std::move(params));
 

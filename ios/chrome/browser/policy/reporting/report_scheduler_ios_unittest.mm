@@ -12,7 +12,6 @@
 #import "base/time/time.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
-#import "components/enterprise/browser/reporting/real_time_report_generator.h"
 #import "components/enterprise/browser/reporting/report_request.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
@@ -111,8 +110,6 @@ class ReportSchedulerIOSTest : public PlatformTest {
     params.client = client_;
     params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
     params.report_generator = std::move(generator_ptr_);
-    params.real_time_report_generator =
-        std::make_unique<RealTimeReportGenerator>(&report_delegate_factory_),
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
   }

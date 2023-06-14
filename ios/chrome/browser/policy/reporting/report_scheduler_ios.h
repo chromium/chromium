@@ -24,9 +24,6 @@ class ReportSchedulerIOS : public ReportScheduler::Delegate {
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
   void OnBrowserVersionUploaded() override;
-  void StartWatchingExtensionRequestIfNeeded() override;
-  void StopWatchingExtensionRequest() override;
-  void OnExtensionRequestUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
 };

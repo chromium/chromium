@@ -9,8 +9,10 @@
 
 #include <memory>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
@@ -45,8 +47,16 @@ class ReportingDelegateFactoryDesktop : public ReportingDelegateFactory {
   std::unique_ptr<RealTimeReportGenerator::Delegate>
   GetRealTimeReportGeneratorDelegate() override;
 
+  std::unique_ptr<RealTimeReportController::Delegate>
+  GetRealTimeReportControllerDelegate() override;
+
   std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate(
       Profile* profile);
+
+  void SetProfileForRealTimeController(Profile* profile);
+
+ private:
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 }  // namespace enterprise_reporting
