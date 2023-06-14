@@ -936,6 +936,7 @@ TEST_F(V4StoreTest, VerifyChecksumMmapFile) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(5);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(5);
 
   WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
                              &list_update_response);
@@ -946,7 +947,7 @@ TEST_F(V4StoreTest, VerifyChecksumMmapFile) {
   EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
   EXPECT_FALSE(store.expected_checksum_.empty());
   EXPECT_EQ("test_client_state", store.state());
-  EXPECT_EQ(78, store.file_size_);
+  EXPECT_EQ(85, store.file_size_);
 
   EXPECT_TRUE(store.VerifyChecksum());
 

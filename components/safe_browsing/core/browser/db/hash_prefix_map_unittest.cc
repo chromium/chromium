@@ -133,6 +133,7 @@ TEST_F(HashPrefixMapTest, ReadFile) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
@@ -151,10 +152,12 @@ TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
 
   hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(2);
   hash_file->set_extension("bar");
+  hash_file->set_file_size(3);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
@@ -172,15 +175,29 @@ TEST_F(HashPrefixMapTest, ReadFileInvalid) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
   EXPECT_EQ(map.IsValid(), MMAP_FAILURE);
 }
 
+TEST_F(HashPrefixMapTest, ReadFileWrongSize) {
+  base::WriteFile(GetPath("foo"), "");
+
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(4);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  MmapHashPrefixMap map(GetBasePath());
+  EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
+}
+
 TEST_F(HashPrefixMapTest, WriteAndReadFile) {
   MmapHashPrefixMap map(GetBasePath());
-  map.Append(4, "foo");
+  map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -192,7 +209,7 @@ TEST_F(HashPrefixMapTest, WriteAndReadFile) {
 
   HashPrefixMapView view = map_read.view();
   EXPECT_EQ(view.size(), 1u);
-  EXPECT_EQ(view[4], "foo");
+  EXPECT_EQ(view[4], "fooo");
 }
 
 TEST_F(HashPrefixMapTest, ClearingMapBeforeWriteDeletesFile) {

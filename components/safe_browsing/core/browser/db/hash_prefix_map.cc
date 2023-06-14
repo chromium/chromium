@@ -370,8 +370,19 @@ ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
     const V4StoreFileFormat& file_format) {
   DCHECK(file_format.list_update_response().additions().empty());
   for (const auto& hash_file : file_format.hash_files()) {
-    if (!GetFileInfo(hash_file.prefix_size()).Initialize(hash_file))
+    auto& file_info = GetFileInfo(hash_file.prefix_size());
+    // Make sure file size is correct before attempting to mmap.
+    int64_t file_size;
+    if (!GetFileSize(GetPath(store_path_, hash_file.extension()), &file_size)) {
       return MMAP_FAILURE;
+    }
+    if (static_cast<uint64_t>(file_size) != hash_file.file_size()) {
+      return MMAP_FAILURE;
+    }
+
+    if (!file_info.Initialize(hash_file)) {
+      return MMAP_FAILURE;
+    }
   }
   return APPLY_UPDATE_SUCCESS;
 }
