@@ -61,6 +61,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 /**
@@ -199,11 +200,11 @@ public class SigninSignoutIntegrationTest {
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         assertSignedOut();
-        verify(mSignInStateObserverMock).onSignedOut();
-        verify(mSigninMetricsUtilsNativeMock)
+        MockitoHelper.waitForEvent(mSignInStateObserverMock).onSignedOut();
+        MockitoHelper.waitForEvent(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninMetricsUtilsNativeMock)
+        MockitoHelper.waitForEvent(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
@@ -328,7 +329,7 @@ public class SigninSignoutIntegrationTest {
 
     private void assertSignedOut() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse("Account should be signed in!",
+            Assert.assertFalse("Account should be signed out!",
                     mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN));
         });
     }
