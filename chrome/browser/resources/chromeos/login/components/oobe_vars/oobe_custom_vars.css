@@ -43,6 +43,7 @@
 
       --oobe-button-font-family: Roboto, sans-serif;
       --oobe-button-font-size: 13px;
+      --oobe-button-font-weight: 500;
 
       --oobe-select-font-size: 13px;
       --oobe-select-line-height: 20px;
@@ -129,6 +130,10 @@
       --oobe-sync-consent-card-title-font: var(--cros-button-1-font);
       --oobe-sync-consent-card-subtitle-font: var(--cros-annotation-1-font);
       --oobe-sync-consent-tooltip-text-font: var(--cros-body-2-font);
+
+      --oobe-button-font-family: var(--cros-button-2-font-family);
+      --oobe-button-font-size: var(--cros-button-2-font-size);
+      --oobe-button-font-weight: var(--cros-button-2-font-weight);
     }
 
     html.simon-enabled {

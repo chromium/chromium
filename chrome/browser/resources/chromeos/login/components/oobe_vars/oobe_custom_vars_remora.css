@@ -40,6 +40,7 @@
 
       --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
       --oobe-button-font-size: 22px;
+      --oobe-button-font-weight: 500;
 
       --oobe-select-font-size: 18px;
       --oobe-select-line-height: 24px;
