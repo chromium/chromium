@@ -32,9 +32,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollUnification);
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
 
-// Flush pending GPU raster work before running the LTHI::DrawLayers stage.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFlushGpuAtDraw);
-
 // When enabled, wheel scrolls trigger smoothness mode. When disabled,
 // smoothness mode is limited to non-animated (precision) scrolls, such as
 // touch scrolling.

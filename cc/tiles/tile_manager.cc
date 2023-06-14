@@ -608,11 +608,12 @@ void TileManager::PrepareToDraw() {
   tile_task_manager_->CheckForCompletedTasks();
   did_check_for_completed_tasks_since_last_schedule_tasks_ = true;
 
-  if (base::FeatureList::IsEnabled(features::kFlushGpuAtDraw)) {
-    // Flush the GPU before calling SetReadyToDrawCallback, which happens in
-    // CheckPendingGpuWorkAndIssueSignals.
-    raster_buffer_provider_->Flush();
-  }
+  // Flush the GPU before calling SetReadyToDrawCallback, which happens in
+  // CheckPendingGpuWorkAndIssueSignals.
+  // TODO(crbug.com/1369739): This flush is unnecessary if no raster work
+  // occurred. Consider tracking whether a flush is needed, either in
+  // TileManager or inside the RasterBufferProvider.
+  raster_buffer_provider_->Flush();
   CheckPendingGpuWorkAndIssueSignals();
 
   TRACE_EVENT_INSTANT1(
