@@ -64,7 +64,12 @@ function closeWhenUnload(endpoint: MojoEndpoint) {
 }
 
 /**
- * Returns a mojo |endpoint| and returns a proxy of it.
+ * Returns a proxy of |endpoint|.
+ *
+ * The |endpoint| is automatically closed on window unload.
+ * Note that the methods on the returned proxy will not be resolved after unload
+ * event on window is triggered to avoid race condition during the window
+ * unloading.
  */
 export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
   closeWhenUnload(endpoint);
@@ -75,7 +80,7 @@ export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
 }
 
 /**
- * Returns the target mojo endpoint.
+ * Closes the target mojo |endpoint|.
  */
 export function closeEndpoint(endpoint: MojoEndpoint): void {
   endpoint.$.close();

@@ -52,7 +52,7 @@ import {
  * Parse the entry data according to its type.
  *
  * @return An array containing elements whose types correspond to the format of
- *     input |tag|.
+ *     input |entry|.
  * @throws If entry type is not supported.
  */
 export function parseMetadata(entry: CameraMetadataEntry): number[] {
@@ -178,7 +178,7 @@ export class DeviceOperator {
       new Map<string, (error: Error) => void>();
 
   /**
-   * Return if the direct communication between camera app and video capture
+   * Returns if the direct communication between camera app and video capture
    * devices is supported.
    */
   async isSupported(): Promise<boolean> {
@@ -201,9 +201,9 @@ export class DeviceOperator {
   }
 
   /**
-   * Gets corresponding device remote by given id.
+   * Gets corresponding device remote by given |deviceId|.
    *
-   * @throws Thrown when given device id is invalid.
+   * @throws Thrown when given |deviceId| is invalid.
    */
   private getDevice(deviceId: string): Promise<CameraAppDeviceRemote> {
     const d = this.devices.get(deviceId);
@@ -249,7 +249,6 @@ export class DeviceOperator {
    * @param deviceId The id of target camera device.
    * @param tag Camera metadata tag to query.
    * @return Promise of the corresponding data array.
-   * @throws Thrown when given device id is invalid.
    */
   async getStaticMetadata(deviceId: string, tag: CameraMetadataTag):
       Promise<number[]> {
@@ -655,18 +654,18 @@ export class DeviceOperator {
   }
 
   /**
-   * Changes whether the camera frame rotation is enabled inside the ChromeOS
+   * Sets whether the camera frame rotation is enabled inside the ChromeOS
    * video capture device.
    *
    * @param deviceId The id of target camera device.
-   * @param isEnabled Whether to enable the camera frame rotation at source.
+   * @param enabled Whether to enable the camera frame rotation at source.
    * @return Whether the operation was successful.
    */
   async setCameraFrameRotationEnabledAtSource(
-      deviceId: string, isEnabled: boolean): Promise<boolean> {
+      deviceId: string, enabled: boolean): Promise<boolean> {
     const device = await this.getDevice(deviceId);
     const {isSuccess} =
-        await device.setCameraFrameRotationEnabledAtSource(isEnabled);
+        await device.setCameraFrameRotationEnabledAtSource(enabled);
     return isSuccess;
   }
 
@@ -713,7 +712,7 @@ export class DeviceOperator {
   }
 
   /**
-   * Enable/Disables the multiple streams feature for video recording on the
+   * Enables/Disables the multiple streams feature for video recording on the
    * target camera device.
    */
   async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
@@ -796,7 +795,7 @@ export class DeviceOperator {
   }
 
   /**
-   * Initialize the singleton instance.
+   * Initializes the singleton instance.
    *
    * This should be called before all invocation of static getInstance() and
    * static isSupported().
@@ -834,7 +833,7 @@ export class DeviceOperator {
   }
 
   /**
-   * Gets if DeviceOperator is supported.
+   * Returns if DeviceOperator is supported.
    */
   static isSupported(): boolean {
     return this.getInstance() !== null;

@@ -76,12 +76,12 @@ export class ChromeHelper {
       wrapEndpoint(CameraAppHelper.getRemote());
 
   /**
-   * Starts tablet mode monitor monitoring tablet mode state of device.
+   * Starts monitoring tablet mode state of device.
    *
    * @param onChange Callback called each time when tablet mode state of device
    *     changes with boolean parameter indicating whether device is entering
    *     tablet mode.
-   * @return Resolved to initial state of whether device is is in tablet mode.
+   * @return Resolved to initial tablet mode state of device.
    */
   async initTabletModeMonitor(onChange: (isTablet: boolean) => void):
       Promise<boolean> {
@@ -95,11 +95,11 @@ export class ChromeHelper {
   }
 
   /**
-   * Starts monitor monitoring system screen state of device.
+   * Starts monitoring screen state of device.
    *
-   * @param onChange Callback called each time when device screen state changes
-   *     with parameter of newly changed value.
-   * @return Resolved to initial system screen state.
+   * @param onChange Callback called each time when screen state of device
+   *     changes with parameter of newly changed value.
+   * @return Resolved to initial screen state of device.
    */
   async initScreenStateMonitor(onChange: (state: ScreenState) => void):
       Promise<ScreenState> {
@@ -113,11 +113,11 @@ export class ChromeHelper {
   }
 
   /**
-   * Starts monitor monitoring the existence of external screens.
+   * Starts monitoring the existence of external screens.
    *
-   * @param onChange Callback called when the existence of external screens
-   *     changes.
-   * @return Resolved to the initial state.
+   * @param onChange Callback called each time when the existence of external
+   *     screens changes.
+   * @return Resolved to the initial state of external screens existence.
    */
   async initExternalScreenMonitor(
       onChange: (hasExternalScreen: boolean) => void): Promise<boolean> {
@@ -146,14 +146,14 @@ export class ChromeHelper {
   }
 
   /**
-   * Triggers the begin of event tracing in Chrome.
+   * Starts event tracing of |event| in Chrome.
    */
   startTracing(event: string): void {
     this.remote.startPerfEventTrace(event);
   }
 
   /**
-   * Triggers the end of event tracing in Chrome.
+   * Stops event tracing of |event| in Chrome.
    */
   stopTracing(event: string): void {
     this.remote.stopPerfEventTrace(event);
@@ -177,14 +177,14 @@ export class ChromeHelper {
   }
 
   /**
-   * Opens the given URL in the browser.
+   * Opens the given |url| in the browser.
    */
   openUrlInBrowser(url: string): void {
     this.remote.openUrlInBrowser({url: url});
   }
 
   /**
-   * Checks return value from |handleCameraResult|.
+   * Checks |value| returned from handleCameraResult() succeed.
    */
   private async checkReturn(
       caller: string, value: Promise<{isSuccess: boolean}>): Promise<void> {
@@ -206,9 +206,9 @@ export class ChromeHelper {
   }
 
   /**
-   * Notifies ARC++ to append data to intent result.
+   * Notifies ARC++ to append |data| to intent of the given |intentId|.
    *
-   * @param intentId Intent id of the intent to be appended data to.
+   * @param intentId Intent id of the intent which |data| appends to.
    * @param data The data to be appended to intent result.
    */
   async appendData(intentId: number, data: Uint8Array): Promise<void> {
@@ -220,7 +220,7 @@ export class ChromeHelper {
   /**
    * Notifies ARC++ to clear appended intent result data.
    *
-   * @param intentId Intent id of the intent to be cleared its result.
+   * @param intentId Intent id of the intent whose results to be cleared.
    */
   async clearData(intentId: number): Promise<void> {
     const ret = this.remote.handleCameraResult(
@@ -229,7 +229,7 @@ export class ChromeHelper {
   }
 
   /**
-   * Checks if the logging consent option is enabled.
+   * Returns if the logging consent option is enabled.
    */
   async isMetricsAndCrashReportingEnabled(): Promise<boolean> {
     const {isEnabled} = await this.remote.isMetricsAndCrashReportingEnabled();
@@ -256,8 +256,6 @@ export class ChromeHelper {
    * |callback| when the file is deleted. Note that a previous monitor request
    * will be canceled once another monitor request is sent.
    *
-   * @param name The name of the file to monitor.
-   * @param callback Function to trigger when deletion.
    * @return Resolved when the file is deleted or the current monitor is
    *     canceled by future monitor call.
    * @throws When error occurs during monitor.
@@ -296,7 +294,7 @@ export class ChromeHelper {
   }
 
   /**
-   * Scans the blob data and returns the detected document corners.
+   * Scans the |blob| data and returns the detected document corners.
    *
    * @return Promise resolve to positions of document corner. Null for failing
    *     to detected corner positions.
@@ -313,7 +311,7 @@ export class ChromeHelper {
   }
 
   /**
-   * Converts the blob to document given by its |blob| data, |resolution| and
+   * Converts the blob to document given by its |blob| data, |rotation| and
    * target |corners| to crop. The output will be converted according to given
    * |mimeType|.
    */
@@ -391,7 +389,7 @@ export class ChromeHelper {
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
-   *     exist instance.
+   *     existing instance.
    *
    * @return The singleton instance.
    */
