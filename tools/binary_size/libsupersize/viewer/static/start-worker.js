@@ -95,6 +95,14 @@ class TreeWorker {
   openNode(idPath) {
     return this._waitForResponse('open', idPath);
   }
+
+  /**
+   * @param {number} id
+   * @return {Promise<QueryAncestryResults>}
+   */
+  queryAncestryById(id) {
+    return this._waitForResponse('queryAncestryById', id);
+  }
 }
 /**
  * @param {function(TreeProgress): *} onProgressHandler

@@ -293,22 +293,22 @@ bool BuildTree(bool method_count_mode,
 
 // Returns a JSON string representing root data.
 const char* Open(const char* path) {
-  static std::string result;
+  static std::string cached_result;
   Json::Value v = builder->Open(path);
-  result = JsonSerialize(v);
-  return result.c_str();
+  cached_result = JsonSerialize(v);
+  return cached_result.c_str();
 }
 
 // Returns a JSON string representing the metadata.
 const char* GetMetadata() {
-  static std::string cached_json;
+  static std::string cached_result;
   Json::Value v;
   v["size_file"] = info->fields;
   if (before_info != nullptr) {
     v["before_size_file"] = before_info->fields;
   }
-  cached_json = JsonSerialize(v);
-  return cached_json.c_str();
+  cached_result = JsonSerialize(v);
+  return cached_result.c_str();
 }
 
 // Returns global properties.
@@ -318,6 +318,14 @@ const char* QueryProperty(const char* key) {
   }
   std::cerr << "Unknown property: " << key << std::endl;
   exit(1);
+}
+
+const char* QueryAncestryById(uint32_t id) {
+  static std::string cached_result;
+  Json::Value v;
+  v["ancestorIds"] = builder->GetAncestryById(id);
+  cached_result = JsonSerialize(v);
+  return cached_result.c_str();
 }
 
 }  // extern "C"

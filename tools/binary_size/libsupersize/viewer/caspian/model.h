@@ -239,6 +239,7 @@ class DeltaSymbol : public BaseSymbol {
  public:
   DeltaSymbol(const Symbol* before, const Symbol* after);
   ~DeltaSymbol() override;
+
   int32_t Size() const override;
   int32_t Padding() const override;
   int32_t Address() const override;
@@ -373,18 +374,26 @@ struct NodeStats {
   DiffStatus imposed_diff_status = DiffStatus::kUnchanged;
 };
 
+class TreeNodeFactory;
+
 struct TreeNode {
-  explicit TreeNode(ArtifactType artifact_type);
+ private:
+  TreeNode(ArtifactType artifact_type_in, int32_t id_in);
+  friend TreeNodeFactory;
+
+ public:
   ~TreeNode();
 
   using CompareFunc =
       std::function<bool(const TreeNode* const& l, const TreeNode* const& r)>;
+
   void WriteIntoJson(const JsonWriteOptions& opts,
                      CompareFunc compare_func,
                      int depth,
                      Json::Value* out);
 
   const ArtifactType artifact_type;
+  const int32_t id;
   GroupedPath id_path;
   const char* src_path = nullptr;
   const char* component = nullptr;
@@ -399,6 +408,19 @@ struct TreeNode {
   std::vector<TreeNode*> children;
   TreeNode* parent = nullptr;
   const BaseSymbol* symbol = nullptr;
+};
+
+class TreeNodeFactory {
+ public:
+  TreeNodeFactory();
+  ~TreeNodeFactory();
+  TreeNodeFactory(const TreeNodeFactory&) = delete;
+  TreeNodeFactory& operator=(const TreeNodeFactory&) = delete;
+
+  TreeNode* Make(ArtifactType artifact_type);
+
+ private:
+  int32_t next_id = 0;
 };
 
 }  // namespace caspian

@@ -308,8 +308,8 @@ DiffStatus DeltaSymbol::GetDiffStatus() const {
   return DiffStatus::kUnchanged;
 }
 
-TreeNode::TreeNode(ArtifactType artifact_type_in)
-    : artifact_type(artifact_type_in) {}
+TreeNode::TreeNode(ArtifactType artifact_type_in, int32_t id_in)
+    : artifact_type(artifact_type_in), id(id_in) {}
 
 TreeNode::~TreeNode() {
   // TODO(jaspercb): Could use custom allocator to delete all nodes in one go.
@@ -397,6 +397,7 @@ void TreeNode::WriteIntoJson(
         compare_func,
     int depth,
     Json::Value* out) {
+  (*out)["id"] = id;
   if (symbol) {
     (*out)["container"] = std::string(symbol->ContainerName());
     (*out)["helpme"] = std::string(symbol->Name());
@@ -567,4 +568,12 @@ DiffStatus NodeStats::GetGlobalDiffStatus() const {
   }
   return DiffStatus::kUnchanged;
 }
+
+TreeNodeFactory::TreeNodeFactory() = default;
+TreeNodeFactory::~TreeNodeFactory() = default;
+
+TreeNode* TreeNodeFactory::Make(ArtifactType artifact_type) {
+  return new TreeNode(artifact_type, next_id++);
+}
+
 }  // namespace caspian

@@ -143,6 +143,18 @@ function wasmLoadSizeProperties() {
 }
 
 /**
+ * @param {number} id
+ * @return {QueryAncestryResults}
+ */
+function wasmQueryAncestryById(id) {
+  const cwrapQueryAncestryById =
+      Module.cwrap('QueryAncestryById', 'number', ['number']);
+  const stringPtr = cwrapQueryAncestryById(id);
+  const r = Module.UTF8ToString(stringPtr, 2 ** 16);
+  return /** @type {!QueryAncestryResults} */ (JSON.parse(r));
+}
+
+/**
  * @param {string} input
  * @param {?string} accessToken
  * @param {!BuildOptions} buildOptions
@@ -317,6 +329,14 @@ const actions = {
    */
   async open(path) {
     return wasmOpen(path);
+  },
+
+  /**
+   * @param {number} id
+   * @return {Promise<QueryAncestryResults>}
+   */
+  async queryAncestryById(id) {
+    return wasmQueryAncestryById(id);
   },
 };
 

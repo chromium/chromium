@@ -30,6 +30,7 @@ class TreeBuilder {
              std::vector<FilterFunc> filters);
   TreeNode* Find(std::string_view path);
   Json::Value Open(const char* path);
+  Json::Value GetAncestryById(uint32_t id);
 
  private:
   void AddFileEntry(GroupedPath source_path,
@@ -38,6 +39,8 @@ class TreeBuilder {
   TreeNode* GetOrMakeParentNode(TreeNode* child_node);
 
   void AttachToParent(TreeNode* child, TreeNode* parent);
+
+  TreeNode* FindNodeById(int32_t id);
 
   ArtifactType ArtifactTypeFromChild(GroupedPath child_path) const;
 
@@ -50,7 +53,8 @@ class TreeBuilder {
 
   BaseSizeInfo* size_info_;
   bool diff_mode_;
-  TreeNode root_;
+  TreeNodeFactory tree_node_factory_;
+  std::unique_ptr<TreeNode> root_;
   std::unordered_map<GroupedPath, TreeNode*> _parents;
 
   // Contained TreeNode hold lightweight string_views to fields in SizeInfo.
