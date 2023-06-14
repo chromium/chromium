@@ -320,9 +320,16 @@ AutofillType AutofillField::ComputedType() const {
     return AutofillType(server_type());
   }
 
-  // If the explicit type is cc-exp and either the server or heuristics agree
-  // on a 2 vs 4 digit specialization of cc-exp, use that specialization.
-  if (html_type_ == HtmlFieldType::kCreditCardExp) {
+  // TODO(crbug/1441057) Delete this if-statement when
+  // features::kAutofillEnableExpirationDateImprovements has launched. This
+  // should be covered by
+  // FormStructureRationalizer::RationalizeAutocompleteAttributes.
+  //
+  // If the explicit type is cc-exp and either the server or heuristics agree on
+  // a 2 vs 4 digit specialization of cc-exp, use that specialization.
+  if (html_type_ == HtmlFieldType::kCreditCardExp &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)) {
     if (server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
       return AutofillType(server_type());

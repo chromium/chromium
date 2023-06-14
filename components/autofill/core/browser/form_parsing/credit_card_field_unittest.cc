@@ -589,6 +589,8 @@ struct DetermineExpirationDateFormatTestCase {
   const uint8_t expected_year_length;
   const std::string label;
   const int max_length;
+  ServerFieldType server_type_hint = NO_SERVER_DATA;
+  bool is_server_override = false;
 };
 
 class DetermineExpirationDateFormat
@@ -668,7 +670,41 @@ INSTANTIATE_TEST_SUITE_P(
         DetermineExpirationDateFormatTestCase{" - ", 2, "MM - YY", 0},
 
         // Date fits after stripping whitespaces from separator.
-        DetermineExpirationDateFormatTestCase{"-", 2, "MM - YY", 5}));
+        DetermineExpirationDateFormatTestCase{"-", 2, "MM - YY", 5},
+
+        // Verify that server hints are getting priority over max_length
+        // but not over the pattern.
+        //
+        // Due to the MM / YY pattern, the 2 digit expiration date is chosen.
+        DetermineExpirationDateFormatTestCase{
+            " / ", 2, "MM / YY", 0, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        DetermineExpirationDateFormatTestCase{
+            " / ", 2, "MM / YY", 7, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        // If no pattern and max length are given, the server hint wins.
+        DetermineExpirationDateFormatTestCase{
+            "/", 4, "", 0, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        DetermineExpirationDateFormatTestCase{
+            "/", 2, "", 0, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+        // The max-length may require a pruning of the separator.
+        DetermineExpirationDateFormatTestCase{
+            "/", 4, "", 7, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        DetermineExpirationDateFormatTestCase{
+            "", 4, "", 6, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        // But at some point we ignore the server if the type does not fit:
+        DetermineExpirationDateFormatTestCase{
+            "/", 2, "", 5, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+
+        // Verify that server overrides are prioritized over everything else.
+        DetermineExpirationDateFormatTestCase{
+            " / ", 4, "MM / YY", 0, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true},
+        // The max-length may require a pruning of the separator.
+        DetermineExpirationDateFormatTestCase{
+            "/", 4, "MM / YY", 7, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true},
+        DetermineExpirationDateFormatTestCase{
+            "", 4, "MM / YY", 6, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true},
+        // But at some point we ignore the server if the type does not fit:
+        DetermineExpirationDateFormatTestCase{
+            "/", 2, "MM / YY", 5, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true}));
 
 TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
   // Assists in identifying which case has failed.
@@ -676,15 +712,20 @@ TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
   SCOPED_TRACE(test_case().expected_year_length);
   SCOPED_TRACE(test_case().label);
   SCOPED_TRACE(test_case().max_length);
+  SCOPED_TRACE(test_case().server_type_hint);
+  SCOPED_TRACE(test_case().is_server_override);
 
   AutofillField field;
   field.max_length = test_case().max_length;
   field.label = base::UTF8ToUTF16(test_case().label);
 
-  ServerFieldType assumed_field_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+  ServerFieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 
   CreditCardField::ExpirationDateFormat result =
-      CreditCardField::DetermineExpirationDateFormat(field, assumed_field_type);
+      CreditCardField::DetermineExpirationDateFormat(
+          field, fallback_type, test_case().server_type_hint,
+          test_case().is_server_override ? test_case().server_type_hint
+                                         : NO_SERVER_DATA);
   EXPECT_EQ(base::UTF8ToUTF16(test_case().expected_separator),
             result.separator);
   EXPECT_EQ(test_case().expected_year_length, result.digits_in_expiration_year);
