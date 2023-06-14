@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 /** Element containing navigation buttons for the Cellular Setup flow. */
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './button_bar.html.js';
