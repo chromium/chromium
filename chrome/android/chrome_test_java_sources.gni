@@ -84,6 +84,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowTest.java",
+  "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderRowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderSelectRowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderViewRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowRenderTest.java",

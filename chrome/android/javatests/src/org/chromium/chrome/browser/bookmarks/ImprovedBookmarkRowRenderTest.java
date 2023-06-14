@@ -60,9 +60,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Render tests for the improved bookmark row.
- */
+/** Render tests for {@link ImprovedBookmarkRow} when it does not represent a folder. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
