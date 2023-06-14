@@ -277,6 +277,25 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoServer) {
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
 }
 
+TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_IllegalScheme) {
+  test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
+                                  {});
+
+  base::Value js_result("{\"" + std::string(kOgType) + "\": \"" +
+                        kOgTypeOgProduct + "\"}");
+  MockWebWrapper web(GURL("chrome://internal-page"), false, &js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kFalse,
+                          OptimizationMetadata());
+
+  DidNavigatePrimaryMainFrame(&web);
+  DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
+
+  histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 0);
+}
+
 TEST_F(ShoppingServiceMetricsTest,
        TestLocalPDPDetection_NoServer_NoExperimentFlag) {
   test_features_.InitWithFeatures({kShoppingList},

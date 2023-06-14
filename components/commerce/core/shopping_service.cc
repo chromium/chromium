@@ -51,6 +51,7 @@
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "url/url_constants.h"
 
 namespace commerce {
 
@@ -635,7 +636,8 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     std::move(callback).Run(url, absl::nullopt);
 
     // If doing local PDP detection, we might still want to run this.
-    if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
+    if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection) &&
+        url.SchemeIsHTTPOrHTTPS()) {
       UpdateProductInfoCache(url, true, nullptr);
       if (web) {
         ScheduleProductInfoJavascript(web);
