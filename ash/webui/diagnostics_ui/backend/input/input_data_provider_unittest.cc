@@ -637,6 +637,10 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
+  absl::optional<ui::mojom::SimulateRightClickModifier>
+  GetRemapRightClickModifier(int device_id) override {
+    return absl::nullopt;
+  }
 
  protected:
   bool suppress_modifier_key_rewrites_ = false;

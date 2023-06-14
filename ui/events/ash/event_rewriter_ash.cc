@@ -26,6 +26,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -1007,24 +1008,41 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
   // TODO(crbug.com/1179893): When enabling the deprecate alt click flag by
   // default, decide whether kUseSearchClickForRightClick being disabled
   // should be able to override it.
-  const bool use_search_key =
-      base::FeatureList::IsEnabled(
-          ::ash::features::kUseSearchClickForRightClick) ||
-      ::features::IsDeprecateAltClickEnabled();
+  bool use_search_key = base::FeatureList::IsEnabled(
+                            ::ash::features::kUseSearchClickForRightClick) ||
+                        ::features::IsDeprecateAltClickEnabled();
+  bool use_alt_key = is_alt_down_remapping_enabled_;
+
+  // TODO(b/279503977): Show a notification when the incoming event would have
+  // been remapped to a right click but the user's setting is inconsistent with
+  // the matched modifier key.
+  if (ash::features::IsAltClickAndSixPackCustomizationEnabled()) {
+    const auto modifier =
+        delegate_->GetRemapRightClickModifier(mouse_event.source_device_id());
+    if (!modifier.has_value()) {
+      return false;
+    }
+    use_search_key = modifier == ui::mojom::SimulateRightClickModifier::kSearch;
+    // Check the current state of is_alt_down_remapping_enabled_
+    // before overriding it since the WindowCycleController disables Alt-Down
+    // remapping while the user is cycling through windows.
+    if (is_alt_down_remapping_enabled_) {
+      use_alt_key = modifier == ui::mojom::SimulateRightClickModifier::kAlt;
+    }
+  }
   if (use_search_key) {
     if (AreFlagsSet(flags, kSearchLeftButton)) {
       *matched_mask = kSearchLeftButton;
     } else if (release_without_modifier) {
       *matched_mask = kSearchLeftButton;
-    } else if (AreFlagsSet(flags, kAltLeftButton) &&
-               is_alt_down_remapping_enabled_) {
+    } else if (AreFlagsSet(flags, kAltLeftButton) && use_alt_key) {
       // When the alt variant is deprecated, report when it would have matched.
       *matched_alt_deprecation = ((mouse_event.type() == ET_MOUSE_PRESSED) ||
                                   pressed_as_right_button_device_ids_.count(
                                       mouse_event.source_device_id())) &&
                                  IsFromTouchpadDevice(mouse_event);
     }
-  } else if (is_alt_down_remapping_enabled_) {
+  } else if (use_alt_key) {
     // If currently both Alt key and mouse left button are still pressed,
     // then this would be an easy case, let's still proceed to remap it
     // to a mouse right button press or release event.

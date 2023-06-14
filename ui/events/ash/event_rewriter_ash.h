@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -148,6 +149,11 @@ class EventRewriterAsh : public EventRewriter {
     // "six pack" key.
     virtual void RecordSixPackEventRewrite(KeyboardCode key_code,
                                            bool alt_based) = 0;
+
+    // Returns the modifier (Alt/Search) that must be pressed when remapping
+    // an event to right click.
+    virtual absl::optional<ui::mojom::SimulateRightClickModifier>
+    GetRemapRightClickModifier(int device_id) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

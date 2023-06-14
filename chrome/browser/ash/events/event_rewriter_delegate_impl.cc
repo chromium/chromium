@@ -216,6 +216,16 @@ void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
   pref_service->SetInteger(it->second, count);
 }
 
+absl::optional<ui::mojom::SimulateRightClickModifier>
+EventRewriterDelegateImpl::GetRemapRightClickModifier(int device_id) {
+  const mojom::TouchpadSettings* settings =
+      input_device_settings_controller_->GetTouchpadSettings(device_id);
+  if (!settings) {
+    return absl::nullopt;
+  }
+  return settings->simulate_right_click;
+}
+
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
   return deprecation_controller_->NotifyDeprecatedRightClickRewrite();
 }

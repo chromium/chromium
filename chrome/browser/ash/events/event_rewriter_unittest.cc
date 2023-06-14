@@ -44,6 +44,7 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -77,6 +78,9 @@ constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
 constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
+
+constexpr int kTouchpadId1 = 10;
+constexpr int kTouchpadId2 = 11;
 
 // A default example of the layout string read from the function_row_physmap
 // sysfs attribute. The values represent the scan codes for each position
@@ -4594,8 +4598,6 @@ void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
   std::vector<ui::TouchpadDevice> touchpad_devices(2);
-  constexpr int kTouchpadId1 = 10;
-  constexpr int kTouchpadId2 = 11;
   touchpad_devices[0].id = kTouchpadId1;
   touchpad_devices[1].id = kTouchpadId2;
   static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
@@ -5410,6 +5412,10 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
+  absl::optional<ui::mojom::SimulateRightClickModifier>
+  GetRemapRightClickModifier(int device_id) override {
+    return absl::nullopt;
+  }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
@@ -5941,5 +5947,125 @@ TEST_P(KeyEventRemappedToSixPackKeyTest, KeyEventRemappedTest) {
   int_pref.SetValue(0);
   delegate_->RecordSixPackEventRewrite(key_code_, alt_based_);
   EXPECT_EQ(expected_pref_value_, prefs()->GetInteger(pref_name_));
+}
+
+class EventRewriterRemapToRightClickTest : public EventRewriterTest {
+ public:
+  void SetUp() override {
+    EventRewriterTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAltClickAndSixPackCustomization);
+    controller_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
+    mock_controller_ = std::make_unique<MockInputDeviceSettingsController>();
+    auto deprecation_controller =
+        std::make_unique<DeprecationNotificationController>(&message_center_);
+    deprecation_controller_ = deprecation_controller.get();
+    delegate_ = std::make_unique<EventRewriterDelegateImpl>(
+        nullptr, std::move(deprecation_controller), mock_controller_.get());
+    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+        delegate_.get(), Shell::Get()->keyboard_capability(), nullptr, false,
+        &fake_ime_keyboard_);
+    Preferences::RegisterProfilePrefs(prefs()->registry());
+    ui::DeviceDataManager* device_data_manager =
+        ui::DeviceDataManager::GetInstance();
+    std::vector<ui::TouchpadDevice> touchpad_devices(1);
+    touchpad_devices[0].id = kTouchpadId1;
+    static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
+        ->OnTouchpadDevicesUpdated(touchpad_devices);
+  }
+
+  void TearDown() override {
+    mock_controller_.reset();
+    controller_resetter_.reset();
+    EventRewriterTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      controller_resetter_;
+  std::unique_ptr<MockInputDeviceSettingsController> mock_controller_;
+  ui::mojom::SimulateRightClickModifier simulate_right_click_modifier_;
+  int flag_masks_;
+};
+
+TEST_F(EventRewriterRemapToRightClickTest, AltClickRemappedToRightClick) {
+  mojom::TouchpadSettings settings;
+  settings.simulate_right_click = ui::mojom::SimulateRightClickModifier::kAlt;
+  int flag_masks = ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON;
+  EXPECT_CALL(*mock_controller_, GetTouchpadSettings(kTouchpadId1))
+      .WillOnce(testing::Return(&settings));
+
+  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), flag_masks,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  ui::EventTestApi test_press(&press);
+  test_press.set_source_device_id(kTouchpadId1);
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+  EXPECT_EQ(flag_masks, press.flags());
+  const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
+  EXPECT_NE(flag_masks, flag_masks & result.flags());
+  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
+}
+
+TEST_F(EventRewriterRemapToRightClickTest, SearchClickRemappedToRightClick) {
+  mojom::TouchpadSettings settings;
+  settings.simulate_right_click =
+      ui::mojom::SimulateRightClickModifier::kSearch;
+  int flag_masks = ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON;
+
+  EXPECT_CALL(*mock_controller_, GetTouchpadSettings(kTouchpadId1))
+      .WillOnce(testing::Return(&settings));
+
+  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), flag_masks,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  ui::EventTestApi test_press(&press);
+  test_press.set_source_device_id(kTouchpadId1);
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+  EXPECT_EQ(flag_masks, press.flags());
+  const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
+  EXPECT_NE(flag_masks, flag_masks & result.flags());
+  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
+}
+
+TEST_F(EventRewriterRemapToRightClickTest, RemapToRightClickBlockedBySetting) {
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  std::vector<ui::TouchpadDevice> touchpad_devices(1);
+  touchpad_devices[0].id = kTouchpadId1;
+  static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
+      ->OnTouchpadDevicesUpdated(touchpad_devices);
+  mojom::TouchpadSettings settings;
+  settings.simulate_right_click = ui::mojom::SimulateRightClickModifier::kAlt;
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetTouchpadSettings(kTouchpadId1))
+      .WillRepeatedly(testing::Return(&settings));
+
+  {
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(),
+                         ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_press(&press);
+    test_press.set_source_device_id(kTouchpadId1);
+    const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+    EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & result.flags());
+    EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
+  }
+  settings.simulate_right_click =
+      ui::mojom::SimulateRightClickModifier::kSearch;
+  {
+    ui::MouseEvent press(
+        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+        ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_press(&press);
+    test_press.set_source_device_id(kTouchpadId1);
+    const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+    EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & result.flags());
+    EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
+  }
 }
 }  // namespace ash

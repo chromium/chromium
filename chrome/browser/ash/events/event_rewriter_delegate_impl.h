@@ -8,6 +8,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/wm/public/activation_client.h"
 
 class PrefService;
@@ -52,6 +53,8 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override;
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override;
+  absl::optional<ui::mojom::SimulateRightClickModifier>
+  GetRemapRightClickModifier(int device_id) override;
 
  private:
   PrefService* GetPrefService() const;

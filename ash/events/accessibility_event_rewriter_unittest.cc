@@ -213,6 +213,10 @@ class ChromeVoxAccessibilityEventRewriterTest
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
+  absl::optional<ui::mojom::SimulateRightClickModifier>
+  GetRemapRightClickModifier(int device_id) override {
+    return absl::nullopt;
+  }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
@@ -617,6 +621,10 @@ class SwitchAccessAccessibilityEventRewriterTest
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
+  absl::optional<ui::mojom::SimulateRightClickModifier>
+  GetRemapRightClickModifier(int device_id) override {
+    return absl::nullopt;
+  }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 
