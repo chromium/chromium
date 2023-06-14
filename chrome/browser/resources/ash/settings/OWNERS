@@ -1,0 +1,4 @@
+# TODO(b/283986054) Remove reference to old OWNERS file and update this file's
+# contents once the code is moved to this directory.
+
+file://chrome/browser/resources/settings/chromeos/OWNERS
