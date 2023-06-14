@@ -150,14 +150,19 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPaper);
   }
 
-  if (print_settings.FindInt(kSettingDpiHorizontal).value_or(0) > 0 &&
-      print_settings.FindInt(kSettingDpiVertical).value_or(0) > 0) {
+  int dpi_horizontal =
+      print_settings.FindInt(kSettingDpiHorizontal).value_or(0);
+  int dpi_vertical = print_settings.FindInt(kSettingDpiVertical).value_or(0);
+  if (dpi_horizontal > 0 && dpi_vertical > 0) {
     absl::optional<bool> is_default_opt =
         print_settings.FindBool(kSettingDpiDefault);
     if (is_default_opt.has_value()) {
       ReportPrintSettingHistogram(is_default_opt.value()
                                       ? PrintSettingsBuckets::kDefaultDpi
                                       : PrintSettingsBuckets::kNonDefaultDpi);
+    }
+    if (dpi_horizontal != dpi_vertical) {
+      ReportPrintSettingHistogram(PrintSettingsBuckets::kNonSquarePixels);
     }
   }
 

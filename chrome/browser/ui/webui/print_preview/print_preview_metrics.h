@@ -48,7 +48,8 @@ enum class PrintSettingsBuckets {
   kNonDefaultDpi = 23,
   kPin = 24,
   kFitToPaper = 25,
-  kMaxValue = kFitToPaper
+  kNonSquarePixels = 26,
+  kMaxValue = kNonSquarePixels
 };
 
 // This enum is used to back an UMA histogram, and should therefore be treated
