@@ -34,6 +34,11 @@ struct PLATFORM_EXPORT FontHeight {
   }
   bool operator!=(const FontHeight& other) const { return !operator==(other); }
 
+  // True if `other`'s ascent and descent are both equal to or less than `this`.
+  bool Contains(const FontHeight& other) const {
+    return other.ascent <= ascent && other.descent <= descent;
+  }
+
   // Add the leading. Half the leading is added to ascent and descent each.
   // https://drafts.csswg.org/css2/visudet.html#leading
   void AddLeading(LayoutUnit line_height);

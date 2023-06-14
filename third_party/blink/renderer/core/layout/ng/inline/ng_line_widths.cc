@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
 
@@ -27,9 +27,15 @@ bool NGLineWidths::Set(const NGInlineNode& node,
     return false;
   }
 
-  // Check if all lines have the same line heights.
+  // Compute the metrics when only one font is used in the block. This is the
+  // same as "strut". https://drafts.csswg.org/css2/visudet.html#strut
   const ComputedStyle& block_style = node.Style();
   const Font& block_font = block_style.GetFont();
+  const FontBaseline baseline_type = block_style.GetFontBaseline();
+  NGInlineBoxState line_box;
+  line_box.ComputeTextMetrics(block_style, block_font, baseline_type);
+
+  // Check if all lines have the same line heights.
   const SimpleFontData* primary_font = block_font.PrimaryFont();
   DCHECK(primary_font);
   const NGInlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
@@ -43,15 +49,30 @@ bool NGLineWidths::Set(const NGInlineNode& node,
         DCHECK(shape_result);
         if (shape_result->PrimaryFont() != primary_font ||
             shape_result->HasFallbackFonts()) {
-          return false;
+          // Compute the metrics. It may have different metrics if fonts are
+          // different.
+          DCHECK(item.Style());
+          const ComputedStyle& item_style = *item.Style();
+          NGInlineBoxState text_box;
+          text_box.ComputeTextMetrics(item_style, item_style.GetFont(),
+                                      baseline_type);
+          if (text_box.include_used_fonts) {
+            text_box.style = &item_style;
+            scoped_refptr<ShapeResultView> shape_result_view =
+                ShapeResultView::Create(shape_result);
+            text_box.AccumulateUsedFonts(shape_result_view.get());
+          }
+          // If it doesn't fit to the default line box, fail.
+          if (!line_box.metrics.Contains(text_box.metrics)) {
+            return false;
+          }
         }
         break;
       }
       case NGInlineItem::kOpenTag: {
         DCHECK(item.Style());
         const ComputedStyle& style = *item.Style();
-        if (style.GetFont().PrimaryFont() != primary_font ||
-            style.VerticalAlign() != EVerticalAlign::kBaseline) {
+        if (style.VerticalAlign() != EVerticalAlign::kBaseline) {
           return false;
         }
         break;
@@ -61,16 +82,12 @@ bool NGLineWidths::Set(const NGInlineNode& node,
     }
   }
 
-  // All lines have the same line height. Compute the line height.
-  const FontBaseline baseline_type = block_style.GetFontBaseline();
-  NGInlineBoxState box;
-  box.ComputeTextMetrics(block_style, block_font, baseline_type);
-  const LayoutUnit line_height = box.metrics.LineHeight();
-  if (line_height <= LayoutUnit()) {
+  // All lines have the same line height.
+  // Compute the number of lines that have the exclusion.
+  const LayoutUnit line_height = line_box.metrics.LineHeight();
+  if (UNLIKELY(line_height <= LayoutUnit())) {
     return false;
   }
-
-  // Compute the number of lines that have the exclusion.
   const NGLayoutOpportunity& last_opportunity = opportunities.back();
   DCHECK(!last_opportunity.HasShapeExclusions());
   default_width_ = last_opportunity.rect.InlineSize();

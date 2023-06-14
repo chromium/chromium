@@ -112,24 +112,26 @@ struct LineWidthsData {
         0123 5678
       </div>
     )HTML"},
-    // Different fonts/`vertical-align` are not computable.
-    {{}, R"HTML(
-      <div id="target">
-        <div class="left"></div>
-        0123 5678 <b>0123</b> 5678
-      </div>
-    )HTML"},
+    // Different `vertical-align` is not computable.
     {{}, R"HTML(
       <div id="target">
         <div class="left"></div>
         0123 5678 <span style="vertical-align: top">0</span>123 5678
       </div>
     )HTML"},
-    // Fallback fonts are also not computable.
+    // When it uses multiple fonts, it's computable if all its ascent/descent
+    // fit to the strut (and therefore the line height is the same as the single
+    // font case,) but not so otherwise.
+    {{70, 100}, R"HTML(
+      <div id="target">
+        <div class="left"></div>
+        0123 5678 <small>0123</small> 5678
+      </div>
+    )HTML"},
     {{}, R"HTML(
       <div id="target">
         <div class="left"></div>
-        0123 5678 \u3040
+        0123 5678 <big>0123</big> 5678
       </div>
     )HTML"},
 };
@@ -171,6 +173,7 @@ TEST_P(NGLineWidthsDataTest, Data) {
     EXPECT_EQ(data.widths.size(), 0u);
     return;
   }
+  EXPECT_GT(data.widths.size(), 0u);
   std::vector<int> actual_widths;
   for (wtf_size_t i = 0; i < data.widths.size(); ++i) {
     actual_widths.push_back((*line_widths)[i].ToInt());
