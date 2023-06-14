@@ -12497,7 +12497,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SSL.Experimental.SubresourceResponse"
-    enum="SSLSubresourceResponseType" expires_after="2023-02-03">
+    enum="SSLSubresourceResponseType" expires_after="2023-07-15">
   <owner>amanvr@chromium.org</owner>
   <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
