@@ -6805,7 +6805,41 @@
             ],
             "experiments": [
                 {
-                    "name": "Full Color",
+                    "name": "TwoImpressions_v1",
+                    "params": {
+                        "ios-autofill-branding-frequency-type-phone": "twice",
+                        "ios-autofill-branding-frequency-type-tablet": "twice"
+                    },
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ]
+                },
+                {
+                    "name": "DismissWhenInteracted_v1",
+                    "params": {
+                        "ios-autofill-branding-frequency-type-phone": "until-interacted",
+                        "ios-autofill-branding-frequency-type-tablet": "until-interacted"
+                    },
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ]
+                },
+                {
+                    "name": "AlwaysSlideToLeadingEdgeOnPhone_v1",
+                    "params": {
+                        "ios-autofill-branding-frequency-type-phone": "dismiss-when-interacted",
+                        "ios-autofill-branding-frequency-type-tablet": "always"
+                    },
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ]
+                },
+                {
+                    "name": "SlideToLeadingEdgeWhenInteractedOnPhone_v1",
+                    "params": {
+                        "ios-autofill-branding-frequency-type-phone": "always-show-and-dismiss",
+                        "ios-autofill-branding-frequency-type-tablet": "always"
+                    },
                     "enable_features": [
                         "AutofillBrandingIOS"
                     ]

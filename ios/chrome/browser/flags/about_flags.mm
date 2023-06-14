@@ -492,38 +492,35 @@ const FeatureEntry::FeatureVariation kEnablePinnedTabsVariations[] = {
      std::size(kEnablePinnedTabsOverflow), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kAutofillBrandingIOSDismissWhenInteractedNoAnimation[] = {
-        {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
-         autofill::features::
-             kAutofillBrandingIOSParamFrequencyTypeUntilInteracted},
-        {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
-         autofill::features::
-             kAutofillBrandingIOSParamFrequencyTypeUntilInteracted}};
-const FeatureEntry::FeatureParam kAutofillBrandingIOSAlwaysShowAndDismiss[] = {
+const FeatureEntry::FeatureParam kAutofillBrandingIOSUntilInteracted[] = {
+    {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
+     autofill::features::kAutofillBrandingIOSParamFrequencyTypeUntilInteracted},
+    {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
+     autofill::features::
+         kAutofillBrandingIOSParamFrequencyTypeUntilInteracted}};
+const FeatureEntry::FeatureParam kAutofillBrandingIOSAlwaysShowAndSlideOut[] = {
     {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
      autofill::features::
          kAutofillBrandingIOSParamFrequencyTypeAlwaysShowAndDismiss},
     {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
      autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
-const FeatureEntry::FeatureParam
-    kAutofillBrandingIOSDismissWhenInteractedWithAnimation[] = {
-        {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
-         autofill::features::
-             kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted},
-        {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
-         autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
+const FeatureEntry::FeatureParam kAutofillBrandingIOSSlideOutWhenInteracted[] =
+    {{autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
+      autofill::features::
+          kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted},
+     {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
+      autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
 const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
     {"(will not show again after user interacts with keyboard accessories)",
-     kAutofillBrandingIOSDismissWhenInteractedNoAnimation,
-     std::size(kAutofillBrandingIOSDismissWhenInteractedNoAnimation), nullptr},
-    {"(shows and fades to leading edge every time)",
-     kAutofillBrandingIOSAlwaysShowAndDismiss,
-     std::size(kAutofillBrandingIOSAlwaysShowAndDismiss), nullptr},
-    {"(fades to leading edge after user interacts with keyboard accessories)",
-     kAutofillBrandingIOSDismissWhenInteractedWithAnimation,
-     std::size(kAutofillBrandingIOSDismissWhenInteractedWithAnimation),
-     nullptr}};
+     kAutofillBrandingIOSUntilInteracted,
+     std::size(kAutofillBrandingIOSUntilInteracted), nullptr},
+    {"(shows and slides out from leading edge every time)",
+     kAutofillBrandingIOSAlwaysShowAndSlideOut,
+     std::size(kAutofillBrandingIOSAlwaysShowAndSlideOut), nullptr},
+    {"(slides out from leading edge after user interacts with keyboard "
+     "accessories)",
+     kAutofillBrandingIOSSlideOutWhenInteracted,
+     std::size(kAutofillBrandingIOSSlideOutWhenInteracted), nullptr}};
 
 const FeatureEntry::FeatureParam kNewTabPageFieldTrialTileAblationHideAll[] = {
     {ntp_tiles::kNewTabPageFieldTrialParam, "1"}};
