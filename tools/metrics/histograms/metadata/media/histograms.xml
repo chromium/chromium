@@ -3266,6 +3266,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.InitializeRendererTimeout" enum="CallbackTimeoutStatus"
+    expires_after="2024-04-11">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>The timeout status of Renderer initialization.</summary>
+</histogram>
+
 <histogram name="Media.InputErrorMac" enum="OSStatus_Audio"
     expires_after="never">
 <!-- expires-never: essential indicator for audio input stability in Chrome -->

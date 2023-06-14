@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -22,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "media/base/callback_timeout_helpers.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder.h"
 #include "media/base/demuxer.h"
@@ -50,6 +52,16 @@ gfx::Size GetRotatedVideoSize(VideoRotation rotation, gfx::Size natural_size) {
   if (rotation == VIDEO_ROTATION_90 || rotation == VIDEO_ROTATION_270)
     return gfx::Size(natural_size.height(), natural_size.width());
   return natural_size;
+}
+
+void OnCallbackTimeout(const std::string& uma_name,
+                       bool called_on_destruction) {
+  DVLOG(1) << "Callback Timeout: " << uma_name
+           << ", called_on_destruction=" << called_on_destruction;
+  base::UmaHistogramEnumeration(
+      uma_name, called_on_destruction
+                    ? CallbackTimeoutStatus::kDestructedBeforeTimeout
+                    : CallbackTimeoutStatus::kTimeout);
 }
 
 }  // namespace
@@ -1154,7 +1166,14 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
   shared_state_.renderer->SetWasPlayedWithUserActivation(
       was_played_with_user_activation_);
 
-  shared_state_.renderer->Initialize(demuxer_, this, std::move(done_cb));
+  // Initialize Renderer and report timeout UMA.
+  std::string uma_name = "Media.InitializeRendererTimeout";
+  base::UmaHistogramEnumeration(uma_name, CallbackTimeoutStatus::kCreate);
+  shared_state_.renderer->Initialize(
+      demuxer_, this,
+      WrapCallbackWithTimeoutHandler(
+          std::move(done_cb), /*timeout_delay=*/base::Seconds(10),
+          base::BindOnce(&OnCallbackTimeout, uma_name)));
 }
 
 void PipelineImpl::RendererWrapper::DestroyRenderer() {
