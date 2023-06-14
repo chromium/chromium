@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
@@ -112,6 +114,10 @@ class CONTENT_EXPORT MediaSessionController
   // accordingly.
   bool AddOrRemovePlayer();
 
+  void OnMediaDeviceSaltReceived(
+      const std::string& raw_device_id,
+      const MediaDeviceSaltAndOrigin& salt_and_origin);
+
   const MediaPlayerId id_;
 
   // Outlives |this|.
@@ -137,6 +143,8 @@ class CONTENT_EXPORT MediaSessionController
   bool supports_audio_output_device_switching_ = true;
   media::MediaContentType media_content_type_ =
       media::MediaContentType::Persistent;
+
+  base::WeakPtrFactory<MediaSessionController> weak_factory_{this};
 };
 
 }  // namespace content

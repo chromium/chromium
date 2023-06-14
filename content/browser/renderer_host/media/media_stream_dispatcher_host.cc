@@ -220,7 +220,7 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
       render_frame_id_(render_frame_id),
       requester_id_(next_requester_id_++),
       media_stream_manager_(media_stream_manager),
-      salt_and_origin_callback_(
+      get_salt_and_origin_cb_(
           base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -355,24 +355,33 @@ bool MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin());
 }
 
-MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult
-MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
+void MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
     int render_process_id,
     int render_frame_id,
     bool request_all_screens,
-    base::OnceCallback<MediaDeviceSaltAndOrigin()>
-        generate_salt_and_origin_callback) {
+    base::OnceCallback<void(MediaDeviceSaltAndOriginCallback)>
+        get_salt_and_origin_cb,
+    base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
+        result_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (request_all_screens &&
       !CheckRequestAllScreensAllowed(render_process_id, render_frame_id)) {
-    return {.request_allowed = false,
-            .salt_and_origin = MediaDeviceSaltAndOrigin()};
+    std::move(result_callback)
+        .Run({.request_allowed = false,
+              .salt_and_origin = MediaDeviceSaltAndOrigin()});
+    return;
   }
 
-  return {
-      .request_allowed = true,
-      .salt_and_origin = std::move(generate_salt_and_origin_callback).Run()};
+  auto got_salt_and_origin = base::BindOnce(
+      [](base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
+             result_callback,
+         const MediaDeviceSaltAndOrigin& salt_and_origin) {
+        std::move(result_callback)
+            .Run({.request_allowed = true, .salt_and_origin = salt_and_origin});
+      },
+      std::move(result_callback));
+  std::move(get_salt_and_origin_cb).Run(std::move(got_salt_and_origin));
 }
 
 const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
@@ -448,18 +457,20 @@ void MediaStreamDispatcherHost::GenerateStreams(
     return;
   }
 
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread,
           /*render_process_id=*/render_process_id_,
           /*render_frame_id=*/render_frame_id_, controls.request_all_screens,
-          base::BindOnce(salt_and_origin_callback_, render_process_id_,
-                         render_frame_id_)),
-      base::BindOnce(&MediaStreamDispatcherHost::DoGenerateStreams,
-                     weak_factory_.GetWeakPtr(), page_request_id, controls,
-                     user_gesture, std::move(audio_stream_selection_info_ptr),
-                     std::move(callback)));
+          base::BindOnce(
+              get_salt_and_origin_cb_,
+              GlobalRenderFrameHostId(render_process_id_, render_frame_id_)),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaStreamDispatcherHost::DoGenerateStreams,
+              weak_factory_.GetWeakPtr(), page_request_id, controls,
+              user_gesture, std::move(audio_stream_selection_info_ptr),
+              std::move(callback)))));
 }
 
 void MediaStreamDispatcherHost::DoGenerateStreams(
@@ -561,13 +572,15 @@ void MediaStreamDispatcherHost::OpenDevice(int32_t page_request_id,
     return;
   }
 
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(salt_and_origin_callback_, render_process_id_,
-                     render_frame_id_),
-      base::BindOnce(&MediaStreamDispatcherHost::DoOpenDevice,
-                     weak_factory_.GetWeakPtr(), page_request_id, device_id,
-                     type, std::move(callback)));
+      base::BindOnce(
+          get_salt_and_origin_cb_,
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          base::BindPostTaskToCurrentDefault(
+              base::BindOnce(&MediaStreamDispatcherHost::DoOpenDevice,
+                             weak_factory_.GetWeakPtr(), page_request_id,
+                             device_id, type, std::move(callback)))));
 }
 
 void MediaStreamDispatcherHost::DoOpenDevice(
@@ -575,7 +588,7 @@ void MediaStreamDispatcherHost::DoOpenDevice(
     const std::string& device_id,
     blink::mojom::MediaStreamType type,
     OpenDeviceCallback callback,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
@@ -717,13 +730,15 @@ void MediaStreamDispatcherHost::GetOpenDevice(
   // on it", and whether we can/need to specific the destination renderer/frame
   // in this case.
 
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(salt_and_origin_callback_, render_process_id_,
-                     render_frame_id_),
-      base::BindOnce(&MediaStreamDispatcherHost::DoGetOpenDevice,
-                     weak_factory_.GetWeakPtr(), page_request_id, session_id,
-                     transfer_id, std::move(callback)));
+      base::BindOnce(
+          get_salt_and_origin_cb_,
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          base::BindPostTaskToCurrentDefault(
+              base::BindOnce(&MediaStreamDispatcherHost::DoGetOpenDevice,
+                             weak_factory_.GetWeakPtr(), page_request_id,
+                             session_id, transfer_id, std::move(callback)))));
 }
 
 void MediaStreamDispatcherHost::DoGetOpenDevice(
@@ -731,7 +746,7 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
     const base::UnguessableToken& session_id,
     const base::UnguessableToken& transfer_id,
     GetOpenDeviceCallback callback,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
                                            salt_and_origin.origin)) {
@@ -743,8 +758,7 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
 
   media_stream_manager_->GetOpenDevice(
       session_id, transfer_id, render_process_id_, render_frame_id_,
-      requester_id_, page_request_id, std::move(salt_and_origin),
-      std::move(callback),
+      requester_id_, page_request_id, salt_and_origin, std::move(callback),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceChanged,

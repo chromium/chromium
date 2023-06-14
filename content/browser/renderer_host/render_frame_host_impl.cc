@@ -11894,9 +11894,11 @@ bool RenderFrameHostImpl::ShouldBypassSecurityChecksForErrorPage(
 
 void RenderFrameHostImpl::SetAudioOutputDeviceIdForGlobalMediaControls(
     std::string hashed_device_id) {
-  audio_service_audio_output_stream_factory_
-      ->SetAuthorizedDeviceIdForGlobalMediaControls(
-          std::move(hashed_device_id));
+  if (audio_service_audio_output_stream_factory_.has_value()) {
+    audio_service_audio_output_stream_factory_
+        ->SetAuthorizedDeviceIdForGlobalMediaControls(
+            std::move(hashed_device_id));
+  }
 }
 
 std::unique_ptr<mojo::MessageFilter>

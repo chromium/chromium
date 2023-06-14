@@ -11,6 +11,7 @@
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
 #include "content/browser/media/session/media_session_impl.h"
+#include "content/public/browser/media_device_id.h"
 #include "content/test/mock_agent_scheduling_group_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -152,7 +153,10 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   void SetPowerExperimentState(bool enabled) override {}
 
-  void SetAudioSinkId(const std::string& sink_id) override {}
+  void SetAudioSinkId(const std::string& sink_id) override {
+    received_set_audio_sink_id_ = sink_id;
+    run_loop_->Quit();
+  }
 
   void SuspendForFrameClosed() override {}
 
@@ -179,6 +183,10 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
     return received_volume_multiplier_;
   }
 
+  const std::string& received_set_audio_sink_id() const {
+    return received_set_audio_sink_id_;
+  }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::RunLoop> run_loop_for_volume_;
@@ -190,6 +198,7 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
   base::TimeDelta received_seek_forward_time_;
   base::TimeDelta received_seek_backward_time_;
   base::TimeDelta received_seek_to_time_;
+  std::string received_set_audio_sink_id_;
 };
 
 class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
@@ -668,6 +677,33 @@ TEST_F(MediaSessionControllerTest, AudioFocusRequestFailure) {
   controller_.reset();
   EXPECT_FALSE(media_session()->IsActive());
   media_session()->RebuildAndNotifyMediaPositionChanged();
+}
+
+TEST_F(MediaSessionControllerTest, SetAudioSinkId) {
+  // No sink ID has been set.
+  EXPECT_TRUE(media_player_->received_set_audio_sink_id().empty());
+
+  // Set a non-default device ID.
+  const std::string new_sink_id = "new sink id";
+  controller_->OnSetAudioSinkId(controller_->get_player_id_for_testing(),
+                                new_sink_id);
+  media_player_->WaitUntilReceivedMessage();
+
+  // The media player receives a hashed version of `new_sink_id`, which must
+  // follow a specific format.
+  EXPECT_FALSE(media_player_->received_set_audio_sink_id().empty());
+  EXPECT_TRUE(IsValidDeviceId(media_player_->received_set_audio_sink_id()));
+  EXPECT_NE(media_player_->received_set_audio_sink_id(),
+            media::AudioDeviceDescription::kDefaultDeviceId);
+
+  // Set the default device ID.
+  controller_->OnSetAudioSinkId(
+      controller_->get_player_id_for_testing(),
+      media::AudioDeviceDescription::kDefaultDeviceId);
+  media_player_->WaitUntilReceivedMessage();
+  // The hashed version of the default device ID equals the unhashed version.
+  EXPECT_EQ(media_player_->received_set_audio_sink_id(),
+            media::AudioDeviceDescription::kDefaultDeviceId);
 }
 
 }  // namespace content

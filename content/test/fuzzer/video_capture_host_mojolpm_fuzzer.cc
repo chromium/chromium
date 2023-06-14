@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"  // nogncheck
@@ -23,6 +24,7 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
@@ -404,8 +406,11 @@ void VideoCaptureHostTestcase::OpenSessionOnUIThread(
     int render_process_id,
     int render_frame_id,
     content::MediaDeviceSaltAndOrigin* out_salt_and_origin) {
-  *out_salt_and_origin =
-      content::GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
+  base::test::TestFuture<const content::MediaDeviceSaltAndOrigin&> future;
+  content::GetMediaDeviceSaltAndOrigin(
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id),
+      future.GetCallback());
+  *out_salt_and_origin = future.Get();
 }
 
 void VideoCaptureHostTestcase::OpenSessionOnIOThread(

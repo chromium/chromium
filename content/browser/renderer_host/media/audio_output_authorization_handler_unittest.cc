@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -229,8 +230,9 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdWithoutPermission_NotAuthorized) {
   std::string raw_nondefault_id = GetRawNondefaultId();
-  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
-      process()->GetID(), main_rfh()->GetRoutingID());
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+  GetMediaDeviceSaltAndOrigin(main_rfh()->GetGlobalId(), future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
   std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
       salt_and_origin.device_id_salt, salt_and_origin.origin,
       raw_nondefault_id);
@@ -265,8 +267,9 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdWithPermission_Ok) {
   std::string raw_nondefault_id = GetRawNondefaultId();
-  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
-      process()->GetID(), main_rfh()->GetRoutingID());
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+  GetMediaDeviceSaltAndOrigin(main_rfh()->GetGlobalId(), future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
   std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
       salt_and_origin.device_id_salt, salt_and_origin.origin,
       raw_nondefault_id);
@@ -380,8 +383,9 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdAfterSaltChange_NotFound) {
   std::string raw_nondefault_id = GetRawNondefaultId();
-  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
-      process()->GetID(), main_rfh()->GetRoutingID());
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+  GetMediaDeviceSaltAndOrigin(main_rfh()->GetGlobalId(), future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
   std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
       salt_and_origin.device_id_salt, salt_and_origin.origin,
       raw_nondefault_id);

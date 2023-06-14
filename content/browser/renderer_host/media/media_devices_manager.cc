@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -399,7 +400,7 @@ MediaDevicesManager::MediaDevicesManager(
       cache_infos_(
           static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES)),
       monitoring_started_(false),
-      salt_and_origin_callback_(
+      get_salt_and_origin_cb_(
           base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(audio_system_);
@@ -458,15 +459,16 @@ void MediaDevicesManager::EnumerateDevices(
       request_audio_input_capabilities ? "true" : "false",
       request_video_input_capabilities ? "true" : "false"));
 
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(salt_and_origin_callback_, render_process_id,
-                     render_frame_id),
-      base::BindOnce(&MediaDevicesManager::CheckPermissionsForEnumerateDevices,
-                     weak_factory_.GetWeakPtr(), render_process_id,
-                     render_frame_id, requested_types,
-                     request_video_input_capabilities,
-                     request_audio_input_capabilities, std::move(callback)));
+      base::BindOnce(
+          get_salt_and_origin_cb_,
+          GlobalRenderFrameHostId(render_process_id, render_frame_id),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesManager::CheckPermissionsForEnumerateDevices,
+              weak_factory_.GetWeakPtr(), render_process_id, render_frame_id,
+              requested_types, request_video_input_capabilities,
+              request_audio_input_capabilities, std::move(callback)))));
 }
 
 uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
@@ -489,19 +491,21 @@ uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
 
   // Fetch the first device_id_salt for this subscriber's frame, to be able to
   // later detect changes.
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(salt_and_origin_callback_, render_process_id,
-                     render_frame_id),
-      base::BindOnce(&MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt,
-                     weak_factory_.GetWeakPtr(), subscription_id));
+      base::BindOnce(
+          get_salt_and_origin_cb_,
+          GlobalRenderFrameHostId(render_process_id, render_frame_id),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt,
+              weak_factory_.GetWeakPtr(), subscription_id))));
 
   return subscription_id;
 }
 
 void MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt(
     uint32_t subscription_id,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   auto it = subscriptions_.find(subscription_id);
 
   if (it == subscriptions_.end())
@@ -679,7 +683,7 @@ void MediaDevicesManager::CheckPermissionsForEnumerateDevices(
     bool request_video_input_capabilities,
     bool request_audio_input_capabilities,
     EnumerateDevicesCallback callback,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   permission_checker_->CheckPermissions(
       requested_types, render_process_id, render_frame_id,
@@ -695,7 +699,7 @@ void MediaDevicesManager::OnPermissionsCheckDone(
     bool request_video_input_capabilities,
     bool request_audio_input_capabilities,
     EnumerateDevicesCallback callback,
-    MediaDeviceSaltAndOrigin salt_and_origin,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
     const MediaDevicesManager::BoolDeviceTypes& has_permissions) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // The video-capture subsystem currently does not support group IDs.
@@ -1060,15 +1064,17 @@ void MediaDevicesManager::UpdateSnapshot(
   for (const auto& subscription : subscriptions_) {
     const SubscriptionRequest& request = subscription.second;
     if (request.subscribe_types[static_cast<size_t>(type)]) {
-      GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(salt_and_origin_callback_, request.render_process_id,
-                         request.render_frame_id),
-          base::BindOnce(&MediaDevicesManager::OnSaltAndOriginForSubscription,
-                         weak_factory_.GetWeakPtr(), subscription.first,
-                         request.render_process_id, request.render_frame_id,
-                         type, new_snapshot,
-                         need_update_device_change_subscribers));
+          base::BindOnce(
+              get_salt_and_origin_cb_,
+              GlobalRenderFrameHostId(request.render_process_id,
+                                      request.render_frame_id),
+              base::BindPostTaskToCurrentDefault(base::BindOnce(
+                  &MediaDevicesManager::OnSaltAndOriginForSubscription,
+                  weak_factory_.GetWeakPtr(), subscription.first,
+                  request.render_process_id, request.render_frame_id, type,
+                  new_snapshot, need_update_device_change_subscribers))));
     }
   }
 }
@@ -1191,7 +1197,7 @@ void MediaDevicesManager::OnSaltAndOriginForSubscription(
     MediaDeviceType type,
     const blink::WebMediaDeviceInfoArray& device_infos,
     bool devices_changed,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto it = subscriptions_.find(subscription_id);
@@ -1219,13 +1225,13 @@ void MediaDevicesManager::CheckPermissionForDeviceChange(
     int render_frame_id,
     MediaDeviceType type,
     const blink::WebMediaDeviceInfoArray& device_infos,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   permission_checker_->CheckPermission(
       type, render_process_id, render_frame_id,
       base::BindOnce(&MediaDevicesManager::NotifyDeviceChange,
                      weak_factory_.GetWeakPtr(), subscription_id, type,
-                     device_infos, std::move(salt_and_origin)));
+                     device_infos, salt_and_origin));
 }
 
 void MediaDevicesManager::NotifyDeviceChange(

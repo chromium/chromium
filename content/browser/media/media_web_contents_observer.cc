@@ -404,10 +404,16 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       RenderFrameHost::FromID(media_player_id_.frame_routing_id);
   DCHECK(render_frame_host);
 
-  auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
+  content::GetMediaDeviceSaltAndOrigin(
+      render_frame_host->GetGlobalId(),
+      base::BindOnce(&MediaPlayerObserverHostImpl::OnReceivedMediaDeviceSalt,
+                     weak_factory_.GetWeakPtr(), hashed_device_id));
+}
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnReceivedMediaDeviceSalt(
+        const std::string& hashed_device_id,
+        const content::MediaDeviceSaltAndOrigin& salt_and_origin) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

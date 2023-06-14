@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -147,8 +148,11 @@ class VideoCaptureTest : public testing::Test,
       MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
       devices_to_enumerate[static_cast<size_t>(
           blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
-      MediaDeviceSaltAndOrigin salt_and_origin =
-          GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
+      base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+      GetMediaDeviceSaltAndOrigin(
+          GlobalRenderFrameHostId(render_process_id, render_frame_id),
+          future.GetCallback());
+      MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
           devices_to_enumerate,
           base::BindOnce(&VideoInputDevicesEnumerated, run_loop.QuitClosure(),
@@ -160,12 +164,17 @@ class VideoCaptureTest : public testing::Test,
 
     // Open the first device.
     {
+      base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+      GetMediaDeviceSaltAndOrigin(
+          GlobalRenderFrameHostId(render_process_id, render_frame_id),
+          future.GetCallback());
+      MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
+
       base::RunLoop run_loop;
       media_stream_manager_->OpenDevice(
           render_process_id, render_frame_id, requester_id, page_request_id,
           video_devices[0].device_id,
-          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-          GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id),
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
           base::BindOnce(&VideoCaptureTest::OnDeviceOpened,
                          base::Unretained(this), run_loop.QuitClosure()),
           MediaStreamManager::DeviceStoppedCallback());

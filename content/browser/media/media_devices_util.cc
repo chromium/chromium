@@ -139,14 +139,13 @@ void GetDefaultMediaDeviceID(
       std::move(callback));
 }
 
-MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
-                                                     int render_frame_id) {
+void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
+                                 MediaDeviceSaltAndOriginCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHostImpl* frame_host =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+      RenderFrameHostImpl::FromID(render_frame_host_id);
   RenderProcessHost* process_host =
-      RenderProcessHost::FromID(render_process_id);
-
+      RenderProcessHost::FromID(render_frame_host_id.child_id);
   url::Origin origin;
   GURL url;
   net::SiteForCookies site_for_cookies;
@@ -200,7 +199,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
       std::move(device_id_salt), std::move(group_id_salt), std::move(origin),
       has_focus, is_background);
   salt_and_origin.ukm_source_id = source_id;
-  return salt_and_origin;
+  std::move(callback).Run(salt_and_origin);
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(

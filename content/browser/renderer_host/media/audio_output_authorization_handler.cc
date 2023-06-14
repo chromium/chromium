@@ -24,19 +24,14 @@ namespace content {
 
 namespace {
 
-// Returns (by callback) the Media Device salt and the Origin for the frame and
-// whether it may request nondefault audio devices.
-void CheckAccessOnUIThread(
+void GotSaltAndOrigin(
     int render_process_id,
     int render_frame_id,
     bool override_permissions,
     bool permissions_override_value,
-    base::OnceCallback<void(std::string, url::Origin, bool)> cb) {
+    base::OnceCallback<void(std::string, url::Origin, bool)> cb,
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  MediaDeviceSaltAndOrigin salt_and_origin =
-      GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
-
   if (!MediaStreamManager::IsOriginAllowed(render_process_id,
                                            salt_and_origin.origin)) {
     // In this case, it's likely a navigation has occurred while processing this
@@ -48,17 +43,31 @@ void CheckAccessOnUIThread(
   // Check that MediaStream device permissions have been granted for
   // nondefault devices.
   if (override_permissions) {
-    std::move(cb).Run(std::move(salt_and_origin.device_id_salt),
-                      std::move(salt_and_origin.origin),
+    std::move(cb).Run(salt_and_origin.device_id_salt, salt_and_origin.origin,
                       permissions_override_value);
     return;
   }
 
-  std::move(cb).Run(std::move(salt_and_origin.device_id_salt),
-                    std::move(salt_and_origin.origin),
+  std::move(cb).Run(salt_and_origin.device_id_salt, salt_and_origin.origin,
                     MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
                         MediaDeviceType::MEDIA_AUDIO_OUTPUT, render_process_id,
                         render_frame_id));
+}
+
+// Returns (by callback) the Media Device salt and the Origin for the frame and
+// whether it may request nondefault audio devices.
+void CheckAccessOnUIThread(
+    int render_process_id,
+    int render_frame_id,
+    bool override_permissions,
+    bool permissions_override_value,
+    base::OnceCallback<void(std::string, url::Origin, bool)> cb) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetMediaDeviceSaltAndOrigin(
+      GlobalRenderFrameHostId(render_process_id, render_frame_id),
+      base::BindOnce(&GotSaltAndOrigin, render_process_id, render_frame_id,
+                     override_permissions, permissions_override_value,
+                     std::move(cb)));
 }
 
 }  // namespace
@@ -171,13 +180,15 @@ void AudioOutputAuthorizationHandler::RequestDeviceAuthorization(
       trace_scope->UsingSessionId(session_id, device->id);
       // We don't need the origin for authorization in this case, but it's used
       // for hashing the device id before sending it back to the renderer.
-      GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(&GetMediaDeviceSaltAndOrigin, render_process_id_,
-                         render_frame_id),
-          base::BindOnce(&AudioOutputAuthorizationHandler::HashDeviceId,
-                         weak_factory_.GetWeakPtr(), std::move(trace_scope),
-                         std::move(cb), *device->matched_output_device_id));
+          base::BindOnce(
+              &GetMediaDeviceSaltAndOrigin,
+              GlobalRenderFrameHostId(render_process_id_, render_frame_id),
+              base::BindPostTaskToCurrentDefault(base::BindOnce(
+                  &AudioOutputAuthorizationHandler::HashDeviceId,
+                  weak_factory_.GetWeakPtr(), std::move(trace_scope),
+                  std::move(cb), *device->matched_output_device_id))));
       return;
     }
     // Otherwise, the default device is used.

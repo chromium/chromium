@@ -27,6 +27,7 @@
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -86,17 +87,26 @@ void TranslateDeviceId(const std::string& device_id,
   // If we're unable to translate the device id, |cb| will not be run.
 }
 
-void GetSaltOriginAndPermissionsOnUIThread(
+void GotSaltAndOrigin(
     int process_id,
     int frame_id,
-    base::OnceCallback<void(MediaDeviceSaltAndOrigin salt_and_origin,
-                            bool has_access)> cb) {
-  auto salt_and_origin = GetMediaDeviceSaltAndOrigin(process_id, frame_id);
+    base::OnceCallback<void(const MediaDeviceSaltAndOrigin& salt_and_origin,
+                            bool has_access)> cb,
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   bool access = MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
       MediaDeviceType::MEDIA_AUDIO_OUTPUT, process_id, frame_id);
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(cb), std::move(salt_and_origin), access));
+      FROM_HERE, base::BindOnce(std::move(cb), salt_and_origin, access));
+}
+
+void GetSaltOriginAndPermissionsOnUIThread(
+    int process_id,
+    int frame_id,
+    base::OnceCallback<void(const MediaDeviceSaltAndOrigin& salt_and_origin,
+                            bool has_access)> cb) {
+  GetMediaDeviceSaltAndOrigin(
+      GlobalRenderFrameHostId(process_id, frame_id),
+      base::BindOnce(&GotSaltAndOrigin, process_id, frame_id, std::move(cb)));
 }
 
 }  // namespace
@@ -142,7 +152,7 @@ class RenderFrameAudioInputStreamFactory::Core final
   void AssociateInputAndOutputForAecAfterCheckingAccess(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id,
-      MediaDeviceSaltAndOrigin salt_and_origin,
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
       bool access_granted);
 
   void AssociateTranslatedOutputDeviceForAec(
@@ -322,7 +332,7 @@ void RenderFrameAudioInputStreamFactory::Core::
     AssociateInputAndOutputForAecAfterCheckingAccess(
         const base::UnguessableToken& input_stream_id,
         const std::string& output_device_id,
-        MediaDeviceSaltAndOrigin salt_and_origin,
+        const MediaDeviceSaltAndOrigin& salt_and_origin,
         bool access_granted) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 

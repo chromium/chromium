@@ -146,8 +146,8 @@ class CONTENT_EXPORT MediaDevicesManager
   blink::WebMediaDeviceInfoArray GetCachedDeviceInfo(
       MediaDeviceType type) const;
 
-  const MediaDeviceSaltAndOriginCallback& salt_and_origin_callback() const {
-    return salt_and_origin_callback_;
+  const GetMediaDeviceSaltAndOriginCallback& get_salt_and_origin_cb() const {
+    return get_salt_and_origin_cb_;
   }
 
   void RegisterDispatcherHost(
@@ -160,9 +160,9 @@ class CONTENT_EXPORT MediaDevicesManager
   // Used for testing only.
   void SetPermissionChecker(
       std::unique_ptr<MediaDevicesPermissionChecker> permission_checker);
-  void set_salt_and_origin_callback_for_testing(
-      MediaDeviceSaltAndOriginCallback callback) {
-    salt_and_origin_callback_ = std::move(callback);
+  void set_get_salt_and_origin_cb_for_testing(
+      GetMediaDeviceSaltAndOriginCallback callback) {
+    get_salt_and_origin_cb_ = std::move(callback);
   }
 
  private:
@@ -234,13 +234,13 @@ class CONTENT_EXPORT MediaDevicesManager
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
-      MediaDeviceSaltAndOrigin salt_and_origin);
+      const MediaDeviceSaltAndOrigin& salt_and_origin);
   void OnPermissionsCheckDone(
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
-      MediaDeviceSaltAndOrigin salt_and_origin,
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
@@ -296,7 +296,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const blink::WebMediaDeviceInfoArray& new_snapshot);
   void SetSubscriptionLastSeenDeviceIdSalt(
       uint32_t subscription_id,
-      MediaDeviceSaltAndOrigin salt_and_origin);
+      const MediaDeviceSaltAndOrigin& salt_and_origin);
   void OnSaltAndOriginForSubscription(
       uint32_t subscription_id,
       int render_process_id,
@@ -304,14 +304,14 @@ class CONTENT_EXPORT MediaDevicesManager
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& device_infos,
       bool devices_changed,
-      MediaDeviceSaltAndOrigin salt_and_origin);
+      const MediaDeviceSaltAndOrigin& salt_and_origin);
   void CheckPermissionForDeviceChange(
       uint32_t subscription_id,
       int render_process_id,
       int render_frame_id,
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& device_infos,
-      MediaDeviceSaltAndOrigin salt_and_origin);
+      const MediaDeviceSaltAndOrigin& salt_and_origin);
   void NotifyDeviceChange(uint32_t subscription_id,
                           MediaDeviceType type,
                           const blink::WebMediaDeviceInfoArray& device_infos,
@@ -349,7 +349,7 @@ class CONTENT_EXPORT MediaDevicesManager
   base::flat_map<uint32_t, SubscriptionRequest> subscriptions_;
 
   // Callback used to obtain the current device ID salt and security origin.
-  MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;
+  GetMediaDeviceSaltAndOriginCallback get_salt_and_origin_cb_;
 
   class AudioServiceDeviceListener;
   std::unique_ptr<AudioServiceDeviceListener> audio_service_device_listener_;
