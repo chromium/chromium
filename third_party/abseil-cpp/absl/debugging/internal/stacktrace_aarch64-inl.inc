@@ -94,15 +94,20 @@ static void **NextStackFrame(void **old_frame_pointer, const void *uc) {
       void **const pre_signal_frame_pointer =
           reinterpret_cast<void **>(ucv->uc_mcontext.regs[29]);
 
+      // The most recent signal always needs special handling to find the frame
+      // pointer, but a nested signal does not.  If pre_signal_frame_pointer is
+      // earlier in the stack than the old_frame_pointer, then use it. If it is
+      // later, then we have already unwound through it and it needs no special
+      // handling.
+      if (pre_signal_frame_pointer >= old_frame_pointer) {
+        new_frame_pointer = pre_signal_frame_pointer;
+      }
       // Check that alleged frame pointer is actually readable. This is to
       // prevent "double fault" in case we hit the first fault due to e.g.
       // stack corruption.
       if (!absl::debugging_internal::AddressIsReadable(
-              pre_signal_frame_pointer))
+              new_frame_pointer))
         return nullptr;
-
-      // Alleged frame pointer is readable, use it for further unwinding.
-      new_frame_pointer = pre_signal_frame_pointer;
 
       // Skip frame size check if we return from a signal. We may be using a
       // an alternate stack for signals.

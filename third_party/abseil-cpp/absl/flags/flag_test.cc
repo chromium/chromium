@@ -34,6 +34,7 @@
 #include "absl/flags/marshalling.h"
 #include "absl/flags/reflection.h"
 #include "absl/flags/usage_config.h"
+#include "absl/numeric/int128.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_cat.h"
@@ -127,6 +128,11 @@ TEST_F(FlagTest, Traits) {
             flags::FlagValueStorageKind::kAlignedBuffer);
   EXPECT_EQ(flags::StorageKind<std::vector<std::string>>(),
             flags::FlagValueStorageKind::kAlignedBuffer);
+
+  EXPECT_EQ(flags::StorageKind<absl::int128>(),
+            flags::FlagValueStorageKind::kSequenceLocked);
+  EXPECT_EQ(flags::StorageKind<absl::uint128>(),
+            flags::FlagValueStorageKind::kSequenceLocked);
 }
 
 // --------------------------------------------------------------------
@@ -135,6 +141,8 @@ constexpr flags::FlagHelpArg help_arg{flags::FlagHelpMsg("literal help"),
                                       flags::FlagHelpKind::kLiteral};
 
 using String = std::string;
+using int128 = absl::int128;
+using uint128 = absl::uint128;
 
 #if !defined(_MSC_VER) || defined(__clang__)
 #define DEFINE_CONSTRUCTED_FLAG(T, dflt, dflt_kind)                        \
@@ -171,6 +179,8 @@ DEFINE_CONSTRUCTED_FLAG(float, 7.8, kOneWord);
 DEFINE_CONSTRUCTED_FLAG(double, 9.10, kOneWord);
 DEFINE_CONSTRUCTED_FLAG(String, &TestMakeDflt<String>, kGenFunc);
 DEFINE_CONSTRUCTED_FLAG(UDT, &TestMakeDflt<UDT>, kGenFunc);
+DEFINE_CONSTRUCTED_FLAG(int128, 13, kGenFunc);
+DEFINE_CONSTRUCTED_FLAG(uint128, 14, kGenFunc);
 
 template <typename T>
 bool TestConstructionFor(const absl::Flag<T>& f1, absl::Flag<T>& f2) {
@@ -202,6 +212,8 @@ TEST_F(FlagTest, TestConstruction) {
   TEST_CONSTRUCTED_FLAG(double);
   TEST_CONSTRUCTED_FLAG(String);
   TEST_CONSTRUCTED_FLAG(UDT);
+  TEST_CONSTRUCTED_FLAG(int128);
+  TEST_CONSTRUCTED_FLAG(uint128);
 }
 
 // --------------------------------------------------------------------
@@ -220,6 +232,8 @@ ABSL_DECLARE_FLAG(double, test_flag_09);
 ABSL_DECLARE_FLAG(float, test_flag_10);
 ABSL_DECLARE_FLAG(std::string, test_flag_11);
 ABSL_DECLARE_FLAG(absl::Duration, test_flag_12);
+ABSL_DECLARE_FLAG(absl::int128, test_flag_13);
+ABSL_DECLARE_FLAG(absl::uint128, test_flag_14);
 
 namespace {
 
@@ -251,6 +265,10 @@ TEST_F(FlagTest, TestFlagDeclaration) {
             "test_flag_11");
   EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_12).Name(),
             "test_flag_12");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_13).Name(),
+            "test_flag_13");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_14).Name(),
+            "test_flag_14");
 }
 #endif  // !ABSL_FLAGS_STRIP_NAMES
 
@@ -270,6 +288,9 @@ ABSL_FLAG(double, test_flag_09, -9.876e-50, "test flag 09");
 ABSL_FLAG(float, test_flag_10, 1.234e12f, "test flag 10");
 ABSL_FLAG(std::string, test_flag_11, "", "test flag 11");
 ABSL_FLAG(absl::Duration, test_flag_12, absl::Minutes(10), "test flag 12");
+ABSL_FLAG(absl::int128, test_flag_13, absl::MakeInt128(-1, 0), "test flag 13");
+ABSL_FLAG(absl::uint128, test_flag_14, absl::MakeUint128(0, 0xFFFAAABBBCCCDDD),
+          "test flag 14");
 
 namespace {
 
@@ -384,6 +405,24 @@ TEST_F(FlagTest, TestFlagDefinition) {
       absl::GetFlagReflectionHandle(FLAGS_test_flag_12).Filename(),
       expected_file_name))
       << absl::GetFlagReflectionHandle(FLAGS_test_flag_12).Filename();
+
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_13).Name(),
+            "test_flag_13");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_13).Help(),
+            "test flag 13");
+  EXPECT_TRUE(absl::EndsWith(
+      absl::GetFlagReflectionHandle(FLAGS_test_flag_13).Filename(),
+      expected_file_name))
+      << absl::GetFlagReflectionHandle(FLAGS_test_flag_13).Filename();
+
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_14).Name(),
+            "test_flag_14");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_14).Help(),
+            "test flag 14");
+  EXPECT_TRUE(absl::EndsWith(
+      absl::GetFlagReflectionHandle(FLAGS_test_flag_14).Filename(),
+      expected_file_name))
+      << absl::GetFlagReflectionHandle(FLAGS_test_flag_14).Filename();
 }
 #endif  // !ABSL_FLAGS_STRIP_NAMES
 
@@ -414,6 +453,10 @@ TEST_F(FlagTest, TestDefault) {
             "");
   EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_12).DefaultValue(),
             "10m");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_13).DefaultValue(),
+            "-18446744073709551616");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_14).DefaultValue(),
+            "1152827684197027293");
 
   EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_01).CurrentValue(),
             "true");
@@ -439,6 +482,10 @@ TEST_F(FlagTest, TestDefault) {
             "");
   EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_12).CurrentValue(),
             "10m");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_13).CurrentValue(),
+            "-18446744073709551616");
+  EXPECT_EQ(absl::GetFlagReflectionHandle(FLAGS_test_flag_14).CurrentValue(),
+            "1152827684197027293");
 
   EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_01), true);
   EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_02), 1234);
@@ -452,6 +499,9 @@ TEST_F(FlagTest, TestDefault) {
   EXPECT_NEAR(absl::GetFlag(FLAGS_test_flag_10), 1.234e12f, 1e5f);
   EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_11), "");
   EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_12), absl::Minutes(10));
+  EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_13), absl::MakeInt128(-1, 0));
+  EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_14),
+            absl::MakeUint128(0, 0xFFFAAABBBCCCDDD));
 }
 
 // --------------------------------------------------------------------
@@ -553,6 +603,13 @@ TEST_F(FlagTest, TestGetSet) {
 
   absl::SetFlag(&FLAGS_test_flag_12, absl::Seconds(110));
   EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_12), absl::Seconds(110));
+
+  absl::SetFlag(&FLAGS_test_flag_13, absl::MakeInt128(-1, 0));
+  EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_13), absl::MakeInt128(-1, 0));
+
+  absl::SetFlag(&FLAGS_test_flag_14, absl::MakeUint128(0, 0xFFFAAABBBCCCDDD));
+  EXPECT_EQ(absl::GetFlag(FLAGS_test_flag_14),
+            absl::MakeUint128(0, 0xFFFAAABBBCCCDDD));
 }
 
 // --------------------------------------------------------------------
@@ -582,6 +639,11 @@ TEST_F(FlagTest, TestGetViaReflection) {
   EXPECT_EQ(*handle->TryGet<std::string>(), "");
   handle = absl::FindCommandLineFlag("test_flag_12");
   EXPECT_EQ(*handle->TryGet<absl::Duration>(), absl::Minutes(10));
+  handle = absl::FindCommandLineFlag("test_flag_13");
+  EXPECT_EQ(*handle->TryGet<absl::int128>(), absl::MakeInt128(-1, 0));
+  handle = absl::FindCommandLineFlag("test_flag_14");
+  EXPECT_EQ(*handle->TryGet<absl::uint128>(),
+            absl::MakeUint128(0, 0xFFFAAABBBCCCDDD));
 }
 
 // --------------------------------------------------------------------
@@ -980,7 +1042,7 @@ TEST_F(FlagTest, TesTypeWrappingEnum) {
 
 // This is a compile test to ensure macros are expanded within ABSL_FLAG and
 // ABSL_DECLARE_FLAG.
-#define FLAG_NAME_MACRO(name) prefix_ ## name
+#define FLAG_NAME_MACRO(name) prefix_##name
 ABSL_DECLARE_FLAG(int, FLAG_NAME_MACRO(test_macro_named_flag));
 ABSL_FLAG(int, FLAG_NAME_MACRO(test_macro_named_flag), 0,
           "Testing macro expansion within ABSL_FLAG");

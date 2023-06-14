@@ -146,7 +146,13 @@ void AppendPieces(std::string* dest,
 
 void StrAppend(std::string* dest, const AlphaNum& a) {
   ASSERT_NO_OVERLAP(*dest, a);
-  dest->append(a.data(), a.size());
+  std::string::size_type old_size = dest->size();
+  strings_internal::STLStringResizeUninitializedAmortized(dest,
+                                                          old_size + a.size());
+  char* const begin = &(*dest)[0];
+  char* out = begin + old_size;
+  out = Append(out, a);
+  assert(out == begin + dest->size());
 }
 
 void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b) {

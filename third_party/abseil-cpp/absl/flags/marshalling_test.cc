@@ -981,6 +981,40 @@ TEST(MarshallingTest, TestUint64Unparsing) {
 
 // --------------------------------------------------------------------
 
+TEST(MarshallingTest, TestInt128Unparsing) {
+  absl::int128 value;
+
+  value = 1;
+  EXPECT_EQ(absl::UnparseFlag(value), "1");
+  value = 0;
+  EXPECT_EQ(absl::UnparseFlag(value), "0");
+  value = -1;
+  EXPECT_EQ(absl::UnparseFlag(value), "-1");
+  value = 123456789L;
+  EXPECT_EQ(absl::UnparseFlag(value), "123456789");
+  value = -987654321L;
+  EXPECT_EQ(absl::UnparseFlag(value), "-987654321");
+  value = 0x7FFFFFFFFFFFFFFF;
+  EXPECT_EQ(absl::UnparseFlag(value), "9223372036854775807");
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestUint128Unparsing) {
+  absl::uint128 value;
+
+  value = 1;
+  EXPECT_EQ(absl::UnparseFlag(value), "1");
+  value = 0;
+  EXPECT_EQ(absl::UnparseFlag(value), "0");
+  value = 123456789L;
+  EXPECT_EQ(absl::UnparseFlag(value), "123456789");
+  value = absl::MakeUint128(0, 0xFFFFFFFFFFFFFFFF);
+  EXPECT_EQ(absl::UnparseFlag(value), "18446744073709551615");
+}
+
+// --------------------------------------------------------------------
+
 TEST(MarshallingTest, TestFloatUnparsing) {
   float value;
 

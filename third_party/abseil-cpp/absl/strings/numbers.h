@@ -125,8 +125,6 @@ namespace numbers_internal {
 ABSL_DLL extern const char kHexChar[17];  // 0123456789abcdef
 ABSL_DLL extern const char
     kHexTable[513];  // 000102030405060708090a0b0c0d0e0f1011...
-ABSL_DLL extern const char
-    two_ASCII_digits[100][2];  // 00, 01, 02, 03...
 
 // Writes a two-character representation of 'i' to 'buf'. 'i' must be in the
 // range 0 <= i < 100, and buf must have space for two characters. Example:
@@ -134,10 +132,7 @@ ABSL_DLL extern const char
 //   PutTwoDigits(42, buf);
 //   // buf[0] == '4'
 //   // buf[1] == '2'
-inline void PutTwoDigits(size_t i, char* buf) {
-  assert(i < 100);
-  memcpy(buf, two_ASCII_digits[i], 2);
-}
+void PutTwoDigits(uint32_t i, char* buf);
 
 // safe_strto?() functions for implementing SimpleAtoi()
 

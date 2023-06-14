@@ -813,4 +813,6 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
+
+  add_library(absl::${_dll} ALIAS ${_dll})
 endfunction()

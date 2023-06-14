@@ -19,6 +19,7 @@
 
 #include <cmath>
 #include <limits>
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -198,6 +199,17 @@ std::string Unparse(long v) { return absl::StrCat(v); }
 std::string Unparse(unsigned long v) { return absl::StrCat(v); }
 std::string Unparse(long long v) { return absl::StrCat(v); }
 std::string Unparse(unsigned long long v) { return absl::StrCat(v); }
+std::string Unparse(absl::int128 v) {
+  std::stringstream ss;
+  ss << v;
+  return ss.str();
+}
+std::string Unparse(absl::uint128 v) {
+  std::stringstream ss;
+  ss << v;
+  return ss.str();
+}
+
 template <typename T>
 std::string UnparseFloatingPointVal(T v) {
   // digits10 is guaranteed to roundtrip correctly in string -> value -> string

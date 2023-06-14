@@ -429,7 +429,10 @@ pid_t GetTID() {
 #elif defined(__native_client__)
 
 pid_t GetTID() {
-  return reinterpret_cast<intptr_t>(pthread_self());
+  auto* thread = pthread_self();
+  static_assert(sizeof(pid_t) == sizeof(thread),
+                "In NaCL int expected to be the same size as a pointer");
+  return reinterpret_cast<pid_t>(thread);
 }
 
 #else

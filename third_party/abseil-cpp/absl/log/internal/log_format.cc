@@ -113,27 +113,29 @@ size_t FormatBoundedFields(absl::LogSeverity severity, absl::Time timestamp,
   char* p = buf.data();
   *p++ = absl::LogSeverityName(severity)[0];
   const absl::TimeZone::CivilInfo ci = tz->At(timestamp);
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(ci.cs.month()), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(ci.cs.month()), p);
   p += 2;
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(ci.cs.day()), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(ci.cs.day()), p);
   p += 2;
   *p++ = ' ';
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(ci.cs.hour()), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(ci.cs.hour()), p);
   p += 2;
   *p++ = ':';
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(ci.cs.minute()), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(ci.cs.minute()),
+                                       p);
   p += 2;
   *p++ = ':';
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(ci.cs.second()), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(ci.cs.second()),
+                                       p);
   p += 2;
   *p++ = '.';
   const int64_t usecs = absl::ToInt64Microseconds(ci.subsecond);
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(usecs / 10000), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(usecs / 10000), p);
   p += 2;
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(usecs / 100 % 100),
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(usecs / 100 % 100),
                                        p);
   p += 2;
-  absl::numbers_internal::PutTwoDigits(static_cast<size_t>(usecs % 100), p);
+  absl::numbers_internal::PutTwoDigits(static_cast<uint32_t>(usecs % 100), p);
   p += 2;
   *p++ = ' ';
   PutLeadingWhitespace(tid, p);

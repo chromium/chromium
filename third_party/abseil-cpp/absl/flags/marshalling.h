@@ -313,6 +313,8 @@ std::string Unparse(long v);                // NOLINT
 std::string Unparse(unsigned long v);       // NOLINT
 std::string Unparse(long long v);           // NOLINT
 std::string Unparse(unsigned long long v);  // NOLINT
+std::string Unparse(absl::int128 v);
+std::string Unparse(absl::uint128 v);
 std::string Unparse(float v);
 std::string Unparse(double v);
 

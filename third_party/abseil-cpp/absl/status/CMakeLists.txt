@@ -25,6 +25,8 @@ absl_cc_library(
     "status_payload_printer.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
+  DEFINES
+    "$<$<PLATFORM_ID:AIX>:_LINUX_SOURCE_COMPAT>"
   DEPS
     absl::atomic_hook
     absl::config

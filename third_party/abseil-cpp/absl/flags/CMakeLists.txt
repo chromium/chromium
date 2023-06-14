@@ -346,6 +346,7 @@ absl_cc_test(
     absl::flags_internal
     absl::flags_marshalling
     absl::flags_reflection
+    absl::int128
     absl::strings
     absl::time
     GTest::gtest_main

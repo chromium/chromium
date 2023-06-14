@@ -71,13 +71,12 @@ int64_t UnscaledCycleClock::Now() {
 #else
   int32_t tbu, tbl, tmp;
   asm volatile(
-      "0:\n"
       "mftbu %[hi32]\n"
       "mftb %[lo32]\n"
       "mftbu %[tmp]\n"
       "cmpw %[tmp],%[hi32]\n"
-      "bne 0b\n"
-      : [ hi32 ] "=r"(tbu), [ lo32 ] "=r"(tbl), [ tmp ] "=r"(tmp));
+      "bne $-16\n"  // Retry on failure.
+      : [hi32] "=r"(tbu), [lo32] "=r"(tbl), [tmp] "=r"(tmp));
   return (static_cast<int64_t>(tbu) << 32) | tbl;
 #endif
 #endif

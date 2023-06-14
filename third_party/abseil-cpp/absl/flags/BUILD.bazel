@@ -388,6 +388,7 @@ cc_test(
         ":reflection",
         "//absl/base:core_headers",
         "//absl/base:malloc_internal",
+        "//absl/numeric:int128",
         "//absl/strings",
         "//absl/time",
         "@com_google_googletest//:gtest_main",

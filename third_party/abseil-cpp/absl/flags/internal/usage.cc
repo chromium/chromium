@@ -92,8 +92,16 @@ class XMLElement {
         case '>':
           out << "&gt;";
           break;
+        case '\n':
+        case '\v':
+        case '\f':
+        case '\t':
+          out << " ";
+          break;
         default:
-          out << c;
+          if (IsValidXmlCharacter(static_cast<unsigned char>(c))) {
+            out << c;
+          }
           break;
       }
     }
@@ -102,6 +110,7 @@ class XMLElement {
   }
 
  private:
+  static bool IsValidXmlCharacter(unsigned char c) { return c >= 0x20; }
   absl::string_view tag_;
   absl::string_view txt_;
 };

@@ -374,14 +374,24 @@ class AlphaNum {
   const char* data() const { return piece_.data(); }
   absl::string_view Piece() const { return piece_; }
 
-  // Normal enums are already handled by the integer formatters.
-  // This overload matches only scoped enums.
+  // Match unscoped enums.  Use integral promotion so that a `char`-backed
+  // enum becomes a wider integral type AlphaNum will accept.
   template <typename T,
             typename = typename std::enable_if<
-                std::is_enum<T>{} && !std::is_convertible<T, int>{} &&
+                std::is_enum<T>{} && std::is_convertible<T, int>{} &&
                 !strings_internal::HasAbslStringify<T>::value>::type>
   AlphaNum(T e)  // NOLINT(runtime/explicit)
-      : AlphaNum(static_cast<typename std::underlying_type<T>::type>(e)) {}
+      : AlphaNum(+e) {}
+
+  // This overload matches scoped enums.  We must explicitly cast to the
+  // underlying type, but use integral promotion for the same reason as above.
+  template <typename T,
+            typename std::enable_if<
+                std::is_enum<T>{} && !std::is_convertible<T, int>{} &&
+                    !strings_internal::HasAbslStringify<T>::value,
+                char*>::type = nullptr>
+  AlphaNum(T e)  // NOLINT(runtime/explicit)
+      : AlphaNum(+static_cast<typename std::underlying_type<T>::type>(e)) {}
 
   // vector<bool>::reference and const_reference require special help to
   // convert to `AlphaNum` because it requires two user defined conversions.

@@ -103,6 +103,16 @@ bool StartsWithIgnoreCase(absl::string_view text,
 bool EndsWithIgnoreCase(absl::string_view text,
                         absl::string_view suffix) noexcept;
 
+// Yields the longest prefix in common between both input strings.
+// Pointer-wise, the returned result is a subset of input "a".
+absl::string_view FindLongestCommonPrefix(absl::string_view a,
+                                          absl::string_view b);
+
+// Yields the longest suffix in common between both input strings.
+// Pointer-wise, the returned result is a subset of input "a".
+absl::string_view FindLongestCommonSuffix(absl::string_view a,
+                                          absl::string_view b);
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 

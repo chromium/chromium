@@ -37,17 +37,12 @@ TEST(CharFormatting, CharEnum) {
   auto v = static_cast<CharEnum>('A');
 
   // Desired behavior: format as decimal
-  // (No APIs do this today.)
-
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
-
-  // Legacy behavior: does not compile:
-  // EXPECT_EQ(absl::StrCat(ch, "B"), "AB");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
+  EXPECT_EQ(absl::StrCat(v, "B"), "65B");
 
   // Legacy behavior: format as character:
 
-  // Some older versions of gcc behave differently in this one case.
+  // Some older versions of gcc behave differently in this one case
 #if !defined(__GNUC__) || defined(__clang__)
   EXPECT_EQ(absl::Substitute("$0B", v), "AB");
 #endif
@@ -57,14 +52,9 @@ enum class CharEnumClass: char {};
 TEST(CharFormatting, CharEnumClass) {
   auto v = static_cast<CharEnumClass>('A');
 
-  // Desired behavior: format as decimal
-  // (No APIs do this today.)
-
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
-
-  // Legacy behavior: does not compile:
-  // EXPECT_EQ(absl::StrCat(ch, "B"), "AB");
+  // Desired behavior: format as decimal:
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
+  EXPECT_EQ(absl::StrCat(v, "B"), "65B");
 
   // Legacy behavior: format as character:
   EXPECT_EQ(absl::Substitute("$0B", v), "AB");
@@ -76,9 +66,7 @@ TEST(CharFormatting, UnsignedChar) {
   // Desired behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
-
-  // Legacy behavior: does not compile:
-  // EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 
   // Signedness check
   const unsigned char w = 255;
@@ -93,9 +81,7 @@ TEST(CharFormatting, SignedChar) {
   // Desired behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
-
-  // Legacy behavior: does not compile:
-  // EXPECT_EQ(absl::StrFormat("%vB", v), "AB");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 
   // Signedness check
   const signed char w = -128;
@@ -110,14 +96,13 @@ TEST(CharFormatting, UnsignedCharEnum) {
   // Desired behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
-
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 
   // Signedness check
   auto w = static_cast<UnsignedCharEnum>(255);
   EXPECT_EQ(absl::StrCat(w, "B"), "255B");
   EXPECT_EQ(absl::Substitute("$0B", w), "255B");
+  EXPECT_EQ(absl::StrFormat("%vB", w), "255B");
 }
 
 enum SignedCharEnum : signed char {};
@@ -127,14 +112,13 @@ TEST(CharFormatting, SignedCharEnum) {
   // Desired behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
-
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 
   // Signedness check
   auto w = static_cast<SignedCharEnum>(-128);
   EXPECT_EQ(absl::StrCat(w, "B"), "-128B");
   EXPECT_EQ(absl::Substitute("$0B", w), "-128B");
+  EXPECT_EQ(absl::StrFormat("%vB", w), "-128B");
 }
 
 enum class UnsignedCharEnumClass : unsigned char {};
@@ -144,14 +128,13 @@ TEST(CharFormatting, UnsignedCharEnumClass) {
   // Desired behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
-
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 
   // Signedness check
   auto w = static_cast<UnsignedCharEnumClass>(255);
   EXPECT_EQ(absl::StrCat(w, "B"), "255B");
   EXPECT_EQ(absl::Substitute("$0B", w), "255B");
+  EXPECT_EQ(absl::StrFormat("%vB", w), "255B");
 }
 
 enum SignedCharEnumClass : signed char {};
@@ -161,14 +144,13 @@ TEST(CharFormatting, SignedCharEnumClass) {
   // Desired behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
-
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 
   // Signedness check
   auto w = static_cast<SignedCharEnumClass>(-128);
   EXPECT_EQ(absl::StrCat(w, "B"), "-128B");
   EXPECT_EQ(absl::Substitute("$0B", w), "-128B");
+  EXPECT_EQ(absl::StrFormat("%vB", w), "-128B");
 }
 
 #ifdef __cpp_lib_byte
@@ -177,12 +159,10 @@ TEST(CharFormatting, StdByte) {
   // Desired behavior: format as 0xff
   // (No APIs do this today.)
 
-  // BUG: internally fails
-  EXPECT_EQ(absl::StrFormat("%vB", v), "");
-
   // Legacy behavior: format as decimal:
   EXPECT_EQ(absl::StrCat(v, "B"), "65B");
   EXPECT_EQ(absl::Substitute("$0B", v), "65B");
+  EXPECT_EQ(absl::StrFormat("%vB", v), "65B");
 }
 #endif  // _cpp_lib_byte
 
