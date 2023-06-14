@@ -38,8 +38,10 @@ FILES_AND_DIRECTORIES_TO_CHECK = [
     'flake_suppressor',
     'gold_inexact_matching',
     'gpu_tests',
+    'machine_times',
     'unexpected_passes',
     # Files.
+    'get_machine_times.py',
     'unexpected_pass_finder.py',
 ]
 FILES_AND_DIRECTORIES_TO_CHECK = [

@@ -35,14 +35,8 @@ via `finder:disable-stale` and `finder:enable-stale`.
 """
 
 import argparse
-import importlib
-import inspect
-import logging
 import os
-import pkgutil
-from typing import Dict, Type
 
-import gpu_path_util
 from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
 from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
 
@@ -57,39 +51,8 @@ from unexpected_passes_common import expectations
 from unexpected_passes_common import result_output
 
 
-def _GenerateTestNameMapping(
-) -> Dict[str, Type[gpu_integration_test.GpuIntegrationTest]]:
-  """Generates a mapping from suite name to class.
-
-  Returns:
-    A dict mapping a suite's human-readable name to the class that implements
-    it.
-  """
-  mapping = {}
-  for p in pkgutil.iter_modules(
-      [os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests')]):
-    if p.ispkg:
-      continue
-    module_name = 'gpu_tests.' + p.name
-    try:
-      module = importlib.import_module(module_name)
-    except ImportError:
-      logging.warning(
-          'Unable to import module %s. This is likely due to stale .pyc files '
-          'existing on disk.', module_name)
-      continue
-    for name, obj in inspect.getmembers(module):
-      # Look for cases of GpuIntegrationTest that have Name() overridden. The
-      # name check filters out base classes.
-      if (inspect.isclass(obj)
-          and issubclass(obj, gpu_integration_test.GpuIntegrationTest)
-          and obj.Name() != name):
-        mapping[obj.Name()] = obj
-  return mapping
-
-
 def ParseArgs() -> argparse.Namespace:
-  name_mapping = _GenerateTestNameMapping()
+  name_mapping = gpu_integration_test.GenerateTestNameMapping()
   test_suites = list(name_mapping.keys())
   test_suites.sort()
 
