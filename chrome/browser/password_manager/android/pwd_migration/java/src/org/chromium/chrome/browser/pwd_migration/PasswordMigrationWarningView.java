@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.FragmentManager;
@@ -114,6 +115,8 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         if (getContentView().isShown()) {
             setFragment();
         }
+        // Makes sure the sheet is fully expanded.
+        mBottomSheetController.expandSheet();
     }
 
     private void setFragment() {
@@ -153,6 +156,17 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         }
         assert !VersionInfo.isStableBuild();
         return "";
+    }
+
+    private @Px int getDesiredSheetHeightPx() {
+        if (mScreenType == ScreenType.INTRO_SCREEN) {
+            return getDimensionPixelSize(R.dimen.pwd_migration_warning_intro_fragment_height);
+        }
+        return getDimensionPixelSize(R.dimen.pwd_migration_warning_options_fragment_height);
+    }
+
+    private @Px int getDimensionPixelSize(int id) {
+        return mContentView.getContext().getResources().getDimensionPixelSize(id);
     }
 
     @Nullable
@@ -208,6 +222,12 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     }
 
     @Override
+    public float getFullHeightRatio() {
+        return Math.min(getDesiredSheetHeightPx(), mBottomSheetController.getContainerHeight())
+                / (float) mBottomSheetController.getContainerHeight();
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         return HeightMode.DISABLED;
     }
@@ -215,5 +235,10 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     @Override
     public int getPeekHeight() {
         return HeightMode.DISABLED;
+    }
+
+    @Override
+    public boolean hideOnScroll() {
+        return false;
     }
 }
