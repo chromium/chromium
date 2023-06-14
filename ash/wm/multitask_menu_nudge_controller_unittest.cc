@@ -14,7 +14,7 @@
 #include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
@@ -45,7 +45,7 @@ chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
         ->tablet_mode_multitask_menu_controller()
-        ->multitask_cue()
+        ->multitask_cue_controller()
         ->nudge_controller_for_testing();
   }
 
@@ -109,8 +109,8 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
     const auto window_screen_bounds = window->GetBoundsInScreen();
     const int tablet_nudge_y_offset =
         MultitaskMenuNudgeDelegateAsh::kTabletNudgeAdditionalYOffset +
-        TabletModeMultitaskCue::kCueHeight +
-        TabletModeMultitaskCue::kCueYOffset;
+        TabletModeMultitaskCueController::kCueHeight +
+        TabletModeMultitaskCueController::kCueYOffset;
     const gfx::Rect expected_bounds(
         (window_screen_bounds.width() - size.width()) / 2 +
             window_screen_bounds.x(),

@@ -531,7 +531,7 @@ void FrameCaptionButtonContainerView::OnWidgetActivationChanged(
   }
 
   // Tablet nudge is controlled by ash by another class
-  // (`::ash::TabletModeMultitaskCue`).
+  // (`::ash::TabletModeMultitaskCueController`).
   if (TabletState::Get()->InTabletMode()) {
     return;
   }

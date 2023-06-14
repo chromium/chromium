@@ -298,7 +298,7 @@ void MultitaskMenuNudgeController::OnDisplayTabletStateChanged(
       DismissNudge();
       break;
     case display::TabletState::kInTabletMode:
-      // Entering tablet mode will call the `TabletModeMultitaskCue`
+      // Entering tablet mode will call the `TabletModeMultitaskCueController`
       // constructor so no work needed.
       // TODO(b/267648014): Combine cue and nudge logic so both are activated in
       // the same place when switching modes.

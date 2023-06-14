@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -17,20 +17,21 @@
 
 namespace ash {
 
-class TabletModeMultitaskCueTest : public AshTestBase {
+class TabletModeMultitaskCueControllerTest : public AshTestBase {
  public:
-  TabletModeMultitaskCueTest()
+  TabletModeMultitaskCueControllerTest()
       : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
-  TabletModeMultitaskCueTest(const TabletModeMultitaskCueTest&) = delete;
-  TabletModeMultitaskCueTest& operator=(const TabletModeMultitaskCueTest&) =
-      delete;
-  ~TabletModeMultitaskCueTest() override = default;
+  TabletModeMultitaskCueControllerTest(
+      const TabletModeMultitaskCueControllerTest&) = delete;
+  TabletModeMultitaskCueControllerTest& operator=(
+      const TabletModeMultitaskCueControllerTest&) = delete;
+  ~TabletModeMultitaskCueControllerTest() override = default;
 
-  TabletModeMultitaskCue* GetMultitaskCue() {
+  TabletModeMultitaskCueController* GetMultitaskCue() {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
         ->tablet_mode_multitask_menu_controller()
-        ->multitask_cue();
+        ->multitask_cue_controller();
   }
 
   // AshTestBase:
@@ -44,26 +45,27 @@ class TabletModeMultitaskCueTest : public AshTestBase {
 };
 
 // Tests that the cue layer is created properly.
-TEST_F(TabletModeMultitaskCueTest, BasicShowCue) {
+TEST_F(TabletModeMultitaskCueControllerTest, BasicShowCue) {
   auto window = CreateAppWindow();
   gfx::Rect window_bounds = window->bounds();
 
-  auto* multitask_cue = GetMultitaskCue();
-  ASSERT_TRUE(multitask_cue);
+  auto* multitask_cue_controller = GetMultitaskCue();
+  ASSERT_TRUE(multitask_cue_controller);
 
-  ui::Layer* cue_layer = multitask_cue->cue_layer();
+  ui::Layer* cue_layer = multitask_cue_controller->cue_layer();
   ASSERT_TRUE(cue_layer);
 
-  EXPECT_EQ(
-      gfx::Rect((window_bounds.width() - TabletModeMultitaskCue::kCueWidth) / 2,
-                TabletModeMultitaskCue::kCueYOffset,
-                TabletModeMultitaskCue::kCueWidth,
-                TabletModeMultitaskCue::kCueHeight),
-      cue_layer->bounds());
+  EXPECT_EQ(gfx::Rect((window_bounds.width() -
+                       TabletModeMultitaskCueController::kCueWidth) /
+                          2,
+                      TabletModeMultitaskCueController::kCueYOffset,
+                      TabletModeMultitaskCueController::kCueWidth,
+                      TabletModeMultitaskCueController::kCueHeight),
+            cue_layer->bounds());
 }
 
 // Tests that the cue bounds are updated properly after a window is split.
-TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
+TEST_F(TabletModeMultitaskCueControllerTest, SplitCueBounds) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
@@ -72,10 +74,12 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
   split_view_controller->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
 
-  gfx::Rect split_bounds(
-      (window1->bounds().width() - TabletModeMultitaskCue::kCueWidth) / 2,
-      TabletModeMultitaskCue::kCueYOffset, TabletModeMultitaskCue::kCueWidth,
-      TabletModeMultitaskCue::kCueHeight);
+  gfx::Rect split_bounds((window1->bounds().width() -
+                          TabletModeMultitaskCueController::kCueWidth) /
+                             2,
+                         TabletModeMultitaskCueController::kCueYOffset,
+                         TabletModeMultitaskCueController::kCueWidth,
+                         TabletModeMultitaskCueController::kCueHeight);
 
   ui::Layer* cue_layer = GetMultitaskCue()->cue_layer();
   ASSERT_TRUE(cue_layer);
@@ -91,59 +95,59 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
 }
 
 // Tests that the `OneShotTimer` properly dismisses the cue after firing.
-TEST_F(TabletModeMultitaskCueTest, DismissTimerFiring) {
+TEST_F(TabletModeMultitaskCueControllerTest, DismissTimerFiring) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto window = CreateAppWindow();
 
-  auto* multitask_cue = GetMultitaskCue();
-  ui::Layer* cue_layer = multitask_cue->cue_layer();
+  auto* multitask_cue_controller = GetMultitaskCue();
+  ui::Layer* cue_layer = multitask_cue_controller->cue_layer();
   ASSERT_TRUE(cue_layer);
 
   // Wait for fade in to finish.
   ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(cue_layer);
 
-  multitask_cue->FireCueDismissTimerForTesting();
+  multitask_cue_controller->FireCueDismissTimerForTesting();
 
   // Wait for fade out to finish.
   animation_waiter.Wait(cue_layer);
-  EXPECT_FALSE(multitask_cue->cue_layer());
+  EXPECT_FALSE(multitask_cue_controller->cue_layer());
 }
 
 // Tests that the cue dismisses properly during the fade out animation.
-TEST_F(TabletModeMultitaskCueTest, DismissEarly) {
+TEST_F(TabletModeMultitaskCueControllerTest, DismissEarly) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto window = CreateAppWindow();
 
-  auto* multitask_cue = GetMultitaskCue();
-  ui::Layer* cue_layer = multitask_cue->cue_layer();
+  auto* multitask_cue_controller = GetMultitaskCue();
+  ui::Layer* cue_layer = multitask_cue_controller->cue_layer();
   ASSERT_TRUE(cue_layer);
 
   // Wait for fade in to finish.
   ui::LayerAnimationStoppedWaiter().Wait(cue_layer);
 
-  multitask_cue->FireCueDismissTimerForTesting();
-  multitask_cue->DismissCue();
-  EXPECT_FALSE(multitask_cue->cue_layer());
+  multitask_cue_controller->FireCueDismissTimerForTesting();
+  multitask_cue_controller->DismissCue();
+  EXPECT_FALSE(multitask_cue_controller->cue_layer());
 }
 
 // Tests that the cue dismisses properly when the float keyboard accelerator is
 // pressed.
-TEST_F(TabletModeMultitaskCueTest, FloatWindow) {
+TEST_F(TabletModeMultitaskCueControllerTest, FloatWindow) {
   auto window = CreateAppWindow();
 
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
 
-  auto* multitask_cue = GetMultitaskCue();
-  ASSERT_TRUE(multitask_cue);
-  EXPECT_FALSE(multitask_cue->cue_layer());
+  auto* multitask_cue_controller = GetMultitaskCue();
+  ASSERT_TRUE(multitask_cue_controller);
+  EXPECT_FALSE(multitask_cue_controller->cue_layer());
 }
 
-TEST_F(TabletModeMultitaskCueTest, TransientChildFocus) {
+TEST_F(TabletModeMultitaskCueControllerTest, TransientChildFocus) {
   auto window1 = CreateAppWindow();
 
   // Create a second window with a transient child.
@@ -154,24 +158,24 @@ TEST_F(TabletModeMultitaskCueTest, TransientChildFocus) {
   wm::ActivateWindow(transient_child2.get());
 
   // Creating an app window shows the cue. Hide it before testing.
-  auto* multitask_cue = GetMultitaskCue();
-  ASSERT_TRUE(multitask_cue->cue_layer());
-  multitask_cue->DismissCue();
+  auto* multitask_cue_controller = GetMultitaskCue();
+  ASSERT_TRUE(multitask_cue_controller->cue_layer());
+  multitask_cue_controller->DismissCue();
 
   // Activate `window2`. The cue should not show up, since the window with
   // previous activation was a transient child.
   wm::ActivateWindow(window2.get());
-  EXPECT_FALSE(multitask_cue->cue_layer());
+  EXPECT_FALSE(multitask_cue_controller->cue_layer());
 
   // Reactivate the transient. The cue should not show up, since the transient
   // window is a popup, and cannot change window states.
   wm::ActivateWindow(transient_child2.get());
-  EXPECT_FALSE(multitask_cue->cue_layer());
+  EXPECT_FALSE(multitask_cue_controller->cue_layer());
 
   // Activate `window1`. The cue should show up, since the previous activated
   // window was not associated with it.
   wm::ActivateWindow(window1.get());
-  EXPECT_TRUE(multitask_cue->cue_layer());
+  EXPECT_TRUE(multitask_cue_controller->cue_layer());
 }
 
 }  // namespace ash

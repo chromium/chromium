@@ -12,7 +12,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
@@ -618,30 +618,33 @@ TEST_F(TabletModeMultitaskMenuTest, HiddenButtons) {
 TEST_F(TabletModeMultitaskMenuTest, CueTransformOnShowMenu) {
   auto window = CreateAppWindow();
 
-  auto* multitask_cue = GetMultitaskMenuController()->multitask_cue();
-  ASSERT_TRUE(multitask_cue);
-  EXPECT_TRUE(multitask_cue->cue_layer());
+  auto* multitask_cue_controller =
+      GetMultitaskMenuController()->multitask_cue_controller();
+  ASSERT_TRUE(multitask_cue_controller);
+  EXPECT_TRUE(multitask_cue_controller->cue_layer());
 
   // Cue should still be showing when the menu is activated.
   ShowMultitaskMenu(*window);
-  ASSERT_TRUE(multitask_cue);
-  ui::Layer* cue_layer = multitask_cue->cue_layer();
+  ASSERT_TRUE(multitask_cue_controller);
+  ui::Layer* cue_layer = multitask_cue_controller->cue_layer();
   EXPECT_TRUE(cue_layer);
 
   // Verify cue is transformed to the right position.
   const gfx::Rect expected_bounds(
-      (window->bounds().width() - TabletModeMultitaskCue::kCueWidth) / 2,
+      (window->bounds().width() - TabletModeMultitaskCueController::kCueWidth) /
+          2,
       GetMultitaskMenuView(GetMultitaskMenu())->bounds().bottom() +
-          kVerticalPosition + TabletModeMultitaskCue::kCueYOffset,
-      TabletModeMultitaskCue::kCueWidth, TabletModeMultitaskCue::kCueHeight);
+          kVerticalPosition + TabletModeMultitaskCueController::kCueYOffset,
+      TabletModeMultitaskCueController::kCueWidth,
+      TabletModeMultitaskCueController::kCueHeight);
   EXPECT_EQ(expected_bounds, cue_layer->GetTargetTransform().MapRect(
                                  cue_layer->GetTargetBounds()));
 
   // Cue should still dismiss via timer after menu opened.
-  multitask_cue->FireCueDismissTimerForTesting();
+  multitask_cue_controller->FireCueDismissTimerForTesting();
 
-  ASSERT_TRUE(multitask_cue);
-  EXPECT_FALSE(multitask_cue->cue_layer());
+  ASSERT_TRUE(multitask_cue_controller);
+  EXPECT_FALSE(multitask_cue_controller->cue_layer());
 }
 
 // Tests that the cue appears on the correct window when the multitask menu is
@@ -659,17 +662,19 @@ TEST_F(TabletModeMultitaskMenuTest, CueCorrectWindowInSplitView) {
 
   // Show the menu and cue on the first window.
   ShowMultitaskMenu(*window1);
-  auto* multitask_cue = GetMultitaskMenuController()->multitask_cue();
-  ASSERT_TRUE(multitask_cue);
-  EXPECT_TRUE(multitask_cue->cue_layer());
-  EXPECT_EQ(window1.get(), multitask_cue->window_);
+  auto* multitask_cue_controller =
+      GetMultitaskMenuController()->multitask_cue_controller();
+  ASSERT_TRUE(multitask_cue_controller);
+  EXPECT_TRUE(multitask_cue_controller->cue_layer());
+  EXPECT_EQ(window1.get(), multitask_cue_controller->window_);
 
   // Show the menu and cue on the second window.
   ShowMultitaskMenu(*window2);
-  multitask_cue = GetMultitaskMenuController()->multitask_cue();
-  ASSERT_TRUE(multitask_cue);
-  EXPECT_TRUE(multitask_cue->cue_layer());
-  EXPECT_EQ(window2.get(), multitask_cue->window_);
+  multitask_cue_controller =
+      GetMultitaskMenuController()->multitask_cue_controller();
+  ASSERT_TRUE(multitask_cue_controller);
+  EXPECT_TRUE(multitask_cue_controller->cue_layer());
+  EXPECT_EQ(window2.get(), multitask_cue_controller->window_);
 }
 
 // Tests that the bottom window can open the multitask menu in portrait mode. In

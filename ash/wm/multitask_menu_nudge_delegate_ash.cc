@@ -7,7 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -35,8 +35,9 @@ MultitaskMenuNudgeDelegateAsh::MultitaskMenuNudgeDelegateAsh() = default;
 MultitaskMenuNudgeDelegateAsh::~MultitaskMenuNudgeDelegateAsh() = default;
 
 int MultitaskMenuNudgeDelegateAsh::GetTabletNudgeYOffset() const {
-  return kTabletNudgeAdditionalYOffset + TabletModeMultitaskCue::kCueHeight +
-         TabletModeMultitaskCue::kCueYOffset;
+  return kTabletNudgeAdditionalYOffset +
+         TabletModeMultitaskCueController::kCueHeight +
+         TabletModeMultitaskCueController::kCueYOffset;
 }
 
 void MultitaskMenuNudgeDelegateAsh::GetNudgePreferences(

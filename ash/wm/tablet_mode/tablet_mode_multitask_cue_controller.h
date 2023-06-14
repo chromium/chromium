@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_CUE_H_
-#define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_CUE_H_
+#ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_CUE_CONTROLLER_H_
+#define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_CUE_CONTROLLER_H_
 
 #include <memory>
 
@@ -22,23 +22,24 @@ namespace ash {
 
 // Creates a cue (draggable bar) at the top center of an app window when it is
 // activated in tablet mode. Only one cue exists at a time.
-// TODO(b/279220838): Rename to TabletModeMultitaskCueController for better
-// clarity.
-class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
-                                          wm::ActivationChangeObserver,
-                                          WindowStateObserver {
+class ASH_EXPORT TabletModeMultitaskCueController
+    : aura::WindowObserver,
+      wm::ActivationChangeObserver,
+      WindowStateObserver {
  public:
   // Cue layout values.
   static constexpr int kCueYOffset = 6;
   static constexpr int kCueWidth = 48;
   static constexpr int kCueHeight = 4;
 
-  TabletModeMultitaskCue();
+  TabletModeMultitaskCueController();
 
-  TabletModeMultitaskCue(const TabletModeMultitaskCue&) = delete;
-  TabletModeMultitaskCue& operator=(const TabletModeMultitaskCue&) = delete;
+  TabletModeMultitaskCueController(const TabletModeMultitaskCueController&) =
+      delete;
+  TabletModeMultitaskCueController& operator=(
+      const TabletModeMultitaskCueController&) = delete;
 
-  ~TabletModeMultitaskCue() override;
+  ~TabletModeMultitaskCueController() override;
 
   ui::Layer* cue_layer() { return cue_layer_.get(); }
 
@@ -116,4 +117,4 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
 
 }  // namespace ash
 
-#endif  // ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_CUE_H_
+#endif  // ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_CUE_CONTROLLER_H_

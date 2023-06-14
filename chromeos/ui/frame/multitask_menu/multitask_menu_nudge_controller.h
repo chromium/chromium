@@ -135,7 +135,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   void PerformPulseAnimation(int pulse_count);
 
   // Dismisses the clamshell nudge at the end of the timer if it is still
-  // visible. Tablet nudge is handled by the `TabletModeMultitaskCue` timer.
+  // visible. Tablet nudge is handled by the `TabletModeMultitaskCueController`
+  // timer.
   base::OneShotTimer clamshell_nudge_dismiss_timer_;
 
   views::UniqueWidgetPtr nudge_widget_;

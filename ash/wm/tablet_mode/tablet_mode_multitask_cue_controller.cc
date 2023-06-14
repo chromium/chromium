@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/shell.h"
@@ -33,7 +33,7 @@ constexpr SkColor kCueColor = SK_ColorGRAY;
 
 }  // namespace
 
-TabletModeMultitaskCue::TabletModeMultitaskCue() {
+TabletModeMultitaskCueController::TabletModeMultitaskCueController() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   DCHECK(Shell::Get()->IsInTabletMode());
   Shell::Get()->activation_client()->AddObserver(this);
@@ -44,12 +44,13 @@ TabletModeMultitaskCue::TabletModeMultitaskCue() {
   }
 }
 
-TabletModeMultitaskCue::~TabletModeMultitaskCue() {
+TabletModeMultitaskCueController::~TabletModeMultitaskCueController() {
   DismissCue();
   Shell::Get()->activation_client()->RemoveObserver(this);
 }
 
-void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
+void TabletModeMultitaskCueController::MaybeShowCue(
+    aura::Window* active_window) {
   DCHECK(active_window);
 
   if (!CanShowCue(active_window)) {
@@ -94,13 +95,13 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
       .SetOpacity(cue_layer_.get(), 1.0f, gfx::Tween::LINEAR);
 
   cue_dismiss_timer_.Start(FROM_HERE, kCueDismissTimeout, this,
-                           &TabletModeMultitaskCue::OnTimerFinished);
+                           &TabletModeMultitaskCueController::OnTimerFinished);
 
   // Show the education nudge a maximum of three times with 24h in between.
   nudge_controller_.MaybeShowNudge(window_);
 }
 
-bool TabletModeMultitaskCue::CanShowCue(aura::Window* window) const {
+bool TabletModeMultitaskCueController::CanShowCue(aura::Window* window) const {
   // Only show or dismiss the cue when activating app windows.
   if (static_cast<AppType>(window->GetProperty(aura::client::kAppType)) ==
       AppType::NON_APP) {
@@ -115,7 +116,7 @@ bool TabletModeMultitaskCue::CanShowCue(aura::Window* window) const {
   return true;
 }
 
-void TabletModeMultitaskCue::DismissCue() {
+void TabletModeMultitaskCueController::DismissCue() {
   cue_dismiss_timer_.Stop();
   window_observation_.Reset();
 
@@ -128,7 +129,7 @@ void TabletModeMultitaskCue::DismissCue() {
   nudge_controller_.DismissNudge();
 }
 
-void TabletModeMultitaskCue::ResetPosition() {
+void TabletModeMultitaskCueController::ResetPosition() {
   if (!cue_layer_) {
     return;
   }
@@ -140,18 +141,20 @@ void TabletModeMultitaskCue::ResetPosition() {
                     gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-void TabletModeMultitaskCue::OnMenuOpened(aura::Window* active_window) {
+void TabletModeMultitaskCueController::OnMenuOpened(
+    aura::Window* active_window) {
   if (cue_layer_ && window_ != active_window) {
     MaybeShowCue(active_window);
   }
   nudge_controller_.OnMenuOpened(/*tablet_mode=*/true);
 }
 
-void TabletModeMultitaskCue::OnWindowDestroying(aura::Window* window) {
+void TabletModeMultitaskCueController::OnWindowDestroying(
+    aura::Window* window) {
   DismissCue();
 }
 
-void TabletModeMultitaskCue::OnWindowBoundsChanged(
+void TabletModeMultitaskCueController::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
@@ -159,9 +162,10 @@ void TabletModeMultitaskCue::OnWindowBoundsChanged(
   UpdateCueBounds();
 }
 
-void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
-                                               aura::Window* gained_active,
-                                               aura::Window* lost_active) {
+void TabletModeMultitaskCueController::OnWindowActivated(
+    ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
   if (!gained_active) {
     return;
   }
@@ -201,7 +205,7 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
   MaybeShowCue(gained_active);
 }
 
-void TabletModeMultitaskCue::OnPostWindowStateTypeChange(
+void TabletModeMultitaskCueController::OnPostWindowStateTypeChange(
     WindowState* window_state,
     chromeos::WindowStateType old_type) {
   if (!TabletModeMultitaskMenuController::CanShowMenu(window_state->window())) {
@@ -209,7 +213,7 @@ void TabletModeMultitaskCue::OnPostWindowStateTypeChange(
   }
 }
 
-void TabletModeMultitaskCue::UpdateCueBounds() {
+void TabletModeMultitaskCueController::UpdateCueBounds() {
   // Needed for some edge cases where the cue is dismissed while it is being
   // updated.
   if (!window_) {
@@ -220,7 +224,7 @@ void TabletModeMultitaskCue::UpdateCueBounds() {
                                   kCueYOffset, kCueWidth, kCueHeight));
 }
 
-void TabletModeMultitaskCue::OnTimerFinished() {
+void TabletModeMultitaskCueController::OnTimerFinished() {
   // If no cue or the animation is already fading out, return.
   if (!cue_layer_ || cue_layer_->GetAnimator()->GetTargetOpacity() == 0.0f) {
     return;
@@ -230,7 +234,7 @@ void TabletModeMultitaskCue::OnTimerFinished() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(&TabletModeMultitaskCue::DismissCue,
+      .OnEnded(base::BindOnce(&TabletModeMultitaskCueController::DismissCue,
                               base::Unretained(this)))
       .Once()
       .SetDuration(kFadeDuration)

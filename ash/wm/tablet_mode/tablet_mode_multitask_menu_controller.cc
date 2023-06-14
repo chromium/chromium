@@ -7,7 +7,7 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
@@ -49,14 +49,15 @@ aura::Window* GetTargetWindow(aura::Window* target) {
 }  // namespace
 
 TabletModeMultitaskMenuController::TabletModeMultitaskMenuController()
-    : multitask_cue_(std::make_unique<TabletModeMultitaskCue>()) {
+    : multitask_cue_controller_(
+          std::make_unique<TabletModeMultitaskCueController>()) {
   Shell::Get()->AddPreTargetHandler(this);
 }
 
 TabletModeMultitaskMenuController::~TabletModeMultitaskMenuController() {
   // The cue needs to be destroyed first so that it doesn't do any work when
   // window activation changes as a result of destroying `this`.
-  multitask_cue_.reset();
+  multitask_cue_controller_.reset();
 
   Shell::Get()->RemovePreTargetHandler(this);
 }
@@ -76,7 +77,7 @@ void TabletModeMultitaskMenuController::ShowMultitaskMenu(
 }
 
 void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
-  multitask_cue_->ResetPosition();
+  multitask_cue_controller_->ResetPosition();
   multitask_menu_.reset();
 }
 
@@ -107,7 +108,7 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
         // We may need to recreate `multitask_menu_` on the new target window.
         multitask_menu_ =
             std::make_unique<TabletModeMultitaskMenu>(this, window);
-        multitask_cue_->OnMenuOpened(window);
+        multitask_cue_controller_->OnMenuOpened(window);
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
         is_drag_active_ = true;
@@ -165,7 +166,7 @@ void TabletModeMultitaskMenuController::MaybeCreateMultitaskMenu(
     aura::Window* window) {
   if (!multitask_menu_) {
     multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(this, window);
-    multitask_cue_->OnMenuOpened(window);
+    multitask_cue_controller_->OnMenuOpened(window);
   }
 }
 

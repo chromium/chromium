@@ -12,8 +12,8 @@
 
 namespace ash {
 
+class TabletModeMultitaskCueController;
 class TabletModeMultitaskMenu;
-class TabletModeMultitaskCue;
 
 // TabletModeMultitaskMenuController handles gestures in tablet mode that may
 // show or hide the multitask menu.
@@ -29,7 +29,9 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   static bool CanShowMenu(aura::Window* window);
 
   TabletModeMultitaskMenu* multitask_menu() { return multitask_menu_.get(); }
-  TabletModeMultitaskCue* multitask_cue() { return multitask_cue_.get(); }
+  TabletModeMultitaskCueController* multitask_cue_controller() {
+    return multitask_cue_controller_.get();
+  }
 
   // Creates and shows the menu.
   void ShowMultitaskMenu(aura::Window* window);
@@ -49,7 +51,7 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   bool is_drag_active_ = false;
 
   // Creates a draggable bar when app windows are activated.
-  std::unique_ptr<TabletModeMultitaskCue> multitask_cue_;
+  std::unique_ptr<TabletModeMultitaskCueController> multitask_cue_controller_;
 
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
 };
