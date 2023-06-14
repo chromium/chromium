@@ -9,6 +9,7 @@ import {castExists} from './assert_extras.js';
 import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import {Constructor} from './common/types.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
+import {Section} from './mojom-webui/routes.mojom-webui.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
 import {isAdvancedRoute, Route, Router, routes} from './router.js';
@@ -155,7 +156,7 @@ export const MainPageMixin = dedupingMixin(
         private async enterSubpage_(route: Route) {
           if (isRevampWayfindingEnabled()) {
             // Make the parent page visible to ensure the subpage is visible
-            this.showPage(route);
+            await this.showPage(route);
           }
           this.lastScrollTop_ = this.scroller_.scrollTop;
           this.scroller_.scrollTop = 0;
@@ -425,7 +426,10 @@ export const MainPageMixin = dedupingMixin(
         /**
          * Helper function to get a section from the local DOM.
          */
-        private querySection(section: string): HTMLElement|null {
+        querySection(section: Section|null): HTMLElement|null {
+          if (section === null) {
+            return null;
+          }
           return this.shadowRoot!.querySelector(
               `os-settings-section[section="${section}"]`);
         }

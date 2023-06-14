@@ -11,12 +11,15 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, Router} from 'chrome://os-settings/os_settings.js';
+import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+const {Section} = routesMojom;
+type PageName = keyof typeof Section;
 
 suite('<os-settings-ui> page visibility', () => {
   let ui: OsSettingsUiElement;
@@ -52,9 +55,9 @@ suite('<os-settings-ui> page visibility', () => {
     flush();
   }
 
-  function queryMenuItem(pageName: string): HTMLElement|null {
+  function queryMenuItem(pageName: PageName): HTMLElement|null {
     return menu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[data-page-name='${pageName}']`);
+        `a.item[data-section="${Section[pageName]}"]`);
   }
 
   /**
@@ -63,7 +66,7 @@ suite('<os-settings-ui> page visibility', () => {
    * - Active page does not have style "display: none"
    * - Inactive pages have style "display: none"
    */
-  function assertOnlyActivePageIsVisible(pageName: string): void {
+  function assertOnlyActivePageIsVisible(pageName: PageName): void {
     const pages =
         mainPageContainer.shadowRoot!.querySelectorAll('os-settings-section');
     let numActive = 0;
@@ -73,7 +76,7 @@ suite('<os-settings-ui> page visibility', () => {
       if (page.hasAttribute('active')) {
         numActive++;
         assertNotEquals('none', displayStyle);
-        assertEquals(pageName, page.section);
+        assertEquals(Section[pageName], page.section);
       } else {
         assertEquals('none', displayStyle);
       }
@@ -106,27 +109,27 @@ suite('<os-settings-ui> page visibility', () => {
 
   test('Network page should be the default visible page', () => {
     Router.getInstance().navigateTo(testRoutes.BASIC);
-    assertOnlyActivePageIsVisible('internet');
+    assertOnlyActivePageIsVisible('kNetwork');
   });
 
-  const pageNames = [
-    'apps',
-    'bluetooth',
-    'crostini',
-    'dateTime',
-    'device',
-    'files',
-    'internet',
-    'kerberos',
-    'multidevice',
-    'osAccessibility',
-    'osLanguages',
-    'osPeople',
-    'osPrinting',
-    'osPrivacy',
-    'osReset',
-    'osSearch',
-    'personalization',
+  const pageNames: PageName[] = [
+    'kAccessibility',
+    'kApps',
+    'kBluetooth',
+    'kCrostini',
+    'kDateAndTime',
+    'kDevice',
+    'kFiles',
+    'kKerberos',
+    'kMultiDevice',
+    'kLanguagesAndInput',
+    'kNetwork',
+    'kPeople',
+    'kPersonalization',
+    'kPrinting',
+    'kPrivacyAndSecurity',
+    'kReset',
+    'kSearchAndAssistant',
   ];
   for (const pageName of pageNames) {
     test(

@@ -9,7 +9,7 @@
  *
  * Example:
  *
- *    <os-settings-animated-pages section="privacy">
+ *    <os-settings-animated-pages section="[[Section.kNetwork]]">
  *      <!-- Insert your section controls here -->
  *    </os-settings-animated-pages>
  */
@@ -23,6 +23,7 @@ import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resour
 
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {FocusConfig} from '../focus_config.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
@@ -51,12 +52,16 @@ class OsSettingsAnimatedPagesElement extends
     return {
       /**
        * Routes with this section activate this element. For instance, if this
-       * property is 'search', and currentRoute.section is also set to 'search',
-       * this element will display the subpage in currentRoute.subpage.
+       * property is Section.kNetwork and currentRoute.section is also set to
+       * Section.kNetwork, this element will display the corresponding page or
+       * subpage.
        *
-       * The section name must match the name specified in route.js.
+       * Must match one of the Section enum entries from routes.mojom.
        */
-      section: String,
+      section: {
+        type: Number,
+        reflectToAttribute: true,
+      },
 
       /**
        * A Map specifying which element should be focused when exiting a
@@ -68,7 +73,7 @@ class OsSettingsAnimatedPagesElement extends
     };
   }
 
-  section: string;
+  section: Section;
   focusConfig: FocusConfig|null = null;
   private previousRoute_: Route|null;
   private lightDomReady_: boolean = false;
@@ -87,6 +92,12 @@ class OsSettingsAnimatedPagesElement extends
      * The last "previous" route reported by the router.
      */
     this.previousRoute_ = null;
+  }
+
+  override ready() {
+    super.ready();
+
+    assert(this.section in Section, `Invalid section: ${this.section}.`);
   }
 
   private onIronSelect_(e: Event) {

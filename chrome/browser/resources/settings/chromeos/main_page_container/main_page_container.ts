@@ -45,6 +45,7 @@ import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/po
 import {castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {MainPageMixin} from '../main_page_mixin.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OsPageAvailability} from '../os_page_availability.js';
@@ -70,6 +71,12 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
       prefs: {
         type: Object,
         notify: true,
+      },
+
+      /** Mirror Section enum to be used in Polymer data bindings. */
+      Section: {
+        type: Object,
+        value: Section,
       },
 
       androidAppsInfo: Object,
@@ -213,8 +220,9 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   }
 
   /** Stamp page in the DOM depending on page availability */
-  private shouldStampPage_(available?: boolean): boolean {
-    return !!available;
+  private shouldStampPage_(
+      pageAvailability: OsPageAvailability, pageName: Section): boolean {
+    return !!pageAvailability[pageName];
   }
 
   private computeShowSecondaryUserBanner_(): boolean {

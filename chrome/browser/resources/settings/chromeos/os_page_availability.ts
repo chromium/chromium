@@ -16,13 +16,16 @@
  */
 
 import {isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
-import {OsPageAvailability} from './mojom-webui/routes.mojom-webui.js';
-
-export {OsPageAvailability};
+import {Section} from './mojom-webui/routes.mojom-webui.js';
 
 /**
- * Used to create the pageAvailability object.
- *
+ * Defines which top-level pages/sections are available to the user. Page keys
+ * should must derive from the Section enum in routes.mojom.
+ */
+export type OsPageAvailability = Record<Section, boolean>;
+
+/**
+ * Used to create the pageAvailability object depending on load time data.
  * Can be used to create the pageAvailability object with expected values after
  * overriding load time data within tests.
  */
@@ -30,22 +33,23 @@ export function createPageAvailability(): OsPageAvailability {
   const isGuestMode = isGuest();
 
   return {
-    apps: true,
-    bluetooth: true,
-    crostini: true,
-    dateTime: true,
-    device: true,
-    files: !isGuestMode,
-    internet: true,
-    kerberos: isKerberosEnabled(),
-    multidevice: !isGuestMode,
-    osAccessibility: true,
-    osLanguages: true,
-    osPeople: !isGuestMode,
-    osPrinting: true,
-    osPrivacy: true,
-    osReset: isPowerwashAllowed(),
-    osSearch: true,
-    personalization: !isGuestMode,
+    [Section.kAboutChromeOs]: true,
+    [Section.kAccessibility]: true,
+    [Section.kApps]: true,
+    [Section.kBluetooth]: true,
+    [Section.kCrostini]: true,
+    [Section.kDateAndTime]: true,
+    [Section.kDevice]: true,
+    [Section.kFiles]: !isGuestMode,
+    [Section.kKerberos]: isKerberosEnabled(),
+    [Section.kLanguagesAndInput]: true,
+    [Section.kMultiDevice]: !isGuestMode,
+    [Section.kNetwork]: true,
+    [Section.kPeople]: !isGuestMode,
+    [Section.kPersonalization]: !isGuestMode,
+    [Section.kPrinting]: true,
+    [Section.kPrivacyAndSecurity]: true,
+    [Section.kReset]: isPowerwashAllowed(),
+    [Section.kSearchAndAssistant]: true,
   };
 }

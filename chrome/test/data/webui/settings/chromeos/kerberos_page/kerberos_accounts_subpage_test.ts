@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {KerberosAccountsBrowserProxyImpl, SettingsKerberosAccountsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {Route, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {createSectionForTesting, createSubpageForTesting, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -30,19 +30,20 @@ suite('<settings-kerberos-accounts-subpage>', () => {
     REMOVE_ACCOUNT: 2,
   };
 
-  setup(() => {
-    routes.BASIC = new Route('/'),
-    routes.KERBEROS = routes.BASIC.createSection('/kerberos', 'kerberos');
-    routes.KERBEROS_ACCOUNTS_V2 =
-        routes.KERBEROS.createChild('/kerberos/kerberosAccounts');
+  suiteSetup(() => {
+    routes.KERBEROS = createSectionForTesting(
+        routes.BASIC, routesMojom.KERBEROS_SECTION_PATH,
+        routesMojom.Section.kKerberos);
+    routes.KERBEROS_ACCOUNTS_V2 = createSubpageForTesting(
+        routes.KERBEROS, routesMojom.KERBEROS_ACCOUNTS_V2_SUBPAGE_PATH,
+        routesMojom.Subpage.kKerberosAccountsV2);
 
     Router.resetInstanceForTesting(new Router(routes));
+  });
 
+  setup(() => {
     browserProxy = new TestKerberosAccountsBrowserProxy();
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-    // Setting the default value of the relevant load time data.
-    loadTimeData.overrideValues({kerberosAddAccountsAllowed: true});
 
     createDialog();
   });

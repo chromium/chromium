@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, routesMojom, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+const {Section} = routesMojom;
 
 suite('<os-settings-ui> about page', () => {
   let ui;
@@ -55,8 +57,9 @@ suite('<os-settings-ui> about page', () => {
         const aboutPage =
             settingsMain.shadowRoot.querySelector('os-settings-about-page');
         await waitBeforeNextRender(aboutPage);
+
         const aboutSection = aboutPage.shadowRoot.querySelector(
-            'os-settings-section[section="about"]');
+            `os-settings-section[section="${Section.kAboutChromeOs}"]`);
         assertEquals(aboutSection, aboutPage.shadowRoot.activeElement);
       });
 

@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {KerberosAccountsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {Route, Router, routes, SettingsKerberosPageElement} from 'chrome://os-settings/os_settings.js';
+import {createSectionForTesting, createSubpageForTesting, Router, routes, routesMojom, SettingsKerberosPageElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -16,14 +16,18 @@ suite('<settings-kerberos-page>', () => {
   let kerberosPage: SettingsKerberosPageElement;
   let browserProxy: TestKerberosAccountsBrowserProxy;
 
-  setup(() => {
-    routes.BASIC = new Route('/'),
-    routes.KERBEROS = routes.BASIC.createSection('/kerberos', 'kerberos');
-    routes.KERBEROS_ACCOUNTS_V2 =
-        routes.KERBEROS.createChild('/kerberos/kerberosAccounts');
+  suiteSetup(() => {
+    routes.KERBEROS = createSectionForTesting(
+        routes.BASIC, routesMojom.KERBEROS_SECTION_PATH,
+        routesMojom.Section.kKerberos);
+    routes.KERBEROS_ACCOUNTS_V2 = createSubpageForTesting(
+        routes.KERBEROS, routesMojom.KERBEROS_ACCOUNTS_V2_SUBPAGE_PATH,
+        routesMojom.Subpage.kKerberosAccountsV2);
 
     Router.resetInstanceForTesting(new Router(routes));
+  });
 
+  setup(() => {
     browserProxy = new TestKerberosAccountsBrowserProxy();
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
   });

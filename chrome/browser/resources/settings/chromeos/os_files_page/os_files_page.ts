@@ -21,6 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
@@ -54,6 +55,12 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
 
   static get properties() {
     return {
+      section_: {
+        type: Number,
+        value: Section.kFiles,
+        readOnly: true,
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -117,6 +124,7 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   private isOneDriveConnected_: boolean;
   private oneDriveEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
+  private section_: Section;
 
   override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.

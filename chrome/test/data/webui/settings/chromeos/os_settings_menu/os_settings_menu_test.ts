@@ -4,40 +4,16 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, OsSettingsMenuElement, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** @fileoverview Runs tests for the OS settings menu. */
-
-function setupRouter() {
-  const basicRoute = new Route('/');
-  const bluetoothRoute = basicRoute.createSection('/bluetooth', 'bluetooth');
-  const advancedRoute = new Route('/advanced');
-  const resetRoute = advancedRoute.createSection('/osReset', 'osReset');
-
-  const testRoutes = {
-    BASIC: basicRoute,
-    ABOUT: new Route('/about'),
-    ADVANCED: advancedRoute,
-    BLUETOOTH: bluetoothRoute,
-    OS_RESET: resetRoute,
-  };
-
-  Router.resetInstanceForTesting(new Router(testRoutes as OsSettingsRoutes));
-
-  routes.OS_RESET = testRoutes.OS_RESET;
-  routes.BLUETOOTH = testRoutes.BLUETOOTH;
-  routes.ADVANCED = testRoutes.ADVANCED;
-  routes.BASIC = testRoutes.BASIC;
-}
-
 suite('<os-settings-menu>', () => {
   let settingsMenu: OsSettingsMenuElement;
 
   setup(() => {
-    setupRouter();
     settingsMenu = document.createElement('os-settings-menu');
     settingsMenu.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(settingsMenu);
@@ -112,7 +88,6 @@ suite('<os-settings-menu> reset', () => {
   let settingsMenu: OsSettingsMenuElement;
 
   setup(() => {
-    setupRouter();
     Router.getInstance().navigateTo(routes.OS_RESET);
     settingsMenu = document.createElement('os-settings-menu');
     settingsMenu.pageAvailability = createPageAvailabilityForTesting();
@@ -159,6 +134,9 @@ suite('<os-settings-menu> reset', () => {
 suite('<os-settings-menu> page availability', () => {
   let settingsMenu: OsSettingsMenuElement;
 
+  const {Section} = routesMojom;
+  type PageName = keyof typeof Section;
+
   setup(() => {
     settingsMenu = document.createElement('os-settings-menu');
     settingsMenu.pageAvailability = createPageAvailabilityForTesting();
@@ -170,52 +148,52 @@ suite('<os-settings-menu> page availability', () => {
     settingsMenu.remove();
   });
 
-  function queryMenuItemByPageName(pageName: string): HTMLElement|null {
+  function queryMenuItem(pageName: PageName): HTMLElement|null {
     return settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[data-page-name='${pageName}']`);
+        `a.item[data-section="${Section[pageName]}"]`);
   }
 
-  const pages = [
+  const pageNames: PageName[] = [
     // Basic pages
-    'internet',
-    'bluetooth',
-    'multidevice',
-    'kerberos',
-    'osPeople',
-    'device',
-    'personalization',
-    'osSearch',
-    'osPrivacy',
-    'apps',
-    'osAccessibility',
+    'kNetwork',
+    'kBluetooth',
+    'kMultiDevice',
+    'kKerberos',
+    'kPeople',
+    'kDevice',
+    'kPersonalization',
+    'kSearchAndAssistant',
+    'kPrivacyAndSecurity',
+    'kApps',
+    'kAccessibility',
     // Advanced section pages
-    'dateTime',
-    'osLanguages',
-    'files',
-    'osPrinting',
-    'crostini',
-    'osReset',
+    'kDateAndTime',
+    'kLanguagesAndInput',
+    'kFiles',
+    'kPrinting',
+    'kCrostini',
+    'kReset',
   ];
-  for (const pageName of pages) {
+  for (const pageName of pageNames) {
     test(`${pageName} menu item is controlled by pageAvailability`, () => {
       // Make page available
       settingsMenu.pageAvailability = {
         ...settingsMenu.pageAvailability,
-        [pageName]: true,
+        [Section[pageName]]: true,
       };
       flush();
 
-      let menuItem = queryMenuItemByPageName(pageName);
+      let menuItem = queryMenuItem(pageName);
       assertTrue(!!menuItem, `Menu item for ${pageName} should be stamped.`);
 
       // Make page unavailable
       settingsMenu.pageAvailability = {
         ...settingsMenu.pageAvailability,
-        [pageName]: false,
+        [Section[pageName]]: false,
       };
       flush();
 
-      menuItem = queryMenuItemByPageName(pageName);
+      menuItem = queryMenuItem(pageName);
       assertNull(menuItem, `Menu item for ${pageName} should not be stamped.`);
     });
   }

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -13,6 +13,8 @@ import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bl
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+const {Section} = routesMojom;
 
 suite('<main-page-container>', function() {
   /** @type {?MainPageContainerElement} */
@@ -72,73 +74,73 @@ suite('<main-page-container>', function() {
     [
         // Basic pages
         {
-          pageName: 'internet',
+          pageName: 'kNetwork',
           elementName: 'settings-internet-page',
         },
         {
-          pageName: 'bluetooth',
+          pageName: 'kBluetooth',
           elementName: 'os-settings-bluetooth-page',
         },
         {
-          pageName: 'multidevice',
+          pageName: 'kMultiDevice',
           elementName: 'settings-multidevice-page',
         },
         {
-          pageName: 'kerberos',
+          pageName: 'kKerberos',
           elementName: 'settings-kerberos-page',
         },
         {
-          pageName: 'osPeople',
+          pageName: 'kPeople',
           elementName: 'os-settings-people-page',
         },
         {
-          pageName: 'device',
+          pageName: 'kDevice',
           elementName: 'settings-device-page',
         },
         {
-          pageName: 'personalization',
+          pageName: 'kPersonalization',
           elementName: 'settings-personalization-page',
         },
         {
-          pageName: 'osSearch',
+          pageName: 'kSearchAndAssistant',
           elementName: 'os-settings-search-page',
         },
         {
-          pageName: 'osPrivacy',
+          pageName: 'kPrivacyAndSecurity',
           elementName: 'os-settings-privacy-page',
         },
         {
-          pageName: 'apps',
+          pageName: 'kApps',
           elementName: 'os-settings-apps-page',
         },
         {
-          pageName: 'osAccessibility',
+          pageName: 'kAccessibility',
           elementName: 'os-settings-a11y-page',
         },
 
         // Advanced section pages
         {
-          pageName: 'dateTime',
+          pageName: 'kDateAndTime',
           elementName: 'settings-date-time-page',
         },
         {
-          pageName: 'osLanguages',
+          pageName: 'kLanguagesAndInput',
           elementName: 'os-settings-languages-section',
         },
         {
-          pageName: 'files',
+          pageName: 'kFiles',
           elementName: 'os-settings-files-page',
         },
         {
-          pageName: 'osPrinting',
+          pageName: 'kPrinting',
           elementName: 'os-settings-printing-page',
         },
         {
-          pageName: 'crostini',
+          pageName: 'kCrostini',
           elementName: 'settings-crostini-page',
         },
         {
-          pageName: 'osReset',
+          pageName: 'kReset',
           elementName: 'os-settings-reset-page',
         },
     ].forEach(({pageName, elementName}) => {
@@ -146,7 +148,7 @@ suite('<main-page-container>', function() {
         // Make page available
         mainPageContainer.pageAvailability = {
           ...mainPageContainer.pageAvailability,
-          [pageName]: true,
+          [Section[pageName]]: true,
         };
         flush();
 
@@ -157,7 +159,7 @@ suite('<main-page-container>', function() {
         // Make page unavailable
         mainPageContainer.pageAvailability = {
           ...mainPageContainer.pageAvailability,
-          [pageName]: false,
+          [Section[pageName]]: false,
         };
         flush();
 
@@ -194,13 +196,15 @@ suite('<main-page-container>', function() {
       });
 
       suite('Route navigations', () => {
+        const {Section} = routesMojom;
+
         /**
          * Asserts the following:
          * - Only one page is marked active
          * - Active page does not have style "display: none"
          * - Inactive pages have style "display: none"
          */
-        function assertOnlyActivePageIsVisible(pageName) {
+        function assertOnlyActivePageIsVisible(section) {
           const pages = mainPageContainer.shadowRoot.querySelectorAll(
               'os-settings-section');
           let numActive = 0;
@@ -210,7 +214,7 @@ suite('<main-page-container>', function() {
             if (page.hasAttribute('active')) {
               numActive++;
               assertNotEquals('none', displayStyle);
-              assertEquals(pageName, page.section);
+              assertEquals(section, page.section);
             } else {
               assertEquals('none', displayStyle);
             }
@@ -221,7 +225,7 @@ suite('<main-page-container>', function() {
 
         suite('From Initial', () => {
           test('to Root should only show Network page', () => {
-            assertOnlyActivePageIsVisible('internet');
+            assertOnlyActivePageIsVisible(Section.kNetwork);
           });
         });
 
@@ -233,7 +237,7 @@ suite('<main-page-container>', function() {
             Router.getInstance().navigateTo(routes.INTERNET);
             await navigationCompletePromise;
 
-            assertOnlyActivePageIsVisible('internet');
+            assertOnlyActivePageIsVisible(Section.kNetwork);
           });
 
           test('to Subpage should result in only one active page', async () => {
@@ -243,7 +247,7 @@ suite('<main-page-container>', function() {
             Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
             await navigationCompletePromise;
 
-            assertOnlyActivePageIsVisible('bluetooth');
+            assertOnlyActivePageIsVisible(Section.kBluetooth);
           });
 
           test(
@@ -259,7 +263,7 @@ suite('<main-page-container>', function() {
                     /*removeSearch=*/ true);
                 await navigationCompletePromise;
 
-                assertOnlyActivePageIsVisible('internet');
+                assertOnlyActivePageIsVisible(Section.kNetwork);
               });
         });
 
@@ -274,7 +278,7 @@ suite('<main-page-container>', function() {
                 Router.getInstance().navigateTo(routes.BLUETOOTH);
                 await navigationCompletePromise;
 
-                assertOnlyActivePageIsVisible('bluetooth');
+                assertOnlyActivePageIsVisible(Section.kBluetooth);
               });
 
           test('to Subpage should result in only one active page', async () => {
@@ -286,7 +290,7 @@ suite('<main-page-container>', function() {
                 routes.A11Y_DISPLAY_AND_MAGNIFICATION);
             await navigationCompletePromise;
 
-            assertOnlyActivePageIsVisible('osAccessibility');
+            assertOnlyActivePageIsVisible(Section.kAccessibility);
           });
 
           test('to Root should result in only one active page', async () => {
@@ -297,7 +301,7 @@ suite('<main-page-container>', function() {
             Router.getInstance().navigateTo(routes.BASIC);
             await navigationCompletePromise;
 
-            assertOnlyActivePageIsVisible('internet');
+            assertOnlyActivePageIsVisible(Section.kNetwork);
           });
         });
       });

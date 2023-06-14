@@ -89,8 +89,8 @@ suite('<settings-multidevice-feature-item>', () => {
     crToggle = featureToggle.$.toggle;
 
     initialRoute = routes.MULTIDEVICE_FEATURES;
-    const FREE_CANDY = routes.BASIC.createSection('/freeCandy', 'freeCandy');
-    featureItem.subpageRoute = FREE_CANDY;
+    const dummyRoute = new Route('/freeCandy');
+    featureItem.subpageRoute = dummyRoute;
 
     resetFeatureData();
     Router.getInstance().navigateTo(initialRoute);

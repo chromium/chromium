@@ -36,6 +36,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Router, routes} from '../router.js';
 
@@ -69,6 +70,12 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       prefs: {
         type: Object,
         notify: true,
+      },
+
+      section_: {
+        type: Number,
+        value: Section.kDevice,
+        readOnly: true,
       },
 
       /**
@@ -235,6 +242,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private touchpadSettingsObserverReceiver: TouchpadSettingsObserverReceiver;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface;
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
+  private section_: Section;
 
   constructor() {
     super();

@@ -79,8 +79,10 @@
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
 </iron-media-query>
-<os-settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
-  <os-settings-animated-pages id="pages" section="about"
+<os-settings-section page-title="$i18n{aboutOsPageTitle}"
+    section="[[section_]]">
+  <os-settings-animated-pages id="pages"
+      section="[[section_]]"
       focus-config="[[focusConfig_]]">
     <div route-path="default">
       <div class="settings-box two-line first">

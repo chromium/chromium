@@ -26,6 +26,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FocusConfig} from '../focus_config.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Router, routes} from '../router.js';
 
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
@@ -50,6 +51,12 @@ class OsSettingsLanguagesSectionElement extends
   static get properties() {
     return {
       prefs: Object,
+
+      section_: {
+        type: Number,
+        value: Section.kLanguagesAndInput,
+        readOnly: true,
+      },
 
       languages: {
         type: Object,
@@ -102,6 +109,7 @@ class OsSettingsLanguagesSectionElement extends
   // Only defined after a render.
   private languageHelper: LanguageHelper;
   private focusConfig_: FocusConfig;
+  private section_: Section;
 
   // loadTimeData flags and strings.
   private inputPageTitle_: string;

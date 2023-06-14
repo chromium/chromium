@@ -4,9 +4,10 @@
 
 module chromeos.settings.mojom;
 
-// Chrome OS Settings sections (i.e., top-level navigation items). Each section
-// has a corresponding path string listed below. Numerical values are used for
-// metrics; do not change or reuse values.
+// ChromeOS Settings sections (i.e., top-level pages & their navigation items).
+// Each section has a corresponding path string listed below. Numerical values
+// are used for metrics.
+// DO NOT change or reuse values.
 enum Section {
   kNetwork = 0,
   kBluetooth = 1,
@@ -321,25 +322,3 @@ const string kDetailedBuildInfoSubpagePath = "help/details";
 // Kerberos section.
 const string kKerberosSectionPath = "kerberos";
 const string kKerberosAccountsV2SubpagePath = "kerberos/kerberosAccounts";
-
-// The properties should match the top-level section paths defined above
-// Keep alphabetized
-struct OsPageAvailability {
-  bool apps;
-  bool bluetooth;
-  bool crostini;
-  bool dateTime;
-  bool device;
-  bool files;
-  bool internet;
-  bool kerberos;
-  bool multidevice;
-  bool osAccessibility;
-  bool osLanguages;
-  bool osPeople;
-  bool osPrinting;
-  bool osPrivacy;
-  bool osReset;
-  bool osSearch;
-  bool personalization;
-};

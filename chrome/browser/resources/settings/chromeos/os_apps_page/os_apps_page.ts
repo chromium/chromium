@@ -38,6 +38,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {androidAppsVisible, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
@@ -77,6 +78,12 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   static get properties() {
     return {
+      section_: {
+        type: Number,
+        value: Section.kApps,
+        readOnly: true,
+      },
+
       /**
        * This object holds the playStoreEnabled and settingsAppAvailable
        * boolean.
@@ -203,6 +210,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private isPluginVmAvailable_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
+  private section_: Section;
   private showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;
   private showStartup_: boolean;

@@ -27,6 +27,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
@@ -57,6 +58,12 @@ export class OsSettingsPrivacyPageElement extends
 
   static get properties() {
     return {
+      section_: {
+        type: Number,
+        value: Section.kPrivacyAndSecurity,
+        readOnly: true,
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -230,6 +237,7 @@ export class OsSettingsPrivacyPageElement extends
   private isSmartPrivacyEnabled_: boolean;
   private isThunderboltSupported_: boolean;
   private isUserConfigurable_: boolean;
+  private section_: Section;
   private setModes_: Object|undefined;
   private showDisableProtectionDialog_: boolean;
   private showPasswordPromptDialog_: boolean;

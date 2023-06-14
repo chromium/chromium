@@ -23,6 +23,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {BluetoothSystemProperties, BluetoothSystemState, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
+
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_page.html.js';
 
@@ -39,6 +41,12 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   static get properties() {
     return {
+      section_: {
+        type: Number,
+        value: Section.kBluetooth,
+        readOnly: true,
+      },
+
       systemProperties_: Object,
 
       shouldShowPairingDialog_: {
@@ -55,6 +63,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   }
 
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
+  private section_: Section;
   private showSavedDevicesLoadingIndicators_: boolean;
   private shouldShowPairingDialog_: boolean;
   private systemProperties_: BluetoothSystemProperties;

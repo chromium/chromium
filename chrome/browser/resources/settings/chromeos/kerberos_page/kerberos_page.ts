@@ -19,6 +19,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './kerberos_page.html.js';
@@ -38,6 +39,12 @@ export class SettingsKerberosPageElement extends
 
   static get properties() {
     return {
+      section_: {
+        type: Number,
+        value: Section.kKerberos,
+        readOnly: true,
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -54,6 +61,7 @@ export class SettingsKerberosPageElement extends
   }
 
   private focusConfig_: Map<string, string>;
+  private section_: Section;
 
   private onKerberosAccountsClick_(): void {
     Router.getInstance().navigateTo(routes.KERBEROS_ACCOUNTS_V2);
