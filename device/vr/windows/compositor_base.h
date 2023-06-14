@@ -96,9 +96,6 @@ class XRCompositorCommon : public base::Thread,
 
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
                     XRFrameDataProvider::GetFrameDataCallback callback) final;
-  void SetInputSourceButtonListener(
-      mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>
-          input_listener_remote) override;
 
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<
@@ -110,7 +107,6 @@ class XRCompositorCommon : public base::Thread,
   virtual gpu::gles2::GLES2Interface* GetContextGL() = 0;
 
  protected:
-  virtual bool UsesInputEventing();
   void SetVisibilityState(mojom::XRVisibilityState visibility_state);
   const mojom::VRStageParametersPtr& GetCurrentStageParameters() const;
   void SetStageParameters(mojom::VRStageParametersPtr stage_parameters);
@@ -121,8 +117,6 @@ class XRCompositorCommon : public base::Thread,
 
   // Allow derived classes to call methods on the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  mojo::AssociatedRemote<mojom::XRInputSourceButtonListener>
-      input_event_listener_;
 
   // Derived classes override this to be notified to clear its pending frame.
   virtual void ClearPendingFrameInternal() {}

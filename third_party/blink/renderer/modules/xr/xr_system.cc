@@ -1577,12 +1577,6 @@ void XRSystem::FinishSessionCreation(
       // element is already in fullscreen mode, and the session can proceed.
       session->SetDOMOverlayElement(query->DOMOverlayElement());
     }
-
-    if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveVr &&
-        session->UsesInputEventing()) {
-      frameProvider()->GetImmersiveDataProvider()->SetInputSourceButtonListener(
-          session->GetInputClickListener());
-    }
   }
 
   UseCounter::Count(ExecutionContext::From(query->GetScriptState()),

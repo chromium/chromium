@@ -179,7 +179,6 @@ void XRCompositorCommon::CleanUp() {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   overlay_receiver_.reset();
-  input_event_listener_.reset();
   StopRuntime();
 }
 
@@ -191,12 +190,6 @@ void XRCompositorCommon::RequestOverlay(
   // WebXR is visible and overlay hidden by default until the overlay overrides
   // this.
   SetOverlayAndWebXRVisibility(false, true);
-}
-
-bool XRCompositorCommon::UsesInputEventing() {
-  // By default we don't use input eventing.  Any subclass that does will need
-  // to override this.
-  return false;
 }
 
 void XRCompositorCommon::UpdateLayerBounds(int16_t frame_id,
@@ -306,7 +299,6 @@ void XRCompositorCommon::StartRuntimeFinish(
                                    enabled_features_.end());
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
-  session->device_config->uses_input_eventing = UsesInputEventing();
   session->device_config->enable_anti_aliasing = CanEnableAntiAliasing();
   session->device_config->views = GetDefaultViews();
   session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
@@ -477,14 +469,6 @@ void XRCompositorCommon::GetFrameData(
   if (next_frame_id_ < 0) {
     next_frame_id_ = 0;
   }
-}
-
-void XRCompositorCommon::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>
-        input_listener_remote) {
-  DCHECK(UsesInputEventing());
-  input_event_listener_.reset();
-  input_event_listener_.Bind(std::move(input_listener_remote));
 }
 
 void XRCompositorCommon::SendFrameData(

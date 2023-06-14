@@ -65,11 +65,9 @@ class XRWebGLLayer;
 
 using XRSessionFeatureSet = HashSet<device::mojom::XRSessionFeature>;
 
-class XRSession final
-    : public EventTargetWithInlineData,
-      public device::mojom::blink::XRSessionClient,
-      public device::mojom::blink::XRInputSourceButtonListener,
-      public ActiveScriptWrappable<XRSession> {
+class XRSession final : public EventTargetWithInlineData,
+                        public device::mojom::blink::XRSessionClient,
+                        public ActiveScriptWrappable<XRSession> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -269,10 +267,6 @@ class XRSession final
       const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
       const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
 
-  // XRInputSourceButtonListener
-  void OnButtonEvent(
-      device::mojom::blink::XRInputSourceStatePtr input_source) override;
-
   const HeapVector<Member<XRViewData>>& views();
 
   void AddTransientInputSource(XRInputSource* input_source);
@@ -283,10 +277,6 @@ class XRSession final
   const device::mojom::blink::VRStageParametersPtr& GetStageParameters() const {
     return stage_parameters_;
   }
-
-  mojo::PendingAssociatedRemote<
-      device::mojom::blink::XRInputSourceButtonListener>
-  GetInputClickListener();
 
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
@@ -325,7 +315,6 @@ class XRSession final
   bool RemoveHitTestSource(XRHitTestSource* hit_test_source);
   bool RemoveHitTestSource(XRTransientInputHitTestSource* hit_test_source);
 
-  bool UsesInputEventing() { return uses_input_eventing_; }
   bool LightEstimationEnabled() { return !!world_light_probe_; }
 
   void Trace(Visitor* visitor) const override;
@@ -586,9 +575,6 @@ class XRSession final
 
   HeapMojoReceiver<device::mojom::blink::XRSessionClient, XRSession>
       client_receiver_;
-  HeapMojoAssociatedReceiver<device::mojom::blink::XRInputSourceButtonListener,
-                             XRSession>
-      input_receiver_;
 
   // Used to schedule video.rVFC callbacks for immersive sessions.
   Vector<ExecuteVfcCallback> vfc_execution_queue_;
@@ -613,7 +599,6 @@ class XRSession final
   int output_width_ = 1;
   int output_height_ = 1;
 
-  bool uses_input_eventing_ = false;
   float recommended_framebuffer_scale_ = 1.0;
 
   // Corresponds to mojo XRSession.supportsViewportScaling

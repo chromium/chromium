@@ -1329,11 +1329,4 @@ void GvrSchedulerDelegate::GetEnvironmentIntegrationProvider(
       "Environment integration is not supported.");
 }
 
-void GvrSchedulerDelegate::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
-  // Input eventing is not supported. This call should not
-  // be made on this device.
-  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
-}
-
 }  // namespace vr

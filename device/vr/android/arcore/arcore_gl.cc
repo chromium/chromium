@@ -1423,13 +1423,6 @@ void ArCoreGl::GetEnvironmentIntegrationProvider(
       &ArCoreGl::OnBindingDisconnect, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ArCoreGl::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
-  // Input eventing is not supported. This call should not
-  // be made on this device.
-  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
-}
-
 void ArCoreGl::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,

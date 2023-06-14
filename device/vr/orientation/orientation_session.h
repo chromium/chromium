@@ -35,10 +35,6 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationSession
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
           environment_provider) override;
-  void SetInputSourceButtonListener(
-      mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>)
-      override;
-
   // Accessible to tests.
  protected:
   // mojom::XRFrameDataProvider

@@ -52,13 +52,6 @@ void VROrientationSession::GetEnvironmentIntegrationProvider(
       "Environment integration is not supported.");
 }
 
-void VROrientationSession::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
-  // Input eventing is not supported. This call should not
-  // be made on this device.
-  magic_window_receiver_.ReportBadMessage("Input eventing is not supported.");
-}
-
 // XRSessionController
 void VROrientationSession::SetFrameDataRestricted(bool frame_data_restricted) {
   restrict_frame_data_ = frame_data_restricted;

@@ -61,9 +61,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   // mojom::XRFrameDataProvider
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
                     GetFrameDataCallback callback) override;
-  void SetInputSourceButtonListener(
-      mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>
-          input_listener_remote) override;
 
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<

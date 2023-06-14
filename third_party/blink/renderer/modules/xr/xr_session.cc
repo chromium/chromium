@@ -350,11 +350,9 @@ XRSession::XRSession(
           CreateDepthManagerIfEnabled(enabled_features_, *device_config)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
-      input_receiver_(this, xr->GetExecutionContext()),
       callback_collection_(
           MakeGarbageCollected<XRFrameRequestCallbackCollection>(
               xr->GetExecutionContext())),
-      uses_input_eventing_(device_config->uses_input_eventing),
       supports_viewport_scaling_(immersive() &&
                                  device_config->supports_viewport_scaling),
       enable_anti_aliasing_(device_config->enable_anti_aliasing),
@@ -465,13 +463,6 @@ ExecutionContext* XRSession::GetExecutionContext() const {
 
 const AtomicString& XRSession::InterfaceName() const {
   return event_target_names::kXRSession;
-}
-
-mojo::PendingAssociatedRemote<device::mojom::blink::XRInputSourceButtonListener>
-XRSession::GetInputClickListener() {
-  DCHECK(!input_receiver_.is_bound());
-  return input_receiver_.BindNewEndpointAndPassRemote(
-      xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void XRSession::updateRenderState(XRRenderStateInit* init,
@@ -1738,11 +1729,7 @@ void XRSession::UpdatePresentationFrameState(
     // after OnInputStateChangeInternal which updated input sources.
     UpdateWorldUnderstandingStateForFrame(timestamp, frame_data);
 
-    // If this session uses input eventing, XR select events are handled via
-    // OnButtonEvent, so they need to be ignored here to avoid duplicate events.
-    if (!uses_input_eventing_) {
-      ProcessInputSourceEvents(input_states);
-    }
+    ProcessInputSourceEvents(input_states);
   } else {
     UpdateWorldUnderstandingStateForFrame(timestamp, frame_data);
   }
@@ -2065,14 +2052,6 @@ void XRSession::UpdateCanvasDimensions(Element* element) {
   }
 
   canvas_was_resized_ = true;
-}
-
-void XRSession::OnButtonEvent(
-    device::mojom::blink::XRInputSourceStatePtr input_state) {
-  DCHECK(uses_input_eventing_);
-  auto input_states = base::make_span(&input_state, 1u);
-  OnInputStateChangeInternal(last_frame_id_, input_states);
-  ProcessInputSourceEvents(input_states);
 }
 
 void XRSession::OnInputStateChangeInternal(
@@ -2413,7 +2392,6 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(overlay_element_);
   visitor->Trace(dom_overlay_state_);
   visitor->Trace(client_receiver_);
-  visitor->Trace(input_receiver_);
   visitor->Trace(callback_collection_);
   visitor->Trace(create_anchor_promises_);
   visitor->Trace(request_hit_test_source_promises_);

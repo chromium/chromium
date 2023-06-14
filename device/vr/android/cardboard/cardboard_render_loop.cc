@@ -72,13 +72,6 @@ void CardboardRenderLoop::GetEnvironmentIntegrationProvider(
       "Environment integration is not supported.");
 }
 
-void CardboardRenderLoop::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
-  // Input eventing is not supported. This call should not
-  // be made on this device.
-  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
-}
-
 void CardboardRenderLoop::CreateSession(
     CardboardRequestSessionCallback session_request_callback,
     base::OnceClosure session_shutdown_callback,
