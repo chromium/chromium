@@ -111,10 +111,9 @@ TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdate) {
 }
 
 TEST_F(ManifestUpdateFinalizeCommandTest, UpdateFailsOnUnsuccessfulCode) {
-  WebAppInstallInfo info;
-  info.validated_scope_extensions.emplace();
-  ManifestUpdateResult expected_result =
-      RunCommandAndGetResult(app_url(), "RandomAppId", std::move(info));
+  // This should fail because RandomAppId does not exist.
+  ManifestUpdateResult expected_result = RunCommandAndGetResult(
+      app_url(), "RandomAppId", GetNewInstallInfoWithTitle(u"Name"));
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdateFailed);
 }
 

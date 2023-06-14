@@ -781,8 +781,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   // shown once in an user session.
   web_app::RecordInstallIphIgnored(
       profile()->GetPrefs(),
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
-                             app_banner_manager_->GetManifestStartUrl()),
+      web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+                             GetInstallableAppURL()),
       base::Time::Now());
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);

@@ -355,7 +355,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     const WebAppInstallInfo& web_app_info,
     InstallFinalizedCallback callback) {
   CHECK(started_);
-
+  CHECK(web_app_info.start_url.is_valid());
   ManifestId manifest_id = web_app_info.manifest_id;
   if (manifest_id.is_valid()) {
     CHECK(url::Origin::Create(manifest_id)
@@ -366,6 +366,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     CHECK_IS_TEST();
     manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
   }
+  CHECK(manifest_id.is_valid());
 
   const AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);

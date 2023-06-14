@@ -164,7 +164,7 @@ void WebAppDataRetriever::PrimaryMainFrameRenderProcessGone(
 void WebAppDataRetriever::OnGetWebPageMetadata(
     mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent,
     int last_committed_nav_entry_unique_id,
-    webapps::mojom::WebPageMetadataPtr web_page_metadata) {
+    webapps::mojom::WebPageMetadataPtr metadata) {
   if (ShouldStopRetrieval()) {
     CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
     return;
@@ -175,33 +175,60 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   content::WebContents* contents = web_contents();
   Observe(nullptr);
 
-  std::unique_ptr<WebAppInstallInfo> info;
-
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
 
-  if (!entry->IsInitialEntry()) {
-    if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
-      info = std::make_unique<WebAppInstallInfo>(*web_page_metadata);
-      if (info->manifest_id.is_empty()) {
-        info->manifest_id = std::move(fallback_install_info_->manifest_id);
-      }
-      if (info->start_url.is_empty()) {
-        info->start_url = std::move(fallback_install_info_->start_url);
-      }
-      if (info->title.empty()) {
-        info->title = std::move(fallback_install_info_->title);
-      }
-    } else {
-      // WebContents navigation state changed during the call. Ignore the mojo
-      // request result. Use default initial info instead.
-      info = std::move(fallback_install_info_);
-    }
+  CHECK(!get_web_app_info_callback_.is_null());
+
+  if (entry->IsInitialEntry()) {
+    // Possibly impossible to get to this state, treat it as an error.
+    fallback_install_info_.reset();
+    std::move(get_web_app_info_callback_).Run(nullptr);
+    return;
   }
 
-  fallback_install_info_.reset();
+  if (entry->GetUniqueID() != last_committed_nav_entry_unique_id) {
+    // WebContents navigation state changed during the call. Ignore the mojo
+    // request result and use default initial info instead.
+    std::move(get_web_app_info_callback_)
+        .Run(std::move(fallback_install_info_));
+    return;
+  }
+  CHECK(metadata);
 
-  DCHECK(!get_web_app_info_callback_.is_null());
+  std::unique_ptr<WebAppInstallInfo> info = std::move(fallback_install_info_);
+  if (!metadata->application_name.empty()) {
+    info->title = metadata->application_name;
+  }
+  if (!metadata->description.empty()) {
+    info->description = metadata->description;
+  }
+  if (metadata->application_url.is_valid()) {
+    info->start_url = metadata->application_url;
+    info->manifest_id =
+        web_app::GenerateManifestIdFromStartUrlOnly(info->start_url);
+  }
+
+  for (const auto& icon : metadata->icons) {
+    apps::IconInfo icon_info;
+    icon_info.url = icon->url;
+    if (icon->square_size_px > 0) {
+      icon_info.square_size_px = icon->square_size_px;
+    }
+    info->manifest_icons.push_back(icon_info);
+  }
+  switch (metadata->mobile_capable) {
+    case webapps::mojom::WebPageMobileCapable::UNSPECIFIED:
+      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED;
+      break;
+    case webapps::mojom::WebPageMobileCapable::ENABLED:
+      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE;
+      break;
+    case webapps::mojom::WebPageMobileCapable::ENABLED_APPLE:
+      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE_APPLE;
+      break;
+  }
+
   std::move(get_web_app_info_callback_).Run(std::move(info));
 }
 

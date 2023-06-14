@@ -23,7 +23,6 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
-#include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -197,8 +196,6 @@ struct WebAppInstallInfo {
 
   WebAppInstallInfo(WebAppInstallInfo&&);
   WebAppInstallInfo& operator=(WebAppInstallInfo&&);
-
-  explicit WebAppInstallInfo(const webapps::mojom::WebPageMetadata& metadata);
   ~WebAppInstallInfo();
 
   // Creates a deep copy of this struct.

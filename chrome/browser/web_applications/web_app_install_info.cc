@@ -7,7 +7,6 @@
 #include <sstream>
 
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
 
@@ -268,33 +267,6 @@ WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;
 WebAppInstallInfo::WebAppInstallInfo(WebAppInstallInfo&&) = default;
 
 WebAppInstallInfo& WebAppInstallInfo::operator=(WebAppInstallInfo&&) = default;
-
-WebAppInstallInfo::WebAppInstallInfo(
-    const webapps::mojom::WebPageMetadata& metadata)
-    : manifest_id(web_app::GenerateManifestIdFromStartUrlOnly(
-          metadata.application_url)),
-      title(metadata.application_name),
-      description(metadata.description),
-      start_url(metadata.application_url) {
-  for (const auto& icon : metadata.icons) {
-    apps::IconInfo icon_info;
-    icon_info.url = icon->url;
-    if (icon->square_size_px > 0)
-      icon_info.square_size_px = icon->square_size_px;
-    manifest_icons.push_back(icon_info);
-  }
-  switch (metadata.mobile_capable) {
-    case webapps::mojom::WebPageMobileCapable::UNSPECIFIED:
-      mobile_capable = MOBILE_CAPABLE_UNSPECIFIED;
-      break;
-    case webapps::mojom::WebPageMobileCapable::ENABLED:
-      mobile_capable = MOBILE_CAPABLE;
-      break;
-    case webapps::mojom::WebPageMobileCapable::ENABLED_APPLE:
-      mobile_capable = MOBILE_CAPABLE_APPLE;
-      break;
-  }
-}
 
 WebAppInstallInfo::~WebAppInstallInfo() = default;
 

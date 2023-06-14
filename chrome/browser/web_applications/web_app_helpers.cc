@@ -88,6 +88,7 @@ AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
 }
 
 ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
+  CHECK(start_url.is_valid());
   return start_url.GetWithoutRef();
 }
 
