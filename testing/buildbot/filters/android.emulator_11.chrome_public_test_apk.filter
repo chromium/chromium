@@ -12,9 +12,6 @@
 -org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderEnabled
 -org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderDisabled
 -org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveDataUrl
--org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveImage
--org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveVideo
 
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
