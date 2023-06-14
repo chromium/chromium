@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOGIN_UI_FACTOR_AUTH_VIEW_H_
-#define ASH_LOGIN_UI_FACTOR_AUTH_VIEW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_H_
+#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_H_
 
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -38,4 +38,4 @@ class FactorAuthView : public views::View {
 
 }  // namespace ash
 
-#endif  //  ASH_LOGIN_UI_FACTOR_AUTH_VIEW_H_
+#endif  //  CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_H_

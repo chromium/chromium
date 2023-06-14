@@ -3448,6 +3448,7 @@ source_set("ash") {
     "//chromeos:chromeos_export",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/auth_panel",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus:metrics_event_proto",

@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+component("auth_panel") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUTH_PANEL" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/osauth/public",
+    "//ui/views",
+  ]
+  sources = [
+    "auth_panel.cc",
+    "auth_panel.h",
+    "factor_auth_view.h",
+    "factor_auth_view_factory.cc",
+    "factor_auth_view_factory.h",
+  ]
+}
