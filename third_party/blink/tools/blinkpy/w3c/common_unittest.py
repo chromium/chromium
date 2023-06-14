@@ -120,6 +120,8 @@ class CommonTest(unittest.TestCase):
             ))
         self.assertFalse(
             is_file_exportable(RELATIVE_WPT_TESTS + 'dom/historical.html.ini'))
+        self.assertFalse(
+            is_file_exportable(RELATIVE_WPT_TESTS + 'html/tools/PRESUBMIT.py'))
 
     def test_is_file_exportable_asserts_path(self):
         # Rejects basenames.
