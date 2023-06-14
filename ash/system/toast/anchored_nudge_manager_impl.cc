@@ -10,6 +10,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "base/containers/contains.h"
 #include "ui/aura/window.h"
@@ -183,10 +185,13 @@ class AnchoredNudgeManagerImpl::NudgeWidgetObserver
 
 AnchoredNudgeManagerImpl::AnchoredNudgeManagerImpl() {
   DCHECK(features::IsSystemNudgeV2Enabled());
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
 AnchoredNudgeManagerImpl::~AnchoredNudgeManagerImpl() {
   CloseAllNudges();
+
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
@@ -289,6 +294,11 @@ void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,
       StartDismissTimer(id);
     }
   }
+}
+
+void AnchoredNudgeManagerImpl::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  CloseAllNudges();
 }
 
 bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
