@@ -236,7 +236,15 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
 
       if (!self.beingDestroyed) {
         web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
-        if (web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state)) {
+        bool browser_lockdown_mode_enabled =
+            web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state);
+        if ((policy == WKNavigationActionPolicyAllow) &&
+            isMainFrameNavigationAction) {
+          UMA_HISTOGRAM_BOOLEAN(
+              "IOS.MainFrameNavigationIsInBrowserLockdownMode",
+              browser_lockdown_mode_enabled);
+        }
+        if (browser_lockdown_mode_enabled) {
           preferences.lockdownModeEnabled = true;
         }
       }
