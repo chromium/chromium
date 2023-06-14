@@ -582,9 +582,14 @@ export class BrowsingContextImpl {
     let clip: Protocol.DOM.Rect;
 
     if (this.isTopLevelContext()) {
-      clip = (
-        await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics')
-      ).cssContentSize;
+      const {cssContentSize, cssLayoutViewport} =
+        await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics');
+      clip = {
+        x: cssContentSize.x,
+        y: cssContentSize.y,
+        width: cssLayoutViewport.clientWidth,
+        height: cssLayoutViewport.clientHeight,
+      };
     } else {
       const {
         result: {value: iframeDocRect},
