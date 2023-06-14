@@ -21,6 +21,7 @@
 @types/dom-speech-recognition/index.d.ts
 @types/dom-webcodecs
 @types/dom-webcodecs/*.d.ts
+@types/emscripten/index.d.ts
 @types/filesystem/index.d.ts
 @types/filewriter/index.d.ts
 @types/google.analytics

@@ -291,3 +291,16 @@ Processing using Streams (https://w3c.github.io/mediacapture-transform/).
 
 Local Modifications:
 (none)
+
+Name: Type Definition for Emscripten
+Short Name: @types/emscripten
+URL: https://www.npmjs.com/package/@types/emscripten
+Version: 1.39.6
+License: MIT
+Security Critical: No. The types are only used when type checking in ChromeOS.
+
+Description:
+This package contains type definitions for Emscripten (https://emscripten.org).
+
+Local Modifications:
+(none)
