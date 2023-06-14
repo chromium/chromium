@@ -473,7 +473,7 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
 
   if (IsCharacterKeyEvent(&event)) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(std::u16string(1, event.GetText()),
+    ime_bridge_->SendInsertText(std::u16string(1, event.GetCharacter()),
                                 /*new_cursor_position=*/1);
   }
 }
