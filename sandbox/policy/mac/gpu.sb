@@ -132,6 +132,19 @@
   (subpath (param darwin-user-temp-dir))
 )
 
+; Metal shader compilation may be offloaded to a helper process that needs
+; access to the user cache directory in order to cache its work to disk.
+; crbug.com/1453813
+(let ((helper-bundle-cache-dir
+       (string-append (param darwin-user-cache-dir)
+                      "/" (param bundle-id) ".helper")))
+  (allow file-issue-extension
+    (require-all
+      (extension-class "com.apple.app-sandbox.read-write")
+      (require-any
+        (subpath (string-append helper-bundle-cache-dir "/com.apple.metalfe"))
+        (subpath (string-append helper-bundle-cache-dir "/com.apple.gpuarchiver"))))))
+
 (if (param-true? filter-syscalls-debug)
   (when (defined? 'syscall-unix)
     (deny syscall-unix (with send-signal SIGSYS))
