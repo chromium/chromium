@@ -344,8 +344,9 @@ class NetworkResponder {
       base::AutoLock auto_lock(lock_);
       DCHECK(!quit_report_wait_loop_callback_);
       EXPECT_LE(report_count_, num_reports);
-      if (report_count_ >= num_reports)
+      if (report_count_ >= num_reports) {
         return;
+      }
       waiting_for_report_count_ = num_reports;
       quit_report_wait_loop_callback_ = run_loop.QuitClosure();
     }
@@ -447,8 +448,9 @@ class NetworkResponder {
 
   void OnReportSent() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     ++report_count_;
-    if (waiting_for_report_count_ == report_count_)
+    if (waiting_for_report_count_ == report_count_) {
       std::move(quit_report_wait_loop_callback_).Run();
+    }
   }
 
   void OnUpdateRequestReceived(URLLoaderInterceptor::RequestParams* params)
@@ -721,15 +723,17 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
     auto interest_group = GetInterestGroup(owner, name);
-    if (!interest_group)
+    if (!interest_group) {
       return 0;
+    }
     return interest_group->bidding_browser_signals->join_count;
   }
 
   double GetPriority(const url::Origin& owner, const std::string& name) {
     auto interest_group = GetInterestGroup(owner, name);
-    if (!interest_group)
+    if (!interest_group) {
       return 0;
+    }
     return interest_group->interest_group.priority;
   }
 
@@ -1156,6 +1160,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
+"updateURL": "%s/interest_group/new_daily_update_partial.json",
 "ads": [{"renderURL": "%s/new_ad_render_url",
          "sizeGroup": "group_new",
          "metadata": {"new_a": "b"},
@@ -1172,7 +1177,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "sizeGroups": {"group_new": ["size_new"]}
 })",
                          kOriginStringA, kOriginStringA, kOriginStringA,
-                         kOriginStringA, kOriginStringA));
+                         kOriginStringA, kOriginStringA, kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;
@@ -1266,6 +1271,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   ASSERT_TRUE(group.trusted_bidding_signals_keys.has_value());
   EXPECT_EQ(group.trusted_bidding_signals_keys->size(), 1u);
   EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "new_key");
+  ASSERT_TRUE(group.update_url.has_value());
+  EXPECT_EQ(
+      group.update_url->spec(),
+      base::StringPrintf("%s/interest_group/new_daily_update_partial.json",
+                         kOriginStringA));
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),

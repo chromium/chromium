@@ -1455,6 +1455,9 @@ bool DoUpdateInterestGroup(sql::Database& db,
     stored_group.all_sellers_capabilities = *update.all_sellers_capabilities;
   if (update.execution_mode)
     stored_group.execution_mode = *update.execution_mode;
+  if (update.daily_update_url) {
+    stored_group.update_url = std::move(update.daily_update_url);
+  }
   if (update.bidding_url)
     stored_group.bidding_url = std::move(update.bidding_url);
   if (update.bidding_wasm_helper_url) {

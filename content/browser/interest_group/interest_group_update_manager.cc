@@ -476,6 +476,11 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
     interest_group_update.bidding_wasm_helper_url =
         GURL(*maybe_bidding_wasm_helper_url);
   }
+  const std::string* maybe_update_url =
+      dict->FindString("updateURL");  // TODO check if we use this or updateURL
+  if (maybe_update_url) {
+    interest_group_update.daily_update_url = GURL(*maybe_update_url);
+  }
   const std::string* maybe_trusted_bidding_signals_url =
       dict->FindString("trustedBiddingSignalsURL");
   const std::string* maybe_trusted_bidding_signals_url_deprecated =
