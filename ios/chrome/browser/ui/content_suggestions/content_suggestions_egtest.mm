@@ -118,8 +118,11 @@ void TapSecondaryActionButton() {
 // Tap the SetUpList button to expand the list.
 void TapSetUpListExpand() {
   id<GREYMatcher> expandButton =
-      grey_accessibilityID(set_up_list::kExpandButtonID);
-  [[EarlGrey selectElementWithMatcher:expandButton]
+      grey_allOf(grey_accessibilityID(set_up_list::kExpandButtonID),
+                 grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:expandButton]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:expandButton] performAction:grey_tap()];
 }
@@ -317,13 +320,6 @@ void TapMoreButtonIfVisible() {
 // Tests that the SetUpList can be expanded and unexpanded by touching the
 // "expand" button at the bottom of the list.
 - (void)testSetUpListExpands {
-// TODO(crbug.com/1453585): Test is flaky on iPhone simulator.
-#if TARGET_IPHONE_SIMULATOR
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPhone simulator.");
-  }
-#endif  // TARGET_IPHONE_SIMULATOR
-
   [self prepareToTestSetUpList];
 
   id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
