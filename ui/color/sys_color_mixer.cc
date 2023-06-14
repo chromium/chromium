@@ -116,6 +116,10 @@ void AddSysColorMixer(ColorProvider* provider,
                                               : kColorRefNeutralVariant90};
 
   // Inverse.
+  mixer[kColorSysBlack] = {kColorRefNeutral0};
+  mixer[kColorSysWhite] = {kColorRefNeutral100};
+
+  // Inverse.
   mixer[kColorSysInversePrimary] = {dark_mode ? kColorRefPrimary40
                                               : kColorRefPrimary80};
   mixer[kColorSysInverseOnSurface] = {dark_mode ? kColorRefNeutral10
@@ -125,30 +129,40 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysSurface] = {dark_mode ? kColorRefNeutral10
                                        : kColorRefNeutral100};
   mixer[kColorSysSurface1] =
-      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x0C),
-                                         {kColorRefNeutral10})
-                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x0C),
-                                         {kColorRefNeutral99});
+      dark_mode ? GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0xD1, 0xE1, 0xFF)}, 0x0C),
+                      {kColorRefNeutral10})
+                : GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0x69, 0x91, 0xD6)}, 0x0C),
+                      {kColorRefNeutral99});
   mixer[kColorSysSurface2] =
-      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x14),
-                                         {kColorRefNeutral10})
-                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x14),
-                                         {kColorRefNeutral99});
+      dark_mode ? GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0xD1, 0xE1, 0xFF)}, 0x14),
+                      {kColorRefNeutral10})
+                : GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0x69, 0x91, 0xD6)}, 0x14),
+                      {kColorRefNeutral99});
   mixer[kColorSysSurface3] =
-      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x1C),
-                                         {kColorRefNeutral10})
-                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x1C),
-                                         {kColorRefNeutral99});
+      dark_mode ? GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0xD1, 0xE1, 0xFF)}, 0x1C),
+                      {kColorRefNeutral10})
+                : GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0x69, 0x91, 0xD6)}, 0x1C),
+                      {kColorRefNeutral99});
   mixer[kColorSysSurface4] =
-      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x1E),
-                                         {kColorRefNeutral10})
-                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x1E),
-                                         {kColorRefNeutral99});
+      dark_mode ? GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0xD1, 0xE1, 0xFF)}, 0x1E),
+                      {kColorRefNeutral10})
+                : GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0x69, 0x91, 0xD6)}, 0x1E),
+                      {kColorRefNeutral99});
   mixer[kColorSysSurface5] =
-      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x23),
-                                         {kColorRefNeutral10})
-                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x23),
-                                         {kColorRefNeutral99});
+      dark_mode ? GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0xD1, 0xE1, 0xFF)}, 0x23),
+                      {kColorRefNeutral10})
+                : GetResultingPaintColor(
+                      SetAlpha({SkColorSetRGB(0x69, 0x91, 0xD6)}, 0x23),
+                      {kColorRefNeutral99});
 
   // General.
   mixer[kColorSysOnSurfaceSecondary] = {dark_mode ? kColorRefNeutral80
@@ -184,8 +198,10 @@ void AddSysColorMixer(ColorProvider* provider,
 
   mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
                                       : kColorRefPrimary90};
-  mixer[kColorSysHeaderInactive] = {dark_mode ? kColorSysSurface1
-                                              : kColorSysSurface3};
+  mixer[kColorSysHeaderInactive] = {
+      dark_mode ? kColorSysSurface1
+                : GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x48),
+                                         {kColorSysSurfaceVariant})};
   mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefNeutral25
                                                : kColorRefPrimary95};
   mixer[kColorSysHeaderContainerInactive] = {dark_mode ? kColorRefNeutral25
@@ -226,23 +242,17 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysStateDisabledContainer] =
       dark_mode ? SetAlpha({kColorRefNeutral90}, 0x1E)
                 : SetAlpha({kColorRefNeutral10}, 0x1E);
-  mixer[kColorSysStateHoverCutout] = {
-      dark_mode ? SetAlpha({kColorRefNeutral10}, 0x0F)
-                : SetAlpha({kColorRefNeutral20}, 0x1F)};
-  mixer[kColorSysStateHoverInverseCutout] = {
-      dark_mode ? SetAlpha({kColorRefNeutral10}, 0x29)
-                : SetAlpha({kColorRefNeutral10}, 0x0F)};
   mixer[kColorSysStateHoverDimBlendProtection] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
                 : SetAlpha({kColorRefPrimary20}, 0x2E)};
   mixer[kColorSysStateHoverBrightBlendProtection] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x29)
                 : SetAlpha({kColorRefNeutral10}, 0x0F)};
-
   mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefSecondary90
                                                   : kColorRefPrimary20};
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefSecondary30
                                                 : kColorRefPrimary80};
+  mixer[kColorSysStateHeaderSelect] = {SetAlpha({kColorSysBase}, 0x9A)};
 
   // Effects.
   mixer[kColorSysShadow] = {kColorRefNeutral0};
@@ -267,6 +277,12 @@ void AddSysColorMixer(ColorProvider* provider,
                                      : SetAlpha({kColorRefNeutral10}, 0x1E);
   mixer[kColorSysStateDrag] = dark_mode ? SetAlpha({kColorRefNeutral90}, 0x29)
                                         : SetAlpha({kColorRefNeutral10}, 0x29);
+  mixer[kColorSysStateHoverCutout] = {
+      dark_mode ? SetAlpha({kColorRefNeutral10}, 0x0F)
+                : SetAlpha({kColorRefNeutral20}, 0x1F)};
+  mixer[kColorSysStateHoverInverseCutout] = {
+      dark_mode ? SetAlpha({kColorRefNeutral10}, 0x29)
+                : SetAlpha({kColorRefNeutral10}, 0x0F)};
 
   if (key.user_color.has_value()) {
     AddThemedSysColorOverrides(mixer, key);
