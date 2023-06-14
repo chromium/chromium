@@ -57,6 +57,8 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
       return 2;
+    case DXGI_FORMAT_R8_UNORM:
+    case DXGI_FORMAT_R8G8_UNORM:
     case DXGI_FORMAT_R8G8B8A8_UNORM:
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:
