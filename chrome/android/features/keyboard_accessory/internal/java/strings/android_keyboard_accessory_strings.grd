@@ -223,9 +223,8 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_SWIPE_FOR_MORE" desc="Text in In-Product-Help bubble suggesting to scroll the accessory to reveal more suggestions.">
         Swipe to see more suggestions
       </message>
-      <!-- TODO(crbug/1444418): Introduce proper string. -->
-      <message translateable="false" name="IDS_CREDMAN_REENTRY_ACCESSORY_BUTTON" desc="Text for the button used to show platform passkeys again.">
-        Show Passkeys
+      <message name="IDS_CREDMAN_REENTRY_ACCESSORY_BUTTON" desc="Text for the button used to show platform passkeys and passwords again.">
+        Choose a sign-in
       </message>
       <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON" desc="Text for the button used to generate a password.">
         Suggest strong password
