@@ -15,7 +15,6 @@ struct CC_EXPORT RasterCapabilities {
   RasterCapabilities& operator=(const RasterCapabilities& other) = delete;
   ~RasterCapabilities() = default;
 
-  bool need_update_gpu_rasterization_status = false;
   bool use_gpu_rasterization = false;
 
   bool can_use_msaa = false;

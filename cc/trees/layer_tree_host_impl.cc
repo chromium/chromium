@@ -795,9 +795,6 @@ void LayerTreeHostImpl::CommitComplete() {
 }
 
 void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
-  // LayerTreeHost may have changed the GPU rasterization flags state, which
-  // may require an update of the tree resources.
-  UpdateTreeResourcesForGpuRasterizationIfNeeded();
   sync_tree()->set_needs_update_draw_properties();
 
   // We need an update immediately post-commit to have the opportunity to create
@@ -2861,17 +2858,7 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
 }
 
 bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
-  if (!raster_caps().need_update_gpu_rasterization_status) {
-    return false;
-  }
-  raster_caps_.need_update_gpu_rasterization_status = false;
-
-  // TODO(danakj): Can we avoid having this run when there's no
-  // LayerTreeFrameSink?
-  // For now just early out and leave things unchanged, we'll come back here
-  // when we get a LayerTreeFrameSink.
-  if (!layer_tree_frame_sink_)
-    return false;
+  CHECK(layer_tree_frame_sink_);
 
   RasterCapabilities new_raster_caps;
   [this](RasterCapabilities& gpu_caps) {
@@ -2879,8 +2866,7 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
       return;
     }
 
-    if (!(layer_tree_frame_sink_ &&
-          layer_tree_frame_sink_->context_provider() &&
+    if (!(layer_tree_frame_sink_->context_provider() &&
           layer_tree_frame_sink_->worker_context_provider())) {
       return;
     }
@@ -2913,28 +2899,6 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   raster_caps_.use_gpu_rasterization = new_raster_caps.use_gpu_rasterization;
   raster_caps_.can_use_msaa = new_raster_caps.can_use_msaa;
   return true;
-}
-
-void LayerTreeHostImpl::UpdateTreeResourcesForGpuRasterizationIfNeeded() {
-  if (!UpdateGpuRasterizationStatus())
-    return;
-
-  // Clean up and replace existing tile manager with another one that uses
-  // appropriate rasterizer. Only do this however if we already have a
-  // resource pool, since otherwise we might not be able to create a new
-  // one.
-  ReleaseTileResources();
-  if (resource_pool_) {
-    CleanUpTileManagerResources();
-    CreateTileManagerResources();
-  }
-  RecreateTileResources();
-
-  // We have released tilings for both active and pending tree.
-  // We would not have any content to draw until the pending tree is activated.
-  // Prevent the active tree from drawing until activation.
-  // TODO(crbug.com/469175): Replace with RequiresHighResToDraw.
-  SetRequiresHighResToDraw();
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
@@ -3930,7 +3894,6 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   // Since the new context may support GPU raster or be capable of MSAA, update
   // status here. We don't need to check the return value since we are
   // recreating all resources already.
-  SetNeedUpdateGpuRasterizationStatus();
   UpdateGpuRasterizationStatus();
 
   // See note in LayerTreeImpl::UpdateDrawProperties, new LayerTreeFrameSink
@@ -4970,10 +4933,6 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
     return;
   property_trees->scroll_tree_mutable().OnScrollOffsetAnimated(
       element_id, scroll_node->id, scroll_offset, tree);
-}
-
-void LayerTreeHostImpl::SetNeedUpdateGpuRasterizationStatus() {
-  raster_caps_.need_update_gpu_rasterization_status = true;
 }
 
 void LayerTreeHostImpl::SetElementFilterMutated(

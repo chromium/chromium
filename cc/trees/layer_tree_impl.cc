@@ -1409,7 +1409,6 @@ void LayerTreeImpl::SetDeviceScaleFactor(float device_scale_factor) {
   set_needs_update_draw_properties();
   if (IsActiveTree())
     host_impl_->SetViewportDamage(GetDeviceViewport());
-  host_impl_->SetNeedUpdateGpuRasterizationStatus();
 }
 
 void LayerTreeImpl::SetLocalSurfaceIdFromParent(

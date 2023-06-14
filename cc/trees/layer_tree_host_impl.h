@@ -414,10 +414,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetTreeLayerScrollOffsetMutated(ElementId element_id,
                                        LayerTreeImpl* tree,
                                        const gfx::PointF& scroll_offset);
-  void SetNeedUpdateGpuRasterizationStatus();
-  bool NeedUpdateGpuRasterizationStatusForTesting() const {
-    return raster_caps().need_update_gpu_rasterization_status;
-  }
 
   // ProtectedSequenceSynchronizer implementation.
   bool IsOwnerThread() const override;
@@ -973,7 +969,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // Returns true if status changed.
   bool UpdateGpuRasterizationStatus();
-  void UpdateTreeResourcesForGpuRasterizationIfNeeded();
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
   bool AnimateScrollbars(base::TimeTicks monotonic_time);
