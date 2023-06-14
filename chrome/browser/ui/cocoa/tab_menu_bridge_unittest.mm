@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -20,6 +19,10 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 constexpr int kStaticItemCount = 4;
 
@@ -40,17 +43,17 @@ class TabMenuBridgeTest : public ::testing::Test {
     rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
     delegate_ = std::make_unique<TabStripModelUiHelperDelegate>();
     model_ = std::make_unique<TabStripModel>(delegate_.get(), nullptr);
-    menu_root_.reset(ItemWithTitle(@"Tab"));
-    menu_.reset([[NSMenu alloc] initWithTitle:@"Tab"]);
-    menu_root_.get().submenu = menu_.get();
+    menu_root_ = ItemWithTitle(@"Tab");
+    menu_ = [[NSMenu alloc] initWithTitle:@"Tab"];
+    menu_root_.submenu = menu_;
 
-    AddStaticItems(menu_.get());
+    AddStaticItems(menu_);
   }
 
   void TearDown() override { model_->CloseAllTabs(); }
 
-  NSMenuItem* menu_root() { return menu_root_.get(); }
-  NSMenu* menu() { return menu_.get(); }
+  NSMenuItem* menu_root() { return menu_root_; }
+  NSMenu* menu() { return menu_; }
   TabStripModel* model() { return model_.get(); }
   TabStripModelDelegate* delegate() { return delegate_.get(); }
 
@@ -172,8 +175,8 @@ class TabMenuBridgeTest : public ::testing::Test {
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<TabStripModelUiHelperDelegate> delegate_;
   std::unique_ptr<TabStripModel> model_;
-  base::scoped_nsobject<NSMenuItem> menu_root_;
-  base::scoped_nsobject<NSMenu> menu_;
+  NSMenuItem* __strong menu_root_;
+  NSMenu* __strong menu_;
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {

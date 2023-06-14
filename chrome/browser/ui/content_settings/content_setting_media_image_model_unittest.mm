@@ -31,6 +31,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace gfx {
 struct VectorIcon;
 }
@@ -109,12 +113,12 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
     auth_wrapper.SetMockMediaPermissionStatus(kAllowed);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
-        *content_setting_image_model, true /*is_visible*/, true /*has_icon*/,
+        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_CAMERA_ACCESSED), 0, &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(kDenied);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
-        *content_setting_image_model, true /*is_visible*/, true /*has_icon*/,
+        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED), IDS_CAMERA_TURNED_OFF,
         &vector_icons::kBlockedBadgeIcon);
     auth_wrapper.SetMockMediaPermissionStatus(kNotDetermined);
@@ -130,12 +134,12 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
     auth_wrapper.SetMockMediaPermissionStatus(kAllowed);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
-        *content_setting_image_model, true /*is_visible*/, true /*has_icon*/,
+        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED), 0, &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(kDenied);
     content_setting_image_model->Update(web_contents());
-    ExpectImageModelState(*content_setting_image_model, true /*is_visible*/,
-                          true /*has_icon*/,
+    ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+                          /*has_icon=*/true,
                           l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED),
                           IDS_MIC_TURNED_OFF, &vector_icons::kBlockedBadgeIcon);
     auth_wrapper.SetMockMediaPermissionStatus(kNotDetermined);
@@ -154,14 +158,14 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
     auth_wrapper.SetMockMediaPermissionStatus(kAllowed);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
-        *content_setting_image_model, true /*is_visible*/, true /*has_icon*/,
+        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED), 0,
         &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(kDenied);
     auth_wrapper.SetMockMediaPermissionStatus(kDenied);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
-        *content_setting_image_model, true /*is_visible*/, true /*has_icon*/,
+        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED),
         IDS_CAMERA_TURNED_OFF, &vector_icons::kBlockedBadgeIcon);
     auth_wrapper.SetMockMediaPermissionStatus(kNotDetermined);
@@ -186,8 +190,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           GetDefaultAudioDevice(), GetDefaultVideoDevice(), std::string(),
           std::string());
       content_setting_image_model->Update(web_contents());
-      ExpectImageModelState(*content_setting_image_model, true /*is_visible*/,
-                            true /*has_icon*/,
+      ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+                            /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED), 0,
                             &vector_icons::kBlockedBadgeIcon);
     }
@@ -201,8 +205,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           GetDefaultAudioDevice(), GetDefaultVideoDevice(), std::string(),
           std::string());
       content_setting_image_model->Update(web_contents());
-      ExpectImageModelState(*content_setting_image_model, true /*is_visible*/,
-                            true /*has_icon*/,
+      ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+                            /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED),
                             0, &vector_icons::kBlockedBadgeIcon);
     }
@@ -219,7 +223,7 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           std::string());
       content_setting_image_model->Update(web_contents());
       ExpectImageModelState(
-          *content_setting_image_model, true /*is_visible*/, true /*has_icon*/,
+          *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
           l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED), 0,
           &vector_icons::kBlockedBadgeIcon);
     }

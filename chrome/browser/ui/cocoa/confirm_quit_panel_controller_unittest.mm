@@ -9,6 +9,10 @@
 #include "testing/gtest_mac.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 class ConfirmQuitPanelControllerTest : public CocoaTest {
@@ -43,9 +47,9 @@ TEST_F(ConfirmQuitPanelControllerTest, ShowAndDismiss) {
 TEST_F(ConfirmQuitPanelControllerTest, KeyCombinationForMenuItem) {
   Class controller = [ConfirmQuitPanelController class];
 
-  NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
-                                                 action:@selector(unused)
-                                          keyEquivalent:@""] autorelease];
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
+                                                action:@selector(unused)
+                                         keyEquivalent:@""];
   item.keyEquivalent = @"q";
   item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
   EXPECT_NSEQ(TestString(@"{Cmd}Q"),

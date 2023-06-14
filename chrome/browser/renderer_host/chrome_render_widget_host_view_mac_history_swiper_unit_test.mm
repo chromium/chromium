@@ -4,7 +4,6 @@
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
 
-#include "base/mac/scoped_nsobject.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -12,6 +11,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 #include "ui/events/blink/did_overscroll_params.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface HistorySwiper (MacHistorySwiperTest)
 - (BOOL)browserCanNavigateInDirection:
@@ -40,8 +43,8 @@ class MacHistorySwiperTest : public CocoaTest {
       got_backwards_hint_ = true;
     }] backwardsSwipeNavigationLikely];
 
-    base::scoped_nsobject<HistorySwiper> historySwiper(
-        [[HistorySwiper alloc] initWithDelegate:mockDelegate]);
+    HistorySwiper* historySwiper =
+        [[HistorySwiper alloc] initWithDelegate:mockDelegate];
     id mockHistorySwiper = [OCMockObject partialMockForObject:historySwiper];
     [[[mockHistorySwiper stub] andReturnBool:YES]
         browserCanNavigateInDirection:history_swiper::kForwards
@@ -76,7 +79,7 @@ class MacHistorySwiperTest : public CocoaTest {
         magic_mouse_history_swipe_ = true;
     }] initiateMagicMouseHistorySwipe:NO event:[OCMArg any]];
 
-    historySwiper_ = [mockHistorySwiper retain];
+    historySwiper_ = mockHistorySwiper;
 
     begin_count_ = 0;
     end_count_ = 0;
@@ -84,12 +87,6 @@ class MacHistorySwiperTest : public CocoaTest {
     navigated_left_ = false;
     magic_mouse_history_swipe_ = false;
     got_backwards_hint_ = false;
-  }
-
-  void TearDown() override {
-    [view_ release];
-    [historySwiper_ release];
-    CocoaTest::TearDown();
   }
 
   // These methods send all 3 types of events: gesture, scroll, and touch.
@@ -105,8 +102,8 @@ class MacHistorySwiperTest : public CocoaTest {
   void sendBeginGestureEventInMiddle();
   void sendEndGestureEventAtPoint(NSPoint point);
 
-  HistorySwiper* historySwiper_;
-  NSView* view_;
+  HistorySwiper* __strong historySwiper_;
+  NSView* __strong view_;
   int begin_count_;
   int end_count_;
   bool navigated_right_;

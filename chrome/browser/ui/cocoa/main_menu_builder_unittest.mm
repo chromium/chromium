@@ -13,26 +13,28 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 using chrome::internal::MenuItemBuilder;
 
 TEST(MainMenuBuilderTest, Separator) {
-  base::scoped_nsobject<NSMenuItem> item =
-      MenuItemBuilder().is_separator().Build();
+  NSMenuItem* item = MenuItemBuilder().is_separator().Build();
   EXPECT_TRUE([item isSeparatorItem]);
   EXPECT_EQ(0, [item tag]);
 }
 
 TEST(MainMenuBuilderTest, SeparatorWithTag) {
-  base::scoped_nsobject<NSMenuItem> item =
-      MenuItemBuilder().is_separator().tag(999).Build();
+  NSMenuItem* item = MenuItemBuilder().is_separator().tag(999).Build();
   EXPECT_TRUE([item isSeparatorItem]);
   EXPECT_EQ(999, [item tag]);
 }
 
 TEST(MainMenuBuilderTest, CommandId) {
-  base::scoped_nsobject<NSMenuItem> item =
+  NSMenuItem* item =
       MenuItemBuilder(IDS_NEW_TAB).command_id(IDC_NEW_TAB).Build();
   EXPECT_EQ(@selector(commandDispatch:), [item action]);
   EXPECT_FALSE([item target]);
@@ -43,21 +45,21 @@ TEST(MainMenuBuilderTest, CommandId) {
 }
 
 TEST(MainMenuBuilderTest, CustomTargetAction) {
-  base::scoped_nsobject<NSObject> target([[NSObject alloc] init]);
+  NSObject* target = [[NSObject alloc] init];
 
-  base::scoped_nsobject<NSMenuItem> item = MenuItemBuilder(IDS_PREFERENCES)
-                                               .target(target)
-                                               .action(@selector(fooBar:))
-                                               .Build();
+  NSMenuItem* item = MenuItemBuilder(IDS_PREFERENCES)
+                         .target(target)
+                         .action(@selector(fooBar:))
+                         .Build();
   EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_PREFERENCES), [item title]);
 
-  EXPECT_EQ(target.get(), [item target]);
+  EXPECT_EQ(target, [item target]);
   EXPECT_EQ(@selector(fooBar:), [item action]);
   EXPECT_EQ(0, [item tag]);
 }
 
 TEST(MainMenuBuilderTest, Submenu) {
-  base::scoped_nsobject<NSMenuItem> item =
+  NSMenuItem* item =
       MenuItemBuilder(IDS_EDIT)
           .tag(123)
           .submenu({
@@ -89,14 +91,13 @@ TEST(MainMenuBuilderTest, Submenu) {
 }
 
 TEST(MainMenuBuilderTest, StringId) {
-  base::scoped_nsobject<NSMenuItem> item =
-      MenuItemBuilder(IDS_NEW_TAB_MAC).Build();
+  NSMenuItem* item = MenuItemBuilder(IDS_NEW_TAB_MAC).Build();
   EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_NEW_TAB_MAC), [item title]);
 }
 
 TEST(MainMenuBuilderTest, StringIdWithArg) {
   std::u16string product_name(u"MyAppIsTotallyAwesome");
-  base::scoped_nsobject<NSMenuItem> item =
+  NSMenuItem* item =
       MenuItemBuilder(IDS_ABOUT_MAC).string_format_1(product_name).Build();
 
   EXPECT_NSEQ(l10n_util::GetNSStringF(IDS_ABOUT_MAC, product_name),
@@ -104,17 +105,15 @@ TEST(MainMenuBuilderTest, StringIdWithArg) {
 }
 
 TEST(MainMenuBuilderTest, Disabled) {
-  base::scoped_nsobject<NSMenuItem> item =
-      MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(true).Build();
-  EXPECT_EQ(nil, item.get());
+  NSMenuItem* item = MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(true).Build();
+  EXPECT_EQ(nil, item);
 
   item = MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(false).Build();
   EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_NEW_TAB_MAC), [item title]);
 }
 
 TEST(MainMenuBuilderTest, Hidden) {
-  base::scoped_nsobject<NSMenuItem> item =
-      MenuItemBuilder(IDS_NEW_TAB_MAC).set_hidden(true).Build();
+  NSMenuItem* item = MenuItemBuilder(IDS_NEW_TAB_MAC).set_hidden(true).Build();
   EXPECT_EQ(true, [item isHidden]);
 }
 

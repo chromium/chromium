@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Foundation/Foundation.h>
 #import <ImageCaptureCore/ImageCaptureCore.h>
+#include "base/files/file_path.h"
 
+#include "base/apple/bridging.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/media_galleries/mac/mtp_device_delegate_impl_mac.h"
@@ -20,6 +20,10 @@
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -35,7 +39,7 @@ const char kTestFileContents[] = "test";
 
 @interface MockMTPICCameraDevice : ICCameraDevice {
  @private
-  base::scoped_nsobject<NSMutableArray> _allMediaFiles;
+  NSMutableArray* __strong _allMediaFiles;
 }
 
 - (void)addMediaFile:(ICCameraFile*)file;
@@ -45,7 +49,10 @@ const char kTestFileContents[] = "test";
 @implementation MockMTPICCameraDevice
 
 - (instancetype)init {
-  return [super initWithDictionary:@{}];
+  if (self = [super initWithDictionary:@{}]) {
+    _allMediaFiles = [NSMutableArray array];
+  }
+  return self;
 }
 
 - (NSString*)mountPoint {
@@ -75,8 +82,6 @@ const char kTestFileContents[] = "test";
 }
 
 - (void)addMediaFile:(ICCameraFile*)file {
-  if (!_allMediaFiles.get())
-    _allMediaFiles.reset([[NSMutableArray alloc] init]);
   [_allMediaFiles addObject:file];
 }
 
@@ -85,8 +90,8 @@ const char kTestFileContents[] = "test";
            downloadDelegate:(id<ICCameraDeviceDownloadDelegate>)downloadDelegate
         didDownloadSelector:(SEL)selector
                 contextInfo:(void*)contextInfo {
-  base::FilePath saveDir(
-      base::SysNSStringToUTF8([options[ICDownloadsDirectoryURL] path]));
+  base::FilePath saveDir =
+      base::mac::NSURLToFilePath(options[ICDownloadsDirectoryURL]);
   std::string saveAsFilename =
       base::SysNSStringToUTF8(options[ICSaveAsFilename]);
   // It appears that the ImageCapture library adds an extension to the requested
@@ -95,8 +100,7 @@ const char kTestFileContents[] = "test";
   base::FilePath toBeSaved = saveDir.Append(saveAsFilename);
   ASSERT_TRUE(base::WriteFile(toBeSaved, kTestFileContents));
 
-  NSMutableDictionary* returnOptions =
-      [NSMutableDictionary dictionaryWithDictionary:options];
+  NSMutableDictionary* returnOptions = [options mutableCopy];
   returnOptions[ICSavedFilename] = base::SysUTF8ToNSString(saveAsFilename);
 
   [static_cast<NSObject<ICCameraDeviceDownloadDelegate>*>(downloadDelegate)
@@ -110,8 +114,8 @@ const char kTestFileContents[] = "test";
 
 @interface MockMTPICCameraFile : ICCameraFile {
  @private
-  base::scoped_nsobject<NSString> _name;
-  base::scoped_nsobject<NSDate> _date;
+  NSString* __strong _name;
+  NSDate* __strong _date;
 }
 
 - (instancetype)init:(NSString*)name;
@@ -122,29 +126,28 @@ const char kTestFileContents[] = "test";
 
 - (instancetype)init:(NSString*)name {
   if ((self = [super init])) {
-    base::scoped_nsobject<NSDateFormatter> iso8601day(
-        [[NSDateFormatter alloc] init]);
-    [iso8601day setDateFormat:@"yyyy-MM-dd"];
-    _name.reset([name retain]);
-    _date.reset([[iso8601day dateFromString:@"2012-12-12"] retain]);
+    NSDateFormatter* iso8601day = [[NSDateFormatter alloc] init];
+    iso8601day.dateFormat = @"yyyy-MM-dd";
+    _name = [name copy];
+    _date = [iso8601day dateFromString:@"2012-12-12"];
   }
   return self;
 }
 
 - (NSString*)name {
-  return _name.get();
+  return _name;
 }
 
 - (NSString*)UTI {
-  return base::mac::CFToNSCast(kUTTypeImage);
+  return base::apple::CFToNSPtrCast(kUTTypeImage);
 }
 
 - (NSDate*)modificationDate {
-  return _date.get();
+  return _date;
 }
 
 - (NSDate*)creationDate {
-  return _date.get();
+  return _date;
 }
 
 - (off_t)fileSize {
@@ -155,7 +158,7 @@ const char kTestFileContents[] = "test";
 
 class MTPDeviceDelegateImplMacTest : public testing::Test {
  public:
-  MTPDeviceDelegateImplMacTest() : camera_(NULL), delegate_(nullptr) {}
+  MTPDeviceDelegateImplMacTest() = default;
 
   MTPDeviceDelegateImplMacTest(const MTPDeviceDelegateImplMacTest&) = delete;
   MTPDeviceDelegateImplMacTest& operator=(const MTPDeviceDelegateImplMacTest&) =
@@ -280,10 +283,10 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   storage_monitor::ImageCaptureDeviceManager manager_;
-  MockMTPICCameraDevice* camera_;
+  MockMTPICCameraDevice* __strong camera_ = nullptr;
 
   // This object needs special deletion inside the above |task_runner_|.
-  raw_ptr<MTPDeviceDelegateImplMac> delegate_;
+  raw_ptr<MTPDeviceDelegateImplMac> delegate_ = nullptr;
 
   base::File::Error error_;
   base::File::Info info_;
@@ -508,9 +511,8 @@ TEST_F(MTPDeviceDelegateImplMacTest, TestDownload) {
   info.last_accessed = t1;
   info.creation_time = t1;
   std::string kTestFileName("filename");
-  base::scoped_nsobject<MockMTPICCameraFile> picture1(
-      [[MockMTPICCameraFile alloc]
-          init:base::SysUTF8ToNSString(kTestFileName)]);
+  MockMTPICCameraFile* picture1 =
+      [[MockMTPICCameraFile alloc] init:base::SysUTF8ToNSString(kTestFileName)];
   [camera_ addMediaFile:picture1];
   delegate_->ItemAdded(kTestFileName, info);
   delegate_->NoMoreItems();

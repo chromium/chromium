@@ -26,7 +26,9 @@
 #include "sql/database.h"
 #include "testing/platform_test.h"
 
-using base::ASCIIToUTF16;
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // In order to test the Safari import functionality effectively, we store a
 // simulated Library directory containing dummy data files in the same

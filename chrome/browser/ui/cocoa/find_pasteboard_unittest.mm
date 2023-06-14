@@ -4,13 +4,16 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/cocoa/find_pasteboard.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // A subclass of FindPasteboard that doesn't write to the real find pasteboard.
 @interface FindPasteboardTesting : FindPasteboard {
@@ -58,57 +61,56 @@ class FindPasteboardTest : public CocoaTest {
 
   void SetUp() override {
     CocoaTest::SetUp();
-    pasteboard_.reset([[FindPasteboardTesting alloc] init]);
-    ASSERT_TRUE(pasteboard_.get());
+    pasteboard_ = [[FindPasteboardTesting alloc] init];
+    ASSERT_TRUE(pasteboard_);
   }
 
   void TearDown() override {
-    pasteboard_.reset();
+    pasteboard_ = nil;
     CocoaTest::TearDown();
   }
 
  protected:
-  base::scoped_nsobject<FindPasteboardTesting> pasteboard_;
+  FindPasteboardTesting* __strong pasteboard_;
 };
 
 TEST_F(FindPasteboardTest, SettingTextUpdatesPboard) {
-  [pasteboard_.get() setFindText:@"text"];
-  EXPECT_EQ(NSOrderedSame,
-            [[pasteboard_.get() findPasteboardText] compare:@"text"]);
+  [pasteboard_ setFindText:@"text"];
+  EXPECT_EQ(NSOrderedSame, [[pasteboard_ findPasteboardText] compare:@"text"]);
 }
 
 TEST_F(FindPasteboardTest, ReadingFromPboardUpdatesFindText) {
-  [pasteboard_.get() setFindPasteboardText:@"text"];
-  [pasteboard_.get() loadTextFromPasteboard:nil];
-  EXPECT_EQ(NSOrderedSame, [[pasteboard_.get() findText] compare:@"text"]);
+  [pasteboard_ setFindPasteboardText:@"text"];
+  [pasteboard_ loadTextFromPasteboard:nil];
+  EXPECT_EQ(NSOrderedSame, [[pasteboard_ findText] compare:@"text"]);
 }
 
 TEST_F(FindPasteboardTest, SendsNotificationWhenTextChanges) {
   __block int notification_count = 0;
   [NSNotificationCenter.defaultCenter
       addObserverForName:kFindPasteboardChangedNotification
-                  object:pasteboard_.get()
+                  object:pasteboard_
                    queue:nil
               usingBlock:^(NSNotification* note) {
                 ++notification_count;
               }];
   EXPECT_EQ(0, notification_count);
-  [pasteboard_.get() setFindText:@"text"];
+  [pasteboard_ setFindText:@"text"];
   EXPECT_EQ(1, notification_count);
-  [pasteboard_.get() setFindText:@"text"];
+  [pasteboard_ setFindText:@"text"];
   EXPECT_EQ(1, notification_count);
-  [pasteboard_.get() setFindText:@"other text"];
+  [pasteboard_ setFindText:@"other text"];
   EXPECT_EQ(2, notification_count);
 
-  [pasteboard_.get() setFindPasteboardText:@"other text"];
-  [pasteboard_.get() loadTextFromPasteboard:nil];
+  [pasteboard_ setFindPasteboardText:@"other text"];
+  [pasteboard_ loadTextFromPasteboard:nil];
   EXPECT_EQ(2, notification_count);
 
-  [pasteboard_.get() setFindPasteboardText:@"otherer text"];
-  [pasteboard_.get() loadTextFromPasteboard:nil];
+  [pasteboard_ setFindPasteboardText:@"otherer text"];
+  [pasteboard_ loadTextFromPasteboard:nil];
   EXPECT_EQ(3, notification_count);
 
-  [[NSNotificationCenter defaultCenter] removeObserver:pasteboard_.get()];
+  [NSNotificationCenter.defaultCenter removeObserver:pasteboard_];
 }
 
 }  // namespace

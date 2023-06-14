@@ -35,11 +35,15 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 class MockTRS : public sessions::TabRestoreServiceImpl {
  public:
-  MockTRS(Profile* profile)
+  explicit MockTRS(Profile* profile)
       : sessions::TabRestoreServiceImpl(
             std::make_unique<ChromeTabRestoreServiceClient>(profile),
             profile->GetPrefs(),
@@ -99,14 +103,14 @@ std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
 
 class MockBridge : public HistoryMenuBridge {
  public:
-  MockBridge(Profile* profile)
+  explicit MockBridge(Profile* profile)
       : HistoryMenuBridge(profile),
         menu_([[NSMenu alloc] initWithTitle:@"History"]) {}
 
-  NSMenu* HistoryMenu() override { return menu_.get(); }
+  NSMenu* HistoryMenu() override { return menu_; }
 
  private:
-  base::scoped_nsobject<NSMenu> menu_;
+  NSMenu* __strong menu_;
 };
 
 class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
@@ -154,8 +158,9 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
                             NSString* title,
                             SEL selector,
                             int tag) {
-    NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:title action:NULL
-                                            keyEquivalent:@""] autorelease];
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
+                                                  action:nullptr
+                                           keyEquivalent:@""];
     [item setTag:tag];
     if (selector) {
       [item setAction:selector];
@@ -218,13 +223,13 @@ void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
   NSInteger always_visible_items[] = {IDC_HOME, IDC_BACK, IDC_FORWARD};
   for (size_t i = 0; i < std::size(always_visible_items); i++) {
     // Create a fake item with tag.
-    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
-    item.get().tag = always_visible_items[i];
+    NSMenuItem* item = [[NSMenuItem alloc] init];
+    item.tag = always_visible_items[i];
     EXPECT_TRUE(test->ShouldMenuItemBeVisible(item));
   }
 
-  // Check visibilty of items belong to regular mode. They should be visible for
-  // regular mode, not for incognito mode.
+  // Check visibility of items belong to regular mode. They should be visible
+  // for regular mode, not for incognito mode.
   NSInteger regular_visible_items[] = {
       HistoryMenuBridge::kRecentlyClosedSeparator,
       HistoryMenuBridge::kRecentlyClosedTitle,
@@ -234,16 +239,16 @@ void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
       IDC_SHOW_HISTORY};
   for (size_t i = 0; i < std::size(regular_visible_items); i++) {
     // Create a fake item with tag.
-    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
-    item.get().tag = regular_visible_items[i];
+    NSMenuItem* item = [[NSMenuItem alloc] init];
+    item.tag = regular_visible_items[i];
     EXPECT_EQ(!is_incognito, test->ShouldMenuItemBeVisible(item));
   }
 }
 
 // Edge case test for clearing until the end of a menu.
 TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuUntilEnd) {
-  NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
-  AddItemToMenu(menu, @"HEADER", NULL, HistoryMenuBridge::kVisitedTitle);
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"history foo"];
+  AddItemToMenu(menu, @"HEADER", nullptr, HistoryMenuBridge::kVisitedTitle);
 
   NSInteger tag = HistoryMenuBridge::kVisited;
   AddItemToMenu(menu, @"alpha", @selector(openHistoryMenuItem:), tag);
@@ -260,13 +265,14 @@ TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuUntilEnd) {
 
 // Skip menu items that are not hooked up to |-openHistoryMenuItem:|.
 TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuSkipping) {
-  NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
-  AddItemToMenu(menu, @"HEADER", NULL, HistoryMenuBridge::kVisitedTitle);
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"history foo"];
+  AddItemToMenu(menu, @"HEADER", nullptr, HistoryMenuBridge::kVisitedTitle);
 
   NSInteger tag = HistoryMenuBridge::kVisited;
   AddItemToMenu(menu, @"alpha", @selector(openHistoryMenuItem:), tag);
   AddItemToMenu(menu, @"bravo", @selector(openHistoryMenuItem:), tag);
-  AddItemToMenu(menu, @"TITLE", NULL, HistoryMenuBridge::kRecentlyClosedTitle);
+  AddItemToMenu(menu, @"TITLE", nullptr,
+                HistoryMenuBridge::kRecentlyClosedTitle);
   AddItemToMenu(menu, @"charlie", @selector(openHistoryMenuItem:), tag);
 
   ClearMenuSection(menu, tag);
@@ -280,8 +286,8 @@ TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuSkipping) {
 
 // Edge case test for clearing an empty menu.
 TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuEmpty) {
-  NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
-  AddItemToMenu(menu, @"HEADER", NULL, HistoryMenuBridge::kVisited);
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"history foo"];
+  AddItemToMenu(menu, @"HEADER", nullptr, HistoryMenuBridge::kVisited);
 
   ClearMenuSection(menu, HistoryMenuBridge::kVisited);
 
@@ -292,7 +298,7 @@ TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuEmpty) {
 
 // Test that AddItemToMenu() properly adds HistoryItem objects as menus.
 TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
-  NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"history foo"];
 
   const std::u16string short_url = u"http://foo/";
   const std::u16string long_url =

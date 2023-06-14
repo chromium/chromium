@@ -24,13 +24,17 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
-  BookmarkMenuBridgeTest() {}
+  BookmarkMenuBridgeTest() = default;
 
   BookmarkMenuBridgeTest(const BookmarkMenuBridgeTest&) = delete;
   BookmarkMenuBridgeTest& operator=(const BookmarkMenuBridgeTest&) = delete;
@@ -40,7 +44,7 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
     bookmarks::test::WaitForBookmarkModelToLoad(
         BookmarkModelFactory::GetForBrowserContext(profile()));
-    menu_.reset([[NSMenu alloc] initWithTitle:@"test"]);
+    menu_ = [[NSMenu alloc] initWithTitle:@"test"];
 
     bridge_ = std::make_unique<BookmarkMenuBridge>(profile(), menu_);
   }
@@ -82,9 +86,9 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   }
 
   NSMenuItem* AddTestMenuItem(NSMenu *menu, NSString *title, SEL selector) {
-    NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:title
-                                                   action:nullptr
-                                            keyEquivalent:@""] autorelease];
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
+                                                  action:nullptr
+                                           keyEquivalent:@""];
     if (selector)
       [item setAction:selector];
     [menu addItem:item];
@@ -92,7 +96,7 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  base::scoped_nsobject<NSMenu> menu_;
+  NSMenu* __strong menu_;
   std::unique_ptr<BookmarkMenuBridge> bridge_;
 
  private:
@@ -127,7 +131,7 @@ TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
   AddTestMenuItem(menu_, @"hi mom", nil);
   AddTestMenuItem(menu_, @"not", @selector(openBookmarkMenuItem:));
   NSMenuItem* test_item = AddTestMenuItem(menu_, @"hi mom", nil);
-  [test_item setSubmenu:[[[NSMenu alloc] initWithTitle:@"bar"] autorelease]];
+  [test_item setSubmenu:[[NSMenu alloc] initWithTitle:@"bar"]];
   AddTestMenuItem(menu_, @"not", @selector(openBookmarkMenuItem:));
   AddTestMenuItem(menu_, @"zippy", @selector(length));
   [menu_ addItem:[NSMenuItem separatorItem]];
@@ -282,15 +286,14 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   model->AddURL(folder, 1, u"Test 2", GURL("http://second-test"));
 
   UpdateRootMenu();
-  base::scoped_nsobject<NSMenu> old_menu(
-      [[[menu_ itemAtIndex:1] submenu] retain]);
+  NSMenu* old_menu = [[menu_ itemAtIndex:1] submenu];
   EXPECT_TRUE([old_menu delegate]);
 
   // If the menu was never built, ensure UpdateRootMenu() also clears delegates
   // from unbuilt submenus, since they will no longer be reachable.
   InvalidateMenu();
   UpdateRootMenu();
-  EXPECT_NE(old_menu.get(), [[menu_ itemAtIndex:1] submenu]);
+  EXPECT_NE(old_menu, [[menu_ itemAtIndex:1] submenu]);
   EXPECT_FALSE([old_menu delegate]);
 
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder,
