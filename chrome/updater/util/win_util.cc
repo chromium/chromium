@@ -1100,7 +1100,6 @@ void LogClsidEntries(REFCLSID clsid) {
       base::StrCat({base::StrCat({L"Software\\Classes\\CLSID\\",
                                   base::win::WStringFromGUID(clsid)}),
                     L"\\LocalServer32"}));
-
   for (const HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER}) {
     for (const REGSAM key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
       base::win::RegKey key;

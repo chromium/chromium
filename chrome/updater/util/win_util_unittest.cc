@@ -510,7 +510,6 @@ TEST(WinUtil, LogClsidEntries) {
   CLSID clsid = {};
   EXPECT_HRESULT_SUCCEEDED(
       ::CLSIDFromProgID(L"InternetExplorer.Application", &clsid));
-
   LogClsidEntries(clsid);
 }
 

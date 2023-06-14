@@ -410,12 +410,6 @@ bool ComServerApp::SwapInNewVersion() {
     LOG_IF(ERROR, DeleteLegacyEntriesPerUser());
   }
 
-  // TODO(crbug.com/1425609) - revert the CL that introduced this logging
-  // after the bug is resolved.
-  for (const auto& clsid : GetServers(false, updater_scope())) {
-    LogClsidEntries(clsid);
-  }
-
   return true;
 }
 

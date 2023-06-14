@@ -83,11 +83,6 @@ class ProxyImplBase {
         }
         VLOG(2) << "::CoCreateInstance failed: "
                 << base::win::WStringFromGUID(clsid) << ": " << std::hex << hr;
-
-        // TODO(crbug.com/1425609) - revert the CL that introduced this logging
-        // after the bug is resolved.
-        LogClsidEntries(clsid);
-
         if (hr == REGDB_E_CLASSNOTREG) {
           return base::unexpected(hr);
         }
