@@ -2058,10 +2058,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   // Try a direct texture upload without using SkSurface.
-  // TODO(crbug.com/1423576): Enable this path for Graphite after fixing
-  // RGBA/BGRA mismatch.
-  if (!graphite_context() &&
-      gfx::Size(src_width, src_height) == dest_shared_image->size() &&
+  if (gfx::Size(src_width, src_height) == dest_shared_image->size() &&
       x_offset == 0 && y_offset == 0 &&
       (src_info.alphaType() == dest_shared_image->alpha_type() ||
        src_info.alphaType() == kUnknown_SkAlphaType) &&
