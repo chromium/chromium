@@ -1844,7 +1844,8 @@ class TabListMediator {
         };
 
         if (mActionsOnAllRelatedTabs && relatedTabList.size() > 1) {
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
+            if (mMode != TabListMode.LIST
+                    || !TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 // For tab group card in grid tab switcher, the favicon is set to be null.
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON, null);
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, null);
@@ -1859,7 +1860,7 @@ class TabListMediator {
                 urls.add(relatedTabList.get(i).getUrl());
             }
 
-            // For tab group card in grid tab switcher, the favicon is the composed favicon.
+            // For tab group card in list tab switcher, the favicon is the composed favicon.
             mModel.get(modelIndex)
                     .model.set(TabProperties.FAVICON_FETCHER,
                             mTabListFaviconProvider.getComposedFaviconImageFetcher(
