@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -28,6 +29,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -268,6 +270,55 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       // Verify the first tab in the group is the active tab.
       CheckResult(
           [&]() { return browser()->tab_strip_model()->active_index(); }, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       UpdateButtonWhenTabGroupVisualDataChanges) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  const std::u16string new_title = u"New title";
+  const tab_groups::TabGroupColorId new_color =
+      tab_groups::TabGroupColorId::kPurple;
+
+  TabGroup* const group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+  const tab_groups::TabGroupVisualData* const old_visual_data =
+      group->visual_data();
+
+  RunTestSequence(
+      FinishTabstripAnimations(),
+      // Show the bookmarks bar where the buttons will be displayed.
+      ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Verify the button in the bookmarks bar has the same color and title
+      // as the tab group.
+      CheckViewProperty(kSavedTabGroupButtonElementId,
+                        &SavedTabGroupButton::GetText,
+                        old_visual_data->title()),
+      CheckViewProperty(kSavedTabGroupButtonElementId,
+                        &SavedTabGroupButton::tab_group_color_id,
+                        old_visual_data->color()),
+      // Update the text and color.
+      Do([&]() {
+        group->SetVisualData(/*visual_data=*/{new_title, new_color});
+      }),
+      // Verify the button has the same color and title as the tab group.
+      CheckViewProperty(kSavedTabGroupButtonElementId,
+                        &SavedTabGroupButton::GetText, new_title),
+      CheckViewProperty(kSavedTabGroupButtonElementId,
+                        &SavedTabGroupButton::tab_group_color_id, new_color),
+      // Click the tab group header to close the menu.
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations());
 }
 
 // TODO(crbug.com/1432770): Re-enable this test once it doesn't get stuck in
