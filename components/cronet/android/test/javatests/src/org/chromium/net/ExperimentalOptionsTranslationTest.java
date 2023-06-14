@@ -5,11 +5,9 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -50,7 +48,7 @@ public class ExperimentalOptionsTranslationTest {
                 ConnectionMigrationOptions.builder().enableDefaultNetworkMigration(true));
         builder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -65,8 +63,9 @@ public class ExperimentalOptionsTranslationTest {
                 ConnectionMigrationOptions.builder().enableDefaultNetworkMigration(true));
         builder.build();
 
-        assertTrue(mockBuilderImpl.mConnectionMigrationOptions.getEnableDefaultNetworkMigration());
-        assertNull(mockBuilderImpl.mEffectiveExperimentalOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions.getEnableDefaultNetworkMigration())
+                .isTrue();
+        assertThat(mockBuilderImpl.mEffectiveExperimentalOptions).isNull();
     }
 
     @Test
@@ -86,7 +85,7 @@ public class ExperimentalOptionsTranslationTest {
                         "{\"QUIC\": {\"migrate_sessions_on_network_change_v2\": false}}");
         builder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -101,7 +100,7 @@ public class ExperimentalOptionsTranslationTest {
                 ConnectionMigrationOptions.builder().allowNonDefaultNetworkUsage(true));
         builder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals("{\"QUIC\":{}}", mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -115,7 +114,7 @@ public class ExperimentalOptionsTranslationTest {
                 ConnectionMigrationOptions.builder().enablePathDegradationMigration(true));
         builder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals("{\"QUIC\":{\"allow_port_migration\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -131,7 +130,7 @@ public class ExperimentalOptionsTranslationTest {
                                                       .allowNonDefaultNetworkUsage(true));
         builder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals("{\"QUIC\":{\"migrate_sessions_early_v2\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -147,7 +146,7 @@ public class ExperimentalOptionsTranslationTest {
                                                       .allowNonDefaultNetworkUsage(false));
         builder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(
                 "{\"QUIC\":{\"migrate_sessions_early_v2\":false,\"allow_port_migration\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
@@ -164,9 +163,8 @@ public class ExperimentalOptionsTranslationTest {
                                                       .allowNonDefaultNetworkUsage(true));
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertTrue(e.getMessage().contains(
-                "Unable to turn on non-default network usage without path degradation"
-                + " migration"));
+        assertThat(e).hasMessageThat().contains(
+                "Unable to turn on non-default network usage without path degradation migration");
     }
 
     @Test
@@ -366,13 +364,13 @@ public class ExperimentalOptionsTranslationTest {
             JSONObject expectedJson = new JSONObject(expected);
             JSONObject actualJson = new JSONObject(actual);
 
-            assertJsonEquals(expectedJson, actualJson);
+            assertJsonEquals(expectedJson, actualJson, "");
         } catch (JSONException e) {
             throw new AssertionError(e);
         }
     }
 
-    private static void assertJsonEquals(JSONObject expected, JSONObject actual)
+    private static void assertJsonEquals(JSONObject expected, JSONObject actual, String currentPath)
             throws JSONException {
         assertThat(jsonKeys(actual)).isEqualTo(jsonKeys(expected));
 
@@ -382,15 +380,16 @@ public class ExperimentalOptionsTranslationTest {
             if (expectedValue == actualValue) {
                 continue;
             }
+            String fullKey = currentPath.isEmpty() ? key : currentPath + "." + key;
             if (expectedValue instanceof JSONObject) {
-                if (actualValue instanceof JSONObject) {
-                    assertJsonEquals((JSONObject) expectedValue, (JSONObject) actualValue);
-                } else {
-                    fail("key [" + key + "]: expected [" + expectedValue + "] but got ["
-                            + actualValue + "]");
-                }
+                assertWithMessage("key is '" + fullKey + "'")
+                        .that(actualValue)
+                        .isInstanceOf(JSONObject.class);
+                assertJsonEquals((JSONObject) expectedValue, (JSONObject) actualValue, fullKey);
             } else {
-                assertThat(actualValue).isEqualTo(expectedValue);
+                assertWithMessage("key is '" + fullKey + "'")
+                        .that(actualValue)
+                        .isEqualTo(expectedValue);
             }
         }
     }
