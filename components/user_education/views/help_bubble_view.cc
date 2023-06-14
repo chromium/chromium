@@ -474,9 +474,21 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     : BubbleDialogDelegateView(
           anchor.view,
           TranslateArrow(params.arrow),
+#if BUILDFLAG(IS_MAC)
+          // On Mac, the default DIALOG_SHADOW is system-drawn, which is
+          // incompatible with visible bubble arrows. Therefore, always use
+          // STANDARD_SHADOW.
+          views::BubbleBorder::STANDARD_SHADOW
+#else
+          // On other platforms, all shadows are Views-drawn, which means we
+          // can revert back to the (slightly better-looking) default
+          // DIALOG_SHADOW following the 2023 refresh. The old pre-refresh
+          // value is preserved just for consistency.
           base::FeatureList::IsEnabled(features::kChromeRefresh2023)
               ? views::BubbleBorder::DIALOG_SHADOW
-              : views::BubbleBorder::STANDARD_SHADOW),
+              : views::BubbleBorder::STANDARD_SHADOW
+#endif
+          ),
       delegate_(delegate) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
