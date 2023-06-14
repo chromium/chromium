@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -69,10 +71,17 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, WebAppsHasBoundsOnOpen) {
   app_browser->window()->Close();
 }
 
-class BrowserFrameColorModeTest : public BrowserFrameTest {
+// Runs browser color scheme tests with ChromeRefresh2023 enabled and disabled.
+class BrowserFrameColorModeTest : public BrowserFrameTest,
+                                  public testing::WithParamInterface<bool> {
  public:
   static constexpr SkColor kLightColor = SK_ColorWHITE;
   static constexpr SkColor kDarkColor = SK_ColorBLACK;
+
+  BrowserFrameColorModeTest() {
+    feature_list_.InitWithFeatureState(features::kChromeRefresh2023,
+                                       GetParam());
+  }
 
   // BrowserFrameTest:
   void SetUpOnMainThread() override {
@@ -110,10 +119,13 @@ class BrowserFrameColorModeTest : public BrowserFrameTest {
   }
 
   Profile* profile() { return browser()->profile(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verifies the BrowserFrame honors the BrowserColorScheme pref.
-IN_PROC_BROWSER_TEST_F(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
   // Assert the browser follows the system color mode. Simulate the system color
   // mode by setting the widget level color mode override.
   views::Widget* browser_frame =
@@ -129,22 +141,33 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
 
   // Set the BrowserColorScheme pref. The BrowserFrame should ignore the system
-  // color mode.
+  // color mode if running ChromeRefresh2023. Otherwise BrowserFrame should
+  // track the system color mode.
   browser_frame->SetColorModeOverride(
       ui::ColorProviderManager::ColorMode::kLight);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
-  EXPECT_EQ(kDarkColor,
-            browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(kDarkColor, browser_frame->GetColorProvider()->GetColor(
+                              ui::kColorSysPrimary));
+  } else {
+    EXPECT_EQ(kLightColor, browser_frame->GetColorProvider()->GetColor(
+                               ui::kColorSysPrimary));
+  }
 
   browser_frame->SetColorModeOverride(
       ui::ColorProviderManager::ColorMode::kDark);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
-  EXPECT_EQ(kLightColor,
-            browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(kLightColor, browser_frame->GetColorProvider()->GetColor(
+                               ui::kColorSysPrimary));
+  } else {
+    EXPECT_EQ(kDarkColor, browser_frame->GetColorProvider()->GetColor(
+                              ui::kColorSysPrimary));
+  }
 }
 
 // Verifies incognito browsers will always use the dark ColorMode.
-IN_PROC_BROWSER_TEST_F(BrowserFrameColorModeTest, IncognitoAlwaysDarkMode) {
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, IncognitoAlwaysDarkMode) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
   views::Widget* incognito_browser_frame =
@@ -162,3 +185,5 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameColorModeTest, IncognitoAlwaysDarkMode) {
   EXPECT_EQ(kDarkColor, incognito_browser_frame->GetColorProvider()->GetColor(
                             ui::kColorSysPrimary));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, BrowserFrameColorModeTest, testing::Bool());

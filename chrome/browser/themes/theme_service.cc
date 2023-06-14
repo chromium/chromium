@@ -64,6 +64,7 @@
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -518,8 +519,12 @@ void ThemeService::SetBrowserColorScheme(
 }
 
 ThemeService::BrowserColorScheme ThemeService::GetBrowserColorScheme() const {
-  return static_cast<BrowserColorScheme>(
-      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme));
+  // If not running ChromeRefresh2023 we should always defer to the system color
+  // scheme.
+  return features::IsChromeRefresh2023()
+             ? static_cast<BrowserColorScheme>(
+                   profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme))
+             : BrowserColorScheme::kSystem;
 }
 
 // static
