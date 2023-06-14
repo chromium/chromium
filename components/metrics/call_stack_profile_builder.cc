@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -229,14 +228,6 @@ void CallStackProfileBuilder::OnSampleCompleted(
 
   if (profile_start_time_.is_null())
     profile_start_time_ = sample_timestamp;
-
-  // Speculation for crash https://crbug.com/1414744:
-  // We seem to be getting sample timestamps out of order. Check if so. Record
-  // how often we get things out of order.
-  // TODO(crbug.com/1414744): Remove once investigation is complete.
-  bool in_order = sample_timestamps_.empty() ||
-                  (sample_timestamps_.back() <= sample_timestamp);
-  UMA_HISTOGRAM_BOOLEAN("UMA.StackProfiler.SampleInOrder", in_order);
 
   sample_timestamps_.push_back(sample_timestamp);
 }
