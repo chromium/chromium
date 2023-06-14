@@ -137,6 +137,15 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
+     * @param text The text to replace the Omnibox content with.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setFillIntoEdit(String text) {
+        mFillIntoEdit = text;
+        return this;
+    }
+
+    /**
      * @param id Group Id for newly built suggestion.
      * @return Omnibox suggestion builder.
      */

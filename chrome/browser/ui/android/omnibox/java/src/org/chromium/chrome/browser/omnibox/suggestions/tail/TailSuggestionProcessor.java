@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -20,7 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** A class that handles model and view creation for the tail suggestions. */
 public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final boolean mAlignTailSuggestions;
-    private AlignmentManager mAlignmentManager;
+    private @Nullable AlignmentManager mAlignmentManager;
 
     /**
      * @param context An Android context.
@@ -33,8 +35,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
-        return mAlignTailSuggestions
-                && suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_TAIL;
+        return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_TAIL;
     }
 
     @Override
@@ -51,12 +52,11 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
-        assert mAlignmentManager != null;
-
         model.set(TailSuggestionViewProperties.ALIGNMENT_MANAGER, mAlignmentManager);
         model.set(TailSuggestionViewProperties.FILL_INTO_EDIT, suggestion.getFillIntoEdit());
 
-        final SuggestionSpannable text = new SuggestionSpannable(suggestion.getDisplayText());
+        final SuggestionSpannable text =
+                new SuggestionSpannable("… " + suggestion.getDisplayText());
         applyHighlightToMatchRegions(text, suggestion.getDisplayTextClassifications());
         model.set(TailSuggestionViewProperties.TEXT, text);
 
@@ -71,6 +71,6 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public void onSuggestionsReceived() {
         super.onSuggestionsReceived();
-        mAlignmentManager = new AlignmentManager();
+        mAlignmentManager = mAlignTailSuggestions ? new AlignmentManager() : null;
     }
 }

@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
+import android.util.ArraySet;
 import android.view.View;
 
 import org.chromium.ui.base.ViewUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Coordinates horizontal alignment of the tail suggestions.
@@ -30,9 +28,9 @@ import java.util.List;
  *    [             ... Omnibox Android]
  */
 class AlignmentManager {
-    private final List<View> mVisibleTailSuggestions = new ArrayList<>();
+    private final ArraySet<View> mVisibleTailSuggestions = new ArraySet<>();
     private int mLongestFullTextWidth;
-    private int mLongestQueryWidth;
+    private int mLongestCompletionWidth;
 
     /**
      * Compute additional suggestion text offset for tail suggestions.
@@ -42,21 +40,21 @@ class AlignmentManager {
      * - all tail suggestions are left aligned with each other.
      *
      * @param requestor View requesting the pad.
-     * @param queryTextWidth Length of the text that is displayed in the suggestion.
+     * @param completionTextWidth Length of the text that is displayed in the suggestion.
      * @param fullTextWidth Total length of the query (user input + tail).
      * @param textAreaWidth Maximum area size available for tail suggestion.
      * @return additional padding required to properly adjust tail suggestion.
      */
     int requestStartPadding(
-            View requestor, int queryTextWidth, int fullTextWidth, int textAreaWidth) {
+            View requestor, int completionTextWidth, int fullTextWidth, int textAreaWidth) {
         final int lastLongestFullTextWidth = mLongestFullTextWidth;
         mLongestFullTextWidth = Math.max(mLongestFullTextWidth, fullTextWidth);
-        mLongestQueryWidth = Math.max(mLongestQueryWidth, queryTextWidth);
+        mLongestCompletionWidth = Math.max(mLongestCompletionWidth, completionTextWidth);
 
         // If there is enough space to render entire user text, padding is equal to everything not
         // covered by query text.
         if (textAreaWidth >= mLongestFullTextWidth) {
-            return (fullTextWidth - queryTextWidth);
+            return (fullTextWidth - completionTextWidth);
         }
 
         // Only re-layout all children, if we found a new longest text.
@@ -64,7 +62,7 @@ class AlignmentManager {
             relayoutAllViewsExcept(requestor);
         }
 
-        return Math.max(textAreaWidth - mLongestQueryWidth, 0);
+        return Math.max(textAreaWidth - mLongestCompletionWidth, 0);
     }
 
     /**
@@ -87,7 +85,7 @@ class AlignmentManager {
     private void relayoutAllViewsExcept(View excluded) {
         final int count = mVisibleTailSuggestions.size();
         for (int index = 0; index < count; ++index) {
-            final View view = mVisibleTailSuggestions.get(index);
+            final View view = mVisibleTailSuggestions.valueAt(index);
             if (view == excluded) continue;
             ViewUtils.requestLayout(view, "AlignmentManger.relayoutAllViewsExcept");
         }

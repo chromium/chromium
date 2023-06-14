@@ -456,12 +456,6 @@ public class BaseSuggestionViewTest {
         executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
     }
 
-    @Test(expected = AssertionError.class)
-    public void layout_emptyContentViews() {
-        mContentView.setMinimumHeight(0);
-        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
-    }
-
     @Test
     public void layout_minimumHeightWithNoFooterIsSemicompact() {
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);

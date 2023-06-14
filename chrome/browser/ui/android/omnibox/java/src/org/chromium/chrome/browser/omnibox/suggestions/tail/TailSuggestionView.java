@@ -37,7 +37,9 @@ public class TailSuggestionView extends TextView {
      */
     void setAlignmentManager(AlignmentManager coordinator) {
         mAlignmentManager = coordinator;
-        mAlignmentManager.registerView(this);
+        if (mAlignmentManager != null) {
+            mAlignmentManager.registerView(this);
+        }
     }
 
     /**
