@@ -20,7 +20,7 @@ std::unique_ptr<ChromePrivateNetworkDeviceChooser>
 ChromePrivateNetworkDeviceDelegate::RunChooser(
     content::RenderFrameHost& frame,
     std::unique_ptr<blink::mojom::PrivateNetworkDevice> device,
-    const ChromePrivateNetworkDeviceChooser::EventHandler& event_handler) {
+    ChromePrivateNetworkDeviceChooser::EventHandler event_handler) {
   auto controller = std::make_unique<PrivateNetworkDeviceChooserController>(
       &frame, std::move(device), std::move(event_handler));
 #if BUILDFLAG(IS_ANDROID)

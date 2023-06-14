@@ -49,7 +49,7 @@ class ChromePrivateNetworkDeviceDelegate {
   std::unique_ptr<ChromePrivateNetworkDeviceChooser> RunChooser(
       content::RenderFrameHost& frame,
       std::unique_ptr<blink::mojom::PrivateNetworkDevice> device,
-      const ChromePrivateNetworkDeviceChooser::EventHandler& event_handler);
+      ChromePrivateNetworkDeviceChooser::EventHandler event_handler);
 
   // Functions to manage the set of Observer instances registered to this
   // object.
