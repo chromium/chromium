@@ -22,6 +22,7 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {changeDirectory} from '../../state/actions/current_directory.js';
 import {getFileData, getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
@@ -132,10 +133,20 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
 
   // The event target could still be a descendant of a DirectoryItem element
   // (e.g. the eject button).
-  if (fileManager.ui.directoryTree.contains(/** @type {Node} */ (element))) {
-    const treeItem = element.closest('.tree-item');
-    if (treeItem && treeItem.entry) {
-      return [treeItem.entry];
+  if (util.isFilesAppExperimental()) {
+    // Handle eject button in the new directory tree.
+    if (element.classList.contains('root-eject')) {
+      const treeItem = element.closest('xf-tree-item');
+      if (treeItem?.entry) {
+        return [treeItem.entry];
+      }
+    }
+  } else {
+    if (fileManager.ui.directoryTree.contains(/** @type {Node} */ (element))) {
+      const treeItem = element.closest('.tree-item');
+      if (treeItem && treeItem.entry) {
+        return [treeItem.entry];
+      }
     }
   }
 
@@ -265,13 +276,21 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
 CommandUtil.createVolumeSwitchCommand = index =>
     new (class extends FilesCommand {
       execute(event, fileManager) {
-        fileManager.directoryTree.activateByIndex(index - 1);
+        if (util.isFilesAppExperimental()) {
+          const items = fileManager.ui.directoryTree.items;
+          if (items[index - 1]?.entry) {
+            getStore().dispatch(
+                changeDirectory({toKey: items[index - 1].entry.toURL()}));
+          }
+        } else {
+          fileManager.ui.directoryTree.activateByIndex(index - 1);
+        }
       }
 
       /** @override */
       canExecute(event, fileManager) {
         event.canExecute =
-            index > 0 && index <= fileManager.directoryTree.items.length;
+            index > 0 && index <= fileManager.ui.directoryTree.items.length;
       }
     })();
 
@@ -987,7 +1006,6 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     }
 
     const directoryModel = fileManager.directoryModel;
-    const directoryTree = fileManager.ui.directoryTree;
     const listContainer = fileManager.ui.listContainer;
     this.busy_ = true;
 
@@ -1005,11 +1023,24 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
 
                 // Select new directory and start rename operation.
                 if (executedFromDirectoryTree) {
-                  directoryTree.updateAndSelectNewDirectory(
-                      targetDirectory, newDirectory);
-                  fileManager.directoryTreeNamingController.attachAndStart(
-                      assert(fileManager.ui.directoryTree.selectedItem), false,
-                      null);
+                  if (util.isFilesAppExperimental()) {
+                    // The above `targetDirectory.getDirectory` call will create
+                    // a new directory, the new directory's file watcher handler
+                    // will re-read the parent directory and the new tree item
+                    // will be rendered automatically, we just need to tell the
+                    // tree container which item should enter into rename
+                    // status.
+                    fileManager.ui.directoryTreeContainer.entryKeyToRename =
+                        newDirectory.toURL();
+                  } else {
+                    const directoryTree =
+                        /** @type {DirectoryTree} */ (
+                            fileManager.ui.directoryTree);
+                    directoryTree.updateAndSelectNewDirectory(
+                        targetDirectory, newDirectory);
+                    fileManager.directoryTreeNamingController.attachAndStart(
+                        assert(directoryTree.selectedItem), false, null);
+                  }
                   this.busy_ = false;
                 } else {
                   directoryModel.updateAndSelectNewDirectory(newDirectory)

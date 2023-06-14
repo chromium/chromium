@@ -182,7 +182,11 @@ export class DirectoryTreeNamingController {
 
       // Put the new name in the .label element before detaching the
       // <input> to prevent showing the old name.
-      this.getLabelElement_().textContent = newName;
+      if (util.isFilesAppExperimental()) {
+        this.currentDirectoryItem_.label = newName;
+      } else {
+        this.getLabelElement_().textContent = newName;
+      }
 
       // We currently don't have promises/callbacks for when removableRoots are
       // successfully renamed, so we can't update their subdirectories or
@@ -191,8 +195,10 @@ export class DirectoryTreeNamingController {
         return;
       }
 
-      this.currentDirectoryItem_.entry = newEntry;
-      this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
+      if (!util.isFilesAppExperimental()) {
+        this.currentDirectoryItem_.entry = newEntry;
+        this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
+      }
       if (window.IN_TEST) {
         this.currentDirectoryItem_.setAttribute('entry-label', newName);
       }

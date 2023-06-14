@@ -15,7 +15,6 @@ import {NamingController} from '../foreground/js/naming_controller.js';
 import {ProvidersModel} from '../foreground/js/providers_model.js';
 import {SpinnerController} from '../foreground/js/spinner_controller.js';
 import {TaskController} from '../foreground/js/task_controller.js';
-import {DirectoryTree} from '../foreground/js/ui/directory_tree.js';
 import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 import {Crostini} from './background/crostini.js';
@@ -39,9 +38,6 @@ export class CommandHandlerDeps {
 
     /** @type {DirectoryModel} */
     this.directoryModel;
-
-    /** @type {DirectoryTree} */
-    this.directoryTree;
 
     /** @type {DirectoryTreeNamingController} */
     this.directoryTreeNamingController;

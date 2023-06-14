@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, strf} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
@@ -69,9 +69,12 @@ export class CrostiniController {
       crostiniNavigationModelItem = null;
       getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
     }
-    this.directoryTree_.dataModel.linuxFilesItem = crostiniNavigationModelItem;
-    // Redraw the tree to ensure 'Linux files' is added/removed.
-    this.directoryTree_.redraw(false);
+    if (!util.isFilesAppExperimental()) {
+      this.directoryTree_.dataModel.linuxFilesItem =
+          crostiniNavigationModelItem;
+      // Redraw the tree to ensure 'Linux files' is added/removed.
+      this.directoryTree_.redraw(false);
+    }
   }
 
   /**

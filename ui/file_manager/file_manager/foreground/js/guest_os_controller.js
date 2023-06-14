@@ -77,23 +77,30 @@ export class GuestOsController {
       uniqGuests.set(`${guest.vmType}-${guest.displayName}`, guest);
     });
 
-    this.directoryTree_.dataModel
-        .guestOsPlaceholders = Array.from(uniqGuests.values()).map(guest => {
-      const guestOsEntry =
-          new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType);
-      const navigationModelItem = new NavigationModelFakeItem(
-          guest.displayName, NavigationModelItemType.GUEST_OS, guestOsEntry);
-      const volumeType =
-          guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
-          VolumeManagerCommon.VolumeType.ANDROID_FILES :
-          VolumeManagerCommon.VolumeType.GUEST_OS;
+    const newGuestOsPlaceholders =
+        Array.from(uniqGuests.values()).map(guest => {
+          const guestOsEntry =
+              new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType);
+          const navigationModelItem = new NavigationModelFakeItem(
+              guest.displayName, NavigationModelItemType.GUEST_OS,
+              guestOsEntry);
+          const volumeType =
+              guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
+              VolumeManagerCommon.VolumeType.ANDROID_FILES :
+              VolumeManagerCommon.VolumeType.GUEST_OS;
 
-      navigationModelItem.disabled = this.volumeManager_.isDisabled(volumeType);
-      store.dispatch(addUiEntry({entry: guestOsEntry}));
-      return navigationModelItem;
-    });
+          navigationModelItem.disabled =
+              this.volumeManager_.isDisabled(volumeType);
+          store.dispatch(addUiEntry({entry: guestOsEntry}));
+          return navigationModelItem;
+        });
 
-    // Redraw the tree to ensure any newly added/removed roots are updated.
-    this.directoryTree_.redraw(false);
+    if (!util.isFilesAppExperimental()) {
+      this.directoryTree_.dataModel.guestOsPlaceholders =
+          newGuestOsPlaceholders;
+      // Redraw the tree to ensure any newly added/removed roots are
+      // updated.
+      this.directoryTree_.redraw(false);
+    }
   }
 }

@@ -19,6 +19,7 @@ import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
@@ -33,6 +34,7 @@ import {updateBulkPinProgress} from '../../state/actions/bulk_pinning.js';
 import {updatePreferences} from '../../state/actions/preferences.js';
 import {updateSearch} from '../../state/actions/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
+import {getMyFiles} from '../../state/reducers/all_entries.js';
 import {trashRootKey} from '../../state/reducers/volumes.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
@@ -484,12 +486,6 @@ export class FileManager extends EventTarget {
     return this.selectionHandler_;
   }
 
-  /**
-   * @return {DirectoryTree}
-   */
-  get directoryTree() {
-    return this.ui_.directoryTree;
-  }
   /**
    * @return {Document}
    */
@@ -1255,27 +1251,37 @@ export class FileManager extends EventTarget {
   async initDirectoryTree_() {
     this.navigationUma_ = new NavigationUma(assert(this.volumeManager_));
 
-    const fakeEntriesVisible =
-        this.dialogType !== DialogType.SELECT_SAVEAS_FILE;
-
     const directoryTree = /** @type {DirectoryTree} */
         (this.dialogDom_.querySelector('#directory-tree'));
-    DirectoryTree.decorate(
-        directoryTree, assert(this.directoryModel_),
-        assert(this.volumeManager_), assert(this.metadataModel_),
-        assert(this.fileOperationManager_), fakeEntriesVisible);
 
-    directoryTree.dataModel = new NavigationListModel(
-        assert(this.volumeManager_), assert(this.folderShortcutsModel_),
-        fakeEntriesVisible && !isFolderDialogType(this.launchParams_.type) ?
-            new NavigationModelFakeItem(
-                str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
-                assert(this.recentEntry_)) :
-            null,
-        assert(this.directoryModel_), assert(this.androidAppListModel_),
-        this.dialogType);
+    if (util.isFilesAppExperimental()) {
+      const treeContainer = directoryTree.parentElement;
+      directoryTree.remove();
+      const directoryTreeContainer = new DirectoryTreeContainer(
+          treeContainer, this.directoryModel_, this.volumeManager_,
+          this.metadataModel_);
+      this.ui_.initDirectoryTree(directoryTreeContainer);
+    } else {
+      const fakeEntriesVisible =
+          this.dialogType !== DialogType.SELECT_SAVEAS_FILE;
 
-    this.ui_.initDirectoryTree(directoryTree);
+      DirectoryTree.decorate(
+          directoryTree, assert(this.directoryModel_),
+          assert(this.volumeManager_), assert(this.metadataModel_),
+          assert(this.fileOperationManager_), fakeEntriesVisible);
+
+      directoryTree.dataModel = new NavigationListModel(
+          assert(this.volumeManager_), assert(this.folderShortcutsModel_),
+          fakeEntriesVisible && !isFolderDialogType(this.launchParams_.type) ?
+              new NavigationModelFakeItem(
+                  str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
+                  assert(this.recentEntry_)) :
+              null,
+          assert(this.directoryModel_), assert(this.androidAppListModel_),
+          this.dialogType);
+      this.ui_.initDirectoryTree(directoryTree);
+    }
+
 
     // If 'media-store-files-only' volume filter is enabled, then Android ARC
     // SelectFile opened files app to pick files from volumes that are indexed
@@ -1303,8 +1309,10 @@ export class FileManager extends EventTarget {
     chrome.fileManagerPrivate.onCrostiniChanged.addListener(
         this.onCrostiniChanged_.bind(this));
     this.crostiniController_ = new CrostiniController(
-        assert(this.crostini_), this.directoryModel_,
-        assert(this.directoryTree),
+        assert(this.crostini_), assert(this.directoryModel_),
+        // TODO(b/285977941): `DirectoryTree` is only used when FileExperimental
+        // flag is off, remove it after the tree replacement.
+        assert(/** @type {DirectoryTree} */ (this.ui_.directoryTree)),
         this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.CROSTINI));
     await this.crostiniController_.redraw();
@@ -1315,7 +1323,10 @@ export class FileManager extends EventTarget {
 
     if (util.isGuestOsEnabled()) {
       this.guestOsController_ = new GuestOsController(
-          this.directoryModel_, assert(this.directoryTree),
+          assert(this.directoryModel_),
+          // TODO(b/285977941): `DirectoryTree` is only used when
+          // FileExperimental flag is off, remove it after the tree replacement.
+          assert(/** @type {DirectoryTree} */ (this.ui_.directoryTree)),
           this.volumeManager_);
       await this.guestOsController_.refresh();
     }
@@ -1437,7 +1448,8 @@ export class FileManager extends EventTarget {
       const hideSpinnerCallback = this.spinnerController_.show();
       const queryMatchedDirEntry =
           await crossoverSearchUtils.findQueryMatchedDirectoryEntry(
-              this.directoryTree.dataModel_, this.directoryModel_, searchQuery);
+              this.ui_.directoryTree.dataModel_, this.directoryModel_,
+              searchQuery);
       if (queryMatchedDirEntry) {
         nextCurrentDirEntry = queryMatchedDirEntry;
       }
@@ -1551,8 +1563,14 @@ export class FileManager extends EventTarget {
     }
 
     // If there is no target select MyFiles by default.
-    if (!nextCurrentDirEntry && this.directoryTree.dataModel.myFilesModel_) {
-      nextCurrentDirEntry = this.directoryTree.dataModel.myFilesModel_.entry;
+    if (!nextCurrentDirEntry) {
+      if (util.isFilesAppExperimental()) {
+        const myFiles = getMyFiles(this.store_.getState());
+        nextCurrentDirEntry = myFiles.myFilesEntry;
+      } else if (this.ui_.directoryTree.dataModel.myFilesModel_) {
+        nextCurrentDirEntry =
+            this.ui_.directoryTree.dataModel.myFilesModel_.entry;
+      }
     }
 
     // Check directory change.
@@ -1740,8 +1758,8 @@ export class FileManager extends EventTarget {
       this.ui_.nudgeContainer.showNudge(NudgeType['SEARCH_V2_EDUCATION_NUDGE']);
     }
 
-    if (redraw) {
-      this.directoryTree.redraw(false);
+    if (redraw && !util.isFilesAppExperimental()) {
+      this.ui_.directoryTree.redraw(false);
     }
   }
 
@@ -1790,12 +1808,16 @@ export class FileManager extends EventTarget {
             new TrashRootEntry());
       }
       this.store_.dispatch(addUiEntry({entry: this.fakeTrashItem_.entry}));
-      this.directoryTree.dataModel.fakeTrashItem = this.fakeTrashItem_;
+      if (!util.isFilesAppExperimental()) {
+        this.ui_.directoryTree.dataModel.fakeTrashItem = this.fakeTrashItem_;
+      }
       return;
     }
 
     this.store_.dispatch(removeUiEntry({key: trashRootKey}));
-    this.directoryTree.dataModel.fakeTrashItem = null;
+    if (!util.isFilesAppExperimental()) {
+      this.ui_.directoryTree.dataModel.fakeTrashItem = null;
+    }
     this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_);
   }
 
@@ -1816,10 +1838,14 @@ export class FileManager extends EventTarget {
         this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.DRIVE);
       }
-      this.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
+      if (!util.isFilesAppExperimental()) {
+        this.ui_.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
+      }
       return;
     }
-    this.directoryTree.dataModel.fakeDriveItem = null;
+    if (!util.isFilesAppExperimental()) {
+      this.ui_.directoryTree.dataModel.fakeDriveItem = null;
+    }
     this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_);
   }
 

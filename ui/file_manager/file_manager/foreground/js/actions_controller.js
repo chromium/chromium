@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
-
+import {util} from '../../common/js/util.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {XfTree} from '../../widgets/xf_tree.js';
 
 import {Action, ActionsModel} from './actions_model.js';
 import {DirectoryModel} from './directory_model.js';
@@ -80,8 +81,14 @@ export class ActionsController {
 
     // Attach listeners to non-user events which will only update the in-memory
     // ActionsModel.
-    this.ui_.directoryTree.addEventListener(
-        'change', this.onNavigationListSelectionChanged_.bind(this), true);
+    if (util.isFilesAppExperimental()) {
+      this.ui_.directoryTree.addEventListener(
+          XfTree.events.TREE_SELECTION_CHANGED,
+          this.onNavigationListSelectionChanged_.bind(this), true);
+    } else {
+      this.ui_.directoryTree.addEventListener(
+          'change', this.onNavigationListSelectionChanged_.bind(this), true);
+    }
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE_THROTTLED,
         this.onSelectionChanged_.bind(this));

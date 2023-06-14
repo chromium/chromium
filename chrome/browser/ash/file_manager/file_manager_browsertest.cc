@@ -1546,10 +1546,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("driveClickFirstSearchResult"),
-        TestCase("drivePressEnterToSearch").FilesExperimental(),
+        TestCase("drivePressEnterToSearch"),
         TestCase("drivePressClearSearch"),
         TestCase("driveSearchAlwaysDisplaysMyDrive"),
-        TestCase("driveSearchAlwaysDisplaysMyDrive").FilesExperimental(),
         TestCase("drivePressCtrlAFromSearch"),
         TestCase("driveAvailableOfflineGearMenu"),
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
@@ -2088,7 +2087,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-02521fe6-a9c5-4cd1-ac9b-cc46df33c1a0"}),
         TestCase("showMyFiles"),
         TestCase("myFilesDisplaysAndOpensEntries"),
-        TestCase("myFilesDisplaysAndOpensEntries").FilesExperimental(),
         TestCase("myFilesFolderRename"),
         TestCase("myFilesUpdatesWhenAndroidVolumeMounts")
             .DontMountVolumes()
