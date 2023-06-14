@@ -736,7 +736,7 @@ ci.builder(
 ci.builder(
     name = "Libfuzzer Upload Mac ASan",
     executable = "recipe:chromium/fuzz",
-    cores = 24,
+    cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
