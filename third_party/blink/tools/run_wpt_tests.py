@@ -128,6 +128,14 @@ class WPTAdapter:
         self.options = options
         self.paths = paths
 
+    def log_config(self):
+        logger.info(f'Running tests for {self.product.name}')
+        logger.info(f'Using port "{self.port.name()}"')
+        logger.info(
+            f'View the test results at file://{self.port.artifacts_directory()}/results.html'
+        )
+        logger.info(f'Using {self.port.get_option("configuration")} build')
+
     def _set_up_runner_options(self):
         """Set up wptrunner options based on run_wpt_tests.py arguments and defaults."""
         parser = wptcommandline.create_parser()
@@ -198,8 +206,11 @@ class WPTAdapter:
         else:
             runner_options.log_chromium = self.fs.join(
                 self.port.results_directory(), 'results.json')
+        # put wpt_reports.json in results_directory first, then move it to
+        # the artifacts directory. The artifacts directory may not exist
+        # at this point yet.
         runner_options.log_wptreport = self.fs.join(
-            self.port.artifacts_directory(), 'wpt_reports.json')
+            self.port.results_directory(), 'wpt_reports.json')
         for log_type in ('chromium', 'wptreport'):
             dest = 'log_%s' % log_type
             filename = getattr(runner_options, dest)
@@ -380,6 +391,12 @@ class WPTAdapter:
             # after the tests complete. Otherwise, `mkdtemp()` raise an error.
             stack.callback(self.fs.rmtree, tmp_dir)
 
+            stack.enter_context(self.product.test_env())
+
+            runner_options = self._set_up_runner_options()
+
+            self.log_config()
+
             if self.options.clobber_old_results:
                 self.port.clobber_old_results()
             elif self.fs.exists(self.port.artifacts_directory()):
@@ -390,10 +407,6 @@ class WPTAdapter:
 
             # Create the output directory if it doesn't already exist.
             self.fs.maybe_make_directory(self.port.artifacts_directory())
-
-            stack.enter_context(self.product.test_env())
-
-            runner_options = self._set_up_runner_options()
 
             if self.options.use_upstream_wpt:
                 tests_root = tools_root = self.fs.join(tmp_dir, 'upstream-wpt')
@@ -426,7 +439,7 @@ class WPTAdapter:
                 self.process_and_upload_results(runner_options))
 
             exit_code = run(**vars(runner_options))
-            return exit_code
+            return 1 if exit_code else 0
 
 
     def _checkout_3h_epoch_commit(self, tools_root: str):
@@ -636,4 +649,6 @@ def main(argv) -> int:
 
 if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
-    sys.exit(main(sys.argv[1:]))
+    rv = main(sys.argv[1:])
+    logger.info(f'Testing completed. Exit status: {rv}')
+    sys.exit(rv)

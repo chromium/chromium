@@ -303,8 +303,6 @@ class WPTResultsProcessor:
                 'blinkpy', 'web_tests', file)
             destination = self.fs.join(self.artifacts_dir, file)
             self.fs.copyfile(source, destination)
-            if file == 'results.html':
-                _log.info(f'View the test results at file://{destination}')
 
     def process_results_json(self,
                              raw_results_path,
@@ -821,8 +819,7 @@ class WPTResultsProcessor:
             report['results'] = self._compact_wpt_results(report['results'])
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:
             json.dump(report, report_file, separators=(',', ':'))
-        _log.info('Processed wpt report (%s -> %s)', report_path,
-                  artifact_path)
+        self.fs.remove(report_path)
         self.sink.report_invocation_level_artifacts({
             report_filename: {
                 'filePath': artifact_path,
