@@ -105,7 +105,7 @@ int g_num_monitors = 0;
 bool g_system_hdr_enabled = false;
 
 // Global direct composition device.
-IDCompositionDevice2* g_dcomp_device = nullptr;
+IDCompositionDevice3* g_dcomp_device = nullptr;
 // Whether swap chain present failed and direct composition should be disabled.
 bool g_direct_composition_swap_chain_failed = false;
 
@@ -420,13 +420,13 @@ void InitializeDirectComposition(GLDisplayEGL* display) {
     return;
   }
 
-  using PFN_DCOMPOSITION_CREATE_DEVICE2 = HRESULT(WINAPI*)(
+  using PFN_DCOMPOSITION_CREATE_DEVICE3 = HRESULT(WINAPI*)(
       IUnknown * renderingDevice, REFIID iid, void** dcompositionDevice);
-  PFN_DCOMPOSITION_CREATE_DEVICE2 create_device_function =
-      reinterpret_cast<PFN_DCOMPOSITION_CREATE_DEVICE2>(
-          ::GetProcAddress(dcomp_module, "DCompositionCreateDevice2"));
-  if (!create_device_function) {
-    DLOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice2";
+  PFN_DCOMPOSITION_CREATE_DEVICE3 create_device3_function =
+      reinterpret_cast<PFN_DCOMPOSITION_CREATE_DEVICE3>(
+          ::GetProcAddress(dcomp_module, "DCompositionCreateDevice3"));
+  if (!create_device3_function) {
+    DLOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice3";
     return;
   }
 
@@ -435,17 +435,17 @@ void InitializeDirectComposition(GLDisplayEGL* display) {
 
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
   HRESULT hr =
-      create_device_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
+      create_device3_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "DCompositionCreateDevice2 failed with error 0x" << std::hex
+    DLOG(ERROR) << "DCompositionCreateDevice3 failed with error 0x" << std::hex
                 << hr;
     return;
   }
 
-  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device;
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device;
   hr = desktop_device.As(&dcomp_device);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to retrieve IDCompositionDevice2 with error 0x"
+    DLOG(ERROR) << "Failed to retrieve IDCompositionDevice3 with error 0x"
                 << std::hex << hr;
     return;
   }
@@ -461,7 +461,7 @@ void ShutdownDirectComposition() {
   }
 }
 
-IDCompositionDevice2* GetDirectCompositionDevice() {
+IDCompositionDevice3* GetDirectCompositionDevice() {
   return g_dcomp_device;
 }
 

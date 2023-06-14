@@ -27,7 +27,7 @@ GL_EXPORT void ShutdownDirectComposition();
 // Retrieves the global direct composition device. InitializeDirectComposition
 // must be called on GPU process startup before the device is retrieved, and
 // ShutdownDirectComposition must be called at process shutdown.
-GL_EXPORT IDCompositionDevice2* GetDirectCompositionDevice();
+GL_EXPORT IDCompositionDevice3* GetDirectCompositionDevice();
 
 // Returns true if direct composition is supported.  We prefer to use direct
 // composition even without hardware overlays, because it allows us to bypass
