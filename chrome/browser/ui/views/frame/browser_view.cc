@@ -4765,6 +4765,11 @@ void BrowserView::OnImmersiveRevealStarted() {
   overlay_view_->SetVisible(true);
   InvalidateLayout();
   GetWidget()->GetRootView()->Layout();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  top_container()->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorFrameActive));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserView::OnImmersiveRevealEnded() {
@@ -4780,6 +4785,7 @@ void BrowserView::OnImmersiveRevealEnded() {
   if (AppUsesWindowControlsOverlay()) {
     UpdateWindowControlsOverlayEnabled();
   }
+  top_container()->SetBackground(nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
