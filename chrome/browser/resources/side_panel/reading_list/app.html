@@ -5,28 +5,6 @@
     height: 100vh;
   }
 
-  #header {
-    align-items: center;
-    color: var(--cr-primary-text-color);
-    flex-grow: 1;
-    font-size: 15px;
-    line-height: var(--mwb-item-height);
-    margin: 0;
-    padding-inline-start: var(--mwb-list-item-horizontal-margin);
-  }
-
-  cr-icon-button {
-    margin-inline-end: 4px;
-    margin-top: 4px;
-    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    cr-icon-button {
-      --cr-icon-button-ripple-opacity: 0.15;
-    }
-  }
-
   /* Transition required to ensure focus highlight after button press.
    * See crbug/1358900.
    */
@@ -52,14 +30,6 @@
     font-size: var(--mwb-primary-text-font-size);
     padding: 8px;
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .mwb-list-item:focus-within {
-    background-color: var(--mwb-list-item-hover-background-color);
-  }
-
-  .mwb-list-item:active {
-    background-color: var(--mwb-list-item-selected-background-color);
   }
 
   sp-heading {
