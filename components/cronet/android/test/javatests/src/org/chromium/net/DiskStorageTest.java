@@ -8,7 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -42,7 +41,9 @@ public class DiskStorageTest {
     @Before
     public void setUp() throws Exception {
         System.loadLibrary("cronet_tests");
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After
@@ -103,7 +104,7 @@ public class DiskStorageTest {
     @OnlyRunNativeCronet
     // Crashing on Android Cronet Builder, see crbug.com/601409.
     public void testPurgeOldVersion() throws Exception {
-        String testStorage = getTestStorage(getContext());
+        String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
         File versionFile = new File(testStorage + "/version");
         FileOutputStream versionOut = null;
         try {
@@ -127,7 +128,7 @@ public class DiskStorageTest {
         }
 
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            builder.setStoragePath(getTestStorage(getContext()));
+            builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
             builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
         });
 
@@ -169,8 +170,9 @@ public class DiskStorageTest {
     public void testCacheVersionCurrent() throws Exception {
         // Initialize a CronetEngine and shut it down.
         ExperimentalCronetEngine.Builder builder =
-                mTestRule.getTestFramework().createNewSecondaryBuilder(getContext());
-        builder.setStoragePath(getTestStorage(getContext()));
+                mTestRule.getTestFramework().createNewSecondaryBuilder(
+                        mTestRule.getTestFramework().getContext());
+        builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
 
         CronetEngine cronetEngine = builder.build();
@@ -185,7 +187,7 @@ public class DiskStorageTest {
         cronetEngine.shutdown();
 
         // Create a sample file in storage directory.
-        String testStorage = getTestStorage(getContext());
+        String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
         File sampleFile = new File(testStorage + "/sample.json");
         FileOutputStream sampleFileOut = null;
         String sampleContent = "sample content";
@@ -248,7 +250,7 @@ public class DiskStorageTest {
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
 
-        String testStorage = getTestStorage(getContext());
+        String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
         File diskCacheDir = new File(testStorage + "/disk_cache");
         assertThat(diskCacheDir.exists()).isFalse();
         File prefsDir = new File(testStorage + "/prefs");
@@ -261,7 +263,7 @@ public class DiskStorageTest {
     // Tests that prefs file is created even if httpcache isn't enabled
     public void testPrefsFileCreatedWithoutHttpCache() throws Exception {
         // Initialize a CronetEngine and shut it down.
-        String testStorage = getTestStorage(getContext());
+        String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder) -> builder.setStoragePath(testStorage));
 

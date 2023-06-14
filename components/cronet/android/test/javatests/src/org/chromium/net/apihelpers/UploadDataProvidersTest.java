@@ -6,8 +6,6 @@ package org.chromium.net.apihelpers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import android.os.ConditionVariable;
 import android.os.ParcelFileDescriptor;
 
@@ -46,9 +44,12 @@ public class UploadDataProvidersTest {
 
     @Before
     public void setUp() throws Exception {
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
         // Add url interceptors after native application context is initialized.
-        mFile = new File(getContext().getCacheDir().getPath() + "/tmpfile");
+        mFile = new File(
+                mTestRule.getTestFramework().getContext().getCacheDir().getPath() + "/tmpfile");
         FileOutputStream fileOutputStream = new FileOutputStream(mFile);
         try {
             fileOutputStream.write(LOREM.getBytes("UTF-8"));

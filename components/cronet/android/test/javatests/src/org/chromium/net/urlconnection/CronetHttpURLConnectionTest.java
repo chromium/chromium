@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import android.net.TrafficStats;
 import android.os.Build;
 import android.os.Process;
@@ -76,10 +74,12 @@ public class CronetHttpURLConnectionTest {
     @Before
     public void setUp() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> { mTestRule.enableDiskCache(builder); });
+                (builder) -> { mTestRule.getTestFramework().enableDiskCache(builder); });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After
@@ -277,7 +277,9 @@ public class CronetHttpURLConnectionTest {
                 "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         checkExceptionsAreThrown(secondConnection);
         // Starts the server to avoid crashing on shutdown in tearDown().
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @Test
@@ -706,7 +708,9 @@ public class CronetHttpURLConnectionTest {
         e = assertThrows(IOException.class, in::read);
         assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
         // Spins up server to avoid crash when shutting it down in tearDown().
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @Test

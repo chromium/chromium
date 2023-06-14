@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -50,9 +48,11 @@ public class CronetFixedModeOutputStreamTest {
     @Before
     public void setUp() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> mTestRule.enableDiskCache(builder));
+                (builder) -> mTestRule.getTestFramework().enableDiskCache(builder));
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After
@@ -133,7 +133,9 @@ public class CronetFixedModeOutputStreamTest {
         e = assertThrows(NetworkException.class, mConnection::getResponseCode);
         assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         // Restarting server to run the test for a second time.
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @Test

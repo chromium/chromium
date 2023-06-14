@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import android.os.ConditionVariable;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -48,7 +46,9 @@ public class GetStatusTest {
 
     @Before
     public void setUp() throws Exception {
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After

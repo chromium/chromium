@@ -6,8 +6,6 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -43,7 +41,7 @@ public class QuicUploadTest {
 
     @Before
     public void setUp() throws Exception {
-        QuicTestServer.startQuicTestServer(getContext());
+        QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
 
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.enableQuic(true);

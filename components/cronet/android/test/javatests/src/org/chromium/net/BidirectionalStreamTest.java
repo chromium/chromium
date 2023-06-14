@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
@@ -63,7 +61,8 @@ public class BidirectionalStreamTest {
                                 builder, QuicTestServer.createMockCertVerifier()));
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        assertThat(Http2TestServer.startHttp2TestServer(getContext())).isTrue();
+        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After
@@ -867,7 +866,7 @@ public class BidirectionalStreamTest {
         String userAgentName = "User-Agent";
         String userAgentValue = "User-Agent-Value";
         ExperimentalCronetEngine.Builder engineBuilder =
-                new ExperimentalCronetEngine.Builder(getContext());
+                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
         engineBuilder.setUserAgent(userAgentValue);
         CronetTestUtil.setMockCertVerifierForTesting(
                 engineBuilder, QuicTestServer.createMockCertVerifier());
@@ -895,7 +894,8 @@ public class BidirectionalStreamTest {
         callback.blockForDone();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         assertThat(callback.mResponseAsString)
-                .isEqualTo(new CronetEngine.Builder(getContext()).getDefaultUserAgent());
+                .isEqualTo(new CronetEngine.Builder(mTestRule.getTestFramework().getContext())
+                                   .getDefaultUserAgent());
     }
 
     @Test
@@ -1270,7 +1270,7 @@ public class BidirectionalStreamTest {
             FailureType failureType, ResponseStep failureStep, boolean expectError) {
         // Use a fresh CronetEngine each time so Http2 session is not reused.
         ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
+                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
         CronetTestUtil.setMockCertVerifierForTesting(
                 builder, QuicTestServer.createMockCertVerifier());
         mCronetEngine = builder.build();

@@ -9,10 +9,9 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import android.os.ConditionVariable;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -106,7 +105,10 @@ public class FakeUrlRequestTest {
     @Before
     public void setUp() {
         mFakeCronetController = new FakeCronetController();
-        mFakeCronetEngine = mFakeCronetController.newFakeCronetEngineBuilder(getContext()).build();
+        mFakeCronetEngine =
+                mFakeCronetController
+                        .newFakeCronetEngineBuilder(ApplicationProvider.getApplicationContext())
+                        .build();
     }
 
     @After

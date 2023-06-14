@@ -8,7 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
 import android.os.StrictMode;
@@ -56,7 +55,8 @@ public class NQETest {
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = EmbeddedTestServer.createAndStartServer(getContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(mTestRule.getTestFramework().getContext());
         mUrl = mTestServer.getURL("/echo?status=200");
     }
 
@@ -140,7 +140,8 @@ public class NQETest {
 
     // Returns whether a file contains a particular string.
     private boolean prefsFileContainsString(String content) throws IOException {
-        File file = new File(getTestStorage(getContext()) + "/prefs/local_prefs.json");
+        File file = new File(getTestStorage(mTestRule.getTestFramework().getContext())
+                + "/prefs/local_prefs.json");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] data = new byte[(int) file.length()];
         fileInputStream.read(data);
@@ -183,7 +184,7 @@ public class NQETest {
                     new JSONObject().put("NetworkQualityEstimator", nqeOptions);
 
             builder.setExperimentalOptions(experimentalOptions.toString());
-            builder.setStoragePath(getTestStorage(getContext()));
+            builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         });
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -298,7 +299,7 @@ public class NQETest {
                             .build();
 
             ExperimentalCronetEngine.Builder cronetEngineBuilder =
-                    new ExperimentalCronetEngine.Builder(getContext());
+                    new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
             assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
             Executor listenersExecutor =
                     Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
@@ -318,7 +319,8 @@ public class NQETest {
 
             cronetEngineBuilder.setExperimentalOptions(experimentalOptions.toString());
 
-            cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
+            cronetEngineBuilder.setStoragePath(
+                    getTestStorage(mTestRule.getTestFramework().getContext()));
 
             final ExperimentalCronetEngine cronetEngine = cronetEngineBuilder.build();
             cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, true);

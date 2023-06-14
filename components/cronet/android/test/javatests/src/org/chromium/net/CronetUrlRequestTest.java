@@ -10,8 +10,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
@@ -71,7 +69,9 @@ public class CronetUrlRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
         // Add url interceptors after native application context is initialized.
         if (!mTestRule.testingJavaImpl()) {
             mMockUrlRequestJobFactory =
@@ -792,7 +792,7 @@ public class CronetUrlRequestTest {
     @OnlyRunNativeCronet // Java impl doesn't support MockUrlRequestJobFactory
     public void testSSLCertificateError() throws Exception {
         EmbeddedTestServer sslServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                getContext(), ServerCertificate.CERT_EXPIRED);
+                mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
@@ -1874,7 +1874,9 @@ public class CronetUrlRequestTest {
             assertThat(callback.mError).isNotNull();
             assertThat(urlRequest.isDone()).isTrue();
             // Start NativeTestServer again to run the test for a second time.
-            assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+            assertThat(NativeTestServer.startNativeTestServer(
+                               mTestRule.getTestFramework().getContext()))
+                    .isTrue();
         }
     }
 

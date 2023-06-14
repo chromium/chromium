@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -55,8 +53,8 @@ public class CronetUploadTest {
 
         mUploadDataStream =
                 new CronetUploadDataStream(mDataProvider, executor, (CronetUrlRequest) urlRequest);
-        mHandler = new TestUploadDataStreamHandler(
-                getContext(), mUploadDataStream.createUploadDataStreamForTesting());
+        mHandler = new TestUploadDataStreamHandler(mTestRule.getTestFramework().getContext(),
+                mUploadDataStream.createUploadDataStreamForTesting());
     }
 
     @After

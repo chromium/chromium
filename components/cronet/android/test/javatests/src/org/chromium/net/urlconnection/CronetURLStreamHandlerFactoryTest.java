@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -57,7 +55,9 @@ public class CronetURLStreamHandlerFactoryTest {
     @Test
     @SmallTest
     public void testSetUrlStreamFactoryUsesCronet() throws Exception {
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
 
         URL.setURLStreamHandlerFactory(
                 mTestRule.getTestFramework().getEngine().createURLStreamHandlerFactory());

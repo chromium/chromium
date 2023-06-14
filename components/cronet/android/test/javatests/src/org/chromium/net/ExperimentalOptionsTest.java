@@ -9,7 +9,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
 import androidx.annotation.OptIn;
@@ -62,7 +61,9 @@ public class ExperimentalOptionsTest {
                 (builder)
                         -> CronetTestUtil.setMockCertVerifierForTesting(
                                 builder, QuicTestServer.createMockCertVerifier()));
-        assertThat(Http2TestServer.startHttp2TestServer(getContext(), mHangingUrlLatch)).isTrue();
+        assertThat(Http2TestServer.startHttp2TestServer(
+                           mTestRule.getTestFramework().getContext(), mHangingUrlLatch))
+                .isTrue();
     }
 
     @After
@@ -201,7 +202,8 @@ public class ExperimentalOptionsTest {
     // Tests that basic Cronet functionality works when host cache persistence is enabled, and that
     // persistence works.
     public void testHostCachePersistence() throws Exception {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(getContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(mTestRule.getTestFramework().getContext());
 
         String realUrl = testServer.getURL("/echo?status=200");
         URL javaUrl = new URL(realUrl);
@@ -211,9 +213,10 @@ public class ExperimentalOptionsTest {
         String testUrl = new URL("http", testHost, realPort, javaUrl.getPath()).toString();
 
         ExperimentalCronetEngine.Builder builder =
-                mTestRule.getTestFramework().createNewSecondaryBuilder(getContext());
+                mTestRule.getTestFramework().createNewSecondaryBuilder(
+                        mTestRule.getTestFramework().getContext());
 
-        builder.setStoragePath(getTestStorage(getContext()))
+        builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()))
                 .enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 0);
 
         // Set a short delay so the pref gets written quickly.

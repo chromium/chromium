@@ -41,7 +41,6 @@ public class CronetTestRule implements TestRule {
 
     private CronetTestFramework mCronetTestFramework;
     private CronetImplementation mImplementation;
-    private StrictMode.VmPolicy mOldVmPolicy;
 
     private final EngineStartupMode mEngineStartupMode;
 
@@ -65,10 +64,6 @@ public class CronetTestRule implements TestRule {
         return new CronetTestRule(EngineStartupMode.AUTOMATIC);
     }
 
-    public static Context getContext() {
-        return ApplicationProvider.getApplicationContext();
-    }
-
     public CronetTestFramework getTestFramework() {
         return mCronetTestFramework;
     }
@@ -89,12 +84,6 @@ public class CronetTestRule implements TestRule {
         }
     }
 
-    public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {
-        cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
-        cronetEngineBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);
-        return cronetEngineBuilder;
-    }
-
     /**
      * Returns {@code true} when test is being run against the java implementation of CronetEngine.
      *
@@ -110,12 +99,7 @@ public class CronetTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                setUp();
-                try {
-                    runBase(base, desc);
-                } finally {
-                    tearDown();
-                }
+                runBase(base, desc);
             }
         };
     }
@@ -193,43 +177,15 @@ public class CronetTestRule implements TestRule {
         }
     }
 
-    private void setUp() throws Exception {
-        System.loadLibrary("cronet_tests");
-        ContextUtils.initApplicationContext(getContext().getApplicationContext());
-        PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
-        prepareTestStorage(getContext());
-        mOldVmPolicy = StrictMode.getVmPolicy();
-        // Only enable StrictMode testing after leaks were fixed in crrev.com/475945
-        if (getMaximumAvailableApiLevel() >= 7) {
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                                           .detectLeakedClosableObjects()
-                                           .penaltyLog()
-                                           .penaltyDeath()
-                                           .build());
-        }
-    }
-
-    private void tearDown() throws Exception {
-        try {
-            // Run GC and finalizers a few times to pick up leaked closeables
-            for (int i = 0; i < 10; i++) {
-                System.gc();
-                System.runFinalization();
-            }
-        } finally {
-            StrictMode.setVmPolicy(mOldVmPolicy);
-        }
-    }
-
     private CronetTestFramework createCronetTestFramework() {
-        mCronetTestFramework = CronetTestFramework.create(getContext(), mImplementation);
+        mCronetTestFramework = CronetTestFramework.create(mImplementation);
         if (mEngineStartupMode.equals(EngineStartupMode.AUTOMATIC)) {
             mCronetTestFramework.startEngine();
         }
         return mCronetTestFramework;
     }
 
-    int getMaximumAvailableApiLevel() {
+    static int getMaximumAvailableApiLevel() {
         // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
         int cronetMajorVersion = Integer.parseInt(ApiVersion.getCronetVersion().split("\\.")[0]);
         if (cronetMajorVersion < 59) {
@@ -341,22 +297,49 @@ public class CronetTestRule implements TestRule {
     public static class CronetTestFramework implements AutoCloseable {
         private final CronetImplementation mImplementation;
         private final ExperimentalCronetEngine.Builder mBuilder;
+        private final Context mContext;
+        private final StrictMode.VmPolicy mOldVmPolicy;
 
         private ExperimentalCronetEngine mCronetEngine;
         private boolean mClosed;
 
-        private CronetTestFramework(
-                ExperimentalCronetEngine.Builder builder, CronetImplementation implementation) {
+        private CronetTestFramework(ExperimentalCronetEngine.Builder builder,
+                CronetImplementation implementation, Context context) {
             this.mBuilder = builder;
             this.mImplementation = implementation;
+            this.mContext = context;
+
+            System.loadLibrary("cronet_tests");
+            ContextUtils.initApplicationContext(getContext().getApplicationContext());
+            PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            prepareTestStorage(getContext());
+            mOldVmPolicy = StrictMode.getVmPolicy();
+            // Only enable StrictMode testing after leaks were fixed in crrev.com/475945
+            if (getMaximumAvailableApiLevel() >= 7) {
+                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                               .detectLeakedClosableObjects()
+                                               .penaltyLog()
+                                               .penaltyDeath()
+                                               .build());
+            }
         }
 
-        private static CronetTestFramework create(
-                Context context, CronetImplementation implementation) {
+        private static CronetTestFramework create(CronetImplementation implementation) {
+            final Context context = ApplicationProvider.getApplicationContext();
             return new CronetTestFramework(implementation.createBuilder(context)
                                                    .setUserAgent(UserAgent.from(context))
                                                    .enableQuic(true),
-                    implementation);
+                    implementation, context);
+        }
+
+        public Context getContext() {
+            return mContext;
+        }
+
+        public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {
+            cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
+            cronetEngineBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);
+            return cronetEngineBuilder;
         }
 
         public ExperimentalCronetEngine startEngine() {
@@ -426,6 +409,16 @@ public class CronetTestRule implements TestRule {
             }
             shutdownEngine();
             mClosed = true;
+
+            try {
+                // Run GC and finalizers a few times to pick up leaked closeables
+                for (int i = 0; i < 10; i++) {
+                    System.gc();
+                    System.runFinalization();
+                }
+            } finally {
+                StrictMode.setVmPolicy(mOldVmPolicy);
+            }
         }
 
         private void shutdownEngine() {

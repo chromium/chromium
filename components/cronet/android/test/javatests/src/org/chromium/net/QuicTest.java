@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -43,7 +42,7 @@ public class QuicTest {
     public void setUp() throws Exception {
         // Load library first, since we need the Quic test server's URL.
         System.loadLibrary("cronet_tests");
-        QuicTestServer.startQuicTestServer(getContext());
+        QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
 
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.enableNetworkQualityEstimator(true).enableQuic(true);
@@ -71,7 +70,7 @@ public class QuicTest {
                                                      .put("HostResolverRules", hostResolverParams)
                                                      .put("NetworkQualityEstimator", nqeParams);
             builder.setExperimentalOptions(experimentalOptions.toString());
-            builder.setStoragePath(getTestStorage(getContext()));
+            builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
             builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
             CronetTestUtil.setMockCertVerifierForTesting(
                     builder, QuicTestServer.createMockCertVerifier());
@@ -117,8 +116,8 @@ public class QuicTest {
 
         // Make another request using a new context but with no QUIC hints.
         ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        builder.setStoragePath(getTestStorage(getContext()));
+                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);
         builder.enableQuic(true);
         JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
@@ -145,7 +144,8 @@ public class QuicTest {
 
     // Returns whether a file contains a particular string.
     private boolean fileContainsString(String filename, String content) throws IOException {
-        File file = new File(getTestStorage(getContext()) + "/prefs/" + filename);
+        File file = new File(
+                getTestStorage(mTestRule.getTestFramework().getContext()) + "/prefs/" + filename);
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] data = new byte[(int) file.length()];
         fileInputStream.read(data);

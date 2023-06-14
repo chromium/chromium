@@ -72,7 +72,7 @@ public final class CronetLoggerTest {
 
     @Before
     public void setUp() {
-        mContext = CronetTestRule.getContext();
+        mContext = mTestRule.getTestFramework().getContext();
         mTestLogger = (TestLogger) mLoggerTestRule.mTestLogger;
         assertThat(NativeTestServer.startNativeTestServer(mContext)).isTrue();
     }
@@ -279,7 +279,7 @@ public final class CronetLoggerTest {
         final String url = "www.example.com";
         ExperimentalCronetEngine.Builder engineBuilder =
                 (ExperimentalCronetEngine.Builder) mTestRule.getTestFramework()
-                        .createNewSecondaryBuilder(CronetTestRule.getContext());
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
         engineBuilder.setExperimentalOptions(experimentalOptions);
 
         CronetEngine engine1 = engineBuilder.build();
