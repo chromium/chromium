@@ -49,8 +49,7 @@ namespace blink {
 
 namespace {
 
-inline bool HasExclusionsOrBlockFragmentations(
-    const LayoutOpportunityVector& opportunities) {
+inline bool HasExclusions(const LayoutOpportunityVector& opportunities) {
   // All lines should have the same available widths. No floats etc.
   if (opportunities.size() != 1) {
     return true;
@@ -58,8 +57,6 @@ inline bool HasExclusionsOrBlockFragmentations(
   const NGLayoutOpportunity& opportunity = opportunities.front();
   // Bisection needs a positive available width.
   if (opportunity.rect.InlineSize() <= LayoutUnit() ||
-      // Block-fragmented boxes are not supported.
-      opportunity.rect.BlockEndOffset() != LayoutUnit::Max() ||
       // Shape exclusions are not supported.
       opportunity.HasShapeExclusions()) {
     return true;
@@ -88,7 +85,7 @@ class NGLineBreakStrategy {
             score_line_break_context_ && score_line_break_context_->IsActive();
       }
       if (UNLIKELY(initiate_balancing_ || use_score_line_break_)) {
-        if (HasExclusionsOrBlockFragmentations(opportunities)) {
+        if (HasExclusions(opportunities)) {
           initiate_balancing_ = use_score_line_break_ = false;
         }
       }
