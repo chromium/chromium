@@ -291,7 +291,7 @@ type URL
             Open WEBSITE_PLACEHOLDER
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=40]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
-          No shortcuts available
+          Your most visited sites will show up here.
       </message>
     </messages>
   </release>
