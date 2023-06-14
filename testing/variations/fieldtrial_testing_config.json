@@ -9175,6 +9175,27 @@
             ]
         }
     ],
+    "OmniboxTailSuggestIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxTailSuggest"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithSuggestEmbed",
+                    "enable_features": [
+                        "OmniboxTailSuggest"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxUISimplificationDesktop": [
         {
             "platforms": [
