@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/search_companion/companion_side_panel_controller.h"
 
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
@@ -133,7 +134,7 @@ void CompanionSidePanelController::DidOpenRequestedURL(
     params.initiator_origin = url::Origin::Create(url);
   }
 
-  bool open_in_current_tab = companion::features::kOpenLinksInCurrentTab.Get();
+  bool open_in_current_tab = companion::ShouldOpenLinksInCurrentTab();
   params.disposition = open_in_current_tab
                            ? WindowOpenDisposition::CURRENT_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;

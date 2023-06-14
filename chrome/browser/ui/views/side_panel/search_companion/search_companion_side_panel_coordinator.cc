@@ -50,9 +50,9 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
     CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
   }
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service_);
-  pref_change_registrar_->Add(
+  policy_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  policy_pref_change_registrar_->Init(pref_service_);
+  policy_pref_change_registrar_->Add(
       prefs::kGoogleSearchSidePanelEnabled,
       base::BindRepeating(
           &SearchCompanionSidePanelCoordinator::OnPolicyPrefChanged,

@@ -16,6 +16,8 @@ static_library("core") {
     "promo_handler.cc",
     "promo_handler.h",
     "signin_delegate.h",
+    "utils.cc",
+    "utils.h",
   ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
@@ -39,6 +41,7 @@ source_set("unit_tests") {
     "companion_metrics_logger_unittest.cc",
     "companion_url_builder_unittest.cc",
     "promo_handler_unittest.cc",
+    "utils_unittest.cc",
   ]
 
   deps = [

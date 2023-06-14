@@ -95,7 +95,7 @@ class SearchCompanionSidePanelCoordinator
   raw_ptr<PrefService> pref_service_;
   bool is_currently_observing_tab_changes_ = false;
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> policy_pref_change_registrar_;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};

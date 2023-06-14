@@ -6,6 +6,7 @@
 
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
@@ -68,7 +69,7 @@ bool IsSearchWebInCompanionSidePanelSupported(const Browser* browser) {
     return false;
   }
   return IsSearchInCompanionSidePanelSupported(browser) &&
-         features::kEnableOpenCompanionForWebSearch.Get();
+         ShouldEnableOpenCompanionForWebSearch();
 }
 
 bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
@@ -76,7 +77,7 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
     return false;
   }
   return IsSearchInCompanionSidePanelSupported(browser) &&
-         features::kEnableOpenCompanionForImageSearch.Get();
+         ShouldEnableOpenCompanionForImageSearch();
 }
 
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
