@@ -8,6 +8,7 @@
 #include <CoreMedia/CoreMedia.h>
 
 #include <stdint.h>
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -20,6 +21,8 @@
 
 namespace media {
 
+class MediaLog;
+
 class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
     : public H264Decoder::H264Accelerator {
  public:
@@ -28,7 +31,9 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
                                    scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
-  VideoToolboxH264Accelerator(DecodeCB decode_cb, OutputCB output_cb);
+  VideoToolboxH264Accelerator(std::unique_ptr<MediaLog> media_log,
+                              DecodeCB decode_cb,
+                              OutputCB output_cb);
   ~VideoToolboxH264Accelerator() override;
 
   // H264Accelerator implementation.
@@ -57,6 +62,8 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
   void Reset() override;
 
  private:
+  std::unique_ptr<MediaLog> media_log_;
+
   // Callbacks are called synchronously, which is always re-entrant.
   DecodeCB decode_cb_;
   OutputCB output_cb_;

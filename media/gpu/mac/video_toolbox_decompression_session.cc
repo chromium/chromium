@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
+#include "media/base/media_log.h"
 
 namespace media {
 
@@ -30,8 +31,11 @@ void OnOutputThunk(void* decompression_output_refcon,
 
 VideoToolboxDecompressionSessionImpl::VideoToolboxDecompressionSessionImpl(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log,
     OutputCB output_cb)
-    : task_runner_(std::move(task_runner)), output_cb_(std::move(output_cb)) {
+    : task_runner_(std::move(task_runner)),
+      media_log_(std::move(media_log)),
+      output_cb_(std::move(output_cb)) {
   DVLOG(1) << __func__;
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -61,6 +65,8 @@ bool VideoToolboxDecompressionSessionImpl::Create(
       session_.InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "VTDecompressionSessionCreate()";
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "VTDecompressionSessionCreate()";
     DCHECK(!session_);
     return false;
   }
@@ -114,6 +120,8 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
       session_, sample, decode_flags, context, nullptr);
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "VTDecompressionSessionDecodeFrame()";
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "VTDecompressionSessionDecodeFrame()";
     return false;
   }
 

@@ -6,6 +6,7 @@
 
 #include "base/mac/mac_logging.h"
 #include "base/sys_byteorder.h"
+#include "media/base/media_log.h"
 
 namespace media {
 
@@ -13,9 +14,13 @@ namespace {
 constexpr size_t kNALUHeaderLength = 4;
 }  // namespace
 
-VideoToolboxH264Accelerator::VideoToolboxH264Accelerator(DecodeCB decode_cb,
-                                                         OutputCB output_cb)
-    : decode_cb_(std::move(decode_cb)), output_cb_(std::move(output_cb)) {
+VideoToolboxH264Accelerator::VideoToolboxH264Accelerator(
+    std::unique_ptr<MediaLog> media_log,
+    DecodeCB decode_cb,
+    OutputCB output_cb)
+    : media_log_(std::move(media_log)),
+      decode_cb_(std::move(decode_cb)),
+      output_cb_(std::move(output_cb)) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -86,6 +91,8 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
     if (status != noErr) {
       OSSTATUS_DLOG(ERROR, status)
           << "CMVideoFormatDescriptionCreateFromH264ParameterSets()";
+      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+          << "CMVideoFormatDescriptionCreateFromH264ParameterSets()";
       return Status::kFail;
     }
 
@@ -136,12 +143,16 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
       data.InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferCreateWithMemoryBlock()";
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMBlockBufferCreateWithMemoryBlock()";
     return Status::kFail;
   }
 
   status = CMBlockBufferAssureBlockMemory(data);
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferAssureBlockMemory()";
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMBlockBufferAssureBlockMemory()";
     return Status::kFail;
   }
 
@@ -155,6 +166,8 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
         CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
     if (status != noErr) {
       OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes()";
+      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+          << "CMBlockBufferReplaceDataBytes()";
       return Status::kFail;
     }
     offset += kNALUHeaderLength;
@@ -164,6 +177,8 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
                                            nalu_data.size());
     if (status != noErr) {
       OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes()";
+      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+          << "CMBlockBufferReplaceDataBytes()";
       return Status::kFail;
     }
     offset += nalu_data.size();
@@ -185,6 +200,8 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
                                 sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMSampleBufferCreate()";
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMSampleBufferCreate()";
     return Status::kFail;
   }
 

@@ -17,10 +17,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/decoder_status.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
+
+class MediaLog;
 
 // Wraps VideoToolboxDecompressionSession to handle reconfiguration. Callbacks
 // are never called re-entrantly or after destruction.
@@ -29,10 +32,11 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
   using OutputCB =
       base::RepeatingCallback<void(base::ScopedCFTypeRef<CVImageBufferRef>,
                                    void*)>;
-  using ErrorCB = base::OnceClosure;
+  using ErrorCB = base::OnceCallback<void(DecoderStatus)>;
 
   VideoToolboxDecompressionInterface(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<MediaLog> media_log,
       OutputCB output_cb,
       ErrorCB error_cb);
 
@@ -59,11 +63,11 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
 
  private:
   // Shut down and call |error_cb_|.
-  void NotifyError();
+  void NotifyError(DecoderStatus status);
 
   // Helper to call |error_cb|. Used to post |error_cb_| without calling it
   // after destruction.
-  void CallErrorCB(ErrorCB error_cb);
+  void CallErrorCB(ErrorCB error_cb, DecoderStatus status);
 
   // Send queued decodes to VideoToolbox if possible.
   [[nodiscard]] bool ProcessDecodes();
@@ -75,6 +79,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
   void DestroySession();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<MediaLog> media_log_;
   OutputCB output_cb_;
   ErrorCB error_cb_;  // |!error_cb_| indicates an error state.
 

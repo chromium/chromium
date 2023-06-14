@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -63,7 +64,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
 
  private:
   // Shut down and enter a permanent error state.
-  void NotifyError();
+  void NotifyError(DecoderStatus status);
 
   // Drop all state, calling decode callbacks with |status|.
   void ResetInternal(DecoderStatus status);
@@ -82,7 +83,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   // |video_toolbox_| callbacks.
   void OnVideoToolboxOutput(base::ScopedCFTypeRef<CVImageBufferRef> image,
                             void* context);
-  void OnVideoToolboxError();
+  void OnVideoToolboxError(DecoderStatus status);
 
   // |converter_| callbacks.
   void OnConverterOutput(scoped_refptr<VideoFrame> frame, void* context);
@@ -92,10 +93,10 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   scoped_refptr<base::SequencedTaskRunner> gpu_task_runner_;
   GetCommandBufferStubCB get_stub_cb_;
 
-  // TODO(crbug.com/1331597): Store a DecoderStatus to report to future
-  // calls, and log errors to the MediaLog.
   bool has_error_ = false;
+
   VideoDecoderConfig config_;
+  InitCB init_cb_;
   OutputCB output_cb_;
   DecodeCB flush_cb_;
 

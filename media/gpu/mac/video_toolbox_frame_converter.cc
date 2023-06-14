@@ -16,6 +16,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/shared_image_stub.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -37,10 +38,12 @@ constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 
 VideoToolboxFrameConverter::VideoToolboxFrameConverter(
     scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
+    std::unique_ptr<MediaLog> media_log,
     GetCommandBufferStubCB get_stub_cb)
     : base::RefCountedDeleteOnSequence<VideoToolboxFrameConverter>(
           gpu_task_runner),
       gpu_task_runner_(std::move(gpu_task_runner)),
+      media_log_(std::move(media_log)),
       get_stub_cb_(std::move(get_stub_cb)) {
   DVLOG(1) << __func__;
   DCHECK(get_stub_cb_);
@@ -69,6 +72,7 @@ void VideoToolboxFrameConverter::Initialize() {
   stub_ = std::move(get_stub_cb_).Run();
   if (!stub_) {
     DVLOG(1) << __func__ << ": Failed to get command buffer stub.";
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to get command buffer stub.";
     return;
   }
 
@@ -83,6 +87,7 @@ void VideoToolboxFrameConverter::Initialize() {
   sis_ = stub_->channel()->shared_image_stub();
   if (!sis_) {
     DVLOG(1) << __func__ << ": Failed to get shared image stub.";
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to get shared image stub.";
     DestroyStub();
     return;
   }
@@ -119,6 +124,7 @@ void VideoToolboxFrameConverter::Convert(
   }
 
   if (!stub_) {
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to get command buffer stub.";
     std::move(output_cb).Run(nullptr, context);
   }
 
@@ -148,6 +154,7 @@ void VideoToolboxFrameConverter::Convert(
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kSharedImageUsage,
       kSharedImageDebugLabel);
   if (!result) {
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create shared image.";
     std::move(output_cb).Run(nullptr, context);
   }
 
@@ -171,6 +178,8 @@ void VideoToolboxFrameConverter::Convert(
       visible_rect, natural_size, timestamp);
 
   if (!frame) {
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create VideoFrame.";
+
     // |image| was dropped along with |release_cb|, but the SharedImage is still
     // alive.
     sis_->GetSharedImageDestructionCallback(mailbox).Run(gpu::SyncToken());

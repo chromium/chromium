@@ -16,6 +16,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_policy.h"
 #include "base/task/bind_post_task.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/accelerated_video_decoder.h"
@@ -86,33 +87,30 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DVLOG(1) << __func__;
   DCHECK(config.IsValidConfig());
 
-  if (has_error_) {
+  if (!has_error_) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(init_cb), DecoderStatus::Codes::kFailed));
     return;
   }
 
+  // Make |init_cb| available to NotifyError().
+  init_cb_ = std::move(init_cb);
+
   if (!IsSupportedProfile(config.profile())) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(init_cb),
-                                  DecoderStatus::Codes::kUnsupportedProfile));
-    NotifyError();
+    NotifyError(DecoderStatus::Codes::kUnsupportedProfile);
     return;
   }
 
   if (config.is_encrypted()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(init_cb),
-                       DecoderStatus::Codes::kUnsupportedEncryptionMode));
-    NotifyError();
+    NotifyError(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (!accelerator_) {
     accelerator_ = std::make_unique<H264Decoder>(
         std::make_unique<VideoToolboxH264Accelerator>(
+            media_log_->Clone(),
             base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorDecode,
                                 base::Unretained(this)),
             base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorOutput,
@@ -120,22 +118,19 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
         config.profile(), config.color_space_info());
 
     video_toolbox_ = std::make_unique<VideoToolboxDecompressionInterface>(
-        task_runner_,
+        task_runner_, media_log_->Clone(),
         base::BindRepeating(&VideoToolboxVideoDecoder::OnVideoToolboxOutput,
                             base::Unretained(this)),
         base::BindRepeating(&VideoToolboxVideoDecoder::OnVideoToolboxError,
                             base::Unretained(this)));
 
     converter_ = base::MakeRefCounted<VideoToolboxFrameConverter>(
-        gpu_task_runner_, std::move(get_stub_cb_));
+        gpu_task_runner_, media_log_->Clone(), std::move(get_stub_cb_));
   } else {
     // TODO(crbug.com/1331597): Support codec changes.
     // TODO(crbug.com/1331597): Handle color space changes.
     if (config.codec() != config_.codec()) {
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(init_cb), DecoderStatus::Codes::kFailed));
-      NotifyError();
+      NotifyError(DecoderStatus::Codes::kCantChangeCodec);
       return;
     }
   }
@@ -143,8 +138,8 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
 
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(init_cb), DecoderStatus::Codes::kOk));
+  task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(init_cb_),
+                                                   DecoderStatus::Codes::kOk));
 }
 
 void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -161,7 +156,7 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   if (buffer->end_of_stream()) {
     flush_cb_ = std::move(decode_cb);
     if (!accelerator_->Flush()) {
-      NotifyError();
+      NotifyError(DecoderStatus::Codes::kMalformedBitstream);
       return;
     }
     ProcessOutputs();
@@ -182,7 +177,8 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
       case AcceleratedVideoDecoder::kNeedContextUpdate:
       case AcceleratedVideoDecoder::kTryAgain:
-        NotifyError();
+        // More specific reasons are logged to the media log.
+        NotifyError(DecoderStatus::Codes::kMalformedBitstream);
         return;
 
       case AcceleratedVideoDecoder::kConfigChange:
@@ -210,7 +206,7 @@ void VideoToolboxVideoDecoder::Reset(base::OnceClosure reset_cb) {
   task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
 }
 
-void VideoToolboxVideoDecoder::NotifyError() {
+void VideoToolboxVideoDecoder::NotifyError(DecoderStatus status) {
   DVLOG(1) << __func__;
 
   if (has_error_) {
@@ -218,11 +214,16 @@ void VideoToolboxVideoDecoder::NotifyError() {
   }
 
   has_error_ = true;
-  ResetInternal(DecoderStatus::Codes::kFailed);
+  ResetInternal(status);
 }
 
 void VideoToolboxVideoDecoder::ResetInternal(DecoderStatus status) {
   DVLOG(4) << __func__;
+
+  if (init_cb_) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(init_cb_), status));
+  }
 
   while (!decode_cbs_.empty()) {
     task_runner_->PostTask(
@@ -328,9 +329,9 @@ void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
   ReleaseDecodeCallbacks();
 }
 
-void VideoToolboxVideoDecoder::OnVideoToolboxError() {
+void VideoToolboxVideoDecoder::OnVideoToolboxError(DecoderStatus status) {
   DVLOG(1) << __func__;
-  NotifyError();
+  NotifyError(std::move(status));
 }
 
 void VideoToolboxVideoDecoder::OnConverterOutput(
@@ -343,7 +344,8 @@ void VideoToolboxVideoDecoder::OnConverterOutput(
   }
 
   if (!frame) {
-    NotifyError();
+    // More specific reasons are logged to the media log.
+    NotifyError(DecoderStatus::Codes::kFailedToGetVideoFrame);
     return;
   }
 

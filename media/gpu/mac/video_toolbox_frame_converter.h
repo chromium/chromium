@@ -7,6 +7,8 @@
 
 #include <CoreMedia/CoreMedia.h>
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +27,8 @@ struct SyncToken;
 
 namespace media {
 
+class MediaLog;
+
 // Converts IOSurface-backed CVImageBuffers to VideoFrames.
 class VideoToolboxFrameConverter
     : public gpu::CommandBufferStub::DestructionObserver,
@@ -40,6 +44,7 @@ class VideoToolboxFrameConverter
   // any sequence, but Convert() must be called on `gpu_task_runner`.
   VideoToolboxFrameConverter(
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
+      std::unique_ptr<MediaLog> media_log,
       GetCommandBufferStubCB get_stub_cb);
 
   void Convert(base::ScopedCFTypeRef<CVImageBufferRef> image,
@@ -65,9 +70,10 @@ class VideoToolboxFrameConverter
       const gpu::SyncToken& sync_token);
 
   scoped_refptr<base::SequencedTaskRunner> gpu_task_runner_;
+  std::unique_ptr<MediaLog> media_log_;
   GetCommandBufferStubCB get_stub_cb_;
-  bool initialized_ = false;
 
+  bool initialized_ = false;
   raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
   gpu::SequenceId wait_sequence_id_;
   raw_ptr<gpu::SharedImageStub> sis_ = nullptr;

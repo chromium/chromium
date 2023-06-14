@@ -11,15 +11,18 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
+#include "media/base/media_log.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
 namespace media {
 
 VideoToolboxDecompressionInterface::VideoToolboxDecompressionInterface(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log,
     OutputCB output_cb,
     ErrorCB error_cb)
     : task_runner_(std::move(task_runner)),
+      media_log_(std::move(media_log)),
       output_cb_(std::move(output_cb)),
       error_cb_(std::move(error_cb)) {
   DVLOG(1) << __func__;
@@ -27,7 +30,7 @@ VideoToolboxDecompressionInterface::VideoToolboxDecompressionInterface(
   weak_this_ = weak_this_factory_.GetWeakPtr();
   decompression_session_ =
       std::make_unique<VideoToolboxDecompressionSessionImpl>(
-          task_runner_,
+          task_runner_, media_log_->Clone(),
           base::BindRepeating(&VideoToolboxDecompressionInterface::OnOutput,
                               weak_this_));
 }
@@ -50,7 +53,7 @@ void VideoToolboxDecompressionInterface::Decode(
   pending_decodes_.push(std::make_pair(std::move(sample), context));
 
   if (!ProcessDecodes()) {
-    NotifyError();
+    NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
 }
@@ -74,7 +77,7 @@ size_t VideoToolboxDecompressionInterface::PendingDecodes() {
   return pending_decodes_.size() + active_decodes_;
 }
 
-void VideoToolboxDecompressionInterface::NotifyError() {
+void VideoToolboxDecompressionInterface::NotifyError(DecoderStatus status) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(error_cb_);
@@ -86,13 +89,14 @@ void VideoToolboxDecompressionInterface::NotifyError() {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoToolboxDecompressionInterface::CallErrorCB,
-                     weak_this_, std::move(error_cb_)));
+                     weak_this_, std::move(error_cb_), std::move(status)));
 }
 
-void VideoToolboxDecompressionInterface::CallErrorCB(ErrorCB error_cb) {
+void VideoToolboxDecompressionInterface::CallErrorCB(ErrorCB error_cb,
+                                                     DecoderStatus status) {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  std::move(error_cb).Run();
+  std::move(error_cb).Run(std::move(status));
 }
 
 bool VideoToolboxDecompressionInterface::ProcessDecodes() {
@@ -158,6 +162,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
                                 &kCFTypeDictionaryValueCallBacks));
   if (!decoder_config) {
     DLOG(ERROR) << "CFDictionaryCreateMutable() failed";
+    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
     return false;
   }
 
@@ -208,16 +213,20 @@ void VideoToolboxDecompressionInterface::OnOutput(
 
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "VTDecompressionOutputCallback";
-    NotifyError();
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "VTDecompressionOutputCallback";
+    NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
 
   if (!image || CFGetTypeID(image) != CVPixelBufferGetTypeID()) {
     DLOG(ERROR) << "Decoded image is not a CVPixelBuffer";
+    MEDIA_LOG(ERROR, media_log_.get())
+        << "Decoded image is not a CVPixelBuffer";
     // TODO(crbug.com/1331597): Potentially allow intentional dropped frames.
     // (signaled in |flags|). It might make sense to dump without crashing to
     // help track down why this happens.
-    NotifyError();
+    NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
 
@@ -228,7 +237,7 @@ void VideoToolboxDecompressionInterface::OnOutput(
   if (draining_ && !active_decodes_) {
     DestroySession();
     if (!ProcessDecodes()) {
-      NotifyError();
+      NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
       return;
     }
   }

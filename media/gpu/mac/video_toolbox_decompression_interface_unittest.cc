@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "media/base/decoder_status.h"
+#include "media/base/media_util.h"
 #include "media/gpu/mac/video_toolbox_decompression_interface.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -139,13 +142,14 @@ class VideoToolboxDecompressionInterfaceTest : public testing::Test {
   ~VideoToolboxDecompressionInterfaceTest() override = default;
 
  protected:
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(DecoderStatus));
   MOCK_METHOD2(OnOutput, void(base::ScopedCFTypeRef<CVImageBufferRef>, void*));
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoToolboxDecompressionInterface> video_toolbox_{
       std::make_unique<VideoToolboxDecompressionInterface>(
           task_environment_.GetMainThreadTaskRunner(),
+          std::make_unique<NullMediaLog>(),
           base::BindRepeating(&VideoToolboxDecompressionInterfaceTest::OnOutput,
                               base::Unretained(this)),
           base::BindOnce(&VideoToolboxDecompressionInterfaceTest::OnError,
@@ -184,7 +188,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, CreateFailure) {
 
   decompression_session_->can_create = false;
 
-  EXPECT_CALL(*this, OnError());
+  EXPECT_CALL(*this, OnError(_));
 
   video_toolbox_->Decode(sample, context);
 
@@ -262,7 +266,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Early) {
 
   decompression_session_->can_decode_frame = false;
 
-  EXPECT_CALL(*this, OnError());
+  EXPECT_CALL(*this, OnError(_));
 
   video_toolbox_->Decode(sample, context);
 
@@ -283,7 +287,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Late) {
   EXPECT_EQ(video_toolbox_->PendingDecodes(), 1ul);
   EXPECT_EQ(decompression_session_->ActiveDecodes(), 1ul);
 
-  EXPECT_CALL(*this, OnError());
+  EXPECT_CALL(*this, OnError(_));
 
   decompression_session_->FailDecode();
 

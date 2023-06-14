@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "media/base/media_util.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 #include "media/video/h264_parser.h"
@@ -15,8 +16,6 @@ namespace media {
 
 using testing::_;
 using testing::ElementsAre;
-using testing::Eq;
-using testing::Not;
 using testing::SaveArg;
 
 namespace {
@@ -52,6 +51,7 @@ class VideoToolboxH264AcceleratorTest : public testing::Test {
 
   std::unique_ptr<VideoToolboxH264Accelerator> accelerator_{
       std::make_unique<VideoToolboxH264Accelerator>(
+          std::make_unique<NullMediaLog>(),
           base::BindRepeating(&VideoToolboxH264AcceleratorTest::OnDecode,
                               base::Unretained(this)),
           base::BindRepeating(&VideoToolboxH264AcceleratorTest::OnOutput,

@@ -8,6 +8,8 @@
 #include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,6 +18,8 @@
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
+
+class MediaLog;
 
 // This interface wraps VideoToolbox platform APIs so that they can be swapped
 // out for testing.
@@ -48,6 +52,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
 
   VideoToolboxDecompressionSessionImpl(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<MediaLog> media_log,
       OutputCB output_cb);
   ~VideoToolboxDecompressionSessionImpl() override;
 
@@ -72,6 +77,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
                 base::ScopedCFTypeRef<CVImageBufferRef> image);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<MediaLog> media_log_;
   OutputCB output_cb_;
 
   base::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
