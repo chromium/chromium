@@ -298,7 +298,13 @@ using MenuItemViewTestRemove21 = MenuItemViewTestRemove<2, 1>;
 VIEW_TEST(MenuItemViewTestRemove00, RemoveItem00)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestRemove01, RemoveItem01)
+// Super flaky on Wayland.
+#if BUILDFLAG(IS_OZONE)
+#define MAYBE_RemoveItem01 DISABLED_RemoveItem01
+#else
+#define MAYBE_RemoveItem01 RemoveItem01
+#endif
+VIEW_TEST(MenuItemViewTestRemove01, MAYBE_RemoveItem01)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestRemove10, RemoveItem10)
