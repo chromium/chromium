@@ -602,4 +602,111 @@ SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
 SignedWebBundleReader::SignatureVerificationAction::
     ~SignatureVerificationAction() = default;
 
+UnsecureReader::UnsecureReader(const base::FilePath& web_bundle_path)
+    : connection_(web_bundle_path, /*base_url=*/absl::nullopt) {}
+
+UnsecureReader::~UnsecureReader() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void UnsecureReader::StartReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  connection_.Initialize(
+      base::BindOnce(&UnsecureReader::OnConnectionInitialized, GetWeakPtr()));
+}
+
+void UnsecureReader::OnConnectionInitialized(
+    base::expected<void, UnusableSwbnFileError> init_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!init_status.has_value()) {
+    ReturnError(init_status.error());
+    return;
+  }
+
+  DoReading();
+}
+
+// static
+void UnsecureSignedWebBundleIdReader::GetWebBundleId(
+    const base::FilePath& web_bundle_path,
+    WebBundleIdCallback result_callback) {
+  std::unique_ptr<UnsecureSignedWebBundleIdReader> reader =
+      base::WrapUnique(new UnsecureSignedWebBundleIdReader(web_bundle_path));
+  UnsecureSignedWebBundleIdReader* const reader_raw_ptr = reader.get();
+
+  // We pass the owning unique_ptr to the second no-op callback to keep
+  // the instance of UnsecureSignedWebBundleIdReader alive.
+  WebBundleIdCallback id_read_callback =
+      base::BindOnce(std::move(result_callback))
+          .Then(base::BindOnce(
+              [](std::unique_ptr<UnsecureSignedWebBundleIdReader> owning_ptr) {
+              },
+              std::move(reader)));
+
+  reader_raw_ptr->SetResultCallback(std::move(id_read_callback));
+  reader_raw_ptr->StartReading();
+}
+
+UnsecureSignedWebBundleIdReader::UnsecureSignedWebBundleIdReader(
+    const base::FilePath& web_bundle_path)
+    : UnsecureReader(web_bundle_path) {}
+
+void UnsecureSignedWebBundleIdReader::DoReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  connection_.parser_->ParseIntegrityBlock(
+      base::BindOnce(&UnsecureSignedWebBundleIdReader::OnIntegrityBlockParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void UnsecureSignedWebBundleIdReader::ReturnError(UnusableSwbnFileError error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(web_bundle_id_callback_).Run(base::unexpected(std::move(error)));
+}
+
+base::WeakPtr<UnsecureReader> UnsecureSignedWebBundleIdReader::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void UnsecureSignedWebBundleIdReader::OnIntegrityBlockParsed(
+    web_package::mojom::BundleIntegrityBlockPtr raw_integrity_block,
+    web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (error) {
+    ReturnError(UnusableSwbnFileError(std::move(error)));
+    return;
+  }
+
+  auto integrity_block =
+      web_package::SignedWebBundleIntegrityBlock::Create(
+          std::move(raw_integrity_block))
+          .transform_error([](std::string error) {
+            return UnusableSwbnFileError(
+                UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError,
+                "Error while parsing the Signed Web Bundle's integrity "
+                "block: " +
+                    std::move(error));
+          });
+
+  if (!integrity_block.has_value()) {
+    ReturnError(std::move(integrity_block.error()));
+    return;
+  }
+
+  web_package::SignedWebBundleId bundle_id =
+      integrity_block->signature_stack().derived_web_bundle_id();
+
+  std::move(web_bundle_id_callback_).Run(std::move(bundle_id));
+}
+
+void UnsecureSignedWebBundleIdReader::SetResultCallback(
+    WebBundleIdCallback web_bundle_id_result_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  web_bundle_id_callback_ = std::move(web_bundle_id_result_callback);
+}
+
+UnsecureSignedWebBundleIdReader::~UnsecureSignedWebBundleIdReader() = default;
+
 }  // namespace web_app

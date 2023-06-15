@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
@@ -27,59 +28,29 @@ namespace web_app {
 
 namespace {
 
+base::expected<IsolatedWebAppUrlInfo, std::string> MakeIsolatedWebAppUrlInfo(
+    base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>
+        bundle_id) {
+  return bundle_id
+      .transform([](const web_package::SignedWebBundleId& id) {
+        return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(id);
+      })
+      .transform_error([](const UnusableSwbnFileError& error) {
+        return "Failed to read the integrity block of the signed web bundle: " +
+               error.message();
+      });
+}
+
 void GetSignedWebBundleIdByPath(
     const base::FilePath& path,
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
-        callback) {
-  std::unique_ptr<SignedWebBundleReader> reader =
-      SignedWebBundleReader::Create(path, /*base_url=*/absl::nullopt);
+        url_info_ready_callback) {
+  UnsecureSignedWebBundleIdReader::WebBundleIdCallback id_read_callback =
+      base::BindOnce(&MakeIsolatedWebAppUrlInfo)
+          .Then(std::move(url_info_ready_callback));
 
-  SignedWebBundleReader* reader_raw_ptr = reader.get();
-
-  auto [callback_first, callback_second] =
-      base::SplitOnceCallback(std::move(callback));
-
-  SignedWebBundleReader::IntegrityBlockReadResultCallback
-      integrity_block_result_callback = base::BindOnce(
-          [](base::OnceCallback<void(
-                 base::expected<IsolatedWebAppUrlInfo, std::string>)> callback,
-             web_package::SignedWebBundleIntegrityBlock integrity_block,
-             base::OnceCallback<void(
-                 SignedWebBundleReader::SignatureVerificationAction)>
-                 verify_callback) {
-            std::move(verify_callback)
-                .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
-                    "Stopped after reading the integrity block."));
-            web_package::SignedWebBundleId bundle_id =
-                integrity_block.signature_stack().derived_web_bundle_id();
-            std::move(callback).Run(
-                IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id));
-          },
-          std::move(callback_first));
-
-  SignedWebBundleReader::ReadErrorCallback read_error_callback = base::BindOnce(
-      [](std::unique_ptr<SignedWebBundleReader> reader_ownership,
-         base::OnceCallback<void(
-             base::expected<IsolatedWebAppUrlInfo, std::string>)> callback,
-         base::expected<void, UnusableSwbnFileError> read_status) {
-        CHECK(!read_status.has_value());
-
-        // If the operation was aborted intentionally the reader will return
-        // kIntegrityBlockValidationError error. Strictly speaking we should
-        // have a separate error for this purpose. But because the code of this
-        // function will be soon refactored, let's use this temporary hacky
-        // solution.
-        if (read_status.error().value() !=
-            UnusableSwbnFileError::Error::kIntegrityBlockValidationError) {
-          std::move(callback).Run(base::unexpected(
-              "Failed to read the integrity block of the signed web bundle: " +
-              read_status.error().message()));
-        }
-      },
-      std::move(reader), std::move(callback_second));
-
-  reader_raw_ptr->StartReading(std::move(integrity_block_result_callback),
-                               std::move(read_error_callback));
+  UnsecureSignedWebBundleIdReader::GetWebBundleId(path,
+                                                  std::move(id_read_callback));
 }
 
 }  // namespace

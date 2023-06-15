@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/shared_file.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
@@ -354,6 +355,69 @@ class SignedWebBundleReader {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SignedWebBundleReader> weak_ptr_factory_{this};
+};
+
+// This is a base class for fetching an info about a unsecure .swbn file.
+// The implementation of the pure virtual functions of this class should
+// provide a logic to read a specific thing from a bundle.
+// A signed web bundle considered unsecure if the signed web bundle ID of the
+// file is not known from a trusted source. Examples of trusted source of the ID
+// are the enterprise policy, a distributor store, etc.
+// Integrity check of the .swbn file without knowing the expected ID makes no
+// sense as an attacker can resign the tampered bundle with their private key.
+class UnsecureReader {
+ public:
+  UnsecureReader(const UnsecureReader&) = delete;
+  UnsecureReader& operator=(const UnsecureReader&) = delete;
+  virtual ~UnsecureReader();
+
+ protected:
+  explicit UnsecureReader(const base::FilePath& web_bundle_path);
+  // Initializes the connection which in the end leads to
+  // |DoReading()| execution.
+  void StartReading();
+
+  // Implementation of this does real work to fetch the particular
+  // information about the .swbn file.
+  virtual void DoReading() = 0;
+  // Implementation should return an error to the caller.
+  virtual void ReturnError(UnusableSwbnFileError error) = 0;
+  virtual base::WeakPtr<UnsecureReader> GetWeakPtr() = 0;
+
+  void OnConnectionInitialized(
+      base::expected<void, UnusableSwbnFileError> init_status);
+
+  internal::SafeWebBundleParserConnection connection_;
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+class UnsecureSignedWebBundleIdReader : public UnsecureReader {
+ public:
+  using WebBundleIdCallback = base::OnceCallback<void(
+      base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>)>;
+
+  static void GetWebBundleId(const base::FilePath& web_bundle_path,
+                             WebBundleIdCallback result_callback);
+
+  ~UnsecureSignedWebBundleIdReader() override;
+
+ protected:
+  explicit UnsecureSignedWebBundleIdReader(
+      const base::FilePath& web_bundle_path);
+
+  void DoReading() override;
+  base::WeakPtr<UnsecureReader> GetWeakPtr() override;
+  void ReturnError(UnusableSwbnFileError error) override;
+
+  void OnIntegrityBlockParsed(
+      web_package::mojom::BundleIntegrityBlockPtr raw_integrity_block,
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr error);
+
+ private:
+  void SetResultCallback(WebBundleIdCallback web_bundle_id_result_callback);
+
+  WebBundleIdCallback web_bundle_id_callback_;
+  base::WeakPtrFactory<UnsecureSignedWebBundleIdReader> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

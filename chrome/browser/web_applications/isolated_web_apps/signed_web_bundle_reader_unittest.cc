@@ -757,4 +757,89 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(absl::nullopt,
                                            "https://example.com"));
 
+class UnsecureSignedWebBundleReaderTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    parser_factory_ =
+        std::make_unique<web_package::MockWebBundleParserFactory>();
+
+    web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
+        signature_stack_entry =
+            web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
+    signature_stack_entry->public_key = web_package::Ed25519PublicKey::Create(
+        base::make_span(kEd25519PublicKey));
+    signature_stack_entry->signature = web_package::Ed25519Signature::Create(
+        base::make_span(kEd25519Signature));
+
+    std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
+        signature_stack;
+    signature_stack.push_back(std::move(signature_stack_entry));
+
+    integrity_block_ = web_package::mojom::BundleIntegrityBlock::New();
+    integrity_block_->size = 123;
+    integrity_block_->signature_stack = std::move(signature_stack);
+
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    EXPECT_TRUE(
+        CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path_));
+
+    in_process_data_decoder_.service()
+        .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
+            &web_package::MockWebBundleParserFactory::AddReceiver,
+            base::Unretained(parser_factory_.get())));
+  }
+
+  void TearDown() override {
+    // Allow cleanup tasks posted by the destructor of `web_package::SharedFile`
+    // to run.
+    task_environment_.RunUntilIdle();
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath temp_file_path_;
+
+  std::unique_ptr<web_package::MockWebBundleParserFactory> parser_factory_;
+  web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
+};
+
+TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {
+  base::test::TestFuture<
+      base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>>
+      read_web_bundle_id_future;
+
+  UnsecureSignedWebBundleIdReader::GetWebBundleId(
+      temp_file_path_, read_web_bundle_id_future.GetCallback());
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+
+  base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>
+      bundle_id_result = read_web_bundle_id_future.Take();
+
+  ASSERT_TRUE(bundle_id_result.has_value());
+  web_package::Ed25519PublicKey public_key =
+      web_package::Ed25519PublicKey::Create(base::make_span(kEd25519PublicKey));
+  EXPECT_THAT(
+      bundle_id_result.value(),
+      web_package::SignedWebBundleId::CreateForEd25519PublicKey(public_key));
+}
+
+TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
+  base::test::TestFuture<
+      base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>>
+      read_web_bundle_id_future;
+
+  UnsecureSignedWebBundleIdReader::GetWebBundleId(
+      temp_file_path_, read_web_bundle_id_future.GetCallback());
+  parser_factory_->RunIntegrityBlockCallback(
+      nullptr, web_package::mojom::BundleIntegrityBlockParseError::New());
+
+  base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>
+      bundle_id_result = read_web_bundle_id_future.Take();
+
+  ASSERT_FALSE(bundle_id_result.has_value());
+  EXPECT_EQ(bundle_id_result.error().value(),
+            UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError);
+}
+
 }  // namespace web_app
