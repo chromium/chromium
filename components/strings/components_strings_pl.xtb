@@ -265,6 +265,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 
       &lt;p&gt;Popraw datę i godzinę w sekcji &lt;strong&gt;Ogólne&lt;/strong&gt; w aplikacji &lt;strong&gt;Ustawienia&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator uruchomi urządzenie ponownie o <ph name="TIME" /> w dniu <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Brak tekstu przekonwertowanego z obrazów</translation>
 <translation id="156703335097561114">Dane sieciowe dotyczące adresów, konfiguracji interfejsu i jakości połączenia</translation>
 <translation id="1567040042588613346">Ta zasada działa w oczekiwany sposób, ale zastąpiła tę samą wartość ustawioną w innym miejscu.</translation>
 <translation id="1567405528131216114">Dodaj temat <ph name="TOPIC" /></translation>
@@ -1200,6 +1201,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3890664840433101773">Dodaj adres e-mail</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Karta straciła ważność</translation>
+<translation id="3906095212874392000">Koniec przekonwertowanego tekstu</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">W każdej chwili możesz zmienić swój wybór w ustawieniach Chrome</translation>
@@ -1400,6 +1402,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4331519897422864041">Układarka 5</translation>
 <translation id="4331708818696583467">Niezabezpieczona</translation>
 <translation id="4333561522337981382">Zarządzanie oknami na wszystkich wyświetlaczach</translation>
+<translation id="4338709847516294988">Naciśnij Wyszukaj + M i przekonwertuj obraz na tekst, używając menu kontekstowego</translation>
 <translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4340982228985273705">Ten komputer nie został wykryty jako zarządzany przez firmę, przez co zasada może instalować automatycznie tylko rozszerzenia hostowane w Chrome Web Store. URL sklepu Chrome Web Store służący do aktualizacji to „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4348834659292907206">Połączenie z <ph name="SITE" /> nie jest bezpieczne</translation>
@@ -1415,6 +1418,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4359160567981085931">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome może pomóc. Aby zmienić hasło i powiadomić Google, że Twoje konto może być zagrożone, kliknij Chroń konto.</translation>
 <translation id="4363222835916186793">Alerty dotyczące tego produktu zostały wyłączone</translation>
 <translation id="437040971055499437">Wystąpiło zdarzenie związane z bezpieczeństwem</translation>
+<translation id="4371307856413138486">Początek przekonwertowanego tekstu</translation>
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4372948949327679948">Oczekiwano wartości typu <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Dodaj temat z powrotem, jeśli chcesz, aby był w puli tematów, na podstawie których Chrome może określić Twoje zainteresowania</translation>
@@ -2089,6 +2093,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6041777658117377052">Temperatura w komorze</translation>
 <translation id="6042308850641462728">Więcej</translation>
+<translation id="6042688167654081154">Obraz został przekonwertowany na tekst</translation>
 <translation id="6044573915096792553">Rozmiar 12</translation>
 <translation id="6045164183059402045">Szablon impozycji</translation>
 <translation id="6047233362582046994">Jeśli rozumiesz zagrożenie, możesz <ph name="BEGIN_LINK" />wejść na tę stronę<ph name="END_LINK" />, zanim szkodliwe aplikacje zostaną usunięte.</translation>
@@ -2150,6 +2155,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">Analizuję obraz</translation>
 <translation id="6203231073485539293">Sprawdź połączenie z internetem</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -2268,6 +2274,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6468485451923838994">Czcionki</translation>
 <translation id="647261751007945333">Zasady dotyczące urządzeń</translation>
 <translation id="647330291963761005">Instaluję aktualizacje</translation>
+<translation id="6474220430271405609">Testy zasad</translation>
 <translation id="6475672344094591109">Odwiedzane przez Ciebie witryny mogą prosić Chrome o informacje, które pomogą im zmierzyć skuteczność prezentowanych reklam. Chrome chroni Twoją prywatność, ograniczając zakres informacji, jakie witryny  mogą udostępniać sobie nawzajem.</translation>
 <translation id="6476284679642588870">Zarządzaj formami płatności</translation>
 <translation id="6486200200930923183">Filmy dokumentalne</translation>

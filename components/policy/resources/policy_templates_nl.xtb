@@ -4719,11 +4719,6 @@ Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 
           Als je dit beleid niet toepast, wordt de functie verplicht uitgezet.</translation>
 <translation id="5435888298115339571">Delen van bureaublad aanzetten in de omnibox en het menu met 3 stippen</translation>
-<translation id="5436664291450581091">Dit beleid bepaalt of een pagina met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> (CCNS) kan worden opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" />. De website die deze koptekst instelt, verwacht misschien niet dat de pagina wordt hersteld vanuit <ph name="BACK_FORWARD_CACHE_NAME" />, omdat bepaalde gevoelige informatie na het herstel mogelijk nog steeds wordt getoond, ook als deze niet meer toegankelijk is.
-
-Als je het beleid toepast of niet instelt, kan de pagina met de CCNS-koptekst worden hersteld vanuit <ph name="BACK_FORWARD_CACHE_NAME" />, tenzij verwijdering uit het cachegeheugen wordt geactiveerd (bijvoorbeeld als er een cookiewijziging met alleen HTTP op de site is).
-
-Als je het beleid niet toepast, wordt de pagina met CCNS-koptekst niet opgeslagen in <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="5441508088704391614">Geen speciale beperkingen. Standaard.</translation>
 <translation id="5442026853063570579">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'DeveloperToolsDisallowed' (waarde 2), hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op een andere waarde of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
 <translation id="5443582909255996887">Als je dit beleid toepast, worden alle sites op Android geïsoleerd, zodat elke site zijn eigen proces uitvoert, en kunnen gebruikers kunnen deze functie niet uitzetten. Een site is een schema plus eTLD+1 (bijvoorbeeld https://example.com). Android isoleert bepaalde gevoelige sites standaard vanaf versie 77 van <ph name="PRODUCT_NAME" />. Dit beleid breidt die standaard site-isolatiemodus uit naar alle sites.

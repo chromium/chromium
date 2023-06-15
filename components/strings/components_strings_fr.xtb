@@ -265,6 +265,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 
       &lt;p&gt;Veuillez ajuster la date et l'heure dans la section &lt;strong&gt;Général&lt;/strong&gt; de l'application &lt;strong&gt;Réglages&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">L'administrateur redémarrera votre appareil le <ph name="DATE" /> à <ph name="TIME" /></translation>
+<translation id="1564753300777780201">Aucun texte converti à partir d'images</translation>
 <translation id="156703335097561114">Les informations de réseau, comme les adresses, la configuration d'interface et la qualité de la connexion</translation>
 <translation id="1567040042588613346">Cette règle fonctionne comme prévu, mais notez que la même valeur a été définie ailleurs et que cette règle la remplace.</translation>
 <translation id="1567405528131216114">Ajouter <ph name="TOPIC" /></translation>
@@ -1200,6 +1201,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3890664840433101773">Ajouter une adresse e-mail</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
+<translation id="3906095212874392000">Fin du texte converti</translation>
 <translation id="3906954721959377182">Tablette</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Vous pouvez modifier vos options à tout moment dans les paramètres Chrome</translation>
@@ -1400,6 +1402,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4331519897422864041">Empileur 5</translation>
 <translation id="4331708818696583467">Non sécurisé</translation>
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
+<translation id="4338709847516294988">Appuyez sur Recherche+M et convertissez l'image en texte dans le menu contextuel</translation>
 <translation id="4340575312453649552">Cette annonce a utilisé trop de ressources pour votre appareil. Par conséquent, Chrome l'a supprimée.</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise. Selon la règle définie, seules les extensions hébergées par le Chrome Web Store peuvent y être installées. L'URL de mise à jour du Chrome Web Store est "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">La connexion à <ph name="SITE" /> n'est pas sécurisée</translation>
@@ -1415,6 +1418,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4359160567981085931">Vous venez de saisir votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et informer Google que votre compte a peut-être été piraté, cliquez sur "Protéger le compte".</translation>
 <translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="437040971055499437">Un événement lié à la sécurité se produit</translation>
+<translation id="4371307856413138486">Début du texte converti</translation>
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4372948949327679948">Valeur attendue : <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Ajoutez de nouveau un thème si vous souhaitez qu'il fasse partie de ceux que Chrome peut choisir pour estimer vos centres d'intérêt</translation>
@@ -2089,6 +2093,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6041777658117377052">Température de la chambre</translation>
 <translation id="6042308850641462728">Plus</translation>
+<translation id="6042688167654081154">Image convertie en texte</translation>
 <translation id="6044573915096792553">Taille 12</translation>
 <translation id="6045164183059402045">Modèle d'imposition</translation>
 <translation id="6047233362582046994">Si vous êtes conscient des risques auxquels vous vous exposez, vous pouvez <ph name="BEGIN_LINK" />consulter ce site<ph name="END_LINK" /> avant que les applications dangereuses aient été supprimées.</translation>
@@ -2150,6 +2155,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6195371403461054755">Géologie</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">L'image est en cours d'analyse</translation>
 <translation id="6203231073485539293">Vérifiez votre connexion Internet</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6212314149070368045">Fanfold américain</translation>
@@ -3065,7 +3071,7 @@ Informations supplémentaires :
 <translation id="8368027906805972958">Appareil inconnu ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Services Google Play</translation>
 <translation id="8369073279043109617">En obtenir un nouveau</translation>
-<translation id="8371889962595521444">Certificats racines personnalisés</translation>
+<translation id="8371889962595521444">Certificats racine personnalisés</translation>
 <translation id="8374636051559112948">Variable</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8380941800586852976">Dangereux</translation>

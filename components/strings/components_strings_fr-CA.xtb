@@ -261,6 +261,7 @@
 
           &lt;p&gt;Veuillez régler la date et l'heure depuis la section &lt;strong&gt;Général&lt;/strong&gt; de l'application &lt;strong&gt;Paramètres&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Votre administrateur va redémarrer votre appareil à <ph name="TIME" /> le <ph name="DATE" /></translation>
+<translation id="1564753300777780201">Aucun texte converti à partir d'images</translation>
 <translation id="156703335097561114">Renseignements relatifs au réseautage tels que les adresses, la configuration d'interface et la qualité de connexion</translation>
 <translation id="1567040042588613346">Cette politique fonctionne comme prévu, mais notez que la même valeur a été définie ailleurs et que cette politique la remplace.</translation>
 <translation id="1567405528131216114">Ajouter <ph name="TOPIC" /></translation>
@@ -1182,6 +1183,7 @@
 <translation id="3890664840433101773">Ajouter une adresse de courriel</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
+<translation id="3906095212874392000">Fin du texte converti</translation>
 <translation id="3906954721959377182">Tablette</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Vous pouvez changer d'avis à tout moment dans les paramètres de Chrome</translation>
@@ -1380,6 +1382,7 @@
 <translation id="4331519897422864041">Empileur 5</translation>
 <translation id="4331708818696583467">Pas sécuritaire</translation>
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
+<translation id="4338709847516294988">Appuyez sur recherche plus m et convertissez l'image en texte dans le menu contextuel</translation>
 <translation id="4340575312453649552">Cette annonce utilisait trop de ressources pour votre appareil, alors Chrome l'a supprimée.</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise, la politique peut donc uniquement installer des extensions hébergées par la boutique Chrome Webstore. L'URL de mise à jour de la boutique Chrome Webstore est « <ph name="CWS_UPDATE_URL" /> ».</translation>
 <translation id="4348834659292907206">La connexion au site <ph name="SITE" /> n'est pas sécurisée</translation>
@@ -1395,6 +1398,7 @@
 <translation id="4359160567981085931">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
 <translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="437040971055499437">Un événement relatif à la sécurité se produit</translation>
+<translation id="4371307856413138486">Début du texte converti</translation>
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4372948949327679948">Valeur <ph name="VALUE_TYPE" /> attendue.</translation>
 <translation id="4375864595697821259">Ajoutez un élément pour l'intégrer dans le répertoire de sujets parmi lesquels Chrome peut choisir pour son évaluation de vos intérêts</translation>
@@ -2062,6 +2066,7 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6041777658117377052">Température de la chambre</translation>
 <translation id="6042308850641462728">Plus</translation>
+<translation id="6042688167654081154">Image convertie en texte</translation>
 <translation id="6044573915096792553">Taille 12</translation>
 <translation id="6045164183059402045">Modèle d'imposition</translation>
 <translation id="6047233362582046994">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />vous rendre sur ce site<ph name="END_LINK" /> avant que les applications malveillantes aient été supprimées.</translation>
@@ -2123,6 +2128,7 @@
 <translation id="6195371403461054755">Géologie</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6197648101609735209">89 mm x 89 mm</translation>
+<translation id="6200386911308538077">L'image est en cours d'analyse</translation>
 <translation id="6203231073485539293">Vérifiez votre connexion Internet</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6212314149070368045">Pli accordéon américain</translation>
@@ -2240,6 +2246,7 @@
 <translation id="6468485451923838994">Polices</translation>
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
 <translation id="647330291963761005">Installation des mises à jour en cours…</translation>
+<translation id="6474220430271405609">Tests de politique</translation>
 <translation id="6475672344094591109">Les sites que vous visitez peuvent demander à Chrome des renseignements qui les aident à mesurer la performance de leurs annonces. Chrome protège votre confidentialité en limitant les renseignements que les sites peuvent partager entre eux.</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6486200200930923183">Documentaires</translation>

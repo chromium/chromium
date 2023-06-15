@@ -146,6 +146,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
 <translation id="4050599136622776556">Chromium försöker redigera betalningsmetoder.</translation>
 <translation id="4055805654398742145">Lösenordshantering</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Organisationen avslutar Chromium automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chromium automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chromium</translation>
 <translation id="421369550622382712">Upptäck fantastiska appar, spel, tillägg och teman för Chromium.</translation>
@@ -182,6 +183,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4888717733111232871">Regel som tillåter inkommande mDNS-trafik för Chromium.</translation>
 <translation id="4893347770495441059">Starta om för att uppdatera &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Organisationen raderar automatiskt webbinformation när Chromium inte har använts på 1 minut. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}other{Organisationen raderar automatiskt webbinformation när Chromium inte har använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}}</translation>
 <translation id="4943838377383847465">Chromium körs i bakgrundsläge.</translation>
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>
@@ -216,6 +218,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5924017743176219022">Ansluter till internet …</translation>
 <translation id="5941711191222866238">Minimera</translation>
 <translation id="5972142260211327093">Om du slumpmässigt har valts ut för en aktiv provfunktion påverkar webbhistoriken vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen från Chromium löpande varje månad. Intressen förnyas om du inte tar bort dem.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Organisationen avslutar Chromium automatiskt när det inte har använts på 1 minut.}other{Organisationen avslutar Chromium automatiskt när det inte har använts på # minuter.}}</translation>
 <translation id="5987687638152509985">Du måste uppdatera Chromium innan synkroniseringen kan starta</translation>
 <translation id="5988505247484123880">Det är vanligt att webbplatser du besöker kommer ihåg sådant som intresserar dig för att anpassa din upplevelse. Webbplatser kan även lagra information om dina intressen i Chromium.</translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>

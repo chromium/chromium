@@ -1468,7 +1468,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4489023393592172404">Kaku 4-kuvert</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
-<translation id="4492332866628791879">Spara och bevaka pris</translation>
 <translation id="4492519888999857993">De här funktionerna är inaktiverade som standard. I kommande versioner av Chrome kommer de inte längre att vara tillgängliga.</translation>
 <translation id="4493480324863638523">Ogiltig webbadress. Måste vara en webbadress med ett standardprotokoll, t.ex. http://example.com eller https://example.com.</translation>
 <translation id="4494323206460475851">Du kan se annonsämnen i inställningarna och blockera dem som du inte vill ska delas med webbplatser. Chrome raderar även annonsämnen som är äldre än fyra veckor automatiskt.</translation>
@@ -2289,6 +2288,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6468485451923838994">Teckensnitt</translation>
 <translation id="647261751007945333">Enhetspolicyer</translation>
 <translation id="647330291963761005">Uppdateringar installeras</translation>
+<translation id="6474220430271405609">Principtester</translation>
 <translation id="6475672344094591109">Webbplatser du besöker kan be Chrome om information som hjälper dem att mäta annonsernas resultat. Chrome skyddar din integritet genom att begränsa informationen som webbplatser kan dela med varandra.</translation>
 <translation id="6476284679642588870">Hantera betalningsmetoder</translation>
 <translation id="6486200200930923183">Dokumentärer</translation>

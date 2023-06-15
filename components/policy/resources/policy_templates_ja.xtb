@@ -1988,6 +1988,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
       このポリシーは Chrome 99 で削除されました。
 
       詳しくは、https://www.chromestatus.com/feature/4664843055398912 をご覧ください。</translation>
+<translation id="2948720459196236547">CCNS ヘッダーを含むページの <ph name="BACK_FORWARD_CACHE_NAME" /> への保存を許可する。</translation>
 <translation id="2952347049958405264">制限事項:</translation>
 <translation id="2957506574938329824">すべてのサイトに対して Web Bluetooth API による Bluetooth デバイスへのアクセスを許可しない</translation>
 <translation id="2957513448235202597">「<ph name="HTTP_NEGOTIATE" />」認証用のアカウントの種類</translation>
@@ -2176,6 +2177,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 注: <ph name="POST_LOWERCASE_METHOD_NAME" /> と <ph name="PUT_LOWERCASE_METHOD_NAME" /> のリクエスト メソッドは影響を受けませんが、<ph name="PATCH_LOWERCASE_METHOD_NAME" /> は影響を受けます。
 
 このポリシーは一時的なもので、将来的には削除されます。</translation>
+<translation id="3107054704365085676"><ph name="CACHE_CONTROL_NO_STORE_NAME" /> ヘッダーを含むページの <ph name="BACK_FORWARD_CACHE_NAME" /> への保存を許可する</translation>
 <translation id="3110248563985502478">このポリシーは M88 でサポートが終了しています。Flash は Chrome でご利用いただけなくなりました。このポリシーを有効に設定した場合、古いプラグインが通常のプラグインとして使用されます。このポリシーを無効に設定した場合、古いプラグインは使用されません。
 
       このポリシーを未設定のままにした場合、古いプラグインの実行の許可を確認するメッセージがユーザーに表示されます。</translation>
@@ -4630,6 +4632,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="5503933085302625442">OS を対象バージョンにロールバックしない。</translation>
 <translation id="55057839818162162"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を許可する</translation>
 <translation id="55057971769693300">カーソルのハイライト表示を無効にする</translation>
+<translation id="5507027524345233268">CCNS ヘッダーを含むページの <ph name="BACK_FORWARD_CACHE_NAME" /> への保存を許可しない。</translation>
 <translation id="5508307164752647432">Kerberos 機能を有効にする</translation>
 <translation id="5511702823008968136">ブックマーク バーを有効にする</translation>
 <translation id="5512418063782665071">ホームページの URL</translation>

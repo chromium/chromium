@@ -141,6 +141,7 @@
 <translation id="1550406609415860283">ອຸປະກອນທີ່ມີໃຫ້</translation>
 <translation id="1550523713251050646">ຄລິກສຳລັບຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
+<translation id="1557622599341396706">ສະແດງຊື່ໂຕະ</translation>
 <translation id="1576511610858879060">Chromebook ຫຼື ອຸປະກອນ Bluetooth ຂອງທ່ານກຳລັງໃຊ້ Bluetooth ເວີຊັນເກົ່າ. ໃຊ້ແຫຼ່ງທີ່ມາຂອງອິນພຸດອື່ນເພື່ອຄຸນນະພາບສຽງທີ່ດີຂຶ້ນ.</translation>
 <translation id="1576623706766186887">ຂະຫຍາຍອອກເມື່ອແວ່ນຂະຫຍາຍເປີດຢູ່</translation>
 <translation id="1586324912145647027">ໄປຫາໂຕະທີ 1 ຫາ 8</translation>
@@ -986,6 +987,7 @@
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5319712128756744240">ຈັບຄູ່ອຸປະກອນໃໝ່</translation>
 <translation id="5322611492012084517">ບໍ່ສາມາດຊອກເຫັນໂທລະສັບຂອງທ່ານໄດ້</translation>
+<translation id="5323994101633366939">ເຊື່ອງຊື່ໂຕະ</translation>
 <translation id="5327248766486351172">ຊື່</translation>
 <translation id="5329548388331921293">ກຳລັງເຊື່ອມຕໍ່...</translation>
 <translation id="5331975486040154427">ອຸ​ປະ​ກອນ USB-C (​ຜອດ​ດ້ານ​ຫຼັງເບື້ອງຊ້າຍ)</translation>
@@ -1168,6 +1170,7 @@
 <translation id="6103838137565245112">ລະບົບ</translation>
 <translation id="6114505516289286752">ດາວໂຫຼດໄຟລ໌ສຽງເວົ້າ <ph name="LANGUAGE" /> ແລ້ວ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">ການແກ້ໄຂສີ</translation>
 <translation id="6121838516699723042">ຢືນຢັນການດາວໂຫຼດ <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນແຂກ.</translation>
 <translation id="6129953537138746214">ຍະຫວ່າງ</translation>
@@ -1637,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ແອັບ</translation>
 <translation id="8255234195843591763">ຣີເຊັດເພື່ອອັບເດດ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
+<translation id="8262312463845990408">ສະຫຼັບການຫຼິ້ນ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນໜຶ່ງຊົ່ວໂມງ}other{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ # ຊົ່ວໂມງ}}</translation>
 <translation id="8277261673056602147">ໄຮໄລ້ຂໍ້ຄວາມຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="8284362522226889623">ໃຊ້ສີ່ນິ້ວມືປັດໄປຊ້າຍເພື່ອປ່ຽນໄປໃຊ້ໂຕະກ່ອນໜ້າ</translation>

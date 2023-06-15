@@ -284,6 +284,7 @@
 <translation id="6327105987658262776">Der er ingen opdatering tilgængelig.</translation>
 <translation id="6360449101159168105">Mens denne fane var inaktiv, blev der frigjort hukommelse for at sikre, at Chrome kører hurtigt. Du kan vælge, at dette website altid skal være inaktivt.</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
 <translation id="648319183876919572">Udvidet beskyttet browsing gør mere for at beskytte dig mod skadelige websites og downloads</translation>
 <translation id="6493527311031785448">Google Chrome forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -333,6 +334,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7410958280246779049">Chrome har blokeret denne fil, fordi den er skadelig</translation>
 <translation id="7426611252293106642">Google Chrome fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter.}}</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
@@ -367,6 +369,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8013993649590906847">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
 <translation id="8019103195866286235">Udgivelsen af denne udvidelse blev fjernet af dens udvikler og er muligvis ikke sikker. Fjern den fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, herunder dine personlige oplysninger.</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer...</translation>

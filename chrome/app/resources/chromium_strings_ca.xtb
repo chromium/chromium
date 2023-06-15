@@ -144,6 +144,7 @@
 <translation id="4050175100176540509">La versió més recent incorpora millores de seguretat i funcions noves importants.</translation>
 <translation id="4050599136622776556">Chromium està provant d'editar les formes de pagament.</translation>
 <translation id="4055805654398742145">G&amp;estor de contrasenyes</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{La teva organització tanca Chromium automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{La teva organització tanca Chromium automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="4148957013307229264">S'està instal·lant...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa - Chromium</translation>
 <translation id="421369550622382712">Descobriu aplicacions, jocs, extensions i temes genials per a Chromium.</translation>
@@ -180,6 +181,7 @@
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4888717733111232871">Regla d'entrada de Chromium per permetre el trànsit de mDNS.</translation>
 <translation id="4893347770495441059">Reinicia per actualitzar &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes obertes ho continuaran estant.}other{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes obertes ho continuaran estant.}}</translation>
 <translation id="4943838377383847465">Chromium està en mode de segon pla.</translation>
 <translation id="4987820182225656817">Els convidats poden utilitzar Chromium sense deixar-hi rastre.</translation>
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
@@ -214,6 +216,7 @@
 <translation id="5924017743176219022">S'està connectant a Internet...</translation>
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5972142260211327093">Si Chromium t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chromium suprimeix els interessos de manera contínua cada mes, i s'actualitzen tret que els suprimeixis.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{La teva organització tanca Chromium automàticament quan no s'utilitza durant 1 minut.}other{La teva organització tanca Chromium automàticament quan no s'utilitza durant # minuts.}}</translation>
 <translation id="5987687638152509985">Actualitza Chromium per iniciar la sincronització</translation>
 <translation id="5988505247484123880">És habitual que els llocs web que visites recordin coses que t'interessen per personalitzar la teva experiència. Els llocs web també poden emmagatzemar informació a Chromium sobre els teus interessos.</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>

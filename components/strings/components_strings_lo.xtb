@@ -396,6 +396,7 @@
 <translation id="1864927262126810325">ຈາກ <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">ພຣັອກຊີໄດ້ຖືກຕັ້ງຂຶ້ນ ເພື່ອໃຊ້ເຊີບເວີພຣັອກຊີທີ່ກໍານົດໄວ້, ບໍ່ແມ່ນ URL ຕົວໜັງສື  .pac.</translation>
 <translation id="1871284979644508959">ຊ່ອງຂໍ້ມູນທີ່ຕ້ອງລະບຸ</translation>
+<translation id="1871739799120352748">ລາຄາສູງ</translation>
 <translation id="1873899211667975540">ເພງຣັອກ</translation>
 <translation id="1874224422119691492">ທ່ານສາມາດປ່ຽນວ່າຈະໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານຫຼືບໍ່ໃນ <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">ຖາດຮູບພາບ</translation>
@@ -439,6 +440,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນຂະຫນາດໃຫຍ່ໄວ້ໃນຄອມພິວເຕີສະເພາະບ່ອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ແລະ ອີກ 1 ອັນ}other{ແລະ ອີກ # ອັນ}}</translation>
+<translation id="2001469757375372617">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງຂອງທ່ານເທື່ອ.</translation>
 <translation id="2003709556000175978">ຣີເຊັດລະຫັດຜ່ານຂອງທ່ານຕອນນີ້</translation>
 <translation id="2003775180883135320">ເຈາະຮູຢູ່ເທິງສຸດສີ່ຮູ</translation>
 <translation id="2009942480257059311">ປຸ່ມສ້າງກິດຈະກຳ, ເປີດນຳໃຊ້ເພື່ອສ້າງກິດຈະກຳໃໝ່ໃນ Google ປະຕິທິນຢ່າງວ່ອງໄວ</translation>
@@ -495,6 +497,7 @@
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">ອອກໃຫ້ແກ່: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ເຈາະຮູຢູ່ລຸ່ມສຸດເບື້ອງຂວາ</translation>
+<translation id="2122214041802369259">ລາຄາສູງ</translation>
 <translation id="2122719317867821810">ນະໂຍບາຍນີ້ກຳລັງເຮັດວຽກຕາມທີ່ກຳນົດໄວ້ ແຕ່ມີການຕັ້ງຄ່າທີ່ຂັດແຍ່ງກັນຢູ່ບ່ອນອື່ນ ແລະ ນະໂຍບາຍນີ້ກຳລັງລົບລ້າງມັນ.</translation>
 <translation id="2126374524350484896">ໂປຣແກຣມສ້າງ PDF:</translation>
 <translation id="2130448033692577677">ແມ່ແບບທີ່ທ່ານລະບຸອາດຈະນຳໃຊ້ບໍ່ໄດ້ຍ້ອນບໍ່ໄດ້ຕັ້ງຄ່ານະໂຍບາຍ DnsOverHttpsMode.</translation>
@@ -851,6 +854,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">ການບໍລິການແກ້ບັນຫາ</translation>
 <translation id="306573536155379004">ເລີ່ມເກມແລ້ວ.</translation>
+<translation id="3067505415088964188">ລາຄາຕ່ຳ</translation>
 <translation id="3068991664510324412">ຄອມພິວເຕີ ແລະ ວິດີໂອເກມ</translation>
 <translation id="3080254622891793721">ກຣາບຟິກ</translation>
 <translation id="3081538120861307764">ເພື່ອວັດແທກປະສິດທິພາບຂອງໂຄສະນາ, ລະບົບຈະແບ່ງປັນປະເພດຂອງຂໍ້ມູນທີ່ຈຳກັດລະຫວ່າງເວັບໄຊ, ເຊັ່ນ: ຊ່ວງເວລາຂອງມື້ທີ່ມີການສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ.</translation>
@@ -2058,6 +2062,7 @@
 <translation id="5967592137238574583">ແກ້ໄຂຂໍ້ມູນຕິດຕໍ່</translation>
 <translation id="5967867314010545767">ເອົາ​ອອກຈາກ​ປະ​ຫວັດ</translation>
 <translation id="5968022600320704045">ບໍ່​ມີ​ຜົນ​​ການ​ຊອກຫາ​</translation>
+<translation id="5969199813874624822">ບັນທຶກ ແລະ ຕິດຕາມລາຄາ</translation>
 <translation id="5974052231147553524">ມ້ວນທີຫົກ</translation>
 <translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="5979084224081478209">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
@@ -3369,6 +3374,7 @@
 <translation id="9141013498910525015">ຈັດການທີ່ຢູ່</translation>
 <translation id="9144951720726881238">ວັນທີໝົດອາຍຸ:</translation>
 <translation id="9148507642005240123">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງແກ້ໄຂ</translation>
+<translation id="9148599396704355100">ລາຄາຕ່ຳ</translation>
 <translation id="9150045010208374699">ໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບ​ຂອງ​ທ່ານ</translation>
 <translation id="9150685862434908345">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກໄດ້. ການເຄື່ອນໄຫວໃນອຸປະກອນນີ້ອາດຈະຖືກຈັດການຢູ່ນອກ Chrome ໄດ້ເຊັ່ນກັນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">ອັບເດດແລ້ວ</translation>

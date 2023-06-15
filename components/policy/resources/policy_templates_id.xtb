@@ -2105,6 +2105,7 @@ Kebijakan <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> mungkin akan mengganti
       Kebijakan ini dihapus di Chrome 99.
 
       Buka https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="2948720459196236547">Izinkan halaman dengan header CCNS disimpan di <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="2952347049958405264">Pembatasan:</translation>
 <translation id="2957506574938329824">Jangan izinkan situs apa pun meminta akses ke perangkat Bluetooth melalui API Bluetooth Web</translation>
 <translation id="2957513448235202597">Jenis akun untuk autentikasi <ph name="HTTP_NEGOTIATE" /></translation>
@@ -2295,6 +2296,7 @@ dan akan menerima header respons <ph name="ACCEPTED_CASE" />.
 Catatan: metode permintaan <ph name="POST_LOWERCASE_METHOD_NAME" /> dan <ph name="PUT_LOWERCASE_METHOD_NAME" /> tidak akan terpengaruh, sedangkan <ph name="PATCH_LOWERCASE_METHOD_NAME" /> akan terpengaruh.
 
 Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translation>
+<translation id="3107054704365085676">Mengizinkan halaman dengan header <ph name="CACHE_CONTROL_NO_STORE_NAME" /> disimpan di <ph name="BACK_FORWARD_CACHE_NAME" /></translation>
 <translation id="3110248563985502478">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel ke Aktif, plugin yang sudah tidak berlaku akan digunakan seperti plugin normal. Jika kebijakan disetel ke Nonaktif, plugin yang sudah tidak berlaku tidak akan digunakan.
 
       Jika kebijakan tidak disetel, pengguna akan dimintai izin untuk menjalankan plugin yang sudah tidak berlaku.</translation>
@@ -3107,6 +3109,7 @@ Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
 <translation id="3791179836066841809">Dokumentasi kebijakan</translation>
 <translation id="3791556154364029875">Aktifkan ruang kerja mengambang dan luncurkan jendela browser jarak jauh saat login</translation>
+<translation id="379318040165550702">Izinkan pengguna memilih</translation>
 <translation id="3793998702484455655">Chrome akan mencoba mengupgrade beberapa jenis subresource konten campuran (HTTP di situs HTTPS) di iOS.
 Lihat https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md untuk mengetahui detailnya.
 
@@ -4755,6 +4758,13 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5345910753471481870">Jangan tampilkan tombol Google Lens di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
 <translation id="534836255587440809">Nonaktifkan klik otomatis di layar login</translation>
+<translation id="5361708558735884308">Jika kebijakan disetel, akses ke URL yang tercantum akan diberikan sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
+
+Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum seperti "tel:" atau "ssh:".
+
+Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.</translation>
 <translation id="5362531528507578966">Mengganti mode pencetakan grafis latar belakang default.</translation>
 <translation id="5365476955714838841">Parameter command line untuk browser alternatif.</translation>
 <translation id="5365946944967967336">Tampilkan tombol Layar Utama di toolbar</translation>
@@ -4948,6 +4958,7 @@ Hal ini dihapus di M112.</translation>
 <translation id="5503933085302625442">Jangan roll back OS ke versi target.</translation>
 <translation id="55057839818162162">Mengizinkan penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="55057971769693300">Nonaktifkan sorotan tanda sisipan</translation>
+<translation id="5507027524345233268">Larang halaman dengan header CCNS disimpan di <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="5508307164752647432">Aktifkan fungsi Kerberos</translation>
 <translation id="5511702823008968136">Aktifkan Bilah Bookmark</translation>
 <translation id="5512418063782665071">URL beranda</translation>

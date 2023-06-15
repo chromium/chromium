@@ -265,6 +265,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 
       &lt;p&gt;Datum a čas upravte v aplikaci &lt;strong&gt;Nastavení&lt;/strong&gt; v sekci &lt;strong&gt;Obecné&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrátor restartuje zařízení <ph name="DATE" /> v <ph name="TIME" /></translation>
+<translation id="1564753300777780201">Žádný text převedený z obrázků</translation>
 <translation id="156703335097561114">Informace o síti, jako jsou adresy, konfigurace rozhraní a kvalita připojení</translation>
 <translation id="1567040042588613346">Zásada funguje podle očekávání, ale jinde je nastavena stejná hodnota, kterou tato zásada nahrazuje.</translation>
 <translation id="1567405528131216114">Přidat zájem <ph name="TOPIC" /></translation>
@@ -1196,6 +1197,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3890664840433101773">Přidat e-mail</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3901925938762663762">Karta vypršela</translation>
+<translation id="3906095212874392000">Konec převedeného textu</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">V nastavení Chromu můžete předvolby kdykoli upravit</translation>
@@ -1396,6 +1398,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4331519897422864041">Stohovač 5</translation>
 <translation id="4331708818696583467">Nezabezpečeno</translation>
 <translation id="4333561522337981382">Správa oken na všech obrazovkách</translation>
+<translation id="4338709847516294988">Stiskněte hledat plus m a v kontextové nabídce převeďte obrázek na text</translation>
 <translation id="4340575312453649552">Tato reklama v zařízení používala příliš mnoho zdrojů, proto ji Chrome odstranil.</translation>
 <translation id="4340982228985273705">Tento počítač nebyl rozpoznán jako spravovaný organizací, proto lze pomocí zásad automaticky instalovat pouze rozšíření hostovaná v Internetovém obchodě Chrome. Adresa URL Internetového obchodu Chrome pro aktualizace je <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">Připojení k webu <ph name="SITE" /> není zabezpečené</translation>
@@ -1411,6 +1414,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4359160567981085931">Právě jste své heslo zadali na klamavém webu. Chrome vám může pomoci. Chcete-li změnit heslo a oznámit Googlu, že váš účet může být ohrožen, klikněte na Ochránit účet.</translation>
 <translation id="4363222835916186793">Upozornění pro tento produkt byla vypnuta</translation>
 <translation id="437040971055499437">Událost týkající se zabezpečení</translation>
+<translation id="4371307856413138486">Začátek převedeného textu</translation>
 <translation id="4371591986692297148">Neaktivní</translation>
 <translation id="4372948949327679948">Očekávána hodnota <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Pokud některou položku chcete zahrnout do výběru témat, ze kterých Chrome může vybírat při odhadu vašich zájmů, můžete ji přidat zpět</translation>
@@ -2085,6 +2089,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6041777658117377052">Teplota komory</translation>
 <translation id="6042308850641462728">Více</translation>
+<translation id="6042688167654081154">Obrázek byl převeden na text</translation>
 <translation id="6044573915096792553">Velikost 12</translation>
 <translation id="6045164183059402045">Šablona zavedení</translation>
 <translation id="6047233362582046994">Pokud bezpečnostní rizika chápete, můžete <ph name="BEGIN_LINK" />tento web navštívit<ph name="END_LINK" /> před tím, než budou nebezpečné aplikace odstraněny.</translation>
@@ -2145,6 +2150,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
+<translation id="6200386911308538077">Probíhá analýza obrázku</translation>
 <translation id="6203231073485539293">Zkontrolujte připojení k internetu</translation>
 <translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

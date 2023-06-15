@@ -283,6 +283,7 @@
 <translation id="6327105987658262776">Nessun aggiornamento disponibile.</translation>
 <translation id="6360449101159168105">Mentre questa scheda non era attiva, la memoria è stata liberata per mantenere Chrome veloce. Puoi scegliere di escludere sempre il sito dall'inattività.</translation>
 <translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>
 <translation id="6493527311031785448">Google Chrome sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -332,6 +333,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7410958280246779049">Chrome ha bloccato questo file perché è pericoloso</translation>
 <translation id="7426611252293106642">Google Chrome potrebbe non funzionare correttamente perché non è più supportato su questa distribuzione Linux</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti.}}</translation>
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
@@ -366,6 +368,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8013993649590906847">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
 <translation id="8019103195866286235">La pubblicazione di questa estensione è stata annullata dallo sviluppatore e potrebbe non essere sicura. Rimuovila da Chrome in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
 <translation id="80471789339884597">L'installazione è terminata. Dovrai riavviare tutti i browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chrome non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chrome non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>

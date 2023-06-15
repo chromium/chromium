@@ -2102,6 +2102,7 @@ A política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> pode substituir o co
       Esta política foi removida no Chrome 99.
 
       Consulte https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="2948720459196236547">Permitir que as páginas com cabeçalho CCNS sejam armazenadas no <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="2952347049958405264">Restrições:</translation>
 <translation id="2957506574938329824">Não permite que nenhum site solicite acesso a dispositivos Bluetooth por meio da API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo de conta para autenticação <ph name="HTTP_NEGOTIATE" /></translation>
@@ -2293,6 +2294,7 @@ e aceitaria o <ph name="ACCEPTED_CASE" />.
 Observação: os métodos de solicitação <ph name="POST_LOWERCASE_METHOD_NAME" /> e <ph name="PUT_LOWERCASE_METHOD_NAME" /> não são afetados, enquanto o <ph name="PATCH_LOWERCASE_METHOD_NAME" /> é.
 
 Essa política é temporária e vai ser removida.</translation>
+<translation id="3107054704365085676">Permitir que as páginas com cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam adicionadas ao <ph name="BACK_FORWARD_CACHE_NAME" /></translation>
 <translation id="3110248563985502478">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida como "Ativada" os plug-ins desatualizados serão usados como plug-ins normais. Se a política for definida como "Desativada", os plug-ins desatualizados não serão usados.
 
       Se a política não for definida, os usuários poderão dar permissão para que os plug-ins desatualizados sejam executados.</translation>
@@ -3099,6 +3101,7 @@ Na versão 114 e mais recentes, o <ph name="DOH_SALT_POLICY_NAME" /> é opcional
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
 <translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
+<translation id="379318040165550702">Permitir que os usuários escolham</translation>
 <translation id="3793998702484455655">O Chrome tentará fazer upgrade de alguns tipos de recursos secundários de conteúdo misto (HTTP em um site HTTPS) no iOS.
 Consulte https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md para mais detalhes.
 
@@ -4744,6 +4747,13 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5345910753471481870">Não mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
 <translation id="534836255587440809">Desativar o clique automático na tela de login</translation>
+<translation id="5361708558735884308">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se a <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida como "*", todas as solicitações serão bloqueadas, e você poderá usar a política para permitir o acesso a uma lista de URLs limitada. Ela pode servir para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://support.google.com/chrome/a?p=url_blocklist_filter_format. O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
+
+Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
+
+Se a política não for definida, nenhuma exceção a <ph name="URL_BLOCKLIST_POLICY_NAME" /> vai ser permitida.
+
+Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política também vai oferecer suporte ao modo headless.</translation>
 <translation id="5362531528507578966">Modifica o modo de impressão de gráficos de segundo plano padrão.</translation>
 <translation id="5365476955714838841">Parâmetros de linha de comando para o navegador alternativo.</translation>
 <translation id="5365946944967967336">Exibir o botão da Página inicial na barra de ferramentas</translation>
@@ -4937,6 +4947,7 @@ A remoção foi feita na versão M112.</translation>
 <translation id="5503933085302625442">Não reverter o SO para a versão de destino.</translation>
 <translation id="55057839818162162">Permitir a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="55057971769693300">Desativar destaque do sinal de interpolação</translation>
+<translation id="5507027524345233268">Não permitir que as páginas com cabeçalho CCNS sejam armazenadas no <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="5508307164752647432">Ativar funcionalidade do Kerberos</translation>
 <translation id="5511702823008968136">Ativar a barra de favoritos</translation>
 <translation id="5512418063782665071">URL da página inicial</translation>

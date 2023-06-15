@@ -178,6 +178,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1368318639262510626">Game Dino. Dinosaurus dalam bentuk piksel akan menghindari kaktus dan pterodaktil saat melintasi lanskap terpencil. Saat Anda mendengar isyarat audio, tekan spasi untuk melompati rintangan.</translation>
 <translation id="1374468813861204354">saran</translation>
 <translation id="1375198122581997741">Tentang Versi</translation>
+<translation id="1375293861397106342">Semua opsi berharga standar <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
 <translation id="1376836354785490390">Tampilkan Lebih Sedikit</translation>
 <translation id="1380591466760231819">Lipatan surat</translation>
 <translation id="138218114945450791">Biru Terang</translation>
@@ -254,6 +255,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1532118530259321453">Halaman ini menyatakan</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
 <translation id="1539840569003678498">Laporan dikirim:</translation>
+<translation id="1545757265410828525">Histori harga</translation>
 <translation id="1549470594296187301">JavaScript harus diaktifkan untuk menggunakan fitur ini.</translation>
 <translation id="1551884710160394169">Freeware &amp; shareware</translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
@@ -446,6 +448,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2012276282211112603">Saat ini tidak ada topik untuk ditampilkan</translation>
 <translation id="2021333772895814435">Kebijakan ini otomatis menonaktifkan sinkronisasi di seluruh perangkat untuk: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 inci (30 x 48 cm)</translation>
+<translation id="2022815493835288714">Notifikasi tentang setelan pembayaran baru dibuka</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2025186561304664664">Proxy disetel ke konfigurasi otomatis.</translation>
 <translation id="2025891858974379949">Konten tidak aman</translation>
@@ -725,6 +728,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2691924980723297736">Peringatan keamanan</translation>
 <translation id="2692131511336778528">Fiksi ilmiah &amp; fantasi</translation>
 <translation id="2701514975700770343">Menghadap ke bawah</translation>
+<translation id="2702592986366989640">Opsi harga rendah</translation>
 <translation id="2702801445560668637">Daftar Bacaan</translation>
 <translation id="2704283930420550640">Nilai tidak sesuai format.</translation>
 <translation id="2704606927547763573">Disalin</translation>
@@ -789,6 +793,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="290376772003165898">Halaman tidak dalam bahasa <ph name="LANGUAGE" />?</translation>
+<translation id="2905107382358353958">Notifikasi tentang setelan pembayaran baru</translation>
 <translation id="2909946352844186028">Perubahan jaringan terdeteksi.</translation>
 <translation id="2911973620368911614">ID pengguna akuntansi tugas</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> biasanya menggunakan enkripsi untuk melindungi informasi Anda. Saat Chrome mencoba terhubung ke <ph name="SITE" /> kali ini, situs mengembalikan kredensial yang salah dan tidak biasa. Hal ini dapat terjadi jika ada penyerang mencoba berpura-pura menjadi <ph name="SITE" />, atau layar login Wi-Fi telah mengganggu koneksi. Informasi Anda masih aman karena Chrome menghentikan koneksi sebelum terjadi pertukaran data apa pun.</translation>
@@ -932,6 +937,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3256863843508922226">Pensiun</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat acara baru di Google Kalender dengan cepat</translation>
 <translation id="3261488570342242926">Pelajari kartu virtual</translation>
+<translation id="3262698603497362968">Opsi pembelian</translation>
 <translation id="3266367459139339908">Kami meluncurkan cara baru untuk membatasi informasi Anda yang dapat dipelajari situs tentang Anda saat menampilkan iklan yang dipersonalisasi, misalnya:</translation>
 <translation id="3266793032086590337">Nilai (bertentangan)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Tidak ada situs yang diblokir, termasuk situs terkait}=1{1 situs diblokir, termasuk situs terkait}other{# situs diblokir, termasuk situs terkait}}</translation>
@@ -1115,6 +1121,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3693327506115126094">Pilih cara memverifikasi diri Anda</translation>
 <translation id="3698629142018988477">Tombol Buat situs, aktifkan untuk membuat situs baru di Google Sites dengan cepat</translation>
 <translation id="3701427423622901115">Reset dikonfirmasi.</translation>
+<translation id="3701900332588705891">Harga standar <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /></translation>
 <translation id="3704162925118123524">Jaringan yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuk jaringan.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -1220,6 +1227,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3949870428812919180">Tidak ada metode pembayaran yang disimpan</translation>
 <translation id="3950574001630941635">Mulai Ulang Tutorial</translation>
 <translation id="3950820424414687140">Login</translation>
+<translation id="3953505489397572035">Harganya standar</translation>
 <translation id="3958057596965527988">4 x 4 inci (10 x 10 cm)</translation>
 <translation id="3961148744525529027">Lembar handler pembayaran setengah terbuka</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
@@ -1356,6 +1364,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4250680216510889253">Tidak</translation>
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Catatan</translation>
+<translation id="4255487295905690262">Anda akan mendapatkan peringatan email jika ada diskon di situs mana pun.</translation>
 <translation id="425582637250725228">Perubahan yang Anda lakukan mungkin tidak disimpan.</translation>
 <translation id="4258748452823770588">Tanda tangan salah</translation>
 <translation id="4261046003697461417">Dokumen yang dilindungi tidak dapat dianotasi</translation>
@@ -1442,6 +1451,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4433642172056592619">Diabaikan karena pengguna tidak berafiliasi dengan pengelolaan mesin atau mesin tidak dikelola.</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="443673843213245140">Penggunaan proxy dinonaktifkan tetapi konfigurasi proxy yang eksplisit ditentukan.</translation>
+<translation id="4438821706955556403">Harga standar</translation>
 <translation id="4441832193888514600">Diabaikan karena kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation>
 <translation id="4449116177348980384">Tombol Kelola setelan situs, aktifkan untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="4451135742916150903">Dapat meminta untuk terhubung ke perangkat HID</translation>
@@ -1596,6 +1606,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4813512666221746211">Kesalahan jaringan</translation>
 <translation id="4816492930507672669">Paskan dengan halaman</translation>
 <translation id="4819347708020428563">Edit anotasi dalam tampilan default?</translation>
+<translation id="4822493756793346865">Harga standar didasarkan pada berbagai toko di web selama 90 hari terakhir.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat Spreadsheet Google baru dengan cepat</translation>
 <translation id="4825507807291741242">Kuat</translation>
 <translation id="483241715238664915">Aktifkan peringatan</translation>
@@ -1775,6 +1786,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5238301240406177137">Simpan di Akun</translation>
+<translation id="5239119062986868403">Harga Standar</translation>
 <translation id="5239623327352565343">Lokasi diizinkan</translation>
 <translation id="5242889659037569123">Koper &amp; aksesori perjalanan</translation>
 <translation id="5244521145258281926">Kelola Akun Google, aktifkan untuk mengelola info, privasi, dan keamanan di Akun Google Anda</translation>
@@ -1844,6 +1856,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5398772614898833570">Iklan diblokir</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="540969355065856584">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya saat ini tidak valid. Hal ini mungkin disebabkan oleh kesalahan konfigurasi atau ada penyerang yang mengganggu koneksi internet Anda.</translation>
+<translation id="5411462078004183575">Opsi Harga Rendah</translation>
 <translation id="5412040515238827314">Format tidak valid: Format harus berupa daftar pola.</translation>
 <translation id="5412236728747081950">Situs ini mendapatkan minat Anda dari Chrome untuk menampilkan iklan yang lebih relevan</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
@@ -2145,6 +2158,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6167577165590485365">Upaya pengambilan terakhir:</translation>
 <translation id="6169916984152623906">Anda kini dapat mengakses secara rahasia, dan orang lain yang menggunakan perangkat ini tidak akan melihat aktivitas Anda. Namun, hasil download dan bookmark akan disimpan.</translation>
 <translation id="617256461084925519">Google Chrome mencoba memverifikasi diri Anda agar dapat mengisi info pembayaran.</translation>
+<translation id="6176387967264100435">Harganya tinggi</translation>
 <translation id="6177128806592000436">Sambungan Anda ke situs ini tidak aman</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">Interval percobaan ulang</translation>
@@ -2273,6 +2287,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6468485451923838994">Font</translation>
 <translation id="647261751007945333">Kebijakan perangkat</translation>
 <translation id="647330291963761005">Menginstal update</translation>
+<translation id="6474220430271405609">Pengujian Kebijakan</translation>
 <translation id="6475672344094591109">Situs yang Anda buka dapat meminta informasi kepada Chrome yang membantunya mengukur performa iklan. Chrome melindungi privasi Anda dengan membatasi informasi yang dapat dibagikan antar-situs.</translation>
 <translation id="6476284679642588870">Kelola metode pembayaran</translation>
 <translation id="6486200200930923183">Film dokumenter</translation>
@@ -2281,6 +2296,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6494750904506170417">pop-up dan pengalihan</translation>
 <translation id="6497295192259406877">Operasi bisnis</translation>
 <translation id="6499038740797743453">Reset sandi?</translation>
+<translation id="6502510275417601303">Notifikasi tentang setelan pembayaran baru ditutup</translation>
 <translation id="6502626736864595182">Penyedia forum &amp; chat</translation>
 <translation id="6502991525169604759">Tanpa perubahan dari Anda</translation>
 <translation id="6506959208958864820">Envelope</translation>
@@ -2340,6 +2356,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6651270836885078973">Dikelola oleh:</translation>
 <translation id="6652101503459149953">Gunakan Windows Hello</translation>
 <translation id="6657585470893396449">Sandi</translation>
+<translation id="6659246032834639189">Harganya rendah</translation>
 <translation id="6660413144148052430">lokasi</translation>
 <translation id="6662457027866368246">Rol Pertama</translation>
 <translation id="666259744093848177">(x86_64 diterjemahkan)</translation>
@@ -2422,6 +2439,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6869334554832814367">Pinjaman pribadi</translation>
 <translation id="6873456682041376666">Baki Atas</translation>
 <translation id="6874604403660855544">&amp;Ulangi penambahan</translation>
+<translation id="6880941331070119097">Opsi harga tinggi</translation>
 <translation id="6881240511396774766">Buat Dokumen Google baru dengan cepat</translation>
 <translation id="6883221904761970440">Sheet autentikasi kredensial pembayaran aman ditutup</translation>
 <translation id="6884662655240309489">Ukuran 1</translation>
@@ -2570,11 +2588,13 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi standar keamanan.</translation>
 <translation id="7210993021468939304">Aktivitas Linux berada dalam penampung, dan dapat menginstal dan menjalankan aplikasi Linux di dalam penampung</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Selengkapnya<ph name="END_LINK" /> tentang masalah ini.</translation>
+<translation id="7213191991901907140">Ceritakan pengalaman Anda</translation>
 <translation id="7217745192097460130">Gunakan Touch ID untuk memverifikasi dan menyelesaikan pembelian Anda?</translation>
 <translation id="7219179957768738017">Koneksi menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Dalam proses</translation>
 <translation id="7221855153210829124">Tampilkan notifikasi</translation>
 <translation id="722454870747268814">Tab Samaran Baru</translation>
+<translation id="7227293336683593977">Histori Harga</translation>
 <translation id="7233592378249864828">Cetak lembar konfirmasi</translation>
 <translation id="7234638337680728591">Harga gas &amp; bahan bakar kendaraan</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% selesai | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -2940,6 +2960,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" tidak dikonfigurasi dengan benar. Biasanya masalah akan terselesaikan dengan meng-uninstal "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Produksi makanan</translation>
 <translation id="8058603697124206642">Tidak perlu</translation>
+<translation id="8063875539456488183">Simpan dan pantau harga</translation>
 <translation id="8064892030280197386">memverifikasi diri Anda agar dapat mengisi info pembayaran.</translation>
 <translation id="8066225060526005217">Dikelola oleh setelan cookie</translation>
 <translation id="8067872629359326442">Anda baru saja memasukkan sandi ke situs penipuan. Chromium dapat membantu. Untuk mengubah sandi dan memberi tahu Google bahwa akun Anda mungkin berisiko, klik Lindungi Akun.</translation>
@@ -2971,6 +2992,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="810875025413331850">Tidak ditemukan perangkat di sekitar.</translation>
 <translation id="8116925261070264013">Dinonaktifkan</translation>
 <translation id="8118489163946903409">Metode pembayaran</translation>
+<translation id="8118506371121007279">Beri masukan</translation>
 <translation id="8123046743443732598">Komputer desktop</translation>
 <translation id="8126056688005753476">Wisata petualangan</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak diinstal dengan benar di komputer atau jaringan Anda. Mintalah administrator IT untuk menyelesaikan masalah ini.</translation>
@@ -3072,6 +3094,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8381674639488873545">Tagihan ini dapat hanya satu kali atau berulang, dan mungkin tidak ditampilkan dengan jelas. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
+<translation id="8389532092404711541">Harga standar <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698">Berbagi dari <ph name="ORIGIN_NAME" /> ke <ph name="VM_NAME" /> telah diblokir oleh kebijakan administrator</translation>
 <translation id="8396522675989118466">Ini adalah kode <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Metode pembayaran yang tersedia untuk diisi dengan gestur sentuh terbuka sepenuhnya.</translation>
@@ -3131,6 +3154,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8542014550340843547">Tiga jepretan di bawah</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Anda dapat <ph name="BEGIN_ERROR_LINK" />melaporkan masalah pendeteksian<ph name="END_ERROR_LINK" /> atau, jika memahami risiko bagi keamanan, Anda dapat <ph name="BEGIN_LINK" />mengunjungi situs yang tidak aman<ph name="END_LINK" />.</translation>
+<translation id="854548366864113872">Opsi Harga Tinggi</translation>
 <translation id="8546350655047701518">Ekspor Log ke JSON</translation>
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8553387990086529628">Tujuan wisata</translation>
@@ -3144,6 +3168,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8564182942834072828">Dokumen terpisah/Salinan tidak tersusun</translation>
 <translation id="8564985650692024650">Chromium menyarankan untuk menyetel ulang sandi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="8576310925653847813">Sistem home theater</translation>
+<translation id="8577192028579836704">Semua opsi berharga standar <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Kartu virtual tidak tersedia</translation>
 <translation id="858637041960032120">+ nomor telepon</translation>
 <translation id="8589998999637048520">Kualitas terbaik</translation>

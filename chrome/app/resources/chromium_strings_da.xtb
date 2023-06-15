@@ -144,6 +144,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="4050599136622776556">Chromium forsøger at redigere betalingsmetoder.</translation>
 <translation id="4055805654398742145">Adgangskodeadministrator</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Din organisation lukker automatisk Chromium, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chromium, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chromium, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Login på netværk – Chromium</translation>
 <translation id="421369550622382712">Find fantastiske apps, spil, udvidelser og temaer til Chromium.</translation>
@@ -180,6 +181,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
 <translation id="4888717733111232871">Indgående regel for Chromium om at tillade mDNS-trafik.</translation>
 <translation id="4893347770495441059">Genstart og opdater &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}}</translation>
 <translation id="4943838377383847465">Chromium kører i baggrunden.</translation>
 <translation id="4987820182225656817">Gæster kan bruge Chromium uden at efterlade noget.</translation>
 <translation id="4994636714258228724">Tilføj dig selv i Chromium</translation>
@@ -214,6 +216,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5924017743176219022">Opretter forbindelse til internettet…</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5972142260211327093">Hvis Chromium har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chromium dine interesser en gang om måneden. Interesserne opdateres, medmindre du fjerner dem.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Din organisation lukker automatisk Chromium, når den ikke bruges i 1 minut.}one{Din organisation lukker automatisk Chromium, når den ikke bruges i # minut.}other{Din organisation lukker automatisk Chromium, når den ikke bruges i # minutter.}}</translation>
 <translation id="5987687638152509985">Opdater Chromium for at starte synkronisering</translation>
 <translation id="5988505247484123880">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse personligt tilpasses. Websites kan også gemme oplysninger med Chromium om dine interesser.</translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>

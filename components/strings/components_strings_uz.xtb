@@ -264,6 +264,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1559572115229829303">&lt;p&gt;Qurilmadagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi sababli <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan xavfsiz aloqa o‘rnatib bo‘lmadi.&lt;/p&gt;
           &lt;p&gt;Aniq sana va vaqt sozlamalarini &lt;strong&gt;Sozlamalar&lt;/strong&gt; ilovasidagi &lt;strong&gt;Umumiy&lt;/strong&gt; bo‘limida belgilang.</translation>
 <translation id="1559839503761818503">Administrator qurilmani <ph name="DATE" /> kuni <ph name="TIME" /> da qayta ishga tushiradi</translation>
+<translation id="1564753300777780201">Rasmlar matnga aylantirilmadi</translation>
 <translation id="156703335097561114">Manzillar, interfeys konfiguratsiyasi hamda ulanish sifati kabi tarmoqga oid axborot</translation>
 <translation id="1567040042588613346">Bu parametr xatosiz ishlayapti, lekin boshqa qaysidir parametr qiymati bilan almashtirildi.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> kiritish</translation>
@@ -1195,6 +1196,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3890664840433101773">Email manzilini kiriting</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Bu kartadan foydalanish muddati tugadi</translation>
+<translation id="3906095212874392000">Aylantirilgan matn oxiri</translation>
 <translation id="3906954721959377182">Planshet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Fikringiz oʻzgarsa, buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin</translation>
@@ -1395,6 +1397,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4331519897422864041">Taxlovchi 5</translation>
 <translation id="4331708818696583467">Xavfsiz emas</translation>
 <translation id="4333561522337981382">Barcha displeylaringizda oynalarni boshqarish</translation>
+<translation id="4338709847516294988">Qidiruv + M tugmalarini bosing va kontekst menyusidan “Rasmdagi matnni oʻqish” bandini tanlang.</translation>
 <translation id="4340575312453649552">Bu reklama qurilamangizdan koʻp tizim manbalarini ishlatdi, shuning uchun uni Chrome olib tashladi.</translation>
 <translation id="4340982228985273705">Bu kompyuter korporativ boshqaruv ostida ekanligi aniqlanmadi, shuning uchun faqat Chrome internet-do‘konidagi kengaytmalar avtomatik tarzda o‘rnatilishi mumkin. Yangilash uchun URL manzili: “<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytiga ulanish xavfsiz emas</translation>
@@ -1410,6 +1413,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4359160567981085931">Hozirgina shubhali saytda parol kiritdingiz. Chrome yordamga tayyor. Parolni almashtirish va Googlega bu hisob xavf ostida ekanini xabar qilish uchun Hisobni himoyalash ustiga bosing.</translation>
 <translation id="4363222835916186793">Bu mahsulot uchun ogohlantirishlar oʻchirilgan</translation>
 <translation id="437040971055499437">Xavfsizlik hodisasi yuz berdi</translation>
+<translation id="4371307856413138486">Aylantirilgan matn boshi</translation>
 <translation id="4371591986692297148">Nofaol</translation>
 <translation id="4372948949327679948">Kutilgan <ph name="VALUE_TYPE" /> qiymati.</translation>
 <translation id="4375864595697821259">Chrome qiziqishlarni taxmin qilishda yana tanlay olishi uchun kerakli mavzuni roʻyxatga qaytarish mumkin</translation>
@@ -2084,6 +2088,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6041777658117377052">Kamera harorati</translation>
 <translation id="6042308850641462728">Yana</translation>
+<translation id="6042688167654081154">Rasm matnga aylantirildi</translation>
 <translation id="6044573915096792553">Hajmi: 12</translation>
 <translation id="6045164183059402045">Boshlangʻich chiziqlar andozasi</translation>
 <translation id="6047233362582046994">Xavfli bo‘lsa ham, zararli ilovalar hali olib tashlanmagan bo‘lsa ham bu saytni ochishni xohlasangiz, <ph name="BEGIN_LINK" />bu yerga bosing<ph name="END_LINK" />.</translation>
@@ -2144,6 +2149,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
+<translation id="6200386911308538077">Rasm tahlil qilinmoqda</translation>
 <translation id="6203231073485539293">Internet aloqasini tekshiring</translation>
 <translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

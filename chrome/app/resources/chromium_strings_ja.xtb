@@ -137,13 +137,14 @@
 <translation id="391789666908693569">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chromium ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>
 <translation id="3945058413678539331">Chromium がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="3962623956404948996">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします</translation>
-<translation id="3975724895399328945">Google Chrome for Testing について</translation>
+<translation id="3975724895399328945">Google Chrome for Testing について(&amp;G)</translation>
 <translation id="3997429360543082038">Chromium OS について</translation>
 <translation id="4019629340646866719">Chromium OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chromium の品質向上にご協力ください</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4050599136622776556">Chromium がお支払い方法を編集しようとしています。</translation>
 <translation id="4055805654398742145">パスワード マネージャー(&amp;A)</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chromium</translation>
 <translation id="421369550622382712">Chromium の優れたアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
@@ -180,6 +181,7 @@
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4888717733111232871">mDNS トラフィックを許可する Chromium のインバウンド ルールです。</translation>
 <translation id="4893347770495441059">再起動して Chromium を更新(&amp;C)</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}}</translation>
 <translation id="4943838377383847465">Chromium はバックグラウンド モードです。</translation>
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
@@ -214,6 +216,7 @@
 <translation id="5924017743176219022">インターネットに接続しています…</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5972142260211327093">Chromium の試用版がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chromium ではユーザーの興味 / 関心が毎月順番に削除されます。ユーザーが削除しない限り、興味 / 関心は更新されます。</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。}}</translation>
 <translation id="5987687638152509985">同期を開始するには、Chromium を更新します</translation>
 <translation id="5988505247484123880">多くのウェブサイトでは、アクセスしたユーザーの興味 / 関心を記録して、ユーザー体験をパーソナライズするのが一般的です。そうしたウェブサイトでは、ユーザーの興味 / 関心についての情報を Chromium に保存する場合があります。</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>

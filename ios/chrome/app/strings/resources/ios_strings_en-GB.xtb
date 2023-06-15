@@ -467,6 +467,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4045648459118332842">Get your saved passwords in any app with one tap</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4063300985191096908">Go to feed</translation>
+<translation id="4066639687323968621">Sign in with your Google Account to sync your bookmarks, history and more.</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
 <translation id="4092655288299341041">Show help</translation>
 <translation id="4105841739161771091">{count,plural, =1{Delete address}other{Delete addresses}}</translation>
@@ -1083,6 +1084,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 
 Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="7971521879845308059">Block Pop-ups</translation>
+<translation id="7975036700432177008">Try</translation>
 <translation id="7978018860671536736">3. Tap auto-fill passwords</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
@@ -1273,6 +1275,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="9157836665414082580">Suppress dialogues</translation>
 <translation id="9162432979321511934">Turn on Auto-fill passwords</translation>
 <translation id="9165320910061267720">To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.</translation>
+<translation id="9172603439892261948">Sync your bookmarks, history and more.</translation>
 <translation id="9177438225260810839">Search open tabs</translation>
 <translation id="9187853111759024059">Close 99+ inactive tabs?</translation>
 <translation id="9188680907066685419">Sign out of managed account</translation>

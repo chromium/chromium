@@ -465,6 +465,7 @@
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4063300985191096908">前往 Feed</translation>
+<translation id="4066639687323968621">只需使用您的 Google 帐号登录，即可同步您的书签、历史记录等信息。</translation>
 <translation id="408404951701638773">现在可以更方便地使用搜索栏</translation>
 <translation id="4092655288299341041">显示帮助</translation>
 <translation id="4105841739161771091">{count,plural, =1{删除这个地址}other{删除这些地址}}</translation>
@@ -1077,6 +1078,7 @@
 
 网站还可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="7971521879845308059">拦截弹出式窗口</translation>
+<translation id="7975036700432177008">试用</translation>
 <translation id="7978018860671536736">3. 点按“自动填充密码”</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>
@@ -1266,6 +1268,7 @@
 <translation id="9157836665414082580">禁止显示对话框</translation>
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
+<translation id="9172603439892261948">同步您的书签、历史记录等信息。</translation>
 <translation id="9177438225260810839">在打开的标签页中搜索</translation>
 <translation id="9187853111759024059">要关闭超过 99 个闲置标签页吗？</translation>
 <translation id="9188680907066685419">退出受管理的帐号</translation>

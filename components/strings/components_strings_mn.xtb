@@ -265,6 +265,7 @@
 
       &lt;p&gt;Та &lt;strong&gt;Settings&lt;/strong&gt; апп-ын &lt;strong&gt;General&lt;/strong&gt; хэсэгт огноо, цагийг өөрчлөнө үү.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Танай администратор төхөөрөмжийг тань <ph name="DATE" />-н <ph name="TIME" />-д дахин эхлүүлнэ</translation>
+<translation id="1564753300777780201">Зургуудаас ямар ч текст хөрвүүлээгүй</translation>
 <translation id="156703335097561114">Хаяг, харагдах байдлын тохиргоо, холболтын чанар зэрэг сүлжээний мэдээлэл</translation>
 <translation id="1567040042588613346">Энэ бодлого нь хэвийн ажиллаж байгаа хэдий ч ижил утгыг өөр газар тохируулсан бөгөөд энэ бодлогоор хүчингүй болгосон байна.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> нэмэх</translation>
@@ -1201,6 +1202,7 @@
 <translation id="3890664840433101773">Имэйл нэмэх</translation>
 <translation id="3897092660631435901">Цэс</translation>
 <translation id="3901925938762663762">Картын хугацаа дууссан байна</translation>
+<translation id="3906095212874392000">Хөрвүүлсэн текстийн төгсгөл</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Та Chrome-н тохиргоонд хүссэн үедээ бодлоо өөрчлөх боломжтой</translation>
@@ -1401,6 +1403,7 @@
 <translation id="4331519897422864041">Гарах цаасыг зэрэгцүүлэх тавцан 5</translation>
 <translation id="4331708818696583467">Аюултай</translation>
 <translation id="4333561522337981382">Таны бүх дэлгэц дээр цонх удирдах</translation>
+<translation id="4338709847516294988">Хайхаас гадна m-г дарж хам сэдэв цэсэд зургийг текст рүү хөрвүүлнэ үү</translation>
 <translation id="4340575312453649552">Энэ зар таны төхөөрөмжийн хэт их нөөцийг ашигласан тул Chrome үүнийг хассан.</translation>
 <translation id="4340982228985273705">Энэ компьютерийг байгууллагаас удирддаг гэж илрүүлээгүй тул удирдамж нь зөвхөн Chrome Webstore-т хост хийсэн өргөтгөлийг автоматаар суулгах боломжтой. Chrome Webstore шинэчлэлтийн URL нь "<ph name="CWS_UPDATE_URL" />" юм.</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-н холболт аюултай байна</translation>
@@ -1416,6 +1419,7 @@
 <translation id="4359160567981085931">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Chrome туслах боломжтой. Нууц үгээ өөрчилж, таны бүртгэл эрсдэлд oрсон байж болзошгүй тухай Google-д мэдэгдэхийн тулд Бүртгэлийг хамгаалах гэснийг товшино уу.</translation>
 <translation id="4363222835916186793">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан</translation>
 <translation id="437040971055499437">Аюулгүй байдлын үйлдэл тохиолдсон</translation>
+<translation id="4371307856413138486">Хөрвүүлсэн текстийн эхлэл</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
 <translation id="4372948949327679948">Хүлээгдэж буй <ph name="VALUE_TYPE" /> утга.</translation>
 <translation id="4375864595697821259">Хэрэв та тухайн зүйлийг Chrome таны сонирхлыг тооцоолохдоо сонгож болох сэдвүүдийн санд оруулахыг хүсвэл буцааж нэмнэ үү.</translation>
@@ -2090,6 +2094,7 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6041777658117377052">Танхимын температур</translation>
 <translation id="6042308850641462728">Илүү их</translation>
+<translation id="6042688167654081154">Зургийг текст рүү хөрвүүлсэн</translation>
 <translation id="6044573915096792553">Хэмжээ12</translation>
 <translation id="6045164183059402045">Байршуулах загвар</translation>
 <translation id="6047233362582046994">Таны аюулгүй байдалд гарч болох эрсдлийг ойлгож байгаа бол аюултай аппыг устгахаас өмнө <ph name="BEGIN_LINK" />энэ сайтад зочилно уу<ph name="END_LINK" />.</translation>
@@ -2150,6 +2155,7 @@
 <translation id="6195371403461054755">Геологи</translation>
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
+<translation id="6200386911308538077">Зургийг задлан шинжилж байна</translation>
 <translation id="6203231073485539293">Та интернэтийн холболтоо шалгана уу</translation>
 <translation id="6205314730813004066">Зарын нууцлал</translation>
 <translation id="6212314149070368045">АНУ-ын Фанфолд</translation>

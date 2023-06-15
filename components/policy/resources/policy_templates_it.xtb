@@ -3058,6 +3058,7 @@ Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è fac
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3791179836066841809">Documentazione per le norme</translation>
 <translation id="3791556154364029875">Abilita l'area di lavoro mobile e avvia le finestre del browser remoto al momento dell'accesso</translation>
+<translation id="379318040165550702">Consenti agli utenti di scegliere</translation>
 <translation id="3793998702484455655">Chrome tenterà di eseguire l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
 Per informazioni dettagliate, visita la pagina https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
 
@@ -4658,6 +4659,13 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
 <translation id="534836255587440809">Disattiva i clic automatici nella schermata di accesso</translation>
+<translation id="5361708558735884308">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
+
+Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
+
+Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
@@ -4751,11 +4759,6 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
           Se questo criterio viene impostato su Disattivato, la funzionalità viene disattivata forzatamente.
           </translation>
 <translation id="5435888298115339571">Attiva la condivisione desktop nel menu con tre puntini e in omnibox</translation>
-<translation id="5436664291450581091">Questo criterio consente di stabilire se una pagina con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /> (CCNS) può essere memorizzata o meno nella <ph name="BACK_FORWARD_CACHE_NAME" />. L'impostazione del sito web per questa intestazione potrebbe non prevedere il ripristino della pagina dalla <ph name="BACK_FORWARD_CACHE_NAME" /> perché alcune informazioni sensibili potrebbero essere ancora visualizzate dopo il ripristino, anche se non sono più accessibili.
-
-Se il criterio viene attivato o se non viene configurato, la pagina con l'intestazione CCNS potrebbe essere ripristinata dalla <ph name="BACK_FORWARD_CACHE_NAME" />, a meno che non venga attivata l'eliminazione della cache, ad esempio se al sito viene apportata una modifica ai cookie solo HTTP.
-
-Se il criterio viene disattivato, la pagina con l'intestazione CCNS non verrà memorizzata nella <ph name="BACK_FORWARD_CACHE_NAME" />.</translation>
 <translation id="5441508088704391614">Nessuna limitazione speciale (opzione predefinita).</translation>
 <translation id="5442026853063570579">Questa norma consente di controllare anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su "DeveloperToolsDisallowed" (valore 2), gli utenti non potranno accedere alle Opzioni sviluppatore. Se la norma viene impostata su un altro valore o non viene impostata, gli utenti potranno accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
 <translation id="5443582909255996887">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati su Android, così che ogni sito venga eseguito nel proprio processo e la disattivazione da parte degli utenti viene impedita. Ogni sito è uno schema più eTLD+1 (ad es. https://example.com). Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> 77 e il criterio estende questa modalità di isolamento dei siti predefinita affinché venga applicata a tutti i siti.

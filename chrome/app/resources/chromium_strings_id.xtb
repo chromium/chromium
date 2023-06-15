@@ -144,6 +144,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
 <translation id="4050599136622776556">Chromium mencoba mengedit metode pembayaran.</translation>
 <translation id="4055805654398742145">Pengelola S&amp;andi</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Login Jaringan - Chromium</translation>
 <translation id="421369550622382712">Temukan aplikasi, game, ekstensi, dan tema yang hebat untuk Chromium.</translation>
@@ -180,6 +181,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4888717733111232871">Inbound rule untuk Chromium guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="4893347770495441059">Luncurkan kembali untuk Mengupdate &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}}</translation>
 <translation id="4943838377383847465">Chromium berjalan di mode latar belakang.</translation>
 <translation id="4987820182225656817">Tamu dapat menggunakan Chromium tanpa meninggalkan apa pun.</translation>
 <translation id="4994636714258228724">Tambahkan diri Anda ke Chromium</translation>
@@ -214,6 +216,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5924017743176219022">Menghubungkan ke internet...</translation>
 <translation id="5941711191222866238">Perkecil</translation>
 <translation id="5972142260211327093">Jika Chromium secara acak menempatkan Anda dalam uji coba aktif, histori penjelajahan Anda akan memengaruhi iklan yang Anda lihat dan minat seperti yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chromium menghapus minat Anda secara berkala setiap bulan. Minat akan diperbarui kecuali jika Anda menghapusnya.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit.}}</translation>
 <translation id="5987687638152509985">Perbarui Chromium untuk memulai sinkronisasi</translation>
 <translation id="5988505247484123880">Situs yang Anda buka biasanya mengingat hal-hal yang Anda minati agar dapat mempersonalisasi pengalaman Anda. Situs juga dapat menyimpan informasi tentang minat Anda ke Chromium.</translation>
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>

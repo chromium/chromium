@@ -284,6 +284,7 @@
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
 <translation id="6360449101159168105">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chrome funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{La teva organització tanca Chrome automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{La teva organització tanca Chrome automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
 <translation id="6493527311031785448">Google Chrome està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -333,6 +334,7 @@
 <translation id="7398801000654795464">Teníeu la sessió iniciada a Chrome com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar-hi a iniciar la sessió.</translation>
 <translation id="7410958280246779049">Chrome ha bloquejat aquest fitxer perquè és perillós</translation>
 <translation id="7426611252293106642">Pot ser que Google Chrome no funcioni correctament perquè ja no és compatible amb aquesta distribució de Linux</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{La teva organització tanca Chrome automàticament quan no s'utilitza durant 1 minut.}other{La teva organització tanca Chrome automàticament quan no s'utilitza durant # minuts.}}</translation>
 <translation id="7481213027396403996">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Instal·lador de <ph name="COMPANY_NAME" /></translation>
@@ -367,6 +369,7 @@
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chrome no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes obertes ho continuaran estant.}other{La teva organització suprimeix automàticament les dades de navegació quan Chrome no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes obertes ho continuaran estant.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>

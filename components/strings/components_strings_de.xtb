@@ -842,7 +842,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="306573536155379004">Spiel gestartet.</translation>
 <translation id="3068991664510324412">Computer- und Videospiele</translation>
 <translation id="3080254622891793721">Grafik</translation>
-<translation id="3081538120861307764">Zur Erfolgsmessung von Werbeanzeigen werden nur bestimmte Arten von Daten zwischen Websites geteilt, beispielsweise die Tageszeit, zu der dir eine Werbeanzeige präsentiert wurde.</translation>
+<translation id="3081538120861307764">Zur Erfolgsmessung von Anzeigen werden nur bestimmte Arten von Daten zwischen Websites geteilt, beispielsweise die Tageszeit, zu der dir eine Anzeige präsentiert wurde.</translation>
 <translation id="3082007635241601060">Zulassen, das Google personalisierte Rabatte für deinen Einkaufswagen findet</translation>
 <translation id="3086579638707268289">Deine Aktivitäten im Web werden überwacht</translation>
 <translation id="3087734570205094154">Unten</translation>
@@ -1174,7 +1174,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3872834068356954457">Wissenschaft</translation>
 <translation id="3875783148670536197">Zeigen</translation>
 <translation id="3881478300875776315">Weniger Zeilen anzeigen</translation>
-<translation id="3883500545751229739">aufdringliche Werbeanzeigen</translation>
+<translation id="3883500545751229739">aufdringliche Anzeigen</translation>
 <translation id="3884278016824448484">In Konflikt stehende Gerätekennung</translation>
 <translation id="388632593194507180">Überwachung erkannt</translation>
 <translation id="3886948180919384617">Stapelfach 3</translation>
@@ -2244,7 +2244,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6468485451923838994">Schriftarten</translation>
 <translation id="647261751007945333">Geräterichtlinien</translation>
 <translation id="647330291963761005">Updates werden installiert</translation>
-<translation id="6475672344094591109">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Werbeanzeigen messen zu können. Chrome trägt zum Schutz deiner Daten bei, indem die Informationen beschränkt werden, die Websites miteinander teilen können.</translation>
+<translation id="6475672344094591109">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Anzeigen messen zu können. Chrome trägt zum Schutz deiner Daten bei, indem die Informationen beschränkt werden, die Websites miteinander teilen können.</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6486200200930923183">Dokumentarfilme</translation>
 <translation id="6489534406876378309">Hochladen von Abstürzen starten</translation>
@@ -2802,7 +2802,7 @@ Weitere Details:
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7785790577395078482">diesem Tablet</translation>
 <translation id="7786368602962652765">Ein Pflichtfeld ist leer. Bitte füllen Sie es vor dem Speichern aus.</translation>
-<translation id="7790488044432570133">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Werbeanzeigen zu messen. Chrome erlaubt Websites aber nur die Datenerhebung zu bestimmten Informationsarten, z. B. die Uhrzeit, zu der eine Werbeanzeige präsentiert wurde.</translation>
+<translation id="7790488044432570133">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Anzeigen zu messen. Chrome erlaubt Websites aber nur die Datenerhebung zu bestimmten Informationsarten, z. B. die Uhrzeit, zu der eine Anzeige präsentiert wurde.</translation>
 <translation id="7791011319128895129">Unveröffentlicht</translation>
 <translation id="7791196057686275387">Bündel</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
@@ -3228,7 +3228,7 @@ Weitere Details:
 <translation id="8891727572606052622">Ungültiger Proxymodus</translation>
 <translation id="8894794286471754040">Lange Seite zuerst</translation>
 <translation id="8897428486789851669">Schwimmen</translation>
-<translation id="8899807382908246773">Aufdringliche Werbeanzeigen</translation>
+<translation id="8899807382908246773">Aufdringliche Anzeigen</translation>
 <translation id="8903921497873541725">Vergrößern</translation>
 <translation id="890493561996401738">Schaltfläche "Vorschlag entfernen", zum Entfernen Eingabetaste drücken, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 in</translation>

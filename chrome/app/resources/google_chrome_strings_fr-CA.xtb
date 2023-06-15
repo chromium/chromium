@@ -288,6 +288,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6327105987658262776">Aucune mise à jour n'est proposée.</translation>
 <translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}one{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}other{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}}</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant?</translation>
 <translation id="648319183876919572">La navigation sécurisée améliorée vous protège davantage contre les sites Web et les téléchargements dangereux</translation>
 <translation id="6493527311031785448">Google Chrome essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -337,6 +338,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7410958280246779049">Chrome a bloqué ce fichier parce qu'il est dangereux</translation>
 <translation id="7426611252293106642">Google Chrome peut ne pas fonctionner correctement parce qu'il n'est plus pris en charge sur cette distribution Linux</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute.}one{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes.}other{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes.}}</translation>
 <translation id="7481213027396403996">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
@@ -370,6 +372,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8008534537613507642">Réinstaller Chrome</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="80471789339884597">Merci pour l'installation. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Votre organisation supprime automatiquement les données de navigation lorsque Chrome n'est pas utilisé pendant 1 minute. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets existants resteront ouverts.}one{Votre organisation supprime automatiquement les données de navigation lorsque Chrome n'est pas utilisé pendant # minutes. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets existants resteront ouverts.}other{Votre organisation supprime automatiquement les données de navigation lorsque Chrome n'est pas utilisé pendant # minutes. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets existants resteront ouverts.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>

@@ -146,6 +146,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
 <translation id="4050599136622776556">Chromium-ek ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="4055805654398742145">Pasahitz-kudeatzailea</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Erakundeak automatikoki itxiko du Chromium minutu batez erabiltzen ez bada. Arakatze-datuak ezabatuko dira. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude.}other{Erakundeak automatikoki itxiko du Chromium # minutuz erabiltzen ez bada. Arakatze-datuak ezabatuko dira. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude.}}</translation>
 <translation id="4148957013307229264">Instalatzen…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chromium</translation>
 <translation id="421369550622382712">Ezagutu Chromium-erako aplikazio, joko, luzapen eta gai bikainak.</translation>
@@ -182,6 +183,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="479167709087336770">Google Bilaketa zerbitzuan erabiltzen den ortografia-zuzentzaile bera erabiltzen da. Arakatzailean idazten duzun testua Google-ri bidaltzen zaio. Aukera horiek aldatzeko, joan ezarpenetara.</translation>
 <translation id="4888717733111232871">Chromium-ek mDNS trafikoa baimentzeko sarrerako araua.</translation>
 <translation id="4893347770495441059">Abiaraz ezazu berriro &amp;Chromium eguneratzeko</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium minutu batez erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Jadanik dauden fitxak irekita mantenduko dira.}other{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium # minutuz erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Jadanik dauden fitxak irekita mantenduko dira.}}</translation>
 <translation id="4943838377383847465">Chromium atzeko planoko moduan dago.</translation>
 <translation id="4987820182225656817">Gonbidatuek Chromium erabil dezakete aztarnarik utzi gabe.</translation>
 <translation id="4994636714258228724">Gaitu zure burua Chromium-en</translation>
@@ -216,6 +218,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5924017743176219022">Internetera konektatzen…</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5972142260211327093">Chromium-ek proba aktibo batean ausaz sartu bazaitu, agertzen zaizkizun iragarkietan eta behean estimatutako interesetan eragina izango du arakatze-historiak. Zure pribatutasuna babesteko, Chromium-ek hilero ezabatzen ditu zure interesak. Interesak eguneratu egiten dira, haiek kendu ezean.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Erakundeak automatikoki itxiko du Chromium minutu batez erabiltzen ez bada.}other{Erakundeak automatikoki itxiko du Chromium # minutuz erabiltzen ez bada.}}</translation>
 <translation id="5987687638152509985">Eguneratu Chromium sinkronizatzen hasteko</translation>
 <translation id="5988505247484123880">Bisitatzen dituzun webguneek interesatzen zaizkizun gauzak gogoratu ohi dituzte zerbitzua pertsonalizatzeko. Webguneek zure interesei buruzko informazioa ere gorde dezakete Chromium-en.</translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>

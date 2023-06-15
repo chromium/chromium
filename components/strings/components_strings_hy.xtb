@@ -265,6 +265,7 @@
 
       &lt;p&gt;Ուղղեք ամսաթիվը և ժամը &lt;strong&gt;Կարգավորումներ&lt;/strong&gt; հավելվածի &lt;strong&gt;Ընդհանուր&lt;/strong&gt; բաժնում:&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Ձեր ադմինիստրատորը կվերագործարկի սարքը <ph name="DATE" />, <ph name="TIME" /></translation>
+<translation id="1564753300777780201">Պատկերներից փոխարկված տեքստ չկա</translation>
 <translation id="156703335097561114">Ցանցային տեղեկությունները, օրինակ՝ հասցեները, միջերեսի կարգավորումները և կապի որակը</translation>
 <translation id="1567040042588613346">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն միևնույն արժեքը սահմանված է այլ տեղում և փոխարինվում է կանոնի կողմից։</translation>
 <translation id="1567405528131216114">Ավելացնել «<ph name="TOPIC" />» թեման</translation>
@@ -1200,6 +1201,7 @@
 <translation id="3890664840433101773">Ավելացրեք էլ․ հասցե</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
 <translation id="3901925938762663762">Քարտի ժամկետը սպառվել է</translation>
+<translation id="3906095212874392000">Փոխարկված տեքստի ավարտ</translation>
 <translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը</translation>
@@ -1400,6 +1402,7 @@
 <translation id="4331519897422864041">Շեղջիչ 5</translation>
 <translation id="4331708818696583467">Անվտանգ չէ</translation>
 <translation id="4333561522337981382">Կառավարել պատուհանները ձեր բոլոր էկրաններին</translation>
+<translation id="4338709847516294988">Սեղմեք որոնման կոճակը + M և տեղային ընտրացանկում պատկերը փոխարկեք տեքստի</translation>
 <translation id="4340575312453649552">Այս գովազդը չափազանց շատ ռեսուրս է օգտագործել ձեր սարքում, այդ պատճառով Chrome-ը հեռացրել է այն։</translation>
 <translation id="4340982228985273705">Այս համակարգիչը կազմակերպության կողմից կառավարվող համակարգիչ չէ: Համաձայն կանոնի՝ ավտոմատ կարող են տեղադրվել միայն Chrome Web Store-ի ընդլայնումները: Chrome Web Store-ի թարմացման URL-ն է՝ «<ph name="CWS_UPDATE_URL" />»:</translation>
 <translation id="4348834659292907206">Միացումը <ph name="SITE" /> կայքին պաշտպանված չէ</translation>
@@ -1415,6 +1418,7 @@
 <translation id="4359160567981085931">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Chrome-ը կարող է օգնել։ Որպեսզի գաղտնաբառը փոխեք և Google-ին տեղեկացնեք, որ ձեր հաշիվը վտանգված է, սեղմեք «Պաշտպանել հաշիվը»։</translation>
 <translation id="4363222835916186793">Այս ապրանքի մասին ծանուցումներն անջատված են</translation>
 <translation id="437040971055499437">Անվտանգությանը սպառնացող գործողություն է տեղի ունենում</translation>
+<translation id="4371307856413138486">Փոխարկված տեքստի սկիզբ</translation>
 <translation id="4371591986692297148">Ակտիվ չէ</translation>
 <translation id="4372948949327679948">Սպասվող արժեք՝ <ph name="VALUE_TYPE" />:</translation>
 <translation id="4375864595697821259">Դուք կարող եք նորից ավելացնել թեման ցանկում, որից Chrome-ը, ըստ իր ուսումնասիրությունների, կարող է ընտրել ձեզ հետաքրքրող թեմաներ</translation>
@@ -2090,6 +2094,7 @@
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6041777658117377052">Խցիկի ջերմաստիճանը</translation>
 <translation id="6042308850641462728">Ավելին</translation>
+<translation id="6042688167654081154">Պատկերը փոխարկվեց տեքստի</translation>
 <translation id="6044573915096792553">Չափ 12</translation>
 <translation id="6045164183059402045">Էջքի ձևանմուշ</translation>
 <translation id="6047233362582046994">Եթե դուք գիտակցում եք անվտանգության հետ կապված ռիսկերը, ապա կարող եք <ph name="BEGIN_LINK" />այցելել այս կայքը<ph name="END_LINK" /> նախքան վնասարար հավելվածները հեռացնելը:</translation>
@@ -2151,6 +2156,7 @@
 <translation id="6195371403461054755">Երկրաբանություն</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6197648101609735209">89 x 89 մմ</translation>
+<translation id="6200386911308538077">Պատկերը վերլուծվում է</translation>
 <translation id="6203231073485539293">Ստուգեք համացանցի կապակցումը</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

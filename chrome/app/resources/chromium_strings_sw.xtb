@@ -146,6 +146,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="4050175100176540509">Maboresho muhimu ya usalama na vipengele vipya vinapatikana katika toleo jipya.</translation>
 <translation id="4050599136622776556">Chromium inajaribu kubadilisha njia za kulipa.</translation>
 <translation id="4055805654398742145">Kidhibiti cha Nenosiri</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Shirika lako hufunga Chromium kiotomatiki isipotumika kwa dakika 1. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}other{Shirika lako hufunga Chromium kiotomatiki isipotumika kwa dakika #. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}}</translation>
 <translation id="4148957013307229264">Inasakinisha...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Kuingia katika Akaunt ya Mtandao - Chromium</translation>
 <translation id="421369550622382712">Gundua programu, michezo, viendelezi na mandhari bora ya Chromium.</translation>
@@ -182,6 +183,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="479167709087336770">Huduma hii hutumia kikagua tahajia sawa na kinachotumika kwenye Huduma ya Tafuta na Google. Maandishi unayoandika kwenye kivinjari yanatumwa kwa Google. Unaweza kubadilisha hali hii katika mipangilio wakati wowote.</translation>
 <translation id="4888717733111232871">Sheria ya ndani ya Chromium ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="4893347770495441059">Fungua tena ili Usasishe &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Shirika lako hufuta kiotomatiki data ya kuvinjari Chromium isipotumika kwa dakika 1. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako vilivyopo havitafungwa.}other{Shirika lako hufuta kiotomatiki data ya kuvinjari Chromium isipotumika kwa dakika #. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako vilivyopo havitafungwa.}}</translation>
 <translation id="4943838377383847465">Chromium iko katika hali ya chini chini.</translation>
 <translation id="4987820182225656817">Walioalikwa wanaweza kutumia Chromium bila kuacha kitu chochote nyuma.</translation>
 <translation id="4994636714258228724">Jiongeze kwenye Chrome</translation>
@@ -216,6 +218,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5924017743176219022">Inaunganisha kwenye Intaneti...</translation>
 <translation id="5941711191222866238">Punguza</translation>
 <translation id="5972142260211327093">Iwapo Chromium imekuweka kwa unasibu katika kipindi cha kujaribu kinachoendelea, historia ya kuvinjari itaathiri mambo yanayokuvutia na matangazo unayoyaona kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chromium hufuta mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yataonyeshwa upya isipokuwa ukiyaondoa.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Shirika lako hufunga Chromium kiotomatiki isipotumika kwa dakika 1.}other{Shirika lako hufunga Chromium kiotomatiki isipotumika kwa dakika #.}}</translation>
 <translation id="5987687638152509985">Sasisha Chromium ili uanze kusawazisha</translation>
 <translation id="5988505247484123880">Ni kawaida kwa tovuti unazotembelea kukumbuka mambo yanayokuvutia, ili kuweka mapendeleo kwenye matumizi yako. Tovuti zinaweza pia kuhifadhi maelezo kuhusu mambo yanayokuvutia kwa kutumia Chromium.</translation>
 <translation id="6003112304606738118">Inapakua... Zimesalia saa <ph name="HOURS" /></translation>

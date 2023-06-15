@@ -144,6 +144,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
 <translation id="4050599136622776556">Chromium sta cercando di modificare i metodi di pagamento.</translation>
 <translation id="4055805654398742145">Gestore delle p&amp;assword</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="4148957013307229264">Installazione...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Accesso rete - Chromium</translation>
 <translation id="421369550622382712">Scopri app, giochi, estensioni e temi straordinari per Chromium.</translation>
@@ -180,6 +181,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4888717733111232871">Regola inbound per consentire il traffico mDNS in Chromium.</translation>
 <translation id="4893347770495441059">Riavvia per aggiornare &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}}</translation>
 <translation id="4943838377383847465">Chromium è in modalità background.</translation>
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
@@ -214,6 +216,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5972142260211327093">Se Chromium ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi vengono aggiornati.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti.}}</translation>
 <translation id="5987687638152509985">Aggiorna Chromium per avviare la sincronizzazione</translation>
 <translation id="5988505247484123880">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chromium informazioni relative ai tuoi interessi.</translation>
 <translation id="6003112304606738118">Download in corso… Ore rimanenti: <ph name="HOURS" /></translation>

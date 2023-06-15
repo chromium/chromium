@@ -1468,7 +1468,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4489023393592172404">Koverta Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifruj sinhronizovane lozinke pomoću Google naloga</translation>
-<translation id="4492332866628791879">Sačuvaj i prati cenu</translation>
 <translation id="4492519888999857993">Ove funkcije su podrazumevano onemogućene. One neće biti dostupne u budućim verzijama Chrome-a.</translation>
 <translation id="4493480324863638523">URL je nevažeći. URL mora da ima standardnu šemu, npr. http://example.com ili https://example.com.</translation>
 <translation id="4494323206460475851">Možete da vidite teme oglasa u podešavanjima i da blokirate one za koje ne želite da se dele sa sajtovima. Chrome automatski briše i teme oglasa starije od 4 nedelje.</translation>
@@ -2288,6 +2287,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6468485451923838994">Fontovi</translation>
 <translation id="647261751007945333">Smernice za uređaj</translation>
 <translation id="647330291963761005">Ažuriranja se instaliraju</translation>
+<translation id="6474220430271405609">Testovi za smernice</translation>
 <translation id="6475672344094591109">Sajtovi koje posećujete mogu da zatraže od Chrome-a informacije radi merenja učinka oglasa. Chrome štiti privatnost tako što ograničava informacije koje sajtovi mogu da dele između sebe.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6486200200930923183">Dokumentarni filmovi</translation>

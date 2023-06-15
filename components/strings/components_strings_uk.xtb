@@ -265,6 +265,7 @@
 
       &lt;p&gt;Налаштуйте дату й час у розділі &lt;strong&gt;Загальні&lt;/strong&gt; додатка &lt;strong&gt;Налаштування&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Адміністратор перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" /></translation>
+<translation id="1564753300777780201">Немає тексту, конвертованого із зображень</translation>
 <translation id="156703335097561114">Інформація про мережу, наприклад адреси, конфігурацію інтерфейсу та якість з’єднання</translation>
 <translation id="1567040042588613346">Це правило працює належним чином, але в іншому місці встановлюється таке ж значення й замінюється цим правилом.</translation>
 <translation id="1567405528131216114">Додати тему "<ph name="TOPIC" />"</translation>
@@ -1200,6 +1201,7 @@
 <translation id="3890664840433101773">Додати електронну адресу</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Термін дії картки минув</translation>
+<translation id="3906095212874392000">Кінець конвертованого тексту</translation>
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Ви можете будь-коли змінити свій вибір у налаштуваннях Chrome</translation>
@@ -1400,6 +1402,7 @@
 <translation id="4331519897422864041">Накопичувач 5</translation>
 <translation id="4331708818696583467">Ненадійне</translation>
 <translation id="4333561522337981382">керувати вікнами на всіх ваших екранах</translation>
+<translation id="4338709847516294988">Натисніть клавішу пошуку + m і конвертуйте зображення в текст у контекстному меню</translation>
 <translation id="4340575312453649552">Це оголошення використовувало забагато ресурсів пристрою, тож веб-переглядач Chrome видалив його.</translation>
 <translation id="4340982228985273705">Цим комп’ютером не керує адміністратор підприємства, тому правило може лише автоматично встановити розширення, розміщені у Веб-магазині Chrome. URL-адреса для оновлення Веб-магазину Chrome: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">З’єднання із сайтом <ph name="SITE" /> не захищене</translation>
@@ -1415,6 +1418,7 @@
 <translation id="4359160567981085931">Щойно ви ввели пароль на оманливому сайті. Chrome може допомогти. Щоб змінити пароль і повідомити Google про можливу небезпеку для облікового запису, натисніть "Захистити обліковий запис".</translation>
 <translation id="4363222835916186793">Сповіщення для цього товару вимкнено</translation>
 <translation id="437040971055499437">Трапляється подія системи безпеки</translation>
+<translation id="4371307856413138486">Початок конвертованого тексту</translation>
 <translation id="4371591986692297148">неактивна</translation>
 <translation id="4372948949327679948">Очікуване значення: <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Ви можете будь-коли додати раніше заблоковану тему в список, за яким Chrome може визначати ваші інтереси</translation>
@@ -2089,6 +2093,7 @@
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6041777658117377052">Температура камери</translation>
 <translation id="6042308850641462728">Більше</translation>
+<translation id="6042688167654081154">Зображення конвертовано в текст</translation>
 <translation id="6044573915096792553">Розмір 12</translation>
 <translation id="6045164183059402045">Шаблон накладення</translation>
 <translation id="6047233362582046994">Якщо ви розумієте ризики, пов’язані з безпекою, можете <ph name="BEGIN_LINK" />перейти на цей сайт<ph name="END_LINK" />, перш ніж небезпечні додатки буде видалено.</translation>
@@ -2150,6 +2155,7 @@
 <translation id="6195371403461054755">Геологія</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
+<translation id="6200386911308538077">Зображення аналізується</translation>
 <translation id="6203231073485539293">Перевірте з’єднання з Інтернетом</translation>
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
 <translation id="6212314149070368045">Fanfold (США)</translation>

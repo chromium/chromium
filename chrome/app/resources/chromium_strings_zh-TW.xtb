@@ -144,6 +144,7 @@
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4050599136622776556">Chromium 正在嘗試編輯付款方式。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{根據貴機構規定，Chromium 閒置 1 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}other{根據貴機構規定，Chromium 閒置 # 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="4148957013307229264">安裝中...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網路登入 - Chromium</translation>
 <translation id="421369550622382712">探索 Chromium 專用的優質應用程式、遊戲、擴充功能和主題。</translation>
@@ -180,6 +181,7 @@
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
 <translation id="4888717733111232871">允許 mDNS 流量的 Chromium 輸入規則。</translation>
 <translation id="4893347770495441059">重新啟動以更新 &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{根據貴機構規定，如果 Chromium 閒置 1 分鐘，系統就會自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。現有的分頁仍會維持開啟狀態。}other{根據貴機構規定，如果 Chromium 閒置 # 分鐘，系統就會自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。現有的分頁仍會維持開啟狀態。}}</translation>
 <translation id="4943838377383847465">Chromium 正在背景模式中執行。</translation>
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
@@ -214,6 +216,7 @@
 <translation id="5924017743176219022">正在連線至網際網路...</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5972142260211327093">如果 Chromium 隨機讓你加入試用行列，你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chromium 每個月都會刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{根據貴機構規定，Chromium 閒置 1 分鐘就會自動關閉。}other{根據貴機構規定，Chromium 閒置 # 分鐘就會自動關閉。}}</translation>
 <translation id="5987687638152509985">如要開始同步處理，請更新 Chromium</translation>
 <translation id="5988505247484123880">你造訪的網站通常都會記住你感興趣的項目，目的是打造個人化體驗。此外，網站也可以將你的興趣喜好相關資訊儲存在 Chromium 中。</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
