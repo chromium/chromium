@@ -3010,7 +3010,6 @@ if (current_toolchain == default_toolchain) {
       "--zero-tests-executed-ok",
       "--browser-apk",
       "@WrappedPath(apks/ChromePublic.apk)",
-      "-v",
     ]
     data_deps = [
       ":chrome_public_apk",

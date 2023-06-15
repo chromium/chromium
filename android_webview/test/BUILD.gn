@@ -87,7 +87,6 @@ script_test("system_webview_wpt") {
     "@WrappedPath(apks/SystemWebView.apk)",
     "--browser-apk",
     "@WrappedPath(apks/SystemWebViewShell.apk)",
-    "-v",
   ]
   data_deps = [
     "//android_webview:system_webview_apk",
