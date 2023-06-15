@@ -662,9 +662,8 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
           GetMediaRouter()->GetMirroringMediaControllerHost(
               route->media_route_id());
       if (mirroring_controller_host) {
-        ui_sink.freeze_info.can_freeze =
-            mirroring_controller_host->can_freeze();
-        ui_sink.freeze_info.is_frozen = mirroring_controller_host->is_frozen();
+        ui_sink.freeze_info.can_freeze = mirroring_controller_host->CanFreeze();
+        ui_sink.freeze_info.is_frozen = mirroring_controller_host->IsFrozen();
       }
     }
   } else {

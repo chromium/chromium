@@ -42,14 +42,14 @@ std::u16string GetNotificationTitle(const std::string& sink_name) {
 std::u16string GetNotificationMessage(const MediaRoute& route,
                                       MirroringMediaControllerHost* freeze_host,
                                       bool freeze_enabled) {
-  if (!freeze_enabled || !freeze_host || !freeze_host->can_freeze()) {
+  if (!freeze_enabled || !freeze_host || !freeze_host->CanFreeze()) {
     if (route.media_source().IsDesktopMirroringSource()) {
       return l10n_util::GetStringUTF16(
           IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_CAST_SCREEN);
     }
     return base::UTF8ToUTF16(route.description());
   }
-  if (freeze_host->is_frozen()) {
+  if (freeze_host->IsFrozen()) {
     if (route.media_source().IsDesktopMirroringSource()) {
       return l10n_util::GetStringUTF16(
           IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_SCREEN_PAUSED);
@@ -152,8 +152,8 @@ CastNotificationControllerLacros::GetButtons(
     MirroringMediaControllerHost* freeze_host) {
   std::vector<message_center::ButtonInfo> buttons;
   if (IsAccessCodeCastFreezeUiEnabled(profile_) && freeze_host &&
-      freeze_host->can_freeze()) {
-    displayed_route_is_frozen_ = freeze_host->is_frozen();
+      freeze_host->CanFreeze()) {
+    displayed_route_is_frozen_ = freeze_host->IsFrozen();
     buttons.emplace_back(
         displayed_route_is_frozen_
             ? l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_RESUME)
@@ -171,8 +171,6 @@ void CastNotificationControllerLacros::OnNotificationClicked(
   if (freeze_button_index_ && button_index == freeze_button_index_) {
     FreezeOrUnfreezeCastStream();
   } else if (button_index == stop_button_index_) {
-    // Handles the case that the stop button is pressed, or the notification is
-    // pressed not on a button.
     StopCasting();
   }
 }

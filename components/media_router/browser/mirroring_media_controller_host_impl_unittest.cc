@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_router/browser/mirroring_media_controller_host.h"
+#include "components/media_router/browser/mirroring_media_controller_host_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/media_router/common/media_route.h"
+#include "components/media_router/common/mojom/media_controller.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,7 +69,7 @@ class MirroringMediaControllerHostTest : public ::testing::Test {
     media_controller_ = std::make_unique<MockMediaController>(
         controller_remote.BindNewPipeAndPassReceiver());
 
-    host_ = std::make_unique<MirroringMediaControllerHost>(
+    host_ = std::make_unique<MirroringMediaControllerHostImpl>(
         std::move(controller_remote));
   }
 
@@ -93,22 +96,22 @@ TEST_F(MirroringMediaControllerHostTest, OnMediaStatusUpdatedCanFreeze) {
   media_router::mojom::MediaStatusPtr status = mojom::MediaStatus::New();
   status->can_play_pause = true;
 
-  EXPECT_FALSE(host_->can_freeze());
+  EXPECT_FALSE(host_->CanFreeze());
   host_->OnMediaStatusUpdated(std::move(status));
-  EXPECT_TRUE(host_->can_freeze());
+  EXPECT_TRUE(host_->CanFreeze());
 }
 
 TEST_F(MirroringMediaControllerHostTest, OnMediaStatusUpdatedIsFrozen) {
   media_router::mojom::MediaStatusPtr status = mojom::MediaStatus::New();
   status->play_state = mojom::MediaStatus::PlayState::PAUSED;
 
-  EXPECT_FALSE(host_->is_frozen());
+  EXPECT_FALSE(host_->IsFrozen());
   host_->OnMediaStatusUpdated(status.Clone());
-  EXPECT_FALSE(host_->is_frozen());
+  EXPECT_FALSE(host_->IsFrozen());
 
   status->can_play_pause = true;
   host_->OnMediaStatusUpdated(std::move(status));
-  EXPECT_TRUE(host_->is_frozen());
+  EXPECT_TRUE(host_->IsFrozen());
 }
 
 TEST_F(MirroringMediaControllerHostTest, Freeze) {

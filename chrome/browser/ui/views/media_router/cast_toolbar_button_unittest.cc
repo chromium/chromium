@@ -22,7 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_router/browser/media_router_factory.h"
-#include "components/media_router/browser/mirroring_media_controller_host.h"
+#include "components/media_router/browser/mirroring_media_controller_host_impl.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -99,8 +99,9 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     ON_CALL(*media_router_, GetLogger())
         .WillByDefault(testing::Return(logger_.get()));
     mojo::Remote<media_router::mojom::MediaController> controller_remote;
-    mirroring_controller_host_ = std::make_unique<MirroringMediaControllerHost>(
-        std::move(controller_remote));
+    mirroring_controller_host_ =
+        std::make_unique<MirroringMediaControllerHostImpl>(
+            std::move(controller_remote));
     ON_CALL(*media_router_, GetMirroringMediaControllerHost(_))
         .WillByDefault(testing::Return(mirroring_controller_host_.get()));
 
@@ -158,7 +159,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoggerImpl> logger_;
   raw_ptr<MockMediaRouter, DanglingUntriaged> media_router_ = nullptr;
-  std::unique_ptr<MirroringMediaControllerHost> mirroring_controller_host_;
+  std::unique_ptr<MirroringMediaControllerHostImpl> mirroring_controller_host_;
 
   gfx::Image idle_icon_;
   gfx::Image idle_chrome_refresh_icon_;
@@ -265,7 +266,11 @@ TEST_F(CastToolbarButtonTest, PausedIcon) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 
-  mirroring_controller_host_.get()->set_is_frozen_for_test(true);
+  media_router::mojom::MediaStatusPtr status = mojom::MediaStatus::New();
+  status->can_play_pause = true;
+  status->play_state = mojom::MediaStatus::PlayState::PAUSED;
+  mirroring_controller_host_.get()->OnMediaStatusUpdated(std::move(status));
+
   button_->OnRoutesUpdated(local_display_route_list_);
   EXPECT_TRUE(gfx::test::AreImagesEqual(paused_icon_, GetIcon()));
 }

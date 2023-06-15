@@ -11,6 +11,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_source.h"
 #include "components/prefs/pref_service.h"
@@ -27,6 +28,22 @@ namespace media_router {
 namespace {
 
 constexpr char kRouteId[] = "route_id";
+
+class MockMirroringMediaControllerHost : public MirroringMediaControllerHost {
+ public:
+  MOCK_METHOD(mojo::PendingRemote<media_router::mojom::MediaStatusObserver>,
+              GetMediaStatusObserverPendingRemote,
+              ());
+  MOCK_METHOD(void, AddObserver, (Observer * observer));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer));
+  MOCK_METHOD(bool, CanFreeze, (), (const));
+  MOCK_METHOD(bool, IsFrozen, (), (const));
+  MOCK_METHOD(void, Freeze, ());
+  MOCK_METHOD(void, Unfreeze, ());
+  MOCK_METHOD(void,
+              OnMediaStatusUpdated,
+              (media_router::mojom::MediaStatusPtr status));
+};
 
 class MockNotificationDisplayService : public NotificationDisplayService {
  public:
@@ -59,6 +76,8 @@ class CastNotificationControllerLacrosTest : public testing::Test {
     builder.AddTestingFactory(ChromeMediaRouterFactory::GetInstance(),
                               base::BindRepeating(&MockMediaRouter::Create));
     profile_ = builder.Build();
+    ON_CALL(media_router_, GetMirroringMediaControllerHost)
+        .WillByDefault(Return(&freeze_host_));
 
     notification_controller_ =
         std::make_unique<CastNotificationControllerLacros>(
@@ -66,9 +85,17 @@ class CastNotificationControllerLacrosTest : public testing::Test {
   }
 
  protected:
+  void EnableFreezeMirroring() {
+    profile_->GetPrefs()->SetBoolean(
+        media_router::prefs::kAccessCodeCastEnabled, true);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kAccessCodeCastFreezeUI}, {});
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   MockNotificationDisplayService notification_service_;
   MockMediaRouter media_router_;
+  MockMirroringMediaControllerHost freeze_host_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CastNotificationControllerLacros> notification_controller_;
 };
@@ -102,6 +129,40 @@ TEST_F(CastNotificationControllerLacrosTest, ClickOnStopButton) {
       .WillOnce(
           WithArg<1>([](const message_center::Notification& notification) {
             // Clicking on the stop button should call TerminateRoute().
+            notification.delegate()->Click(/*button_index=*/0,
+                                           /*reply=*/absl::nullopt);
+          }));
+  notification_controller_->OnRoutesUpdated({CreateMediaRoute()});
+}
+
+TEST_F(CastNotificationControllerLacrosTest, FreezeStream) {
+  EnableFreezeMirroring();
+  ON_CALL(freeze_host_, CanFreeze).WillByDefault(Return(true));
+  ON_CALL(freeze_host_, IsFrozen).WillByDefault(Return(false));
+
+  EXPECT_CALL(freeze_host_, Freeze());
+  EXPECT_CALL(notification_service_,
+              Display(NotificationHandler::Type::TRANSIENT, _, _))
+      .WillOnce(
+          WithArg<1>([](const message_center::Notification& notification) {
+            // Clicking on the pause button should call Freeze().
+            notification.delegate()->Click(/*button_index=*/0,
+                                           /*reply=*/absl::nullopt);
+          }));
+  notification_controller_->OnRoutesUpdated({CreateMediaRoute()});
+}
+
+TEST_F(CastNotificationControllerLacrosTest, UnfreezeStream) {
+  EnableFreezeMirroring();
+  ON_CALL(freeze_host_, CanFreeze).WillByDefault(Return(true));
+  ON_CALL(freeze_host_, IsFrozen).WillByDefault(Return(true));
+
+  EXPECT_CALL(freeze_host_, Unfreeze());
+  EXPECT_CALL(notification_service_,
+              Display(NotificationHandler::Type::TRANSIENT, _, _))
+      .WillOnce(
+          WithArg<1>([](const message_center::Notification& notification) {
+            // Clicking on the resume button should call Unfreeze().
             notification.delegate()->Click(/*button_index=*/0,
                                            /*reply=*/absl::nullopt);
           }));
