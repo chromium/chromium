@@ -217,6 +217,7 @@ def dev_list():
       "libelf-dev",
       "libevdev-dev",
       "libffi-dev",
+      "libfuse2",
       "libgbm-dev",
       "libglib2.0-dev",
       "libglu1-mesa-dev",
