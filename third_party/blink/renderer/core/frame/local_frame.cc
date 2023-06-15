@@ -64,6 +64,7 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -3521,6 +3522,11 @@ LocalFrame::GetNotRestoredReasons() {
   // web exposed API returns non-null values only for the outermost main frames.
   DCHECK(IsOutermostMainFrame());
   return not_restored_reasons_;
+}
+
+void LocalFrame::SetLCPPHint(
+    mojom::blink::LCPCriticalPathPredictorNavigationTimeHintPtr hint) {
+  // TODO(crbug.com/1419756): Pass the hint to `lcpp_`
 }
 
 void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {

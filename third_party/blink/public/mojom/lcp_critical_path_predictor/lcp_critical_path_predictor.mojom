@@ -7,3 +7,8 @@ module blink.mojom;
 // Interface for LCP Critical Path Predictor from the renderer process.
 interface LCPCriticalPathPredictorHost {
 };
+
+// LCP Critical Path Predictor hints provided at navigation time.
+// TODO(crbug.com/1419756): Populate actual hint data.
+struct LCPCriticalPathPredictorNavigationTimeHint {
+};

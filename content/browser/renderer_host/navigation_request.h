@@ -61,6 +61,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -367,6 +368,9 @@ class CONTENT_EXPORT NavigationRequest
                         const std::string& header_value) override;
   void SetCorsExemptRequestHeader(const std::string& header_name,
                                   const std::string& header_value) override;
+  void SetLCPPNavigationHint(
+      const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint)
+      override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
   net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() override;
   const absl::optional<net::SSLInfo>& GetSSLInfo() override;
@@ -2593,6 +2597,11 @@ class CONTENT_EXPORT NavigationRequest
   // See `RenderFrameHostImpl::CookieChangeListener`.
   std::unique_ptr<RenderFrameHostImpl::CookieChangeListener>
       cookie_change_listener_;
+
+  // LCP Critical Path Predictor managed hint data those were already available
+  // at the time of navigation. The hint is passed along to the renderer process
+  // on commit along with the other navigation params.
+  blink::mojom::LCPCriticalPathPredictorNavigationTimeHint lcpp_hint_;
 
   // The WebUI object to be used for this navigation. When a RenderFrameHost has
   // been picked for the navigation, the WebUI object will be moved to be owned

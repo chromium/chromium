@@ -19,6 +19,7 @@
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
@@ -28,6 +29,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
 using content::BrowserThread;
@@ -253,6 +256,19 @@ void LoadingPredictorTabHelper::DidStartNavigation(
 
   if (!IsHandledNavigation(navigation_handle))
     return;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPCriticalPathPredictor)) {
+    // Attach LCP Critical Path Predictor hint to NavigationHandle, so that it
+    // would be sent to the renderer process upon navigation commit.
+
+    // TODO(crbug.com/1419756): Replace this with a real hint data. Also,
+    // add a similar code to redirect code path so we update the hint data as we
+    // follow redirects.
+    blink::mojom::LCPCriticalPathPredictorNavigationTimeHint hint;
+
+    navigation_handle->SetLCPPNavigationHint(hint);
+  }
 
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
 

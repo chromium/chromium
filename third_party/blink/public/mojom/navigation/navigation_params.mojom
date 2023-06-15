@@ -22,6 +22,7 @@ import "third_party/blink/public/mojom/navigation/navigation_initiator_activatio
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
@@ -602,4 +603,7 @@ struct CommitNavigationParams {
   // because no update is required. Subframes navigations never set this,
   // because they cannot change browsing context group.
   blink.mojom.BrowsingContextGroupInfo? browsing_context_group_info;
+
+  // LCP Critical Path Predictor hint data available at navigation timing.
+  blink.mojom.LCPCriticalPathPredictorNavigationTimeHint? lcpp_hint;
 };

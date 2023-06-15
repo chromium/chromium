@@ -1256,7 +1256,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*fenced_frame_properties=*/absl::nullopt,
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/load_with_storage_access,
-          /*browsing_context_group_info=*/absl::nullopt);
+          /*browsing_context_group_info=*/absl::nullopt,
+          /*lcpp_hint=*/nullptr);
 
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
@@ -1399,7 +1400,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*fenced_frame_properties=*/absl::nullopt,
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/false,
-          /*browsing_context_group_info=*/absl::nullopt);
+          /*browsing_context_group_info=*/absl::nullopt,
+          /*lcpp_hint=*/nullptr);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -7475,6 +7477,12 @@ void NavigationRequest::SetCorsExemptRequestHeader(
     const std::string& header_value) {
   DCHECK(state_ == WILL_START_REQUEST || state_ == WILL_REDIRECT_REQUEST);
   cors_exempt_request_headers_.SetHeader(header_name, header_value);
+}
+
+void NavigationRequest::SetLCPPNavigationHint(
+    const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint) {
+  DCHECK_EQ(WILL_START_REQUEST, state_);
+  commit_params_->lcpp_hint = hint.Clone();
 }
 
 const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {

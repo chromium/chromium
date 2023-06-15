@@ -2766,6 +2766,10 @@ void RenderFrameImpl::CommitNavigationWithParams(
         std::move(commit_params->not_restored_reasons));
   }
 
+  if (commit_params->lcpp_hint) {
+    frame_->SetLCPPHint(std::move(commit_params->lcpp_hint));
+  }
+
   // Note: this intentionally does not call |Detach()| before |reset()|. If
   // there is an active |MHTMLBodyLoaderClient|, the browser-side navigation
   // code is explicitly replacing it with a new navigation commit request.

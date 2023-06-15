@@ -111,6 +111,7 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
@@ -3241,6 +3242,17 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     }
   }
   return not_restored_reasons;
+}
+
+void WebLocalFrameImpl::SetLCPPHint(
+    const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr& hint) {
+  CHECK(hint);
+  CHECK(base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor));
+
+  if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
+    // TODO(crbug.com/1419756): Consume hint.
+    NOTIMPLEMENTED();
+  }
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

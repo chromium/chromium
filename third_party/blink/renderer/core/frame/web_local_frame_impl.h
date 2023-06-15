@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
@@ -402,6 +403,9 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
   GetNotRestoredReasons();
+
+  void SetLCPPHint(
+      const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) override;
 
   void InitializeCoreFrame(
       Page&,

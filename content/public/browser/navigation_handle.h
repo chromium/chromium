@@ -30,6 +30,7 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
@@ -387,6 +388,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // |NetworkContextParams::cors_exempt_header_list|.
   virtual void SetCorsExemptRequestHeader(const std::string& header_name,
                                           const std::string& header_value) = 0;
+
+  // Set LCP Critical Path Predictor hint data to be passed along to the
+  // renderer process on the navigation commit.
+  virtual void SetLCPPNavigationHint(
+      const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint) = 0;
 
   // Returns the response headers for the request, or nullptr if there aren't
   // any response headers or they have not been received yet. The response

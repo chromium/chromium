@@ -145,6 +145,9 @@ class MockNavigationHandle : public NavigationHandle {
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
   }
+  MOCK_METHOD1(
+      SetLCPPNavigationHint,
+      void(const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint&));
   MOCK_METHOD0(GetConnectionInfo, net::HttpResponseInfo::ConnectionInfo());
   const absl::optional<net::SSLInfo>& GetSSLInfo() override {
     return ssl_info_;
