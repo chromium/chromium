@@ -192,8 +192,6 @@ extern const base::FeatureParam<int> kDiscardedTabTreatmentOption;
 // Threshold for when memory usage is labeled as "high".
 extern const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes;
 
-BASE_DECLARE_FEATURE(kUseDeviceBatterySaverChromeOS);
-
 enum class DiscardTabTreatmentOptions {
   kNone = 0,
   kFadeFullsizedFavicon = 1,

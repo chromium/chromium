@@ -32,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
 
@@ -681,7 +682,7 @@ void UserPerformanceTuningManager::Start() {
   OnHighEfficiencyModePrefChanged();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kUseDeviceBatterySaverChromeOS)) {
+  if (ash::features::IsBatterySaverAvailable()) {
     battery_saver_provider_ =
         std::make_unique<ChromeOSBatterySaverProvider>(this);
   } else {

@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -514,8 +515,7 @@ TEST_F(UserPerformanceTuningManagerTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(UserPerformanceTuningManagerTest, ManagedFromPowerManager) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      performance_manager::features::kUseDeviceBatterySaverChromeOS);
+  feature_list.InitAndEnableFeature(ash::features::kBatterySaver);
 
   StartManager();
   EXPECT_FALSE(manager()->IsBatterySaverActive());
@@ -541,8 +541,7 @@ TEST_F(UserPerformanceTuningManagerTest, ManagedFromPowerManager) {
 TEST_F(UserPerformanceTuningManagerTest,
        StartsEnabledIfAlreadyEnabledInPowerManager) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      performance_manager::features::kUseDeviceBatterySaverChromeOS);
+  feature_list.InitAndEnableFeature(ash::features::kBatterySaver);
 
   // Request to enable PowerManager's BSM
   power_manager::SetBatterySaverModeStateRequest proto;
