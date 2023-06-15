@@ -169,6 +169,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void UnlockMouse() override;
   // Checks if the window is key, in addition to "focused".
   bool CanBeMouseLocked() override;
+  // Checks if the window is key, in addition to "focused".
+  bool AccessibilityHasFocus() override;
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
   // Returns true when running on a recent enough OS for unaccelerated pointer
   // events.

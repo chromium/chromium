@@ -356,6 +356,10 @@ bool RenderWidgetHostViewBase::CanBeMouseLocked() {
   return HasFocus();
 }
 
+bool RenderWidgetHostViewBase::AccessibilityHasFocus() {
+  return HasFocus();
+}
+
 bool RenderWidgetHostViewBase::LockKeyboard(
     absl::optional<base::flat_set<ui::DomCode>> codes) {
   NOTIMPLEMENTED_LOG_ONCE();

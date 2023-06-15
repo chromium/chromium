@@ -35,6 +35,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // tree manager for that child tree. Otherwise, return nullptr.
   static AXTreeManager* ForChildTree(const AXNode& parent_node);
 
+  // For testing only, get the registered focus change callback
+  static base::RepeatingClosure& GetFocusChangeCallbackForTesting();
   // For testing only, register a function to be called when focus changes
   // in any AXTreeManager.
   static void SetFocusChangeCallbackForTesting(base::RepeatingClosure callback);

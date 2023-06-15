@@ -2800,7 +2800,7 @@ void RenderFrameHostImpl::AccessibilityPerformAction(
 bool RenderFrameHostImpl::AccessibilityViewHasFocus() {
   RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
   if (view)
-    return view->HasFocus();
+    return view->AccessibilityHasFocus();
   return false;
 }
 

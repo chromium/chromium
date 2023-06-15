@@ -38,12 +38,6 @@
 
 namespace content {
 
-namespace {
-// A function to call when focus changes, for testing only.
-base::LazyInstance<base::RepeatingClosure>::DestructorAtExit
-    g_focus_change_callback_for_testing = LAZY_INSTANCE_INITIALIZER;
-}  // namespace
-
 ui::AXTreeUpdate MakeAXTreeUpdateForTesting(
     const ui::AXNodeData& node1,
     const ui::AXNodeData& node2 /* = ui::AXNodeData() */,
@@ -191,7 +185,7 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
   // Don't fire focus events if the window itself doesn't have focus.
   // Bypass this check for some tests.
   if (!never_suppress_or_delay_events_for_testing_ &&
-      !g_focus_change_callback_for_testing.Get()) {
+      !AXTreeManager::GetFocusChangeCallbackForTesting()) {
     if (delegate_ && !delegate_->AccessibilityViewHasFocus())
       return;
   }

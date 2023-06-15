@@ -15,13 +15,6 @@
 
 namespace ui {
 
-namespace {
-// A function to call when focus changes, for testing only.
-base::LazyInstance<base::RepeatingClosure>::DestructorAtExit
-    g_focus_change_callback_for_testing = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 // static
 AXTreeManagerMap& AXTreeManager::GetMap() {
   static base::NoDestructor<AXTreeManagerMap> map;
@@ -55,9 +48,15 @@ AXTreeManager* AXTreeManager::ForChildTree(const AXNode& parent_node) {
 }
 
 // static
+base::RepeatingClosure& AXTreeManager::GetFocusChangeCallbackForTesting() {
+  static base::NoDestructor<base::RepeatingClosure>
+      g_focus_change_callback_for_testing;
+  return *g_focus_change_callback_for_testing;
+}
+
 void AXTreeManager::SetFocusChangeCallbackForTesting(
     base::RepeatingClosure callback) {
-  g_focus_change_callback_for_testing.Get() = std::move(callback);
+  GetFocusChangeCallbackForTesting() = std::move(callback);
 }
 
 AXTreeManager::AXTreeManager()
@@ -81,8 +80,9 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
 }
 
 void AXTreeManager::FireFocusEvent(AXNode* node) {
-  if (g_focus_change_callback_for_testing.Get())
-    g_focus_change_callback_for_testing.Get().Run();
+  if (GetFocusChangeCallbackForTesting()) {
+    GetFocusChangeCallbackForTesting().Run();
+  }
 }
 
 AXNode* AXTreeManager::RetargetForEvents(AXNode* node,
