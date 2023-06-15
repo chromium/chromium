@@ -793,9 +793,6 @@ Document::Document(const DocumentInit& initializer,
       is_srcdoc_document_(initializer.IsSrcdocDocument()),
       is_mobile_document_(false),
       layout_view_(nullptr),
-      document_part_root_(RuntimeEnabledFeatures::DOMPartsAPIEnabled()
-                              ? MakeGarbageCollected<DocumentPartRoot>(*this)
-                              : nullptr),
       load_event_delay_count_(0),
       // We already intentionally fire load event asynchronously and here we use
       // kDOMManipulation to ensure that we run onload() in order with other
@@ -2483,6 +2480,14 @@ CSSToggleInference& Document::EnsureCSSToggleInference() {
     css_toggle_inference_ = MakeGarbageCollected<CSSToggleInference>(this);
   }
   return *css_toggle_inference_;
+}
+
+DocumentPartRoot& Document::getPartRoot() {
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (!document_part_root_) {
+    document_part_root_ = MakeGarbageCollected<DocumentPartRoot>(*this);
+  }
+  return *document_part_root_;
 }
 
 void Document::ApplyScrollRestorationLogic() {
