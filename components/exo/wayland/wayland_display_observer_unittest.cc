@@ -56,12 +56,13 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
 
   void TearDown() override {
     handler_->UnsetXdgOutputResource();
+    // Reset `handler_` before `wl_output_resource_` is destroyed.
+    handler_.reset();
     wl_resource_destroy(xdg_output_resource_);
     wl_resource_destroy(wl_output_resource_);
     wl_client_destroy(client_);
     wl_display_destroy(wayland_display_);
     close(fds_[1]);
-    handler_.reset();
     output_.reset();
 
     test::ExoTestBase::TearDown();
