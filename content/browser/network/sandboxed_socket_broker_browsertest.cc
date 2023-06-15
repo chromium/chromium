@@ -52,7 +52,8 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
       std::vector<base::test::FeatureRef> enabled_features = {
           sandbox::policy::features::kNetworkServiceSandbox,
       };
-      ForceInProcessNetworkService();
+      scoped_feature_list_.InitWithFeatures(
+          enabled_features, {features::kNetworkServiceInProcess});
     } else {
       check_sandbox_ = false;
     }
@@ -69,8 +70,7 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
     };
     scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
-    ForceOutOfProcessNetworkService();
+                                          {features::kNetworkServiceInProcess});
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 

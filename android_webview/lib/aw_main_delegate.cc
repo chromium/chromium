@@ -55,7 +55,6 @@
 #include "content/public/browser/android/media_url_interceptor_register.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -313,6 +312,10 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     // Disable key pinning enforcement on webview.
     features.DisableIfNotSet(net::features::kStaticKeyPinningEnforcement);
 
+    // Have the network service in the browser process even if we have separate
+    // renderer processes. See also: switches::kInProcessGPU above.
+    features.EnableIfNotSet(::features::kNetworkServiceInProcess);
+
     // FedCM is not yet supported on WebView.
     features.DisableIfNotSet(::features::kFedCm);
 
@@ -337,10 +340,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
   // this causes re-entrancy into the allocator shim, while the TLS object is
   // partially-initialized, which the TLS object is supposed to protect again.
   heap_profiling::InitTLSSlot();
-
-  // Have the network service in the browser process even if we have separate
-  // renderer processes. See also: switches::kInProcessGPU above.
-  content::ForceInProcessNetworkService();
 
   return absl::nullopt;
 }

@@ -19,7 +19,6 @@
 #include "components/cookie_config/cookie_store_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -87,11 +86,9 @@ class ChromeNetworkServiceBrowserTest
   ChromeNetworkServiceBrowserTest() {
     bool in_process = GetParam();
     // Verify that cookie encryption works both in-process and out of process.
-    if (in_process) {
-      content::ForceInProcessNetworkService();
-    } else {
-      content::ForceOutOfProcessNetworkService();
-    }
+    if (in_process)
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kNetworkServiceInProcess);
   }
 
   ChromeNetworkServiceBrowserTest(const ChromeNetworkServiceBrowserTest&) =
@@ -118,6 +115,9 @@ class ChromeNetworkServiceBrowserTest
         std::move(context_params));
     return network_context;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {

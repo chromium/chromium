@@ -22,7 +22,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -172,7 +171,8 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_BrowserCrashCallStack) {
   // A browser process immediate crash can race the initialization of the
   // network service process and leave the process hanging, so run the network
   // service in-process.
-  ForceInProcessNetworkService();
+  new_test.AppendSwitchASCII(switches::kEnableFeatures,
+                             features::kNetworkServiceInProcess.name);
 
   std::string output;
   base::GetAppOutputAndError(new_test, &output);

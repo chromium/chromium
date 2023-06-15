@@ -6992,12 +6992,12 @@ class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
          ",2478392C652868C0AAF0316A28284610DBDACF02D66A00B39F3BA75D887F4829"});
 
     feature_list_.InitWithFeaturesAndParameters(
-        {{network::features::kPervasivePayloadsList,
+        {{features::kNetworkServiceInProcess, {}},
+         {network::features::kPervasivePayloadsList,
           {{"pervasive-payloads", pervasive_payloads_params}}},
          {network::features::kCacheTransparency, {}},
          {net::features::kSplitCacheByNetworkIsolationKey, {}}},
         {/* disabled_features */});
-    ForceInProcessNetworkService();
   }
 
   void ExpectCacheUsed() const {

@@ -15,9 +15,6 @@ bool IsInProcessNetworkService() {
   return IsInProcessNetworkServiceImpl();
 }
 
-void ForceOutOfProcessNetworkService() {
-  ForceOutOfProcessNetworkServiceImpl();
-}
 void ForceInProcessNetworkService() {
   ForceInProcessNetworkServiceImpl();
 }

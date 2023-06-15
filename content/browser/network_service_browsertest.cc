@@ -372,13 +372,13 @@ class NetworkServiceConnectionTypeSyncedBrowserTest
     : public NetworkServiceBrowserTest {
  public:
   NetworkServiceConnectionTypeSyncedBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
 #if BUILDFLAG(IS_LINUX)
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kAddressTrackerLinuxIsProxied);
+        {net::features::kAddressTrackerLinuxIsProxied},
 #else
-    scoped_feature_list_.Init();
+        {},
 #endif
-    ForceOutOfProcessNetworkService();
+        {features::kNetworkServiceInProcess});
   }
 
  private:
@@ -402,7 +402,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceConnectionTypeSyncedBrowserTest,
 
 class NetworkServiceOutOfProcessBrowserTest : public NetworkServiceBrowserTest {
  public:
-  NetworkServiceOutOfProcessBrowserTest() { ForceOutOfProcessNetworkService(); }
+  NetworkServiceOutOfProcessBrowserTest() {
+    ForceOutOfProcessNetworkServiceImpl();
+  }
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(IsOutOfProcessNetworkService());
@@ -908,16 +910,17 @@ class MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures
       public ::testing::WithParamInterface<std::tuple<bool, FailureType>> {
  public:
   MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures() {
-    if (IsNetworkServiceRunningInProcess()) {
-      ForceInProcessNetworkService();
-    } else {
-      ForceOutOfProcessNetworkService();
-    }
+    if (IsNetworkServiceRunningInProcess())
+      network_service_in_process_feature_.InitAndEnableFeature(
+          features::kNetworkServiceInProcess);
   }
 
  protected:
   bool IsNetworkServiceRunningInProcess() { return std::get<0>(GetParam()); }
   FailureType GetFailureType() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList network_service_in_process_feature_;
 };
 
 // A function to verify that data files move during migration to sandboxed data
@@ -1516,7 +1519,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
  public:
-  NetworkServiceInProcessBrowserTest() { ForceInProcessNetworkService(); }
+  NetworkServiceInProcessBrowserTest() {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kNetworkServiceInProcess);
+    scoped_feature_list_.InitWithFeatures(
+        features, std::vector<base::test::FeatureRef>());
+  }
 
   NetworkServiceInProcessBrowserTest(
       const NetworkServiceInProcessBrowserTest&) = delete;
@@ -1527,6 +1535,9 @@ class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(embedded_test_server()->Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that in-process network service works.

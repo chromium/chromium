@@ -202,9 +202,9 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
   };
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kAddressTrackerLinuxIsProxied);
-    ForceOutOfProcessNetworkService();
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kAddressTrackerLinuxIsProxied},
+        {features::kNetworkServiceInProcess});
     ncn_mocked_factory_ = new NetworkChangeNotifierLinuxMockedNetlinkFactory();
     net::NetworkChangeNotifier::SetFactory(ncn_mocked_factory_);
     ContentBrowserTest::SetUp();

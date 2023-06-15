@@ -15,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
+#include "content/browser/network/network_service_util_internal.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
@@ -69,7 +70,7 @@ class NonSandboxedNetworkServiceBrowserTest : public ContentBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/kDisabledFeatures);
-    ForceOutOfProcessNetworkService();
+    ForceOutOfProcessNetworkServiceImpl();
   }
 
   void SetUpOnMainThread() override {
@@ -115,7 +116,7 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
 #endif
     };
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
-    ForceOutOfProcessNetworkService();
+    ForceOutOfProcessNetworkServiceImpl();
   }
 
   void SetUp() override {
