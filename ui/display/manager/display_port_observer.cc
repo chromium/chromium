@@ -34,7 +34,8 @@ std::vector<uint32_t> ParseDrmSysfsAndFindPort(
     const auto& sys_path = pair.second;
     // `sys_path` of a DRM device, i.e. /sys/class/drm/cardX.
     base::FileEnumerator enumerator(sys_path, false,
-                                    base::FileEnumerator::DIRECTORIES);
+                                    base::FileEnumerator::DIRECTORIES,
+                                    FILE_PATH_LITERAL("card*-DP-*"));
     // Each directory in `sys_path` represents a connector, so we fetch each
     // connector's ID by reading the `/sys/class/drm/*/connector_id` file
     // (e.g. /sys/class/drm/card0/card0-DP-1/connector_id stores 256). We use
