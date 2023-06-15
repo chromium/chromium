@@ -37,6 +37,10 @@ export class ColorChangeUpdater {
     this.root_ = root;
   }
 
+  /**
+   * Starts listening for ColorProvider changes from the browser and updates the
+   * `root_` whenever changes occur.
+   */
   start() {
     if (this.listenerId_ !== null) {
       return;
@@ -114,13 +118,3 @@ export class ColorChangeUpdater {
         (documentInstance = new ColorChangeUpdater(document));
   }
 }
-
-// <if expr="chromeos_ash">
-/**
- * Starts listening for ColorProvider changes from the browser and updates the
- * top level HTML document whenever changes occur.
- */
-export function startColorChangeUpdater() {
-  ColorChangeUpdater.forDocument().start();
-}
-// </if>
