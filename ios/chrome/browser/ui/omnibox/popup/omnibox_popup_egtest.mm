@@ -549,6 +549,58 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 @end
 
+@interface OmniboxPopupWithFakeSuggestionTestCase : ChromeTestCase
+@end
+
+@implementation OmniboxPopupWithFakeSuggestionTestCase
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  [OmniboxAppInterface
+      setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];
+}
+
+- (void)tearDown {
+  [OmniboxAppInterface tearDownFakeSuggestionsService];
+  [super tearDown];
+}
+
+- (void)testTapAppendArrowButton {
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+
+  // Clears the url and replace it with local url host.
+  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString("abc")];
+
+  // Wait for the suggestions to show.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::OmniboxPopupRowWithString(@"abcdef")];
+
+  id<GREYMatcher> appendArrowButtonMatcher = grey_allOf(
+      grey_ancestor(chrome_test_util::OmniboxPopupRowWithString(@"abcdef")),
+      grey_accessibilityID(kOmniboxPopupRowAppendAccessibilityIdentifier), nil);
+
+  // Wait for the append button to show.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:appendArrowButtonMatcher];
+
+  // Tap on the append arrow button.
+  [[EarlGrey selectElementWithMatcher:grey_allOf(appendArrowButtonMatcher,
+                                                 grey_interactable(), nil)]
+      performAction:grey_tap()];
+
+  // Omnibox should now contain the suggestion row string 'abcdef '.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::OmniboxContainingText("abcdef ")];
+
+  // Wait for the new suggestions to show.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::OmniboxPopupRowWithString(@"abcdefghi")];
+}
+
+@end
+
 @interface HardwareKeyboardInteractionTestCase : ChromeTestCase
 @end
 
