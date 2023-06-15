@@ -101651,6 +101651,15 @@ would be helpful to identify which type is being sent.
   <int value="15" label="CACHE_GUID_DIFFERENT__BIRTHDAY_DIFFERENT"/>
 </enum>
 
+<enum name="SyncDownloadStatusWaitingForUpdatesReason">
+  <int value="0" label="Refresh tokens not loaded"/>
+  <int value="1" label="Sync engine not initialized"/>
+  <int value="2" label="Data type not active"/>
+  <int value="3" label="Invalidations are not initialized"/>
+  <int value="4" label="Incoming invalidation"/>
+  <int value="5" label="Poll request scheduled"/>
+</enum>
+
 <enum name="SyncedNotificationActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Notification clicked"/>

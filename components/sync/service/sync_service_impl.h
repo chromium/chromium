@@ -210,6 +210,9 @@ class SyncServiceImpl : public SyncService,
   // once (before this object is destroyed).
   void Shutdown() override;
 
+  // Records the reason if the `type` is waiting for updates to be downloaded.
+  void RecordReasonIfWaitingForUpdates(ModelType type);
+
   // Returns whether or not the underlying sync engine has made any
   // local changes to items that have not yet been synced with the
   // server.
@@ -271,7 +274,7 @@ class SyncServiceImpl : public SyncService,
   // Records UMA histograms related to download status during browser startup.
   class DownloadStatusRecorder : public SyncServiceObserver {
    public:
-    DownloadStatusRecorder(SyncService* sync_service,
+    DownloadStatusRecorder(SyncServiceImpl* sync_service,
                            base::OnceClosure on_finished_callback,
                            ModelTypeSet data_types_to_track);
     DownloadStatusRecorder(const DownloadStatusRecorder&) = delete;
@@ -285,7 +288,7 @@ class SyncServiceImpl : public SyncService,
    private:
     void OnTimeout();
 
-    raw_ptr<SyncService> sync_service_ = nullptr;
+    raw_ptr<SyncServiceImpl> sync_service_ = nullptr;
 
     // Set on browser startup to report metrics related to sync configuration.
     base::OneShotTimer startup_metrics_timer_;
@@ -393,6 +396,13 @@ class SyncServiceImpl : public SyncService,
 
   // Clean up download status recorder.
   void OnDownloadStatusRecorderFinished();
+
+  // Returns current download status for `type`. Records a histogram if the data
+  // type is waiting for updates and `record_waiting_for_updates_metrics` is set
+  // to true.
+  ModelTypeDownloadStatus GetDownloadStatusForImpl(
+      ModelType type,
+      bool record_waiting_for_updates_metrics) const;
 
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
