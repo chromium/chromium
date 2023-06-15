@@ -53,7 +53,6 @@ dependencies {
     compile 'androidx.leanback:leanback-preference:{{androidx_dependency_version}}'
     compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
-    compile 'androidx.media3:media3-common:1.0.2'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // This library version is hard-coded as it does not match the
@@ -87,6 +86,15 @@ dependencies {
     compile 'androidx.legacy:legacy-support-core-utils:1.0.0'
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
+
+    String media3Version = '1.0.2'
+    compile 'androidx.media3:media3-common:${media3Version}'
+    compile 'androidx.media3:media3-database:${media3Version}'
+    compile 'androidx.media3:media3-datasource:${media3Version}'
+    compile 'androidx.media3:media3-decoder:${media3Version}'
+    compile 'androidx.media3:media3-exoplayer:${media3Version}'
+    compile 'androidx.media3:media3-extractor:${media3Version}'
+    compile 'androidx.media3:media3-session:${media3Version}'
 
     compile 'androidx.multidex:multidex:2.0.0'
     compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'
