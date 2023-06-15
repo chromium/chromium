@@ -20,7 +20,7 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   explicit ServiceWorkerRouterEvaluator(blink::ServiceWorkerRouterRules rules);
   ~ServiceWorkerRouterEvaluator();
 
-  bool IsValid() { return is_valid_; }
+  bool IsValid() const { return is_valid_; }
 
   // Returns an empty list if nothing matched.
   std::vector<blink::ServiceWorkerRouterSource> Evaluate(

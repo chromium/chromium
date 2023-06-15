@@ -10,7 +10,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
-#include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,6 +19,8 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace content {
+
+class ServiceWorkerRouterEvaluator;
 
 namespace mojom {
 class ServiceWorkerContainerHost;
@@ -113,6 +114,10 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
     return fetch_handler_bypass_option_;
   }
 
+  const ServiceWorkerRouterEvaluator* router_evaluator() const {
+    return router_evaluator_.get();
+  }
+
  private:
   void SetControllerServiceWorker(
       mojo::PendingRemote<blink::mojom::ControllerServiceWorker> controller);
@@ -141,7 +146,7 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   blink::mojom::ServiceWorkerFetchHandlerBypassOption
       fetch_handler_bypass_option_ =
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
-  absl::optional<content::ServiceWorkerRouterEvaluator> router_evaluator_;
+  std::unique_ptr<ServiceWorkerRouterEvaluator> router_evaluator_;
 };
 
 }  // namespace content
