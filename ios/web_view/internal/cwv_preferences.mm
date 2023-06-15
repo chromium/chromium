@@ -4,13 +4,14 @@
 
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/translate/core/browser/translate_pref_names.h"
-#include "components/translate/core/browser/translate_prefs.h"
+#import "base/functional/bind.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/language/core/browser/pref_names.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/translate/core/browser/translate_pref_names.h"
+#import "components/translate/core/browser/translate_prefs.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,6 +90,14 @@
 
 - (BOOL)isSafeBrowsingEnabled {
   return safe_browsing::IsSafeBrowsingEnabled(*_prefService);
+}
+
+- (void)commitPendingWrite:(void (^)(void))completionHandler {
+  _prefService->CommitPendingWrite(base::BindOnce(^{
+    if (completionHandler) {
+      completionHandler();
+    }
+  }));
 }
 
 @end

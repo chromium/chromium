@@ -5,30 +5,42 @@
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 
 #import <Foundation/Foundation.h>
-#include <memory>
+#import <memory>
 
-#include "base/memory/scoped_refptr.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/in_memory_pref_store.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/pref_service_factory.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/translate/core/browser/translate_pref_names.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "base/base_paths.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/path_service.h"
+#import "base/run_loop.h"
+#import "base/test/ios/wait_util.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/json_pref_store.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/pref_service_factory.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/translate/core/browser/translate_pref_names.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+
 namespace ios_web_view {
 
 class CWVPreferencesTest : public PlatformTest {
  protected:
-  CWVPreferencesTest() {
+  // Creates a new pref service and optionally deletes the backing file for a
+  // clean slate.
+  std::unique_ptr<PrefService> CreateTestPrefService(bool delete_file = true) {
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
         new user_prefs::PrefRegistrySyncable;
     pref_registry->RegisterBooleanPref(
@@ -45,59 +57,107 @@ class CWVPreferencesTest : public PlatformTest {
     pref_registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
     pref_registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
 
-    scoped_refptr<PersistentPrefStore> pref_store = new InMemoryPrefStore();
+    base::FilePath temp_dir_path;
+    EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir_path));
+
+    base::FilePath temp_prefs_path = temp_dir_path.Append("TestPrefs");
+    if (delete_file) {
+      EXPECT_TRUE(base::DeleteFile(temp_prefs_path));
+    }
+
+    scoped_refptr<PersistentPrefStore> pref_store =
+        new JsonPrefStore(temp_prefs_path);
     PrefServiceFactory factory;
     factory.set_user_prefs(pref_store);
 
-    pref_service_ = factory.Create(pref_registry.get());
-    preferences_ =
-        [[CWVPreferences alloc] initWithPrefService:pref_service_.get()];
+    return factory.Create(pref_registry.get());
   }
 
-  std::unique_ptr<PrefService> pref_service_;
-  CWVPreferences* preferences_;
+  web::WebTaskEnvironment task_environment_;
 };
 
 // Tests CWVPreferences |profileAutofillEnabled|.
 TEST_F(CWVPreferencesTest, ProfileAutofillEnabled) {
-  EXPECT_TRUE(preferences_.profileAutofillEnabled);
-  preferences_.profileAutofillEnabled = NO;
-  EXPECT_FALSE(preferences_.profileAutofillEnabled);
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_TRUE(preferences.profileAutofillEnabled);
+  preferences.profileAutofillEnabled = NO;
+  EXPECT_FALSE(preferences.profileAutofillEnabled);
 }
 
 // Tests CWVPreferences |creditCardAutofillEnabled|.
 TEST_F(CWVPreferencesTest, CreditCardAutofillEnabled) {
-  EXPECT_TRUE(preferences_.creditCardAutofillEnabled);
-  preferences_.creditCardAutofillEnabled = NO;
-  EXPECT_FALSE(preferences_.creditCardAutofillEnabled);
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_TRUE(preferences.creditCardAutofillEnabled);
+  preferences.creditCardAutofillEnabled = NO;
+  EXPECT_FALSE(preferences.creditCardAutofillEnabled);
 }
 
 // Tests CWVPreferences |translationEnabled|.
 TEST_F(CWVPreferencesTest, TranslationEnabled) {
-  EXPECT_TRUE(preferences_.translationEnabled);
-  preferences_.translationEnabled = NO;
-  EXPECT_FALSE(preferences_.translationEnabled);
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_TRUE(preferences.translationEnabled);
+  preferences.translationEnabled = NO;
+  EXPECT_FALSE(preferences.translationEnabled);
 }
 
 // Tests CWVPreferences |passwordAutofillEnabled|.
 TEST_F(CWVPreferencesTest, PasswordAutofillEnabled) {
-  EXPECT_TRUE(preferences_.passwordAutofillEnabled);
-  preferences_.passwordAutofillEnabled = NO;
-  EXPECT_FALSE(preferences_.passwordAutofillEnabled);
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_TRUE(preferences.passwordAutofillEnabled);
+  preferences.passwordAutofillEnabled = NO;
+  EXPECT_FALSE(preferences.passwordAutofillEnabled);
 }
 
 // Tests CWVPreferences |passwordLeakCheckEnabled|.
 TEST_F(CWVPreferencesTest, PasswordLeakCheckEnabled) {
-  EXPECT_TRUE(preferences_.passwordLeakCheckEnabled);
-  preferences_.passwordLeakCheckEnabled = NO;
-  EXPECT_FALSE(preferences_.passwordLeakCheckEnabled);
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_TRUE(preferences.passwordLeakCheckEnabled);
+  preferences.passwordLeakCheckEnabled = NO;
+  EXPECT_FALSE(preferences.passwordLeakCheckEnabled);
 }
 
 // Tests safe browsing setting.
 TEST_F(CWVPreferencesTest, SafeBrowsingEnabled) {
-  EXPECT_TRUE(preferences_.safeBrowsingEnabled);
-  preferences_.safeBrowsingEnabled = NO;
-  EXPECT_FALSE(preferences_.safeBrowsingEnabled);
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_TRUE(preferences.safeBrowsingEnabled);
+  preferences.safeBrowsingEnabled = NO;
+  EXPECT_FALSE(preferences.safeBrowsingEnabled);
+}
+
+// Tests pending writes are committed to disk.
+TEST_F(CWVPreferencesTest, CommitPendingWrite) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+
+  EXPECT_TRUE(preferences.safeBrowsingEnabled);
+  preferences.safeBrowsingEnabled = NO;
+  EXPECT_FALSE(preferences.safeBrowsingEnabled);
+
+  __block BOOL commit_completion_was_called = NO;
+  [preferences commitPendingWrite:^{
+    commit_completion_was_called = YES;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return commit_completion_was_called;
+  }));
+
+  pref_service = CreateTestPrefService(/*delete_file=*/false);
+  preferences = [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.safeBrowsingEnabled);
 }
 
 }  // namespace ios_web_view

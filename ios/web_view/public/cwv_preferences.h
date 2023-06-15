@@ -64,6 +64,10 @@ CWV_EXPORT
 // incognito CWVWebViewConfiguration.
 - (void)resetTranslationSettings;
 
+// Immediately writes any changes in memory to disk.
+// `completionHandler` callback when writes are committed.
+- (void)commitPendingWrite:(void (^)(void))completionHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END
