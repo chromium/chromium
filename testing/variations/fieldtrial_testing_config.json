@@ -12494,6 +12494,32 @@
             ]
         }
     ],
+    "SidePanelCompanion": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Pinned_Clobber",
+                    "params": {
+                        "open-links-in-current-tab": "true"
+                    },
+                    "enable_features": [
+                        "SidePanelCompanion",
+                        "SidePanelCompanionDefaultPinned"
+                    ],
+                    "disable_features": [
+                        "SideSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelJourneys": [
         {
             "platforms": [
@@ -12511,115 +12537,6 @@
                     },
                     "enable_features": [
                         "SidePanelJourneys"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SideSearchDesktop": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SideSearchDesktop",
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchClearCacheWhenClosed",
-                        "SideSearchDSESupport"
-                    ]
-                },
-                {
-                    "name": "SideSearchDesktopWithIPH",
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchClearCacheWhenClosed",
-                        "SideSearchDSESupport"
-                    ]
-                },
-                {
-                    "name": "Enabled_Profile_1",
-                    "params": {
-                        "SideSearchPageActionLabelAnimationMaxCount": "1",
-                        "SideSearchPageActionLabelAnimationType": "Profile"
-                    },
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchDSESupport",
-                        "SideSearchPageActionLabelAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_Profile_3",
-                    "params": {
-                        "SideSearchPageActionLabelAnimationMaxCount": "3",
-                        "SideSearchPageActionLabelAnimationType": "Profile"
-                    },
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchDSESupport",
-                        "SideSearchPageActionLabelAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_Window_1",
-                    "params": {
-                        "SideSearchPageActionLabelAnimationMaxCount": "1",
-                        "SideSearchPageActionLabelAnimationType": "Window"
-                    },
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchDSESupport",
-                        "SideSearchPageActionLabelAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_Window_3",
-                    "params": {
-                        "SideSearchPageActionLabelAnimationMaxCount": "3",
-                        "SideSearchPageActionLabelAnimationType": "Window"
-                    },
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchDSESupport",
-                        "SideSearchPageActionLabelAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_Tab_1",
-                    "params": {
-                        "SideSearchPageActionLabelAnimationMaxCount": "1",
-                        "SideSearchPageActionLabelAnimationType": "Tab"
-                    },
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchDSESupport",
-                        "SideSearchPageActionLabelAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_Tab_3",
-                    "params": {
-                        "SideSearchPageActionLabelAnimationMaxCount": "3",
-                        "SideSearchPageActionLabelAnimationType": "Tab"
-                    },
-                    "enable_features": [
-                        "SidePanelImprovedClobbering",
-                        "SideSearch",
-                        "SideSearchDSESupport",
-                        "SideSearchPageActionLabelAnimation"
                     ]
                 }
             ]
