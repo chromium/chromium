@@ -7,12 +7,12 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 }  // namespace base
 
@@ -41,8 +41,9 @@ class AXInspectTestHelper {
       const base::FilePath::StringType& expectations_qualifier =
           FILE_PATH_LITERAL(""));
 
-  // Sets up a command line for the test.
-  void SetUpCommandLine(base::CommandLine*) const;
+  // Enable/disable features as needed.
+  void InitializeFeatureList();
+  void ResetFeatureList();
 
   // Parses a given testing scenario. Prepends default property filters if any
   // so the test file filters will take precedence over default filters in case
@@ -113,6 +114,7 @@ class AXInspectTestHelper {
       const std::vector<std::string>& expected_lines,
       const std::vector<std::string>& actual_lines);
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::string expectation_type_;
 };
 

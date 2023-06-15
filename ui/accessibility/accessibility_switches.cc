@@ -56,21 +56,6 @@ bool IsMagnifierDebugDrawRectEnabled() {
       ::switches::kEnableMagnifierDebugDrawRect);
 }
 
-#if BUILDFLAG(IS_WIN)
-// Enables UI Automation platform API in addition to the IAccessible API.
-const char kEnableExperimentalUIAutomation[] =
-    "enable-experimental-ui-automation";
-#endif
-
-bool IsExperimentalAccessibilityPlatformUIAEnabled() {
-#if BUILDFLAG(IS_WIN)
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableExperimentalUIAutomation);
-#else
-  return false;
-#endif
-}
-
 // Optionally disable AXMenuList, which makes the internal pop-up menu
 // UI for a select element directly accessible.
 const char kDisableAXMenuList[] = "disable-ax-menu-list";

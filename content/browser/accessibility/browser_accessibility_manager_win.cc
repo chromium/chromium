@@ -19,7 +19,7 @@
 #include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/public/common/content_switches.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
@@ -547,8 +547,9 @@ bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(
 void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     LONG uia_event,
     BrowserAccessibility* node) {
-  if (!::switches::IsExperimentalAccessibilityPlatformUIAEnabled())
+  if (!::features::IsUiaProviderEnabled()) {
     return;
+  }
   if (!ShouldFireEventForNode(node))
     return;
 
@@ -586,8 +587,9 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
 void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
     LONG uia_property,
     BrowserAccessibility* node) {
-  if (!::switches::IsExperimentalAccessibilityPlatformUIAEnabled())
+  if (!::features::IsUiaProviderEnabled()) {
     return;
+  }
   if (!ShouldFireEventForNode(node))
     return;
   // Suppress events when |IGNORED_CHANGED| with the exception for firing
@@ -616,8 +618,9 @@ void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
 void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
     StructureChangeType change_type,
     BrowserAccessibility* node) {
-  if (!::switches::IsExperimentalAccessibilityPlatformUIAEnabled())
+  if (!::features::IsUiaProviderEnabled()) {
     return;
+  }
   if (!ShouldFireEventForNode(node))
     return;
   // Suppress events when |IGNORED_CHANGED| except for related structure changes

@@ -629,8 +629,8 @@ class PDFExtensionAccessibilityTreeDumpTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionAccessibilityTest::SetUpCommandLine(command_line);
 
-    // Each test pass might require custom command-line setup
-    test_helper_.SetUpCommandLine(command_line);
+    // Each test pass might require custom feature setup
+    test_helper_.InitializeFeatureList();
   }
 
  protected:

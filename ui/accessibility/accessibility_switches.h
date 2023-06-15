@@ -32,13 +32,6 @@ IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
 // Returns true if experimental accessibility Switch Access text is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
 
-#if BUILDFLAG(IS_WIN)
-AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];
-#endif
-
-// Returns true if experimental support for UIAutomation is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityPlatformUIAEnabled();
-
 // Returns true if Switch Access point scanning is enabled.
 AX_BASE_EXPORT bool IsMagnifierDebugDrawRectEnabled();
 

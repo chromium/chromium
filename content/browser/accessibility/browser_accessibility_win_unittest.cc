@@ -27,7 +27,6 @@
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/base/win/atl_module.h"
@@ -3297,15 +3296,6 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
   EXPECT_EQ(2, n_relations);
   EXPECT_HRESULT_SUCCEEDED(ax_child2->GetCOM()->get_nRelations(&n_relations));
   EXPECT_EQ(2, n_relations);
-}
-
-TEST_F(BrowserAccessibilityWinTest, TestUIASwitch) {
-  EXPECT_FALSE(::switches::IsExperimentalAccessibilityPlatformUIAEnabled());
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalUIAutomation);
-
-  EXPECT_TRUE(::switches::IsExperimentalAccessibilityPlatformUIAEnabled());
 }
 
 }  // namespace content

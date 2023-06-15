@@ -98,6 +98,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kSelectiveUIAEnablement);
 // the accessibility system.
 AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);
+
+// Returns true if the browser's UIA provider should be used when requested by
+// an a11y client.
+AX_BASE_EXPORT bool IsUiaProviderEnabled();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

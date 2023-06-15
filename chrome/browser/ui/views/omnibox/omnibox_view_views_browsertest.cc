@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -42,7 +42,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -798,11 +798,8 @@ class OmniboxViewViewsUIATest : public OmniboxViewViewsTest {
  public:
   OmniboxViewViewsUIATest() {}
 
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    OmniboxViewViewsTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnableExperimentalUIAutomation);
-  }
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
 };
 
 // Omnibox fires the right events when the popup opens/closes with UIA turned
@@ -887,14 +884,10 @@ class OmniboxViewViewsIMETest : public OmniboxViewViewsTest {
   }
 
  protected:
-  // OmniboxViewViewsTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    OmniboxViewViewsTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnableExperimentalUIAutomation);
-  }
   OmniboxMockInputMethod* GetInputMethod() const { return input_method_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
   raw_ptr<OmniboxMockInputMethod, DanglingUntriaged> input_method_ = nullptr;
 };
 

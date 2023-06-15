@@ -131,6 +131,12 @@ BASE_FEATURE(kSelectiveUIAEnablement,
 bool IsSelectiveUIAEnablementEnabled() {
   return base::FeatureList::IsEnabled(::features::kSelectiveUIAEnablement);
 }
+
+BASE_FEATURE(kUiaProvider, "UiaProvider", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUiaProviderEnabled() {
+  return base::FeatureList::IsEnabled(kUiaProvider);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

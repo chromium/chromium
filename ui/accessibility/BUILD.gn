@@ -262,6 +262,7 @@ static_library("test_support") {
   public_deps = [
     ":accessibility",
     "//base",
+    "//base/test:test_support",
     "//third_party/abseil-cpp:absl",
   ]
 }

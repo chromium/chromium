@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
-#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
@@ -20,7 +19,6 @@
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 
 using base::win::ScopedVariant;
@@ -53,13 +51,6 @@ namespace content {
 
 class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
  protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableAccessibilityAriaVirtualContent);
-
-    ContentBrowserTest::SetUp();
-  }
-
   template <typename T>
   ComPtr<T> QueryInterfaceFromNode(
       BrowserAccessibility* browser_accessibility) {
@@ -181,7 +172,8 @@ class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kEnableAccessibilityAriaVirtualContent};
 };
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
@@ -224,13 +216,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
 }
 
 class AXPlatformNodeWinUIABrowserTest : public AXPlatformNodeWinBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AXPlatformNodeWinBrowserTest::SetUpCommandLine(command_line);
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableExperimentalUIAutomation);
-  }
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
 };
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
