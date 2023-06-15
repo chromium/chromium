@@ -230,19 +230,6 @@ OverviewSession* GetOverviewSession() {
              : nullptr;
 }
 
-// We don't want to show overview session on the other half of the screen if the
-// overview is empty.
-bool ShouldShowOverviewInClamshellOnWindowSnapped() {
-  auto window_list =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  base::EraseIf(window_list, window_util::ShouldExcludeForOverview);
-  return IsSnapGroupEnabledInClamshellMode() &&
-         Shell::Get()
-             ->snap_group_controller()
-             ->IsArm1AutomaticallyLockEnabled() &&
-         !window_list.empty();
-}
-
 void RemoveSnappingWindowFromOverviewIfApplicable(
     OverviewSession* overview_session,
     aura::Window* window) {
@@ -1747,8 +1734,7 @@ void SplitViewController::OpenOverviewOnTheOtherSideOfTheScreen(
   // position will not been observed in `OnOverviewModeStarting()`.
   default_snap_position_ = snap_position;
 
-  if (!IsInOverviewSession() && !DesksController::Get()->animation() &&
-      ShouldShowOverviewInClamshellOnWindowSnapped()) {
+  if (!IsInOverviewSession() && !DesksController::Get()->animation()) {
     Shell::Get()->snap_group_controller()->RemoveSnapGroupContainingWindow(
         primary_window_);
     split_view_divider_.reset();
@@ -2760,19 +2746,17 @@ void SplitViewController::OnWindowSnapped(
     }
   }
 
-  // Make sure overview is opened on the other side of the screen if there is
+  // Overview will be opened on the other side of the screen if there is
   // only one snapped window in split screen when in tablet mode or clamshell
-  // mode with feature flag `kSnapGroup` enabled and feature param
-  // `kAutomaticallyLockGroup` set to true.
-  if (!IsInOverviewSession() &&
+  // mode when `CanEnterOverview()` returns true, the check will happen in
+  // `OverviewController`.
+  if (!IsInOverviewSession() && !DesksController::Get()->animation() &&
       (split_view_type_ == SplitViewType::kTabletType ||
-       ShouldShowOverviewInClamshellOnWindowSnapped()) &&
+       IsSnapGroupEnabledInClamshellMode()) &&
       (state_ == State::kPrimarySnapped ||
        state_ == State::kSecondarySnapped)) {
-    if (!DesksController::Get()->animation()) {
-      Shell::Get()->overview_controller()->StartOverview(
-          OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);
-    }
+    Shell::Get()->overview_controller()->StartOverview(
+        OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);
     return;
   }
 

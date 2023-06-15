@@ -7,6 +7,8 @@
 #include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -96,6 +98,20 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
   }
 
   return window_to_snap_group_map_.find(window)->second;
+}
+
+bool SnapGroupController::CanEnterOverview() const {
+  // `SnapGroupController` is currently available for clamshell only, tablet
+  // mode check will not be handled here.
+  // TODO(michelefan): Get the `SplitViewController` for the actual root window
+  // instead of hard code it to be primary root window.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+      !SplitViewController::Get(Shell::GetPrimaryRootWindow())
+           ->InSplitViewMode()) {
+    return true;
+  }
+
+  return IsArm1AutomaticallyLockEnabled() && can_enter_overview_;
 }
 
 void SnapGroupController::AddObserver(Observer* observer) {

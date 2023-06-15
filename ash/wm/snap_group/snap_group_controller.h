@@ -65,6 +65,10 @@ class ASH_EXPORT SnapGroupController {
   // snap group or nullptr otherwise.
   SnapGroup* GetSnapGroupForGivenWindow(aura::Window* window);
 
+  // Used to decide whether showing overview on window snapped is allowed in
+  // clamshell with `kSnapGroup` arm1 enabled.
+  bool CanEnterOverview() const;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -81,6 +85,9 @@ class ASH_EXPORT SnapGroupController {
   const SnapGroups& snap_groups_for_testing() const { return snap_groups_; }
   const WindowToSnapGroupMap& window_to_snap_group_map_for_testing() const {
     return window_to_snap_group_map_;
+  }
+  void set_can_enter_overview_for_testing(bool can_enter_overview) {
+    can_enter_overview_ = can_enter_overview;
   }
 
  private:
@@ -99,6 +106,11 @@ class ASH_EXPORT SnapGroupController {
   WindowToSnapGroupMap window_to_snap_group_map_;
 
   base::ObserverList<Observer> observers_;
+
+  // If false, overview will not be allowed to show on the other side of the
+  // screen on one window snapped, which is an instant way to snap window when
+  // restoring the window snapped state.
+  bool can_enter_overview_ = true;
 };
 
 }  // namespace ash

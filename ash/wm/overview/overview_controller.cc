@@ -20,6 +20,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -469,12 +470,20 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
 }
 
 bool OverviewController::CanEnterOverview() {
-  // Prevent entering overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated())
+  if (!DesksController::Get()->CanEnterOverview()) {
     return false;
+  }
 
-  if (!DesksController::Get()->CanEnterOverview())
+  if (SnapGroupController* snap_group_controller =
+          Shell::Get()->snap_group_controller();
+      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
     return false;
+  }
+
+  // Prevent entering overview while the divider is dragged or animated.
+  if (IsSplitViewDividerDraggedOrAnimated()) {
+    return false;
+  }
 
   // Don't allow a window overview if the user session is not active (e.g.
   // locked or in user-adding screen) or a modal dialog is open or running in

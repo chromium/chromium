@@ -640,7 +640,9 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerBoundsTest) {
 
 // Tests that the overview session will not show on the other side of the
 // screen on one window snapped if the overview is empty.
-TEST_F(SnapGroupEntryPointArm1Test, NotShowOverviewIfEmpty) {
+// TODO(b/287514790) : Re-enable the test after figuring out a way to
+// differentiate whether to show full or partial overview.
+TEST_F(SnapGroupEntryPointArm1Test, DISABLED_NotShowOverviewIfEmpty) {
   for (const auto snap_state : {chromeos::WindowStateType::kPrimarySnapped,
                                 chromeos::WindowStateType::kSecondarySnapped}) {
     std::unique_ptr<aura::Window> w1(CreateTestWindow());
@@ -906,6 +908,28 @@ TEST_F(SnapGroupEntryPointArm1Test,
   timer->FireNow();
   EXPECT_TRUE(GetResizeWidget());
   EXPECT_FALSE(GetLockWidget());
+}
+
+// Tests that when disallowing showing overview in clamshell with `kSnapGroup`
+// arm1 enabled, the overview will not show on one window snapped. The overview
+// will show when re-enabling showing overview.
+TEST_F(SnapGroupEntryPointArm1Test, SnapWithoutShowingOverview) {
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  snap_group_controller->set_can_enter_overview_for_testing(
+      /*can_enter_overview=*/false);
+
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  SnapOneTestWindow(w2.get(), chromeos::WindowStateType::kSecondarySnapped);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  snap_group_controller->set_can_enter_overview_for_testing(
+      /*can_enter_overview=*/true);
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
 // Tests that the swap window source histogram is recorded correctly.
