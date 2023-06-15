@@ -2196,12 +2196,6 @@ crbug.com/619978 fast/css/giant-stylesheet-crash.html [ Crash Failure Pass Timeo
 
 crbug.com/399507 virtual/threaded/http/tests/devtools/tracing/timeline-paint/layer-tree.js [ Failure Pass Timeout ]
 
-# These tests have test harness errors and PASS lines that have a
-# non-deterministic order.
-crbug.com/705125 [ Mac13-arm64 ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
-crbug.com/705125 [ Mac11-arm64 Release ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
-crbug.com/705125 [ Mac12-arm64 Release ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
-
 # Working on getting the CSP tests going:
 
 # These tests will be added back soon:
