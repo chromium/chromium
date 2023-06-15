@@ -11,3 +11,9 @@ source_set("features") {
   deps = [ "//ui/base" ]
   public_deps = [ "//base" ]
 }
+
+source_set("system_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "system_flags.h" ]
+  deps = [ "//ios/chrome/browser/flags:system_flags" ]
+}

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/feature_list.h"
+#include <string>
 
 // This file can be empty. Its purpose is to contain the flags living in the
 // System Settings, used for testing/debugging. No base::Feature (or check for
