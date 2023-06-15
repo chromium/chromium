@@ -27,6 +27,7 @@ constexpr char kPriority[] = "priority";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 constexpr char kDeviceKey[] = "device";
 constexpr char kBrowserKey[] = "browser";
+constexpr char kRequestId[] = "requestId";
 
 // Generate new backoff entry.
 std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(
@@ -317,7 +318,7 @@ std::set<std::string>
 EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
   static std::set<std::string> kTopLevelKeyAllowList{
       kEncryptedRecordListKey, kAttachEncryptionSettingsKey, kDeviceKey,
-      kBrowserKey};
+      kBrowserKey, kRequestId};
   return kTopLevelKeyAllowList;
 }
 

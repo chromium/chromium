@@ -753,4 +753,35 @@ TEST_F(EncryptedReportingJobConfigurationTest, UmaName) {
 
   EXPECT_EQ(configuration.GetUmaName(), "Browser.ERP.UploadEncryptedReport");
 }
+
+TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
+  static constexpr char kDeviceKey[] = "device";
+  static constexpr char kBrowserKey[] = "browser";
+  static constexpr char kRequestId[] = "requestId";
+  static constexpr char kInvalidKey[] = "invalid";
+
+  base::Value::Dict request;
+  request.Set(kEncryptedRecordListKey, base::Value::List());
+  request.Set(kAttachEncryptionSettingsKey, true);
+  request.Set(kDeviceKey, base::Value::Dict());
+  request.Set(kBrowserKey, base::Value::Dict());
+  request.Set(kInvalidKey, base::Value::Dict());
+  request.Set(kRequestId, "request-id");
+
+  EncryptedReportingJobConfiguration configuration(
+      shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
+      kServerUrl, std::move(request), &client_, base::DoNothing());
+
+  absl::optional<base::Value> payload =
+      base::JSONReader::Read(configuration.GetPayload());
+
+  ASSERT_TRUE(payload);
+  ASSERT_TRUE(payload->is_dict());
+  EXPECT_TRUE(payload->GetDict().FindList(kEncryptedRecordListKey));
+  EXPECT_TRUE(payload->GetDict().FindBool(kAttachEncryptionSettingsKey));
+  EXPECT_TRUE(payload->GetDict().FindDict(kDeviceKey));
+  EXPECT_TRUE(payload->GetDict().FindDict(kBrowserKey));
+  EXPECT_FALSE(payload->GetDict().FindDict(kInvalidKey));
+  EXPECT_TRUE(payload->GetDict().FindString(kRequestId));
+}
 }  // namespace policy
