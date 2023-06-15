@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -22,6 +23,8 @@ class GM2TabStyle : public TabStyle {
   ~GM2TabStyle() override = default;
   int GetStandardWidth() const override;
   int GetPinnedWidth() const override;
+  int GetMinimumActiveWidth() const override;
+  int GetMinimumInactiveWidth() const override;
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
   int GetDragHandleExtension(int height) const override;
@@ -53,6 +56,40 @@ int GM2TabStyle::GetStandardWidth() const {
 int GM2TabStyle::GetPinnedWidth() const {
   constexpr int kTabPinnedContentWidth = 24;
   return kTabPinnedContentWidth + GetContentsHorizontalInsetSize() * 2;
+}
+
+int GM2TabStyle::GetMinimumActiveWidth() const {
+  const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+  const int min_active_width =
+      close_button_size + GetContentsHorizontalInsetSize() * 2;
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    return std::max(
+        min_active_width,
+        base::GetFieldTrialParamByFeatureAsInt(
+            features::kScrollableTabStrip,
+            features::kMinimumTabWidthFeatureParameterName, min_active_width));
+  }
+  return min_active_width;
+}
+
+int GM2TabStyle::GetMinimumInactiveWidth() const {
+  // Allow tabs to shrink until they appear to be 16 DIP wide excluding
+  // outer corners.
+  constexpr int kInteriorWidth = 16;
+  // The overlap contains the trailing separator that is part of the interior
+  // width; avoid double-counting it.
+  int min_inactive_width =
+      kInteriorWidth - GetSeparatorSize().width() + GetTabOverlap();
+
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    return std::max(min_inactive_width,
+                    base::GetFieldTrialParamByFeatureAsInt(
+                        features::kScrollableTabStrip,
+                        features::kMinimumTabWidthFeatureParameterName,
+                        min_inactive_width));
+  }
+
+  return min_inactive_width;
 }
 
 int GM2TabStyle::GetTabOverlap() const {

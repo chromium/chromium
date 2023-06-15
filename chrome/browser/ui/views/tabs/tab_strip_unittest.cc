@@ -422,10 +422,8 @@ TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {
 
   SetMaxTabStripWidth(50);
 
-  EXPECT_EQ(TabStyleViews::Create()->GetMinimumActiveWidth(),
-            GetActiveTabWidth());
-  EXPECT_EQ(TabStyleViews::Create()->GetMinimumInactiveWidth(),
-            GetInactiveTabWidth());
+  EXPECT_EQ(TabStyle::Get()->GetMinimumActiveWidth(), GetActiveTabWidth());
+  EXPECT_EQ(TabStyle::Get()->GetMinimumInactiveWidth(), GetInactiveTabWidth());
 }
 
 // The active tab should always be at least as wide as its minimum width.
@@ -437,8 +435,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   SetMaxTabStripWidth(400);
 
   // Create a lot of tabs in order to make inactive tabs tiny.
-  const int min_inactive_width =
-      TabStyleViews::Create()->GetMinimumInactiveWidth();
+  const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
   while (GetInactiveTabWidth() != min_inactive_width) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
@@ -457,7 +454,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   while (tab_strip_->GetTabCount() > 0) {
     active_index = tab_strip_->GetActiveIndex().value();
     EXPECT_GE(tab_strip_->tab_at(active_index)->bounds().width(),
-              TabStyleViews::Create()->GetMinimumActiveWidth());
+              TabStyle::Get()->GetMinimumActiveWidth());
     tab_strip_->CloseTab(tab_strip_->tab_at(active_index),
                          CLOSE_TAB_FROM_MOUSE);
     CompleteAnimationAndLayout();
@@ -471,9 +468,8 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
 
   // Create a lot of tabs in order to make inactive tabs smaller than active
   // tab but not the minimum.
-  const int min_inactive_width =
-      TabStyleViews::Create()->GetMinimumInactiveWidth();
-  const int min_active_width = TabStyleViews::Create()->GetMinimumActiveWidth();
+  const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
+  const int min_active_width = TabStyle::Get()->GetMinimumActiveWidth();
   while (GetInactiveTabWidth() >= (min_inactive_width + min_active_width) / 2) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
@@ -501,14 +497,13 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   SetMaxTabStripWidth(200);
 
   // Create a lot of tabs in order to make inactive tabs tiny.
-  const int min_inactive_width =
-      TabStyleViews::Create()->GetMinimumInactiveWidth();
+  const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
   while (GetInactiveTabWidth() != min_inactive_width) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
   }
 
-  const int min_active_width = TabStyleViews::Create()->GetMinimumActiveWidth();
+  const int min_active_width = TabStyle::Get()->GetMinimumActiveWidth();
 
   int dragged_tab_index = tab_strip_->GetActiveIndex().value();
   ASSERT_GE(tab_strip_->tab_at(dragged_tab_index)->bounds().width(),

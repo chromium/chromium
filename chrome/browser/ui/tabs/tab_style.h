@@ -109,6 +109,14 @@ class TabStyle {
   // Returns the width for pinned tabs. Pinned tabs always have this width.
   virtual int GetPinnedWidth() const = 0;
 
+  // Returns the minimum possible width of an active Tab. Active tabs must
+  // always show a close button, and thus have a larger minimum size than
+  // inactive tabs.
+  virtual int GetMinimumActiveWidth() const = 0;
+
+  // Returns the minimum possible width of a single inactive Tab.
+  virtual int GetMinimumInactiveWidth() const = 0;
+
   // Returns the overlap between adjacent tabs.
   virtual int GetTabOverlap() const = 0;
 

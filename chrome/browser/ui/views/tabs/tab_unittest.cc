@@ -14,6 +14,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
@@ -354,8 +355,8 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         } else {
           width = tab->tab_style()->GetStandardWidth();
           min_width = is_active_tab
-                          ? tab->tab_style_views()->GetMinimumActiveWidth()
-                          : tab->tab_style_views()->GetMinimumInactiveWidth();
+                          ? TabStyle::Get()->GetMinimumActiveWidth()
+                          : TabStyle::Get()->GetMinimumInactiveWidth();
         }
         const int height = GetLayoutConstant(TAB_HEIGHT);
         for (; width >= min_width; --width) {

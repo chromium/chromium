@@ -34,7 +34,6 @@ class TabStyleViews {
   // Factory function allows to experiment with different variations on tab
   // style at runtime or via flag.
   static std::unique_ptr<TabStyleViews> CreateForTab(Tab* tab);
-  static std::unique_ptr<TabStyleViews> Create();
 
   TabStyleViews();
   virtual ~TabStyleViews();
@@ -81,14 +80,6 @@ class TabStyleViews {
 
   // Returns the progress (0 to 1) of the hover animation.
   virtual double GetHoverAnimationValue() const = 0;
-
-  // Returns the minimum possible width of a selected Tab. Selected tabs must
-  // always show a close button, and thus have a larger minimum size than
-  // unselected tabs.
-  int GetMinimumActiveWidth() const;
-
-  // Returns the minimum possible width of a single unselected Tab.
-  int GetMinimumInactiveWidth() const;
 
   const TabStyle* tab_style() const { return tab_style_; }
 

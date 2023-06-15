@@ -195,7 +195,7 @@ Tab::Tab(TabSlotController* controller)
       title_animation_(this) {
   DCHECK(controller);
 
-  tab_style_views_ = TabStyleViews::Create()->CreateForTab(this);
+  tab_style_views_ = TabStyleViews::CreateForTab(this);
 
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
@@ -337,7 +337,7 @@ void Tab::Layout() {
     // for touch events.
     // TODO(pkasting): The padding should maybe be removed, see comments in
     // TabCloseButton::TargetForRect().
-    const int close_button_size = TabCloseButton::GetGlyphSize();
+    const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
     const int top =
         contents_rect.y() + Center(contents_rect.height(), close_button_size);
     // Clamp the close button position to "centered within the tab"; this should
@@ -724,9 +724,8 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 }
 
 TabSizeInfo Tab::GetTabSizeInfo() const {
-  return {tab_style()->GetPinnedWidth(),
-          tab_style_views()->GetMinimumActiveWidth(),
-          tab_style_views()->GetMinimumInactiveWidth(),
+  return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
+          tab_style()->GetMinimumInactiveWidth(),
           tab_style()->GetStandardWidth()};
 }
 

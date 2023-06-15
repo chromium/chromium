@@ -84,6 +84,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 16;
     case TAB_ALERT_INDICATOR_ICON_WIDTH:
       return touch_ui ? 12 : 16;
+    case TAB_CLOSE_BUTTON_SIZE:
+      return touch_ui ? 24 : 16;
     case TAB_HEIGHT:
       return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
     case TAB_SEPARATOR_HEIGHT:

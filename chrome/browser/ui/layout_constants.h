@@ -93,6 +93,9 @@ enum LayoutConstant {
   // used for all 3 states of normal, hovered and pressed.
   TAB_ALERT_INDICATOR_ICON_WIDTH,
 
+  // Width and height of the tab close button.
+  TAB_CLOSE_BUTTON_SIZE,
+
   // The height of a tab, including outer strokes.  In non-100% scales this is
   // slightly larger than the apparent height of the tab, as the top stroke is
   // drawn as a 1-px line flush with the bottom of the tab's topmost DIP.

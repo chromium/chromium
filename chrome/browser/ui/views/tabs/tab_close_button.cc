@@ -34,12 +34,6 @@
 #include "ui/aura/env.h"
 #endif
 
-namespace {
-constexpr int kGlyphSize = 16;
-constexpr int kTouchGlyphSize = 24;
-
-}  //  namespace
-
 TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
                                MouseEventCallback mouse_event_callback)
     : views::ImageButton(std::move(pressed_callback)),
@@ -82,13 +76,7 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
 }
 
-TabCloseButton::~TabCloseButton() {}
-
-// static
-int TabCloseButton::GetGlyphSize() {
-  return ui::TouchUiController::Get()->touch_ui() ? kTouchGlyphSize
-                                                  : kGlyphSize;
-}
+TabCloseButton::~TabCloseButton() = default;
 
 TabStyle::TabColors TabCloseButton::GetColors() const {
   return colors_;
@@ -150,15 +138,15 @@ gfx::Insets TabCloseButton::GetInsets() const {
 }
 
 gfx::Size TabCloseButton::CalculatePreferredSize() const {
-  const int glyph_size = GetGlyphSize();
-  return gfx::Size(glyph_size, glyph_size) + GetInsets().size();
+  const int size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+  return gfx::Size(size, size) + GetInsets().size();
 }
 
 void TabCloseButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   constexpr float kStrokeWidth = 1.5f;
-  float touch_scale = static_cast<float>(GetGlyphSize()) / kGlyphSize;
-  float size = (kGlyphSize - 8) * touch_scale - kStrokeWidth;
+  const float size =
+      (GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE) / 2) - kStrokeWidth;
   gfx::RectF glyph_bounds(GetContentsBounds());
   glyph_bounds.ClampToCenteredSize(gfx::SizeF(size, size));
   flags.setAntiAlias(true);
