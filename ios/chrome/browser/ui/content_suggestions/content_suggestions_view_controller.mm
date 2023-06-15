@@ -989,7 +989,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   NSUInteger moduleCount = [_magicStackModuleOrder count];
   // Find closest page to the current scroll offset.
   CGFloat closestPage = roundf(offset / moduleWidth);
-  closestPage = fminf(closestPage, moduleCount);
+  closestPage = fminf(closestPage, moduleCount - 1);
   return (ContentSuggestionsModuleType)[_magicStackModuleOrder[(
       NSUInteger)closestPage] intValue];
 }
