@@ -228,6 +228,7 @@
 #include "chrome/browser/content_creation/notes/internal/note_service_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
+#include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
@@ -971,6 +972,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   SCTReportingServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
+  search_resumption_module::StartSuggestServiceFactory::GetInstance();
   SearchPermissionsService::Factory::GetInstance();
 #endif
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
