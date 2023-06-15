@@ -1125,8 +1125,10 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     // devices), there are driver limitations on the minimum size of a buffer.
     // Thus, we set the initial size to 64x64 here instead of 1x1.
     gfx::Size initial_size(
-        std::max(64, attrib_helper.offscreen_framebuffer_size.width()),
-        std::max(64, attrib_helper.offscreen_framebuffer_size.height()));
+        std::max(64,
+                 attrib_helper.offscreen_framebuffer_size_for_testing.width()),
+        std::max(
+            64, attrib_helper.offscreen_framebuffer_size_for_testing.height()));
     if (!emulated_back_buffer_->Resize(initial_size)) {
       bool was_lost = CheckResetStatus();
       Destroy(true);
@@ -1153,8 +1155,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     // Bind the emulated default framebuffer and initialize the viewport
     api()->glBindFramebufferEXTFn(
         GL_FRAMEBUFFER, emulated_back_buffer_->framebuffer_service_id);
-    api()->glViewportFn(0, 0, attrib_helper.offscreen_framebuffer_size.width(),
-                        attrib_helper.offscreen_framebuffer_size.height());
+    api()->glViewportFn(0, 0, initial_size.width(), initial_size.height());
   }
 
   // Initialize the tracked scissor and viewport state and then apply the

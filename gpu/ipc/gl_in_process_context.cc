@@ -58,8 +58,6 @@ ContextResult GLInProcessContext::Initialize(
     const ContextCreationAttribs& attribs,
     const SharedMemoryLimits& mem_limits) {
   DCHECK(base::SingleThreadTaskRunner::GetCurrentDefault());
-  DCHECK_GE(attribs.offscreen_framebuffer_size.width(), 0);
-  DCHECK_GE(attribs.offscreen_framebuffer_size.height(), 0);
 
   command_buffer_ = std::make_unique<InProcessCommandBuffer>(
       task_executor, GURL("chrome://gpu/GLInProcessContext::Initialize"));

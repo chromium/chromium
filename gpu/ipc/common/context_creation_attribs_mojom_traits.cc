@@ -13,8 +13,7 @@ bool StructTraits<gpu::mojom::ContextCreationAttribsDataView,
                   gpu::ContextCreationAttribs>::
     Read(gpu::mojom::ContextCreationAttribsDataView data,
          gpu::ContextCreationAttribs* out) {
-  if (!data.ReadOffscreenFramebufferSize(&out->offscreen_framebuffer_size) ||
-      !data.ReadGpuPreference(&out->gpu_preference) ||
+  if (!data.ReadGpuPreference(&out->gpu_preference) ||
       !data.ReadContextType(&out->context_type) ||
       !data.ReadColorSpace(&out->color_space)) {
     return false;

@@ -98,11 +98,6 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
 template <>
 struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
                                gpu::ContextCreationAttribs> {
-  static gfx::Size offscreen_framebuffer_size(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.offscreen_framebuffer_size;
-  }
-
   static gl::GpuPreference gpu_preference(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.gpu_preference;

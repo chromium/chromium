@@ -1002,8 +1002,6 @@ struct FuzzTraits<gpu::CommandBufferNamespace> {
 template <>
 struct FuzzTraits<gpu::ContextCreationAttribs> {
   static bool Fuzz(gpu::ContextCreationAttribs* p, Fuzzer* fuzzer) {
-    if (!FuzzParam(&p->offscreen_framebuffer_size, fuzzer))
-      return false;
     if (!FuzzParam(&p->gpu_preference, fuzzer))
       return false;
     if (!FuzzParam(&p->context_type, fuzzer))

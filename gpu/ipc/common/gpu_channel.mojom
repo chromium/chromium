@@ -50,7 +50,6 @@ enum SchedulingPriority {
 
 // Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
 struct ContextCreationAttribs {
-  gfx.mojom.Size offscreen_framebuffer_size;
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
   // -1 if invalid or unspecified.

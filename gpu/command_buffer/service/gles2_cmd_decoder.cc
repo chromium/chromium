@@ -3281,7 +3281,8 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         std::min(renderbuffer_manager()->max_renderbuffer_size(),
                  texture_manager()->MaxSizeForTarget(GL_TEXTURE_2D));
 
-    gfx::Size initial_size = attrib_helper.offscreen_framebuffer_size;
+    gfx::Size initial_size =
+        attrib_helper.offscreen_framebuffer_size_for_testing;
     if (initial_size.IsEmpty()) {
       // If we're an offscreen surface with zero width and/or height, set to a
       // non-zero size so that we have a complete framebuffer for operations

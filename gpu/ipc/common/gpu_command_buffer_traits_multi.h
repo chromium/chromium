@@ -155,7 +155,6 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::CommandBuffer::State)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gpu::ContextCreationAttribs)
-  IPC_STRUCT_TRAITS_MEMBER(offscreen_framebuffer_size)
   IPC_STRUCT_TRAITS_MEMBER(gpu_preference)
 #if BUILDFLAG(IS_ANDROID)
   IPC_STRUCT_TRAITS_MEMBER(alpha_size)
