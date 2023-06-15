@@ -60451,6 +60451,7 @@ from previous Chrome versions.
   <int value="-1348040371" label="ScanAppStickySettings:disabled"/>
   <int value="-1346817340" label="EarlyBodyLoad:disabled"/>
   <int value="-1346722635" label="gesture-selection"/>
+  <int value="-1346261029" label="PageInfoAboutThisSiteMoreLangs:disabled"/>
   <int value="-1345931804" label="TabbedAppOverflowMenuIcons:disabled"/>
   <int value="-1345471133" label="JourneysOmniboxAction:enabled"/>
   <int value="-1344775211"
@@ -64886,6 +64887,7 @@ from previous Chrome versions.
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
+  <int value="982805190" label="PageInfoAboutThisSiteMoreLangs:enabled"/>
   <int value="982932009" label="WebContentsCaptureHiDPI:disabled"/>
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>

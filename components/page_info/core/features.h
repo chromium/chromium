@@ -29,9 +29,9 @@ extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale);
 
 // Controls the feature for English and other languages that are enabled by
 // default. Use IsAboutThisSiteFeatureEnabled() to check a specific language.
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteEn);
+BASE_DECLARE_FEATURE(kPageInfoAboutThisSite);
 // Controls the feature for languages that are not enabled by default yet.
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteNonEn);
+BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreLangs);
 
 // Whether we show hard-coded content for some sites like https://example.com.
 extern const base::FeatureParam<bool> kShowSampleContent;

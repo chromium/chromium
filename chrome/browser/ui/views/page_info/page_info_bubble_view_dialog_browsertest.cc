@@ -472,8 +472,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
   PageInfoBubbleViewAboutThisSiteDialogBrowserTest() {
     // TODO(crbug.com/1344787): Clean up when PageSpecificSiteDataDialog is
     // launched.
-    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSiteEn,
-                                    page_info::kPageInfoAboutThisSiteNonEn},
+    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSiteMoreLangs},
                                    {page_info::kPageSpecificSiteDataDialog,
                                     page_info::kPageInfoCookiesSubpage});
   }

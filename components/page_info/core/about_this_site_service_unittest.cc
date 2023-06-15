@@ -134,24 +134,16 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
 
 // Tests the language specific feature check.
 TEST_F(AboutThisSiteServiceTest, FeatureCheck) {
-  const char* enabled[]{"en-US", "en-UK", "en"};
+  const char* enabled[]{"en-US", "en-UK", "en",    "pt",    "pt-BR",
+                        "pt-PT", "fr",    "fr-CA", "it",    "nl",
+                        "de",    "de-DE", "es",    "es-419"};
   const char* disabled[]{"da", "id", "zh-TW", "ja"};
-  const char* enabled_on_android[]{"pt", "pt-BR", "pt-PT", "fr", "fr-CA", "it",
-                                   "nl", "de",    "de-DE", "es", "es-419"};
 
   for (const char* lang : enabled) {
     EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled(lang));
   }
   for (const char* lang : disabled) {
     EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled(lang));
-  }
-
-  for (const char* lang : enabled_on_android) {
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled(lang));
-#else
-    EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled(lang));
-#endif
   }
 }
 

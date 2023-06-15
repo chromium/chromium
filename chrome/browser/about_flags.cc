@@ -8003,7 +8003,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageInfoAboutThisSiteNonEnName,
      flag_descriptions::kPageInfoAboutThisSiteNonEnDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteNonEn)},
+     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreLangs)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"page-info-about-this-page-persistent-side-panel-entry",

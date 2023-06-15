@@ -915,8 +915,7 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
   virtual void InitFeatureList() {
     feature_list_.InitWithFeatures(
         {
-            page_info::kPageInfoAboutThisSiteEn,
-            page_info::kPageInfoAboutThisSiteNonEn,
+            page_info::kPageInfoAboutThisSiteMoreLangs,
         },
         {});
   }

@@ -71,8 +71,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for PageInfoAboutThisSite.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-        ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN})
+@Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
@@ -221,11 +220,8 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN})
     @Features.DisableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET)
-    public void
-    testAboutThisSiteOpensEphemeralTab() throws Exception {
+    public void testAboutThisSiteOpensEphemeralTab() throws Exception {
         mockResponse(createDescription());
         openPageInfo();
 
@@ -241,11 +237,9 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET})
-    public void
-    testAboutThisSiteOpensEphemeralTabWithImprovedBottomSheetEnabled() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET})
+    public void testAboutThisSiteOpensEphemeralTabWithImprovedBottomSheetEnabled()
+            throws Exception {
         mockResponse(createDescription());
         openPageInfo();
 
@@ -263,10 +257,7 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN})
-    public void
-    testAboutThisSiteWithoutDescription() throws Exception {
+    public void testAboutThisSiteWithoutDescription() throws Exception {
         mockResponse(createDescription().clearDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
