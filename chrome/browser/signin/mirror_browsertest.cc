@@ -119,7 +119,7 @@ class MirrorBrowserTest : public InProcessBrowserTest {
     auto web_auth_flow = std::make_unique<extensions::WebAuthFlow>(
         nullptr, browser()->profile(),
         https_server.GetURL("google.com", kAuthPath),
-        extensions::WebAuthFlow::INTERACTIVE, partition);
+        extensions::WebAuthFlow::INTERACTIVE, partition, /*user_gesture=*/true);
 
     web_auth_flow->Start();
     run_loop.Run();

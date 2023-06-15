@@ -86,7 +86,8 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
 
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
         &mock_web_auth_flow_delegate_, profile, url, mode, partition,
-        abort_on_load_for_non_interactive, timeout_for_non_interactive);
+        /*user_gesture=*/true, abort_on_load_for_non_interactive,
+        timeout_for_non_interactive);
 
     timeout_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     web_auth_flow_->SetClockForTesting(timeout_task_runner_->GetMockTickClock(),

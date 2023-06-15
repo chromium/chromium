@@ -110,6 +110,7 @@ class WebAuthFlow : public content::WebContentsObserver,
               const GURL& provider_url,
               Mode mode,
               Partition partition,
+              bool user_gesture,
               AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
               absl::optional<base::TimeDelta> timeout_for_non_interactive =
                   absl::nullopt);
@@ -189,6 +190,7 @@ class WebAuthFlow : public content::WebContentsObserver,
   const GURL provider_url_;
   const Mode mode_;
   const Partition partition_;
+  const bool user_gesture_;
 
   // Variables used only if displaying the auth flow in an app window.
   raw_ptr<AppWindow> app_window_ = nullptr;

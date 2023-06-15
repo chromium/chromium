@@ -33,7 +33,8 @@ class FakeWebAuthFlowWithWindowKey : public WebAuthFlow {
                     nullptr,
                     GURL(),
                     WebAuthFlow::INTERACTIVE,
-                    WebAuthFlow::GET_AUTH_TOKEN),
+                    WebAuthFlow::GET_AUTH_TOKEN,
+                    /*user_gesture=*/true),
         fake_window_key_(window_key) {}
 
   ~FakeWebAuthFlowWithWindowKey() override = default;
@@ -54,7 +55,11 @@ class TestGaiaRemoteConsentFlow : public GaiaRemoteConsentFlow {
                             const ExtensionTokenKey& token_key,
                             const RemoteConsentResolutionData& resolution_data,
                             const std::string& window_key)
-      : GaiaRemoteConsentFlow(delegate, nullptr, token_key, resolution_data),
+      : GaiaRemoteConsentFlow(delegate,
+                              nullptr,
+                              token_key,
+                              resolution_data,
+                              /*user_gesture=*/true),
         window_key_(window_key) {
     SetWebAuthFlowForTesting(
         std::make_unique<FakeWebAuthFlowWithWindowKey>(this, window_key_));

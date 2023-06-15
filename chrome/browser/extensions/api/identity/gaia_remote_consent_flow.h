@@ -54,7 +54,8 @@ class GaiaRemoteConsentFlow
   GaiaRemoteConsentFlow(Delegate* delegate,
                         Profile* profile,
                         const ExtensionTokenKey& token_key,
-                        const RemoteConsentResolutionData& resolution_data);
+                        const RemoteConsentResolutionData& resolution_data,
+                        bool user_gesture);
   ~GaiaRemoteConsentFlow() override;
 
   GaiaRemoteConsentFlow(const GaiaRemoteConsentFlow& other) = delete;
@@ -104,10 +105,10 @@ class GaiaRemoteConsentFlow
 
   content::StoragePartition* GetStoragePartition();
 
-  raw_ptr<Delegate> delegate_;
-  raw_ptr<Profile> profile_;
-  CoreAccountId account_id_;
-  RemoteConsentResolutionData resolution_data_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<Profile> profile_;
+  const RemoteConsentResolutionData resolution_data_;
+  const bool user_gesture_;
 
   std::unique_ptr<WebAuthFlow> web_flow_;
   bool web_flow_started_;

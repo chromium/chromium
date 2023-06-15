@@ -108,6 +108,7 @@ WebAuthFlow::WebAuthFlow(
     const GURL& provider_url,
     Mode mode,
     Partition partition,
+    bool user_gesture,
     AbortOnLoad abort_on_load_for_non_interactive,
     absl::optional<base::TimeDelta> timeout_for_non_interactive)
     : delegate_(delegate),
@@ -115,6 +116,7 @@ WebAuthFlow::WebAuthFlow(
       provider_url_(provider_url),
       mode_(mode),
       partition_(partition),
+      user_gesture_(user_gesture),
       abort_on_load_for_non_interactive_(abort_on_load_for_non_interactive),
       timeout_for_non_interactive_(timeout_for_non_interactive),
       non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()) {
@@ -301,7 +303,7 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   }
 
   Browser::CreateParams browser_params(Browser::TYPE_POPUP, profile_,
-                                       /*user_gesture=*/true);
+                                       user_gesture_);
   browser_params.omit_from_session_restore = true;
   browser_params.should_trigger_session_restore = false;
 
