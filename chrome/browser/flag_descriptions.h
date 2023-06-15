@@ -3779,6 +3779,9 @@ extern const char kSystemJapanesePhysicalTypingDescription[];
 extern const char kSystemLiveCaptionName[];
 extern const char kSystemLiveCaptionDescription[];
 
+extern const char kSystemNudgeV2Name[];
+extern const char kSystemNudgeV2Description[];
+
 extern const char kCaptivePortalErrorPageName[];
 extern const char kCaptivePortalErrorPageDescription[];
 

@@ -7387,6 +7387,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "system-nudge-v2",
+    "owners": [
+      "kradtke",
+      "cros-status-area-eng@google.com"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "tab-drag-drop",
     "owners": [ "ranjithkagathi@google.com", "gurmeetk@google.com" ],
     "expiry_milestone": 122

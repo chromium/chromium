@@ -6596,6 +6596,10 @@ const char kSystemLiveCaptionDescription[] =
     "Enables the live caption feature for non-Chrome (e.g. Android, linux) "
     "audio.";
 
+const char kSystemNudgeV2Name[] = "New System Nudges";
+const char kSystemNudgeV2Description[] =
+    "Enables the use of the new System Nudges";
+
 const char kCaptivePortalErrorPageName[] =
     "Enables Captive Portal error page suggestions.";
 const char kCaptivePortalErrorPageDescription[] =
