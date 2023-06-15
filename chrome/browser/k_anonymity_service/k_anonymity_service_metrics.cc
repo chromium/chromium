@@ -15,7 +15,7 @@ void RecordQuerySetAction(KAnonymityServiceQuerySetAction action) {
 }
 
 void RecordQuerySetSize(size_t size) {
-  UMA_HISTOGRAM_COUNTS_1000("Chrome.KAnonymityService.QuerySet.Size", size);
+  UMA_HISTOGRAM_COUNTS_10000("Chrome.KAnonymityService.QuerySet.Size", size);
 }
 
 void RecordTrustTokenGetterAction(KAnonymityTrustTokenGetterAction action) {
