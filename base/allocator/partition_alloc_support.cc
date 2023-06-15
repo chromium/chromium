@@ -512,11 +512,13 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
       "base::RefCountedThreadSafe<>::Release()",
 
       // Windows signatures
-      "internal::RawPtrBackupRefImpl<0>::ReleaseInternal",
+      "internal::RawPtrBackupRefImpl<0,0>::ReleaseInternal",
+      "internal::RawPtrBackupRefImpl<0,1>::ReleaseInternal",
       "_free_base",
 
       // Mac signatures
-      "internal::RawPtrBackupRefImpl<false>::ReleaseInternal",
+      "internal::RawPtrBackupRefImpl<false, false>::ReleaseInternal",
+      "internal::RawPtrBackupRefImpl<false, true>::ReleaseInternal",
 
       // Task traces are prefixed with "Task trace:" in
       // |TaskTrace::OutputToStream|
