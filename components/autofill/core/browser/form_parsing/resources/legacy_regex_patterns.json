@@ -1245,7 +1245,7 @@
     ],
     "pt": [
       {
-        "positive_pattern": "(?:ponto|complemento).*referência",
+        "positive_pattern": "(?:ponto|complemento).*ref[êe]r[êe]ncia",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1289,16 +1289,16 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH", "SELECT"]
       }
     ],
     "es": [
       {
-        "positive_pattern": "municipio|delegación",
+        "positive_pattern": "municipio|delegaci[oó]n",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH", "SELECT"]
       }
     ]
   },

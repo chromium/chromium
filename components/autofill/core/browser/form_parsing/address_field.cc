@@ -89,7 +89,9 @@ constexpr MatchParams kBetweenStreetsMatchType =
     kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
 
 constexpr MatchParams kAdminLevel2MatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<MatchFieldType::kTextArea,
+                            MatchFieldType::kSearch,
+                            MatchFieldType::kSelect>;
 
 }  // namespace
 
