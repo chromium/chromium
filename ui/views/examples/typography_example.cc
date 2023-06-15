@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
@@ -75,6 +76,8 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetTextStyle(style::STYLE_HEADLINE_5))
           .Build();
 
+  headlines->SetProperty(kMarginsKey, gfx::Insets().set_bottom(10));
+
   auto bodies =
       Builder<TableLayoutView>()
           .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
@@ -84,56 +87,75 @@ void TypographyExample::CreateExampleView(View* container) {
           .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
                      TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
                      220, 0)
-          .AddRows(8, TableLayout::kFixedSize, 0)
+          .AddPaddingColumn(TableLayout::kFixedSize, 4)
+          .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
+                     TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
+                     220, 0)
+          .AddRows(9, TableLayout::kFixedSize, 0)
           .AddChildren(
+              Builder<View>(), Builder<Label>().SetText(u"Regular"),
+              Builder<Label>().SetText(u"Emphasis"),
               Builder<Label>().SetText(u"Body1"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetTextStyle(style::STYLE_BODY_1),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_1_EMPHASIS),
               Builder<Label>().SetText(u"Body2"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetTextStyle(style::STYLE_BODY_2),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_2_EMPHASIS),
               Builder<Label>().SetText(u"Body3"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetTextStyle(style::STYLE_BODY_3),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_3_EMPHASIS),
               Builder<Label>().SetText(u"Body4"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BODY_5),
+                  .SetTextStyle(style::STYLE_BODY_4),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_4_EMPHASIS),
               Builder<Label>().SetText(u"Body5"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetTextStyle(style::STYLE_BODY_5),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_5_EMPHASIS),
               Builder<Label>().SetText(u"Caption"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_CAPTION),
-              Builder<Label>().SetText(u"Button"),
-              Builder<Label>()
-                  .SetText(body_text)
-                  .SetMultiLine(true)
-                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BUTTON),
-              Builder<Label>().SetText(u"Label"),
-              Builder<Label>()
-                  .SetText(body_text)
-                  .SetMultiLine(true)
-                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_LABEL))
+                  .SetTextStyle(style::STYLE_CAPTION))
           .Build();
 
   auto wrapper = std::make_unique<BoxLayoutView>();
