@@ -8,31 +8,13 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
+load("./mojo.star", "mojo")
 
 __filegroups = {}
 
-def __rewrite_rewrapper(ctx, cmd):
-    # Slice from the first non-arg passed to rewrapper.
-    # (Whilst rewrapper usage is `rewrapper [-flags] -- command ...` we don't pass -- to rewrapper.)
-    non_flag_start = -1
-    cfg_file = None
-    for i, arg in enumerate(cmd.args):
-        if i == 0:
-            continue
-
-        # NOTE: Only handle -cfg= as that's how we call rewrapper in our .gn files.
-        if arg.startswith("-cfg="):
-            cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
-            continue
-        if not arg.startswith("-"):
-            non_flag_start = i
-            break
-    if non_flag_start < 1:
-        fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
-
+def __parse_rewrapper_cfg(ctx, cfg_file):
     if not cfg_file:
         fail("cfg file expected but none found")
-
     if not ctx.fs.exists(cfg_file):
         fail("cmd specifies rewrapper cfg %s but not found, is download_remoteexec_cfg set in gclient custom_vars?" % cfg_file)
 
@@ -74,14 +56,73 @@ def __rewrite_rewrapper(ctx, cmd):
 
         if line.startswith("server_address="):
             reproxy_config["server_address"] = line.removeprefix("server_address=")
+    return reproxy_config
 
+def __rewrite_rewrapper(ctx, cmd):
+    # Example command:
+    #   ../../buildtools/reclient/rewrapper
+    #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
+    #     -exec_root=/path/to/your/chromium/src/
+    #     ../../third_party/llvm-build/Release+Asserts/bin/clang++
+    #     [rest of clang args]
+    # We don't need to care about:
+    #   -exec_root: Siso already knows this.
+    wrapped_command_pos = -1
+    cfg_file = None
+    for i, arg in enumerate(cmd.args):
+        if i == 0:
+            continue
+        if arg.startswith("-cfg="):
+            cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
+            continue
+        if not arg.startswith("-"):
+            wrapped_command_pos = i
+            break
+    if wrapped_command_pos < 1:
+        fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
     ctx.actions.fix(
-        args = cmd.args[non_flag_start:],
-        reproxy_config = json.encode(reproxy_config),
+        args = cmd.args[wrapped_command_pos:],
+        reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
+    )
+
+def __rewrite_action_remote_mojo(ctx, cmd):
+    # Example command:
+    #   python3
+    #     ../../build/util/action_remote.py
+    #     ../../buildtools/reclient/rewrapper
+    #     --custom_processor=mojom_parser
+    #     --cfg=../../buildtools/reclient_cfgs/python/rewrapper_linux.cfg
+    #     --exec_root=/path/to/your/chromium/src/
+    #     --input_list_paths=gen/gpu/ipc/common/surface_handle__parser__remote_inputs.rsp
+    #     --output_list_paths=gen/gpu/ipc/common/surface_handle__parser__remote_outputs.rsp
+    #     python3
+    #     ../../mojo/public/tools/mojom/mojom_parser.py
+    #     [rest of mojo args]
+    # We don't need to care about:
+    #   --exec_root: Siso already knows this.
+    #   --custom_processor: Used by action_remote.py to apply mojo handling.
+    #   --[input,output]_list_paths: We should always use mojo.star for Siso.
+    wrapped_command_pos = -1
+    cfg_file = None
+    for i, arg in enumerate(cmd.args):
+        if i < 3:
+            continue
+        if arg.startswith("--cfg="):
+            cfg_file = ctx.fs.canonpath(arg.removeprefix("--cfg="))
+            continue
+        if not arg.startswith("-"):
+            wrapped_command_pos = i
+            break
+    if wrapped_command_pos < 1:
+        fail("couldn't find mojo command in %s" % str(cmd.args))
+    ctx.actions.fix(
+        args = cmd.args[wrapped_command_pos:],
+        reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
     )
 
 __handlers = {
     "rewrite_rewrapper": __rewrite_rewrapper,
+    "rewrite_action_remote_mojo": __rewrite_action_remote_mojo,
 }
 
 def __enabled(ctx):
@@ -92,7 +133,13 @@ def __enabled(ctx):
     return False
 
 def __step_config(ctx, step_config):
+    mojo_rule = mojo.step_rule()
+    mojo_rule.update({
+        "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
+        "handler": "rewrite_action_remote_mojo",
+    })
     step_config["rules"].extend([
+        mojo_rule,
         {
             "name": "clang/cxx",
             "action": "(.*_)?cxx",
