@@ -85,6 +85,12 @@
 
   [self.baseViewController dismissViewControllerAnimated:YES
                                               completion:completion];
+  _navigationController = nil;
+  [super stop];
+}
+
+- (void)dealloc {
+  CHECK(!_navigationController);
 }
 
 #pragma mark - FirstRunScreenDelegate
