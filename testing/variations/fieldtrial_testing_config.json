@@ -14426,40 +14426,6 @@
             ]
         }
     ],
-    "V8MapSpaceCompaction": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "CompactInOldSpace_V1",
-                    "disable_features": [
-                        "V8CompactMaps",
-                        "V8UseMapSpace"
-                    ]
-                },
-                {
-                    "name": "CompactInMapSpace_V1",
-                    "enable_features": [
-                        "V8CompactMaps",
-                        "V8UseMapSpace"
-                    ]
-                },
-                {
-                    "name": "Control_V1"
-                }
-            ]
-        }
-    ],
     "V8NoTurbofan": [
         {
             "platforms": [
