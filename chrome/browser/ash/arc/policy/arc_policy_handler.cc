@@ -47,7 +47,7 @@ absl::optional<base::StringPiece> FindUnknownVariable(
   if (!found_unknown_variable)
     return absl::nullopt;
 
-  return base::StringPiece(capture.data(), capture.length());
+  return capture;
 }
 
 // Add warning messages in |arc_policy| for invalid variables in

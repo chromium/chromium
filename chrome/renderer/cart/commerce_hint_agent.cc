@@ -345,10 +345,6 @@ void OnWillSendRequest(content::RenderFrame* render_frame, bool is_addtocart) {
   observer->OnWillSendRequest(is_addtocart);
 }
 
-bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
-  return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re);
-}
-
 const re2::RE2& GetAddToCartPattern() {
   auto* pattern_from_component =
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
@@ -475,8 +471,7 @@ bool GetProductIdFromRequest(base::StringPiece request,
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> re("(product_id|pr1id)=(\\w+)", options);
-  return RE2::PartialMatch(re2::StringPiece(request.data(), request.size()),
-                           *re, nullptr, product_id);
+  return RE2::PartialMatch(request, *re, nullptr, product_id);
 }
 
 bool IsSameDomainXHR(const std::string& host,
@@ -705,14 +700,15 @@ CommerceHintAgent::~CommerceHintAgent() = default;
 
 bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
                                     bool skip_length_limit) {
-  return PartialMatch(skip_length_limit ? str : str.substr(0, kLengthLimit),
-                      GetAddToCartPattern());
+  return RE2::PartialMatch(
+      skip_length_limit ? str : str.substr(0, kLengthLimit),
+      GetAddToCartPattern());
 }
 
 bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(
     base::StringPiece str) {
-  return PartialMatch(str.substr(0, kLengthLimit),
-                      GetDOMBasedAddToCartPattern());
+  return RE2::PartialMatch(str.substr(0, kLengthLimit),
+                           GetDOMBasedAddToCartPattern());
 }
 
 // TODO(crbug.com/1310422): Remove below two APIs and move all related unit
@@ -729,7 +725,7 @@ bool CommerceHintAgent::IsPurchase(const GURL& url) {
   auto* pattern = GetVisitPurchasePattern(url);
   if (!pattern)
     return false;
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
+  return RE2::PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url,
@@ -740,7 +736,7 @@ bool CommerceHintAgent::IsPurchase(const GURL& url,
       purchase_regex_map;
   std::string domain = eTLDPlusOne(url);
   if (purchase_string_map.find(domain) == purchase_string_map.end()) {
-    return PartialMatch(button_text, GetPurchaseTextPattern());
+    return RE2::PartialMatch(button_text, GetPurchaseTextPattern());
   }
   static re2::RE2::Options options;
   options.set_case_sensitive(false);
@@ -749,11 +745,12 @@ bool CommerceHintAgent::IsPurchase(const GURL& url,
         {domain,
          std::make_unique<re2::RE2>(purchase_string_map.at(domain), options)});
   }
-  return PartialMatch(button_text, *purchase_regex_map->at(domain));
+  return RE2::PartialMatch(button_text, *purchase_regex_map->at(domain));
 }
 
 bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
-  return PartialMatch(product_name.substr(0, kLengthLimit), GetSkipPattern());
+  return RE2::PartialMatch(product_name.substr(0, kLengthLimit),
+                           GetSkipPattern());
 }
 
 const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
@@ -1260,7 +1257,8 @@ bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .GetSkipAddToCartPatternForDomain(navigation_domain);
   if (pattern) {
-    return PartialMatch(request_url.spec().substr(0, kLengthLimit), *pattern);
+    return RE2::PartialMatch(request_url.spec().substr(0, kLengthLimit),
+                             *pattern);
   }
   const std::map<std::string, std::string>& skip_string_map =
       GetSkipAddToCartMapping();
@@ -1277,7 +1275,7 @@ bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,
          std::make_unique<re2::RE2>(skip_string_map.at(navigation_domain),
                                     options)});
   }
-  return PartialMatch(request_url.spec().substr(0, kLengthLimit),
-                      *skip_regex_map->at(navigation_domain));
+  return RE2::PartialMatch(request_url.spec().substr(0, kLengthLimit),
+                           *skip_regex_map->at(navigation_domain));
 }
 }  // namespace cart

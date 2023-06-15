@@ -163,9 +163,8 @@ std::string ResolveVariableChain(const VariableResolver& resolver,
   return "";
 }
 
-std::vector<base::StringPiece> SplitByColon(const re2::StringPiece& input) {
-  return base::SplitStringPiece(base::StringPiece(input.data(), input.size()),
-                                ":", base::TRIM_WHITESPACE,
+std::vector<base::StringPiece> SplitByColon(base::StringPiece input) {
+  return base::SplitStringPiece(input, ":", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
 
@@ -196,7 +195,7 @@ std::string SearchAndReplace(
     search_input = re2::StringPiece(capture.end(), remaining_size);
   }
   // Output the remaining |search_input|.
-  output.emplace_back(search_input.data(), search_input.length());
+  output.emplace_back(search_input);
   return base::JoinString(output, /*separator=*/"");
 }
 

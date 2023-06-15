@@ -74,10 +74,6 @@ std::string JsonSerialize(const Json::Value& value) {
   return s.str();
 }
 
-re2::StringPiece Re2StringPiece(std::string_view str) {
-  return re2::StringPiece(str.data(), str.size());
-}
-
 bool ContainsUpper(const char* str) {
   while (*str) {
     if (std::isupper(*str)) {
@@ -110,7 +106,7 @@ bool MatchesRegex(const GroupedPath& id_path,
     return true;
   }
 
-  return RE2::PartialMatch(Re2StringPiece(sym.ContainerName()), regex);
+  return RE2::PartialMatch(sym.ContainerName(), regex);
 }
 
 bool IsMultiContainer() {

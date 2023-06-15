@@ -499,7 +499,7 @@ bool FindAndConsumeAndGetSkippedN(re2::StringPiece* input,
 
   if (skipped_input && result) {
     size_t bytes_skipped = args[0]->data() - old_input.data();
-    *skipped_input = re2::StringPiece(old_input.data(), bytes_skipped);
+    *skipped_input = old_input.substr(0, bytes_skipped);
   }
   return result;
 }
@@ -686,9 +686,9 @@ std::string RedactionTool::RedactMACAddresses(
   while (FindAndConsumeAndGetSkipped(&text, *mac_re, &skipped, &oui, &nic)) {
     // Look up the MAC address in the hash. Force the separator to be a colon
     // so that the same MAC with a different format will match in all cases.
-    std::string oui_string = base::ToLowerASCII(std::string(oui));
+    std::string oui_string = base::ToLowerASCII(oui);
     base::ReplaceChars(oui_string, kMacSeparatorChars, ":", &oui_string);
-    std::string nic_string = base::ToLowerASCII(std::string(nic));
+    std::string nic_string = base::ToLowerASCII(nic);
     base::ReplaceChars(nic_string, kMacSeparatorChars, ":", &nic_string);
     std::string mac = oui_string + ":" + nic_string;
     std::string replacement_mac = mac_addresses_[mac];
@@ -748,10 +748,8 @@ std::string RedactionTool::RedactHashes(
     }
 
     // Look up the hash value address in the map of replacements.
-    std::string hash_prefix_string =
-        base::ToLowerASCII(std::string(hash_prefix));
-    std::string hash =
-        hash_prefix_string + base::ToLowerASCII(std::string(hash_suffix));
+    std::string hash_prefix_string = base::ToLowerASCII(hash_prefix);
+    std::string hash = hash_prefix_string + base::ToLowerASCII(hash_suffix);
     std::string replacement_hash = hashes_[hash];
     if (replacement_hash.empty()) {
       // If not found, build up a replacement value.
@@ -815,8 +813,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
     // - Otherwise, remove all the characters in the component but the first
     //   one.
     // - If the original component has 2 or more bytes, add '_'.
-    const base::FilePath path(
-        std::string(app_specific.data(), app_specific.size()));
+    const base::FilePath path(app_specific);
     std::vector<std::string> components = path.GetComponents();
     DCHECK(!components.empty());
 
@@ -831,8 +828,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
       }
     }
     if (detected != nullptr) {
-      (*detected)[PIIType::kAndroidAppStoragePath].insert(
-          std::string(app_specific.data(), app_specific.size()));
+      (*detected)[PIIType::kAndroidAppStoragePath].emplace(app_specific);
     }
     RecordPIIRedactedHistogram(PIIType::kAndroidAppStoragePath);
   }
@@ -959,7 +955,7 @@ std::string RedactionTool::RedactIbans(
 
     // Remove the separating characters.
     std::string stripped;
-    base::RemoveChars(std::string(iban.data(), iban.size()), " -", &stripped);
+    base::RemoveChars(iban, " -", &stripped);
 
     if (const auto previous_iban = ibans_.find(stripped);
         previous_iban != ibans_.end()) {

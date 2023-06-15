@@ -20,14 +20,6 @@
 namespace media::hls::types {
 
 namespace {
-re2::StringPiece to_re2(base::StringPiece str) {
-  return re2::StringPiece(str.data(), str.size());
-}
-
-re2::StringPiece to_re2(SourceString str) {
-  return to_re2(str.Str());
-}
-
 bool IsOneOf(char c, base::StringPiece set) {
   return base::Contains(set, c);
 }
@@ -113,7 +105,7 @@ ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
   // NOTE: It may be useful to split this into a separate function which
   // extracts the range containing valid characters from a given
   // base::StringPiece. For now that's the caller's responsibility.
-  if (!RE2::FullMatch(to_re2(str), *decimal_integer_regex)) {
+  if (!RE2::FullMatch(str, *decimal_integer_regex)) {
     return ParseStatusCode::kFailedToParseDecimalInteger;
   }
 
@@ -153,7 +145,7 @@ ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
 
   // Check that the set of characters is allowed: - . 0-9
   // `base::StringToDouble` is not as strict as the HLS spec
-  if (!re2::RE2::FullMatch(to_re2(str), *decimal_floating_point_regex)) {
+  if (!re2::RE2::FullMatch(str, *decimal_floating_point_regex)) {
     return ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint;
   }
 
@@ -401,7 +393,7 @@ ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
       "[a-zA-Z0-9_-]+");
 
   // This source_str must match completely
-  if (!re2::RE2::FullMatch(to_re2(source_str), *variable_name_regex)) {
+  if (!re2::RE2::FullMatch(source_str.Str(), *variable_name_regex)) {
     return ParseStatusCode::kMalformedVariableName;
   }
 

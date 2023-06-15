@@ -64,8 +64,8 @@ void CompileRulesFromData(const std::string& data_string,
   size_t token_end = 0;
   while (!data.empty()) {
     token_end = data.find('\t');
-    re2::StringPiece pattern_re2(data.data(), token_end);
-    auto pattern = std::make_unique<re2::RE2>(pattern_re2, options);
+    auto pattern =
+        std::make_unique<re2::RE2>(data.substr(0, token_end), options);
     data.remove_prefix(token_end + 1);
 
     token_end = data.find('\n');

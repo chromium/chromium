@@ -176,9 +176,7 @@ bool IsValidDotId(base::StringPiece name) {
       "[a-zA-Z\\200-\\377_][0-9a-zA-Z\\200-\\377_]*"
       "|-?(?:\\.[0-9]+|[0-9]+(\\.[0-9]*)?)"
       "|\"(?:[^\"]|\\\")*\"";
-  return RE2::FullMatch(
-      re2::StringPiece(name.data(), base::checked_cast<int>(name.size())),
-      pattern);
+  return RE2::FullMatch(name, pattern);
 }
 
 // Returns the source name of the first edge of the graphstr described in DOT
@@ -186,11 +184,10 @@ bool IsValidDotId(base::StringPiece name) {
 base::StringPiece LocateNodeNameInGraph(base::StringPiece graphstr) {
   re2::StringPiece name;
   EXPECT_TRUE(RE2::FullMatch(
-      re2::StringPiece(graphstr.data(),
-                       base::checked_cast<int>(graphstr.size())),
-      "(?sm).*^[ \\t]*([^ \\t]*(?:[ \\t]+[^ \\t]+)*)[ \\t]*->.*", &name))
+      graphstr, "(?sm).*^[ \\t]*([^ \\t]*(?:[ \\t]+[^ \\t]+)*)[ \\t]*->.*",
+      &name))
       << "graphstr=" << graphstr;
-  return base::StringPiece(name.data(), name.size());
+  return name;
 }
 
 // Node names in the dependency graph should be properly escaped.

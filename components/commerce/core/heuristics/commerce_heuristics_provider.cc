@@ -150,10 +150,6 @@ const re2::RE2* GetVisitCheckoutPattern(const GURL& url) {
   return checkout_regex_map->at(domain).get();
 }
 
-bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
-  return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re);
-}
-
 std::string CanonicalURL(const GURL& url) {
   return base::JoinString({url.scheme_piece(), "://", url.host_piece(),
                            url.path_piece().substr(0, kLengthLimit)},
@@ -166,14 +162,14 @@ bool IsVisitCart(const GURL& url) {
   auto* pattern = GetVisitCartPattern(url);
   if (!pattern)
     return false;
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
+  return RE2::PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
 }
 
 bool IsVisitCheckout(const GURL& url) {
   auto* pattern = GetVisitCheckoutPattern(url);
   if (!pattern)
     return false;
-  return PartialMatch(url.spec().substr(0, kLengthLimit), *pattern);
+  return RE2::PartialMatch(url.spec().substr(0, kLengthLimit), *pattern);
 }
 
 bool IsAddToCartButtonSpec(int height, int width) {
@@ -206,7 +202,7 @@ bool IsAddToCartButtonText(const std::string& text) {
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(
       commerce::kAddToCartButtonTextPattern.Get(), options);
-  return PartialMatch(text.substr(0, kLengthLimit), *instance);
+  return RE2::PartialMatch(text.substr(0, kLengthLimit), *instance);
 }
 
 bool ShouldUseDOMBasedHeuristics(const GURL& url) {
@@ -217,7 +213,7 @@ bool ShouldUseDOMBasedHeuristics(const GURL& url) {
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(
       commerce::kSkipHeuristicsDomainPattern.Get(), options);
-  return !PartialMatch(eTLDPlusOne(url), *instance);
+  return !RE2::PartialMatch(eTLDPlusOne(url), *instance);
 }
 
 }  // namespace commerce_heuristics

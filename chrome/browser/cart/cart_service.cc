@@ -913,8 +913,7 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                      }),
       proto_pairs.end());
   for (auto proto_pair : proto_pairs) {
-    if (RE2::FullMatch(re2::StringPiece(proto_pair.first),
-                       GetSkipCartExtractionPattern())) {
+    if (RE2::FullMatch(proto_pair.first, GetSkipCartExtractionPattern())) {
       proto_pair.second.clear_product_image_urls();
       cart_db_->AddCart(proto_pair.first, proto_pair.second,
                         base::BindOnce(&CartService::OnOperationFinished,
@@ -1022,8 +1021,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
   }
 
   // Skip extracting the block list.
-  if (RE2::FullMatch(re2::StringPiece(domain),
-                     GetSkipCartExtractionPattern())) {
+  if (RE2::FullMatch(domain, GetSkipCartExtractionPattern())) {
     proto.clear_product_image_urls();
     proto.clear_product_infos();
     cart_db_->AddCart(domain, std::move(proto),

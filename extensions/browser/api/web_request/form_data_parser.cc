@@ -402,12 +402,10 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
     result->set_name(unescaped_name);
     std::string unescaped_value =
         base::UnescapeBinaryURLComponent(value_, kUnescapeRules);
-    const base::StringPiece unescaped_data(unescaped_value.data(),
-                                           unescaped_value.length());
-    if (base::IsStringUTF8(unescaped_data)) {
+    if (base::IsStringUTF8(unescaped_value)) {
       result->SetStringValue(std::move(unescaped_value));
     } else {
-      result->SetBinaryValue(unescaped_data);
+      result->SetBinaryValue(unescaped_value);
     }
   }
   if (source_.length() > 0) {
@@ -422,7 +420,7 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
 bool FormDataParserUrlEncoded::SetSource(base::StringPiece source) {
   if (source_set_)
     return false;  // We do not allow multiple sources for this parser.
-  source_ = re2::StringPiece(source.data(), source.size());
+  source_ = source;
   source_set_ = true;
   source_malformed_ = false;
   return true;
@@ -434,7 +432,7 @@ std::string FormDataParserMultipart::CreateBoundaryPatternFromLiteral(
   static const char quote[] = "\\Q";
   static const char unquote[] = "\\E";
 
-  // The result always starts with opening the qoute and then "--".
+  // The result always starts with opening the quote and then "--".
   std::string result("\\Q--");
 
   // This StringPiece is used below to record the next occurrence of "\\E" in
@@ -566,7 +564,7 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
 bool FormDataParserMultipart::SetSource(base::StringPiece source) {
   if (source.data() == nullptr || !source_.empty())
     return false;
-  source_ = re2::StringPiece(source.data(), source.size());
+  source_ = source;
 
   switch (state_) {
     case STATE_INIT:
@@ -628,12 +626,12 @@ bool FormDataParserMultipart::TryReadHeader(base::StringPiece* name,
     state_ = STATE_ERROR;
     return true;  // See (*) for why true.
   }
-  *name = base::StringPiece(groups[1].data(), groups[1].size());
+  *name = groups[1];
 
   if (value_pattern().Match(header,
                             kContentDispositionLength, header.size(),
                             RE2::UNANCHORED, groups, 2)) {
-    *value = base::StringPiece(groups[1].data(), groups[1].size());
+    *value = groups[1];
     *value_assigned = true;
   }
   return true;

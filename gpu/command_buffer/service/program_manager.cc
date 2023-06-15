@@ -614,7 +614,8 @@ std::string Program::ProcessLogInfo(const std::string& log) {
       output += hashed_name;
   }
 
-  return output + std::string(input);
+  output.append(input);
+  return output;
 }
 
 void Program::UpdateLogInfo() {
