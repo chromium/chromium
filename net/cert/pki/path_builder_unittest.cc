@@ -1107,13 +1107,20 @@ TEST_F(PathBuilderKeyRolloverTest, TestReturnsPartialPathEndedByLoopChecker) {
   CertIssuerSourceStatic sync_certs;
   sync_certs.AddCert(newintermediate_);
   sync_certs.AddCert(newroot_);
-  sync_certs.AddCert(newrootrollover_);
+
+  CertIssuerSourceStatic rollover_certs;
+  rollover_certs.AddCert(newrootrollover_);
 
   CertPathBuilder path_builder(
       target_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
       initial_explicit_policy_, user_initial_policy_set_,
       initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
   path_builder.AddCertIssuerSource(&sync_certs);
+  // The rollover root is added as a second issuer source to ensure we get paths
+  // back in a deterministic order, otherwise newroot and newrootrollover do not
+  // differ in any way that the path builder would use for prioritizing which
+  // path comes back first.
+  path_builder.AddCertIssuerSource(&rollover_certs);
 
   auto result = path_builder.Run();
 
