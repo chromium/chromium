@@ -1000,6 +1000,7 @@ android_library("cronet_common_javatests") {
     "test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
     "test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
     "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
+    "test/javatests/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
   ]
   deps = [
            ":cronet_api_java",

@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -32,14 +34,13 @@ public class UrlResponseInfoTest {
      */
     @Test
     @SmallTest
-    public void testPublicAPI() throws Exception {
-        final List<String> urlChain = new ArrayList<String>();
+    public void testPublicAPI() {
+        final List<String> urlChain = new ArrayList<>();
         urlChain.add("chromium.org");
         final int httpStatusCode = 200;
         final String httpStatusText = "OK";
         final Map.Entry<String, String> header =
-                new AbstractMap.SimpleImmutableEntry<String, String>(
-                        "Date", "Fri, 30 Oct 2015 14:26:41 GMT");
+                new AbstractMap.SimpleImmutableEntry<>("Date", "Fri, 30 Oct 2015 14:26:41 GMT");
         final List<Map.Entry<String, String>> allHeadersList = new ArrayList<>();
         allHeadersList.add(header);
         final boolean wasCached = true;
@@ -50,22 +51,23 @@ public class UrlResponseInfoTest {
         final UrlResponseInfo info =
                 new UrlResponseInfoImpl(urlChain, httpStatusCode, httpStatusText, allHeadersList,
                         wasCached, negotiatedProtocol, proxyServer, receivedByteCount);
-        assertThat(urlChain).isEqualTo(info.getUrlChain());
-        assertThat(urlChain.get(urlChain.size() - 1)).isEqualTo(info.getUrl());
+
+        assertThat(info).hasUrlChainThat().isEqualTo(urlChain);
+        assertThat(info).hasUrlThat().isEqualTo(urlChain.get(urlChain.size() - 1));
         assertThrows(
                 UnsupportedOperationException.class, () -> info.getUrlChain().add("example.com"));
-        assertThat(info.getHttpStatusCode()).isEqualTo(httpStatusCode);
-        assertThat(info.getHttpStatusText()).isEqualTo(httpStatusText);
-        assertThat(info.getAllHeadersAsList()).isEqualTo(allHeadersList);
+        assertThat(info).hasHttpStatusCodeThat().isEqualTo(httpStatusCode);
+        assertThat(info).hasHttpStatusTextThat().isEqualTo(httpStatusText);
+        assertThat(info).hasHeadersListThat().isEqualTo(allHeadersList);
         assertThrows(UnsupportedOperationException.class,
                 ()
                         -> info.getAllHeadersAsList().add(
-                                new AbstractMap.SimpleImmutableEntry<String, String>("X", "Y")));
-        assertThat(info.getAllHeaders())
-                .containsExactly(header.getKey(), Arrays.asList(header.getValue()));
-        assertThat(info.wasCached()).isEqualTo(wasCached);
-        assertThat(info.getNegotiatedProtocol()).isEqualTo(negotiatedProtocol);
-        assertThat(info.getProxyServer()).isEqualTo(proxyServer);
-        assertThat(info.getReceivedByteCount()).isEqualTo(receivedByteCount);
+                                new AbstractMap.SimpleImmutableEntry<>("X", "Y")));
+        assertThat(info).hasHeadersThat().containsExactly(
+                header.getKey(), Arrays.asList(header.getValue()));
+        assertThat(info).wasCached();
+        assertThat(info).hasNegotiatedProtocolThat().isEqualTo(negotiatedProtocol);
+        assertThat(info).hasProxyServerThat().isEqualTo(proxyServer);
+        assertThat(info).hasReceivedByteCountThat().isEqualTo(receivedByteCount);
     }
 }
