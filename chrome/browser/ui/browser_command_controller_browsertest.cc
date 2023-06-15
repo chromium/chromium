@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profile_ui_test_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -319,6 +322,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteProfileMenuOpenGuestProfile) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GUEST_PROFILE));
+  Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(guest_browser);
+  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteTurnOnSync) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_TURN_ON_SYNC));
 }
@@ -332,6 +343,21 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   signin::SetRefreshTokenForPrimaryAccount(identity_manager);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_SIGNIN_WHEN_PAUSED));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteProfileMenuAddNewProfile) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_ADD_NEW_PROFILE));
+  profiles::testing::WaitForPickerLoadStop(
+      GURL("chrome://profile-picker/new-profile"));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteProfileMenuManageChromeProfiles) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_MANAGE_CHROME_PROFILES));
+  profiles::testing::WaitForPickerWidgetCreated();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
 #endif

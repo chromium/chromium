@@ -12,6 +12,7 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   # Keep sorted alphabetically.
   sources = [
+    "account_add_chrome_refresh.icon",
     "account_box.icon",
     "account_child.icon",
     "account_child_circle.icon",

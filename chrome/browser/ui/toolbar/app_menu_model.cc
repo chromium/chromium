@@ -13,6 +13,7 @@
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -29,7 +30,11 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -215,7 +220,8 @@ bool IsPasswordManagerPage(const GURL& url) {
          url.DomainIs(password_manager::kChromeUIPasswordManagerHost);
 }
 
-class ProfileSubMenuModel : public ui::SimpleMenuModel {
+class ProfileSubMenuModel : public ui::SimpleMenuModel,
+                            public ui::SimpleMenuModel::Delegate {
  public:
   ProfileSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                       Profile* profile);
@@ -229,18 +235,37 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel {
 
   const std::u16string& profile_name() const { return profile_name_; }
 
+  // Returns |next_menu_id_| and increments it by n. This allows for 'sharing'
+  // command ids with the other variable sized menu, which also uses every other
+  // int as an id.
+  int GetAndIncrementNextMenuID();
+
+  // Overridden from ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdChecked(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id) const override;
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
+
  private:
   bool BuildSyncSection();
 
   ui::ImageModel avatar_image_model_;
   std::u16string profile_name_;
   raw_ptr<Profile> profile_;
+  raw_ptr<ui::SimpleMenuModel::Delegate> app_menu_model_delegate_;
+  // ID of the next menu item.
+  int next_other_profile_menu_id_;
+  base::flat_map<int, base::FilePath> other_profiles_;
 };
 
 ProfileSubMenuModel::ProfileSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
     Profile* profile)
-    : SimpleMenuModel(delegate), profile_(profile) {
+    : SimpleMenuModel(this),
+      profile_(profile),
+      app_menu_model_delegate_(delegate),
+      next_other_profile_menu_id_(AppMenuModel::kMinOtherProfileCommandId) {
   const int avatar_icon_size =
       GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
@@ -272,15 +297,7 @@ ProfileSubMenuModel::ProfileSubMenuModel(
                 avatar_image, avatar_icon_size, avatar_icon_size,
                 profiles::SHAPE_CIRCLE));
       }
-      // Don't use ProfileAttributesEntry::GetName() to prevent both the GAIA
-      // name and local name from being displayed
-      profile_name_ = profile_attributes->GetGAIANameToDisplay();
-      if (profile_name_.empty()) {
-        profile_name_ = profile_attributes->GetLocalProfileName();
-      }
-      profile_name_ = ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-          profile_name_, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
-          gfx::CHARACTER_BREAK));
+      profile_name_ = GetProfileMenuDisplayName(profile_attributes);
     }
   }
 
@@ -312,6 +329,90 @@ ProfileSubMenuModel::ProfileSubMenuModel(
         ui::ImageModel::FromVectorIcon(manage_account_icon, ui::kColorMenuIcon,
                                        kDefaultIconSize));
   }
+
+  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddTitle(l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
+    auto profile_entries =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetAllProfilesAttributesSortedByLocalProfileName();
+    for (ProfileAttributesEntry* profile_entry : profile_entries) {
+      // The current profile and omitted profiles are excluded.
+      if (profile_entry->GetPath() == profile->GetPath() ||
+          profile_entry->IsOmitted()) {
+        continue;
+      }
+
+      std::u16string display_name = GetProfileMenuDisplayName(profile_entry);
+      int menu_id = GetAndIncrementNextMenuID();
+      AddItemWithIcon(menu_id,
+                      ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+                          display_name,
+                          GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+                          gfx::CHARACTER_BREAK)),
+                      ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+                          profile_entry->GetAvatarIcon(), avatar_icon_size,
+                          avatar_icon_size, profiles::SHAPE_CIRCLE)));
+      other_profiles_.insert({menu_id, profile_entry->GetPath()});
+    }
+
+    if (profiles::IsGuestModeEnabled()) {
+      AddItemWithStringIdAndIcon(
+          IDC_OPEN_GUEST_PROFILE, IDS_OPEN_GUEST_PROFILE,
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon,
+              kDefaultIconSize));
+    }
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    if (profiles::IsProfileCreationAllowed()) {
+      AddItemWithStringIdAndIcon(
+          IDC_ADD_NEW_PROFILE, IDS_ADD_NEW_PROFILE,
+          ui::ImageModel::FromVectorIcon(kAccountAddChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+    }
+    AddItemWithStringIdAndIcon(
+        IDC_MANAGE_CHROME_PROFILES, IDS_MANAGE_CHROME_PROFILES,
+        ui::ImageModel::FromVectorIcon(kAccountManageChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+  }
+}
+
+bool ProfileSubMenuModel::IsCommandIdChecked(int command_id) const {
+  return false;
+}
+
+bool ProfileSubMenuModel::IsCommandIdEnabled(int command_id) const {
+  if (command_id >= AppMenuModel::kMinOtherProfileCommandId) {
+    return true;
+  }
+  return app_menu_model_delegate_ &&
+         app_menu_model_delegate_->IsCommandIdEnabled(command_id);
+}
+
+bool ProfileSubMenuModel::GetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  return app_menu_model_delegate_ &&
+         app_menu_model_delegate_->GetAcceleratorForCommandId(command_id,
+                                                              accelerator);
+}
+
+void ProfileSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
+  if (other_profiles_.find(command_id) != other_profiles_.end()) {
+    return profiles::SwitchToProfile(other_profiles_[command_id],
+                                     /*always_create=*/false);
+  }
+  if (app_menu_model_delegate_) {
+    app_menu_model_delegate_->ExecuteCommand(command_id, event_flags);
+  }
+  return;
+}
+
+int ProfileSubMenuModel::GetAndIncrementNextMenuID() {
+  const int current_id = next_other_profile_menu_id_;
+  next_other_profile_menu_id_ += AppMenuModel::kNumUnboundedMenuTypes;
+  return current_id;
 }
 
 bool ProfileSubMenuModel::BuildSyncSection() {
@@ -1125,6 +1226,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
 
     // Profile submenu.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_CUSTOMIZE_CHROME:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CustomizeChrome",
@@ -1146,7 +1248,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_MANAGE_GOOGLE_ACCOUNT);
       break;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_SHOW_SYNC_SETTINGS:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSyncSettings",
@@ -1167,6 +1268,27 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             "WrenchMenu.TimeToAction.ShowSigninWhenPaused", delta);
       }
       LogMenuAction(MENU_SHOW_SIGNIN_WHEN_PAUSED);
+      break;
+    case IDC_OPEN_GUEST_PROFILE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenGuestProfile",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_OPEN_GUEST_PROFILE);
+      break;
+    case IDC_ADD_NEW_PROFILE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.AddNewProfile",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_ADD_NEW_PROFILE);
+      break;
+    case IDC_MANAGE_CHROME_PROFILES:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ManageChromeProfiles", delta);
+      }
+      LogMenuAction(MENU_ACTION_MANAGE_CHROME_PROFILES);
       break;
 #endif
   }

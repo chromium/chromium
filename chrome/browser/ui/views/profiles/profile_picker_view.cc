@@ -115,6 +115,8 @@ bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
   // TODO(crbug.com/1360773): Implement more use cases outside of the classic
   // profile picker flow. e.g.: kLacrosSelectAvailableAccount.
   switch (params.entry_point()) {
+    case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
+    case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:
     case ProfilePicker::EntryPoint::kOnStartup:
     case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:

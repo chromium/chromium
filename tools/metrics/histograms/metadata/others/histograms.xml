@@ -14842,6 +14842,7 @@ regressions. -->
   </summary>
   <token key="Action">
     <variant name="About"/>
+    <variant name="AddNewProfile"/>
     <variant name="AppInfo"/>
     <variant name="BetaForum"/>
     <variant name="BookmarkAllTabs"/>
@@ -14869,12 +14870,14 @@ regressions. -->
     <variant name="ImportSettings"/>
     <variant name="InstallPwa"/>
     <variant name="LoginForDeviceTabs"/>
+    <variant name="ManageChromeProfiles"/>
     <variant name="ManageExtensions"/>
     <variant name="ManageGoogleAccount"/>
     <variant name="NewIncognitoWindow"/>
     <variant name="NewTab"/>
     <variant name="NewWindow"/>
     <variant name="OpenBookmark"/>
+    <variant name="OpenGuestProfile"/>
     <variant name="OpenInChrome"/>
     <variant name="OpenInPwaWindow"/>
     <variant name="OpenRecentTab"/>

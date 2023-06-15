@@ -31,4 +31,8 @@ AccountInfo GetAccountInfoFromProfile(const Profile* profile);
 // Returns the ProfileAttributesEntry from the profile.
 ProfileAttributesEntry* GetProfileAttributesFromProfile(const Profile* profile);
 
+// Returns the profile display name based off the profile attributes.
+std::u16string GetProfileMenuDisplayName(
+    ProfileAttributesEntry* profile_attributes);
+
 #endif  // CHROME_BROWSER_UI_PASSWORDS_UI_UTILS_H_

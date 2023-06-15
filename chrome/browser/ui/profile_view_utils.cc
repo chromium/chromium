@@ -6,6 +6,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -13,12 +14,15 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/url_util.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
@@ -78,4 +82,19 @@ ProfileAttributesEntry* GetProfileAttributesFromProfile(
   return g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .GetProfileAttributesWithPath(profile->GetPath());
+}
+
+std::u16string GetProfileMenuDisplayName(
+    ProfileAttributesEntry* profile_attributes) {
+  // Don't use ProfileAttributesEntry::GetName() to prevent both the GAIA
+  // name and local name from being displayed
+  std::u16string profile_name = profile_attributes->GetGAIANameToDisplay();
+  if (profile_name.empty()) {
+    profile_name = profile_attributes->GetLocalProfileName();
+  }
+  profile_name = ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+      profile_name, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+      gfx::CHARACTER_BREAK));
+
+  return profile_name;
 }

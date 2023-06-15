@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_view_utils.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -1041,7 +1042,11 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
           SidePanelEntryId::kReadingList, SidePanelOpenTrigger::kAppMenu);
       break;
-    // Profile submenu commands.
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // Profile submenu commands
+    // This menu item is not enabled on ChromeOS and certain capabilities such
+    // as the profile picker are not available.
     case IDC_CUSTOMIZE_CHROME:
       chrome::ShowSettingsSubPage(browser_, chrome::kManageProfileSubPage);
       break;
@@ -1066,6 +1071,18 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
               .email);
       break;
     }
+    case IDC_OPEN_GUEST_PROFILE:
+      profiles::SwitchToGuestProfile();
+      break;
+    case IDC_ADD_NEW_PROFILE:
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile));
+      break;
+    case IDC_MANAGE_CHROME_PROFILES:
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles));
+      break;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1265,11 +1282,16 @@ void BrowserCommandController::InitCommandState() {
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
        !profile()->IsIncognitoProfile()));
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_CUSTOMIZE_CHROME, true);
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_PROFILE, true);
   command_updater_.UpdateCommandEnabled(
       IDC_MANAGE_GOOGLE_ACCOUNT,
       HasUnconstentedProfile(profile()) && !IsSyncPaused(profile()));
+  command_updater_.UpdateCommandEnabled(IDC_OPEN_GUEST_PROFILE, true);
+  command_updater_.UpdateCommandEnabled(IDC_ADD_NEW_PROFILE, true);
+  command_updater_.UpdateCommandEnabled(IDC_MANAGE_CHROME_PROFILES, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (profile()->IsIncognitoProfile()) {
     command_updater_.UpdateCommandEnabled(IDC_CLEAR_BROWSING_DATA, true);

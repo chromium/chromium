@@ -28,6 +28,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -130,13 +132,25 @@ const int kZoomLabelHorizontalPadding = 2;
 bool IsBookmarkCommand(int command_id) {
   return command_id == IDC_SHOW_BOOKMARK_SIDE_PANEL ||
          (command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-          (command_id % AppMenuModel::kNumUnboundedMenuTypes == 0));
+          ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+               AppMenuModel::kNumUnboundedMenuTypes ==
+           0));
 }
 
 // Returns true if |command_id| identifies a recent tabs menu item.
 bool IsRecentTabsCommand(int command_id) {
   return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-         (command_id % AppMenuModel::kNumUnboundedMenuTypes == 1);
+         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+              AppMenuModel::kNumUnboundedMenuTypes ==
+          1);
+}
+
+// Returns true if |command_id| identifies an other profile menu item.
+bool IsOtherProfileCommand(int command_id) {
+  return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
+         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+              AppMenuModel::kNumUnboundedMenuTypes ==
+          2);
 }
 
 // Combination border/background for the buttons contained in the menu. The
@@ -328,6 +342,74 @@ class InMenuImageButton : public ImageButton {
 
 BEGIN_METADATA(InMenuImageButton, ImageButton)
 END_METADATA
+
+// Helper method that adds a bespoke chip to the profile related menu items.
+void AddChipToProfileMenuItem(Browser* browser,
+                              views::MenuItemView* item,
+                              const std::u16string& chip_label,
+                              const int horizontal_padding,
+                              std::vector<base::CallbackListSubscription>&
+                                  profile_menu_subscription_list) {
+  constexpr int profile_chip_corner_radii = 100;
+  raw_ptr<views::Label> profile_chip_label;
+  const MenuConfig& config = MenuConfig::instance();
+  // Truncate in the same way that app_menu_model does for the menu
+  // title.
+  if (!chip_label.empty() && !browser->profile()->IsIncognitoProfile()) {
+    std::u16string local_name =
+        ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+            chip_label, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+            gfx::CHARACTER_BREAK));
+    // We need to have the label of the profile chip within a
+    // BoxLayoutView and inside border insets because MenuItemView will
+    // layout the child items to the full height of the menu item in
+    // MenuItemView::Layout().
+    auto profile_chip =
+        views::Builder<views::BoxLayoutView>()
+            .SetInsideBorderInsets(gfx::Insets::VH(config.item_top_margin, 0))
+            .AddChildren(
+                views::Builder<views::Label>()
+                    .SetText(local_name)
+                    .CopyAddressTo(&profile_chip_label)
+                    .SetBackground(views::CreateThemedRoundedRectBackground(
+                        item->IsSelected()
+                            ? ui::kColorAppMenuProfileRowChipHovered
+                            : ui::kColorAppMenuProfileRowChipBackground,
+                        profile_chip_corner_radii))
+                    // Add additional horizontal padding. Vertical
+                    // padding depends on menu margins to get alignment
+                    // with other items in the menu.
+                    .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                        0, views::LayoutProvider::Get()
+                               ->GetInsetsMetric(views::INSETS_LABEL_BUTTON)
+                               .left()))))
+            .Build();
+
+    // MenuItemView has specific layout logic for child views in
+    // MenuItemView::Layout() which does not work very well with more
+    // custom menu items. We use this view to add the correct spacing
+    // between the profile chip and the edge of the menu.
+    auto profile_chip_edge_spacing_view =
+        views::Builder<views::View>()
+            .SetPreferredSize(gfx::Size(horizontal_padding, 0))
+            .Build();
+    profile_menu_subscription_list.push_back(
+        item->AddSelectedChangedCallback(base::BindRepeating(
+            [](MenuItemView* menu_item_view, View* child_view,
+               int corner_radius) {
+              child_view->SetBackground(
+                  views::CreateThemedRoundedRectBackground(
+                      menu_item_view->IsSelected()
+                          ? ui::kColorAppMenuProfileRowChipHovered
+                          : ui::kColorAppMenuProfileRowChipBackground,
+                      corner_radius));
+            },
+            item, profile_chip_label, profile_chip_corner_radii)));
+    item->AddChildView(std::move(profile_chip));
+    item->AddChildView(std::move(profile_chip_edge_spacing_view));
+    item->SetHighlightWhenSelectedWithChildViews(true);
+  }
+}
 
 // AppMenuView is a view that can contain label buttons.
 class AppMenuView : public views::View {
@@ -1199,7 +1281,14 @@ bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
            WindowOpenDisposition::NEW_BACKGROUND_TAB)) ||
          (IsBookmarkCommand(command_id) &&
           bookmark_menu_delegate_->ShouldExecuteCommandWithoutClosingMenu(
-              command_id, event));
+              command_id, event)) ||
+         // TODO(https://crbug.com/1454311) Currently the UI for
+         // OtherProfileCommand has bespoke child views which will block
+         // activation in ui/views/controls/menu/menu_controller.cc. The correct
+         // fix will be to have the child view as part of
+         // ui/views/controls/menu/menu_item_view.cc but we will currently
+         // bypass this by using this method to allow the command to trigger.
+         (IsOtherProfileCommand(command_id) && event.IsMouseEvent());
 }
 
 void AppMenu::BookmarkModelChanged() {
@@ -1236,14 +1325,12 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       item->SetMargins(top_margin, bottom_margin);
     }
 #endif
-
-    if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU)
+    if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
-
+    }
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
         if (features::IsChromeRefresh2023()) {
-          constexpr int profile_chip_corner_radii = 100;
           constexpr int background_horizontal_margin = 12;
           constexpr int background_corner_radii = 12;
           // Profile row margins are different from the menu config item
@@ -1258,71 +1345,13 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
               ui::kColorAppMenuProfileRowBackgroundHovered);
           ProfileAttributesEntry* profile_attributes =
               GetProfileAttributesFromProfile(browser_->profile());
-          views::Label* profile_chip_label;
-          views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
-          const MenuConfig& config = MenuConfig::instance();
-          // Truncate in the same way that app_menu_model does for the menu
-          // title.
           if (profile_attributes &&
-              !profile_attributes->GetLocalProfileName().empty() &&
-              !browser_->profile()->IsIncognitoProfile()) {
-            std::u16string local_name =
-                ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-                    profile_attributes->GetLocalProfileName(),
-                    GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
-                    gfx::CHARACTER_BREAK));
-            // We need to have the label of the profile chip within a
-            // BoxLayoutView and inside border insets because MenuItemView will
-            // layout the child items to the full height of the menu item in
-            // MenuItemView::Layout().
-            auto profile_chip =
-                views::Builder<views::BoxLayoutView>()
-                    .SetInsideBorderInsets(
-                        gfx::Insets::VH(config.item_top_margin, 0))
-                    .AddChildren(
-                        views::Builder<views::Label>()
-                            .SetText(local_name)
-                            .CopyAddressTo(&profile_chip_label)
-                            .SetBackground(views::CreateThemedRoundedRectBackground(
-                                item->IsSelected()
-                                    ? ui::kColorAppMenuProfileRowChipHovered
-                                    : ui::kColorAppMenuProfileRowChipBackground,
-                                profile_chip_corner_radii))
-                            // Add additional horizontal padding. Vertical
-                            // padding depends on menu margins to get alignment
-                            // with other items in the menu.
-                            .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-                                0, layout_provider
-                                       ->GetInsetsMetric(
-                                           views::INSETS_LABEL_BUTTON)
-                                       .left()))))
-                    .Build();
-
-            // MenuItemView has specific layout logic for child views in
-            // MenuItemView::Layout() which does not work very well with more
-            // custom menu items. We use this view to add the correct spacing
-            // between the profile chip and the edge of the menu.
-            auto profile_chip_edge_spacing_view =
-                views::Builder<views::View>()
-                    .SetPreferredSize(gfx::Size(
-                        config.arrow_to_edge_padding + config.arrow_width, 0))
-                    .Build();
-
-            profile_menu_item_selected_subscription_ =
-                item->AddSelectedChangedCallback(base::BindRepeating(
-                    [](MenuItemView* menu_item_view, View* child_view,
-                       int corner_radius) {
-                      child_view->SetBackground(
-                          views::CreateThemedRoundedRectBackground(
-                              menu_item_view->IsSelected()
-                                  ? ui::kColorAppMenuProfileRowChipHovered
-                                  : ui::kColorAppMenuProfileRowChipBackground,
-                              corner_radius));
-                    },
-                    item, profile_chip_label, profile_chip_corner_radii));
-            item->AddChildView(std::move(profile_chip));
-            item->AddChildView(std::move(profile_chip_edge_spacing_view));
-            item->SetHighlightWhenSelectedWithChildViews(true);
+              !profile_attributes->GetLocalProfileName().empty()) {
+            const MenuConfig& config = MenuConfig::instance();
+            AddChipToProfileMenuItem(
+                browser_, item, profile_attributes->GetLocalProfileName(),
+                config.arrow_to_edge_padding + config.arrow_width,
+                profile_menu_item_selected_subscription_list_);
           }
         }
         break;
@@ -1376,8 +1405,34 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
                 this, model->GetSubmenuModelAt(i), item);
         break;
 
-      default:
+      default: {
+        if (features::IsChromeRefresh2023() &&
+            IsOtherProfileCommand(model->GetCommandIdAt(i))) {
+          // Other profile command ids are dynamic and can change depending on
+          // the number of profiles in the browser. Because it's dynamic, check
+          // in the default section by verifying if the command matches what was
+          // assigned during initialization and whether the profile entry has
+          // a matching name.
+          std::u16string chip_label;
+          std::u16string gaia_name = model->GetLabelAt(i);
+          auto all_profile_entries =
+              g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .GetAllProfilesAttributesSortedByLocalProfileName();
+          for (ProfileAttributesEntry* profile_entry : all_profile_entries) {
+            if (GetProfileMenuDisplayName(profile_entry) == gaia_name) {
+              chip_label = profile_entry->GetLocalProfileName();
+              break;
+            }
+          }
+          if (!chip_label.empty()) {
+            AddChipToProfileMenuItem(
+                browser_, item, chip_label, 0 /*horizontal_padding*/,
+                profile_menu_item_selected_subscription_list_);
+          }
+        }
         break;
+      }
     }
   }
 }

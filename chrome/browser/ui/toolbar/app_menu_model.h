@@ -90,6 +90,10 @@ enum AppMenuAction {
   MENU_SHOW_SIGNIN_WHEN_PAUSED = 68,
   MENU_SHOW_SYNC_SETTINGS = 69,
   MENU_TURN_ON_SYNC = 70,
+  MENU_ACTION_OPEN_GUEST_PROFILE = 71,
+  MENU_ACTION_ADD_NEW_PROFILE = 72,
+  MENU_ACTION_MANAGE_CHROME_PROFILES = 73,
+
   LIMIT_MENU_ACTION
 };
 
@@ -156,14 +160,15 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // number of menu items. For example, the number of bookmarks menu items
   // varies depending upon the underlying model. The command IDs for items in
   // these menus will be staggered and each increment by this value, so they
-  // don't have conflicts. Currently, this accounts for the bookmarks and recent
-  // tabs menus.
-  static constexpr int kNumUnboundedMenuTypes = 2;
+  // don't have conflicts. Currently, this accounts for the bookmarks, recent
+  // tabs menus, and the profile submenu.
+  static constexpr int kNumUnboundedMenuTypes = 3;
 
   // First command ID to use for each unbounded menu. These should be staggered,
   // and there should be kNumUnboundedMenuTypes of them.
   static constexpr int kMinBookmarksCommandId = IDC_FIRST_UNBOUNDED_MENU;
   static constexpr int kMinRecentTabsCommandId = kMinBookmarksCommandId + 1;
+  static constexpr int kMinOtherProfileCommandId = kMinRecentTabsCommandId + 1;
 
   // Creates an app menu model for the given browser. Init() must be called
   // before passing this to an AppMenu. |app_menu_icon_controller|, if provided,

@@ -68,7 +68,7 @@ class ProfilePicker {
     kProfileMenuManageProfiles = 1,
     kProfileMenuAddNewProfile = 2,
     kOpenNewWindowAfterProfileDeletion = 3,
-    // A new session was sarted while Chrome was already running (e.g. by
+    // A new session was started while Chrome was already running (e.g. by
     // clicking on the tray icon on Windows).
     kNewSessionOnExistingProcess = 4,
     kProfileLocked = 5,
@@ -93,8 +93,12 @@ class ProfilePicker {
     // There was no usable profile when starting a new session while Chrome is
     // already running (e.g. the profiles were locked by force signin).
     kNewSessionOnExistingProcessNoProfile = 13,
+    // Opens manage profile view from the app menu.
+    kAppMenuProfileSubMenuManageProfiles = 14,
+    // Opens the add new profile view from the app menu.
+    kAppMenuProfileSubMenuAddNewProfile = 15,
 
-    kMaxValue = kNewSessionOnExistingProcessNoProfile,
+    kMaxValue = kAppMenuProfileSubMenuAddNewProfile,
   };
 
   class Params final {

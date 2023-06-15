@@ -170,6 +170,9 @@
 #define IDC_SHOW_SYNC_SETTINGS          35353
 #define IDC_TURN_ON_SYNC                35354
 #define IDC_SHOW_SIGNIN_WHEN_PAUSED     35355
+#define IDC_OPEN_GUEST_PROFILE          35356
+#define IDC_ADD_NEW_PROFILE             35357
+#define IDC_MANAGE_CHROME_PROFILES      35358
 
 // Zoom
 #define IDC_ZOOM_MENU                   38000

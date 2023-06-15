@@ -87992,6 +87992,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="First Run Experience (non-Lacros)"/>
   <int value="12" label="No usable profile at startup"/>
   <int value="13" label="No usable profile for existing process"/>
+  <int value="14" label="Manage profile item in the app menu"/>
+  <int value="15" label="Add new profile item in the app menu"/>
 </enum>
 
 <enum name="ProfilePickerPages">
@@ -115157,6 +115159,9 @@ Called by update_scheduler_enums.py.-->
       label="Show reauth sign in prompt to user who has sync paused"/>
   <int value="69" label="Show sync settings page"/>
   <int value="70" label="Show turn on sync prompt"/>
+  <int value="71" label="Open Guest profile"/>
+  <int value="72" label="Add new profile"/>
+  <int value="73" label="Manage Chrome profiles"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

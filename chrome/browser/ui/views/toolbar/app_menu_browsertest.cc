@@ -18,7 +18,10 @@
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -275,6 +278,11 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
       IdentityManagerFactory::GetForProfile(browser()->profile());
   signin::SetPrimaryAccount(identity_manager, "user@example.com",
                             signin::ConsentLevel::kSignin);
+
+  // Create an additional profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
+  profiles::testing::CreateProfileSync(profile_manager, new_path);
   ShowAndVerifyUi();
 }
 

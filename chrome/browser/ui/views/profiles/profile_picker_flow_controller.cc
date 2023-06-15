@@ -63,8 +63,10 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
     case ProfilePicker::EntryPoint::kProfileIdle:
     case ProfilePicker::EntryPoint::kNewSessionOnExistingProcessNoProfile:
+    case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:
       return base_url;
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
+    case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
       return base_url.Resolve("new-profile");
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
       return base_url.Resolve("account-selection-lacros");
@@ -307,6 +309,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
   DCHECK_EQ(Step::kPostSignInFlow, current_step());
 
   switch (entry_point_) {
+    case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:
     case ProfilePicker::EntryPoint::kOnStartup:
     case ProfilePicker::EntryPoint::kOnStartupNoProfile:
     case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
@@ -324,6 +327,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
 #endif
       return;
     }
+    case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {
       // This results in destroying `this`.
       ExitFlow();
