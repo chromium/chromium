@@ -768,9 +768,6 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
     }
   }
 
-  // TODO(crbug.com/801482): If we ever start running tests against external
-  // servers again, we might have to find a way to clear any pre-existing data
-  // from the test account.
   if (server_type_ == EXTERNAL_LIVE_SERVER) {
     LOG(ERROR) << "WARNING: Running against external servers with an existing "
                   "account. If there is any pre-existing data in the account, "

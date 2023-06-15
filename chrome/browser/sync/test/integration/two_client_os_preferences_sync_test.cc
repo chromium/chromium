@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, BrowserSyncDisabled) {
     // Disable all browser types.
     GetSyncService(i)->GetUserSettings()->SetSelectedTypes(
         false, syncer::UserSelectableTypeSet());
-    GetClient(i)->AwaitSyncSetupCompletion();
+    ASSERT_TRUE(GetClient(i)->AwaitSyncSetupCompletion());
   }
 
   ChangeStringPref(0, ash::prefs::kShelfAlignment, ash::kShelfAlignmentRight);

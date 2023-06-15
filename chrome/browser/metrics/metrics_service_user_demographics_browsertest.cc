@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
   std::unique_ptr<SyncServiceImplHarness> harness =
       test::InitializeProfileForSync(test_profile,
                                      GetFakeServer()->AsWeakPtr());
-  harness->SetupSync();
+  ASSERT_TRUE(harness->SetupSync());
 
   // Make sure that there is only one Profile to allow reporting the user's
   // birth year and gender.

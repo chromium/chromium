@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentBrowserTest,
 
   // Sync both clients, so the synced state of both prefs (i.e. off) will arrive
   // at the second client.
-  AwaitQuiescence();
+  ASSERT_TRUE(AwaitQuiescence());
 
   // Both clients: Expect that pref A is off and pref B is on.
   // Reason:

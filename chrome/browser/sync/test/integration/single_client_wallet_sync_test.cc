@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
        CreateSyncWalletAddress(/*name=*/"new-address", /*company=*/"Company-2"),
        CreateSyncPaymentsCustomerData(/*customer_id=*/"different"),
        CreateSyncCreditCardCloudTokenData(/*cloud_token_data_id=*/"data-2")});
-  GetClient(0)->SignInPrimaryAccount();
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
   WaitForNumberOfCards(1, pdm);
 

@@ -68,7 +68,7 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
     service->GetUserSettings()->SetSelectedOsTypes(
         /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
 
-    GetClient(0)->AwaitSyncSetupCompletion();
+    ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
   }
 
   base::Uuid kTestUuid1_;

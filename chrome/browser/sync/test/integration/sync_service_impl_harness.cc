@@ -263,11 +263,11 @@ void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
       IdentityManagerFactory::GetForProfile(profile_));
 }
 
-void SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
+bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   signin::SetRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(profile_));
   // The engine was off in the sync-paused state, so wait for it to start.
-  AwaitSyncSetupCompletion();
+  return AwaitSyncSetupCompletion();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

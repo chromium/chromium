@@ -589,9 +589,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
     app_listener.Wait();
   }
   // Propagate the change to profile 1.
-  AwaitQuiescence();
+  ASSERT_TRUE(AwaitQuiescence());
   // Propagate any possible re-installs back to profile 0.
-  AwaitQuiescence();
+  ASSERT_TRUE(AwaitQuiescence());
 
   WebAppProvider::GetForTest(GetProfile(0))
       ->command_manager()

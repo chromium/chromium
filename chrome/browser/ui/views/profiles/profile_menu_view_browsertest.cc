@@ -841,7 +841,7 @@ class ProfileMenuClickTest : public SyncTest,
   }
 
   void EnableSync() {
-    sync_harness()->SetupSync();
+    ASSERT_TRUE(sync_harness()->SetupSync());
     ASSERT_TRUE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
     ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());

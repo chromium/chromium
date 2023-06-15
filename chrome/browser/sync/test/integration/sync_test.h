@@ -238,7 +238,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Blocks until all sync clients have completed their mutual sync cycles.
   // Returns true if a quiescent state was successfully reached.
-  bool AwaitQuiescence();
+  [[nodiscard]] bool AwaitQuiescence();
 
   // Sets the mock gaia response for when an OAuth2 token is requested.
   // Each call to this method will overwrite responses that were previously set.

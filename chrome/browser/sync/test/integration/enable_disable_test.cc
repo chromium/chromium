@@ -297,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableDisable) {
   // Enable all, and then disable immediately afterwards, before datatypes
   // have had the chance to finish startup (which usually involves task
   // posting).
-  GetClient(0)->EnableSyncForRegisteredDatatypes();
-  GetClient(0)->DisableSyncForAllDatatypes();
+  ASSERT_TRUE(GetClient(0)->EnableSyncForRegisteredDatatypes());
+  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType grouped_type : ResolveGroup(type)) {
@@ -331,9 +331,9 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
   // Enable all, and then disable+reenable immediately afterwards, before
   // datatypes have had the chance to finish startup (which usually involves
   // task posting).
-  GetClient(0)->EnableSyncForRegisteredDatatypes();
-  GetClient(0)->DisableSyncForAllDatatypes();
-  GetClient(0)->EnableSyncForRegisteredDatatypes();
+  ASSERT_TRUE(GetClient(0)->EnableSyncForRegisteredDatatypes());
+  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
+  ASSERT_TRUE(GetClient(0)->EnableSyncForRegisteredDatatypes());
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType model_type : ResolveGroup(type)) {
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Stop and restart Sync.
   GetClient(0)->StopSyncServiceAndClearData();
-  GetClient(0)->EnableSyncFeature();
+  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
   // Everything should have been redownloaded.

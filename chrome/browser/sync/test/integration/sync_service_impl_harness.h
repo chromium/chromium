@@ -56,7 +56,10 @@ class SyncServiceImplHarness {
   SyncServiceImplHarness& operator=(const SyncServiceImplHarness&) = delete;
 
   // Signs in to a primary account without actually enabling sync the feature.
-  bool SignInPrimaryAccount();
+  // TODO(crbug.com/1455032): This actually sets up an account with
+  // ConsentLevel::kSync (should probably be kSignin instead), and on Android it
+  // also explicitly enables Sync-the-feature.
+  [[nodiscard]] bool SignInPrimaryAccount();
 
   // This is similar to click the reset button on chrome.google.com/sync.
   void ResetSyncForPrimaryAccount();
@@ -73,7 +76,7 @@ class SyncServiceImplHarness {
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
   void EnterSyncPausedStateForPrimaryAccount();
-  void ExitSyncPausedStateForPrimaryAccount();
+  bool ExitSyncPausedStateForPrimaryAccount();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Enables and configures sync for all available datatypes. Returns true only
@@ -82,8 +85,8 @@ class SyncServiceImplHarness {
   // |user_settings_callback| will be called once the engine is initialized, but
   // before actually starting sync, to give the caller a chance to modify sync
   // settings (mostly the selected data types).
-  bool SetupSync(SetUserSettingsCallback user_settings_callback =
-                     SetUserSettingsCallback());
+  [[nodiscard]] bool SetupSync(SetUserSettingsCallback user_settings_callback =
+                                   SetUserSettingsCallback());
 
   // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
@@ -93,7 +96,7 @@ class SyncServiceImplHarness {
   // before actually starting sync, to give the caller a chance to modify sync
   // settings (mostly the selected data types).
   // Returns true on success.
-  bool SetupSyncNoWaitForCompletion(
+  [[nodiscard]] bool SetupSyncNoWaitForCompletion(
       SetUserSettingsCallback user_settings_callback =
           SetUserSettingsCallback());
 
@@ -111,9 +114,10 @@ class SyncServiceImplHarness {
 
   // Stops the sync service and clears all local sync data.
   void StopSyncServiceAndClearData();
+
   // Turns on sync-the-feature and waits until sync-the-feature is active.
   // Returns true if and only if sync setup completed successfully.
-  bool EnableSyncFeature();
+  [[nodiscard]] bool EnableSyncFeature();
 
   // Calling this acts as a barrier and blocks the caller until |this| and
   // |partner| have both completed a sync cycle.  When calling this method,
@@ -122,33 +126,34 @@ class SyncServiceImplHarness {
   // from the message queue. Returns true if two sync cycles have completed.
   // Note: Use this method when exactly one client makes local change(s), and
   // exactly one client is waiting to receive those changes.
-  bool AwaitMutualSyncCycleCompletion(SyncServiceImplHarness* partner);
+  [[nodiscard]] bool AwaitMutualSyncCycleCompletion(
+      SyncServiceImplHarness* partner);
 
   // Blocks the caller until every client in |clients| completes its ongoing
   // sync cycle and all the clients' progress markers match.  Note: Use this
   // method when more than one client makes local change(s), and more than one
   // client is waiting to receive those changes.
-  static bool AwaitQuiescence(
+  [[nodiscard]] static bool AwaitQuiescence(
       const std::vector<SyncServiceImplHarness*>& clients);
 
   // Blocks the caller until the sync engine is initialized or some end state
   // (e.g., auth error) is reached. Returns true only if the engine initialized
   // successfully. See SyncService::IsEngineInitialized() for the definition
   // of engine initialization.
-  bool AwaitEngineInitialization();
+  [[nodiscard]] bool AwaitEngineInitialization();
 
   // Blocks the caller until sync setup is complete, and sync-the-feature is
   // active. Returns true if and only if sync setup completed successfully. Make
   // sure to actually start sync setup (usually by calling SetupSync() or one of
   // its variants) before.
-  bool AwaitSyncSetupCompletion();
+  [[nodiscard]] bool AwaitSyncSetupCompletion();
 
   // Blocks the caller until the sync transport layer is active. Returns true if
   // successful.
-  bool AwaitSyncTransportActive();
+  [[nodiscard]] bool AwaitSyncTransportActive();
 
   // Blocks the caller until invalidations are enabled or disabled.
-  bool AwaitInvalidationsStatus(bool expected_status);
+  [[nodiscard]] bool AwaitInvalidationsStatus(bool expected_status);
 
   // Returns the SyncServiceImpl member of the sync client.
   syncer::SyncServiceImpl* service() { return service_; }
@@ -159,17 +164,17 @@ class SyncServiceImplHarness {
 
   // Enables sync for a particular selectable sync type (will enable sync for
   // all corresponding datatypes). Returns true on success.
-  bool EnableSyncForType(syncer::UserSelectableType type);
+  [[nodiscard]] bool EnableSyncForType(syncer::UserSelectableType type);
 
   // Disables sync for a particular selectable sync type (will enable sync for
   // all corresponding datatypes). Returns true on success.
-  bool DisableSyncForType(syncer::UserSelectableType type);
+  [[nodiscard]] bool DisableSyncForType(syncer::UserSelectableType type);
 
   // Enables sync for all registered sync datatypes. Returns true on success.
-  bool EnableSyncForRegisteredDatatypes();
+  [[nodiscard]] bool EnableSyncForRegisteredDatatypes();
 
   // Disables sync for all sync datatypes. Returns true on success.
-  bool DisableSyncForAllDatatypes();
+  [[nodiscard]] bool DisableSyncForAllDatatypes();
 
   // Returns a snapshot of the current sync session.
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;

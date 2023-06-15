@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_TwoClientDictionarySyncTest, Limit) {
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
   // Disable client #1 before client #0 starts adding anything.
-  GetClient(1)->DisableSyncForAllDatatypes();
+  ASSERT_TRUE(GetClient(1)->DisableSyncForAllDatatypes());
 
   // Pick a size between 1/2 and 1/3 of kMaxSyncableDictionaryWords. This will
   // allow the test to verify that while we crossed the limit the client not

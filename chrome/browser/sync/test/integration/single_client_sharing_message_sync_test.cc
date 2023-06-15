@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
       callback_checker.GetCommitFinishedCallback());
 
   GetClient(0)->StopSyncServiceAndClearData();
-  GetClient(0)->EnableSyncFeature();
+  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
 
   EXPECT_TRUE(callback_checker.Wait());
   EXPECT_TRUE(GetFakeServer()
