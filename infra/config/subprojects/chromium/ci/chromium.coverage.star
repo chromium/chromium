@@ -403,7 +403,7 @@ coverage_builder(
         build_gs_bucket = "chromium-fyi-archive",
     ),
     builderless = True,
-    cores = 24,
+    cores = 12,
     os = os.MAC_ANY,
     console_view_entry = [
         consoles.console_view_entry(
