@@ -283,7 +283,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
-        websocket, context_id):
+        websocket, read_sorted_messages):
     await subscribe(websocket, [
         "browsingContext.contextCreated", "browsingContext.domContentLoaded",
         "browsingContext.load"
@@ -302,13 +302,8 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     # * `browsingContext.contextCreated` event.
     # * `browsingContext.domContentLoaded` event.
     # * `browsingContext.load` event.
-    messages = [
-        await read_JSON_message(websocket), await read_JSON_message(websocket),
-        await read_JSON_message(websocket)
-    ]
-
-    messages.sort(key=lambda x: x["method"] if "method" in x else "")
-    [context_created_event, dom_content_loaded_event, load_event] = messages
+    [context_created_event, dom_content_loaded_event,
+     load_event] = await read_sorted_messages(3)
 
     # Read the `browsingContext.create` command result. It should be sent after
     # all the loading events.

@@ -220,11 +220,8 @@ async def test_addPreloadScript_sameScript_multipleTimes_addedToSameContext(
 
 @pytest.mark.asyncio
 async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
-                                                   url_all_origins, html):
-    if url_all_origins in [
-            'https://example.com/', 'data:text/html,<h2>child page</h2>'
-    ]:
-        pytest.xfail(reason="TODO: fail")
+                                                   url_all_origins, html,
+                                                   read_sorted_messages):
     await subscribe(websocket, "log.entryAdded")
 
     await execute_command(
@@ -263,7 +260,7 @@ async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
     assert result == {"id": command_id, "result": ANY_DICT}
 
     # Create a new iframe within the same context.
-    result = await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -278,9 +275,13 @@ async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
             }
         })
 
+    # Event order is not guaranteed, so read 2 messages, sort them and assert.
+    [command_result, log_entry_added] = await read_sorted_messages(2)
+
+    assert command_result == {"id": command_id, "result": ANY_DICT}
+
     # Asset that the preload script is executed in the new iframe.
-    result = await read_JSON_message(websocket)
-    assert result == AnyExtending({
+    assert log_entry_added == AnyExtending({
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -289,8 +290,6 @@ async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
             }]
         }
     })
-
-    result = await read_JSON_message(websocket)
 
 
 @pytest.mark.asyncio

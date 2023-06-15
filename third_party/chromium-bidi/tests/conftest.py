@@ -18,7 +18,7 @@ import os
 import pytest
 import pytest_asyncio
 import websockets
-from test_helpers import execute_command, get_tree, goto_url
+from test_helpers import execute_command, get_tree, goto_url, read_JSON_message
 
 
 @pytest_asyncio.fixture
@@ -121,6 +121,22 @@ def url_cross_origin(request):
 def url_all_origins(request):
     """Return an URL exhaustively, including same-origin and cross-origin."""
     return request.param
+
+
+@pytest.fixture
+def read_sorted_messages(websocket):
+    """Read the given number of messages from the websocket, and returns them
+    in consistent order."""
+
+    async def read_sorted_messages(message_count):
+        messages = []
+        for _ in range(message_count):
+            messages.append(await read_JSON_message(websocket))
+        messages.sort(key=lambda x: x["method"]
+                      if "method" in x else str(x["id"]) if "id" in x else "")
+        return messages
+
+    return read_sorted_messages
 
 
 @pytest.fixture

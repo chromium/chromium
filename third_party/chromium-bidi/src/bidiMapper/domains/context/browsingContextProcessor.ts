@@ -34,14 +34,11 @@ import type {InputState} from '../input/InputState.js';
 import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 
-import {
-  type BidiPreloadScript,
-  type CdpPreloadScript,
-  PreloadScriptStorage,
-} from './PreloadScriptStorage.js';
+import {PreloadScriptStorage} from './PreloadScriptStorage.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
+import {BidiPreloadScript} from './bidiPreloadScript';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -162,9 +159,7 @@ export class BrowsingContextProcessor {
       sessionId,
       this.#realmStorage,
       this.#eventManager,
-      this.#preloadScriptStorage,
-      this.#browsingContextStorage,
-      this.#logger
+      this.#preloadScriptStorage
     );
 
     if (maybeContext) {
@@ -193,7 +188,9 @@ export class BrowsingContextProcessor {
     const contextId = params.targetId!;
     this.#browsingContextStorage.findContext(contextId)?.delete();
 
-    this.#preloadScriptStorage.removeCdpPreloadScripts({targetId: contextId});
+    this.#preloadScriptStorage
+      .findPreloadScripts({targetId: contextId})
+      .map((preloadScript) => preloadScript.cdpTargetIsGone(contextId));
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {
@@ -306,10 +303,8 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    if (params.arguments !== undefined && params.arguments.length > 0) {
-      // TODO: Handle arguments.
-      throw new Error('add preload script arguments are not supported');
-    }
+    const preloadScript = new BidiPreloadScript(params);
+    this.#preloadScriptStorage.addPreloadScript(preloadScript);
 
     const cdpTargets = new Set<CdpTarget>(
       // TODO: The unique target can be in a non-top-level browsing context.
@@ -322,27 +317,7 @@ export class BrowsingContextProcessor {
         : [this.#browsingContextStorage.getContext(params.context).cdpTarget]
     );
 
-    const cdpPreloadScripts: CdpPreloadScript[] = [];
-
-    for (const cdpTarget of cdpTargets) {
-      const cdpPreloadScriptId = await cdpTarget.addPreloadScript(
-        // The spec provides a function, and CDP expects an evaluation.
-        `(${params.functionDeclaration})();`,
-        params.sandbox
-      );
-      cdpPreloadScripts.push({
-        target: cdpTarget,
-        preloadScriptId: cdpPreloadScriptId,
-      });
-    }
-
-    const preloadScript: BidiPreloadScript =
-      this.#preloadScriptStorage.addPreloadScripts(
-        params.context ?? null,
-        cdpPreloadScripts,
-        params.functionDeclaration,
-        params.sandbox
-      );
+    await preloadScript.initInTargets(cdpTargets);
 
     return {
       result: {
@@ -366,13 +341,7 @@ export class BrowsingContextProcessor {
       );
     }
 
-    for (const script of scripts) {
-      for (const cdpPreloadScript of script.cdpPreloadScripts) {
-        const cdpTarget = cdpPreloadScript.target;
-        const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
-        await cdpTarget.removePreloadScript(cdpPreloadScriptId);
-      }
-    }
+    await Promise.all(scripts.map((script) => script.remove()));
 
     this.#preloadScriptStorage.removeBiDiPreloadScripts({
       id: bidiId,

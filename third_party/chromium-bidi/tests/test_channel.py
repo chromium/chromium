@@ -258,9 +258,9 @@ async def test_channel_and_another_channel(websocket, context_id):
         "handle": ANY_STR
     }),
     pytest.param({"maxDomDepth": 1}, {},
-                 marks=pytest.mark.skip("Not implemented yet")),
+                 marks=pytest.mark.skip("TODO: Not implemented yet")),
     pytest.param({"maxDomDepth": None}, {},
-                 marks=pytest.mark.skip("Not implemented yet")),
+                 marks=pytest.mark.skip("TODO: Not implemented yet")),
     ({
         "maxObjectDepth": 0
     }, {
@@ -328,9 +328,9 @@ async def test_channel_and_another_channel(websocket, context_id):
         "handle": ANY_STR
     }),
     pytest.param({"includeShadowTree": "open"}, {},
-                 marks=pytest.mark.skip("Not implemented yet")),
+                 marks=pytest.mark.skip("TODO: Not implemented yet")),
     pytest.param({"includeShadowTree": "all"}, {},
-                 marks=pytest.mark.skip("Not implemented yet")),
+                 marks=pytest.mark.skip("TODO: Not implemented yet")),
 ])
 @pytest.mark.asyncio
 async def test_channel_serialization_options(websocket, context_id,

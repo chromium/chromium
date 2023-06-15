@@ -21,13 +21,10 @@ import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogManager} from '../log/logManager.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {CDP, type Script} from '../../../protocol/protocol.js';
+import {CDP} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
-import {type LoggerFn, LogType} from '../../../utils/log.js';
-
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import type {BrowsingContextStorage} from './browsingContextStorage';
 
 export class CdpTarget {
   readonly #targetId: string;
@@ -36,11 +33,9 @@ export class CdpTarget {
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
-  readonly #logger?: LoggerFn;
 
   readonly #targetUnblocked: Deferred<void>;
   #networkDomainActivated: boolean;
-  #browsingContextStorage: BrowsingContextStorage;
 
   static create(
     targetId: string,
@@ -49,9 +44,7 @@ export class CdpTarget {
     cdpSessionId: string,
     realmStorage: RealmStorage,
     eventManager: IEventManager,
-    preloadScriptStorage: PreloadScriptStorage,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn
+    preloadScriptStorage: PreloadScriptStorage
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -59,9 +52,7 @@ export class CdpTarget {
       cdpClient,
       cdpSessionId,
       eventManager,
-      preloadScriptStorage,
-      browsingContextStorage,
-      logger
+      preloadScriptStorage
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -81,9 +72,7 @@ export class CdpTarget {
     cdpClient: ICdpClient,
     cdpSessionId: string,
     eventManager: IEventManager,
-    preloadScriptStorage: PreloadScriptStorage,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn
+    preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#targetId = targetId;
     this.#parentTargetId = parentTargetId;
@@ -91,8 +80,6 @@ export class CdpTarget {
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#logger = logger;
 
     this.#networkDomainActivated = false;
     this.#targetUnblocked = new Deferred();
@@ -140,7 +127,7 @@ export class CdpTarget {
         flatten: true,
       });
 
-      await this.#loadPreloadScripts();
+      await this.#initAndEvaluatePreloadScripts();
 
       await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
     } catch (error: any) {
@@ -181,84 +168,14 @@ export class CdpTarget {
   }
 
   /** Loads all top-level and parent preload scripts. */
-  async #loadPreloadScripts() {
+  async #initAndEvaluatePreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
-      const {functionDeclaration, sandbox} = script;
-
-      // The spec provides a function, and CDP expects an evaluation.
-      const cdpPreloadScriptId = await this.addPreloadScript(
-        `(${functionDeclaration})();`,
-        sandbox
-      );
-
-      // Upon attaching to a new target, run preload scripts on each execution
-      // context before `Runtime.runIfWaitingForDebugger`.
-      //
-      // Otherwise a browsing context might be created without the evaluation of
-      // preload scripts.
-      await Promise.all(
-        this.#browsingContextStorage
-          .getAllContexts()
-          .filter((context) => context.cdpTarget === this)
-          .map((context) =>
-            context
-              .getOrCreateSandbox(sandbox)
-              .then((realm) =>
-                this.cdpClient.sendCommand('Runtime.evaluate', {
-                  expression: `(${functionDeclaration})();`,
-                  contextId: realm.executionContextId,
-                })
-              )
-              .catch((error) => {
-                this.#logger?.(
-                  LogType.cdp,
-                  'Could not evaluate preload script',
-                  error
-                );
-              })
-          )
-      );
-
-      this.#preloadScriptStorage.appendCdpPreloadScript(script, {
-        target: this,
-        preloadScriptId: cdpPreloadScriptId,
-      });
+      await script.initInTarget(this);
+      // Upon attaching to a new target, schedule running preload scripts right
+      // after `Runtime.runIfWaitingForDebugger`, but don't wait for the result.
+      script.scheduleEvaluateInTarget(this);
     }
-  }
-
-  /**
-   * Issues `Page.addScriptToEvaluateOnNewDocument` CDP command with the given
-   * script source in evaluated form and world name / sandbox.
-   *
-   * @return The CDP preload script ID.
-   */
-  async addPreloadScript(
-    scriptSource: string,
-    sandbox?: string
-  ): Promise<Script.PreloadScript> {
-    const result = await this.cdpClient.sendCommand(
-      'Page.addScriptToEvaluateOnNewDocument',
-      {
-        source: scriptSource,
-        worldName: sandbox,
-      }
-    );
-
-    return result.identifier;
-  }
-
-  /**
-   * Issues `Page.removeScriptToEvaluateOnNewDocument` CDP command with the
-   * given CDP preload script ID.
-   */
-  async removePreloadScript(cdpPreloadScriptId: string): Promise<void> {
-    await this.cdpClient.sendCommand(
-      'Page.removeScriptToEvaluateOnNewDocument',
-      {
-        identifier: cdpPreloadScriptId,
-      }
-    );
   }
 }
