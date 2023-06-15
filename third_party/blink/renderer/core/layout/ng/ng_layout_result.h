@@ -110,7 +110,7 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   int LinesUntilClamp() const {
-    return HasRareData() ? rare_data_->lines_until_clamp : 0;
+    return rare_data_ ? rare_data_->lines_until_clamp : 0;
   }
 
   // Return true if this is an orthogonal writing-mode root that depends on the
@@ -122,15 +122,15 @@ class CORE_EXPORT NGLayoutResult final
   // Return true if there's an orthogonal writing-mode root descendant inside
   // that depends on the size of the initial containing block.
   bool HasOrthogonalFallbackSizeDescendant() const {
-    return HasRareData() &&
-           rare_data_->has_orthogonal_fallback_size_descendant();
+    return bitfields_.has_orthogonal_fallback_size_descendant;
   }
 
   // Return the adjustment baked into the fragment's block-offset that's caused
   // by ruby annotations.
   LayoutUnit AnnotationBlockOffsetAdjustment() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return LayoutUnit();
+    }
     const RareData::LineData* data = rare_data_->GetLineData();
     return data ? data->annotation_block_offset_adjustment : LayoutUnit();
   }
@@ -142,21 +142,19 @@ class CORE_EXPORT NGLayoutResult final
   //      This happens only for LayoutRubyRun.
   // N : Overflowing by N px at block-end side
   LayoutUnit AnnotationOverflow() const {
-    return HasRareData() ? rare_data_->annotation_overflow : LayoutUnit();
+    return rare_data_ ? rare_data_->annotation_overflow : LayoutUnit();
   }
 
   // The amount of available space for block-start side annotations of the
   // next box.
   // This never be negative.
   LayoutUnit BlockEndAnnotationSpace() const {
-    return HasRareData() ? rare_data_->block_end_annotation_space
-                         : LayoutUnit();
+    return rare_data_ ? rare_data_->block_end_annotation_space : LayoutUnit();
   }
 
   LogicalOffset OutOfFlowPositionedOffset() const {
     DCHECK(bitfields_.has_oof_positioned_offset);
-    return HasRareData() ? rare_data_->oof_positioned_offset
-                         : oof_positioned_offset_;
+    return oof_positioned_offset_;
   }
 
   // Returns if we can use the first-tier OOF-positioned cache.
@@ -166,17 +164,17 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   absl::optional<wtf_size_t> PositionFallbackIndex() const {
-    return HasRareData() ? rare_data_->PositionFallbackIndex() : absl::nullopt;
+    return rare_data_ ? rare_data_->PositionFallbackIndex() : absl::nullopt;
   }
   const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
       const {
-    return HasRareData() ? rare_data_->PositionFallbackNonOverflowingRanges()
-                         : nullptr;
+    return rare_data_ ? rare_data_->PositionFallbackNonOverflowingRanges()
+                      : nullptr;
   }
 
   // Get the path to the column spanner (if any) that interrupted column layout.
   const NGColumnSpannerPath* ColumnSpannerPath() const {
-    if (HasRareData()) {
+    if (rare_data_) {
       if (const RareData::BlockData* data = rare_data_->GetBlockData())
         return data->column_spanner_path;
     }
@@ -196,14 +194,15 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   const NGEarlyBreak* GetEarlyBreak() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return nullptr;
+    }
     return rare_data_->early_break;
   }
 
   const NGExclusionSpace& ExclusionSpace() const {
     if (bitfields_.has_rare_data_exclusion_space) {
-      DCHECK(HasRareData());
+      DCHECK(rare_data_);
       return rare_data_->exclusion_space;
     }
 
@@ -213,9 +212,6 @@ class CORE_EXPORT NGLayoutResult final
   EStatus Status() const { return static_cast<EStatus>(bitfields_.status); }
 
   LayoutUnit BfcLineOffset() const {
-    if (HasRareData())
-      return rare_data_->bfc_line_offset;
-
     if (bitfields_.has_oof_positioned_offset) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
@@ -225,9 +221,6 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   const absl::optional<LayoutUnit> BfcBlockOffset() const {
-    if (HasRareData())
-      return rare_data_->BfcBlockOffset();
-
     if (bitfields_.has_oof_positioned_offset) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
@@ -256,7 +249,7 @@ class CORE_EXPORT NGLayoutResult final
     if (Status() != kSuccess || !PhysicalFragment().IsLineBox())
       return absl::nullopt;
 
-    if (HasRareData()) {
+    if (rare_data_) {
       if (absl::optional<LayoutUnit> offset =
               rare_data_->LineBoxBfcBlockOffset())
         return offset;
@@ -266,7 +259,7 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   const NGMarginStrut EndMarginStrut() const {
-    return HasRareData() ? rare_data_->end_margin_strut : NGMarginStrut();
+    return rare_data_ ? rare_data_->end_margin_strut : NGMarginStrut();
   }
 
   // Get the intrinsic block-size of the fragment. This is the block-size the
@@ -291,14 +284,15 @@ class CORE_EXPORT NGLayoutResult final
   // Return the amount of clearance that we have to add after the fragment. This
   // is used for BR clear elements.
   LayoutUnit ClearanceAfterLine() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return LayoutUnit();
+    }
     const RareData::LineData* data = rare_data_->GetLineData();
     return data ? data->clearance_after_line : LayoutUnit();
   }
 
   absl::optional<LayoutUnit> MinimalSpaceShortage() const {
-    if (!HasRareData() || space_.IsInitialColumnBalancingPass() ||
+    if (!rare_data_ || space_.IsInitialColumnBalancingPass() ||
         rare_data_->minimal_space_shortage == kIndefiniteSize) {
       return absl::nullopt;
     }
@@ -306,7 +300,7 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   LayoutUnit TallestUnbreakableBlockSize() const {
-    if (!HasRareData() || !space_.IsInitialColumnBalancingPass() ||
+    if (!rare_data_ || !space_.IsInitialColumnBalancingPass() ||
         rare_data_->tallest_unbreakable_block_size == kIndefiniteSize) {
       return LayoutUnit();
     }
@@ -321,8 +315,9 @@ class CORE_EXPORT NGLayoutResult final
   // wasn't performed on the node (e.g. monolithic content such as line boxes,
   // or if the node isn't inside a fragmentation context at all).
   LayoutUnit BlockSizeForFragmentation() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return kIndefiniteSize;
+    }
     return rare_data_->block_size_for_fragmentation;
   }
 
@@ -361,33 +356,37 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   SerializedScriptValue* CustomLayoutData() const {
-    return HasRareData() ? rare_data_->custom_layout_data.get() : nullptr;
+    return rare_data_ ? rare_data_->custom_layout_data.get() : nullptr;
   }
 
   wtf_size_t TableColumnCount() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return 0;
+    }
     const RareData::TableData* data = rare_data_->GetTableData();
     return data ? data->table_column_count : 0;
   }
 
   const NGGridLayoutData* GridLayoutData() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return nullptr;
+    }
     const RareData::GridData* data = rare_data_->GetGridData();
     return data ? data->grid_layout_data.get() : nullptr;
   }
 
   const DevtoolsFlexInfo* FlexLayoutData() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return nullptr;
+    }
     const RareData::FlexData* data = rare_data_->GetFlexData();
     return data ? data->flex_layout_data.get() : nullptr;
   }
 
   LayoutUnit MathItalicCorrection() const {
-    if (!HasRareData())
+    if (!rare_data_) {
       return LayoutUnit();
+    }
     const RareData::MathData* data = rare_data_->GetMathData();
     return data ? data->italic_correction : LayoutUnit();
   }
@@ -481,10 +480,7 @@ class CORE_EXPORT NGLayoutResult final
           .can_use_out_of_flow_positioned_first_tier_cache =
           can_use_out_of_flow_positioned_first_tier_cache;
       layout_result_->bitfields_.has_oof_positioned_offset = true;
-      if (layout_result_->HasRareData())
-        layout_result_->rare_data_->oof_positioned_offset = offset;
-      else
-        layout_result_->oof_positioned_offset_ = offset;
+      layout_result_->oof_positioned_offset_ = offset;
     }
 
     void SetPositionFallbackResult(
@@ -581,15 +577,11 @@ class CORE_EXPORT NGLayoutResult final
     };
 
     using BitField = WTF::ConcurrentlyReadBitField<uint8_t>;
-    using BfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
-    using LineBoxBfcBlockOffsetIsSetFlag =
-        BfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
+    using LineBoxBfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
     using PositionFallbackResultIsSetFlag =
-        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<uint8_t, 1>;
+        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using DataUnionTypeValue =
         PositionFallbackResultIsSetFlag::DefineNextValue<uint8_t, 3>;
-    using HasOrthogonalFallbackSizeDescendantFlag =
-        DataUnionTypeValue::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -630,14 +622,6 @@ class CORE_EXPORT NGLayoutResult final
       wtf_size_t table_column_count = 0;
     };
 
-    bool bfc_block_offset_is_set() const {
-      return bit_field.get<BfcBlockOffsetIsSetFlag>();
-    }
-
-    void set_bfc_block_offset_is_set(bool flag) {
-      return bit_field.set<BfcBlockOffsetIsSetFlag>(flag);
-    }
-
     bool line_box_bfc_block_offset_is_set() const {
       return bit_field.get<LineBoxBfcBlockOffsetIsSetFlag>();
     }
@@ -652,14 +636,6 @@ class CORE_EXPORT NGLayoutResult final
 
     void set_position_fallback_result_is_set(bool flag) {
       return bit_field.set<PositionFallbackResultIsSetFlag>(flag);
-    }
-
-    bool has_orthogonal_fallback_size_descendant() const {
-      return bit_field.get<HasOrthogonalFallbackSizeDescendantFlag>();
-    }
-
-    void set_has_orthogonal_fallback_size_descendant(bool flag) {
-      return bit_field.set<HasOrthogonalFallbackSizeDescendantFlag>(flag);
     }
 
     DataUnionType data_union_type() const {
@@ -724,18 +700,9 @@ class CORE_EXPORT NGLayoutResult final
       return GetData<TableData>(&table_data, kTableData);
     }
 
-    RareData(LayoutUnit bfc_line_offset,
-             absl::optional<LayoutUnit> bfc_block_offset)
-        : bfc_line_offset(bfc_line_offset),
-          bit_field(BfcBlockOffsetIsSetFlag::encode(bfc_line_offset) |
-                    LineBoxBfcBlockOffsetIsSetFlag::encode(false) |
-                    DataUnionTypeValue::encode(kNone)) {
-      SetBfcBlockOffset(bfc_block_offset);
-    }
+    RareData() : bit_field(DataUnionTypeValue::encode(kNone)) {}
     RareData(const RareData& rare_data)
-        : bfc_line_offset(rare_data.bfc_line_offset),
-          early_break(rare_data.early_break),
-          oof_positioned_offset(rare_data.oof_positioned_offset),
+        : early_break(rare_data.early_break),
           end_margin_strut(rare_data.end_margin_strut),
           // This will initialize "both" members of the union.
           tallest_unbreakable_block_size(
@@ -746,7 +713,6 @@ class CORE_EXPORT NGLayoutResult final
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
           lines_until_clamp(rare_data.lines_until_clamp),
-          bfc_block_offset(rare_data.bfc_block_offset),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           position_fallback_index(rare_data.position_fallback_index),
           position_fallback_non_overflowing_ranges(
@@ -805,20 +771,6 @@ class CORE_EXPORT NGLayoutResult final
       }
     }
 
-    void SetBfcBlockOffset(absl::optional<LayoutUnit> offset) {
-      if (offset) {
-        bfc_block_offset = *offset;
-        set_bfc_block_offset_is_set(true);
-      } else {
-        set_bfc_block_offset_is_set(false);
-      }
-    }
-    absl::optional<LayoutUnit> BfcBlockOffset() const {
-      if (!bfc_block_offset_is_set())
-        return absl::nullopt;
-      return bfc_block_offset;
-    }
-
     void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
       line_box_bfc_block_offset = offset;
       set_line_box_bfc_block_offset_is_set(true);
@@ -852,10 +804,7 @@ class CORE_EXPORT NGLayoutResult final
 
     void Trace(Visitor* visitor) const;
 
-    LayoutUnit bfc_line_offset;
-
     Member<const NGEarlyBreak> early_break;
-    LogicalOffset oof_positioned_offset;
     NGMarginStrut end_margin_strut;
     union {
       // Only set in the initial column balancing layout pass, when we have no
@@ -879,9 +828,6 @@ class CORE_EXPORT NGLayoutResult final
     int lines_until_clamp = 0;
 
    private:
-    // Only valid if bfc_block_offset_is_set
-    LayoutUnit bfc_block_offset;
-
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
@@ -900,7 +846,6 @@ class CORE_EXPORT NGLayoutResult final
       TableData table_data;
     };
   };
-  bool HasRareData() const { return rare_data_; }
   RareData* EnsureRareData();
 
 #if DCHECK_IS_ON()
@@ -943,7 +888,8 @@ class CORE_EXPORT NGLayoutResult final
           initial_break_before(static_cast<unsigned>(EBreakBetween::kAuto)),
           final_break_after(static_cast<unsigned>(EBreakBetween::kAuto)),
           status(static_cast<unsigned>(kSuccess)),
-          is_truncated_by_fragmentation_line(false) {}
+          is_truncated_by_fragmentation_line(false),
+          has_orthogonal_fallback_size_descendant(false) {}
 
     unsigned has_rare_data_exclusion_space : 1;
     unsigned has_oof_positioned_offset : 1;
@@ -970,6 +916,7 @@ class CORE_EXPORT NGLayoutResult final
 
     unsigned status : 3;  // EStatus
     unsigned is_truncated_by_fragmentation_line : 1;
+    unsigned has_orthogonal_fallback_size_descendant : 1;
   };
 
   // The constraint space which generated this layout result.

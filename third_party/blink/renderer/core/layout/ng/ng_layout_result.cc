@@ -162,13 +162,12 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
                                LayoutUnit block_offset_delta)
     : space_(new_space),
       physical_fragment_(other.physical_fragment_),
+      rare_data_(other.rare_data_
+                     ? MakeGarbageCollected<RareData>(*other.rare_data_)
+                     : nullptr),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (other.HasRareData()) {
-    rare_data_ = MakeGarbageCollected<RareData>(*other.rare_data_);
-    rare_data_->bfc_line_offset = bfc_line_offset;
-    rare_data_->SetBfcBlockOffset(bfc_block_offset);
-  } else if (!bitfields_.has_oof_positioned_offset) {
+  if (!bitfields_.has_oof_positioned_offset) {
     bfc_offset_.line_offset = bfc_line_offset;
     bfc_offset_.block_offset = bfc_block_offset.value_or(LayoutUnit());
     bitfields_.is_bfc_block_offset_nullopt = !bfc_block_offset.has_value();
@@ -189,19 +188,21 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
     space_.ExclusionSpace().MoveDerivedGeometry(new_exclusion_space);
   }
 
-  if (new_end_margin_strut != NGMarginStrut() || HasRareData())
+  if (new_end_margin_strut != NGMarginStrut() || rare_data_) {
     EnsureRareData()->end_margin_strut = new_end_margin_strut;
+  }
 }
 
 NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
                                const NGPhysicalFragment* physical_fragment)
     : space_(other.space_),
       physical_fragment_(std::move(physical_fragment)),
+      rare_data_(other.rare_data_
+                     ? MakeGarbageCollected<RareData>(*other.rare_data_)
+                     : nullptr),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (other.HasRareData()) {
-    rare_data_ = MakeGarbageCollected<RareData>(*other.rare_data_);
-  } else if (!bitfields_.has_oof_positioned_offset) {
+  if (!bitfields_.has_oof_positioned_offset) {
     bfc_offset_ = other.bfc_offset_;
   } else {
     DCHECK(physical_fragment_->IsOutOfFlowPositioned());
@@ -215,6 +216,7 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
                                NGFragmentBuilder* builder)
     : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),
+      rare_data_(nullptr),
       bitfields_(builder->is_self_collapsing_,
                  builder->is_pushed_by_floats_,
                  builder->adjoining_object_types_,
@@ -269,21 +271,13 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
 
   bitfields_.should_force_same_fragmentation_flow =
       builder->should_force_same_fragmentation_flow_;
+  bitfields_.has_orthogonal_fallback_size_descendant =
+      builder->has_orthogonal_fallback_size_descendant_;
 
-  if (builder->has_orthogonal_fallback_size_descendant_) {
-    EnsureRareData()->set_has_orthogonal_fallback_size_descendant(true);
-  }
-
-  if (HasRareData()) {
-    rare_data_->bfc_line_offset = builder->bfc_line_offset_;
-    rare_data_->SetBfcBlockOffset(builder->bfc_block_offset_);
-  } else {
-    bfc_offset_.line_offset = builder->bfc_line_offset_;
-    bfc_offset_.block_offset =
-        builder->bfc_block_offset_.value_or(LayoutUnit());
-    bitfields_.is_bfc_block_offset_nullopt =
-        !builder->bfc_block_offset_.has_value();
-  }
+  bfc_offset_.line_offset = builder->bfc_line_offset_;
+  bfc_offset_.block_offset = builder->bfc_block_offset_.value_or(LayoutUnit());
+  bitfields_.is_bfc_block_offset_nullopt =
+      !builder->bfc_block_offset_.has_value();
 }
 
 NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
@@ -301,13 +295,8 @@ NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
 }
 
 NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
-  if (!HasRareData()) {
-    DCHECK(!bitfields_.has_oof_positioned_offset);
-    absl::optional<LayoutUnit> bfc_block_offset;
-    if (!bitfields_.is_bfc_block_offset_nullopt)
-      bfc_block_offset = bfc_offset_.block_offset;
-    rare_data_ = MakeGarbageCollected<RareData>(bfc_offset_.line_offset,
-                                                bfc_block_offset);
+  if (!rare_data_) {
+    rare_data_ = MakeGarbageCollected<RareData>();
   }
   return rare_data_;
 }
