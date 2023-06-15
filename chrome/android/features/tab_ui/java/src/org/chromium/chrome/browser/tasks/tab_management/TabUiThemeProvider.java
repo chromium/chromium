@@ -28,6 +28,9 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class TabUiThemeProvider {
     private static final String TAG = "TabUiThemeProvider";
+    private static final int ALPHA_20 = 0x33;
+    private static final int ALPHA_25 = 0x40;
+    private static final int ALPHA_40 = 0x66;
 
     /**
      * Returns the color to use for the tab grid card view background based on incognito mode.
@@ -180,33 +183,24 @@ public class TabUiThemeProvider {
     public static @ColorInt int getThumbnailPlaceholderIconColor(
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
-            @ColorRes
-            final int colorRes = isSelected ? R.color.incognito_placeholder_icon_selected_color
-                                            : R.color.incognito_placeholder_icon_color;
-            @ColorInt
-            final int color = context.getColor(colorRes);
-            // 40% if selected, 25% if not selected
-            return isSelected ? applyAlpha(0x66, color) : applyAlpha(0x40, color);
+            final @ColorRes int colorRes = isSelected
+                    ? R.color.incognito_placeholder_icon_selected_color
+                    : R.color.incognito_placeholder_icon_color;
+            final @ColorInt int color = context.getColor(colorRes);
+            return isSelected ? ColorUtils.setAlphaComponent(color, ALPHA_40)
+                              : ColorUtils.setAlphaComponent(color, ALPHA_25);
+        } else if (ColorUtils.inNightMode(context)) {
+            final @ColorInt int color = isSelected
+                    ? SemanticColorUtils.getDefaultTextColorOnAccent1(context)
+                    : SemanticColorUtils.getDefaultIconColor(context);
+            return isSelected ? ColorUtils.setAlphaComponent(color, ALPHA_40)
+                              : ColorUtils.setAlphaComponent(color, ALPHA_25);
+        } else {
+            final @ColorInt int color = isSelected
+                    ? SemanticColorUtils.getDefaultIconColorAccent1(context)
+                    : SemanticColorUtils.getDefaultIconColor(context);
+            return isSelected ? color : ColorUtils.setAlphaComponent(color, ALPHA_20);
         }
-        final boolean isDarkTheme = ColorUtils.inNightMode(context);
-        if (isDarkTheme) {
-            // colorOnPrimary == default_icon_color_on_accent_1.
-            @ColorInt
-            int color = isSelected ? MaterialColors.getColor(
-                                context, org.chromium.chrome.R.attr.colorOnPrimary, TAG)
-                                   : SemanticColorUtils.getDefaultIconColor(context);
-            // 40% if selected. 25% if not selected.
-            return isSelected ? applyAlpha(0x66, color) : applyAlpha(0x40, color);
-        }
-        @ColorInt
-        int color = isSelected ? SemanticColorUtils.getDefaultIconColorAccent1(context)
-                               : SemanticColorUtils.getDefaultIconColor(context);
-        // 100% if selected, 20% if not selected.
-        return isSelected ? color : applyAlpha(0x33, color);
-    }
-
-    private static @ColorInt int applyAlpha(int alpha, @ColorInt int color) {
-        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     /**
