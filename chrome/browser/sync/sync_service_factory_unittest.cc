@@ -121,7 +121,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(syncer::kTabGroupsSaveSyncIntegration)) {
+    if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
       datatypes.Put(syncer::SAVED_TAB_GROUP);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||

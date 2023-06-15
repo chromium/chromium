@@ -22,9 +22,7 @@ namespace {
 class SingleClientSavedTabGroupsSyncTest : public SyncTest {
  public:
   SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        {features::kTabGroupsSave, syncer::kTabGroupsSaveSyncIntegration},
-        /*disabled_features=*/{});
+    features_.InitAndEnableFeature(features::kTabGroupsSave);
   }
   ~SingleClientSavedTabGroupsSyncTest() override = default;
   SingleClientSavedTabGroupsSyncTest(

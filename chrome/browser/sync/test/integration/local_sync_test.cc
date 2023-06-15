@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
     expected_active_data_types.Remove(syncer::TYPED_URLS);
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kTabGroupsSaveSyncIntegration)) {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
     expected_active_data_types.Put(syncer::SAVED_TAB_GROUP);
   }
 

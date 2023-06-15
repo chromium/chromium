@@ -195,13 +195,13 @@ BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 // If enabled, uses a JsonPrefStore for account preferences.
 BASE_DECLARE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences);
 
-// Flag to control if a user can enable sync for the #tab-groups-save feature.
-BASE_DECLARE_FEATURE(kTabGroupsSaveSyncIntegration);
+// Wrapper flag to control the nudge delay of the #tab-groups-save feature.
+BASE_DECLARE_FEATURE(kTabGroupsSaveNudgeDelay);
 
 // If provided, changes the amount of time before we send messages to the sync
 // service.
 inline constexpr base::FeatureParam<base::TimeDelta>
-    kTabGroupsSaveCustomNudgeDelay(&kTabGroupsSaveSyncIntegration,
+    kTabGroupsSaveCustomNudgeDelay(&kTabGroupsSaveNudgeDelay,
                                    "TabGroupsSaveCustomNudgeDelay",
                                    base::Seconds(11));
 
