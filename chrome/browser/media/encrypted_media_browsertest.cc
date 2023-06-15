@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "media/audio/win/core_audio_util_win.h"
 #include "media/base/win/mf_feature_checks.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -320,10 +321,6 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       RegisterMediaFoundationClearKeyCdm(enabled_features);
       enabled_features.push_back(
           {media::kHardwareSecureDecryptionExperiment, {}});
-      // TODO(crbug.com/1412485): Remove this line so that real hardware
-      // capabilities can be checked.
-      command_line->AppendSwitchASCII(
-          switches::kOverrideHardwareSecureCodecsForTesting, "avc1,mp4a");
 
       // To enable MediaFoundation playback, tests should run on a hardware GPU
       // other than use a software OpenGL implementation. This can be configured
@@ -1075,6 +1072,38 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
                                 SrcType::MSE, PlayCount::ONCE);
   }
 
+  void TestMediaFoundationMultipleFilePlayback(const std::string& video_file,
+                                               const std::string& audio_file) {
+    std::string expected_title = media::kEndedTitle;
+    if (!IsPlayBackPossible(media::kMediaFoundationClearKeyKeySystem)) {
+      expected_title = kEmeUpdateFailed;
+    }
+
+    base::StringPairs query_params;
+    const auto video_format = media::GetMimeTypeForFile(video_file);
+    const auto audio_format = media::GetMimeTypeForFile(audio_file);
+    const auto media_type =
+        media::GetMimeTypeForFile(audio_file + ";" + video_file);
+    query_params.emplace_back("keySystem",
+                              media::kMediaFoundationClearKeyKeySystem);
+    query_params.emplace_back("runEncrypted", "1");
+    query_params.emplace_back("useMSE", "1");
+    query_params.emplace_back("playCount", "1");
+    query_params.emplace_back("videoFile", video_file);
+    query_params.emplace_back("videoFormat", video_format);
+    query_params.emplace_back("audioFile", audio_file);
+    query_params.emplace_back("audioFormat", audio_format);
+    query_params.emplace_back("mediaType", media_type);
+    RunEncryptedMediaTestPage(kDefaultEmePlayer,
+                              media::kMediaFoundationClearKeyKeySystem,
+                              query_params, media::kEndedTitle);
+
+    // Check KeyMessage received for all key systems.
+    EXPECT_EQ(true, content::EvalJs(
+                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.querySelector('video').receivedKeyMessage;"));
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaTestBase::SetUpCommandLine(command_line);
@@ -1120,6 +1149,20 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
 
     return is_playback_supported;
   }
+
+  bool IsDefaultAudioOutputDeviceAvailable() {
+    auto default_audio_output_device_id =
+        media::CoreAudioUtil::GetDefaultOutputDeviceID();
+    DLOG(INFO) << "default_audio_output_device_id="
+               << default_audio_output_device_id;
+
+    if (default_audio_output_device_id.empty()) {
+      DLOG(WARNING) << "No default audio output device available!";
+      return false;
+    }
+
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
@@ -1140,39 +1183,56 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   TestMediaFoundationPlayback("bear-640x360-v_frag-cbcs.mp4");  // H.264
 }
 
-// TODO(crbug.com/1442373): Enable this test after fixing the error with no
-// audio device (i.e., Windows trybots don't have any audio device will fail).
-// "Activate failed to create mediasink. Call
-// OutputNode::GetUINT32(MF_TOPONODE_MAJORTYPE) for more information.
-// (0xC00D36FA)"
-/*
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_EncryptedCencVideoAudio_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP();
+  }
+
+  TestMediaFoundationMultipleFilePlayback(
+      "bear-640x360-v_frag-cenc.mp4",   // H.264
+      "bear-640x360-a_frag-cenc.mp4");  // MP4 AAC
+}
+
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                        Playback_EncryptedCencAudio_Success) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP();
   }
 
-  TestMediaFoundationPlayback(
-      "bear-640x360-a_frag-cenc.mp4");  // MP4 AAC audio only
+  std::string expected_title = media::kEndedTitle;
+
+  // TODO(crbug.com/1452165): "Activate failed to create mediasink (0xC00D36FA)"
+  // kPlaybackError is expected when playing encrypted audio only content if no
+  // audio device. Remove this temporary fix for test machines once the
+  // permenent solution is implemented (i.e., a null sink for no audio device).
+  if (!IsDefaultAudioOutputDeviceAvailable()) {
+    DLOG(WARNING)
+        << "Test method "
+        << ::testing::UnitTest::GetInstance()->current_test_info()->name()
+        << " is expected to receive an error since there is no default audio "
+           "output device.";
+    expected_title = media::kErrorTitle;
+  }
+
+  RunEncryptedMediaTest(
+      kDefaultEmePlayer, "bear-640x360-a_frag-cenc.mp4",  // MP4 AAC audio only
+      media::kMediaFoundationClearKeyKeySystem, SrcType::MSE, kNoSessionToLoad,
+      false, PlayCount::ONCE, expected_title);
 }
-*/
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
-                       Playback_EncryptedVp9CencAudio_MediaTypeUnsupported) {
+                       Playback_EncryptedAv1CencAudio_MediaTypeUnsupported) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP();
   }
 
-  // MediaFoundation Clear Key Key System supports only H.264 videos
-  // (codecs="avc1.64001E") and MP4 audios (codecs="mp4a.40.2"). See
-  // AddMediaFoundationClearKey() in
+  // MediaFoundation Clear Key Key System doesn't support AV1 videos
+  // (codecs-"av01.0.04M.08"). See AddMediaFoundationClearKey() in
   // components/cdm/renderer/key_system_support_update.cc
-  RunEncryptedMediaTest(kDefaultEmePlayer,
-                        "bear-320x240-v_frag-vp9-cenc.mp4"
-                        /*codecs="vp09.00.10.08.01.02.02.02.00"*/
-                        ,
-                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
-                        kNoSessionToLoad, false, PlayCount::ONCE,
-                        kEmeNotSupportedError);
+  RunEncryptedMediaTest(
+      kDefaultEmePlayer, "bear-av1-cenc.mp4", /*codecs="av01.0.04M.08"*/
+      media::kMediaFoundationClearKeyKeySystem, SrcType::MSE, kNoSessionToLoad,
+      false, PlayCount::ONCE, kEmeNotSupportedError);
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)

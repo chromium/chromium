@@ -151,6 +151,21 @@
       video.addEventListener('waitingforkey', onLogEvent);
       document.addEventListener('visibilitychange', onVisibilityChange);
       Utils.resetTitleChange();
+
+      // If multiple media files exist
+      if (testConfig.videoFormat && testConfig.audioFormat) {
+        var media_types = [];
+        var media_files = [];
+
+        media_types = media_types.concat(testConfig.videoFormat);
+        media_files = media_files.concat(testConfig.videoFile);
+        media_types = media_types.concat(testConfig.audioFormat);
+        media_files = media_files.concat(testConfig.audioFile);
+
+        var mediaSource = MediaSourceUtils.loadMediaSource(media_files, media_types);
+        video.src = window.URL.createObjectURL(mediaSource);
+      }
+
       if (playCount == 2) {
         // Wait for the first play to complete.
         video.addEventListener('ended', onFirstPlayEnded);

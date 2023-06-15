@@ -485,6 +485,8 @@ void AddMediaFoundationClearKey(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // TODO(crbug.com/1412485): Remove this hard-codeded supported codecs so that
+  // real hardware capabilities can be checked.
   key_systems->push_back(std::make_unique<ExternalClearKeyKeySystemInfo>(
       media::kMediaFoundationClearKeyKeySystem, std::vector<std::string>(),
       // MediaFoundation Clear Key Key System uses Windows Media Foundation's

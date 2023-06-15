@@ -7,6 +7,7 @@
 #include <mferror.h>
 
 #include "base/task/sequenced_task_runner.h"
+#include "media/audio/win/core_audio_util_win.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
@@ -49,8 +50,38 @@ HRESULT MediaFoundationSourceWrapper::RuntimeClassInitialize(
 
   auto demuxer_streams = media_resource->GetAllStreams();
 
+  bool has_video_stream = false;
+  for (DemuxerStream* demuxer_stream : demuxer_streams) {
+    if (demuxer_stream->type() == DemuxerStream::Type::VIDEO) {
+      has_video_stream = true;
+      break;
+    }
+  }
   int stream_id = 0;
   for (DemuxerStream* demuxer_stream : demuxer_streams) {
+    // TODO(crbug.com/1453682): MediaFoundationRenderer playback won't end
+    // after hitting the end of the video stream if no audio device. If any
+    // video stream is available but no audio device, do not create an instance
+    // of the MediaFoundationStreamWrapper so that the video playback can end
+    // properly at the end of the video stream. Remove this workaround once
+    // the permenent solution is implemented (i.e., a null sink for no audio
+    // device).
+    if (has_video_stream &&
+        demuxer_stream->type() == DemuxerStream::Type::AUDIO) {
+      auto default_audio_output_device_id =
+          media::CoreAudioUtil::GetDefaultOutputDeviceID();
+      DVLOG_FUNC(3) << "default_audio_output_device_id="
+                    << default_audio_output_device_id;
+
+      if (default_audio_output_device_id.empty()) {
+        DLOG(WARNING) << __func__
+                      << ": No default audio output device available! Not "
+                         "creating an instance of the "
+                         "MediaFoundationStreamWrapper for this audio stream.";
+        continue;
+      }
+    }
+
     ComPtr<MediaFoundationStreamWrapper> mf_stream;
     RETURN_IF_FAILED(MediaFoundationStreamWrapper::Create(
         stream_id++, this, demuxer_stream, media_log->Clone(), task_runner,
