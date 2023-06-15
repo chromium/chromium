@@ -1279,10 +1279,6 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   session.authenticated = true;
   session.authorized_auth_session_intent.Put(
       session.requested_auth_session_intent);
-  if (session.requested_auth_session_intent ==
-      user_data_auth::AUTH_INTENT_DECRYPT) {
-    reply.set_authenticated(true);
-  }
   reply.add_authorized_for(session.requested_auth_session_intent);
   reply.set_seconds_left(kSessionTimeoutSeconds);
 }
