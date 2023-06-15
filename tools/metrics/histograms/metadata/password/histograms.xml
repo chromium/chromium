@@ -3737,6 +3737,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UI.OpenedPasswordDetailsWhileSearching"
+    enum="BooleanSuccess" expires_after="2023-12-04">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether user navigated to password details page while using search
+    field. Recorded only on desktop after user clicked on a password entry.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UIDismissalReason"
     enum="PasswordManagerUIDismissalReason" expires_after="2023-11-30">
   <owner>vasilii@chromium.org</owner>
