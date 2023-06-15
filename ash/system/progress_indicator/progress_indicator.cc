@@ -13,9 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -349,8 +351,9 @@ base::CallbackListSubscription ProgressIndicator::AddProgressChangedCallback(
   return progress_changed_callback_list_.Add(std::move(callback));
 }
 
-ui::Layer* ProgressIndicator::CreateLayer() {
-  DCHECK(!layer());
+ui::Layer* ProgressIndicator::CreateLayer(ColorResolver color_resolver) {
+  CHECK(!layer());
+  CHECK(color_resolver);
 
   auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
   layer->set_delegate(this);
@@ -358,10 +361,14 @@ ui::Layer* ProgressIndicator::CreateLayer() {
   layer->SetName(kClassName);
   Reset(std::move(layer));
 
+  color_resolver_ = std::move(color_resolver);
+
   return this->layer();
 }
 
 void ProgressIndicator::DestroyLayer() {
+  color_resolver_.Reset();
+
   if (layer())
     ReleaseLayer();
 }
@@ -369,6 +376,16 @@ void ProgressIndicator::DestroyLayer() {
 void ProgressIndicator::InvalidateLayer() {
   if (layer())
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
+}
+
+void ProgressIndicator::SetColorId(
+    const absl::optional<ui::ColorId>& color_id) {
+  if (color_id_ == color_id) {
+    return;
+  }
+
+  color_id_ = color_id;
+  InvalidateLayer();
 }
 
 void ProgressIndicator::SetInnerIconVisible(bool visible) {
@@ -449,8 +466,12 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   flags.setStrokeWidth(outer_ring_stroke_width);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
 
-  const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor);
+  const SkColor color =
+      chromeos::features::IsJellyEnabled() || color_id_.has_value()
+          ? color_resolver_.Run(
+                color_id_.value_or(cros_tokens::kCrosSysPrimary))
+          : AshColorProvider::Get()->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   // Outer ring.
   flags.setColor(SkColorSetA(

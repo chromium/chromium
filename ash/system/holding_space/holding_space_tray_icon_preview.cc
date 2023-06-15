@@ -675,8 +675,7 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   // due to pixel rounding. Failure to do so could result in paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(
-      container_->GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
+  flags.setColor(GetColor(kColorAshShieldAndBaseOpaque));
   flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
       gfx::PointF(contents_bounds.CenterPoint()),
@@ -721,7 +720,8 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   new_layer->SetName(kClassName);
   new_layer->SetTransform(initial_transform);
   new_layer->Add(image_layer_owner_->CreateLayer());
-  new_layer->Add(progress_indicator_->CreateLayer());
+  new_layer->Add(progress_indicator_->CreateLayer(base::BindRepeating(
+      &HoldingSpaceTrayIconPreview::GetColor, base::Unretained(this))));
   layer_owner_.Reset(std::move(new_layer));
 
   UpdateLayerBounds();
@@ -742,20 +742,6 @@ bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
 void HoldingSpaceTrayIconPreview::InvalidateLayer() {
   if (layer())
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
-}
-
-void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
-    gfx::Vector2dF* vector_2df) {
-  if (!shelf_->IsHorizontalAlignment()) {
-    const float x = vector_2df->x();
-    vector_2df->set_x(vector_2df->y());
-    vector_2df->set_y(x);
-    return;
-  }
-  // With a horizontal shelf in RTL, translation is a negative offset relative
-  // to the parent layer's right bound. This requires negation of `vector_2df`.
-  if (base::i18n::IsRTL())
-    vector_2df->Scale(-1.f);
 }
 
 void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
@@ -791,6 +777,25 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   bounds.ClampToCenteredSize(GetPreviewSize());
   image_layer_owner_->layer()->SetBounds(bounds);
   progress_indicator_->layer()->SetBounds(bounds);
+}
+
+void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
+    gfx::Vector2dF* vector_2df) {
+  if (!shelf_->IsHorizontalAlignment()) {
+    const float x = vector_2df->x();
+    vector_2df->set_x(vector_2df->y());
+    vector_2df->set_y(x);
+    return;
+  }
+  // With a horizontal shelf in RTL, translation is a negative offset relative
+  // to the parent layer's right bound. This requires negation of `vector_2df`.
+  if (base::i18n::IsRTL()) {
+    vector_2df->Scale(-1.f);
+  }
+}
+
+SkColor HoldingSpaceTrayIconPreview::GetColor(ui::ColorId color_id) const {
+  return container_->GetColorProvider()->GetColor(color_id);
 }
 
 }  // namespace ash

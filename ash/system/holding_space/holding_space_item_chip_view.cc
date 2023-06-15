@@ -172,7 +172,11 @@ class ProgressIndicatorView : public views::View {
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    layer()->Add(progress_indicator_->CreateLayer());
+    layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
+        [](const ProgressIndicatorView* self, ui::ColorId color_id) {
+          return self->GetColorProvider()->GetColor(color_id);
+        },
+        base::Unretained(this))));
   }
 
  private:

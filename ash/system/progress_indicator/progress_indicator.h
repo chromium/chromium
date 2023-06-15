@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 
@@ -47,7 +48,8 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
 
   // Creates and returns the `layer()` which is owned by this progress
   // indicator. Note that this may only be called if `layer()` does not exist.
-  ui::Layer* CreateLayer();
+  using ColorResolver = base::RepeatingCallback<SkColor(ui::ColorId)>;
+  ui::Layer* CreateLayer(ColorResolver color_resolver);
 
   // Destroys the `layer()` which is owned by this progress indicator. Note that
   // this will no-op if `layer()` does not exist.
@@ -55,6 +57,10 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
 
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();
+
+  // Sets the `color_id` to use in lieu of the default when painting progress
+  // indication. If `color_id` is absent, default colors are used.
+  void SetColorId(const absl::optional<ui::ColorId>& color_id);
 
   // Sets the visibility for this progress indicator's inner icon. Note that
   // the inner icon will only be painted while `progress_` is incomplete,
@@ -146,6 +152,14 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // indicator will `InvalidateLayer()` to trigger paint of the next animation
   // frame.
   base::CallbackListSubscription ring_animation_updated_subscription_;
+
+  // Used to resolve the color to use to paint progress indication. Non-null if
+  // and only if the `layer()` which is owned by this progress indicator exists.
+  ColorResolver color_resolver_;
+
+  // The color ID to use in lieu of the default when painting progress
+  // indication. If absent, default colors are used.
+  absl::optional<ui::ColorId> color_id_;
 
   // Cached progress returned from `CalculateProgress()` just prior to painting.
   // NOTE: If absent, progress is indeterminate.

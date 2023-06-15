@@ -258,7 +258,11 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   progress_indicator_ =
       holding_space_util::CreateProgressIndicatorForController(
           HoldingSpaceController::Get());
-  layer()->Add(progress_indicator_->CreateLayer());
+  layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
+      [](const HoldingSpaceTray* self, ui::ColorId color_id) {
+        return self->GetColorProvider()->GetColor(color_id);
+      },
+      base::Unretained(this))));
 
   // Subscribe to receive notification of changes to the `progress_indicator_`'s
   // underlying progress. When progress changes, the `default_tray_icon_` may
@@ -578,10 +582,12 @@ HoldingSpaceTray::CreateContextMenuModel() {
   return context_menu_model;
 }
 
-// TODO(http://b/287151663): Fix progress indicator.
 void HoldingSpaceTray::UpdateTrayItemColor(bool is_active) {
   default_tray_icon_->SchedulePaint();
   drop_target_icon_->SchedulePaint();
+  progress_indicator_->SetColorId(
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysPrimary);
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {

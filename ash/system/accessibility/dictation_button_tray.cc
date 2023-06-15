@@ -140,6 +140,14 @@ void DictationButtonTray::Initialize() {
 
 void DictationButtonTray::ClickedOutsideBubble() {}
 
+void DictationButtonTray::UpdateTrayItemColor(bool is_active) {
+  if (progress_indicator_) {
+    progress_indicator_->SetColorId(
+        is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysPrimary);
+  }
+}
+
 std::u16string DictationButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME);
 }
@@ -205,8 +213,13 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
             },
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
-    layer()->Add(progress_indicator_->CreateLayer());
+    layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
+        [](const DictationButtonTray* self, ui::ColorId color_id) {
+          return self->GetColorProvider()->GetColor(color_id);
+        },
+        base::Unretained(this))));
     UpdateProgressIndicatorBounds();
+    UpdateTrayItemColor(is_active());
   }
   progress_indicator_->InvalidateLayer();
 }
