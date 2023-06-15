@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
@@ -28,8 +27,8 @@ class HotspotFeatureUsageMetrics;
 // 2. Check tethering readiness
 // 3. Enable tethering from Shill
 //
-// Enable or disable requests are queued and executes one request at a time in
-// order.
+// Enable or disable requests executed as they come in but are ignored if there
+// is already a pending request.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
     : public TechnologyStateController::HotspotOperationDelegate {
  public:
@@ -56,9 +55,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   using HotspotControlCallback = base::OnceCallback<void(
       hotspot_config::mojom::HotspotControlResult control_result)>;
 
-  // Push the enable or disable hotspot request to the request queue and try to
-  // execute. If another request is already being processed, the current request
-  // will wait until the previous one is completed.
+  // Checks if there is an existing request and if there isn't one, proceeds to
+  // execute it.
   void EnableHotspot(HotspotControlCallback callback);
   void DisableHotspot(HotspotControlCallback callback,
                       hotspot_config::mojom::DisableReason disable_reason);
@@ -78,7 +76,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   friend class HotspotEnabledStateNotifierTest;
 
   // Represents hotspot enable or disable control request parameters. Requests
-  // are queued and processed one at a time.
+  // are executed as they come in.
   struct HotspotControlRequest {
     HotspotControlRequest(
         bool enabled,
@@ -102,13 +100,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   void PrepareEnableWifi(
       base::OnceCallback<void(bool prepare_success)> callback) override;
 
-  void ProcessRequestQueue();
   void CheckTetheringReadiness();
   void OnCheckTetheringReadiness(
       HotspotCapabilitiesProvider::CheckTetheringReadinessResult result);
   void PerformSetTetheringEnabled(bool enabled);
-  void OnSetTetheringEnabledSuccess(const std::string& result);
-  void OnSetTetheringEnabledFailure(const std::string& error_name,
+  void OnSetTetheringEnabledSuccess(const bool& enabled,
+                                    const std::string& result);
+  void OnSetTetheringEnabledFailure(const bool& enabled,
+                                    const std::string& error_name,
                                     const std::string& error_message);
   void OnPrepareEnableHotspotCompleted(bool prepare_success,
                                        bool wifi_turned_off);
@@ -117,15 +116,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
       hotspot_config::mojom::HotspotControlResult control_result);
   void OnDisableHotspotCompleteForRestart(
       hotspot_config::mojom::HotspotControlResult control_result);
-  bool IsCurrentRequestAlreadyFulfilled();
   void CompleteCurrentRequest(
+      const bool& enabled,
+      hotspot_config::mojom::HotspotControlResult result);
+  void CompleteEnableRequest(
+      hotspot_config::mojom::HotspotControlResult result);
+  void CompleteDisableRequest(
       hotspot_config::mojom::HotspotControlResult result);
   void NotifyHotspotTurnedOn(bool wifi_turned_off);
   void NotifyHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason);
 
-  std::unique_ptr<HotspotControlRequest> current_request_;
-  base::queue<std::unique_ptr<HotspotControlRequest>> queued_requests_;
+  std::unique_ptr<HotspotControlRequest> current_enable_request_;
+  std::unique_ptr<HotspotControlRequest> current_disable_request_;
+
   bool allow_hotspot_ = true;
   raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
       hotspot_capabilities_provider_ = nullptr;
