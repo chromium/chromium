@@ -1571,6 +1571,9 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   if (base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion)) {
     caps.supports_yuv_rgb_conversion = true;
   }
+  // Technically, YUV readback is handled on the client side, but enable it here
+  // so that clients can use this to detect support.
+  caps.supports_yuv_readback = true;
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();

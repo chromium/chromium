@@ -3681,6 +3681,10 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.angle_rgbx_internal_format =
       feature_info_->feature_flags().angle_rgbx_internal_format;
 
+  // Technically, YUV readback is handled on the client side, but enable it here
+  // so that clients can use this to detect support.
+  caps.supports_yuv_readback = true;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   PopulateDRMCapabilities(&caps, feature_info_.get());
 #endif

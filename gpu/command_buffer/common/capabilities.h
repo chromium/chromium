@@ -164,6 +164,7 @@ struct GPU_EXPORT Capabilities {
   bool supports_oop_raster = false;
 
   bool supports_yuv_rgb_conversion = false;
+  bool supports_yuv_readback = false;
 
   bool chromium_gpu_fence = false;
 
