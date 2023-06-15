@@ -83,10 +83,10 @@ TEST(ContentSettingsTraitsTest, Roundtrips_SessionModel) {
 
 TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
   content_settings::RuleMetaData original;
-  original.last_modified = base::Time::FromDoubleT(123);
-  original.last_visited = base::Time::FromDoubleT(234);
-  original.expiration = base::Time::FromDoubleT(345);
-  original.session_model = content_settings::SessionModel::UserSession;
+  original.set_last_modified(base::Time::FromDoubleT(123));
+  original.set_last_visited(base::Time::FromDoubleT(234));
+  original.set_expiration(base::Time::FromDoubleT(345));
+  original.set_session_model(content_settings::SessionModel::UserSession);
   content_settings::RuleMetaData round_tripped;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -103,7 +103,7 @@ TEST(ContentSettingsTraitsTest, Roundtrips_ContentSettingPatternSource) {
       ContentSettingsPattern::FromString("https://foo.com:*");
   original.incognito = true;
   original.setting_value = base::Value(123);
-  original.metadata.expiration = base::Time::FromDoubleT(234);
+  original.metadata.set_expiration(base::Time::FromDoubleT(234));
   original.source = "source";
   ContentSettingPatternSource round_tripped;
 

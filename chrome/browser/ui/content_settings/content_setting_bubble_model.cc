@@ -1425,8 +1425,9 @@ void ContentSettingGeolocationBubbleModel::SetCustomLink() {
   const GURL url =
       GetPage().GetMainDocument().GetLastCommittedOrigin().GetURL();
   map->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
-  if (info.metadata.session_model == SessionModel::OneTime)
+  if (info.metadata.session_model() == SessionModel::OneTime) {
     set_custom_link(l10n_util::GetStringUTF16(IDS_GEOLOCATION_WILL_ASK_AGAIN));
+  }
 }
 
 // ContentSettingSubresourceFilterBubbleModel ----------------------------------

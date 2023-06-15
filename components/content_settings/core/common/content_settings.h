@@ -52,7 +52,8 @@ struct ContentSettingPatternSource {
                               base::Value setting_value,
                               const std::string& source,
                               bool incognito,
-                              content_settings::RuleMetaData metadata = {});
+                              content_settings::RuleMetaData metadata =
+                                  content_settings::RuleMetaData());
   ContentSettingPatternSource(const ContentSettingPatternSource& other);
   ContentSettingPatternSource();
   ContentSettingPatternSource& operator=(

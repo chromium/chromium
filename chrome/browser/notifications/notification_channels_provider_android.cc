@@ -26,6 +26,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/template_url.h"
@@ -130,12 +131,14 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
     DCHECK(HasNext());
     auto& channel = channels_[index_];
     DCHECK_NE(channels_[index_].status, NotificationChannelStatus::UNAVAILABLE);
+    content_settings::RuleMetaData metadata;
+    metadata.set_last_modified(channel.timestamp);
     std::unique_ptr<content_settings::Rule> rule =
         std::make_unique<content_settings::OwnedRule>(
             ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
             ContentSettingsPattern::Wildcard(),
             base::Value(ChannelStatusToContentSetting(channel.status)),
-            content_settings::RuleMetaData{.last_modified = channel.timestamp});
+            metadata);
     index_++;
     return rule;
   }

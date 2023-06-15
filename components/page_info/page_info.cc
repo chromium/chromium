@@ -1134,8 +1134,8 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
   permission_info.setting = content_settings::ValueToContentSetting(value);
 
   permission_info.source = info.source;
-  permission_info.is_one_time =
-      (info.metadata.session_model == content_settings::SessionModel::OneTime);
+  permission_info.is_one_time = (info.metadata.session_model() ==
+                                 content_settings::SessionModel::OneTime);
 
   if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
       info.secondary_pattern == ContentSettingsPattern::Wildcard()) {
@@ -1321,7 +1321,7 @@ void PageInfo::PresentSitePermissions() {
         if (setting.primary_pattern.Matches(site_url_)) {
           continue;  // Skip first-party settings.
         }
-        if (setting.metadata.session_model ==
+        if (setting.metadata.session_model() ==
             content_settings::SessionModel::NonRestorableUserSession) {
           continue;  // Skip auto-granted settings.
         }

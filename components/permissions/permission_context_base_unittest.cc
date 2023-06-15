@@ -910,8 +910,8 @@ TEST_F(PermissionContextBaseTests, ExpirationAllow) {
                           ContentSettingsType::GEOLOCATION, &info);
 
   // The last_visited should lie between today and a week ago.
-  EXPECT_GE(info.metadata.last_visited, now - base::Days(7));
-  EXPECT_LE(info.metadata.last_visited, now);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
 }
 
 TEST_F(PermissionContextBaseTests, ExpirationBlock) {
@@ -930,7 +930,7 @@ TEST_F(PermissionContextBaseTests, ExpirationBlock) {
                           ContentSettingsType::GEOLOCATION, &info);
 
   // last_visited is not set for BLOCKed permissions.
-  EXPECT_EQ(base::Time(), info.metadata.last_visited);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

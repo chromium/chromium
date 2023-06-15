@@ -214,8 +214,8 @@ ContentSetting ContentSettingPatternSource::GetContentSetting() const {
 }
 
 bool ContentSettingPatternSource::IsExpired() const {
-  return !metadata.expiration.is_null() &&
-         metadata.expiration < base::Time::Now();
+  return !metadata.expiration().is_null() &&
+         metadata.expiration() < base::Time::Now();
 }
 
 bool ContentSettingPatternSource::operator==(

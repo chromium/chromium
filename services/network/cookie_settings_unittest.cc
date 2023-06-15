@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
@@ -78,11 +79,12 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
       const std::string& secondary_pattern,
       ContentSetting setting,
       base::Time expiration = base::Time()) {
+    content_settings::RuleMetaData metadata;
+    metadata.set_expiration(expiration);
     return ContentSettingPatternSource(
         ContentSettingsPattern::FromString(primary_pattern),
         ContentSettingsPattern::FromString(secondary_pattern),
-        base::Value(setting), std::string(), false /* incognito */,
-        {.expiration = expiration});
+        base::Value(setting), std::string(), false /* incognito */, metadata);
   }
 
   void FastForwardTime(base::TimeDelta delta) {

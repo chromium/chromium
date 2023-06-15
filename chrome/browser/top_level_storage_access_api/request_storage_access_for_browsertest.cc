@@ -294,11 +294,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
   // normally this expired value would be filtered out before sending and time
   // cannot be properly mocked in a browser test.
   ContentSettingsForOneType settings;
-  settings.push_back(ContentSettingPatternSource(
+  content_settings::RuleMetaData metadata;
+  metadata.SetFromConstraints(constraints);
+  settings.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostB)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
-      /*incognito=*/false, {.expiration = creation_time + lifetime}));
+      /*incognito=*/false, metadata);
   settings.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),

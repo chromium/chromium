@@ -12,6 +12,7 @@ static_library("common") {
     "content_settings.h",
     "content_settings_constraints.cc",
     "content_settings_constraints.h",
+    "content_settings_metadata.cc",
     "content_settings_metadata.h",
     "content_settings_param_traits.cc",
     "content_settings_param_traits.h",

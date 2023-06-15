@@ -198,7 +198,7 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
 
     revoked_permission_value.Set(
         kExpirationKey,
-        base::TimeToValue(revoked_permissions.metadata.expiration));
+        base::TimeToValue(revoked_permissions.metadata.expiration()));
 
     result.Append(std::move(revoked_permission_value));
   }

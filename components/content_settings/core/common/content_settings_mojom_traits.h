@@ -102,21 +102,21 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
                     content_settings::RuleMetaData> {
   static const base::Time& last_modified(
       const content_settings::RuleMetaData& r) {
-    return r.last_modified;
+    return r.last_modified_;
   }
 
   static const base::Time& last_visited(
       const content_settings::RuleMetaData& r) {
-    return r.last_visited;
+    return r.last_visited_;
   }
 
   static const base::Time& expiration(const content_settings::RuleMetaData& r) {
-    return r.expiration;
+    return r.expiration_;
   }
 
   static const content_settings::SessionModel& session_model(
       const content_settings::RuleMetaData& r) {
-    return r.session_model;
+    return r.session_model_;
   }
 
   static bool Read(content_settings::mojom::RuleMetaDataDataView data,

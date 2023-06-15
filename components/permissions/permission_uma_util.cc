@@ -952,7 +952,7 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
   content_settings::SettingInfo setting_info;
   settings_map->GetWebsiteSetting(primary_url, secondary_url, content_type_,
                                   &setting_info);
-  last_modified_date_ = setting_info.metadata.last_modified;
+  last_modified_date_ = setting_info.metadata.last_modified();
 }
 
 PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(

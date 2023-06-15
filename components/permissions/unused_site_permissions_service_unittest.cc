@@ -57,7 +57,7 @@ class UnusedSitePermissionsServiceTest
   base::Time GetLastVisitedDate(GURL url, ContentSettingsType type) {
     content_settings::SettingInfo info;
     hcsm()->GetWebsiteSetting(url, url, type, &info);
-    return info.metadata.last_visited;
+    return info.metadata.last_visited();
   }
 
   ContentSettingsForOneType GetRevokedUnusedPermissions(
@@ -459,7 +459,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
   content_settings::ContentSettingConstraints expiration_constraint;
   expiration_constraint.set_lifetime(
       expiration_constraint.DeltaFromCreationTime(
-          revoked_permission.metadata.expiration));
+          revoked_permission.metadata.expiration()));
   service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
   service()->UndoRegrantPermissionsForOrigin({type}, expiration_constraint,
                                              url::Origin::Create(url1));

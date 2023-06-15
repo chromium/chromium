@@ -276,7 +276,7 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   GetSettingsMap()->GetWebsiteSetting(web_contents()->GetLastCommittedURL(),
                                       web_contents()->GetLastCommittedURL(),
                                       type, &setting_info);
-  const base::Time grant_time = setting_info.metadata.last_modified;
+  const base::Time grant_time = setting_info.metadata.last_modified();
   if (grant_time.is_null())
     return;
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(

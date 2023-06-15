@@ -125,10 +125,10 @@ bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
                   content_settings::RuleMetaData>::
     Read(content_settings::mojom::RuleMetaDataDataView data,
          content_settings::RuleMetaData* out) {
-  return data.ReadLastModified(&out->last_modified) &&
-         data.ReadLastVisited(&out->last_visited) &&
-         data.ReadExpiration(&out->expiration) &&
-         data.ReadSessionModel(&out->session_model);
+  return data.ReadLastModified(&out->last_modified_) &&
+         data.ReadLastVisited(&out->last_visited_) &&
+         data.ReadExpiration(&out->expiration_) &&
+         data.ReadSessionModel(&out->session_model_);
 }
 
 // static

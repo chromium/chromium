@@ -885,7 +885,8 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   *source_string = SiteSettingSourceToString(
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
 
-  if (info.metadata.session_model == content_settings::SessionModel::OneTime) {
+  if (info.metadata.session_model() ==
+      content_settings::SessionModel::OneTime) {
     DCHECK(
         permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type));
     DCHECK_EQ(result.content_setting, CONTENT_SETTING_ALLOW);

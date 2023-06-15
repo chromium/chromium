@@ -59,7 +59,7 @@ void SiteSettingsCounter::Count() {
           if (content_setting.source == "preference" ||
               content_setting.source == "notification_android" ||
               content_setting.source == "ephemeral") {
-            base::Time last_modified = content_setting.metadata.last_modified;
+            base::Time last_modified = content_setting.metadata.last_modified();
             if (last_modified >= period_start && last_modified < period_end) {
               if (content_setting.primary_pattern.GetHost().empty())
                 empty_host_pattern++;

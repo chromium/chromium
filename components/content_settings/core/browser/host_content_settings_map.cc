@@ -770,7 +770,7 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
     if (pattern_predicate.is_null() ||
         pattern_predicate.Run(setting.primary_pattern,
                               setting.secondary_pattern)) {
-      base::Time last_modified = setting.metadata.last_modified;
+      base::Time last_modified = setting.metadata.last_modified();
       if (last_modified >= begin_time &&
           (last_modified < end_time || end_time.is_null())) {
         for (auto* provider : user_modifiable_providers_) {
@@ -829,9 +829,9 @@ void HostContentSettingsMap::AddSettingsForOneType(
     // We may be adding settings for only specific rule types. If that's the
     // case and this setting isn't a match, don't add it. We will also avoid
     // adding any expired rules since they are no longer valid.
-    if ((!rule->metadata.expiration.is_null() &&
-         (rule->metadata.expiration < clock_->Now())) ||
-        (session_model && (session_model != rule->metadata.session_model))) {
+    if ((!rule->metadata.expiration().is_null() &&
+         (rule->metadata.expiration() < clock_->Now())) ||
+        (session_model && (session_model != rule->metadata.session_model()))) {
       continue;
     }
 
@@ -1010,8 +1010,8 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
       std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
       if (rule->primary_pattern.Matches(primary_url) &&
           rule->secondary_pattern.Matches(secondary_url) &&
-          (rule->metadata.expiration.is_null() ||
-           (rule->metadata.expiration > clock->Now()))) {
+          (rule->metadata.expiration().is_null() ||
+           (rule->metadata.expiration() > clock->Now()))) {
         if (primary_pattern)
           *primary_pattern = rule->primary_pattern;
         if (secondary_pattern)

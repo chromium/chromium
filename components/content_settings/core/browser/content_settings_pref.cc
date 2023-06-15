@@ -323,15 +323,14 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
         last_visited = GetLastVisit(settings_dictionary);
       }
       DCHECK(IsValueAllowedForType(*value, content_type_));
+      RuleMetaData metadata;
+      metadata.set_last_modified(last_modified);
+      metadata.set_last_visited(last_visited);
+      metadata.set_expiration(expiration);
+      metadata.set_session_model(session_model);
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
-                          value->Clone(),
-                          {
-                              .last_modified = last_modified,
-                              .last_visited = last_visited,
-                              .expiration = expiration,
-                              .session_model = session_model,
-                          });
+                          value->Clone(), metadata);
     }
   }
 
@@ -415,22 +414,22 @@ void ContentSettingsPref::UpdatePref(
                                                         nullptr);
       } else {
         settings_dictionary->SetKey(kSettingKey, std::move(value));
-        if (metadata.last_modified != base::Time()) {
+        if (metadata.last_modified() != base::Time()) {
           settings_dictionary->SetKey(
-              kLastModifiedKey, base::TimeToValue(metadata.last_modified));
+              kLastModifiedKey, base::TimeToValue(metadata.last_modified()));
         }
-        if (metadata.expiration != base::Time()) {
+        if (metadata.expiration() != base::Time()) {
           settings_dictionary->SetKey(kExpirationKey,
-                                      base::TimeToValue(metadata.expiration));
+                                      base::TimeToValue(metadata.expiration()));
         }
-        if (metadata.session_model != SessionModel::Durable) {
+        if (metadata.session_model() != SessionModel::Durable) {
           settings_dictionary->SetKey(
               kSessionModelKey,
-              base::Value(static_cast<int>(metadata.session_model)));
+              base::Value(static_cast<int>(metadata.session_model())));
         }
-        if (metadata.last_visited != base::Time()) {
-          settings_dictionary->SetKey(kLastVisitKey,
-                                      base::TimeToValue(metadata.last_visited));
+        if (metadata.last_visited() != base::Time()) {
+          settings_dictionary->SetKey(
+              kLastVisitKey, base::TimeToValue(metadata.last_visited()));
         }
       }
 

@@ -8,27 +8,59 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+namespace content_settings::mojom {
+class RuleMetaDataDataView;
+}  // namespace content_settings::mojom
+
 namespace content_settings {
 
 // Holds metadata for a ContentSetting rule.
-struct RuleMetaData {
-  // Last Modified data as specified by some UserModifiableProvider
-  // implementations. May be null.
-  base::Time last_modified;
-  // Last visited data as specified by some UserModifiableProvider
-  // implementations. Only populated when
-  // ContentSettingsConstraint::track_last_visit_for_autoexpiration is enabled.
-  base::Time last_visited;
-  // Expiration date if defined through a ContentSettingsConstraint.
-  base::Time expiration;
-  // SessionModel as defined through a ContentSettingsConstraint.
-  SessionModel session_model = SessionModel::Durable;
+class RuleMetaData {
+ public:
+  RuleMetaData();
 
-  bool operator==(const RuleMetaData& other) const {
-    return std::tie(last_modified, last_visited, expiration, session_model) ==
-           std::tie(other.last_modified, other.last_visited, other.expiration,
-                    other.session_model);
+  bool operator==(const RuleMetaData& other) const;
+
+  base::Time last_modified() const { return last_modified_; }
+  void set_last_modified(base::Time last_modified) {
+    last_modified_ = last_modified;
   }
+
+  base::Time last_visited() const { return last_visited_; }
+  void set_last_visited(base::Time visited) { last_visited_ = visited; }
+
+  base::Time expiration() const { return expiration_; }
+  void set_expiration(base::Time expiration) { expiration_ = expiration; }
+
+  SessionModel session_model() const { return session_model_; }
+  void set_session_model(SessionModel session_model) {
+    session_model_ = session_model;
+  }
+
+  // Sets member variables based on `constraints`.
+  void SetFromConstraints(const ContentSettingConstraints& constraints);
+
+ private:
+  // mojo (de)serialization needs access to private details.
+  friend struct mojo::
+      StructTraits<content_settings::mojom::RuleMetaDataDataView, RuleMetaData>;
+
+  // Last Modified data as specified by some UserModifiableProvider
+  // implementations. May be zero.
+  base::Time last_modified_;
+  // Last visited data as specified by some UserModifiableProvider
+  // implementations. Only non-zero when
+  // ContentSettingsConstraint::track_last_visit_for_autoexpiration is enabled.
+  base::Time last_visited_;
+  // Expiration date if defined through a ContentSettingsConstraint. May be
+  // zero.
+  base::Time expiration_;
+  // SessionModel as defined through a ContentSettingsConstraint.
+  SessionModel session_model_ = SessionModel::Durable;
 };
 
 }  // namespace content_settings

@@ -71,8 +71,8 @@ UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
       if (!setting.primary_pattern.MatchesSingleOrigin()) {
         continue;
       }
-      if (setting.metadata.last_visited != base::Time() &&
-          setting.metadata.last_visited < threshold) {
+      if (setting.metadata.last_visited() != base::Time() &&
+          setting.metadata.last_visited() < threshold) {
         GURL url = GURL(setting.primary_pattern.ToString());
         // Converting URL to a origin is normally an anti-pattern but here it is
         // ok since the URL belongs to a single origin. Therefore, it has a
@@ -224,7 +224,7 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
 
   // Record the days elapsed from auto-revocation to regrant.
   base::Time revoked_time =
-      info.metadata.expiration -
+      info.metadata.expiration() -
       content_settings::features::
           kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
   base::UmaHistogramCustomCounts(
@@ -281,7 +281,7 @@ void UnusedSitePermissionsService::IgnoreOriginForAutoRevocation(
     ContentSettingsForOneType settings;
     hcsm_->GetSettingsForOneType(type, &settings);
     for (const auto& setting : settings) {
-      if (setting.metadata.last_visited != base::Time() &&
+      if (setting.metadata.last_visited() != base::Time() &&
           setting.primary_pattern.MatchesSingleOrigin() &&
           setting.primary_pattern.Matches(origin.GetURL())) {
         hcsm_->ResetLastVisitedTime(setting.primary_pattern,
@@ -374,9 +374,9 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
 
       // Reset the permission to default if the site is visited before
       // threshold. Also, the secondary pattern should be wildcard.
-      DCHECK(entry.source.metadata.last_visited != base::Time());
+      DCHECK_NE(entry.source.metadata.last_visited(), base::Time());
       DCHECK(entry.type != ContentSettingsType::NOTIFICATIONS);
-      if (entry.source.metadata.last_visited < threshold &&
+      if (entry.source.metadata.last_visited() < threshold &&
           entry.source.secondary_pattern ==
               ContentSettingsPattern::Wildcard()) {
         revoked_permissions.insert(entry.type);
@@ -508,7 +508,7 @@ absl::optional<uint32_t> UnusedSitePermissionsService::GetDaysSinceRevocation(
     return absl::nullopt;
   }
   base::Time revoked_time =
-      info.metadata.expiration -
+      info.metadata.expiration() -
       content_settings::features::
           kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
   ;

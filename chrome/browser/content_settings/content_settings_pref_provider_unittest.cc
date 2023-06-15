@@ -1057,15 +1057,15 @@ TEST_F(PrefProviderTest, LastVisitedTimeIsTracked) {
             TestUtils::GetContentSetting(
                 &provider, primary_url, primary_url,
                 ContentSettingsType::MEDIASTREAM_CAMERA, false, &metadata));
-  EXPECT_EQ(metadata.last_visited, base::Time());
+  EXPECT_EQ(metadata.last_visited(), base::Time());
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_NE(metadata.last_visited, base::Time());
-  EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
-  EXPECT_LE(metadata.last_visited, clock.Now());
+  EXPECT_NE(metadata.last_visited(), base::Time());
+  EXPECT_GE(metadata.last_visited(), clock.Now() - base::Days(7));
+  EXPECT_LE(metadata.last_visited(), clock.Now());
 
   provider.ShutdownOnUIThread();
 }
@@ -1089,7 +1089,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_NE(metadata.last_visited, base::Time());
+  EXPECT_NE(metadata.last_visited(), base::Time());
 
   // Shutdown our provider and we should still have a setting present.
   provider.ShutdownOnUIThread();
@@ -1102,7 +1102,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata_from_disk));
-  EXPECT_EQ(metadata.last_visited, metadata_from_disk.last_visited);
+  EXPECT_EQ(metadata.last_visited(), metadata_from_disk.last_visited());
 
   provider2.ShutdownOnUIThread();
 }
@@ -1130,8 +1130,8 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
-  EXPECT_LE(metadata.last_visited, clock.Now());
+  EXPECT_GE(metadata.last_visited(), clock.Now() - base::Days(7));
+  EXPECT_LE(metadata.last_visited(), clock.Now());
 
   clock.Advance(base::Days(20));
   provider.UpdateLastVisitTime(primary_pattern, primary_pattern,
@@ -1140,8 +1140,8 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
-  EXPECT_LE(metadata.last_visited, clock.Now());
+  EXPECT_GE(metadata.last_visited(), clock.Now() - base::Days(7));
+  EXPECT_LE(metadata.last_visited(), clock.Now());
 
   // Test resetting the last_visited time.
   provider.ResetLastVisitTime(primary_pattern, primary_pattern,
@@ -1150,7 +1150,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_EQ(metadata.last_visited, base::Time());
+  EXPECT_EQ(metadata.last_visited(), base::Time());
   provider.ShutdownOnUIThread();
 }
 
