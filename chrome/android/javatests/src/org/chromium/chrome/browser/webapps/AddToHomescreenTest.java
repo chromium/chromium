@@ -53,6 +53,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /**
  * Tests org.chromium.chrome.browser.webapps.addtohomescreen.AddToHomescreenManager and its C++
@@ -61,6 +62,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class AddToHomescreenTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
