@@ -47,7 +47,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -205,17 +204,6 @@ public class VoiceRecognitionHandlerUnitTest {
         })
                 .when(mWindowAndroid)
                 .showCancelableIntent(any(Intent.class), mIntentCallback.capture(), any());
-    }
-
-    /**
-     * Tests for {@link VoiceRecognitionHandler#isVoiceSearchEnabled}.
-     */
-    @Test
-    @SmallTest
-    @DisabledTest(message = "the logic being checked never tests for null tab")
-    public void testIsVoiceSearchEnabled_FalseOnNullTab() {
-        doReturn(null).when(mDataProvider).getTab();
-        Assert.assertFalse(mHandler.isVoiceSearchEnabled());
     }
 
     @Test
