@@ -66,12 +66,12 @@ void BuiltinProvider::DoStarterPackAutocompletion(const std::u16string& text) {
       base::StartsWith(text, u"@", base::CompareCase::INSENSITIVE_ASCII);
 
   if (starts_with_starter_pack_symbol) {
-    TemplateURLService::TURLsAndMeaningfulLengths matches;
+    TemplateURLService::TemplateURLVector matches;
     template_url_service_->AddMatchingKeywords(text, false, &matches);
-    for (auto match : matches) {
-      if (match.first->starter_pack_id() > 0 &&
-          match.first->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-        AddStarterPackMatch(*match.first);
+    for (auto* match : matches) {
+      if (match->starter_pack_id() > 0 &&
+          match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
+        AddStarterPackMatch(*match);
       }
     }
   }

@@ -287,25 +287,6 @@ bool HQPAlsoDoHUPLikeScoring();
 bool HUPSearchDatabase();
 
 // ---------------------------------------------------------
-// For the aggressive keyword matching experiment that's part of the bundled
-// omnibox field trial.
-
-// One function is missing from here to avoid a cyclic dependency
-// between search_engine and omnibox. In the search_engine component
-// there is a OmniboxFieldTrialKeywordRequiresRegistry function
-// that logically should be here.
-//
-// It returns whether KeywordProvider should consider the registry portion
-// (e.g., co.uk) of keywords that look like hostnames as an important part of
-// the keyword name for matching purposes.  Returns true if the experiment
-// isn't active.
-
-// Returns the relevance score that KeywordProvider should assign to keywords
-// with sufficiently-complete matches, i.e., the user has typed all of the
-// important part of the keyword.  Returns -1 if the experiment isn't active.
-int KeywordScoreForSufficientlyCompleteMatch();
-
-// ---------------------------------------------------------
 // For UI experiments.
 
 // Returns true if the fuzzy URL suggestions feature is enabled.
@@ -429,11 +410,6 @@ extern const char kHQPNumTitleWordsRule[];
 extern const char kHQPAlsoDoHUPLikeScoringRule[];
 extern const char kHUPSearchDatabaseRule[];
 extern const char kPreventUWYTDefaultForNonURLInputsRule[];
-// kKeywordRequiresRegistryRule seemingly has no production uses, but the string
-// is actually used within TemplateURLService as a string to break a circular
-// omnibox -> search_engines -> omnibox dependency.
-extern const char kKeywordRequiresRegistryRule[];
-extern const char kKeywordScoreForSufficientlyCompleteMatchRule[];
 extern const char kHQPAllowDupMatchesForScoringRule[];
 extern const char kEmphasizeTitlesRule[];
 

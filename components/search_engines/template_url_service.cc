@@ -150,49 +150,6 @@ void LogDuplicatesHistogram(
   UMA_HISTOGRAM_COUNTS_100("Search.SearchEngineDuplicateCounts", num_dupes);
 }
 
-// Returns the length of the registry portion of a hostname.  For example,
-// www.google.co.uk will return 5 (the length of co.uk).
-size_t GetRegistryLength(const std::u16string& host) {
-  return net::registry_controlled_domains::PermissiveGetHostRegistryLength(
-      host, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-      net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-}
-
-// For keywords that look like hostnames, returns whether KeywordProvider
-// should require users to type a prefix of the hostname to match against
-// them, rather than just the domain name portion. In other words, returns
-// whether the prefix before the domain name should be considered important
-// for matching purposes. Returns true if the experiment isn't active.
-bool OmniboxFieldTrialKeywordRequiresRegistry() {
-  // This would normally be
-  // bool OmniboxFieldTrial::KeywordRequiresRegistry()
-  // but that would create a dependency cycle since omnibox depends on
-  // search_engines (and search -> search_engines)
-  constexpr char kBundledExperimentFieldTrialName[] =
-      "OmniboxBundledExperimentV1";
-  constexpr char kKeywordRequiresRegistryRule[] = "KeywordRequiresRegistry";
-  const std::string value = base::GetFieldTrialParamValue(
-      kBundledExperimentFieldTrialName, kKeywordRequiresRegistryRule);
-  return value.empty() || (value == "true");
-}
-
-// Returns the length of the important part of the |keyword|, assumed to be
-// associated with the TemplateURL.  For instance, for the keyword
-// google.co.uk, this can return 6 (the length of "google").
-size_t GetMeaningfulKeywordLength(const std::u16string& keyword,
-                                  const TemplateURL* turl) {
-  // Using Omnibox from here is a layer violation and should be fixed.
-  if (OmniboxFieldTrialKeywordRequiresRegistry())
-    return keyword.length();
-  const size_t registry_length = GetRegistryLength(keyword);
-  if (registry_length == std::string::npos)
-    return keyword.length();
-  DCHECK_LT(registry_length, keyword.length());
-  // The meaningful keyword length is the length of any portion before the
-  // registry ("co.uk") and its preceding dot.
-  return keyword.length() - (registry_length ? (registry_length + 1) : 0);
-}
-
 bool Contains(TemplateURLService::OwnedTemplateURLVector* template_urls,
               const TemplateURL* turl) {
   return FindTemplateURL(template_urls, turl) != template_urls->end();
@@ -222,10 +179,9 @@ class TemplateURLService::LessWithPrefix {
   // Unfortunately the calling convention is not "prefix and element" but
   // rather "two elements", so we pass the prefix as a fake "element" which has
   // a NULL KeywordDataElement pointer.
-  bool operator()(
-      const KeywordToTURLAndMeaningfulLength::value_type& elem1,
-      const KeywordToTURLAndMeaningfulLength::value_type& elem2) const {
-    return (elem1.second.first == nullptr)
+  bool operator()(const KeywordToTURL::value_type& elem1,
+                  const KeywordToTURL::value_type& elem2) const {
+    return (elem1.second == nullptr)
                ? (elem2.first.compare(0, elem1.first.length(), elem1.first) > 0)
                : (elem1.first < elem2.first);
   }
@@ -379,12 +335,11 @@ bool TemplateURLService::ShowInDefaultList(const TemplateURL* t_url) const {
       IsPrepopulatedOrCreatedByPolicy(t_url);
 }
 
-void TemplateURLService::AddMatchingKeywords(
-    const std::u16string& prefix,
-    bool supports_replacement_only,
-    TURLsAndMeaningfulLengths* matches) {
-  AddMatchingKeywordsHelper(
-      keyword_to_turl_and_length_, prefix, supports_replacement_only, matches);
+void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
+                                             bool supports_replacement_only,
+                                             TemplateURLVector* matches) {
+  AddMatchingKeywordsHelper(keyword_to_turl_, prefix, supports_replacement_only,
+                            matches);
 }
 
 TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
@@ -397,16 +352,16 @@ TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
 const TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
     const std::u16string& keyword) const {
   // Finds and returns the best match for |keyword|.
-  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  const auto match_range = keyword_to_turl_.equal_range(keyword);
   if (match_range.first != match_range.second) {
     // Among the matches for |keyword| in the multimap, return the best one.
     return std::min_element(
                match_range.first, match_range.second,
                [](const auto& a, const auto& b) {
-                 return a.second.first
-                     ->IsBetterThanEngineWithConflictingKeyword(b.second.first);
+                 return a.second->IsBetterThanEngineWithConflictingKeyword(
+                     b.second);
                })
-        ->second.first;
+        ->second;
   }
 
   return (!loaded_ && initial_default_search_provider_ &&
@@ -693,9 +648,9 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
   // Play API for engine, but still CHECK this to avoid polluting the database.
   // Currently, we never update Play API engine data. If we ever want to do
   // that, we need to change how this method behaves.
-  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  const auto match_range = keyword_to_turl_.equal_range(keyword);
   for (auto it = match_range.first; it != match_range.second; ++it) {
-    CHECK(!it->second.first->created_from_play_api());
+    CHECK(!it->second->created_from_play_api());
   }
 
   TemplateURLData data;
@@ -1673,12 +1628,12 @@ void TemplateURLService::Init(const Initializer* initializers,
 void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
   const std::u16string& keyword = template_url->keyword();
 
-  // Remove from |keyword_to_turl_and_length_|. No need to find the best
+  // Remove from |keyword_to_turl_|. No need to find the best
   // fallback. We choose the best one as-needed from the multimap.
-  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  const auto match_range = keyword_to_turl_.equal_range(keyword);
   for (auto it = match_range.first; it != match_range.second;) {
-    if (it->second.first == template_url) {
-      it = keyword_to_turl_and_length_.erase(it);
+    if (it->second == template_url) {
+      it = keyword_to_turl_.erase(it);
     } else {
       ++it;
     }
@@ -1697,10 +1652,7 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
 
 void TemplateURLService::AddToMaps(TemplateURL* template_url) {
   const std::u16string& keyword = template_url->keyword();
-  keyword_to_turl_and_length_.insert(std::make_pair(
-      keyword,
-      TURLAndMeaningfulLength(
-          template_url, GetMeaningfulKeywordLength(keyword, template_url))));
+  keyword_to_turl_.insert(std::make_pair(keyword, template_url));
 
   if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)
     return;
@@ -2169,10 +2121,9 @@ void TemplateURLService::MergeInSyncTemplateURL(
   // working from best to worst.
   DCHECK(sync_turl->type() == TemplateURL::NORMAL);
   std::vector<TemplateURL*> local_duplicates;
-  const auto match_range =
-      keyword_to_turl_and_length_.equal_range(sync_turl->keyword());
+  const auto match_range = keyword_to_turl_.equal_range(sync_turl->keyword());
   for (auto it = match_range.first; it != match_range.second; ++it) {
-    TemplateURL* local_turl = it->second.first;
+    TemplateURL* local_turl = it->second;
     // The conflict resolution code below sometimes resets the TemplateURL's
     // GUID, which can trigger deleting any Policy-created engines. Avoid this
     // use-after-free bug by excluding any Policy-created engines. Also exclude
@@ -2339,10 +2290,10 @@ void TemplateURLService::MaybeSetIsActiveSearchEngines(
 
 template <typename Container>
 void TemplateURLService::AddMatchingKeywordsHelper(
-    const Container& keyword_to_turl_and_length,
+    const Container& keyword_to_turl,
     const std::u16string& prefix,
     bool supports_replacement_only,
-    TURLsAndMeaningfulLengths* matches) {
+    TemplateURLVector* matches) {
   // Sanity check args.
   if (prefix.empty())
     return;
@@ -2352,17 +2303,16 @@ void TemplateURLService::AddMatchingKeywordsHelper(
   // beginning with |prefix| and stores the endpoints of the resulting set in
   // |match_range|.
   const auto match_range(std::equal_range(
-      keyword_to_turl_and_length.begin(), keyword_to_turl_and_length.end(),
-      typename Container::value_type(prefix,
-                                     TURLAndMeaningfulLength(nullptr, 0)),
-      LessWithPrefix()));
+      keyword_to_turl.begin(), keyword_to_turl.end(),
+      typename Container::value_type(prefix, nullptr), LessWithPrefix()));
 
   // Add to vector of matching keywords.
   for (typename Container::const_iterator i(match_range.first);
     i != match_range.second; ++i) {
     if (!supports_replacement_only ||
-        i->second.first->url_ref().SupportsReplacement(search_terms_data()))
+        i->second->url_ref().SupportsReplacement(search_terms_data())) {
       matches->push_back(i->second);
+    }
   }
 }
 
@@ -2414,7 +2364,7 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
   const std::u16string& keyword = candidate->keyword();
 
   // If there's not at least one conflicting TemplateURL, there's nothing to do.
-  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  const auto match_range = keyword_to_turl_.equal_range(keyword);
   if (match_range.first == match_range.second) {
     return false;
   }
@@ -2423,7 +2373,7 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
   // because Remove() invalidates iterators.
   std::vector<TemplateURL*> replaceable_turls;
   for (auto it = match_range.first; it != match_range.second; ++it) {
-    TemplateURL* turl = it->second.first;
+    TemplateURL* turl = it->second;
     DCHECK_NE(turl, candidate) << "This algorithm runs BEFORE |candidate| is "
                                   "added to the keyword map.";
 

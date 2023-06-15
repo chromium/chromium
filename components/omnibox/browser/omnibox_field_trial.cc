@@ -542,21 +542,6 @@ bool OmniboxFieldTrial::HUPSearchDatabase() {
   return value.empty() || (value == "true");
 }
 
-int OmniboxFieldTrial::KeywordScoreForSufficientlyCompleteMatch() {
-  std::string value_str = base::GetFieldTrialParamValue(
-      kBundledExperimentFieldTrialName,
-      kKeywordScoreForSufficientlyCompleteMatchRule);
-  if (value_str.empty()) {
-    return -1;
-  }
-  // This is a best-effort conversion; we trust the hand-crafted parameters
-  // downloaded from the server to be perfect.  There's no need for handle
-  // errors smartly.
-  int value;
-  base::StringToInt(value_str, &value);
-  return value;
-}
-
 bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
 }
@@ -777,11 +762,6 @@ const char OmniboxFieldTrial::kHQPNumTitleWordsRule[] = "HQPNumTitleWords";
 const char OmniboxFieldTrial::kHQPAlsoDoHUPLikeScoringRule[] =
     "HQPAlsoDoHUPLikeScoring";
 const char OmniboxFieldTrial::kHUPSearchDatabaseRule[] = "HUPSearchDatabase";
-const char OmniboxFieldTrial::kKeywordRequiresRegistryRule[] =
-    "KeywordRequiresRegistry";
-const char OmniboxFieldTrial::kKeywordScoreForSufficientlyCompleteMatchRule[] =
-    "KeywordScoreForSufficientlyCompleteMatch";
-
 const char OmniboxFieldTrial::kHUPNewScoringTypedCountRelevanceCapParam[] =
     "TypedCountRelevanceCap";
 const char OmniboxFieldTrial::kHUPNewScoringTypedCountHalfLifeTimeParam[] =

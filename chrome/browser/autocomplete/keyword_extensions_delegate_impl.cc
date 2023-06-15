@@ -167,13 +167,13 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
     // is true, because we wouldn't get results from the extension unless
     // the full keyword had been typed.
     int first_relevance = KeywordProvider::CalculateRelevance(
-        input.type(), true, true, true, input.prefer_keyword(),
+        input.type(), true, true, input.prefer_keyword(),
         input.allow_exact_keyword_match());
     // Because these matches are async, we should never let them become the
     // default match, lest we introduce race conditions in the omnibox user
     // interaction.
     extension_suggest_matches_.push_back(provider_->CreateAutocompleteMatch(
-        template_url, keyword.length(), input, keyword.length(),
+        template_url, input, keyword.length(),
         base::UTF8ToUTF16(suggestion.content), false, first_relevance - (i + 1),
         suggestion.deletable && *suggestion.deletable));
 

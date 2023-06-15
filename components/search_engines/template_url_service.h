@@ -83,14 +83,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
 
-  // We may want to treat the keyword in a TemplateURL as being a different
-  // length than it actually is.  For example, for keywords that end in a
-  // registry, e.g., '.com', we want to consider the registry characters as not
-  // a meaningful part of the keyword and not penalize for the user not typing
-  // those.)
-  using TURLAndMeaningfulLength = std::pair<TemplateURL*, size_t>;
-  using TURLsAndMeaningfulLengths = std::vector<TURLAndMeaningfulLength>;
-
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
   struct Initializer {
@@ -159,7 +151,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // efficient, since it's run roughly once per omnibox keystroke.
   void AddMatchingKeywords(const std::u16string& prefix,
                            bool supports_replacement_only,
-                           TURLsAndMeaningfulLengths* matches);
+                           TemplateURLVector* matches);
 
   // Looks up |keyword| and returns the best TemplateURL for it.  Returns
   // nullptr if the keyword was not found. The caller should not try to delete
@@ -529,16 +521,15 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   using GUIDToTURL = std::map<std::string, TemplateURL*>;
 
-  // A mapping from keywords to the corresponding TemplateURLs and their
-  // meaningful keyword lengths.  This is a multimap, so the system can
+  // A mapping from keywords to the corresponding TemplateURLs.
+  // This is a multimap, so the system can
   // efficiently tolerate multiple engines with the same keyword, like from
   // extensions.
   //
   // The values for any given keyword are not sorted. Users that want the best
   // value for each key must traverse through all matching items. The vast
   // majority of keywords should only have one item.
-  using KeywordToTURLAndMeaningfulLength =
-      std::multimap<std::u16string, TURLAndMeaningfulLength>;
+  using KeywordToTURL = std::multimap<std::u16string, TemplateURL*>;
 
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
@@ -580,18 +571,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   void Init(const Initializer* initializers, int num_initializers);
 
   // Removes |template_url| from various internal maps
-  // (|keyword_to_turl_and_length_|, |guid_to_turl_|, |provider_map_|).
+  // (|keyword_to_turl_|, |guid_to_turl_|, |provider_map_|).
   void RemoveFromMaps(const TemplateURL* template_url);
 
   // Adds |template_url| to various internal maps
-  // (|keyword_to_turl_and_length_|, |guid_to_turl_|, |provider_map_|) if
+  // (|keyword_to_turl_|, |guid_to_turl_|, |provider_map_|) if
   // appropriate.  (It might not be appropriate if, for instance,
   // |template_url|'s keyword conflicts with the keyword of a custom search
   // engine already existing in the maps that is not allowed to be replaced.)
   void AddToMaps(TemplateURL* template_url);
-
-  // Helper function for adding an element to |keyword_to_turl_and_length_|.
-  void AddToMap(TemplateURL* template_url);
 
   // Sets the keywords. This is used once the keywords have been loaded.
   // This does NOT notify the delegate or the database.
@@ -701,15 +689,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   // by the user.
   void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
 
-  // Adds to |matches| all TemplateURLs stored in |keyword_to_turl_and_length|
+  // Adds to |matches| all TemplateURLs stored in |keyword_to_turl|
   // whose keywords begin with |prefix|, sorted shortest-keyword-first.  If
   // |supports_replacement_only| is true, only TemplateURLs that support
   // replacement are returned.
   template <typename Container>
-  void AddMatchingKeywordsHelper(const Container& keyword_to_turl_and_length,
+  void AddMatchingKeywordsHelper(const Container& keyword_to_turl,
                                  const std::u16string& prefix,
                                  bool supports_replacement_only,
-                                 TURLsAndMeaningfulLengths* matches);
+                                 TemplateURLVector* matches);
 
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   TemplateURL* FindPrepopulatedTemplateURL(int prepopulated_id);
@@ -769,7 +757,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   PrefChangeRegistrar pref_change_registrar_;
 
   // Mapping from keyword to the TemplateURL.
-  KeywordToTURLAndMeaningfulLength keyword_to_turl_and_length_;
+  KeywordToTURL keyword_to_turl_;
 
   // Mapping from Sync GUIDs to the TemplateURL.
   GUIDToTURL guid_to_turl_;

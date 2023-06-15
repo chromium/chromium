@@ -130,13 +130,12 @@ class KeywordProvider : public AutocompleteProvider {
       std::u16string* remaining_input);
 
   // Determines the relevance for some input, given its type, whether the user
-  // typed the complete keyword (or close to it), and whether the user is in
+  // typed the complete keyword, and whether the user is in
   // "prefer keyword matches" mode, and whether the keyword supports
   // replacement. If |allow_exact_keyword_match| is false, the relevance for
-  // complete keywords that support replacements is degraded.
+  // keywords that support replacements is degraded.
   static int CalculateRelevance(metrics::OmniboxInputType type,
                                 bool complete,
-                                bool sufficiently_complete,
                                 bool support_replacement,
                                 bool prefer_keyword,
                                 bool allow_exact_keyword_match);
@@ -145,7 +144,6 @@ class KeywordProvider : public AutocompleteProvider {
   // If |relevance| is negative, calculate a relevance based on heuristics.
   AutocompleteMatch CreateAutocompleteMatch(
       const TemplateURL* template_url,
-      const size_t meaningful_keyword_length,
       const AutocompleteInput& input,
       size_t prefix_length,
       const std::u16string& remaining_input,
