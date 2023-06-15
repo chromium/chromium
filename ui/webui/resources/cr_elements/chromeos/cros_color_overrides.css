@@ -139,6 +139,11 @@ To get ChromeOS Jelly colors, an element must:
   display: block;
 }
 
+:host-context(body.jelly-enabled) cr-button:active,
+:host-context(body.jelly-enabled) cr-button.action-button:not(:active):hover  {
+  box-shadow: none;
+}
+
 :host-context(body.jelly-enabled) cr-button.action-button {
   background-color: var(--bg-action);
 }
