@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kAutofillAlwaysReturnCloudTokenizedCard);
 BASE_DECLARE_FEATURE(kAutofillAutoTriggerManualFallbackForCards);
 BASE_DECLARE_FEATURE(kAutofillEnableCardArtImage);
 BASE_DECLARE_FEATURE(kAutofillEnableCardProductName);
+BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFilling);
 BASE_DECLARE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath);
 BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
 BASE_DECLARE_FEATURE(kAutofillEnableIbanClientSideUrlFiltering);

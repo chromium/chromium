@@ -47,6 +47,12 @@ BASE_FEATURE(kAutofillEnableCardProductName,
              "AutofillEnableCardProductName",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, we will store CVC for both local and server credit cards. This
+// will also allow the users to autofill their CVCs on checkout pages.
+BASE_FEATURE(kAutofillEnableCvcStorageAndFilling,
+             "AutofillEnableCvcStorageAndFilling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, if the user encounters the yellow path (challenge path) in the
 // VCN retrieval flow and the server denotes that the card is eligible for email
 // OTP authentication, email OTP authentication will be offered as one of the
