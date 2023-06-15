@@ -27,6 +27,7 @@ items:
   supported_on:
   - chrome.*:14-
   - chrome_os:14-
+  - ios:90-
   value: 2
 owners:
 - file://components/policy/OWNERS
