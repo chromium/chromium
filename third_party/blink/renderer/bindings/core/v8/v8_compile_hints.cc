@@ -86,7 +86,7 @@ void V8CrowdsourcedCompileHintsProducer::RecordScript(
   uint32_t script_name_hash =
       base::PersistentHash(name_std_string.c_str(), name_length);
 
-  scripts_.emplace_back(v8::Global<v8::Script>(isolate, script));
+  scripts_.emplace_back(v8::TracedReference<v8::Script>(isolate, script));
   script_name_hashes_.emplace_back(script_name_hash);
 }
 
@@ -108,6 +108,7 @@ void V8CrowdsourcedCompileHintsProducer::GenerateData() {
 
 void V8CrowdsourcedCompileHintsProducer::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
+  visitor->Trace(scripts_);
 }
 
 void V8CrowdsourcedCompileHintsProducer::ClearData() {

@@ -1172,8 +1172,13 @@ void Page::PrepareForLeakDetection() {
   // depending on whether the garbage collector(s) are able to find the settings
   // object through the Page supplement. Prepares for leak detection by removing
   // all InternalSetting objects from Pages.
-  for (Page* page : OrdinaryPages())
+  for (Page* page : OrdinaryPages()) {
     page->RemoveSupplement<InternalSettingsPageSupplementBase>();
+
+    // V8CompileHintsProducer keeps v8::Script objects alive until the page
+    // becomes interactive. Give it a chance to clean up.
+    page->v8_compile_hints_->ClearData();
+  }
 }
 
 // Ensure the 10 bits reserved for connected frame count in NodeRareData are
