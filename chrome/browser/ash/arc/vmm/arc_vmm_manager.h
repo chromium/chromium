@@ -35,8 +35,18 @@ enum class SwapState {
 
 // ARCVM vmm features manager.
 class ArcVmmManager : public KeyedService,
-                      public arc::ConnectionObserver<arc::mojom::AppInstance> {
+                      public arc::ConnectionObserver<arc::mojom::AppInstance>,
+                      public ash::ConciergeClient::VmObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnArcVmSwappingOut() {}
+    virtual void OnArcVmSwappingIn() {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
   // Returns singleton instance for the given BrowserContext, or nullptr if
   // the browser |context| is not allowed to use ARC.
   static ArcVmmManager* GetForBrowserContext(content::BrowserContext* context);
@@ -65,9 +75,16 @@ class ArcVmmManager : public KeyedService,
 
   static void EnsureFactoryBuilt();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // arc::ConnectionObserver:
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
+
+  // ash::ConciergeClient::VmObserver override:
+  void OnVmSwapping(
+      const vm_tools::concierge::VmSwappingSignal& signal) override;
 
  private:
   friend class ArcVmmManagerTest;
@@ -116,6 +133,9 @@ class ArcVmmManager : public KeyedService,
 
   SwapState latest_swap_state_ = SwapState::DISABLE;
 
+  // List of observers.
+  base::ObserverList<Observer> observer_list_;
+
   // Log the time stamp and result of last shrink memory request.
   absl::optional<base::Time> last_shrink_timestamp_;
   absl::optional<bool> last_shrink_result_;
@@ -152,6 +172,10 @@ class ArcVmmManager : public KeyedService,
       ConnectionHolder<mojom::AppInstance, mojom::AppHost>,
       ConnectionHolder<mojom::AppInstance, mojom::AppHost>::Observer>
       app_instance_observation_{this};
+
+  base::ScopedObservation<ash::ConciergeClient,
+                          ash::ConciergeClient::VmObserver>
+      concierge_observation_{this};
 
   base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };

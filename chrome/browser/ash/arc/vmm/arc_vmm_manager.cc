@@ -73,6 +73,16 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                              ArcBridgeService* bridge)
     : context_(context), bridge_service_(bridge) {
   app_instance_observation_.Observe(bridge_service_->app());
+
+  auto* client = ash::ConciergeClient::Get();
+  DCHECK(client);
+  if (client) {
+    concierge_observation_.Observe(client);
+  } else {
+    LOG(FATAL) << "ArcVmmManager initialized but failed to register observer "
+                  "on Concierge.";
+  }
+
   if (base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut)) {
     accelerator_ = std::make_unique<AcceleratorTarget>(this);
   }
@@ -179,11 +189,36 @@ bool ArcVmmManager::IsSwapped() const {
   return latest_swap_state_ != SwapState::DISABLE;
 }
 
+void ArcVmmManager::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+void ArcVmmManager::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void ArcVmmManager::OnConnectionReady() {
   arc_connected_ = true;
 }
 void ArcVmmManager::OnConnectionClosed() {
   arc_connected_ = false;
+}
+
+void ArcVmmManager::OnVmSwapping(
+    const vm_tools::concierge::VmSwappingSignal& signal) {
+  if (signal.name() != kArcVmName) {
+    return;
+  }
+  if (signal.state() == vm_tools::concierge::SWAPPING_OUT) {
+    VLOG(1) << "ArcVm swapping out.";
+    for (auto& observer : observer_list_) {
+      observer.OnArcVmSwappingOut();
+    }
+  } else if (signal.state() == vm_tools::concierge::SWAPPING_IN) {
+    VLOG(1) << "ArcVm swapping in.";
+    for (auto& observer : observer_list_) {
+      observer.OnArcVmSwappingIn();
+    }
+  }
 }
 
 void ArcVmmManager::SendSwapRequest(

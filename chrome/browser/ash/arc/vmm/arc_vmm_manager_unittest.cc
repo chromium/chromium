@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -171,6 +172,16 @@ class ArcVmmManagerTest : public testing::Test {
           }
           std::move(callback).Run(trim_result, "");
         });
+  }
+
+  void SendVmSwappingSignal(const std::string vm_name, bool out) {
+    vm_tools::concierge::VmSwappingSignal signal;
+    signal.set_name(vm_name);
+    signal.set_state(out ? vm_tools::concierge::SWAPPING_OUT
+                         : vm_tools::concierge::SWAPPING_IN);
+    for (auto& observer : client()->vm_observer_list()) {
+      observer.OnVmSwapping(signal);
+    }
   }
 
   ArcVmmManager* manager() { return manager_; }
@@ -438,6 +449,42 @@ TEST_F(ArcVmmManagerTest, EnableAndDisableRaceCondition) {
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(1, client()->disable_count());
+}
+
+TEST_F(ArcVmmManagerTest, ObserveSwappingInAndOut) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  class TestObs : public ArcVmmManager::Observer {
+   public:
+    void OnArcVmSwappingIn() override { swapping_in_++; }
+    void OnArcVmSwappingOut() override { swapping_out_++; }
+
+    int swapping_in() { return swapping_in_; }
+    int swapping_out() { return swapping_out_; }
+
+   private:
+    int swapping_in_ = 0;
+    int swapping_out_ = 0;
+  } test_observer;
+  manager()->AddObserver(&test_observer);
+
+  SendVmSwappingSignal(kArcVmName, /*out=*/true);
+  EXPECT_EQ(1, test_observer.swapping_out());
+  EXPECT_EQ(0, test_observer.swapping_in());
+
+  // Not response no-arcvm swapping signal.
+  SendVmSwappingSignal("not_arcvm", /*out=*/true);
+  EXPECT_EQ(1, test_observer.swapping_out());
+  EXPECT_EQ(0, test_observer.swapping_in());
+
+  SendVmSwappingSignal(kArcVmName, /*out=*/false);
+  EXPECT_EQ(1, test_observer.swapping_out());
+  EXPECT_EQ(1, test_observer.swapping_in());
+
+  SendVmSwappingSignal("not_arcvm", /*out=*/false);
+  EXPECT_EQ(1, test_observer.swapping_out());
+  EXPECT_EQ(1, test_observer.swapping_in());
 }
 
 // This test verify the weak ptr safety in scheduler.
