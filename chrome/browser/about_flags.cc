@@ -7712,6 +7712,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"scalable-iph", flag_descriptions::kScalableIphName,
      flag_descriptions::kScalableIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kScalableIph)},
+
+    {"help-app-welcome-tips", flag_descriptions::kHelpAppWelcomeTipsName,
+     flag_descriptions::kHelpAppWelcomeTipsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHelpAppWelcomeTips)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

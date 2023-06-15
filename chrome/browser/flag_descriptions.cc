@@ -6103,6 +6103,11 @@ const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";
 
+const char kHelpAppWelcomeTipsName[] = "Help App Welcome Tips";
+const char kHelpAppWelcomeTipsDescription[] =
+    "Enables showing the welcome tips page in the help app. This feature "
+    "is dependent on the #scalable-iph feature being enabled as well.";
+
 const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
     "Enable diacritics and variant character selection on PK longpress.";
 const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =

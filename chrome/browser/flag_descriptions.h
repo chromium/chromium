@@ -3495,6 +3495,9 @@ extern const char kHelpAppAutoTriggerInstallDialogDescription[];
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 
+extern const char kHelpAppWelcomeTipsName[];
+extern const char kHelpAppWelcomeTipsDescription[];
+
 extern const char kHotspotName[];
 extern const char kHotspotDescription[];
 

@@ -1178,6 +1178,12 @@ BASE_FEATURE(kHelpAppLauncherSearch,
              "HelpAppLauncherSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable showing the welcome tips page in the help app. This feature
+// is dependent on the 'ScalableIph' feature being enabled as well.
+BASE_FEATURE(kHelpAppWelcomeTips,
+             "HelpAppWelcomeTips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable ChromeOS hibernation features.
 BASE_FEATURE(kHibernate, "Hibernate", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2571,6 +2577,11 @@ bool AreContextualNudgesEnabled() {
 
 bool AreDesksTemplatesEnabled() {
   return base::FeatureList::IsEnabled(kDesksTemplates);
+}
+
+bool AreHelpAppWelcomeTipsEnabled() {
+  return base::FeatureList::IsEnabled(kHelpAppWelcomeTips) &&
+         base::FeatureList::IsEnabled(kScalableIph);
 }
 
 bool ArePolicyProvidedTrustAnchorsAllowedAtLockScreen() {

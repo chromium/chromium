@@ -61137,6 +61137,7 @@ from previous Chrome versions.
   <int value="-1011390415" label="AutofillRejectCompanyBirthyear:enabled"/>
   <int value="-1010590882" label="MutationEvents:enabled"/>
   <int value="-1010588306" label="SlideTopChromeWithPageScrolls:disabled"/>
+  <int value="-1009727449" label="HelpAppWelcomeTips:enabled"/>
   <int value="-1009111883" label="NearbyShareVisibilityReminder:enabled"/>
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
   <int value="-1008130438" label="PageEntitiesPageContentAnnotations:enabled"/>
@@ -62763,6 +62764,7 @@ from previous Chrome versions.
   <int value="-158549277" label="enable-embeddedsearch-api"/>
   <int value="-158161384" label="SafeModeForCachedFlags:disabled"/>
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
+  <int value="-154632776" label="HelpAppWelcomeTips:disabled"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>
