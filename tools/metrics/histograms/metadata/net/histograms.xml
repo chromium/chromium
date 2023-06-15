@@ -1514,63 +1514,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.DNS.SecureDnsMode.Automatic.ResolveTime" units="ms"
-    expires_after="2023-11-19">
-  <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
-  <summary>
-    Duration of time taken by HostResolverManager::Job (the basic internal unit
-    of work for non-local host resolutions, potentially merging redundant
-    requests from Chrome) in resolutions for in AUTOMATIC secure DNS mode.
-    Excludes jobs where all requests are speculative.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.SecureDnsMode.Off.ResolveTime" units="ms"
-    expires_after="2023-11-19">
-  <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
-  <summary>
-    Duration of time taken by HostResolverManager::Job (the basic internal unit
-    of work for non-local host resolutions, potentially merging redundant
-    requests from Chrome) in resolutions for in OFF secure DNS mode. Excludes
-    jobs where all requests are speculative.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.SecureDnsMode.Secure.ResolveTime" units="ms"
-    expires_after="2023-11-19">
-  <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
-  <summary>
-    Duration of time taken by HostResolverManager::Job (the basic internal unit
-    of work for non-local host resolutions, potentially merging redundant
-    requests from Chrome) in resolutions for in SECURE secure DNS mode. Excludes
-    jobs where all requests are speculative.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime" units="ms"
-    expires_after="2023-06-14">
-  <owner>awillia@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
-  <summary>
-    Duration of time taken by a secure DnsTask in resolutions that failed that
-    were issued in AUTOMATIC mode. Excludes time spent in the subsequent
-    fallback.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.SecureDnsTask.DnsModeSecure.FailureTime" units="ms"
-    expires_after="2023-09-07">
-  <owner>horo@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
-  <summary>
-    Duration of time taken by a secure DnsTask in resolutions that failed that
-    were issued in SECURE mode.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.SystemTask.FailureTime" units="ms"
     expires_after="2023-11-05">
   <owner>horo@chromium.org</owner>

@@ -2500,14 +2500,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                         bool secure) {
     DCHECK_NE(OK, failure_results.error());
 
-    if (key_.secure_dns_mode == SecureDnsMode::kSecure) {
-      DCHECK(secure);
-      UMA_HISTOGRAM_LONG_TIMES_100(
-          "Net.DNS.SecureDnsTask.DnsModeSecure.FailureTime", duration);
-    } else if (key_.secure_dns_mode == SecureDnsMode::kAutomatic && secure) {
-      UMA_HISTOGRAM_LONG_TIMES_100(
-          "Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime", duration);
-    } else {
+    if (!secure) {
+      DCHECK_NE(key_.secure_dns_mode, SecureDnsMode::kSecure);
       UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.InsecureDnsTask.FailureTime",
                                    duration);
     }
@@ -2725,14 +2719,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         base::UmaHistogramSparse("Net.DNS.ResolveError.Fast", std::abs(error));
       else
         base::UmaHistogramSparse("Net.DNS.ResolveError.Slow", std::abs(error));
-    }
-
-    if (had_non_speculative_request_) {
-      UmaHistogramMediumTimes(
-          base::StringPrintf(
-              "Net.DNS.SecureDnsMode.%s.ResolveTime",
-              SecureDnsModeToString(key_.secure_dns_mode).c_str()),
-          duration);
     }
 
     if (error == OK) {
