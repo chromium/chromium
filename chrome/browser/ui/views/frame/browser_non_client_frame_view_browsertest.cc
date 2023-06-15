@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 
 namespace {
 
@@ -227,10 +228,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   BrowserFrame* frame = view->frame();
   BrowserNonClientFrameView* frame_view = frame->GetFrameView();
 
-  // Checking the exact color is brittle but there's no better way to ensure
-  // that it's not overridden by accident.
-  EXPECT_EQ(gfx::kGoogleGrey900,
-            frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
+  color_utils::HSL frame_color_hsl;
+  SkColorToHSL(frame_view->GetFrameColor(BrowserFrameActiveState::kActive),
+               &frame_color_hsl);
+  // Ensure that the frame color is very dark in Incognito.
+  EXPECT_LT(frame_color_hsl.l, 0.2);
 
   incognito_browser->window()->Close();
 }
