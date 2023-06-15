@@ -41,6 +41,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -132,10 +133,9 @@ std::unique_ptr<views::FlexLayoutView> CreateLabelWithCheckIcon(
     const std::u16string& label_text) {
   auto label_with_icon = std::make_unique<views::FlexLayoutView>();
 
-  // TODO(crbug.com/1444070): Add correct check icon (without circle).
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kCheckCircleIcon, ui::kColorIconSecondary, kIconSize));
+      views::kMenuCheckIcon, ui::kColorIconSecondary, kIconSize));
   label_with_icon->AddChildView(std::move(icon));
 
   auto spacer = std::make_unique<views::View>();
