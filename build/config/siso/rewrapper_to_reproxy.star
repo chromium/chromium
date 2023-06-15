@@ -85,7 +85,7 @@ def __rewrite_rewrapper(ctx, cmd):
         reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
     )
 
-def __rewrite_action_remote_mojo(ctx, cmd):
+def __rewrite_action_remote_py(ctx, cmd):
     # Example command:
     #   python3
     #     ../../build/util/action_remote.py
@@ -114,7 +114,7 @@ def __rewrite_action_remote_mojo(ctx, cmd):
             wrapped_command_pos = i
             break
     if wrapped_command_pos < 1:
-        fail("couldn't find mojo command in %s" % str(cmd.args))
+        fail("couldn't find action command in %s" % str(cmd.args))
     ctx.actions.fix(
         args = cmd.args[wrapped_command_pos:],
         reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
@@ -122,7 +122,7 @@ def __rewrite_action_remote_mojo(ctx, cmd):
 
 __handlers = {
     "rewrite_rewrapper": __rewrite_rewrapper,
-    "rewrite_action_remote_mojo": __rewrite_action_remote_mojo,
+    "rewrite_action_remote_py": __rewrite_action_remote_py,
 }
 
 def __enabled(ctx):
@@ -133,13 +133,18 @@ def __enabled(ctx):
     return False
 
 def __step_config(ctx, step_config):
-    mojo_rule = mojo.step_rule()
-    mojo_rule.update({
+    mojom_parser_rule = mojo.step_rule()
+    mojom_parser_rule.update({
         "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
-        "handler": "rewrite_action_remote_mojo",
+        "handler": "rewrite_action_remote_py",
     })
     step_config["rules"].extend([
-        mojo_rule,
+        mojom_parser_rule,
+        {
+            "name": "action_remote",
+            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
+            "handler": "rewrite_action_remote_py",
+        },
         {
             "name": "clang/cxx",
             "action": "(.*_)?cxx",
