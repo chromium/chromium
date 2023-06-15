@@ -9837,12 +9837,11 @@ class DeskButtonTest
     SetShowDeskButtonInShelfPref(GetPrimaryUserPrefService(), true);
   }
 
-  DeskButton* GetDeskButton() {
-    return shelf_test_api_->shelf_view()
-        ->shelf_widget()
-        ->desk_button_widget()
-        ->GetDeskButton();
+  DeskButtonWidget* GetDeskButtonWidget() {
+    return GetPrimaryShelf()->shelf_widget()->desk_button_widget();
   }
+
+  DeskButton* GetDeskButton() { return GetDeskButtonWidget()->GetDeskButton(); }
 
   views::ImageButton* GetPrevDeskButton() {
     return GetDeskButton()->prev_desk_button();
@@ -9983,6 +9982,18 @@ TEST_P(DeskButtonTest, DeskButtonTextWorksWithEmojis) {
   EXPECT_EQ(
       GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"😃",
       desk_button->GetTextForTest());
+}
+
+// Tests that the desk button is visible after changing desks from overview.
+TEST_P(DeskButtonTest, OverviewDeskSwitch) {
+  NewDesk();
+  EXPECT_TRUE(GetDeskButtonWidget()->GetLayer()->GetTargetVisibility());
+
+  EnterOverview();
+  EXPECT_FALSE(GetDeskButtonWidget()->GetLayer()->GetTargetVisibility());
+  auto* desks_controller = DesksController::Get();
+  ActivateDesk(desks_controller->desks()[1].get());
+  EXPECT_TRUE(GetDeskButtonWidget()->GetLayer()->GetTargetVisibility());
 }
 
 // TODO(b/272383056): Add test that switches between different shelf alignments.
