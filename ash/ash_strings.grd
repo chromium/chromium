@@ -4718,6 +4718,9 @@ Connect your device to power.
       <message name="IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_TITLE" desc="Title of the notification shown to a user that has not completed the MultiDevice setup when their Chrome device recognizes that they have a phone on their account that the Chrome device can connect to">
         Your devices work even better together
       </message>
+      <message name="IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITH_PHONE_HUB" desc="The text mentions Phone Hub that shows in the notifier of multidevice setup.">
+        Quickly send or reply to your phone's messages using Phone Hub.
+      </message>
       <message name="IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_MESSAGE" desc="Message shown as part of the notification shown to a user that has not completed the MultiDevice setup when their Chrome device recognizes that they have a phone on their account that the Chrome device can connect to. Clicking it opens a prompt to guide them through setting up.">
         Connect your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> with your phone
       </message>

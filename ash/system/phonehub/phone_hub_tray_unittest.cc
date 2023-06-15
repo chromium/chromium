@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_tray.h"
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -12,6 +13,8 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/toast/anchored_nudge.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -38,6 +41,7 @@ using AccessProhibitedReason =
     phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason;
 
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
+const std::string kPhoneHubNudgeId = "PhoneHubNudge";
 
 // A mock implementation of |NewWindowDelegate| for use in tests.
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -64,7 +68,8 @@ class PhoneHubTrayTest : public AshTestBase {
                               features::kPhoneHubCameraRoll,
                               features::kEcheLauncher, features::kEcheSWA,
                               features::kPhoneHubNudge,
-                              features::kEcheNetworkConnectionState},
+                              features::kEcheNetworkConnectionState,
+                              features::kSystemNudgeV2},
         /*disabled_features=*/{});
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
@@ -785,10 +790,8 @@ TEST_F(PhoneHubTrayTest, ShowNudge) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
 
-  PhoneHubNudgeController* nudge_controller =
-      phone_hub_tray_->phone_hub_nudge_controller_for_testing();
-  SystemNudge* nudge = nudge_controller->GetSystemNudgeForTesting();
-  EXPECT_TRUE(nudge);
+  EXPECT_TRUE(
+      Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 }
 
 TEST_F(PhoneHubTrayTest, HideNudge) {
@@ -798,14 +801,12 @@ TEST_F(PhoneHubTrayTest, HideNudge) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
 
-  PhoneHubNudgeController* nudge_controller =
-      phone_hub_tray_->phone_hub_nudge_controller_for_testing();
-  SystemNudge* nudge = nudge_controller->GetSystemNudgeForTesting();
-  EXPECT_TRUE(nudge);
+  EXPECT_TRUE(
+      Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 
   ClickTrayButton();
-  nudge = nudge_controller->GetSystemNudgeForTesting();
-  EXPECT_FALSE(nudge);
+  EXPECT_FALSE(
+      Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 }
 
 }  // namespace ash

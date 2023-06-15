@@ -3418,7 +3418,8 @@ bool IsPhoneHubMonochromeNotificationIconsEnabled() {
 }
 
 bool IsPhoneHubNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubNudge);
+  return base::FeatureList::IsEnabled(kPhoneHubNudge) &&
+         base::FeatureList::IsEnabled(kSystemNudgeV2);
 }
 
 bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {

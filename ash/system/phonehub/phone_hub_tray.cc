@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_tray.h"
-
+#include <string>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -408,7 +408,10 @@ void PhoneHubTray::UpdateVisibility() {
                       IsInUserSession());
   if (features::IsPhoneHubNudgeEnabled() && IsInUserSession()) {
     if (ui_state == PhoneHubUiController::UiState::kOnboardingWithoutPhone) {
-      phone_hub_nudge_controller_->ShowNudge();
+      // TODO(b/282057052): update text based on different groups.
+      phone_hub_nudge_controller_->ShowNudge(
+          this, l10n_util::GetStringUTF16(
+                    IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITH_PHONE_HUB));
       // TODO (b/266853434): Animation of icon.
     }
   }
@@ -436,15 +439,15 @@ void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
 }
 
 void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
+  if (features::IsPhoneHubNudgeEnabled()) {
+    phone_hub_nudge_controller_->HideNudge();
+  }
   // Simply toggle between visible/invisibvle
   if (bubble_ && bubble_->bubble_view()->GetVisible()) {
     CloseBubble();
     return;
   }
   ShowBubble();
-  if (features::IsPhoneHubNudgeEnabled()) {
-    phone_hub_nudge_controller_->HideNudge();
-  }
 }
 
 views::View* PhoneHubTray::GetPhoneStatusView() {

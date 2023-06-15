@@ -4,19 +4,36 @@
 
 #include "ash/system/phonehub/phone_hub_nudge_controller.h"
 
-#include "ash/system/phonehub/phone_hub_nudge.h"
+#include <string>
+
+#include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 
 namespace ash {
+namespace {
+const std::string kPhoneHubNudgeId = "PhoneHubNudge";
 
+}  // namespace
 PhoneHubNudgeController::PhoneHubNudgeController() = default;
 PhoneHubNudgeController::~PhoneHubNudgeController() = default;
 
-std::unique_ptr<SystemNudge> PhoneHubNudgeController::CreateSystemNudge() {
-  SetNudgeContent();
-  return std::make_unique<PhoneHubNudge>(nudge_content_);
+void PhoneHubNudgeController::ShowNudge(views::View* anchor_view,
+                                        const std::u16string& text) {
+  if (!ash::features::IsPhoneHubNudgeEnabled()) {
+    return;
+  }
+  AnchoredNudgeData nudge_data = {
+      kPhoneHubNudgeId, AnchoredNudgeCatalogName::kPhoneHub, text, anchor_view};
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
-void PhoneHubNudgeController::SetNudgeContent() {
-  nudge_content_ = u"";
+void PhoneHubNudgeController::HideNudge() {
+  if (!ash::features::IsPhoneHubNudgeEnabled()) {
+    return;
+  }
+  AnchoredNudgeManager::Get()->Cancel(kPhoneHubNudgeId);
 }
 }  // namespace ash
