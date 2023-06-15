@@ -677,81 +677,98 @@ TEST_F(SyncPrefsMigrationTest, ReplacingSyncWithSignin_TurnsPreferencesOff) {
 
 TEST_F(SyncPrefsMigrationTest,
        ReplacingSyncWithSignin_MigratesBookmarksOptedIn) {
-  // Bookmarks and ReadingList are enabled (by default - the actual prefs are
-  // not set explicitly). On iOS, an additional opt-in pref is required.
-  ASSERT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
+  {
+    // The feature starts disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+
+    // Bookmarks and ReadingList are enabled (by default - the actual prefs are
+    // not set explicitly). On iOS, an additional opt-in pref is required.
+    ASSERT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
+    ASSERT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
 #if BUILDFLAG(IS_IOS)
-  SetBooleanUserPrefValue(
-      prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, PREF_TRUE);
+    SetBooleanUserPrefValue(
+        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn,
+        PREF_TRUE);
 #endif  // BUILDFLAG(IS_IOS)
-  ASSERT_TRUE(
-      SyncPrefs(&pref_service_)
-          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .HasAll({UserSelectableType::kBookmarks,
-                   UserSelectableType::kReadingList}));
+    ASSERT_TRUE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .HasAll({UserSelectableType::kBookmarks,
+                     UserSelectableType::kReadingList}));
+  }
 
-  // Now (on the next browser restart) the feature gets enabled, and the
-  // migration runs.
-  base::test::ScopedFeatureList feature_list(
-      kReplaceSyncPromosWithSignInPromos);
+  {
+    // Now (on the next browser restart) the feature gets enabled, and the
+    // migration runs.
+    base::test::ScopedFeatureList feature_list(
+        kReplaceSyncPromosWithSignInPromos);
 
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForReplacingSyncWithSignin(
+            SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
-  // Bookmarks and ReadingList should still be enabled (by default).
-  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
-  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
-  EXPECT_TRUE(
-      SyncPrefs(&pref_service_)
-          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .HasAll({UserSelectableType::kBookmarks,
-                   UserSelectableType::kReadingList}));
+    // Bookmarks and ReadingList should still be enabled (by default).
+    EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
+    EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
+    EXPECT_TRUE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .HasAll({UserSelectableType::kBookmarks,
+                     UserSelectableType::kReadingList}));
+  }
 }
 
 #if BUILDFLAG(IS_IOS)
 TEST_F(SyncPrefsMigrationTest,
        ReplacingSyncWithSignin_MigratesBookmarksNotOptedIn) {
-  // The regular Bookmarks and ReadingList prefs are enabled, but the additional
-  // opt-in pref is not.
-  SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
-  SetBooleanUserPrefValue(kReadingListPref, PREF_TRUE);
-  ASSERT_EQ(GetBooleanUserPrefValue(
-                prefs::internal::kBookmarksAndReadingListAccountStorageOptIn),
-            PREF_UNSET);
-  ASSERT_FALSE(
-      SyncPrefs(&pref_service_)
-          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .HasAny({UserSelectableType::kBookmarks,
-                   UserSelectableType::kReadingList}));
+  {
+    // The feature starts disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
 
-  // Now (on the next browser restart) the feature gets enabled, and the
-  // migration runs.
-  base::test::ScopedFeatureList feature_list(
-      kReplaceSyncPromosWithSignInPromos);
+    // The regular Bookmarks and ReadingList prefs are enabled, but the
+    // additional opt-in pref is not.
+    SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
+    SetBooleanUserPrefValue(kReadingListPref, PREF_TRUE);
+    ASSERT_EQ(GetBooleanUserPrefValue(
+                  prefs::internal::kBookmarksAndReadingListAccountStorageOptIn),
+              PREF_UNSET);
+    ASSERT_FALSE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .HasAny({UserSelectableType::kBookmarks,
+                     UserSelectableType::kReadingList}));
+  }
 
-  // Sanity check: Without the migration, Bookmarks and ReadingList would now be
-  // considered enabled.
-  ASSERT_TRUE(
-      SyncPrefs(&pref_service_)
-          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .HasAll({UserSelectableType::kBookmarks,
-                   UserSelectableType::kReadingList}));
+  {
+    // Now (on the next browser restart) the feature gets enabled, and the
+    // migration runs.
+    base::test::ScopedFeatureList feature_list(
+        kReplaceSyncPromosWithSignInPromos);
 
-  // Run the migration!
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+    // Sanity check: Without the migration, Bookmarks and ReadingList would now
+    // be considered enabled.
+    ASSERT_TRUE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .HasAll({UserSelectableType::kBookmarks,
+                     UserSelectableType::kReadingList}));
 
-  // After the migration, bookmarks should be disabled.
-  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_FALSE));
-  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
-  EXPECT_FALSE(
-      SyncPrefs(&pref_service_)
-          .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .HasAny({UserSelectableType::kBookmarks,
-                   UserSelectableType::kReadingList}));
+    // Run the migration!
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForReplacingSyncWithSignin(
+            SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+    // After the migration, bookmarks should be disabled.
+    EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_FALSE));
+    EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
+    EXPECT_FALSE(
+        SyncPrefs(&pref_service_)
+            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+            .HasAny({UserSelectableType::kBookmarks,
+                     UserSelectableType::kReadingList}));
+  }
 }
 #endif  // BUILDFLAG(IS_IOS)
 
