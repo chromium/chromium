@@ -1509,6 +1509,8 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff,
          ::features::kChromeKioskEnableLacros},
         {});
   }
