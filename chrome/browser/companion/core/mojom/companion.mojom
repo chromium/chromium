@@ -48,6 +48,9 @@ enum MethodType {
 
   // Method corresponding to `CompanionPage.OnCqFindTextResultsAvailable`.
   kOnCqFindTextResultsAvailable = 32,
+
+  // Method corresponding to `CompanionPage.OnDeviceVisualClassificationResult`.
+  kOnDeviceVisualClassificationResult = 33,
 };
 
 // Types of promos shown in the companion UI.

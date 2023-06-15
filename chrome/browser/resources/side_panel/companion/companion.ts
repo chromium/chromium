@@ -175,7 +175,10 @@ function initialize() {
 companionProxy.callbackRouter.onDeviceVisualClassificationResult.addListener(
     (results: VisualSearchResult[]) => {
       const dataUris = results.map(result => result.dataUri);
-      const message = {[ParamType.VISUAL_SEARCH_PARAMS]: dataUris};
+      const message = {
+        [ParamType.METHOD_TYPE]: MethodType.kOnDeviceVisualClassificationResult,
+        [ParamType.VISUAL_SEARCH_PARAMS]: dataUris,
+      };
 
       const companionOrigin =
           new URL(loadTimeData.getString('companion_origin')).origin;
