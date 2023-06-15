@@ -356,9 +356,16 @@ void Delegate::OnReceivedRedirect(URLRequest* request,
 
 void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
+
+  const bool is_http2 = request->response_info().connection_info ==
+                        HttpResponseInfo::CONNECTION_INFO_HTTP2;
+
   // All error codes, including OK and ABORTED, as with
   // Net.ErrorCodesForMainFrame4
   base::UmaHistogramSparse("Net.WebSocket.ErrorCodes", -net_error);
+  if (is_http2) {
+    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes.Http2", -net_error);
+  }
   if (net::IsLocalhost(request->url())) {
     base::UmaHistogramSparse("Net.WebSocket.ErrorCodes_Localhost", -net_error);
   } else {
@@ -374,8 +381,7 @@ void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
   const int response_code = request->GetResponseCode();
   DVLOG(3) << "OnResponseStarted (response code " << response_code << ")";
 
-  if (request->response_info().connection_info ==
-      HttpResponseInfo::CONNECTION_INFO_HTTP2) {
+  if (is_http2) {
     if (response_code == HTTP_OK) {
       owner_->PerformUpgrade();
       return;

@@ -5629,15 +5629,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.WebSocket.ErrorCodes" enum="NetErrorCodes"
+<histogram name="Net.WebSocket.ErrorCodes{Protocol}" enum="NetErrorCodes"
     expires_after="never">
 <!-- expires-never: needed for long-term tracking of ecosystem -->
 
-  <owner>yhirano@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
   <summary>
     Positive net error codes that WebSockets end with, including OK and ABORTED.
   </summary>
+  <token key="Protocol">
+    <variant name="" summary="All protocols"/>
+    <variant name=".Http2" summary="HTTP/2"/>
+  </token>
 </histogram>
 
 <histogram name="Net.WebSocket.HandshakeResult2"
