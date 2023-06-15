@@ -38,7 +38,7 @@ export function confirmationPageTest() {
   let feedbackServiceProvider = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
 
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);

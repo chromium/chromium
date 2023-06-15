@@ -417,6 +417,8 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://nearby-internals",
     "chrome://network",
     "chrome://office-fallback/",
+    "chrome://os-feedback",
+    "chrome-untrusted://os-feedback",
     "chrome://parent-access",
     "chrome://password-change",
     "chrome://personalization",

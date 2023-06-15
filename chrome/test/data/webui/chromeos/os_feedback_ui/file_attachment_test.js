@@ -29,7 +29,7 @@ export function fileAttachmentTestSuite() {
   let feedbackServiceProvider;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });

@@ -20,6 +20,7 @@ static_library("os_feedback_ui") {
   deps = [
     "//ash/constants:constants",
     "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/os_feedback_ui/backend",
     "//ash/webui/os_feedback_ui/mojom",
     "//ash/webui/resources:os_feedback_resources",

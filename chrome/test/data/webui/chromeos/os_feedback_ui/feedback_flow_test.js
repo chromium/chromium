@@ -29,7 +29,7 @@ export function FeedbackFlowTestSuite() {
   let feedbackServiceProvider = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     // Create helpContentProvider.
     helpContentProvider = new FakeHelpContentProvider();
     // Setup search response.
@@ -930,7 +930,7 @@ export function FeedbackFlowTestSuite() {
         assertTrue(link.href.includes(disabledUrl));
 
         // Reset app element.
-        document.body.innerHTML = '';
+        document.body.innerHTML = trustedTypes.emptyHTML;
         page.remove();
         page = null;
 
