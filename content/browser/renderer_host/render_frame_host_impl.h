@@ -2943,6 +2943,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // kept constant across navigations in a frame.
   const absl::optional<base::UnguessableToken>& GetDevToolsNavigationToken();
 
+  // Returns if the RenderFrameHostImpl is loaded with the "Cache-Control:
+  // no-store" header.
+  bool LoadedWithCacheControlNoStoreHeader();
+
  protected:
   friend class RenderFrameHostFactory;
 

@@ -19,6 +19,7 @@
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
+#include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/base/features.h"
@@ -1656,6 +1657,27 @@ TEST_F(RenderFrameHostImplTest,
   // The page should close regardless of it not being primary since the browser
   // requested it.
   testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+// Test if `LoadedWithCacheControlNoStoreHeader()` behaves
+// as expected.
+TEST_F(RenderFrameHostImplTest, LoadedWithCacheControlNoStoreHeader) {
+  TestRenderFrameHost* rfh = main_test_rfh();
+  // In the default state, `LoadedWithCacheControlNoStoreHeader()`
+  // will return false.
+  ASSERT_FALSE(rfh->LoadedWithCacheControlNoStoreHeader());
+  // Register the `kMainResourceHasCacheControlNoStore` feature and
+  // `LoadedWithCacheControlNoStoreHeader()` will return true.
+  rfh->OnBackForwardCacheDisablingStickyFeatureUsed(
+      blink::scheduler::WebSchedulerTrackedFeature::
+          kMainResourceHasCacheControlNoStore);
+  ASSERT_TRUE(rfh->LoadedWithCacheControlNoStoreHeader());
+  // Simulate a same RFH navigation and the
+  // `LoadedWithCacheControlNoStoreHeader()` should return false because the
+  // registered feature is reset.
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://foo"), rfh);
+  ASSERT_EQ(main_test_rfh(), rfh);
+  ASSERT_FALSE(main_test_rfh()->LoadedWithCacheControlNoStoreHeader());
 }
 
 }  // namespace content

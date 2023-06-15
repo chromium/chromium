@@ -623,8 +623,7 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   if (!AllowStoringPagesWithCacheControlNoStore())
     return;
   // If the page didn't have cache-control: no-store, do nothing.
-  if (!render_frame_host->GetBackForwardCacheDisablingFeatures().Has(
-          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
+  if (!render_frame_host->LoadedWithCacheControlNoStoreHeader()) {
     return;
   }
 
@@ -938,8 +937,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   // main document and used the "Authorization" header then add that reason.
   // This does not use `IsSameOriginForTreeResult` because we want to be more
   // conservative and react to *any* same-origin frame using it.
-  if (root_rfh_->GetBackForwardCacheDisablingFeatures().Has(
-          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore) &&
+  if (root_rfh_->LoadedWithCacheControlNoStoreHeader() &&
       rfh->GetLastCommittedOrigin().IsSameOriginWith(
           root_rfh_->GetLastCommittedOrigin()) &&
       rfh->GetBackForwardCacheDisablingFeatures().Has(

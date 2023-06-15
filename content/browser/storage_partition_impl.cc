@@ -2006,7 +2006,7 @@ void StoragePartitionImpl::OnAuthRequired(
   if (current_web_contents) {
     // Evict all the BFCache entries that
     // 1): are stored in the same BrowserContext
-    // 2): contain CCNS header
+    // 2): were loaded with the "Cache-control: no-store" header
     // 3): match the challenger information of the page that requires HTTP
     // authentication.
     for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
@@ -2016,9 +2016,7 @@ void StoragePartitionImpl::OnAuthRequired(
              web_contents->GetController().GetBackForwardCache().GetEntries()) {
           RenderFrameHostImpl* rfh = entry->render_frame_host();
           const GURL& last_committed_url = rfh->GetLastCommittedURL();
-          if (rfh->GetBackForwardCacheDisablingFeatures().Has(
-                  blink::scheduler::WebSchedulerTrackedFeature::
-                      kMainResourceHasCacheControlNoStore) &&
+          if (rfh->LoadedWithCacheControlNoStoreHeader() &&
               auth_info.challenger ==
                   url::SchemeHostPort(last_committed_url.scheme(),
                                       last_committed_url.host(),

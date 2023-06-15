@@ -15305,4 +15305,10 @@ void RenderFrameHostImpl::SetResourceCacheRemote(
   GetMojomFrameInRenderer()->SetResourceCache(std::move(pending_remote));
 }
 
+bool RenderFrameHostImpl::LoadedWithCacheControlNoStoreHeader() {
+  return GetBackForwardCacheDisablingFeatures().Has(
+      blink::scheduler::WebSchedulerTrackedFeature::
+          kMainResourceHasCacheControlNoStore);
+}
+
 }  // namespace content
