@@ -640,6 +640,11 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
   const std::string privacy_sandbox_prompt_startup_histogram =
       "Settings.PrivacySandbox.PromptStartupState";
 
+  const bool user_reported_restricted =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
+  const bool user_is_currently_unrestricted =
+      privacy_sandbox_settings_->IsPrivacySandboxCurrentlyUnrestricted();
+
   // Prompt suppressed cases.
   PromptSuppressedReason prompt_suppressed_reason =
       static_cast<PromptSuppressedReason>(
@@ -705,10 +710,16 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     }
 
     case PromptSuppressedReason::kNoticeShownToGuardian: {
+      // Check for users waiting for graduation: If a user was ever reported as
+      // restricted and is currently unrestricted it means they are ready for
+      // graduation.
       base::UmaHistogramEnumeration(
           privacy_sandbox_prompt_startup_histogram,
-          PromptStartupState::
-              kRestrictedNoticeNotShownDueToNoticeShownToGuardian);
+          user_reported_restricted && user_is_currently_unrestricted
+              ? PromptStartupState::
+                    kWaitingForGraduationRestrictedNoticeFlowNotCompleted
+              : PromptStartupState::
+                    kRestrictedNoticeNotShownDueToNoticeShownToGuardian);
       return;
     }
   }
@@ -724,16 +735,12 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     return;
   }
 
+  const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
+      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
+
   // Check for users waiting for graduation: If a user was ever reported as
   // restricted and is currently unrestricted it means they are ready for
   // graduation.
-  const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
-      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
-  const bool user_reported_restricted =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
-  const bool user_is_currently_unrestricted =
-      privacy_sandbox_settings_->IsPrivacySandboxCurrentlyUnrestricted();
-
   if (user_reported_restricted && user_is_currently_unrestricted) {
     base::UmaHistogramEnumeration(
         privacy_sandbox_prompt_startup_histogram,
