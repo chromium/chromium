@@ -112,6 +112,24 @@ class DIPSService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 
+  void AddOpenSite(const std::string& site) {
+    if (open_sites_.contains(site)) {
+      open_sites_.at(site)++;
+    } else {
+      open_sites_.insert({site, 1});
+    }
+  }
+
+  void RemoveOpenSite(const std::string& site) {
+    CHECK(open_sites_.contains(site));
+    if (open_sites_.contains(site)) {
+      open_sites_.at(site)--;
+      if (open_sites_.at(site) == 0) {
+        open_sites_.erase(site);
+      }
+    }
+  }
+
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
@@ -182,6 +200,8 @@ class DIPSService : public KeyedService {
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
   absl::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
+
+  std::map<std::string, int> open_sites_;
 
   base::WeakPtrFactory<DIPSService> weak_factory_{this};
 };

@@ -12,12 +12,14 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -91,6 +93,12 @@ using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
 
 // Helper function to close (and waits for closure of) a `web_contents` tab.
 void CloseTab(content::WebContents* web_contents);
+
+// Helper function to open a link to the given URL in a new tab and return the
+// new tab's WebContents.
+base::expected<content::WebContents*, std::string> OpenInNewTab(
+    content::WebContents* original_tab,
+    const GURL& url);
 
 // Helper function for performing client side cookie access via JS.
 void AccessCookieViaJSIn(content::WebContents* web_contents,

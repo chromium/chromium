@@ -23,6 +23,23 @@ void CloseTab(content::WebContents* web_contents) {
   destruction_watcher.Wait();
 }
 
+base::expected<WebContents*, std::string> OpenInNewTab(
+    WebContents* original_tab,
+    const GURL& url) {
+  OpenedWindowObserver tab_observer(original_tab,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  if (!content::ExecJs(original_tab,
+                       content::JsReplace("window.open($1, '_blank');", url))) {
+    return base::unexpected("window.open failed");
+  }
+  tab_observer.Wait();
+
+  // Wait for the new tab to finish navigating.
+  content::WaitForLoadStop(tab_observer.window());
+
+  return tab_observer.window();
+}
+
 void AccessCookieViaJSIn(content::WebContents* web_contents,
                          content::RenderFrameHost* frame) {
   FrameCookieAccessObserver observer(web_contents, frame,

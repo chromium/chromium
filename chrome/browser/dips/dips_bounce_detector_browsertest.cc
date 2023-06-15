@@ -396,26 +396,6 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     observer.Wait();
   }
 
-  // Open a link to the given URL in a new tab and return the new tab's
-  // WebContents.
-  base::expected<WebContents*, std::string> OpenInNewTab(
-      WebContents* original_tab,
-      const GURL& url) {
-    OpenedWindowObserver tab_observer(
-        original_tab, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-    if (!content::ExecJs(
-            original_tab,
-            content::JsReplace("window.open($1, '_blank');", url))) {
-      return base::unexpected("window.open failed");
-    }
-    tab_observer.Wait();
-
-    // Wait for the new tab to finish navigating.
-    content::WaitForLoadStop(tab_observer.window());
-
-    return tab_observer.window();
-  }
-
   // Perform a browser-based navigation to terminate the current redirect chain.
   // (NOTE: tests using WCOCallbackLogger must call this *after* checking the
   // log, since this navigation will be logged.)

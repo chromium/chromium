@@ -395,6 +395,8 @@ ukm::SourceId DIPSWebContentsObserver::GetPageUkmSourceId() const {
 void DIPSWebContentsObserver::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
+  // We need to pass in a WeakPtr to DIPSWebContentsObserver as it's not
+  // guaranteed to outlive the call.
   dips_service_->HandleRedirectChain(
       std::move(redirects), std::move(chain),
       base::BindRepeating(
@@ -652,6 +654,14 @@ void DIPSWebContentsObserver::DidFinishNavigation(
     return;
   }
 
+  if (navigation_handle->HasCommitted()) {
+    if (last_committed_site_.has_value()) {
+      dips_service_->RemoveOpenSite(last_committed_site_.value());
+    }
+    last_committed_site_ = GetSiteForDIPS(navigation_handle->GetURL());
+    dips_service_->AddOpenSite(last_committed_site_.value());
+  }
+
   DIPSNavigationHandleImpl dips_handle(navigation_handle);
   detector_.DidFinishNavigation(&dips_handle);
 }
@@ -784,6 +794,10 @@ bool DIPSBounceDetector::ShouldUpdateTimestamp(
 }
 
 void DIPSWebContentsObserver::WebContentsDestroyed() {
+  if (last_committed_site_.has_value()) {
+    dips_service_->RemoveOpenSite(last_committed_site_.value());
+  }
+
   detector_.BeforeDestruction();
 }
 

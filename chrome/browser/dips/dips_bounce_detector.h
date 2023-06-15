@@ -349,6 +349,8 @@ class DIPSWebContentsObserver
   DIPSBounceDetector detector_;
   DIPSIssueReportingCallback issue_reporting_callback_;
 
+  absl::optional<std::string> last_committed_site_;
+
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
