@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://crbug.com/1453291
 // https://github.com/tbondwilkinson/dom-parts
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
-interface Part {
-  readonly attribute PartRoot? root;
+interface Part : PartRoot {
+  readonly attribute PartRoot root;
   readonly attribute FrozenArray<DOMString> metadata;
-
-  void disconnect();
 };

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://crbug.com/1453291
 // https://github.com/tbondwilkinson/dom-parts
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
-interface ChildNodePart : PartRoot {
-  constructor(Node previousSibling, Node nextSibling, optional NodePartInit init = {});
+interface ChildNodePart : Part {
+  constructor(PartRoot root, Node previousSibling, Node nextSibling, optional NodePartInit init = {});
   readonly attribute Node previousSibling;
   readonly attribute Node nextSibling;
   readonly attribute FrozenArray<Node> children;

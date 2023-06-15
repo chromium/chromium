@@ -18,19 +18,24 @@
 </div>
 
 <script>
+const target = document.getElementById('target');
+assert_true(target.children.length >= 3);
+
 test(() => {
-  const target = document.getElementById('target');
-  assert_true(target.children.length >= 3);
-  const documentPart = document.getDocumentPart();
-  assert_true(documentPart instanceof DocumentPart,'document should have a DocumentPart');
-  const parts = documentPart.getParts();
-  assert_true(!!parts,'getParts should return something');
-  const nodePart = new NodePart(target);
+  const root = document.getPartRoot();
+  assert_true(root instanceof DocumentPartRoot,'document.getPartRoot() should return the DocumentPartRoot');
+  const parts = root.getParts();
+  assert_true(!!parts,'getParts() should return something');
+
+  const nodePart = new NodePart(root,target);
   assert_true(!!nodePart);
   assert_equals(nodePart.node,target);
-  const childNodePart = new ChildNodePart(target.children[0], target.children[1]);
+  assert_equals(nodePart.root,root);
+  const childNodePart = new ChildNodePart(root,target.children[0], target.children[1]);
   assert_true(!!childNodePart);
+  assert_equals(childNodePart.root,root);
   assert_equals(childNodePart.previousSibling,target.children[0]);
   assert_equals(childNodePart.nextSibling,target.children[1]);
+  assert_equals(childNodePart.getParts().length,0,'childNodePart.getParts() should return an empty array');
 }, 'Basic imperative DOM Parts object construction');
 </script>

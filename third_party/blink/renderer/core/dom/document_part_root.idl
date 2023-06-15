@@ -6,8 +6,6 @@
 // https://github.com/tbondwilkinson/dom-parts/blob/main/README.md
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
-interface PartRoot {
-  FrozenArray<Part> getParts();
-  // TODO(crbug.com/1453291) Document what this does.
-  PartRoot clone();
+interface DocumentPartRoot : PartRoot {
+
 };

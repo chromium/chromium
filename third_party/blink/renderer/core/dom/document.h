@@ -156,7 +156,7 @@ class DocumentLoader;
 class DocumentMarkerController;
 class DocumentNameCollection;
 class DocumentParser;
-class DocumentPart;
+class DocumentPartRoot;
 class DocumentResourceCoordinator;
 class DocumentState;
 class DocumentTimeline;
@@ -1601,7 +1601,9 @@ class CORE_EXPORT Document : public ContainerNode,
   CSSToggleInference* GetCSSToggleInference() { return css_toggle_inference_; }
   CSSToggleInference& EnsureCSSToggleInference();
 
-  DocumentPart* getDocumentPart();
+  // https://crbug.com/1453291
+  // The DOM Parts API: https://github.com/tbondwilkinson/dom-parts.
+  DocumentPartRoot& getPartRoot() { return *document_part_root_; }
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -2503,6 +2505,8 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<Element>> elements_needing_style_recalc_for_toggle_;
   // The inference engine for CSS toggles.
   Member<CSSToggleInference> css_toggle_inference_;
+
+  Member<DocumentPartRoot> document_part_root_;
 
   int load_event_delay_count_;
 

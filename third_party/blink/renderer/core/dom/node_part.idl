@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://crbug.com/1453291
 // https://github.com/tbondwilkinson/dom-parts
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface NodePart : Part {
-  constructor(Node node, optional NodePartInit init = {});
+  constructor(PartRoot root, Node node, optional NodePartInit init = {});
   readonly attribute Node node;
 };
 

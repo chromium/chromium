@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
-#include "third_party/blink/renderer/core/dom/document_part.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_part.h"
+#include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -22,21 +22,25 @@ namespace blink {
 // Implementation of the ChildNodePart class, which is part of the DOM Parts
 // API. A ChildNodePart stores a reference to a range of nodes within the
 // children of a single parent |Node| in the DOM tree.
-class CORE_EXPORT ChildNodePart : public PartRoot {
+class CORE_EXPORT ChildNodePart : public Part {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ChildNodePart* Create(Node* previous_sibling,
+  static ChildNodePart* Create(PartRoot* root,
+                               Node* previous_sibling,
                                Node* next_sibling,
                                const NodePartInit* init) {
-    return MakeGarbageCollected<ChildNodePart>(previous_sibling, next_sibling,
-                                               init);
+    return MakeGarbageCollected<ChildNodePart>(*root, *previous_sibling,
+                                               *next_sibling, init);
   }
   // TODO(crbug.com/1453291): Handle the init parameter.
-  ChildNodePart(Node* previous_sibling,
-                Node* next_sibling,
+  ChildNodePart(PartRoot& root,
+                Node& previous_sibling,
+                Node& next_sibling,
                 const NodePartInit* init)
-      : previous_sibling_(previous_sibling), next_sibling_(next_sibling) {}
+      : Part(root),
+        previous_sibling_(previous_sibling),
+        next_sibling_(next_sibling) {}
   ChildNodePart(const ChildNodePart&) = delete;
   ~ChildNodePart() override = default;
 
@@ -53,13 +57,7 @@ class CORE_EXPORT ChildNodePart : public PartRoot {
   HeapVector<Member<Node>> children() const {
     return HeapVector<Member<Node>>();
   }
-  // TODO(crbug.com/1453291) Implement this method.
-  HeapVector<Member<Part>> getParts() override {
-    return HeapVector<Member<Part>>();
-  }
 
-  // TODO(crbug.com/1453291) Implement this method.
-  PartRoot* root() const override { return nullptr; }
   // TODO(crbug.com/1453291) Implement this method.
   void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
 

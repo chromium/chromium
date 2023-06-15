@@ -132,7 +132,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
-#include "third_party/blink/renderer/core/dom/document_part.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -793,6 +793,9 @@ Document::Document(const DocumentInit& initializer,
       is_srcdoc_document_(initializer.IsSrcdocDocument()),
       is_mobile_document_(false),
       layout_view_(nullptr),
+      document_part_root_(RuntimeEnabledFeatures::DOMPartsAPIEnabled()
+                              ? MakeGarbageCollected<DocumentPartRoot>(*this)
+                              : nullptr),
       load_event_delay_count_(0),
       // We already intentionally fire load event asynchronously and here we use
       // kDOMManipulation to ensure that we run onload() in order with other
@@ -2480,10 +2483,6 @@ CSSToggleInference& Document::EnsureCSSToggleInference() {
     css_toggle_inference_ = MakeGarbageCollected<CSSToggleInference>(this);
   }
   return *css_toggle_inference_;
-}
-
-DocumentPart* Document::getDocumentPart() {
-  return MakeGarbageCollected<DocumentPart>(this);
 }
 
 void Document::ApplyScrollRestorationLogic() {
@@ -8805,6 +8804,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(elements_with_css_toggles_);
   visitor->Trace(elements_needing_style_recalc_for_toggle_);
   visitor->Trace(css_toggle_inference_);
+  visitor->Trace(document_part_root_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);

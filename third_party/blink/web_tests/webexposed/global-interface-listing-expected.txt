@@ -1260,7 +1260,7 @@ interface CharacterData : Node
     method replaceWith
     method substringData
     setter data
-interface ChildNodePart : PartRoot
+interface ChildNodePart : Part
     attribute @@toStringTag
     getter children
     getter nextSibling
@@ -2001,12 +2001,12 @@ interface Document : Node
     method exitPictureInPicture
     method exitPointerLock
     method getAnimations
-    method getDocumentPart
     method getElementById
     method getElementsByClassName
     method getElementsByName
     method getElementsByTagName
     method getElementsByTagNameNS
+    method getPartRoot
     method getSelection
     method hasFocus
     method hasPrivateToken
@@ -2180,9 +2180,8 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
-interface DocumentPart : PartRoot
+interface DocumentPartRoot : PartRoot
     attribute @@toStringTag
-    method clone
     method constructor
 interface DocumentPictureInPicture : EventTarget
     attribute @@toStringTag
@@ -6752,14 +6751,14 @@ interface PannerNode : AudioNode
     setter panningModel
     setter refDistance
     setter rolloffFactor
-interface Part
+interface Part : PartRoot
     attribute @@toStringTag
     getter metadata
     getter root
     method constructor
-    method disconnect
-interface PartRoot : Part
+interface PartRoot
     attribute @@toStringTag
+    method clone
     method constructor
     method getParts
 interface PasswordCredential : Credential

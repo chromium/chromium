@@ -208,7 +208,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [RuntimeEnabled=ConfirmationOfAction] void ariaNotify(HTMLString announcement, optional AriaNotificationOptions options = {});
 
     // The (experimental) DOM Parts API.
-    [RuntimeEnabled=DOMPartsAPI] DocumentPart getDocumentPart();
+    [RuntimeEnabled=DOMPartsAPI] DocumentPartRoot getPartRoot();
 
     // Event handler attributes
     attribute EventHandler onbeforecopy;
