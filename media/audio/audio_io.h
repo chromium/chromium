@@ -130,6 +130,11 @@ class MEDIA_EXPORT AudioOutputStream {
   // Flushes the stream. This should only be called if the stream is not
   // playing. (i.e. called after Stop or Open)
   virtual void Flush() = 0;
+
+  // Constrains a timedelta representing a delay to between 0 and 10 seconds.
+  // This is used by OS implementations to prevent miscalculated delay values
+  // from creating large amounts of noise in the delay stats.
+  static base::TimeDelta BoundedDelay(base::TimeDelta delay);
 };
 
 // Models an audio sink receiving recorded audio from the audio driver.

@@ -43,4 +43,20 @@ TEST(AudioGlitchInfo, ToString) {
   EXPECT_EQ(info.ToString(), "duration (ms): 123, count: 456");
 }
 
+TEST(AudioGlitchInfo, SingleBoundedGlitch) {
+  {
+    AudioGlitchInfo result{.duration = base::Seconds(0), .count = 1};
+    EXPECT_EQ(AudioGlitchInfo::SingleBoundedGlitch(base::Seconds(-0.1)),
+              result);
+  }
+  {
+    AudioGlitchInfo result{.duration = base::Seconds(1), .count = 1};
+    EXPECT_EQ(AudioGlitchInfo::SingleBoundedGlitch(base::Seconds(1.1)), result);
+  }
+  {
+    AudioGlitchInfo result{.duration = base::Seconds(0.5), .count = 1};
+    EXPECT_EQ(AudioGlitchInfo::SingleBoundedGlitch(base::Seconds(0.5)), result);
+  }
+}
+
 }  // namespace media

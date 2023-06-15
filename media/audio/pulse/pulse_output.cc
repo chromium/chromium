@@ -176,7 +176,7 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
     UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
                               delay.InMilliseconds());
     size_t frames_filled = source_callback_->OnMoreData(
-        delay, base::TimeTicks::Now(), {}, audio_bus_.get());
+        BoundedDelay(delay), base::TimeTicks::Now(), {}, audio_bus_.get());
 
     // Zero any unfilled data so it plays back as silence.
     if (frames_filled < unwritten_frames_in_bus) {

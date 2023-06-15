@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 
 namespace media {
 
@@ -15,6 +16,14 @@ std::string AudioGlitchInfo::ToString() const {
   return base::StrCat(
       {"duration (ms): ", base::NumberToString(duration.InMilliseconds()),
        ", count: ", base::NumberToString(count)});
+}
+
+// static
+AudioGlitchInfo AudioGlitchInfo::SingleBoundedGlitch(
+    const base::TimeDelta duration) {
+  return AudioGlitchInfo{
+      .duration = std::clamp(duration, base::Seconds(0), base::Seconds(1)),
+      .count = 1};
 }
 
 AudioGlitchInfo& AudioGlitchInfo::operator+=(const AudioGlitchInfo& other) {

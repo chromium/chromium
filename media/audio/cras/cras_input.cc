@@ -453,7 +453,8 @@ void CrasInputStream::ReadAudio(size_t frames,
 
   peak_detector_.FindPeak(audio_bus_.get());
 
-  callback_->OnData(audio_bus_.get(), capture_time, normalized_volume, {});
+  callback_->OnData(audio_bus_.get(), capture_time, normalized_volume,
+                    glitch_info_accumulator_.GetAndReset());
 }
 
 void CrasInputStream::NotifyStreamError(int err) {
@@ -574,8 +575,14 @@ void CrasInputStream::CalculateAudioGlitches(
   base::TimeDelta dropped_samples_glitch_duration =
       dropped_samples_duration - last_dropped_samples_duration_;
 
-  glitch_reporter_.UpdateStats(overrun_glitch_duration +
-                               dropped_samples_glitch_duration);
+  base::TimeDelta glitch_duration =
+      overrun_glitch_duration + dropped_samples_glitch_duration;
+  glitch_reporter_.UpdateStats(glitch_duration);
+  if (glitch_duration.is_positive()) {
+    glitch_info_accumulator_.Add(
+        AudioGlitchInfo::SingleBoundedGlitch(glitch_duration));
+  }
+
   last_overrun_frames_ = overrun_frames;
   last_dropped_samples_duration_ = dropped_samples_duration;
 }

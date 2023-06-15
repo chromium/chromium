@@ -794,7 +794,8 @@ int AlsaPcmOutputStream::RunDataCallback(base::TimeDelta delay,
   if (source_callback_) {
     UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
                               delay.InMilliseconds());
-    return source_callback_->OnMoreData(delay, delay_timestamp, {}, audio_bus);
+    return source_callback_->OnMoreData(BoundedDelay(delay), delay_timestamp,
+                                        {}, audio_bus);
   }
 
   return 0;

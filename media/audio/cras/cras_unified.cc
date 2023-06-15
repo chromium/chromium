@@ -340,8 +340,8 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
   UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
                             delay.InMilliseconds());
   int frames_filled = source_callback_->OnMoreData(
-      delay, base::TimeTicks::Now(), glitch_info_accumulator_.GetAndReset(),
-      output_bus_.get());
+      BoundedDelay(delay), base::TimeTicks::Now(),
+      glitch_info_accumulator_.GetAndReset(), output_bus_.get());
 
   peak_detector_->FindPeak(output_bus_.get());
 
@@ -396,7 +396,7 @@ void CrasUnifiedStream::CalculateAudioGlitches(
 
   if (underrun_glitch_duration.is_positive()) {
     glitch_info_accumulator_.Add(
-        AudioGlitchInfo{.duration = underrun_glitch_duration, .count = 1});
+        AudioGlitchInfo::SingleBoundedGlitch(underrun_glitch_duration));
   }
   last_underrun_duration_ = underrun_duration;
 }

@@ -20,6 +20,7 @@
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/base/amplitude_peak_detector.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -174,6 +175,8 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).
   SystemGlitchReporter glitch_reporter_;
+
+  AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
   // Callback to send statistics info.
   const AudioManager::LogCallback log_callback_;

@@ -949,7 +949,8 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
         }
         glitch_reporter_.UpdateStats(glitch_duration);
         if (glitch_duration.is_positive()) {
-          glitch_accumulator_.Add({.duration = glitch_duration, .count = 1});
+          glitch_accumulator_.Add(
+              AudioGlitchInfo::SingleBoundedGlitch(glitch_duration));
         }
       }
 

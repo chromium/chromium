@@ -22,6 +22,9 @@ struct MEDIA_EXPORT AudioGlitchInfo {
   // Stringifies the info for human-readable logging.
   std::string ToString() const;
 
+  // Creates a glitch with duration clamped to between 0 and 1 seconds.
+  static AudioGlitchInfo SingleBoundedGlitch(const base::TimeDelta duration);
+
   AudioGlitchInfo& operator+=(const AudioGlitchInfo& other);
 
   class MEDIA_EXPORT Accumulator;
