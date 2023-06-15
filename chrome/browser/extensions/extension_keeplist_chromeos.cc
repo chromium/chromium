@@ -91,7 +91,6 @@ base::span<const base::StringPiece> ExtensionAppsRunInOSOnlyAllowlist() {
     extension_misc::kFilesManagerAppId,
 #endif
     extension_misc::kCalculatorAppId,
-    extension_misc::kInAppPaymentsSupportAppId,
   };
 
   return base::make_span(kKeeplist);
