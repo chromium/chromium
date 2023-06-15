@@ -366,6 +366,14 @@ new command, add it to `_processCommand`, write and call processor for it.
 
 ### Publish new `npm` release
 
+#### Semi-automatic release
+
+Go to [GitHub Actions](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/create-release-pr.yml) and trigger a run with the correct SemVer
+type.
+That will create a PR. Once that is merge a new tag and release will be created.
+
+#### Manual release
+
 1. Dry-run
 
    ```sh
