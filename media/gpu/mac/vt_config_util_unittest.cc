@@ -58,8 +58,8 @@ base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,
 
 base::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
     media::VideoColorSpace cs) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
-      kCMVideoCodecType_H264, media::H264PROFILE_MAIN, cs, gfx::HDRMetadata()));
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
+      kCMVideoCodecType_H264, media::H264PROFILE_MAIN, cs, gfx::HDRMetadata());
 
   base::ScopedCFTypeRef<CVImageBufferRef> image_buffer;
   OSStatus err =
@@ -144,9 +144,9 @@ constexpr char kVpccKey[] = "vpcC";
 namespace media {
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt =
       CreateFormatExtensions(kCMVideoCodecType_H264, H264PROFILE_MAIN,
-                             VideoColorSpace::REC709(), absl::nullopt));
+                             VideoColorSpace::REC709(), absl::nullopt);
 
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
@@ -167,13 +167,13 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
 }
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata()));
+      gfx::HDRMetadata());
 
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
@@ -188,13 +188,13 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
 }
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::ARIB_STD_B67,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata()));
+      gfx::HDRMetadata());
 
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
@@ -218,13 +218,13 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
       /*luminance_min=*/0);
   const auto& cv_metadata = hdr_meta.smpte_st_2086.value();
 
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      hdr_meta));
+      hdr_meta);
 
   {
     auto mdcv = GetDataValue(
@@ -290,8 +290,8 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
       VideoColorSpace::PrimaryID::BT2020,
       VideoColorSpace::TransferID::SMPTEST2084,
       VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
-      kCMVideoCodecType_VP9, kTestProfile, kTestColorSpace, absl::nullopt));
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
+      kCMVideoCodecType_VP9, kTestProfile, kTestColorSpace, absl::nullopt);
   EXPECT_EQ(10, GetIntValue(fmt, base::SysUTF8ToCFStringRef(kBitDepthKey)));
 
   auto vpcc = GetNestedDataValue(

@@ -8,6 +8,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreMedia/CoreMedia.h>
 
+#include "base/mac/scoped_cftyperef.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/media_gpu_export.h"
@@ -16,11 +17,11 @@
 
 namespace media {
 
-MEDIA_GPU_EXPORT CFMutableDictionaryRef
-CreateFormatExtensions(CMVideoCodecType codec_type,
-                       VideoCodecProfile profile,
-                       const VideoColorSpace& color_space,
-                       absl::optional<gfx::HDRMetadata> hdr_metadata);
+MEDIA_GPU_EXPORT base::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
+    CMVideoCodecType codec_type,
+    VideoCodecProfile profile,
+    const VideoColorSpace& color_space,
+    absl::optional<gfx::HDRMetadata> hdr_metadata);
 
 }  // namespace media
 

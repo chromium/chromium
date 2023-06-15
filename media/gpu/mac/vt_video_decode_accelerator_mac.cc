@@ -262,9 +262,8 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
     media::VideoCodecProfile profile,
     absl::optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> format_config(
-      CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,
-                             hdr_metadata));
+  base::ScopedCFTypeRef<CFDictionaryRef> format_config = CreateFormatExtensions(
+      kCMVideoCodecType_VP9, profile, color_space, hdr_metadata);
 
   base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   if (!format_config) {

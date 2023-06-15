@@ -6,9 +6,14 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/bridging.h"
+#include "base/logging.h"
 #include "media/base/mac/color_space_util_mac.h"
 #include "ui/gfx/hdr_metadata_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -25,14 +30,15 @@ NSString* CMVideoCodecTypeToString(CMVideoCodecType code) {
 void SetDictionaryValue(NSMutableDictionary<NSString*, id>* dictionary,
                         CFStringRef key,
                         id value) {
-  if (value)
-    dictionary[base::mac::CFToNSCast(key)] = value;
+  if (value) {
+    dictionary[base::apple::CFToNSPtrCast(key)] = value;
+  }
 }
 
 void SetDictionaryValue(NSMutableDictionary<NSString*, id>* dictionary,
                         CFStringRef key,
                         CFStringRef value) {
-  SetDictionaryValue(dictionary, key, base::mac::CFToNSCast(value));
+  SetDictionaryValue(dictionary, key, base::apple::CFToNSPtrCast(value));
 }
 
 CFStringRef GetPrimaries(media::VideoColorSpace::PrimaryID primary_id) {
@@ -137,26 +143,26 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
 }
 
 void SetContentLightLevelInfo(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
-    NSMutableDictionary<NSString*, id>* extensions) {
-  SetDictionaryValue(
-      extensions, kCMFormatDescriptionExtension_ContentLightLevelInfo,
-      base::mac::CFToNSCast(gfx::GenerateContentLightLevelInfo(hdr_metadata)));
+    NSMutableDictionary<NSString*, id>* extensions,
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  SetDictionaryValue(extensions,
+                     kCMFormatDescriptionExtension_ContentLightLevelInfo,
+                     base::apple::CFToNSPtrCast(
+                         gfx::GenerateContentLightLevelInfo(hdr_metadata)));
 }
 
 void SetColorVolumeMetadata(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
-    NSMutableDictionary<NSString*, id>* extensions) {
+    NSMutableDictionary<NSString*, id>* extensions,
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
   SetDictionaryValue(
       extensions, kCMFormatDescriptionExtension_MasteringDisplayColorVolume,
-      base::mac::CFToNSCast(
+      base::apple::CFToNSPtrCast(
           gfx::GenerateMasteringDisplayColorVolume(hdr_metadata)));
 }
 
-void SetVp9CodecConfigurationBox(
-    media::VideoCodecProfile codec_profile,
-    const media::VideoColorSpace& color_space,
-    NSMutableDictionary<NSString*, id>* extensions) {
+void SetVp9CodecConfigurationBox(NSMutableDictionary<NSString*, id>* extensions,
+                                 media::VideoCodecProfile codec_profile,
+                                 const media::VideoColorSpace& color_space) {
   // Synthesize a 'vpcC' box. See
   // https://www.webmproject.org/vp9/mp4/#vp-codec-configuration-box.
   uint8_t version = 1;
@@ -200,12 +206,13 @@ void SetVp9CodecConfigurationBox(
 
 namespace media {
 
-CFMutableDictionaryRef CreateFormatExtensions(
+base::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
     CMVideoCodecType codec_type,
     VideoCodecProfile profile,
     const VideoColorSpace& color_space,
     absl::optional<gfx::HDRMetadata> hdr_metadata) {
-  auto* extensions = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary* extensions = [[NSMutableDictionary alloc] init];
+
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_FormatName,
                      CMVideoCodecTypeToString(codec_type));
 
@@ -238,14 +245,15 @@ CFMutableDictionaryRef CreateFormatExtensions(
 
   // Set metadata for PQ signals.
   if (color_space.transfer == VideoColorSpace::TransferID::SMPTEST2084) {
-    SetContentLightLevelInfo(hdr_metadata, extensions);
-    SetColorVolumeMetadata(hdr_metadata, extensions);
+    SetContentLightLevelInfo(extensions, hdr_metadata);
+    SetColorVolumeMetadata(extensions, hdr_metadata);
   }
 
   if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX)
-    SetVp9CodecConfigurationBox(profile, color_space, extensions);
+    SetVp9CodecConfigurationBox(extensions, profile, color_space);
 
-  return base::mac::NSToCFCast(extensions);
+  return base::ScopedCFTypeRef<CFDictionaryRef>(
+      base::apple::NSToCFOwnershipCast(extensions));
 }
 
 }  // namespace media

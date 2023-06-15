@@ -16,6 +16,8 @@ source_set("mac") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   visibility = [ "//media/gpu" ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   sources = [
     "video_toolbox_decompression_interface.cc",
     "video_toolbox_decompression_interface.h",
