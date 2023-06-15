@@ -253,14 +253,6 @@ void RecordBuiltInAppSearchResult(const std::string& app_id) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void RecordAppsPerNotification(int count) {
-  if (count <= 0) {
-    return;
-  }
-  base::UmaHistogramBoolean("ChromeOS.Apps.NumberOfAppsForNotification",
-                            (count > 1));
-}
-
 const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
   if (app_id == web_app::kCalculatorAppId) {

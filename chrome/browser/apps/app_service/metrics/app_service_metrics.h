@@ -98,8 +98,6 @@ void RecordAppLaunch(const std::string& app_id,
 void RecordBuiltInAppSearchResult(const std::string& app_id);
 #endif
 
-void RecordAppsPerNotification(int count);
-
 // Converts a preinstalled web app ID to the corresponding `DefaultAppName`, or
 // nullopt if it doesn't match a known ID.
 const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(

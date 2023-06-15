@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -469,8 +468,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
 
 IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
                        AddAndRemoveNonPersistentNotificationForOneApp) {
-  base::HistogramTester histogram_tester;
-
   const GURL origin = GetOrigin();
   std::string app_id1 = CreateWebApp(GetUrl1(), GetScope1());
   std::string app_id3 = CreateWebApp(GetUrl3(), GetScope3());
@@ -487,9 +484,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
 
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Apps.NumberOfAppsForNotification", false, 1);
-
   RemoveNotification(profile(), notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
@@ -497,8 +491,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
 
 IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
                        AddAndRemoveNonPersistentNotification) {
-  base::HistogramTester histogram_tester;
-
   const GURL origin = GetOrigin();
   std::string app_id1 = CreateWebApp(GetUrl1(), GetScope1());
   std::string app_id2 = CreateWebApp(GetUrl2(), GetScope2());
@@ -518,9 +510,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_TRUE(HasBadge(profile(), app_id2).value());
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
 
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Apps.NumberOfAppsForNotification", true, 1);
-
   RemoveNotification(profile(), notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
@@ -529,8 +518,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
 
 IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
                        NonPersistentNotificationWhenInstallAndUninstallApp) {
-  base::HistogramTester histogram_tester;
-
   // Send the notification 1 before installing apps.
   const GURL origin = GetOrigin();
   const std::string notification_id1 = "notification-id1";
@@ -549,9 +536,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
 
-  histogram_tester.ExpectTotalCount("ChromeOS.Apps.NumberOfAppsForNotification",
-                                    0);
-
   // Send the notification 2.
   const std::string notification_id2 = "notification-id2";
   notification = CreateNotification(notification_id2, origin);
@@ -563,9 +547,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
   ASSERT_TRUE(HasBadge(profile(), app_id2).value());
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
-
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Apps.NumberOfAppsForNotification", true, 1);
 
   // Uninstall the app 1. The notification badge for app 2 and app 3 should not
   // be affected.
@@ -589,9 +570,6 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
   ASSERT_TRUE(HasBadge(profile(), app_id2).value());
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
-
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Apps.NumberOfAppsForNotification", true, 2);
 
   // Remove the notification 3
   RemoveNotification(profile(), notification_id3);

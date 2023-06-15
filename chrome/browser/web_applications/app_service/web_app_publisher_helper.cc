@@ -1804,13 +1804,9 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
                           : notification.origin_url();
 
     auto app_ids = registrar().FindAppsInScope(url);
-    int count = 0;
     for (const auto& app_id : app_ids) {
-      if (MaybeAddNotification(app_id, notification.id())) {
-        ++count;
-      }
+      MaybeAddNotification(app_id, notification.id());
     }
-    apps::RecordAppsPerNotification(count);
   }
 }
 
