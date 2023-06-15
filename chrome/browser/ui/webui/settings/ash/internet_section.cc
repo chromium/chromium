@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/internet_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -1116,6 +1117,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
 void InternetSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<InternetHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<ExtensionControlHandler>());
 }
 
 int InternetSection::GetSectionNameMessageId() const {
