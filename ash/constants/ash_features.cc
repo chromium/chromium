@@ -994,7 +994,7 @@ BASE_FEATURE(kFilesConflictDialog,
 // shortcut.
 BASE_FEATURE(kFilesDriveShortcuts,
              "FilesDriveShortcuts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable inline sync status in Files app.
 BASE_FEATURE(kFilesInlineSyncStatus,
