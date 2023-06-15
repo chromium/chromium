@@ -33,6 +33,32 @@ chromium-metrics-reviews@google.com.
   <variant name=".Other" summary="Installed by other sources"/>
 </variants>
 
+<histogram name="WebApk.AppIdentityDialog.PendingImageUpdateDiffValue"
+    units="%" expires_after="2024-06-01">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records how much different the before and after images are during the webapp
+    update process (for non-scaled images only -- see also metric
+    PendingImageUpdateDiffValueScaled). Recorded each time the update process
+    detects an image change, except for instances where the update is still
+    pending when the update process runs again (already approved images).
+  </summary>
+</histogram>
+
+<histogram name="WebApk.AppIdentityDialog.PendingImageUpdateDiffValueScaled"
+    units="%" expires_after="2024-06-01">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records how much different the before and after images are during the webapp
+    update process, when one of them has been scaled. Recorded each time the
+    update process detects an image change, except for instances where the
+    update is still pending when the update process runs again (already approved
+    images).
+  </summary>
+</histogram>
+
 <histogram name="WebApk.Install.AvailableSpace.Fail" units="MB"
     expires_after="2023-12-01">
   <owner>hartmanng@chromium.org</owner>

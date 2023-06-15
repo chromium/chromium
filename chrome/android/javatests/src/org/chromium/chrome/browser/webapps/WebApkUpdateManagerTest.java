@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.text.format.DateUtils;
 
 import androidx.test.filters.MediumTest;
@@ -247,7 +249,9 @@ public class WebApkUpdateManagerTest {
         callback.waitForCallback(0);
     }
 
-     /** Checks whether a WebAPK update is needed. */
+    /**
+     * Checks whether a WebAPK update is needed.
+     */
     private boolean checkUpdateNeeded(
             final CreationData creationData, boolean acceptDialogIfAppears) throws Exception {
         return checkUpdateNeeded(creationData, null, acceptDialogIfAppears);
@@ -793,5 +797,56 @@ public class WebApkUpdateManagerTest {
         WebApkProto.WebApk proto = parseRequestProto(mUpdateRequestPath);
         assertEquals(proto.getAppKey(), mTestServer.getURL(WEBAPK_MANIFEST_URL));
         assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testImageDiff() throws Exception {
+        Bitmap allBlack2x2 =
+                Bitmap.createBitmap(new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2,
+                        2, Bitmap.Config.ARGB_8888);
+        Bitmap allWhite2x2 =
+                Bitmap.createBitmap(new int[] {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff}, 2,
+                        2, Bitmap.Config.ARGB_8888);
+        Bitmap blackAndWhite2x2 =
+                Bitmap.createBitmap(new int[] {0x00000000, 0xffffffff, 0x00000000, 0xffffffff}, 2,
+                        2, Bitmap.Config.ARGB_8888);
+        Bitmap differentConfig2x2 = Bitmap.createBitmap(
+                new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2, 2, Config.ALPHA_8);
+
+        // A black image compared against a white one should register as all changed.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, allWhite2x2));
+        // Alternating black and white pixels should show as half changed when compared against all
+        // black image.
+        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, blackAndWhite2x2));
+        // Alternating black and white pixels should show as half changed when compared against all
+        // white image.
+        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(blackAndWhite2x2, allWhite2x2));
+        // Two all black images should register as unchanged.
+        assertEquals(0, TestWebApkUpdateManager.imageDiffValue(blackAndWhite2x2, blackAndWhite2x2));
+
+        // Two null images register as unchanged.
+        assertEquals(0, TestWebApkUpdateManager.imageDiffValue(null, null));
+        // If 'before' is provided, but 'after' is null, they should register as 100% different.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, null));
+        // If 'after' is provided, but 'before' is null, they should register as 100% different.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(null, allWhite2x2));
+        // Images with different color configurations should register as 100% different.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, differentConfig2x2));
+    }
+
+    @Test(expected = AssertionError.class)
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testImageDiffDifferentDimensions() throws Exception {
+        Bitmap allBlack1x1 = Bitmap.createBitmap(
+                new int[] {0x00000000, 0x00000000}, 1, 1, Bitmap.Config.ARGB_8888);
+        Bitmap allBlack2x2 =
+                Bitmap.createBitmap(new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2,
+                        2, Bitmap.Config.ARGB_8888);
+
+        // Images of different dimensions should fire an assert (see test annotation above).
+        TestWebApkUpdateManager.imageDiffValue(allBlack1x1, allBlack2x2);
     }
 }
