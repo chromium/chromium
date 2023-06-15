@@ -93,11 +93,24 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult('Added ' + objectStoreName1 + ' entry.');
   ApplicationTestRunner.dumpObjectStores();
 
+  let onUpdate = () => {};
+
+  TestRunner.addSniffer(
+      Resources.IDBDataView.prototype, 'updatedDataForTests', function() {
+        onUpdate(this);
+      }, true);
+
+  const NUM_EXPECTED_VIEWS = 4;  // Two object store views and two index views
   // Refresh database view
+  let updates = new Promise(resolve => {
+    const updated = new Set();
+    onUpdate = (view) => {
+      updated.add(view);
+      if (updated.size === NUM_EXPECTED_VIEWS) resolve();
+    };
+  });
   await waitRefreshDatabase();
-  await waitUpdateDataView();  // Wait for indexes and second object store to refresh.
-  await waitUpdateDataView();
-  await waitUpdateDataView();
+  await updates;
   TestRunner.addResult('Refreshed database view.');
   ApplicationTestRunner.dumpObjectStores();
 
@@ -107,10 +120,15 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ApplicationTestRunner.dumpObjectStores();
 
   // Right-click refresh database view
+  updates = new Promise(resolve => {
+    const updated = new Set();
+    onUpdate = (view) => {
+      updated.add(view);
+      if (updated.size === NUM_EXPECTED_VIEWS) resolve();
+    };
+  });
   await waitRefreshDatabaseRightClick();
-  await waitUpdateDataView();  // Wait for indexes and second object store to refresh.
-  await waitUpdateDataView();
-  await waitUpdateDataView();
+  await updates;
   TestRunner.addResult('Right-click refreshed database.');
   ApplicationTestRunner.dumpObjectStores();
 
