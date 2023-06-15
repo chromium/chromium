@@ -201,23 +201,11 @@ class WPTAdapter:
                 '--log-path=-',
             ])
 
-        if self.options.json_test_results:
-            runner_options.log_chromium = self.options.json_test_results
-        else:
-            runner_options.log_chromium = self.fs.join(
-                self.port.results_directory(), 'results.json')
-        # put wpt_reports.json in results_directory first, then move it to
-        # the artifacts directory. The artifacts directory may not exist
-        # at this point yet.
-        runner_options.log_wptreport = self.fs.join(
-            self.port.results_directory(), 'wpt_reports.json')
-        for log_type in ('chromium', 'wptreport'):
-            dest = 'log_%s' % log_type
-            filename = getattr(runner_options, dest)
-            if filename:
-                filename = self.fs.abspath(filename)
-                setattr(runner_options, dest,
-                        [mozlog.commandline.log_file(filename)])
+        runner_options.log_wptreport = [
+            mozlog.commandline.log_file(
+                self.fs.join(self.port.results_directory(),
+                             'wpt_reports.json'))
+        ]
         runner_options.log = wptlogging.setup(dict(vars(runner_options)),
                                               {'grouped': sys.stdout})
         logging.root.handlers.clear()
@@ -474,7 +462,7 @@ class WPTAdapter:
             json.dump(run_info, file_handle)
 
     @contextlib.contextmanager
-    def process_and_upload_results(self, options):
+    def process_and_upload_results(self, runner_options):
         artifacts_dir = self.port.artifacts_directory()
         processor = WPTResultsProcessor(
             self.fs,
@@ -484,11 +472,14 @@ class WPTAdapter:
             crash_timeout_threshold=self.port.get_option(
                 'exit_after_n_crashes_or_timeouts'))
         with processor.stream_results() as events:
-            options.log.add_handler(events.put)
+            runner_options.log.add_handler(events.put)
             yield
-        processor.process_wpt_report(options.log_wptreport[0].name)
-        processor.process_results_json(options.log_chromium[0].name)
-        if self.port.get_option('show_results') and processor.has_regressions:
+        processor.process_wpt_report(runner_options.log_wptreport[0].name)
+        processor.process_results_json(
+            self.port.get_option('json_test_results'))
+        processor.copy_results_viewer()
+        if self.port.get_option(
+                'show_results') and processor.num_regressions > 0:
             self.port.show_results_html_file(
                 self.fs.join(artifacts_dir, 'results.html'))
 

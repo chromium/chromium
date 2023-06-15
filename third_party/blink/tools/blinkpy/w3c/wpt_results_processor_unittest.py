@@ -160,7 +160,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertFalse(result.unexpected)
         self.assertAlmostEqual(result.took, 2)
         self.assertEqual(result.artifacts, {})
-        self.assertFalse(self.processor.has_regressions)
 
     def test_report_unexpected_fail(self):
         self._event(action='test_start',
@@ -200,7 +199,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                  'reftest-pretty-diff.html'),
                 ]
             })
-        self.assertTrue(self.processor.has_regressions)
 
     def test_report_pass_on_retry(self):
         self._event(action='suite_start', time=0)
@@ -788,28 +786,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                     'screenshot': 'abcd',
                                 }]
                             })
+                self._event(action='test_start', test='/reftest.html')
+                self._event(action='test_end',
+                            test='/reftest.html',
+                            status='PASS',
+                            expected='PASS')
                 self._event(action='suite_end')
 
-        results_json = {
-            'tests': {
-                'test.html': {
-                    'expected': 'PASS',
-                    'actual': 'FAIL FAIL',
-                    'artifacts': {
-                        'wpt_actual_status': ['ERROR'],
-                    },
-                    'is_unexpected': True,
-                    'is_regression': True,
-                },
-            },
-            'path_delimiter': '/',
-        }
-        full_json_path = self.fs.join('/mock-checkout', 'out', 'Default',
-                                      'layout-test-results',
-                                      'raw_wpt_output.json')
-        self.fs.write_text_file(full_json_path, json.dumps(results_json))
-
-        self.processor.process_results_json(full_json_path)
+        self.processor.process_results_json()
         full_json = json.loads(
             self.fs.read_text_file(
                 self.fs.join('/mock-checkout', 'out', 'Default',
@@ -822,8 +806,22 @@ class WPTResultsProcessorTest(LoggingTestCase):
         ])
         self.assertEqual(unexpected_fail['image_diff_stats'], diff_stats)
 
+        path_to_failing_results = self.fs.join('/mock-checkout', 'out',
+                                               'Default',
+                                               'layout-test-results',
+                                               'failing_results.json')
+        failing_results_match = re.fullmatch(
+            'ADD_RESULTS\((?P<json>.*)\);',
+            self.fs.read_text_file(path_to_failing_results))
+        self.assertIsNotNone(failing_results_match)
+        failing_results = json.loads(failing_results_match['json'])
+        self.assertIn('test.html', failing_results['tests'])
+        self.assertNotIn('reftest.html', failing_results['tests'])
+        self.assertRegex(self.fs.read_text_file(path_to_failing_results),
+                         'ADD_RESULTS\(.*\);$')
+
     def test_trim_json_to_regressions(self):
-        results_json = {
+        results = {
             'tests': {
                 'test.html': {
                     'expected': 'PASS',
@@ -852,28 +850,11 @@ class WPTResultsProcessorTest(LoggingTestCase):
             },
             'path_delimiter': '/',
         }
-        full_json_path = self.fs.join('/mock-checkout', 'out', 'Default',
-                                      'layout-test-results',
-                                      'raw_wpt_output.json')
-        self.fs.write_text_file(full_json_path, json.dumps(results_json))
+        self.processor.trim_to_regressions(results['tests'])
 
-        self.processor.process_results_json(full_json_path)
-
-        failing_results_match = re.fullmatch(
-            'ADD_RESULTS\((?P<json>.*)\);',
-            self.fs.read_text_file(
-                self.fs.join('/mock-checkout', 'out', 'Default',
-                             'layout-test-results', 'failing_results.json')))
-        self.assertIsNotNone(failing_results_match)
-        failing_results = json.loads(failing_results_match['json'])
-        self.assertNotIn('test.html', failing_results['tests'])
-        self.assertNotIn('variant.html?foo=bar/abc', failing_results['tests'])
-        self.assertIn('variant.html?foo=baz', failing_results['tests'])
-        self.assertRegex(
-            self.fs.read_text_file(
-                self.fs.join('/mock-checkout', 'out', 'Default',
-                             'layout-test-results', 'full_results_jsonp.js')),
-            'ADD_FULL_RESULTS\(.*\);$')
+        self.assertNotIn('test.html', results['tests'])
+        self.assertNotIn('variant.html?foo=bar/abc', results['tests'])
+        self.assertIn('variant.html?foo=baz', results['tests'])
 
     def test_process_wpt_report(self):
         report_src = self.fs.join('/mock-checkout', 'out', 'Default',
