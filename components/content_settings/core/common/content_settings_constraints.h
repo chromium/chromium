@@ -75,6 +75,9 @@ class ContentSettingConstraints {
   // the intended lifetime. Setting the lifetime directly (without using this
   // helper) should be preferred instead.
   base::TimeDelta DeltaFromCreationTime(base::Time exp) const {
+    if (exp.is_null()) {
+      return base::TimeDelta();
+    }
     return exp - created_at_;
   }
 
