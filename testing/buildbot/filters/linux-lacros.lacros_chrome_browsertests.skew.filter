@@ -11,3 +11,5 @@
 # response for a Verified Access challenge which leads to a different error.
 -KeystoreServiceLacrosBrowserTest.WrongFormattingUser
 
+# crbug.com/1451234
+-WebAppIntegration*
