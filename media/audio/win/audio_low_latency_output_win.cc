@@ -752,9 +752,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         glitch_reporter_.UpdateStats(is_glitch ? gap_duration
                                                : base::TimeDelta());
         if (is_glitch) {
-          // TODO(olka): Exploratory check. Run it for a couple of days on
-          // Canary/Dev and remove.
-          CHECK_LE(gap_duration, base::Seconds(10));
           glitch_info_accumulator.Add(
               AudioGlitchInfo::SingleBoundedGlitch(gap_duration));
         }
