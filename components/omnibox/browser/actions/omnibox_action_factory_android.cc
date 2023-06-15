@@ -90,7 +90,8 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
     const std::vector<scoped_refptr<OmniboxAction>>& actions) {
   // Early return for cases where Action creation is not yet possible, e.g.
   // if the control is passed from the IntentHandler.
-  if (!g_java_omnibox_action.IsCreated() || !g_java_factory.IsCreated()) {
+  if (!g_java_omnibox_action.IsCreated() || !g_java_factory.IsCreated() ||
+      !g_java_omnibox_action.Get() || !g_java_factory.Get()) {
     return {};
   }
 
