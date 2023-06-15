@@ -1,4 +1,21 @@
 <style include="mwb-shared-style">
+  :host-context([chrome-refresh-2023]) {
+    --cr-primary-text-color: var(--color-tab-search-primary-foreground);
+    --cr-secondary-text-color: var(--color-tab-search-secondary-foreground);
+    --cr-separator-color: var(--color-tab-search-divider);
+    --mwb-background-color: var(--color-tab-search-background);
+    --mwb-icon-button-fill-color: var(--color-tab-search-secondary-foreground);
+    --mwb-list-item-hover-background-color: var(--cr-hover-background-color);
+    --mwb-list-item-selected-background-color: var(--cr-active-background-color);
+    --mwb-primary-text-font-size: 12px;
+    --mwb-primary-text-font-weight: 500;
+    --mwb-secondary-text-font-size: 11px;
+    --mwb-secondary-text-font-weight: 400;
+    --mwb-scrollbar-thumb-color: var(--color-tab-search-scrollbar-thumb);
+    --mwb-scrollbar-thumb-hover-color: var(--color-tab-search-scrollbar-thumb);
+    --mwb-scrollbar-track-color: transparent;
+  }
+
   #no-results {
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
@@ -68,6 +85,12 @@
     color: var(--mwb-icon-button-fill-color);
     flex-grow: 1;
   }
+
+  #divider {
+    width: 100%;
+    height: 1px;
+    background-color: var(--cr-separator-color);
+  }
 </style>
 <tab-search-search-field id="searchField" autofocus
     clear-label="$i18n{clearSearch}" label="$i18n{searchTabs}"
@@ -75,6 +98,7 @@
     on-search-changed="onSearchChanged_"
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
+<div id="divider"></div>
 <div hidden="[[!filteredItems_.length]]">
   <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
       items="[[filteredItems_]]">

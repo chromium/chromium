@@ -59,8 +59,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Tab Search Colors.
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
+  mixer[kColorTabSearchDivider] = {ui::kColorSysOnBaseDivider};
+  mixer[kColorTabSearchMediaIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabSearchMediaRecordingIcon] = {ui::kColorSysError};
   mixer[kColorTabSearchPrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabSearchScrollbarThumb] = {ui::kColorSysPrimary};
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;

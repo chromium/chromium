@@ -11,6 +11,11 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]):host {
+     --audio-icon-color: var(--color-tab-search-media-icon);
+     --media-recording-icon-color:  var(--color-tab-search-media-recording-icon);
+   }
+
   :host(:focus) {
     outline: none;
   }
@@ -143,7 +148,7 @@
   }
 
   #iconContainer {
-    margin-inline-end: var(--mwb-list-item-horizontal-margin);
+    margin-inline-end: 16px;
   }
 
   :host-context([chrome-refresh-2023]) #iconContainer {

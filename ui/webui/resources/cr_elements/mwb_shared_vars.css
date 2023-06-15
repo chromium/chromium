@@ -11,12 +11,12 @@ html {
   --mwb-background-color: white;
   --mwb-icon-button-fill-color: var(--google-grey-700);
   --mwb-icon-size: 16px;
-  --mwb-item-height: 56px;
-  --mwb-list-item-horizontal-margin: 16px;
+  --mwb-item-height: 48px;
+  --mwb-list-item-horizontal-margin: 20px;
   --mwb-list-item-hover-background-color: rgba(var(--google-grey-900-rgb), 0.1);
   --mwb-list-item-selected-background-color: rgba(var(--google-grey-900-rgb), 0.14);
   --mwb-list-section-title-font-size: 11px;
-  --mwb-list-section-title-height: 40px;
+  --mwb-list-section-title-height: 48px;
   --mwb-primary-text-font-size: 13px;
   --mwb-primary-text-font-weight: normal;
   --mwb-scrollbar-thumb-color: var(--google-grey-300);
@@ -25,19 +25,6 @@ html {
   --mwb-scrollbar-width: 4px;
   --mwb-secondary-text-font-size: 12px;
   --mwb-secondary-text-font-weight: normal;
-}
-
-html[chrome-refresh-2023] {
-  --cr-primary-text-color: var(--color-tab-search-primary-foreground);
-  --cr-secondary-text-color: var(--color-tab-search-secondary-foreground);
-  --mwb-background-color: var(--color-tab-search-background);
-  --mwb-icon-button-fill-color: var(--color-tab-search-secondary-foreground);
-  --mwb-list-item-hover-background-color: var(--cr-hover-background-color);
-  --mwb-list-item-selected-background-color: var(--cr-active-background-color);
-  --mwb-primary-text-font-size: 12px;
-  --mwb-primary-text-font-weight: 500;
-  --mwb-secondary-text-font-size: 11px;
-  --mwb-secondary-text-font-weight: 400;
 }
 
 @media (prefers-color-scheme: dark) {

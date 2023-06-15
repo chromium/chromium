@@ -34,7 +34,7 @@ class TestApp extends PolymerElement {
       </template>
       <template data-type="TabData" data-selectable>
         <tab-search-item id="[[item.tab.tabId]]"
-            style="display: flex;height: 56px" data="[[item]]" tabindex="0"
+            style="display: flex;height: 48px" data="[[item]]" tabindex="0"
             role="option">
         </tab-search-item>
       </template>
