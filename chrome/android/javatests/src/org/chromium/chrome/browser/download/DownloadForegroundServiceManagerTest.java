@@ -91,6 +91,11 @@ public final class DownloadForegroundServiceManagerTest {
         @Override
         void postMaybeStopServiceRunnable() {}
 
+        @Override
+        protected boolean canStartForeground() {
+            return true;
+        }
+
         /**
          * Call for testing that mimics the onServiceConnected call in mConnection that ensures the
          * mBoundService is non-null and the pending queue is processed.
