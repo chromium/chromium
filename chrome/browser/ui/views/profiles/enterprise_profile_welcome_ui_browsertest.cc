@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -135,17 +133,8 @@ class EnterpriseWelcomeUIWindowPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
  public:
-  EnterpriseWelcomeUIWindowPixelTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
-                          enabled_features, disabled_features);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
-  }
+  EnterpriseWelcomeUIWindowPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {}
 
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -192,10 +181,8 @@ class EnterpriseWelcomeUIWindowPixelTest
     return profile_picker_view_->GetWidget();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIWindowPixelTest, InvokeUi_default) {
@@ -211,11 +198,8 @@ class EnterpriseWelcomeUIDialogPixelTest
     : public ProfilesPixelTestBaseT<DialogBrowserTest>,
       public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
  public:
-  EnterpriseWelcomeUIDialogPixelTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
-                          enabled_features, disabled_features);
+  EnterpriseWelcomeUIDialogPixelTest()
+      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
   }
 
   ~EnterpriseWelcomeUIDialogPixelTest() override = default;
@@ -247,14 +231,6 @@ class EnterpriseWelcomeUIDialogPixelTest
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest, InvokeUi_default) {

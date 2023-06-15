@@ -5,10 +5,8 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
-#include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -55,19 +53,11 @@ const char kRemoveAvatarIconJS[] =
 }  // namespace
 
 class ProfileTypeChoiceUIPixelTest
-    : public UiBrowserTest,
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<PixelTestParam> {
  public:
-  ProfileTypeChoiceUIPixelTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    InitPixelTestFeatures(GetParam(), scoped_feature_list_, enabled_features,
-                          disabled_features);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam(), scoped_env_override_, command_line);
-  }
+  ProfileTypeChoiceUIPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {}
 
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -128,8 +118,6 @@ class ProfileTypeChoiceUIPixelTest
     return profile_picker_view_->GetWidget();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
 };

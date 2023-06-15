@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
-#include <memory>
-
-#include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -133,13 +130,11 @@ class SyncConfirmationStepControllerForTest
 
 void InitFeatures(const SyncConfirmationTestParam& params,
                   base::test::ScopedFeatureList& feature_list) {
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  std::vector<base::test::FeatureRef> disabled_features = {};
   if (params.sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
-    enabled_features.push_back(kSyncPromoAfterSigninIntercept);
+    feature_list.InitAndEnableFeature(kSyncPromoAfterSigninIntercept);
+  } else {
+    feature_list.Init();
   }
-  InitPixelTestFeatures(params.pixel_test_param, feature_list, enabled_features,
-                        disabled_features);
 }
 }  // namespace
 
@@ -147,14 +142,10 @@ class SyncConfirmationUIWindowPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<SyncConfirmationTestParam> {
  public:
-  SyncConfirmationUIWindowPixelTest() {
+  SyncConfirmationUIWindowPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style == SyncConfirmationStyle::kWindow);
     InitFeatures(GetParam(), scoped_feature_list_);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
   }
 
   void ShowUi(const std::string& name) override {
@@ -202,7 +193,6 @@ class SyncConfirmationUIWindowPixelTest
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIWindowPixelTest, InvokeUi_default) {
@@ -218,7 +208,8 @@ class SyncConfirmationUIDialogPixelTest
     : public ProfilesPixelTestBaseT<DialogBrowserTest>,
       public testing::WithParamInterface<SyncConfirmationTestParam> {
  public:
-  SyncConfirmationUIDialogPixelTest() {
+  SyncConfirmationUIDialogPixelTest()
+      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style != SyncConfirmationStyle::kWindow);
     InitFeatures(GetParam(), scoped_feature_list_);
   }
@@ -251,13 +242,7 @@ class SyncConfirmationUIDialogPixelTest
     observer.Wait();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {

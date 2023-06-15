@@ -83,11 +83,11 @@ void SetUpPixelTestCommandLine(
   }
 }
 
-void InitPixelTestFeatures(
-    const PixelTestParam& params,
-    base::test::ScopedFeatureList& feature_list,
-    std::vector<base::test::FeatureRef>& enabled_features,
-    std::vector<base::test::FeatureRef>& disabled_features) {
+void InitPixelTestFeatures(const PixelTestParam& params,
+                           base::test::ScopedFeatureList& feature_list) {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+
   if (params.use_chrome_refresh_2023_style) {
     enabled_features.push_back(features::kChromeRefresh2023);
     enabled_features.push_back(features::kChromeWebuiRefresh2023);
@@ -97,5 +97,6 @@ void InitPixelTestFeatures(
     enabled_features.push_back(kForYouFre);
   }
 #endif
+
   feature_list.InitWithFeatures(enabled_features, disabled_features);
 }

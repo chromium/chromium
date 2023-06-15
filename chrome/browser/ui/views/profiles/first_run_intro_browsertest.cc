@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
+
 #include "base/functional/callback_helpers.h"
-#include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
@@ -73,20 +71,11 @@ const char kMakeCardDescriptionLongerJsString[] =
 }  // namespace
 
 class FirstRunIntroPixelTest
-    : public UiBrowserTest,
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<FirstRunTestParam> {
  public:
-  FirstRunIntroPixelTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
-                          enabled_features, disabled_features);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
-  }
+  FirstRunIntroPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {}
 
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -135,9 +124,6 @@ class FirstRunIntroPixelTest
   views::Widget* GetWidgetForScreenshot() {
     return profile_picker_view_->GetWidget();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
