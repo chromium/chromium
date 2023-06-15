@@ -170,7 +170,7 @@ bool IsRefineDataSourceReloadReportingEnabled() {
 
 bool IsStickyHeaderDisabledForFollowingFeed() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kFeedHeaderSettings, kDisableStickyHeaderForFollowingFeed, false);
+      kFeedHeaderSettings, kDisableStickyHeaderForFollowingFeed, true);
 }
 
 bool IsDotEnabledForNewFollowedContent() {
@@ -183,7 +183,7 @@ bool IsFeedSyntheticCapabilitiesEnabled() {
 }
 
 int FollowingFeedHeaderHeight() {
-  int defaultWebChannelsHeaderHeight = 52;
+  int defaultWebChannelsHeaderHeight = 30;
   return base::GetFieldTrialParamByFeatureAsInt(kFeedHeaderSettings,
                                                 kOverrideFeedHeaderHeight,
                                                 defaultWebChannelsHeaderHeight);
