@@ -285,6 +285,9 @@ vars = {
   # siso CIPD package version.
   'siso_version': 'git_revision:b14dabf6114b8b87c34f6a09945329b118e3b28a',
 
+  # download libaom test data
+  'download_libaom_testdata': False,
+
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
   'boringssl_git': 'https://boringssl.googlesource.com',
@@ -5624,6 +5627,18 @@ hooks = [
                '--rbe_instance',
                Var('rbe_instance'),
                ],
+  },
+  {
+    'name': 'libaom_testdata',
+    'pattern': '.',
+    'condition': 'download_libaom_testdata',
+    'action': ['python3',
+               'src/third_party/depot_tools/gsutil.py',
+               '-q',
+               '-m',
+               'rsync',
+               'gs://aom-test-data',
+               'src/third_party/libaom/testdata']
   },
 ]
 
