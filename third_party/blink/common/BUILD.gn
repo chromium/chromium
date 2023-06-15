@@ -441,6 +441,7 @@ source_set("common_unittests_sources") {
     "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "security/address_space_feature_unittest.cc",
+    "service_worker/service_worker_router_rule_mojom_traits_unittest.cc",
     "service_worker/service_worker_scope_match_unittest.cc",
     "shared_storage/module_script_downloader_unittest.cc",
     "shared_storage/shared_storage_mojom_traits_unittest.cc",

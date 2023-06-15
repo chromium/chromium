@@ -47,6 +47,7 @@ bool UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
          blink::ServiceWorkerRouterSource* out) {
   switch (data.tag()) {
     case blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource:
+      out->network_source.emplace();
       return true;
   }
   return false;
