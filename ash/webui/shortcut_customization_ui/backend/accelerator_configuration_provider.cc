@@ -276,21 +276,35 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
   // is a function key.
   if (modifiers == ui::EF_NONE &&
       !ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kMissingModifier);
     return AcceleratorConfigResult::kMissingModifier;
   }
 
   // Case: Reserved keys cannot be part of a custom accelerator.
   if (base::Contains(kReservedKeys, accelerator.key_code())) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)
+            << "- Reserved key in accelerator.";
     return AcceleratorConfigResult::kKeyNotAllowed;
   }
 
   // Case: Top-row action keys cannot be part of the accelerator.
   if (ui::KeyboardCapability::IsTopRowActionKey(accelerator.key_code())) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)
+            << "- top row action key in accelerator.";
     return AcceleratorConfigResult::kKeyNotAllowed;
   }
 
   // Case: Accelerator cannot only have SHIFT as its modifier.
   if (modifiers == ui::EF_SHIFT_DOWN) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kShiftOnlyNotAllowed);
     return AcceleratorConfigResult::kShiftOnlyNotAllowed;
   }
 
@@ -320,6 +334,32 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   }
 
   return false;
+}
+
+void LogReplaceAccelerator(mojom::AcceleratorSource source,
+                           const ui::Accelerator& old_accelerator,
+                           const ui::Accelerator& new_accelerator,
+                           mojom::AcceleratorConfigResult error) {
+  VLOG(1) << "ReplaceAccelerator returned for source: " << source
+          << " old accelerator: " << old_accelerator.GetShortcutText()
+          << " new_accelerator: " << new_accelerator.GetShortcutText()
+          << " with error code: " << error;
+}
+
+void LogRemoveAccelerator(mojom::AcceleratorSource source,
+                          const ui::Accelerator& accelerator,
+                          mojom::AcceleratorConfigResult error) {
+  VLOG(1) << "RemoveAccelerator returned for source: " << source
+          << " accelerator: " << accelerator.GetShortcutText()
+          << " with error: " << error;
+}
+
+void LogAddAccelerator(mojom::AcceleratorSource source,
+                       const ui::Accelerator& new_accelerator,
+                       mojom::AcceleratorConfigResult error) {
+  VLOG(1) << "AddAccelerator returned for source: " << source
+          << " accelerator: " << new_accelerator.GetShortcutText()
+          << " with error: " << error;
 }
 
 }  // namespace
@@ -511,6 +551,7 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   if (error_result.has_value()) {
     pending_accelerator_.reset();
     result_data->result = *error_result;
+    LogAddAccelerator(source, accelerator, result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -527,6 +568,7 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   if (found_accelerator_infos != ash_accelerators_mapping->second.end() &&
       found_accelerator_infos->second.size() >= kMaxAcceleratorsAllowed) {
     result_data->result = AcceleratorConfigResult::kMaximumAcceleratorsReached;
+    LogAddAccelerator(source, accelerator, result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -537,6 +579,7 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   // early with the error.
   if (result_data_ptr.has_value()) {
     std::move(callback).Run(std::move(*result_data_ptr));
+    LogAddAccelerator(source, accelerator, result_data->result);
     return;
   }
 
@@ -544,6 +587,7 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   pending_accelerator_.reset();
   result_data->result = ash_accelerator_configuration_->AddUserAccelerator(
       action_id, accelerator);
+  LogAddAccelerator(source, accelerator, result_data->result);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -560,6 +604,7 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
                               ash_accelerator_configuration_);
   if (validated_source_action_result.has_value()) {
     result_data->result = *validated_source_action_result;
+    LogRemoveAccelerator(source, accelerator, result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -567,6 +612,7 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   AcceleratorConfigResult result =
       ash_accelerator_configuration_->RemoveAccelerator(action_id, accelerator);
   result_data->result = result;
+  LogRemoveAccelerator(source, accelerator, result_data->result);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -589,6 +635,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   if (error_result.has_value()) {
     result_data->result = *error_result;
+    LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+                          result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -598,6 +646,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
       ash_accelerator_configuration_->FindAcceleratorAction(old_accelerator);
   if (!old_accelerator_id || *old_accelerator_id != action_id) {
     result_data->result = AcceleratorConfigResult::kNotFound;
+    LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+                          result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -607,6 +657,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
   absl::optional<AcceleratorResultDataPtr> result_data_ptr =
       PreprocessAddAccelerator(source, action_id, new_accelerator);
   if (result_data_ptr.has_value()) {
+    LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+                          (*result_data_ptr)->result);
     std::move(callback).Run(std::move(*result_data_ptr));
     return;
   }
@@ -615,6 +667,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
   pending_accelerator_.reset();
   result_data->result = ash_accelerator_configuration_->ReplaceAccelerator(
       action_id, old_accelerator, new_accelerator);
+  LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+                        result_data->result);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -646,6 +700,8 @@ void AcceleratorConfigurationProvider::RestoreAllDefaults(
   AcceleratorConfigResult result =
       ash_accelerator_configuration_->RestoreAllDefaults();
   result_data->result = result;
+  VLOG(1) << "RestoreAllDefaults completed with error code: "
+          << result_data->result;
   std::move(callback).Run(std::move(result_data));
 }
 
