@@ -76,6 +76,10 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   // only if the URL is a valid Lens results URL.
   void MaybeSetContentAndNewTabButtonVisible(const GURL& url);
 
+  // Registers a WebContentsModalDialogManager for our WebContents in order to
+  // display web modal dialogs triggered by it.
+  void RegisterModalDialogManager(Browser* browser);
+
   // content::WebContentsObserver:
   // TODO(crbug/1452161): Clean up unused listeners and flags after determining
   // which ones we want to listen to for server-side rendering backends.
@@ -101,6 +105,10 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<views::Separator> separator_;

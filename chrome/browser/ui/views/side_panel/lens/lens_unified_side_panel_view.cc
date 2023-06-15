@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search/search.h"
@@ -28,6 +29,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -115,6 +117,10 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(
       search::DefaultSearchProviderIsGoogle(profile)
           ? lens::features::GetHomepageURLForLens()
           : provider->image_url());
+
+  // Register a modal dialog manager to show permissions dialog like those
+  // requested from the feedback UI.
+  RegisterModalDialogManager(browser_view->browser());
 }
 
 content::WebContents* LensUnifiedSidePanelView::GetWebContents() {
@@ -356,6 +362,23 @@ void LensUnifiedSidePanelView::SetContentAndNewTabButtonVisible(
 
   if (!update_new_tab_button_callback_.is_null())
     update_new_tab_button_callback_.Run();
+}
+
+void LensUnifiedSidePanelView::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  // Note: This is needed for taking screenshots via the feedback form.
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), nullptr /* extension */);
+}
+
+void LensUnifiedSidePanelView::RegisterModalDialogManager(Browser* browser) {
+  CHECK(GetWebContents());
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      GetWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(GetWebContents())
+      ->SetDelegate(browser);
 }
 
 LensUnifiedSidePanelView::~LensUnifiedSidePanelView() = default;
