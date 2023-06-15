@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_VERSION_UI_CSS" file="../version_ui/resources/about_version.css" type="BINDATA" />
-  <if expr="is_android or is_ios">
-    <include name="IDR_VERSION_UI_MOBILE_CSS" file="../version_ui/resources/about_version_mobile.css" type="BINDATA" />
-  </if>
-  <include name="IDR_VERSION_UI_HTML" file="../version_ui/resources/about_version.html" preprocess="true" type="BINDATA" />
-  <include name="IDR_VERSION_UI_JS" file="${root_gen_dir}/components/version_ui/resources/tsc/about_version.js" use_base_dir="false" type="BINDATA" />
-</grit-part>

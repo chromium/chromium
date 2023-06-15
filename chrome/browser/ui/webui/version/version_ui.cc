@@ -26,8 +26,9 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/embedder_support/user_agent_utils.h"
-#include "components/grit/components_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/grit/version_ui_resources.h"
+#include "components/grit/version_ui_resources_map.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
@@ -110,19 +111,16 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
 
   VersionUI::AddVersionDetailStrings(html_source);
 
+  html_source->AddResourcePaths(
+      base::make_span(kVersionUiResources, kVersionUiResourcesSize));
   html_source->UseStringsJs();
-  html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);
-  html_source->AddResourcePath(version_ui::kAboutVersionCSS,
-                               IDR_VERSION_UI_CSS);
 
 #if BUILDFLAG(IS_ANDROID)
-  html_source->AddResourcePath(version_ui::kAboutVersionMobileCSS,
-                               IDR_VERSION_UI_MOBILE_CSS);
   html_source->AddResourcePath("images/product_logo.png", IDR_PRODUCT_LOGO);
   html_source->AddResourcePath("images/product_logo_white.png",
                                IDR_PRODUCT_LOGO_WHITE);
 #endif  // BUILDFLAG(IS_ANDROID)
-  html_source->SetDefaultResource(IDR_VERSION_UI_HTML);
+  html_source->SetDefaultResource(IDR_VERSION_UI_ABOUT_VERSION_HTML);
 }
 
 std::string GetProductModifier() {

@@ -11,8 +11,8 @@
 #import "base/strings/stringprintf.h"
 #import "base/time/time.h"
 #import "build/build_config.h"
-#import "components/grit/components_resources.h"
 #import "components/grit/components_scaled_resources.h"
+#import "components/grit/version_ui_resources.h"
 #import "components/strings/grit/components_chromium_strings.h"
 #import "components/strings/grit/components_google_chrome_strings.h"
 #import "components/strings/grit/components_strings.h"
@@ -115,15 +115,16 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                          std::string(version_info::GetSanitizerList()));
 
   html_source->UseStringsJs();
-  html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);
+  html_source->AddResourcePath(version_ui::kVersionJS,
+                               IDR_VERSION_UI_ABOUT_VERSION_JS);
   html_source->AddResourcePath(version_ui::kAboutVersionCSS,
-                               IDR_VERSION_UI_CSS);
+                               IDR_VERSION_UI_ABOUT_VERSION_CSS);
   html_source->AddResourcePath(version_ui::kAboutVersionMobileCSS,
-                               IDR_VERSION_UI_MOBILE_CSS);
+                               IDR_VERSION_UI_ABOUT_VERSION_MOBILE_CSS);
   html_source->AddResourcePath("images/product_logo.png", IDR_PRODUCT_LOGO);
   html_source->AddResourcePath("images/product_logo_white.png",
                                IDR_PRODUCT_LOGO_WHITE);
-  html_source->SetDefaultResource(IDR_VERSION_UI_HTML);
+  html_source->SetDefaultResource(IDR_VERSION_UI_ABOUT_VERSION_HTML);
   return html_source;
 }
 
