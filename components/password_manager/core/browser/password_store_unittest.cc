@@ -735,7 +735,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
   }
 
   std::vector<std::string> no_affiliated_android_realms;
-  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, no_affiliated_android_realms);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -854,7 +854,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
   affiliated_android_realms.push_back(kTestAndroidRealm2);
   affiliated_android_realms.push_back(kTestAndroidRealm3);
 
-  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, affiliated_android_realms);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -949,7 +949,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
   expected_results.push_back(std::make_unique<PasswordForm>(*credential));
   expected_results[0]->is_affiliation_based_match = true;
 
-  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, {kTestAndroidRealm1});
   std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
       affiliation_info_for_results = {
@@ -1045,7 +1045,7 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
   std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2,
                                                 kTestAffiliatedRealm};
 
-  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, affiliated_realms);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -1164,12 +1164,12 @@ TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
   // In the production 'kTestWebRealm1' won't be in the list but the code should
   // protect against it.
   std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2};
+  std::vector<std::string> grouped_realms;
   if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
-    mock_affiliated_match_helper_->ExpectCallToGetGroup(observed_form,
-                                                        {kTestGroupRealm});
+    grouped_realms.emplace_back(kTestGroupRealm);
   }
-  mock_affiliated_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
-      observed_form, affiliated_realms);
+  mock_affiliated_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, affiliated_realms, grouped_realms);
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
@@ -1722,7 +1722,7 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
                                       kTestWebRealm1, GURL(kTestWebRealm1)};
 
   // Add affiliated android form corresponding to a 'observed_form'.
-  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, {kTestAndroidRealm1});
 
   MockPasswordStoreConsumer mock_consumer;

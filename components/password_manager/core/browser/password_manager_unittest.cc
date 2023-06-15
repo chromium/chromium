@@ -2295,7 +2295,7 @@ TEST_F(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
   EXPECT_CALL(driver_, SetPasswordFillData)
       .WillRepeatedly(SaveArg<0>(&form_data));
   store_->AddLogin(android_form);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
       PasswordFormDigest(observed_form), {android_form.signon_realm});
   manager()->OnPasswordFormsParsed(&driver_, observed_forms);
   manager()->OnPasswordFormsRendered(&driver_, observed_forms);
@@ -2352,7 +2352,7 @@ TEST_F(PasswordManagerTest, UpdatePasswordOfAffiliatedCredential) {
 
   EXPECT_CALL(driver_, SetPasswordFillData);
   store_->AddLogin(android_form);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
       PasswordFormDigest(observed_form), {android_form.signon_realm});
   manager()->OnPasswordFormsParsed(&driver_, observed_forms);
   manager()->OnPasswordFormsRendered(&driver_, observed_forms);

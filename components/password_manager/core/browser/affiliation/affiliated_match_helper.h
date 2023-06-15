@@ -36,7 +36,8 @@ class AffiliatedMatchHelper {
   // Callback to returns the list of affiliated signon_realms (as per defined in
   // PasswordForm) to the caller.
   using AffiliatedRealmsCallback =
-      base::OnceCallback<void(const std::vector<std::string>&)>;
+      base::OnceCallback<void(std::vector<std::string> affiliations,
+                              std::vector<std::string> groups)>;
 
   // Callback to return PasswordForms with injected branding information.
   using PasswordFormsOrErrorCallback = base::OnceCallback<void(
@@ -54,13 +55,9 @@ class AffiliatedMatchHelper {
   // realm of the |observed_form| if it is web-based. Otherwise, yields the
   // empty list. The |result_callback| will be invoked in both cases, on the
   // same thread.
-  virtual void GetAffiliatedAndroidAndWebRealms(
+  virtual void GetAffiliatedAndGroupedRealms(
       const PasswordFormDigest& observed_form,
       AffiliatedRealmsCallback result_callback);
-
-  // Similar to |GetAffiliatedAndroidAndWebRealms()|, but for groups.
-  virtual void GetGroup(const PasswordFormDigest& observed_form,
-                        AffiliatedRealmsCallback result_callback);
 
   // Retrieves affiliation and branding information about the Android
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
@@ -81,15 +78,6 @@ class AffiliatedMatchHelper {
   void DoDeferredInitialization();
 
   // Called back by AffiliationService to supply the list of facets
-  // affiliated with |original_facet_uri| so that a
-  // |GetAffiliatedAndroidAndWebRealms()| call can be completed.
-  void CompleteGetAffiliatedAndroidAndWebRealms(
-      const FacetURI& original_facet_uri,
-      AffiliatedRealmsCallback result_callback,
-      const AffiliatedFacets& results,
-      bool success);
-
-  // Called back by AffiliationService to supply the list of facets
   // affiliated with the Android credential in |form|. Injects affiliation and
   // branding information by setting |affiliated_web_realm|, |app_display_name|
   // and |app_icon_url| on |form| if |success| is true and |results| is
@@ -99,13 +87,6 @@ class AffiliatedMatchHelper {
       base::OnceClosure barrier_closure,
       const AffiliatedFacets& results,
       bool success);
-
-  // Called back by AffiliationService to supply the list of facets
-  // that are in same group with |original_facet_uri| so that a
-  // GetGroup() call can be completed.
-  void CompleteGetGroup(const FacetURI& original_facet_uri,
-                        AffiliatedRealmsCallback result_callback,
-                        const std::vector<GroupedFacets>& groups);
 
   raw_ptr<AffiliationService, DanglingUntriaged> affiliation_service_;
 

@@ -66,13 +66,11 @@ LoginsResultOrError ProccessExactAndPSLForms(
 class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
  public:
   GetLoginsHelper(PasswordFormDigest requested_digest,
-                  PasswordStoreBackend* backend,
-                  AffiliatedMatchHelper* affiliated_match_helper)
-      : requested_digest_(std::move(requested_digest)),
-        backend_(backend),
-        affiliated_match_helper_(affiliated_match_helper) {}
+                  PasswordStoreBackend* backend)
+      : requested_digest_(std::move(requested_digest)), backend_(backend) {}
 
-  void Init(LoginsOrErrorReply callback);
+  void Init(AffiliatedMatchHelper* affiliated_match_helper,
+            LoginsOrErrorReply callback);
 
  private:
   friend class base::RefCounted<GetLoginsHelper>;
@@ -81,15 +79,11 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   // From the affiliated realms returns all the forms to be additionally queried
   // in the password store. The list excludes the PSL matches because those will
   // be already returned by the main request.
-  void HandleAffiliationsReceived(
+  void HandleAffiliationsAndGroupsReceived(
       base::RepeatingCallback<void(LoginsResultOrError)>
           forms_received_callback,
-      const std::vector<std::string>& realms);
-
-  // Similar to |HandleAffiliationsReceived|, but only for grouping.
-  void HandleGroupReceived(base::RepeatingCallback<void(LoginsResultOrError)>
-                               forms_received_callback,
-                           const std::vector<std::string>& realms);
+      std::vector<std::string> affiliated_realms,
+      std::vector<std::string> grouped_realms);
 
   // Method which is called after exact, PSL, affiliated and grouped matches
   // are received.
@@ -104,16 +98,13 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   base::flat_set<std::string> group_;
 
   raw_ptr<PasswordStoreBackend, FlakyDanglingUntriaged> backend_;
-
-  raw_ptr<AffiliatedMatchHelper, FlakyDanglingUntriaged>
-      affiliated_match_helper_;
 };
 
-void GetLoginsHelper::Init(LoginsOrErrorReply callback) {
+void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
+                           LoginsOrErrorReply callback) {
   // Number of time 'forms_received_' closure should be called before executing.
   // Once for perfect matches and once for affiliations.
-  const int kCallsNumber =
-      2 + base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites);
+  const int kCallsNumber = 2;
 
   auto forms_received_callback = base::BarrierCallback<LoginsResultOrError>(
       kCallsNumber, base::BindOnce(&GetLoginsHelper::MergeResults, this)
@@ -124,57 +115,42 @@ void GetLoginsHelper::Init(LoginsOrErrorReply callback) {
           .Then(forms_received_callback),
       FormSupportsPSL(requested_digest_), {requested_digest_});
 
-  affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
+  affiliated_match_helper->GetAffiliatedAndGroupedRealms(
       requested_digest_,
-      base::BindOnce(&GetLoginsHelper::HandleAffiliationsReceived, this,
-                     std::move(forms_received_callback)));
+      base::BindOnce(&GetLoginsHelper::HandleAffiliationsAndGroupsReceived,
+                     this, std::move(forms_received_callback)));
 }
 
-void GetLoginsHelper::HandleAffiliationsReceived(
+void GetLoginsHelper::HandleAffiliationsAndGroupsReceived(
     base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
-    const std::vector<std::string>& realms) {
-  affiliations_ = base::flat_set<std::string>(realms.begin(), realms.end());
+    std::vector<std::string> affiliated_realms,
+    std::vector<std::string> grouped_realms) {
+  affiliations_ = base::flat_set<std::string>(
+      std::make_move_iterator(affiliated_realms.begin()),
+      std::make_move_iterator(affiliated_realms.end()));
+  group_ = base::flat_set<std::string>(
+      std::make_move_iterator(grouped_realms.begin()),
+      std::make_move_iterator(grouped_realms.end()));
 
-  std::vector<PasswordFormDigest> affiliated_digests_to_request;
-  for (const auto& realm : realms) {
+  std::vector<PasswordFormDigest> digests_to_request;
+  for (const auto& realm : affiliations_) {
     // The PSL forms are requested in the main request.
     if (!IsPublicSuffixDomainMatch(realm, requested_digest_.signon_realm)) {
-      affiliated_digests_to_request.emplace_back(requested_digest_.scheme,
-                                                 realm, GURL(realm));
+      digests_to_request.emplace_back(requested_digest_.scheme, realm,
+                                      GURL(realm));
     }
   }
-  backend_->FillMatchingLoginsAsync(forms_received_callback,
-                                    /*include_psl=*/false,
-                                    affiliated_digests_to_request);
-
-  if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
-    affiliated_match_helper_->GetGroup(
-        requested_digest_,
-        base::BindOnce(&GetLoginsHelper::HandleGroupReceived, this,
-                       std::move(forms_received_callback)));
-  }
-}
-
-// Similar to |HandleAffiliationsReceived|, but only for grouping.
-void GetLoginsHelper::HandleGroupReceived(
-    base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
-    const std::vector<std::string>& realms) {
-  CHECK(base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites));
-  group_ = base::flat_set<std::string>(realms.begin(), realms.end());
-
-  std::vector<PasswordFormDigest> group_digests_to_request;
-  for (const auto& realm : realms) {
+  for (const auto& realm : group_) {
     // The PSL forms are requested in the main request, ignore affiliated
     // matches too.
     if (!IsPublicSuffixDomainMatch(realm, requested_digest_.signon_realm) &&
         !base::Contains(affiliations_, realm)) {
-      group_digests_to_request.emplace_back(requested_digest_.scheme, realm,
-                                            GURL(realm));
+      digests_to_request.emplace_back(requested_digest_.scheme, realm,
+                                      GURL(realm));
     }
   }
   backend_->FillMatchingLoginsAsync(std::move(forms_received_callback),
-                                    /*include_psl=*/false,
-                                    group_digests_to_request);
+                                    /*include_psl=*/false, digests_to_request);
 }
 
 LoginsResultOrError GetLoginsHelper::MergeResults(
@@ -232,9 +208,8 @@ void GetLoginsWithAffiliationsRequestHandler(
     AffiliatedMatchHelper* affiliated_match_helper,
     LoginsOrErrorReply callback) {
   scoped_refptr<GetLoginsHelper> request_handler =
-      base::MakeRefCounted<GetLoginsHelper>(std::move(form), backend,
-                                            affiliated_match_helper);
-  request_handler->Init(std::move(callback));
+      base::MakeRefCounted<GetLoginsHelper>(std::move(form), backend);
+  request_handler->Init(affiliated_match_helper, std::move(callback));
 }
 
 }  // namespace password_manager
