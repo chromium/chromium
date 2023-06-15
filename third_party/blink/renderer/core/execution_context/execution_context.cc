@@ -180,8 +180,13 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
         DCHECK_EQ(state_observer->GetExecutionContext(), this);
         DCHECK(state_observer->UpdateStateIfNeededCalled());
 #endif
+        recordreplay::Assert(
+            "[RUN-1716] ExecutionContext::SetLifecycleState A %d",
+            recordreplay::PointerId(state_observer));
         state_observer->ContextLifecycleStateChanged(state);
       });
+
+  recordreplay::Assert("[RUN-1716] ExecutionContext::SetLifecycleState B");
 }
 
 void ExecutionContext::NotifyContextDestroyed() {
