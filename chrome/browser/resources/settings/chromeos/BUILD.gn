@@ -129,6 +129,7 @@ build_webui("build") {
     "internet_page/network_summary_item.ts",
     "internet_page/network_summary.ts",
     "internet_page/passpoint_subpage.ts",
+    "internet_page/passpoint_remove_dialog.ts",
     "internet_page/settings_traffic_counters.ts",
     "internet_page/tether_connection_dialog.ts",
     "kerberos_page/kerberos_accounts_subpage.ts",

@@ -614,7 +614,10 @@ suite('InternetDetailPage', function() {
     });
 
     test('WiFi Passpoint removal shows a dialog', async () => {
-      loadTimeData.overrideValues({isPasspointEnabled: true});
+      loadTimeData.overrideValues({
+        isPasspointEnabled: true,
+        isPasspointSettingsEnabled: false,
+      });
       init();
       mojoApi_.resetForTest();
       mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
@@ -636,24 +639,72 @@ suite('InternetDetailPage', function() {
       // Click the button and check the dialog is displayed.
       forgetButton.click();
       await waitAfterNextRender(forgetButton);
-      const dialog = getDialog('passpointRemovalDialog');
-      assertTrue(dialog.open);
+      const removeDialog = getDialog('passpointRemovalDialog');
+      assertTrue(removeDialog.$.dialog.open);
 
       // Check "Cancel" dismiss the dialog.
-      const cancelButton = getButton('passpointRemovalCancelButton');
+      const cancelButton = removeDialog.$.cancelButton;
       assertTrue(!!cancelButton);
       cancelButton.click();
       await flushAsync();
-      assertFalse(dialog.open);
+      assertFalse(removeDialog.$.dialog.open);
 
       // Check "Confirm" triggers network removal
       forgetButton.click();
       await flushAsync();
-      const confirmButton = getButton('passpointRemovalConfirmButton');
+      const confirmButton = removeDialog.$.confirmButton;
       confirmButton.click();
       await flushAsync();
-      assertFalse(dialog.open);
+      assertFalse(removeDialog.$.dialog.open);
       await mojoApi_.whenCalled('forgetNetwork');
+    });
+
+    test('WiFi Passpoint removal leads to subscription page', async () => {
+      loadTimeData.overrideValues({
+        isPasspointEnabled: true,
+        isPasspointSettingsEnabled: true,
+      });
+      init();
+
+      const subId = 'a_passpoint_id';
+      setSubscriptionForTest({
+        id: subId,
+        friendlyName: 'My Passpoint provider',
+      });
+
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.passpointId = subId;
+      wifiNetwork.typeProperties.wifi.passpointMatchType = MatchType.kHome;
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
+      await flushAsync();
+
+      const forgetButton = getButton('forgetButton');
+      assertFalse(forgetButton.hidden);
+      assertFalse(forgetButton.disabled);
+
+      // Click the button and check the dialog is displayed.
+      forgetButton.click();
+      await waitAfterNextRender(forgetButton);
+      const removeDialog = getDialog('passpointRemovalDialog');
+      assertTrue(removeDialog.$.dialog.open);
+
+      // Check "Confirm" leads to Passpoint subscription page.
+      forgetButton.click();
+      await flushAsync();
+      assertTrue(removeDialog.$.dialog.open);
+      const confirmButton = removeDialog.$.confirmButton;
+      const showDetailPromise = eventToPromise('show-passpoint-detail', window);
+      confirmButton.click();
+      await flushAsync();
+      const showDetailEvent = await showDetailPromise;
+      assertEquals(subId, showDetailEvent.detail.id);
     });
 
     [true, false].forEach(isPasspointEnabled => {

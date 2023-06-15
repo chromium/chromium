@@ -534,31 +534,7 @@
 </template>
 <template is="dom-if" if="[[isPasspointWifi_(managedProperties_)]]" restamp>
   <!-- Passpoint subscription removal confirmation dialog -->
-  <cr-dialog id="passpointRemovalDialog" close-text="$i18n{close}">
-    <div slot="title">
-      $i18n{networkSectionPasspointRemovalTitle}
-    </div>
-    <div slot="body">
-      <p>$i18n{networkSectionPasspointRemovalDescription}</p>
-      <p>
-        $i18n{networkSectionPasspointRemovalInformation}
-        <a href="$i18nRaw{wifiPasspointLearnMoreUrl}" target="_blank"
-            aria-label="$i18nPolymer{passpointLearnMoreA11yLabel}">
-          $i18n{learnMoreLabel}
-        </a>
-      </p>
-    </div>
-    <div slot="button-container">
-      <cr-button id="passpointRemovalCancelButton" class="cancel-button"
-          on-click="onPasspointRemovalDialogCancel_"
-          aria-label="$i18nPolymer{passpointRemoveCancelA11yLabel}">
-        $i18n{cancel}
-      </cr-button>
-      <cr-button id="passpointRemovalConfirmButton" class="action-button"
-          on-click="onPasspointRemovalDialogConfirm_"
-          aria-label="$i18nPolymer{passpointRemoveConfirmA11yLabel}">
-        $i18n{confirm}
-      </cr-button>
-    </div>
-  </cr-dialog>
+  <passpoint-remove-dialog id="passpointRemovalDialog"
+      on-confirm="onPasspointRemovalDialogConfirm_">
+  </passpoint-remove-dialog>
 </template>

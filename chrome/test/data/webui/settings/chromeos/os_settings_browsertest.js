@@ -335,6 +335,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    }
  ],
  [
+   'InternetPagePasspointRemoveDialog',
+   'internet_page/passpoint_remove_dialog_test.js', {
+     enabled: [
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
+ ],
+ [
    'InternetPageTetherConnectionDialog',
    'internet_page/tether_connection_dialog_test.js'
  ],

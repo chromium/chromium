@@ -3766,6 +3766,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_INFORMATION" desc="Settings > Network > Wi-Fi > Network details: Information on the Passpoint subscription displayed in the network removal dialog.">
     Your Passpoint provider will be removed from this device only. To make changes to your subscription, contact the subscription provider.
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_TITLE" desc="Settings > Network > Wi-Fi > Network details: Title of the Passpoint removal dialog that leads the user to the subscription page.">
+    Remove this network in Passpoint subscription page?
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_INFORMATION" desc="Settings > Network > Wi-Fi > Network details: Information displayed in the Passpoint removal dialog that leads the user to the subscription page.">
+    To forget this subscription and its associated networks, go to the Passpoint subscription page to remove the subscription.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_BUTTON" desc="Settings > Network > Wi-Fi > Network details: Label of the button that leads the user to the subscription page.">
+    Go to subscription
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_BUTTON_A11Y_LABEL" desc="Settings > Network > Wi-Fi > Network details: Accessibility label for the button that leads the user to the subscription page.">
+    Go to subscription page
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
     Proxy
   </message>
