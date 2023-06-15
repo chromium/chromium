@@ -331,6 +331,11 @@ tast_disabled_tests_from_chrome_all = [
   # b/286590113
   "health.ProbeBlockDevices",
 
+  # b/287525851
+  "arc.AudioValidity.playback",
+  "arc.AudioValidity.record",
+  "arc.BuildProperties",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
