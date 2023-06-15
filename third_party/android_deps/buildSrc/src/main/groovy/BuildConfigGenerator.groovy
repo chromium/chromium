@@ -857,12 +857,6 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  ]')
                 }
                 break
-            case 'androidx_credentials_credentials':
-                sb.append('\n')
-                // We are overriding 1.0.0-SNAPSHOT to 1.2.0-alpha03 which has different deps.
-                // TODO(1433052): remove after 1.2.0 becomes part of the normal release structure.
-                sb.append('  deps += [":androidx_core_core_java"]\n')
-                break
             case 'androidx_startup_startup_runtime':
                 sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
                 sb.append('  ignore_proguard_configs = true\n')
