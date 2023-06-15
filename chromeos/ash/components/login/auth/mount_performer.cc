@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -191,7 +192,10 @@ void MountPerformer::OnPrepareGuestVault(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::PrepareGuestVaultReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  bool is_success = error == user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
+  AuthEventsRecorder::Get()->OnUserVaultPrepared(
+      AuthEventsRecorder::UserVaultType::kGuest, is_success);
+  if (!is_success) {
     LOGIN_LOG(ERROR) << "PrepareGuestVault failed with error " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -206,7 +210,10 @@ void MountPerformer::OnPrepareEphemeralVault(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::PrepareEphemeralVaultReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  bool is_success = error == user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
+  AuthEventsRecorder::Get()->OnUserVaultPrepared(
+      AuthEventsRecorder::UserVaultType::kEphemeral, is_success);
+  if (!is_success) {
     LOGIN_LOG(ERROR) << "PrepareEphemeralVault failed with error " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -221,7 +228,10 @@ void MountPerformer::OnPreparePersistentVault(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::PreparePersistentVaultReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  bool is_success = error == user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
+  AuthEventsRecorder::Get()->OnUserVaultPrepared(
+      AuthEventsRecorder::UserVaultType::kPersistent, is_success);
+  if (!is_success) {
     LOGIN_LOG(ERROR) << "PreparePersistentVault failed with error " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -236,7 +246,10 @@ void MountPerformer::OnPrepareVaultForMigration(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::PrepareVaultForMigrationReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  bool is_success = error == user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
+  AuthEventsRecorder::Get()->OnUserVaultPrepared(
+      AuthEventsRecorder::UserVaultType::kPersistent, is_success);
+  if (!is_success) {
     LOGIN_LOG(ERROR) << "PrepareVaultForMigration failed with error " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;

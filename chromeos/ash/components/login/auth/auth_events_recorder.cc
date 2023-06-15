@@ -245,6 +245,21 @@ std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
   return "";
 }
 
+std::string GetUserVaultTypeName(
+    AuthEventsRecorder::UserVaultType user_vault_type) {
+  using UserVaultType = AuthEventsRecorder::UserVaultType;
+  switch (user_vault_type) {
+    case UserVaultType::kPersistent:
+      return "persistent";
+    case UserVaultType::kEphemeral:
+      return "ephemeral";
+    case UserVaultType::kGuest:
+      return "guest";
+  }
+  NOTREACHED();
+  return "";
+}
+
 std::string GetCrashKeyStringWithStatus(const std::string& event_name,
                                         bool success) {
   return event_name + (success ? "_success" : "_failure");
@@ -389,6 +404,13 @@ void AuthEventsRecorder::OnPasswordChange() {
 
 void AuthEventsRecorder::OnGaiaScreen() {
   AddAuthEvent("gaia");
+}
+
+void AuthEventsRecorder::OnUserVaultPrepared(UserVaultType user_vault_type,
+                                             bool success) {
+  const std::string crash_key_prefix =
+      GetUserVaultTypeName(user_vault_type) + "_vault_prepare";
+  AddAuthEvent(GetCrashKeyStringWithStatus(crash_key_prefix, success));
 }
 
 void AuthEventsRecorder::OnSessionStateChanged() {

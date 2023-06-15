@@ -70,6 +70,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
     kMaxValue = kMountCryptohomeError,
   };
 
+  // Type of user vault (a.k.a. cryptohome).
+  enum class UserVaultType {
+    kPersistent,
+    kEphemeral,
+    kGuest,
+  };
+
   AuthEventsRecorder(const AuthEventsRecorder&) = delete;
   AuthEventsRecorder& operator=(const AuthEventsRecorder&) = delete;
   AuthEventsRecorder(AuthEventsRecorder&&) = delete;
@@ -143,6 +150,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
 
   // Report that the user was directed to online Gaia flow.
   void OnGaiaScreen();
+
+  // Report the result of the user vault preparation (a.k.a. cryptohome
+  // mounting).
+  void OnUserVaultPrepared(UserVaultType user_vault_type, bool success);
 
   int knowledge_factor_auth_failure_count() {
     return knowledge_factor_auth_failure_count_;
