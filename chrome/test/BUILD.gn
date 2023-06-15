@@ -6462,6 +6462,7 @@ test("unit_tests") {
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/color:color",
     "//ui/color:mixers",
+    "//ui/color/dynamic_color",
     "//ui/display:test_support",
     "//ui/events:gesture_detection",
     "//ui/events:test_support",

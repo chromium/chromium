@@ -36,7 +36,6 @@ suite('AppearanceTest', () => {
     handler.setResultFor('getOverviewChromeColors', Promise.resolve({}));
     appearanceElement = document.createElement('customize-chrome-appearance');
     document.body.appendChild(appearanceElement);
-    await handler.whenCalled('getOverviewChromeColors');
   });
 
   test('appearance edit button creates event', async () => {

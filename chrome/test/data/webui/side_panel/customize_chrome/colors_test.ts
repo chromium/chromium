@@ -123,6 +123,8 @@ suite('ColorsTest', () => {
   });
 
   test('renders chrome colors', async () => {
+    const theme = createTheme();
+    callbackRouter.setTheme(theme);
     initializeElement();
     const colors = {
       colors: [
@@ -163,6 +165,8 @@ suite('ColorsTest', () => {
   });
 
   test('sets chrome color', async () => {
+    const theme = createTheme();
+    callbackRouter.setTheme(theme);
     initializeElement();
     const colors = {
       colors: [

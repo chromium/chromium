@@ -79,6 +79,7 @@ export class ColorsElement extends PolymerElement {
   static get observers() {
     return [
       'updateCustomColor_(colors_, theme_, isCustomColorSelected_)',
+      'updateColors_(theme_)',
     ];
   }
 
@@ -89,15 +90,6 @@ export class ColorsElement extends PolymerElement {
   private customColor_: Color;
   private setThemeListenerId_: number|null = null;
   private showManagedDialog_: boolean;
-
-  constructor() {
-    super();
-    CustomizeChromeApiProxy.getInstance()
-        .handler.getOverviewChromeColors()
-        .then(({colors}) => {
-          this.colors_ = colors;
-        });
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -244,6 +236,14 @@ export class ColorsElement extends PolymerElement {
     };
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
+  }
+
+  private updateColors_() {
+    CustomizeChromeApiProxy.getInstance()
+        .handler.getOverviewChromeColors(this.theme_.isDarkMode)
+        .then(({colors}) => {
+          this.colors_ = colors;
+        });
   }
 
   private onManagedDialogClosed_() {

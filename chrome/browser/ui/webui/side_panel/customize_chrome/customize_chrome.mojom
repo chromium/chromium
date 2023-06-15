@@ -65,7 +65,8 @@ struct ChromeColor {
   // The background color.
   skia.mojom.SkColor foreground;
   // The base color.
-  skia.mojom.SkColor base;
+  // TODO(crbug/1454868): Make base  no longer optional once GM2 is removed.
+  skia.mojom.SkColor? base;
 };
 
 // A collection of background images.
@@ -125,7 +126,7 @@ interface CustomizeChromePageHandler {
   UpdateMostVisitedSettings();
 
   // Returns the chrome colors used in the customize chrome side panel overview.
-  GetOverviewChromeColors() => (array<ChromeColor> colors);
+  GetOverviewChromeColors(bool is_dark_mode) => (array<ChromeColor> colors);
 
   // Returns the chrome colors used in the customize chrome side panel themes.
   GetChromeColors() => (array<ChromeColor> colors);

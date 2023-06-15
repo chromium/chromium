@@ -70,6 +70,7 @@ class CustomizeChromePageHandler
   void SetDefaultColor() override;
   void SetSeedColor(SkColor seed_color) override;
   void GetOverviewChromeColors(
+      bool is_dark_mode,
       GetOverviewChromeColorsCallback callback) override;
   void GetChromeColors(GetChromeColorsCallback callback) override;
   void SetBackgroundImage(const std::string& attribution_1,
