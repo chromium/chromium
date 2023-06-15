@@ -604,7 +604,7 @@ void MessageCenterImpl::DisableNotification(const std::string& id) {
 void MessageCenterImpl::MarkSinglePopupAsShown(const std::string& id,
                                                bool mark_notification_as_read) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!FindVisibleNotificationById(id)) {
+  if (!FindNotificationById(id)) {
     return;
   }
 

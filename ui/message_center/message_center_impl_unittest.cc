@@ -611,6 +611,46 @@ TEST_F(MessageCenterImplTest, NotificationBlocker) {
   EXPECT_EQ(2u, message_center()->GetVisibleNotifications().size());
 }
 
+TEST_F(MessageCenterImplTest, MarkPopupAsShownWhileBlocked) {
+  const std::string kMarkedId = "id1";
+  const std::string kNotMarkedId = "id2";
+
+  ToggledNotificationBlocker blocker(message_center());
+
+  message_center()->AddNotification(CreateSimpleNotification(kMarkedId));
+  message_center()->AddNotification(CreateSimpleNotification(kNotMarkedId));
+
+  EXPECT_EQ(message_center()->GetPopupNotifications().size(), 2u);
+  EXPECT_EQ(message_center()->GetVisibleNotifications().size(), 2u);
+
+  // Block all notifications. There should be no popups or visible
+  // notifications.
+  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
+  EXPECT_TRUE(message_center()->GetPopupNotifications().empty());
+  EXPECT_TRUE(message_center()->GetVisibleNotifications().empty());
+  EXPECT_EQ(message_center()->GetNotifications().size(), 2u);
+
+  // Mark one notification as being shown as a popup, so that when blocking ends
+  // it will not be displayed.
+  message_center()->MarkSinglePopupAsShown(kMarkedId, false);
+
+  // Stop blocking notifications, which should cause notifications to show as
+  // popups and in notifications center depending on their state.
+  blocker.SetPopupNotificationsEnabled(true);
+  blocker.SetNotificationsEnabled(true);
+
+  // Only the notification we did not mark should show as a popup.
+  NotificationList::PopupNotifications popups =
+      message_center()->GetPopupNotifications();
+  EXPECT_EQ(popups.size(), 1u);
+  EXPECT_TRUE(PopupNotificationsContain(popups, kNotMarkedId));
+
+  // Both notifications should be visible.
+  EXPECT_EQ(message_center()->GetNotifications().size(), 2u);
+  EXPECT_EQ(message_center()->GetVisibleNotifications().size(), 2u);
+}
+
 TEST_F(MessageCenterImplTest, VisibleNotificationsWithoutBlocker) {
   NotifierId notifier_id1(NotifierType::APPLICATION, /*id=*/"app1");
   NotifierId notifier_id2(NotifierType::APPLICATION, /*id=*/"app2");

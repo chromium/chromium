@@ -187,10 +187,9 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // notification.
   virtual void DisableNotification(const std::string& id) = 0;
 
-  // This should be called by UI classes after a visible notification popup
-  // closes, indicating that the notification has been shown to the user.
-  // |mark_notification_as_read|, if false, will unset the read bit on a
-  // notification, increasing the unread count of the center.
+  // Called by the UI classes to mark a popup as shown, preventing it from being
+  // shown in the future. `mark_notification_as_read`, if false, will unset the
+  // read bit on a notification, increasing the unread count of the center.
   virtual void MarkSinglePopupAsShown(const std::string& id,
                                       bool mark_notification_as_read) = 0;
 
