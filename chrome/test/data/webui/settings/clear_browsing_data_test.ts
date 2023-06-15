@@ -571,38 +571,34 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertEquals('result', checkbox.subLabel);
   });
 
-  test('history rows are hidden for supervised users', async function() {
+  test('history rows are shown for supervised users', async function() {
+    function assertRowsShown() {
+      assertFalse(element.shadowRoot!
+                      .querySelector<SettingsCheckboxElement>(
+                          '#browsingCheckbox')!.hidden);
+      assertFalse(element.shadowRoot!
+                      .querySelector<SettingsCheckboxElement>(
+                          '#browsingCheckboxBasic')!.hidden);
+      assertFalse(element.shadowRoot!
+                      .querySelector<SettingsCheckboxElement>(
+                          '#downloadCheckbox')!.hidden);
+    }
+
     assertFalse(
       loadTimeData.getBoolean('isChildAccount'));
-    assertFalse(element.shadowRoot!
-                    .querySelector<SettingsCheckboxElement>(
-                        '#browsingCheckbox')!.hidden);
-    assertFalse(element.shadowRoot!
-                    .querySelector<SettingsCheckboxElement>(
-                        '#browsingCheckboxBasic')!.hidden);
-    assertFalse(element.shadowRoot!
-                    .querySelector<SettingsCheckboxElement>(
-                        '#downloadCheckbox')!.hidden);
+    assertRowsShown();
+
 
     element.remove();
     testBrowserProxy.reset();
     loadTimeData.overrideValues({isChildAccount: true});
-    loadTimeData.overrideValues({allowDeletingBrowserHistory: false});
 
     element = document.createElement('settings-clear-browsing-data-dialog');
     document.body.appendChild(element);
     flush();
 
     await testBrowserProxy.whenCalled('initialize');
-    assertTrue(element.shadowRoot!
-                   .querySelector<SettingsCheckboxElement>(
-                       '#browsingCheckbox')!.hidden);
-    assertTrue(element.shadowRoot!
-                   .querySelector<SettingsCheckboxElement>(
-                       '#browsingCheckboxBasic')!.hidden);
-    assertTrue(element.shadowRoot!
-                   .querySelector<SettingsCheckboxElement>(
-                       '#downloadCheckbox')!.hidden);
+    assertRowsShown();
   });
 
   // <if expr="is_chromeos">

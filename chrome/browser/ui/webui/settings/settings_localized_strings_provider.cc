@@ -243,9 +243,6 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
-  html_source->AddBoolean(
-      "allowDeletingBrowserHistory",
-      profile->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory));
 #if BUILDFLAG(IS_LINUX)
   bool allow_qt_theme = base::FeatureList::IsEnabled(ui::kAllowQt);
 #else
