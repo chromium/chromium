@@ -1428,7 +1428,7 @@
     },
     {
       name: "DocumentOpenSandboxInheritanceRemoval",
-      status: "experimental",
+      status: "stable",
       copied_from_base_feature_if: "overridden",
     },
     {
