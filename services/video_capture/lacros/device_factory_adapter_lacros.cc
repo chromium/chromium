@@ -33,6 +33,42 @@ void DeviceFactoryAdapterLacros::CreateDevice(const std::string& device_id,
   DCHECK(device_factory_ash_.is_bound());
   mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote;
   auto proxy_receiver = proxy_remote.InitWithNewPipeAndPassReceiver();
+  auto wrapped_callback =
+      base::BindOnce(&DeviceFactoryAdapterLacros::WrapNewDeviceInProxy,
+                     weak_factory_.GetWeakPtr(), std::move(callback), device_id,
+                     std::move(proxy_remote));
+
+  device_factory_ash_->CreateDevice(device_id, std::move(proxy_receiver),
+                                    std::move(wrapped_callback));
+}
+
+void DeviceFactoryAdapterLacros::WrapNewDeviceInProxy(
+    CreateDeviceCallback callback,
+    const std::string& device_id,
+    mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote,
+    crosapi::mojom::DeviceAccessResultCode code) {
+  media::VideoCaptureError video_capture_result_code;
+  switch (code) {
+    case crosapi::mojom::DeviceAccessResultCode::NOT_INITIALIZED:
+      video_capture_result_code = media::VideoCaptureError::
+          kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice;
+      break;
+    case crosapi::mojom::DeviceAccessResultCode::SUCCESS:
+      video_capture_result_code = media::VideoCaptureError::kNone;
+      break;
+    case crosapi::mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND:
+      video_capture_result_code = media::VideoCaptureError::
+          kServiceDeviceLauncherServiceRespondedWithDeviceNotFound;
+      break;
+    default:
+      NOTREACHED() << "Unexpected device access result code";
+  }
+
+  if (video_capture_result_code != media::VideoCaptureError::kNone) {
+    DeviceInfo info{nullptr, video_capture_result_code};
+    std::move(callback).Run(std::move(info));
+    return;
+  }
   // Since |device_proxy| is owned by this instance and the cleanup callback
   // is only called within the lifetime of |device_proxy|, it should be safe
   // to use base::Unretained(this) here.
@@ -41,38 +77,9 @@ void DeviceFactoryAdapterLacros::CreateDevice(const std::string& device_id,
       base::BindOnce(
           &DeviceFactoryAdapterLacros::OnClientConnectionErrorOrClose,
           base::Unretained(this), device_id));
-
-  auto wrapped_callback = base::BindOnce(
-      [](CreateDeviceCallback callback, video_capture::Device* device,
-         crosapi::mojom::DeviceAccessResultCode code) {
-        media::VideoCaptureError video_capture_result_code;
-        switch (code) {
-          case crosapi::mojom::DeviceAccessResultCode::NOT_INITIALIZED:
-            video_capture_result_code = media::VideoCaptureError::
-                kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice;
-            break;
-          case crosapi::mojom::DeviceAccessResultCode::SUCCESS:
-            video_capture_result_code = media::VideoCaptureError::kNone;
-            break;
-          case crosapi::mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND:
-            video_capture_result_code = media::VideoCaptureError::
-                kServiceDeviceLauncherServiceRespondedWithDeviceNotFound;
-            break;
-          default:
-            NOTREACHED() << "Unexpected device access result code";
-        }
-
-        DCHECK(callback);
-        DCHECK(device);
-        DeviceInfo info{device, media::VideoCaptureError::kNone};
-        info.result_code = video_capture_result_code;
-        std::move(callback).Run(std::move(info));
-      },
-      std::move(callback), device_proxy.get());
-
+  DeviceInfo info{device_proxy.get(), media::VideoCaptureError::kNone};
   devices_.emplace(device_id, std::move(device_proxy));
-  device_factory_ash_->CreateDevice(device_id, std::move(proxy_receiver),
-                                    std::move(wrapped_callback));
+  std::move(callback).Run(std::move(info));
 }
 
 void DeviceFactoryAdapterLacros::StopDevice(const std::string device_id) {
