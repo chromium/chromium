@@ -227,7 +227,8 @@ class DeleteForeignVisitsDBTask : public HistoryDBTask {
       return true;
     }
 
-    backend->RemoveVisits(visits);
+    backend->RemoveVisits(visits,
+                          DeletionInfo::Reason::kDeleteAllForeignVisits);
 
     bool done = visits.size() < static_cast<size_t>(max_count);
     if (done) {
@@ -1876,11 +1877,12 @@ void HistoryBackend::DeleteAllForeignVisitsAndResetIsKnownToSync() {
   }
 }
 
-bool HistoryBackend::RemoveVisits(const VisitVector& visits) {
+bool HistoryBackend::RemoveVisits(const VisitVector& visits,
+                                  DeletionInfo::Reason deletion_reason) {
   if (!db_)
     return false;
 
-  expirer_.ExpireVisits(visits);
+  expirer_.ExpireVisits(visits, deletion_reason);
   ScheduleCommit();
   return true;
 }

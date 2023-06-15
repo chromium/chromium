@@ -215,7 +215,7 @@ class RemoveVisitsTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     // Fetch the visits.
-    backend->RemoveVisits(*visits_);
+    backend->RemoveVisits(*visits_, history::DeletionInfo::Reason::kOther);
     wait_event_->Signal();
     return true;
   }

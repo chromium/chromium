@@ -647,6 +647,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarred) {
                                 /*user_initiated*/ true);
   EXPECT_EQ(GetLastDeletionInfo()->time_range().begin(), visit_times[2]);
   EXPECT_EQ(GetLastDeletionInfo()->time_range().end(), base::Time());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -831,6 +833,8 @@ TEST_F(ExpireHistoryTest, FlushURLsForTimes) {
   times.push_back(visit_times[2]);
   expirer_.ExpireHistoryForTimes(times);
   EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -884,6 +888,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredRestricted) {
   EXPECT_EQ(GetLastDeletionInfo()->time_range().end(), base::Time());
   EXPECT_EQ(GetLastDeletionInfo()->deleted_rows().size(), 0U);
   EXPECT_EQ(GetLastDeletionInfo()->restrict_urls()->size(), 1U);
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -964,10 +970,14 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPropagatesUserInitiated) {
   expirer_.ExpireHistoryBetween(restrict_urls, visit_times[3], base::Time(),
                                 /*user_initiated*/ true);
   EXPECT_FALSE(GetLastDeletionInfo()->is_from_expiration());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
 
   expirer_.ExpireHistoryBetween(restrict_urls, visit_times[1], base::Time(),
                                 /*user_initiated*/ false);
   EXPECT_TRUE(GetLastDeletionInfo()->is_from_expiration());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
 }
 
 TEST_F(ExpireHistoryTest, ExpireHistoryBeforeUnstarred) {
@@ -1062,6 +1072,8 @@ TEST_F(ExpireHistoryTest, ExpireSomeOldHistory) {
   EXPECT_FALSE(expirer_.ExpireSomeOldHistory(visit_times[0], reader, 2));
   EXPECT_EQ(1U, GetLastDeletionInfo()->deleted_rows().size());
   EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
   ClearLastNotifications();
 
   // Deleting a time range with the max number of results should return true
@@ -1265,7 +1277,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
 
   // Expiring visit_row2 should also expire visit_row1 which is its redirect
   // parent.
-  expirer_.ExpireVisits({visit_row2});
+  expirer_.ExpireVisits({visit_row2}, DeletionInfo::Reason::kOther);
 
   VisitRow v;
   EXPECT_FALSE(main_db_->GetRowForVisit(visit_row1.visit_id, &v));
@@ -1310,7 +1322,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
 
   // Expiring visit_row2 should also expire visit_row1 which is its redirect
   // parent, without infinite looping.
-  expirer_.ExpireVisits({visit_row2});
+  expirer_.ExpireVisits({visit_row2}, DeletionInfo::Reason::kOther);
 
   VisitRow v;
   EXPECT_FALSE(main_db_->GetRowForVisit(visit_row1.visit_id, &v));
@@ -1354,7 +1366,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
 
   // Expiring visit_row2 should not expire visit_row1 which is its referer
   // parent.
-  expirer_.ExpireVisits({visit_row2});
+  expirer_.ExpireVisits({visit_row2}, DeletionInfo::Reason::kOther);
 
   VisitRow v;
   EXPECT_TRUE(main_db_->GetRowForVisit(visit_row1.visit_id, &v));

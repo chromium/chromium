@@ -655,6 +655,14 @@ class DeletionTimeRange {
 // action.
 class DeletionInfo {
  public:
+  // Captures the reason for the history deletion.
+  enum class Reason {
+    // All foreign visits are being deleted (i.e. visits that occurred on
+    // another device but were synced to this device).
+    kDeleteAllForeignVisits,
+    kOther,
+  };
+
   // Returns a DeletionInfo that covers all history.
   static DeletionInfo ForAllHistory();
   // Returns a DeletionInfo with invalid time range for the given urls.
@@ -663,6 +671,12 @@ class DeletionInfo {
 
   DeletionInfo(const DeletionTimeRange& time_range,
                bool is_from_expiration,
+               URLRows deleted_rows,
+               std::set<GURL> favicon_urls,
+               absl::optional<std::set<GURL>> restrict_urls);
+  DeletionInfo(const DeletionTimeRange& time_range,
+               bool is_from_expiration,
+               Reason deletion_reason,
                URLRows deleted_rows,
                std::set<GURL> favicon_urls,
                absl::optional<std::set<GURL>> restrict_urls);
@@ -691,6 +705,9 @@ class DeletionInfo {
   // Returns true, if the URL deletion is due to expiration.
   bool is_from_expiration() const { return is_from_expiration_; }
 
+  // The reason for the history deletion.
+  Reason deletion_reason() const { return deletion_reason_; }
+
   // Returns the list of the deleted URLs.
   // Undefined if `IsAllHistory()` returns true.
   const URLRows& deleted_rows() const { return deleted_rows_; }
@@ -716,6 +733,7 @@ class DeletionInfo {
  private:
   DeletionTimeRange time_range_;
   bool is_from_expiration_;
+  Reason deletion_reason_;
   URLRows deleted_rows_;
   std::set<GURL> favicon_urls_;
   absl::optional<std::set<GURL>> restrict_urls_;

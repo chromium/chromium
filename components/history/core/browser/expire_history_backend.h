@@ -99,7 +99,8 @@ class ExpireHistoryBackend {
 
   // Removes the given list of visits, updating the URLs accordingly (similar to
   // ExpireHistoryBetween(), but affecting a specific set of visits).
-  void ExpireVisits(const VisitVector& visits);
+  void ExpireVisits(const VisitVector& visits,
+                    DeletionInfo::Reason deletion_reason);
 
   // Expires all visits before and including the given time, updating the URLs
   // accordingly.
@@ -221,7 +222,8 @@ class ExpireHistoryBackend {
   void ExpireVisitsInternal(const VisitVector& visits,
                             const DeletionTimeRange& time_range,
                             const std::set<GURL>& restrict_urls,
-                            DeletionType type);
+                            DeletionType type,
+                            DeletionInfo::Reason deletion_reason);
 
   // Deletes the favicons listed in `effects->affected_favicons` if they are
   // unused. Fails silently (we don't care about favicons so much, so don't want
@@ -234,7 +236,8 @@ class ExpireHistoryBackend {
   void BroadcastNotifications(DeleteEffects* effects,
                               DeletionType type,
                               const DeletionTimeRange& time_range,
-                              absl::optional<std::set<GURL>> restrict_urls);
+                              absl::optional<std::set<GURL>> restrict_urls,
+                              DeletionInfo::Reason deletion_reason);
 
   // Schedules a call to DoExpireIteration.
   void ScheduleExpire();

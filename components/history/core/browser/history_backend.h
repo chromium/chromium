@@ -673,7 +673,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // and foreign.
   void DeleteAllForeignVisitsAndResetIsKnownToSync() override;
 
-  bool RemoveVisits(const VisitVector& visits);
+  // Removes `visits` from local state. `deletion_reason` specifies the reason
+  // for why the removal action was initiated.
+  bool RemoveVisits(const VisitVector& visits,
+                    DeletionInfo::Reason deletion_reason);
 
   // Returns the `VisitSource` associated with each one of the passed visits.
   // If there is no entry in the map for a given visit, that means the visit
