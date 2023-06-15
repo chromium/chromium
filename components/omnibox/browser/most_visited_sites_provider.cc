@@ -88,7 +88,6 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
   }
 
   if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
-    LOG(ERROR) << "<><><> HERE";
     AutocompleteMatch match = BuildMatch(
         provider, client, std::u16string(), GURL::EmptyGURL(),
         kMostVisitedTilesRelevance, AutocompleteMatchType::TILE_NAVSUGGEST);
