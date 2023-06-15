@@ -509,7 +509,7 @@
     },
     {
       name: "ByobFetch",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CacheStorageCodeCacheHint",
