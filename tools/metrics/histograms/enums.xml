@@ -1870,6 +1870,8 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Keyboard (Camera)"/>
   <int value="9" label="App icon long press (Camera)"/>
   <int value="10" label="iOS Spotlight (Camera)"/>
+  <int value="11" label="Plus Button (Camera)"/>
+  <int value="12" label="Web Search Bar (Camera)"/>
 </enum>
 
 <enum name="AmbientUiMode">
@@ -14409,6 +14411,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Tasks Surface"/>
   <int value="4" label="Keyboard"/>
   <int value="5" label="Spotlight"/>
+  <int value="6" label="App Icon Long Press"/>
+  <int value="7" label="Plus Button"/>
+  <int value="8" label="Web Search Bar"/>
 </enum>
 
 <enum name="CameraPreviewSnapPosition">
@@ -54540,6 +54545,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
   <int value="6" label="Image Share Menu"/>
   <int value="7" label="App Icon Long Press"/>
+  <int value="8" label="Plus Button">
+    Lens was triggered by tapping the option in long press menu of the new tab
+    plus button.
+  </int>
+  <int value="9" label="Web Search Bar"/>
 </enum>
 
 <enum name="IOSLensSupportStatus">
