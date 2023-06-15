@@ -167,6 +167,10 @@ class FileUploadJob {
     // Repost new event if successful, then complete.
     void RepostAndComplete();
 
+    // Compose and post a retry event (with decremented retry count and no
+    // tracker - thus initiating a new FileUploadJob).
+    void PostRetry() const;
+
     SEQUENCE_CHECKER(sequence_checker_);
 
     const base::WeakPtr<FileUploadJob> job_;

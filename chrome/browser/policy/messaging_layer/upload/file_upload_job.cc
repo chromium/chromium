@@ -128,6 +128,12 @@ void FileUploadJob::Manager::Register(
              ::ash::reporting::LogUploadEvent log_upload_event,
              base::WeakPtr<Delegate> delegate,
              base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
+            // Retry count must allow the job to run.
+            if (log_upload_event.upload_settings().retry_count() < 1) {
+              std::move(result_cb).Run(
+                  Status(error::INVALID_ARGUMENT, "Too many upload attempts"));
+              return;
+            }
             // Serialize settings to get the map key.
             std::string serialized_settings;
             if (!log_upload_event.upload_settings().SerializeToString(
@@ -298,14 +304,21 @@ void FileUploadJob::EventHelper::RepostAndComplete() {
     Complete(Status(error::DATA_LOSS, "Upload Job has been removed"));
     return;
   }
-  // Job is still around. Update the new event with its status.
+  // Job is still around.
+  // If the job failed, post retry event unless retry count will drop to 0.
+  if (job_->tracker().has_status() && job_->settings().retry_count() > 1) {
+    // Post retry event.
+    PostRetry();
+  }
+
+  // Update the new event with its status.
   if (job_->tracker().access_parameters().empty() &&
       !job_->tracker().has_status()) {
     // The job_ is in progress (not succeeded and not failed),
     // flag the new tracking event to be processed when reaching uploader.
     record_copy_.set_needs_local_unencrypted_copy(true);
   }
-  // Copy it tracking state to the new event.
+  // Copy its tracking state to the new event.
   *log_upload_event_.mutable_upload_settings() = job_->settings();
   *log_upload_event_.mutable_upload_tracker() = job_->tracker();
   // Patch the copy event.
@@ -321,6 +334,32 @@ void FileUploadJob::EventHelper::RepostAndComplete() {
       priority_, std::move(record_copy_),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &EventHelper::Complete, weak_ptr_factory_.GetWeakPtr())));
+}
+
+void FileUploadJob::EventHelper::PostRetry() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(job_);
+  // Compose retry event that has no tracker.
+  // Decrement its retry count (`FileUploadJob::Manager::Register` will then
+  // register it as a new job).
+  auto retry_log_upload_event = log_upload_event_;
+  *retry_log_upload_event.mutable_upload_settings() = job_->settings();
+  retry_log_upload_event.mutable_upload_settings()->set_retry_count(
+      retry_log_upload_event.upload_settings().retry_count() - 1);
+  retry_log_upload_event.clear_upload_tracker();
+  // Make a copy for retry.
+  Record retry_copy = record_copy_;
+  retry_copy.set_needs_local_unencrypted_copy(true);
+  // Serialize and post retry event; if it fails, just log the error.
+  if (!retry_log_upload_event.SerializeToString(retry_copy.mutable_data())) {
+    LOG(ERROR) << "Retry event " << Destination_Name(retry_copy.destination())
+               << " failed to serialize";
+    return;
+  }
+  FileUploadJob::AddRecordToStorage(
+      priority_, std::move(retry_copy), base::BindOnce([](Status status) {
+        LOG_IF(ERROR, !status.ok()) << "Retry event failed to post: " << status;
+      }));
 }
 
 // FileUploadJob implementation.
@@ -346,7 +385,7 @@ base::ScopedClosureRunner FileUploadJob::CompletionCb(
                   << "Event must be associated with the job";
               if (!job->tracker_.access_parameters().empty() ||  // success
                   (job->tracker_.has_status() &&
-                   job->settings_.retry_count() <= 0)) {  // last retry
+                   job->settings_.retry_count() <= 1)) {  // last retry
                 // Perform deletion on a thread pool, do not wait for completion
                 // and do not report the outcome.
                 Manager::GetInstance()->sequenced_task_runner()->PostTask(
@@ -376,12 +415,11 @@ void FileUploadJob::Initiate(base::OnceClosure done_cb) {
         tracker_.mutable_status());
     return;
   }
-  if (settings_.retry_count() <= 0) {
+  if (settings_.retry_count() < 1) {
     Status{error::OUT_OF_RANGE, "Too many upload attempts"}.SaveTo(
         tracker_.mutable_status());
     return;
   }
-  settings_.set_retry_count(settings_.retry_count() - 1);
   if (timer_.IsRunning()) {
     timer_.Reset();
   }

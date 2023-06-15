@@ -42,12 +42,6 @@ class RecordHandlerImpl : public RecordHandler {
       CompletionCallback upload_complete,
       EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
 
-  // Helper method adds a record to the default storage on ReportClient task
-  // runner and calls `done_cb` with the result..
-  static void AddRecordToStorage(Priority priority,
-                                 Record record_copy,
-                                 base::OnceCallback<void(Status)> done_cb);
-
  private:
   // Helper `ReportUploader` class handles events being uploaded.
   class ReportUploader;
