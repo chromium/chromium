@@ -49,6 +49,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -102,6 +103,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testClick_opensNewTab_portrait() {
         ActivityTestUtils.rotateActivityToOrientation(
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);

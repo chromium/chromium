@@ -127,6 +127,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.util.ColorUtils;
@@ -837,6 +838,7 @@ public class TabGridDialogTest {
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     // TODO(crbug.com/1380489): Re-enable once test is no longer flaky locally.
     @Features.DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testSelectionEditorPosition() {

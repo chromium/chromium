@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,6 +56,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -66,6 +68,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DoNotBatch(reason = "Relies on global state")
 public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCase {
     /** Parameter provider for night mode state and device orientation. */

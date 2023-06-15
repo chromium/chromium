@@ -60,6 +60,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -194,9 +195,9 @@ public class TabbedAppMenuTest {
      * Test that hitting ENTER on the top item actually triggers the top item.
      * Catches regressions for https://crbug.com/191239 for shrunken menus.
      */
+    @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Test
     public void testKeyboardMenuEnterOnTopItemLandscape() {
         ActivityTestUtils.rotateActivityToOrientation(
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
@@ -212,6 +213,7 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testKeyboardMenuEnterOnTopItemPortrait() {
         ActivityTestUtils.rotateActivityToOrientation(
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
