@@ -1,9 +1,0 @@
-Tests that buffer usage update are sent when recording trace events and TimelineLifecycleDelegate methods are properly invoked in the expected order.
-
-TimelineControllerClient.recordingStarted
-TimelineControllerClient.recordingProgress
-TimelineControllerClient.loadingStarted
-TimelineControllerClient.loadingProgress
-TimelineControllerClient.processingStarted
-TimelineControllerClient.loadingComplete
-
