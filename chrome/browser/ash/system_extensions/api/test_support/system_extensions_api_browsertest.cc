@@ -311,8 +311,8 @@ void SystemExtensionsApiBrowserTest::MaybeInstallSystemExtension(
     const char* path;
     const char* name;
   } mojom_files[] = {
-      {"gen/mojo/public/js/", "mojo_bindings_lite.js"},
-      {"gen/chrome/browser/ash/system_extensions/api/test_support/",
+      {"mojo/public/js/", "mojo_bindings_lite.js"},
+      {"chrome/browser/ash/system_extensions/api/test_support/",
        "system_extensions_test_runner.test-mojom-lite.js"},
   };
   for (auto mojom_file : base::make_span(mojom_files)) {

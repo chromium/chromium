@@ -353,7 +353,7 @@ TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
   screenai::ViewHierarchy expected_view_hierarchy;
   ASSERT_TRUE(LoadTextProto(
       kExpectedProtoPath,
-      "gen/components/services/screen_ai/proto/view_hierarchy.descriptor",
+      "components/services/screen_ai/proto/view_hierarchy.descriptor",
       expected_view_hierarchy));
 
   // Compare protos.

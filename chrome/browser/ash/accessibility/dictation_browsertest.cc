@@ -373,8 +373,7 @@ class DictationTestBase : public InProcessBrowserTest,
     // `pumpkin_test_files` rule in the accessibility_common BUILD file.
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath gen_root_dir;
-    ASSERT_TRUE(
-        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_root_dir));
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &gen_root_dir));
     base::FilePath pumpkin_test_file_path =
         gen_root_dir.AppendASCII(kPumpkinTestFilePath);
     ASSERT_TRUE(base::PathExists(pumpkin_test_file_path));

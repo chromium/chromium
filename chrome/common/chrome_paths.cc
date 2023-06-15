@@ -394,8 +394,9 @@ bool PathProvider(int key, base::FilePath* result) {
     // will fail if executed from an installed executable (because the
     // generated path won't exist).
     case chrome::DIR_GEN_TEST_DATA:
-      if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &cur))
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("test_data"));
       if (!base::PathExists(cur))  // We don't want to create this.
         return false;

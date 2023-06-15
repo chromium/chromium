@@ -75,7 +75,7 @@ TEST(ServiceProcessLauncherTest, DISABLED_StartJoin) {
 
   // The test executable is a data_deps and thus generated test data.
   base::FilePath test_service_path;
-  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &test_service_path);
+  base::PathService::Get(base::DIR_ASSETS, &test_service_path);
   test_service_path = test_service_path.AppendASCII(kTestServiceName)
                           .AddExtension(kServiceExtension);
 

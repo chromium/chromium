@@ -41,6 +41,11 @@ bool ReturnsValidPath(int key) {
   // Some paths might not exist on some platforms in which case confirming
   // |result| is true and !path.empty() is the best we can do.
   bool check_path_exists = true;
+
+  // If no file is generate for the test, the path may not exist.
+  if (key == DIR_GEN_TEST_DATA_ROOT) {
+    check_path_exists = false;
+  }
 #if BUILDFLAG(IS_POSIX)
   // If chromium has never been started on this account, the cache path may not
   // exist.
@@ -345,21 +350,19 @@ TEST_F(PathServiceTest, DIR_ASSETS) {
 #endif
 }
 
-// DIR_GEN_TEST_DATA_ROOT is DIR_MODULE except on Fuchsia where it is the
-// package root and Android where it is overridden in tests by
-// test_support_android.cc.
+// DIR_GEN_TEST_DATA_ROOT is DIR_ASSETS/gen except on Fuchsia where
+// it is DIR_ASSETS.
 TEST_F(PathServiceTest, DIR_GEN_TEST_DATA_ROOT) {
   FilePath path;
   ASSERT_TRUE(PathService::Get(DIR_GEN_TEST_DATA_ROOT, &path));
 #if BUILDFLAG(IS_FUCHSIA)
   EXPECT_EQ(path.value(), "/pkg");
-#elif BUILDFLAG(IS_ANDROID)
-  // This key is overridden in //base/test/test_support_android.cc.
-  EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
 #else
-  // On other platforms all build output is in the same directory,
-  // so DIR_GEN_TEST_DATA_ROOT should match DIR_MODULE.
-  EXPECT_EQ(path, PathService::CheckedGet(DIR_MODULE));
+  // On other platforms all gen output is in the same directory,
+  // so DIR_GEN_TEST_DATA_ROOT should match DIR_ASSETS/gen.
+  EXPECT_EQ(
+      path,
+      PathService::CheckedGet(DIR_ASSETS).Append(FILE_PATH_LITERAL("gen")));
 #endif
 }
 
@@ -380,8 +383,6 @@ TEST_F(PathServiceTest, AndroidTestOverrides) {
   EXPECT_EQ(PathService::CheckedGet(DIR_ASSETS).value(),
             kExpectedChromiumTestsRoot);
   EXPECT_EQ(PathService::CheckedGet(DIR_SRC_TEST_DATA_ROOT).value(),
-            kExpectedChromiumTestsRoot);
-  EXPECT_EQ(PathService::CheckedGet(DIR_GEN_TEST_DATA_ROOT).value(),
             kExpectedChromiumTestsRoot);
 }
 

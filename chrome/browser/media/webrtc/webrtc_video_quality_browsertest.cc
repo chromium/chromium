@@ -317,8 +317,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
 
   base::FilePath GetTestBinaryDir() {
     base::FilePath browser_dir;
-    EXPECT_TRUE(
-        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &browser_dir));
+    EXPECT_TRUE(base::PathService::Get(base::DIR_ASSETS, &browser_dir));
     return browser_dir;
   }
 

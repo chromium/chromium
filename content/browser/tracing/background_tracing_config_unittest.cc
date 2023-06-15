@@ -37,12 +37,7 @@ class MockNetworkChangeNotifier : public net::NetworkChangeNotifier {
 };
 
 base::FilePath GetTestDataRoot() {
-  base::FilePath test_data_root =
-      base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT);
-#if !BUILDFLAG(IS_FUCHSIA)
-  test_data_root = test_data_root.Append(FILE_PATH_LITERAL("gen"));
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-  return test_data_root;
+  return base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT);
 }
 
 void CreateRuleConfig(const std::string& proto_text,

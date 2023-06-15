@@ -34,11 +34,13 @@ bool PathProvider(int key, FilePath* result) {
     case DIR_HOME:
       *result = GetHomeDir();
       return true;
-    case DIR_GEN_TEST_DATA_ROOT:
 #if !BUILDFLAG(IS_FUCHSIA)
-      // On most platforms, all build output is in the same directory, so
-      // use DIR_MODULE to get the path to the current binary.
-      return PathService::Get(DIR_MODULE, result);
+    case DIR_GEN_TEST_DATA_ROOT:
+      if (!PathService::Get(DIR_ASSETS, result)) {
+        return false;
+      }
+      *result = result->Append(FILE_PATH_LITERAL("gen"));
+      return true;
 #endif  // !BUILDFLAG(IS_FUCHSIA)
     case DIR_TEST_DATA: {
       FilePath test_data_path;

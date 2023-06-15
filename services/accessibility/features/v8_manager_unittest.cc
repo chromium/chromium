@@ -37,7 +37,7 @@ class V8ManagerTest : public testing::Test {
     base::FilePath gen_test_data_root;
     base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_test_data_root);
     base::FilePath source_path = gen_test_data_root.Append(FILE_PATH_LITERAL(
-        "gen/services/accessibility/features/mojo/test/mojom_test_support.js"));
+        "services/accessibility/features/mojo/test/mojom_test_support.js"));
     std::string script;
     EXPECT_TRUE(ReadFileToString(source_path, &script));
     return script;

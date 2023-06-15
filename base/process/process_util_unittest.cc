@@ -155,7 +155,7 @@ const int kSuccess = 0;
 class ProcessUtilTest : public MultiProcessTest {
  public:
   void SetUp() override {
-    ASSERT_TRUE(PathService::Get(DIR_GEN_TEST_DATA_ROOT, &test_helper_path_));
+    ASSERT_TRUE(PathService::Get(DIR_ASSETS, &test_helper_path_));
     test_helper_path_ = test_helper_path_.AppendASCII(kTestHelper);
   }
 

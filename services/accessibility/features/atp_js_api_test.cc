@@ -124,9 +124,9 @@ class TtsJSApiTest : public AtpJSApiTest {
     // doing it in the test. Right now the service doesn't have enough
     // permissions so we load support JS within the test.
     return std::vector<std::string>{
-        "gen/services/accessibility/features/mojo/test/mojom_test_support.js",
-        "gen/services/accessibility/public/mojom/tts.mojom-lite.js",
-        "gen/services/accessibility/features/javascript/tts.js",
+        "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "services/accessibility/public/mojom/tts.mojom-lite.js",
+        "services/accessibility/features/javascript/tts.js",
     };
   }
 };
