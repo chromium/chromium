@@ -59,7 +59,7 @@ class WvrDevice : public device::VRDeviceBase,
   void OnWvrThreadReady(device::mojom::XRRuntimeSessionOptionsPtr options);
   void OnWvrGlInitializationComplete(
       device::mojom::XRRuntimeSessionOptionsPtr options);
-  void OnStartPresentResult(device::mojom::XRSessionPtr session);
+  void OnStartPresenting(device::mojom::XRSessionPtr session);
 
   // XRSessionController
   void SetFrameDataRestricted(bool restricted) override;
