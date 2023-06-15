@@ -24,7 +24,6 @@
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
-#include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
 namespace gfx {
@@ -95,8 +94,7 @@ class DrmDevice;
 class HardwareDisplayController {
  public:
   HardwareDisplayController(std::unique_ptr<CrtcController> controller,
-                            const gfx::Point& origin,
-                            raw_ptr<DrmModifiersFilter> drm_modifiers_filter);
+                            const gfx::Point& origin);
 
   HardwareDisplayController(const HardwareDisplayController&) = delete;
   HardwareDisplayController& operator=(const HardwareDisplayController&) =
@@ -244,8 +242,6 @@ class HardwareDisplayController {
 
   // Used to crash the GPU process when unrecoverable failures occur.
   PageFlipWatchdog watchdog_;
-
-  raw_ptr<DrmModifiersFilter> drm_modifiers_filter_;
 
   base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 };

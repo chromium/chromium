@@ -3,7 +3,6 @@ include_rules = [
   "+cc/base",
   "+cc/paint",
   "+device/vr/buildflags/buildflags.h",
-  "+gpu/vulkan/buildflags.h",
   "+skia/ext",
   "+third_party/harfbuzz-ng",
   "+third_party/skia",

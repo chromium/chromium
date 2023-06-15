@@ -94,8 +94,6 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 
     Fn get() const { return fn_; }
 
-    void OverrideForTesting(Fn fn) { fn_ = fn; }
-
    private:
     friend VulkanFunctionPointers;
 
