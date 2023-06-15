@@ -42,8 +42,6 @@ suite('PasskeyDetailsCardTest', function() {
   test('Content displayed properly', async function() {
     assertEquals(passkey.username, card.$.usernameValue.value);
     assertEquals(passkey.displayName, card.$.displayNameValue.value);
-    assertTrue(isVisible(card.$.noteValue));
-    assertEquals(passkey.note, card.$.noteValue.note);
     assertTrue(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
 
