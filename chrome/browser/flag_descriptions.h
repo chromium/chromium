@@ -3725,6 +3725,9 @@ extern const char kSecondaryGoogleAccountUsageDescription[];
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 
+extern const char kShimlessRMAComplianceCheckName[];
+extern const char kShimlessRMAComplianceCheckDescription[];
+
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 

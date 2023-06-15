@@ -2128,6 +2128,11 @@ BASE_FEATURE(kShimlessRMADiagnosticPage,
              "ShimlessRMADiagnosticPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables device compliance check in the Shimless RMA flow.
+BASE_FEATURE(kShimlessRMAComplianceCheck,
+             "ShimlessRMAComplianceCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the shortcut customization app.
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kShortcutCustomizationJelly,
@@ -3575,6 +3580,10 @@ bool IsShimlessRMADarkModeDisabled() {
 
 bool IsShimlessRMADiagnosticPageEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMADiagnosticPage);
+}
+
+bool IsShimlessRMAComplianceCheckEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMAComplianceCheck);
 }
 
 bool IsSmdsSupportEnabled() {

@@ -6522,6 +6522,11 @@ const char kShimlessRMADiagnosticPageDescription[] =
     "Enable the diagnostic page in Shimless RMA for showing detailed device "
     "information";
 
+const char kShimlessRMAComplianceCheckName[] =
+    "Enable compliance check in Shimless RMA";
+const char kShimlessRMAComplianceCheckDescription[] =
+    "Enable device compliance check in the Shimless RMA flow";
+
 const char kShortcutCustomizationJellyName[] =
     "Enable jelly colors for the Shortcut Customization App";
 const char kShortcutCustomizationJellyDescription[] =

@@ -62036,6 +62036,7 @@ from previous Chrome versions.
   <int value="-539515670" label="CrOSLateBootArcVmmSwap:disabled"/>
   <int value="-538728016" label="ChromeCartDomBasedHeuristics:disabled"/>
   <int value="-538448229" label="MaxUnthrottledTimeoutNestingLevel:enabled"/>
+  <int value="-538317834" label="ShimlessRMAComplianceCheck:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>
   <int value="-538003236" label="OneTimePermission:disabled"/>
   <int value="-536289234" label="ssl-interstitial-v2-colorful"/>
@@ -64458,6 +64459,7 @@ from previous Chrome versions.
   <int value="728064595" label="RevampedContextMenu:disabled"/>
   <int value="728656094" label="PasswordForceSaving:disabled"/>
   <int value="728937354" label="ShutdownSupportForKeepalive:disabled"/>
+  <int value="729082677" label="ShimlessRMAComplianceCheck:disabled"/>
   <int value="729726508" label="NtpModulesFirstRunExperience:disabled"/>
   <int value="730024226" label="enable-out-of-process-pdf"/>
   <int value="730478037" label="FilesAppExperimental:disabled"/>

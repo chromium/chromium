@@ -7020,6 +7020,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "shimless-rma-compliance-check",
+    "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "shimless-rma-diagnostic-page",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 120
