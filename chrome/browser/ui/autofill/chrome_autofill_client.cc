@@ -64,6 +64,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
@@ -526,6 +527,16 @@ void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
   controller->ShowBubble(virtual_card_enrollment_fields,
                          std::move(accept_virtual_card_callback),
                          std::move(decline_virtual_card_callback));
+}
+
+payments::MandatoryReauthManager*
+ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!payments_mandatory_reauth_manager_) {
+    payments_mandatory_reauth_manager_ =
+        std::make_unique<payments::MandatoryReauthManager>(this);
+  }
+
+  return payments_mandatory_reauth_manager_.get();
 }
 
 void ChromeAutofillClient::ShowMandatoryReauthOptInPrompt(

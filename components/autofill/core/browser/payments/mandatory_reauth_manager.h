@@ -38,8 +38,9 @@ class MandatoryReauthManager {
   // autofilled with non-interactive authentication. If there is a match, then
   // we know the most recent card filled with non-interactive authentication was
   // the card that was submitted in the form, so we should offer re-auth opt-in.
+  // TODO(crbug.com/4555994): Rename this function to ShouldOfferOptIn().
   virtual bool ShouldOfferOptin(
-      const CreditCard& card_extracted_from_form,
+      const absl::optional<CreditCard>& card_extracted_from_form,
       const absl::optional<absl::variant<FormDataImporter::CardGuid,
                                          FormDataImporter::CardLastFourDigits>>&
           card_identifier_if_non_interactive_authentication_flow_completed,

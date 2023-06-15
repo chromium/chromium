@@ -154,6 +154,17 @@ class FormDataImporter : public PersonalDataManagerObserver {
   const absl::optional<absl::variant<CardGuid, CardLastFourDigits>>&
   GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted() const;
 
+  bool ProcessExtractedCreditCardForTesting(
+      const FormStructure& submitted_form,
+      const absl::optional<CreditCard>& credit_card_import_candidate,
+      const absl::optional<std::string>& extracted_upi_id,
+      bool payment_methods_autofill_enabled,
+      bool is_credit_card_upstream_enabled) {
+    return ProcessExtractedCreditCard(
+        submitted_form, credit_card_import_candidate, extracted_upi_id,
+        payment_methods_autofill_enabled, is_credit_card_upstream_enabled);
+  }
+
  protected:
   void set_credit_card_save_manager_for_testing(
       std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {
@@ -414,10 +425,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   friend class SaveCardBubbleViewsFullFormBrowserTest;
   friend class SaveCardInfobarEGTestHelper;
   friend class ::SaveCardOfferObserver;
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
-                           ProcessExtractedCreditCard_EmptyCreditCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
-                           ProcessExtractedCreditCard_VirtualCardEligible);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
                            ShouldOfferUploadCardOrLocalCardSave);
 };

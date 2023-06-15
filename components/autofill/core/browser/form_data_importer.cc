@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -699,10 +700,32 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     upi_vpa_save_manager_->OfferLocalSave(*extracted_upi_id);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   // If no card was successfully extracted from the form, return.
   if (credit_card_import_type_ == CreditCardImportType::kNoCard) {
     return false;
   }
+
+  // If a flow where there was no interactive authentication was completed, we
+  // might need to initiate the re-auth opt-in flow.
+  if (auto* mandatory_reauth_manager =
+          client_->GetOrCreatePaymentsMandatoryReauthManager();
+      mandatory_reauth_manager &&
+      mandatory_reauth_manager->ShouldOfferOptin(
+          extracted_credit_card,
+          card_identifier_if_non_interactive_authentication_flow_completed_,
+          credit_card_import_type_)) {
+    card_identifier_if_non_interactive_authentication_flow_completed_.reset();
+    mandatory_reauth_manager->StartOptInFlow();
+    return true;
+  }
+
+  // If a virtual card was extracted from the form, return as we do not do
+  // anything with virtual cards beyond this point.
+  if (credit_card_import_type_ == CreditCardImportType::kVirtualCard) {
+    return false;
+  }
+
   // Do not offer upload save for google domain.
   if (net::HasGoogleHost(submitted_form.main_frame_origin().GetURL()) &&
       is_credit_card_upstream_enabled) {
@@ -802,9 +825,11 @@ absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   if (!candidate.HasValidCardNumber())
     return absl::nullopt;
 
-  // If the imported card is a known virtual card, abort importing.
-  if (fetched_virtual_cards_.contains(candidate.LastFourDigits()))
-    return absl::nullopt;
+  // If the extracted card is a known virtual card, return the extracted card.
+  if (fetched_virtual_cards_.contains(candidate.LastFourDigits())) {
+    credit_card_import_type_ = CreditCardImportType::kVirtualCard;
+    return candidate;
+  }
 
   // Can import one valid card per form. Start by treating it as kNewCard, but
   // overwrite this type if we discover it is already a local or server card.

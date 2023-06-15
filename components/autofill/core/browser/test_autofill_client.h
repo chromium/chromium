@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
@@ -255,6 +256,15 @@ class TestAutofillClientTemplate : public T {
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override {}
+
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override {
+    if (!mock_payments_mandatory_reauth_manager_) {
+      mock_payments_mandatory_reauth_manager_ = std::make_unique<
+          testing::NiceMock<payments::MockMandatoryReauthManager>>();
+    }
+    return mock_payments_mandatory_reauth_manager_.get();
+  }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -675,6 +685,8 @@ class TestAutofillClientTemplate : public T {
   scoped_refptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_ =
           base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
+  std::unique_ptr<::testing::NiceMock<payments::MockMandatoryReauthManager>>
+      mock_payments_mandatory_reauth_manager_;
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;

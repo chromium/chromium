@@ -2607,11 +2607,11 @@ TEST_P(FormDataImporterTest,
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  ASSERT_FALSE(extracted_data.extracted_credit_card);
-  // |credit_card_import_type_| should be kNoCard because the
-  // card imported from the form was a virtual card.
-  ASSERT_TRUE(form_data_importer().credit_card_import_type_for_testing() ==
-              FormDataImporter::CreditCardImportType::kNoCard);
+  EXPECT_TRUE(extracted_data.extracted_credit_card);
+  // `credit_card_import_type_` should be `kVirtualCard` because the
+  // card extracted from the form was a virtual card.
+  EXPECT_EQ(form_data_importer().credit_card_import_type_for_testing(),
+            FormDataImporter::CreditCardImportType::kVirtualCard);
 }
 
 // Ensures that
@@ -3266,7 +3266,7 @@ TEST_P(FormDataImporterTest,
 
   // Add two local cards to the credit cards to ensure that in the case where we
   // have separate copies of a server card and a local card, we still only set
-  // |imported_credit_card| to the server card details as we want the server
+  // `extracted_credit_card` to the server card details as we want the server
   // to be the source of truth. Adding two cards also helps us ensure that we
   // will update both.
   for (int i = 0; i < 2; i++) {
@@ -4176,7 +4176,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   // `form_data_importer()`'s `credit_card_import_type_` is set
   // to kLocalCard because we need to make sure we do not return early in the
   // kNewCard case, and kLocalCard with upstream enabled but empty
-  // |imported_credit_card| is the most likely scenario for a crash.
+  // `extracted_credit_card` is the most likely scenario for a crash.
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kLocalCard);
 
@@ -4185,7 +4185,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   syncer::TestSyncService sync_service;
   personal_data_manager_->SetSyncServiceForTest(&sync_service);
 
-  EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCard(
+  EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCardForTesting(
       *form_structure, extracted_credit_card, extracted_upi_id,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
@@ -4195,12 +4195,11 @@ TEST_F(FormDataImporterNonParameterizedTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(FormDataImporterNonParameterizedTest,
        ProcessExtractedCreditCard_VirtualCardEligible) {
-  CreditCard imported_credit_card = test::GetMaskedServerCard();
-  imported_credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
-  imported_credit_card.set_instrument_id(1111);
-  imported_credit_card.set_virtual_card_enrollment_state(
+  CreditCard extracted_credit_card = test::GetMaskedServerCard();
+  extracted_credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
+  extracted_credit_card.set_instrument_id(1111);
+  extracted_credit_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE);
-  absl::optional<CreditCard> extracted_credit_card = imported_credit_card;
   absl::optional<std::string> extracted_upi_id;
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
@@ -4219,7 +4218,8 @@ TEST_F(FormDataImporterNonParameterizedTest,
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
                                     _, _, _, _))
       .Times(0);
-  EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCard(
+
+  EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCardForTesting(
       *form_structure, extracted_credit_card, extracted_upi_id,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
@@ -4229,7 +4229,8 @@ TEST_F(FormDataImporterNonParameterizedTest,
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
                                     _, _, _, _))
       .Times(1);
-  EXPECT_TRUE(form_data_importer().ProcessExtractedCreditCard(
+
+  EXPECT_TRUE(form_data_importer().ProcessExtractedCreditCardForTesting(
       *form_structure, extracted_credit_card, extracted_upi_id,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
@@ -4237,6 +4238,77 @@ TEST_F(FormDataImporterNonParameterizedTest,
   personal_data_manager_->SetSyncServiceForTest(nullptr);
 }
 #endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+// Test that in the case where the MandatoryReauthManager denotes we should not
+// offer re-auth opt-in, we do not start the opt-in flow.
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessExtractedCreditCard_MandatoryReauthNotOffered) {
+  CreditCard extracted_credit_card = test::GetVirtualCard();
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer()
+      .SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
+          FormDataImporter::CardLastFourDigits(
+              base::UTF16ToUTF8(extracted_credit_card.LastFourDigits())));
+  form_data_importer().set_credit_card_import_type_for_testing(
+      FormDataImporter::CreditCardImportType::kVirtualCard);
+
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      ShouldOfferOptin)
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      StartOptInFlow)
+      .Times(0);
+
+  EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCardForTesting(
+      *form_structure, extracted_credit_card, absl::nullopt,
+      /*payment_methods_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true));
+}
+
+// Test that in the case where the MandatoryReauthManager denotes we should
+// offer re-auth opt-in, we start the opt-in flow.
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessExtractedCreditCard_MandatoryReauthOffered) {
+  CreditCard extracted_credit_card = test::GetCreditCard2();
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer()
+      .SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
+          FormDataImporter::CardGuid(extracted_credit_card.guid()));
+  form_data_importer().set_credit_card_import_type_for_testing(
+      FormDataImporter::CreditCardImportType::kVirtualCard);
+
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      ShouldOfferOptin)
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      StartOptInFlow)
+      .Times(1);
+
+  EXPECT_TRUE(form_data_importer().ProcessExtractedCreditCardForTesting(
+      *form_structure, extracted_credit_card, absl::nullopt,
+      /*payment_methods_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true));
+
+  // Ensure that we reset the card identifier at the end of the flow.
+  EXPECT_FALSE(
+      form_data_importer()
+          .GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(FormDataImporterNonParameterizedTest,
        ShouldOfferUploadCardOrLocalCardSave) {

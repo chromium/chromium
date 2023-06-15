@@ -155,13 +155,28 @@ TEST_F(MandatoryReauthManagerTest,
 // opt-in if the conditions if the last four digits in the virtual card case do
 // not match.
 TEST_F(MandatoryReauthManagerTest,
-       ShouldNotOfferOptin_LastFourDigitsDontMatch_VirtualCard) {
+
+       ShouldOfferOptin_LastFourDigitsDontMatch_VirtualCard) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
       virtual_card_, FormDataImporter::CardLastFourDigits("1234"),
       FormDataImporter::kVirtualCard));
+}
+
+// Test that the MandatoryReauthManager returns that we should not offer re-auth
+// opt-in if we did not extract any card from the form.
+TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_NoCardExtractedFromForm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+
+  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+
+  EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
+      absl::nullopt, FormDataImporter::CardGuid(local_card_.guid()),
+      FormDataImporter::kLocalCard));
 }
 
 // Test that the MandatoryReauthManager returns that we should not offer re-auth

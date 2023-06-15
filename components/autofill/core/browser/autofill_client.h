@@ -105,6 +105,7 @@ enum class WebauthnDialogState;
 
 namespace payments {
 class PaymentsClient;
+class MandatoryReauthManager;
 }
 
 // A client interface that needs to be supplied to the Autofill component by the
@@ -507,6 +508,11 @@ class AutofillClient : public RiskDataLoader {
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback);
+
+  // Gets or creates a payments autofill mandatory re-auth manager. This will be
+  // used to handle payments mandatory re-auth related flows.
+  virtual payments::MandatoryReauthManager*
+  GetOrCreatePaymentsMandatoryReauthManager();
 
   // Prompt the user to enable mandatory reauthentication for payment method
   // autofill. When enabled, the user will be asked to authenticate using

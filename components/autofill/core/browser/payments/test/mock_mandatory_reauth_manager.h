@@ -18,7 +18,7 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
 
   MOCK_METHOD(bool,
               ShouldOfferOptin,
-              ((const CreditCard&),
+              ((const absl::optional<CreditCard>&),
                (const absl::optional<
                    absl::variant<FormDataImporter::CardGuid,
                                  FormDataImporter::CardLastFourDigits>>&),

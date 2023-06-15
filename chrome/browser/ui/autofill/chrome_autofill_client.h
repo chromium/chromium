@@ -54,6 +54,10 @@ struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 
+namespace payments {
+class MandatoryReauthManager;
+}  // namespace payments
+
 // Chrome implementation of AutofillClient.
 //
 // ChromeAutofillClient is instantiated once per WebContents, and usages of
@@ -147,6 +151,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override;
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
   void ShowMandatoryReauthOptInPrompt(
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
@@ -312,6 +318,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
+  std::unique_ptr<payments::MandatoryReauthManager>
+      payments_mandatory_reauth_manager_;
 
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   FormInteractionsFlowId flow_id_{};

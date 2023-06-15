@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
@@ -122,6 +123,11 @@ void AutofillClient::ShowVirtualCardEnrollDialog(
     base::OnceClosure decline_virtual_card_callback) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
+}
+
+payments::MandatoryReauthManager*
+AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  return nullptr;
 }
 
 void AutofillClient::ShowMandatoryReauthOptInPrompt(

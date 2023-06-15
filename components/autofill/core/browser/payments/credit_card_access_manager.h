@@ -406,6 +406,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // a card that does not have a CVC saved (for example, a local card). This
   // function should only be called on platforms where DeviceAuthenticator is
   // present.
+  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // MandatoryReauthManager.
   void StartDeviceAuthenticationForFilling(base::WeakPtr<Accessor> accessor,
                                            const CreditCard* card,
                                            const std::u16string& cvc);
@@ -415,6 +417,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // response. If it is successful, we will fill `card` and `cvc` into the form
   // using `accessor`, otherwise we will handle the error. `successful_auth` is
   // true if the authentication waas successful, false otherwise.
+  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // MandatoryReauthManager.
   void OnDeviceAuthenticationResponseForFilling(
       base::WeakPtr<Accessor> accessor,
       const CreditCard* card,
@@ -422,6 +426,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
       bool successful_auth);
 
   // Callback that resets `device_authenticator_` after an authentication.
+  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // MandatoryReauthManager.
   void OnReauthCompleted();
 
   // The current form of authentication in progress.
@@ -525,6 +531,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // `device_authenticator_` alive while an authentication is in progress. Set
   // when we initiate a re-auth using `DeviceAuthenticator`, and reset once the
   // authentication has finished.
+  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // MandatoryReauthManager.
   scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};

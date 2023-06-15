@@ -19,7 +19,7 @@ MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
 MandatoryReauthManager::~MandatoryReauthManager() = default;
 
 bool MandatoryReauthManager::ShouldOfferOptin(
-    const CreditCard& card_extracted_from_form,
+    const absl::optional<CreditCard>& card_extracted_from_form,
     const absl::optional<absl::variant<FormDataImporter::CardGuid,
                                        FormDataImporter::CardLastFourDigits>>&
         card_identifier_if_non_interactive_authentication_flow_completed,
@@ -45,6 +45,14 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           client_->GetDeviceAuthenticator();
       !device_authenticator ||
       !device_authenticator->CanAuthenticateWithBiometrics()) {
+    return false;
+  }
+
+  // If we did not extract any card from the form, then we should not offer
+  // re-auth opt-in, as the user submitted a form without a card. It could be
+  // confusing to offer payments autofill functionalities when there was no card
+  // submitted.
+  if (!card_extracted_from_form.has_value()) {
     return false;
   }
 
@@ -91,7 +99,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           absl::get<FormDataImporter::CardGuid>(
               card_identifier_if_non_interactive_authentication_flow_completed
                   .value()),
-          card_extracted_from_form);
+          card_extracted_from_form.value());
     }
     case FormDataImporter::CreditCardImportType::kServerCard: {
       // From `import_type` we know that the submitted card exists as a server
@@ -110,7 +118,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
 
       for (CreditCard* local_card :
            client_->GetPersonalDataManager()->GetLocalCreditCards()) {
-        if (local_card->IsLocalOrServerDuplicateOf(card_extracted_from_form)) {
+        if (local_card->IsLocalOrServerDuplicateOf(
+                card_extracted_from_form.value())) {
           // We found a matching local card for this server card. We then need
           // to check that the local card version of this card was the card most
           // recently filled into the form with non-interactive authentication,
@@ -152,7 +161,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
                  absl::get<FormDataImporter::CardLastFourDigits>(
                      card_identifier_if_non_interactive_authentication_flow_completed
                          .value())
-                     .value()) == card_extracted_from_form.LastFourDigits();
+                     .value()) == card_extracted_from_form->LastFourDigits();
     }
     case FormDataImporter::CreditCardImportType::kNewCard:
     case FormDataImporter::CreditCardImportType::kNoCard:
