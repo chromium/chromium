@@ -152,12 +152,6 @@ class URLLoader::Context : public ResourceRequestClient {
  private:
   ~Context() override;
 
-  // Called when the body data stream is detached from the reader side.
-  void CancelBodyStreaming();
-
-  void OnBodyAvailable(MojoResult, const mojo::HandleSignalsState&);
-  void OnBodyHasBeenRead(uint32_t read_bytes);
-
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(
       network::ResourceRequest* request);
 
@@ -188,10 +182,6 @@ class URLLoader::Context : public ResourceRequestClient {
   base::WaitableEvent* terminate_sync_load_event_;
 
   int request_id_;
-  bool in_two_phase_read_ = false;
-  bool is_in_on_body_available_ = false;
-
-  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
 
   std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
@@ -468,20 +458,6 @@ void URLLoader::Context::OnCompletedRequest(
 URLLoader::Context::~Context() {
   // We must be already cancelled at this point.
   DCHECK_LT(request_id_, 0);
-}
-
-void URLLoader::Context::CancelBodyStreaming() {
-  scoped_refptr<Context> protect(this);
-
-  if (client_) {
-    // TODO(yhirano): Set |stale_copy_in_cache| appropriately if possible.
-    client_->DidFail(WebURLError(net::ERR_ABORTED, url_),
-                     base::TimeTicks::Now(),
-                     URLLoaderClient::kUnknownEncodedDataLength, 0, 0);
-  }
-
-  // Notify the browser process that the request is canceled.
-  Cancel();
 }
 
 // URLLoader ----------------------------------------------------------------
