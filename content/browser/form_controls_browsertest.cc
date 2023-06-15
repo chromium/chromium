@@ -79,6 +79,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     }
 #elif BUILDFLAG(IS_FUCHSIA)
     platform_suffix = "_fuchsia";
+#elif BUILDFLAG(IS_IOS)
+    platform_suffix = "_ios";
 #endif
 
     base::FilePath dir_test_data;
@@ -97,7 +99,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         NavigateToURL(shell()->web_contents(),
                       GURL("data:text/html,<!DOCTYPE html>" + body_html)));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     // This fuzzy pixel comparator handles several mac behaviors:
     // - Different font rendering after 10.14
     // - Slight differences in radio and checkbox rendering in 10.15

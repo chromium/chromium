@@ -29,8 +29,8 @@
 #include "ui/gfx/geometry/size_conversions.h"
 
 // Used for settng the requested renderer size when testing.
-constexpr int kDefaultWidthForTesting = 800;
-constexpr int kDefaultHeightForTesting = 600;
+constexpr int kDefaultWidthForTesting = 980;
+constexpr int kDefaultHeightForTesting = 735;
 
 static void* kObservingContext = &kObservingContext;
 
@@ -352,8 +352,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
-    browser_compositor_->UpdateSurfaceFromUIView(
-        gfx::Size(kDefaultWidthForTesting, kDefaultHeightForTesting));
+    browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
   }
 
   CHECK(host()->GetFrameSinkId().is_valid());
@@ -432,6 +431,9 @@ bool RenderWidgetHostViewIOS::HasFocus() {
 }
 
 gfx::Rect RenderWidgetHostViewIOS::GetViewBounds() {
+  // When testing, we will not have a windowScene and, as a consequence, we will
+  // not have an intrinsic renderer size. This will cause tests to fail, though,
+  // so we will instead set a default size.
   return IsTesting()
              ? gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting)
              : gfx::Rect([ui_view_->view_ bounds]);
@@ -539,18 +541,12 @@ bool RenderWidgetHostViewIOS::IsShowing() {
 }
 
 gfx::Rect RenderWidgetHostViewIOS::GetBoundsInRootWindow() {
-  return IsTesting()
-             ? gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting)
-             : gfx::Rect([ui_view_->view_ bounds]);
+  return GetViewBounds();
 }
 
 gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
-  // When testing, we will not have a windowScene and, as a consequence, we will
-  // not have an intrinsic renderer size. This will cause tests to fail, though,
-  // so we will instead set a default size.
-  return !IsTesting()
-             ? browser_compositor_->GetRendererSize()
-             : gfx::Size(kDefaultWidthForTesting, kDefaultHeightForTesting);
+  return !IsTesting() ? browser_compositor_->GetRendererSize()
+                      : GetViewBounds().size();
 }
 
 absl::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
