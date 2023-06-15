@@ -1224,10 +1224,10 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
 
     VLOG_POLICY(2, CBCM_ENROLLMENT) << "Policy fetch succeeded";
   } else {
-    NotifyClientError();
-
     VLOG_POLICY(2, CBCM_ENROLLMENT)
         << "Policy fetching failed with DM status error: " << last_dm_status_;
+
+    NotifyClientError();
 
     if (result.dm_status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
         result.dm_status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
