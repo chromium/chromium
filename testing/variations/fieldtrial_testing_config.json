@@ -799,6 +799,14 @@
                         "ArcvmSwapoutKeyboardShortcut"
                     ],
                     "min_os_version": "15489.0.0"
+                },
+                {
+                    "name": "Enabled_20230615",
+                    "enable_features": [
+                        "ArcVmmSwapPolicy",
+                        "ArcVmmSwapoutGhostWindow"
+                    ],
+                    "min_os_version": "15489.0.0"
                 }
             ]
         }
