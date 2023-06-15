@@ -649,8 +649,8 @@ class IndexedDBBackingStoreTestWithExternalObjects
           }
           break;
         case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
-          if (b.file_system_access_token().empty()) {
-            EXPECT_FALSE(b.file_system_access_token().empty());
+          if (b.serialized_file_system_access_handle().empty()) {
+            EXPECT_FALSE(b.serialized_file_system_access_handle().empty());
             return false;
           }
           break;
@@ -681,8 +681,8 @@ class IndexedDBBackingStoreTestWithExternalObjects
             return false;
           break;
         case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
-          if (read.file_system_access_token().size() != 1 ||
-              read.file_system_access_token()[0] >
+          if (read.serialized_file_system_access_handle().size() != 1 ||
+              read.serialized_file_system_access_handle()[0] >
                   file_system_access_context_->writes().size()) {
             return false;
           }

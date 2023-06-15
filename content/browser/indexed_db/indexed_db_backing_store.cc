@@ -307,8 +307,8 @@ std::string EncodeExternalObjects(
         }
         break;
       case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
-        DCHECK(!info.file_system_access_token().empty());
-        EncodeBinary(info.file_system_access_token(), &ret);
+        DCHECK(!info.serialized_file_system_access_handle().empty());
+        EncodeBinary(info.serialized_file_system_access_handle(), &ret);
         break;
     }
   }
@@ -3528,8 +3528,9 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
             ++num_objects_to_write;
           break;
         case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
-          if (entry.file_system_access_token().empty())
+          if (entry.serialized_file_system_access_handle().empty()) {
             ++num_objects_to_write;
+          }
           break;
       }
     }
@@ -3617,8 +3618,9 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           break;
         }
         case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
-          if (!entry.file_system_access_token().empty())
+          if (!entry.serialized_file_system_access_handle().empty()) {
             continue;
+          }
           // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
           // SharedRemote, so this code can just move the remote, instead of
           // cloning.
@@ -3644,7 +3646,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
                           storage::mojom::WriteBlobToFileResult::kError);
                       return;
                     }
-                    object->set_file_system_access_token(serialized_token);
+                    object->set_serialized_file_system_access_handle(
+                        serialized_token);
                     std::move(callback).Run(
                         storage::mojom::WriteBlobToFileResult::kSuccess);
                   },

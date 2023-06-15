@@ -449,9 +449,10 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
           blob_info.file_system_access_token_remote()->Clone(
               mojo_token.InitWithNewPipeAndPassReceiver());
         } else {
-          DCHECK(!blob_info.file_system_access_token().empty());
+          DCHECK(!blob_info.serialized_file_system_access_handle().empty());
           file_system_access_context()->DeserializeHandle(
-              bucket_locator.storage_key, blob_info.file_system_access_token(),
+              bucket_locator.storage_key,
+              blob_info.serialized_file_system_access_handle(),
               mojo_token.InitWithNewPipeAndPassReceiver());
         }
         mojo_object->get_file_system_access_token() = std::move(mojo_token);
