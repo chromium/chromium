@@ -5,6 +5,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
@@ -73,6 +74,17 @@ void WaitForSettingDoneButton() {
 @end
 
 @implementation AdvancedSettingsSigninTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings)]) {
+    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
+    config.features_disabled.push_back(
+        bookmarks::kEnableBookmarksAccountStorage);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -190,6 +191,21 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 @end
 
 @implementation SigninCoordinatorTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testDismissAdvancedSigninBookmarksFromAdvancedSigninSettings)] ||
+      [self isRunningTest:@selector(testDismissSigninFromBookmarks)] ||
+      [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
+      [self isRunningTest:@selector(testSigninPromoClosedWhenSyncOff)] ||
+      [self isRunningTest:@selector(testSigninPromoWhenSyncOff)]) {
+    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
+    config.features_disabled.push_back(
+        bookmarks::kEnableBookmarksAccountStorage);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

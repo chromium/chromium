@@ -62,6 +62,17 @@ using chrome_test_util::SecondarySignInButton;
              [self isRunningTest:@selector(testPromoViewBody)]) {
     config.features_enabled.push_back(
         bookmarks::kEnableBookmarksAccountStorage);
+  } else if ([self isRunningTest:@selector(testPromoViewBodyLegacy)] ||
+             [self isRunningTest:@selector(testTurnOnSyncPromo)] ||
+             [self isRunningTest:@selector
+                   (testSignInPromoWithIdentitiesUsingPrimaryButton)] ||
+             [self isRunningTest:@selector
+                   (testSignInPromoWithIdentitiesUsingSecondaryButton)] ||
+             [self isRunningTest:@selector
+                   (testSignInPromoWithNoIdentitiesUsingPrimaryButton)]) {
+    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
+    config.features_disabled.push_back(
+        bookmarks::kEnableBookmarksAccountStorage);
   }
   return config;
 }

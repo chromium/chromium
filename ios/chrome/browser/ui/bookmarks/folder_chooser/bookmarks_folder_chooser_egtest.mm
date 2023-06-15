@@ -54,6 +54,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
             (testCreateNewProfileFolderDefaultDestination)]) {
     config.features_enabled.push_back(
         bookmarks::kEnableBookmarksAccountStorage);
+  } else if ([self isRunningTest:@selector
+                   (testCreateNewFolderDefaultDestinationLegacy)]) {
+    // Legacy test verifies pre-EnableBookmarksAccountStorage behavior.
+    config.features_disabled.push_back(
+        bookmarks::kEnableBookmarksAccountStorage);
   }
   return config;
 }
