@@ -55,11 +55,11 @@ suite('ExtensionsReviewPanel', function() {
     // TODO(http://crbug.com/1432194): Update the unsafe extensions number
     const headingArgs = pluralString.getArgs('getPluralString')[0];
     assertEquals('safetyCheckTitle', headingArgs.messageName);
-    assertEquals(0, headingArgs.itemCount);
+    assertEquals(1, headingArgs.itemCount);
 
     const descriptionArgs = pluralString.getArgs('getPluralString')[1];
     assertEquals('safetyCheckDescription', descriptionArgs.messageName);
-    assertEquals(0, descriptionArgs.itemCount);
+    assertEquals(1, descriptionArgs.itemCount);
 
     // Verify that Remove All button exists.
     const removeAllButton = element.$.removeAllButton;
@@ -93,6 +93,17 @@ suite('ExtensionsReviewPanel', function() {
     // Button and list are expanded.
     assertTrue(expandButton.expanded);
     assertTrue(extensionsList.opened);
+  });
+
+  test('ReviewPanelUnsafeExtensionRowsExist', async function() {
+    const extensionNameContainers =
+        element.shadowRoot!.querySelectorAll('.extension-row');
+    assertEquals(extensionNameContainers.length, 1);
+    assertEquals(
+        extensionNameContainers[0]
+            ?.querySelector('.extension-representation')
+            ?.textContent,
+        'Alpha');
   });
 
   // TODO(http://crbug.com/1432194): Add tests to verify action functionalities.

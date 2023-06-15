@@ -48,7 +48,7 @@
     padding-inline-start: 50px;
   }
 
-  .extension-row > .cr-row {
+  .extension-row.cr-row {
     border: none;
   }
 
@@ -86,8 +86,23 @@
 <iron-collapse class="extension-list"
     opened="[[unsafeExtensionsReviewListExpanded_]]">
   <template is="dom-repeat" items="[[unsafeExtensions_]]">
-    <div class="extension-row">
-      <!-- TODO(crbug.com/1432194): Implement extension row element in the next CL. -->
+    <div class="extension-row cr-row">
+      <img id="extension-icon" src="[[item.iconUrl]]" role="presentation">
+      <div class="display-name text-elide">
+        <div class="extension-representation">[[item.name]]</div>
+        <div class="secondary">
+          <!-- TODO(crbug.com/1432194): Add secondary string
+            (trigger warnings). -->
+          Placeholder for the trigger text.
+        </div>
+      </div>
+      <cr-icon-button iron-icon="cr:delete"
+          actionable on-click="onRemoveExtensionClick_">
+      </cr-icon-button>
+      <cr-icon-button class="icon-more-vert header-aligned-button"
+        id="makeExceptionMenuButton"
+        on-click="onMakeExceptionMenuClick_"
+        focus-type="makeExceptionMenuButton"></cr-icon-button>
     </div>
   </template>
   <div class="cr-row first">
@@ -99,3 +114,10 @@
     </cr-button>
   </div>
 </iron-collapse>
+<cr-action-menu id="makeExceptionMenu">
+  <button id="menuKeepExtension"
+    class="dropdown-item"
+    on-click="onKeepExtensionClick_">
+      $i18n{safetyCheckKeepExtension}
+  </button>
+</cr-action-menu>

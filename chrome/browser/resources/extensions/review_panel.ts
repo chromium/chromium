@@ -7,15 +7,18 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './shared_style.css.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ItemDelegate} from './item.js';
 import {getTemplate} from './review_panel.html.js';
 
 export interface ExtensionsReviewPanelElement {
   $: {
+    makeExceptionMenu: CrActionMenuElement,
     reviewPanelContainer: HTMLDivElement,
     expandButton: CrExpandButtonElement,
     headingText: HTMLElement,
@@ -35,9 +38,8 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * List of installed extensions.
-       */
+      delegate: Object,
+
       extensions: {
         type: Array,
         notify: true,
@@ -73,6 +75,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
     return ['onExtensionsChanged_(extensions.*)'];
   }
 
+  delegate: ItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
   private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[]|null;
   private headerString_: string;
@@ -80,7 +83,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   private unsafeExtensionsReviewListExpanded_: boolean;
 
   private async onExtensionsChanged_() {
-    this.unsafeExtensions_ = [];
+    this.unsafeExtensions_ = this.getUnsafeExtensions_(this.extensions);
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckTitle', this.unsafeExtensions_.length);
@@ -89,7 +92,39 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
             'safetyCheckDescription', this.unsafeExtensions_.length);
   }
 
-  private onRemoveAllClick_() {
+  private getUnsafeExtensions_(extensions:
+                                   chrome.developerPrivate.ExtensionInfo[]):
+      chrome.developerPrivate.ExtensionInfo[] {
+    // TODO(crbug.com/1432194): Update this filter criteria when new trigger
+    // texts are added to getExtensionInfo API.
+    return extensions.filter(
+        extension => extension.disableReasons.corruptInstall ||
+            extension.disableReasons.suspiciousInstall ||
+            extension.runtimeWarnings.length || !!extension.blacklistText);
+  }
+
+  /**
+   * Opens the extension action menu.
+   */
+  private onMakeExceptionMenuClick_(e: Event) {
+    this.$.makeExceptionMenu.showAt(e.target as HTMLElement);
+  }
+
+  /**
+   * Acknowledges the extension safety check warning.
+   */
+  private onKeepExtensionClick_() {
+    this.$.makeExceptionMenu.close();
+    // TODO(crbug.com/1432194): Call the private API to keep the extension in
+    // pref.
+  }
+
+  private onRemoveExtensionClick_(
+      e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    this.delegate.deleteItem(e.model.item.id);
+  }
+
+  private onRemoveAllExtensions_(): void {
     // TODO(crbug.com/1432194): Call the private API to remove all extensions.
   }
 }
