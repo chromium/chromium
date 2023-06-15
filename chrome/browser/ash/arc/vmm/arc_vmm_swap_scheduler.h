@@ -43,6 +43,7 @@ class ArcVmmSwapScheduler : public ash::ConciergeClient::VmObserver {
       const vm_tools::concierge::VmSwappingSignal& signal) override;
 
  private:
+  friend class ArcVmmManagerBrowserTest;
   void SetSwapoutThrottleInterval(base::TimeDelta interval);
   void SetActiveSwappableChecking(
       base::TimeDelta period,
