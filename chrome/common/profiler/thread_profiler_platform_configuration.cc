@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chrome/common/profiler/process_type.h"
 
@@ -22,8 +23,11 @@ class DefaultPlatformConfiguration
   RelativePopulations GetEnableRates(
       absl::optional<version_info::Channel> release_channel) const override;
 
-  double GetChildProcessEnableFraction(
+  double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
+
+  absl::optional<metrics::CallStackProfileParams::Process>
+  ChooseEnabledProcess() const override;
 
   bool IsEnabledForThread(
       metrics::CallStackProfileParams::Process process,
@@ -67,7 +71,7 @@ DefaultPlatformConfiguration::GetEnableRates(
   return RelativePopulations{80, 20};
 }
 
-double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
+double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
   DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
 
@@ -89,6 +93,12 @@ double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
     default:
       return 0.0;
   }
+}
+
+absl::optional<metrics::CallStackProfileParams::Process>
+DefaultPlatformConfiguration::ChooseEnabledProcess() const {
+  // Ignore the setting, sampling more than one process.
+  return absl::nullopt;
 }
 
 bool DefaultPlatformConfiguration::IsEnabledForThread(
@@ -130,8 +140,11 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
   RelativePopulations GetEnableRates(
       absl::optional<version_info::Channel> release_channel) const override;
 
-  double GetChildProcessEnableFraction(
+  double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
+
+  absl::optional<metrics::CallStackProfileParams::Process>
+  ChooseEnabledProcess() const override;
 };
 
 AndroidPlatformConfiguration::AndroidPlatformConfiguration(
@@ -156,17 +169,45 @@ AndroidPlatformConfiguration::GetEnableRates(
   return RelativePopulations{1, 99, /* add_periodic_only_group=*/true};
 }
 
-double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
+double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  if (process == metrics::CallStackProfileParams::Process::kRenderer) {
-    // There are empirically, on average, 1.3 renderer processes per browser
-    // process. This samples the renderer process at roughly the same
-    // frequency overall as the browser process.
-    // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
-    return browser_test_mode_enabled() ? 1.0 : 0.75;
-  }
-  return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
+  // Unconditionally profile child processes that match ChooseEnabledProcess().
+  return 1.0;
 }
+
+absl::optional<metrics::CallStackProfileParams::Process>
+AndroidPlatformConfiguration::ChooseEnabledProcess() const {
+  // Weights are set such that we will receive similar amount of data from
+  // each process type. The value is calculated based on Canary/Dev channel
+  // data collected when all process are sampled.
+  const struct {
+    metrics::CallStackProfileParams::Process process;
+    int weight;
+  } process_enable_weights[] = {
+      {metrics::CallStackProfileParams::Process::kBrowser, 50},
+      {metrics::CallStackProfileParams::Process::kGpu, 40},
+      {metrics::CallStackProfileParams::Process::kRenderer, 10},
+  };
+
+  int total_weight = 0;
+  for (const auto& process_enable_weight : process_enable_weights) {
+    total_weight += process_enable_weight.weight;
+  }
+  DCHECK_EQ(100, total_weight);
+
+  int chosen = base::RandInt(0, total_weight - 1);  // Max is inclusive.
+  int cumulative_weight = 0;
+  for (const auto& process_enable_weight : process_enable_weights) {
+    if (chosen >= cumulative_weight &&
+        chosen < cumulative_weight + process_enable_weight.weight) {
+      return process_enable_weight.process;
+    }
+    cumulative_weight += process_enable_weight.weight;
+  }
+  NOTREACHED();
+  return absl::nullopt;
+}
+
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 
 }  // namespace

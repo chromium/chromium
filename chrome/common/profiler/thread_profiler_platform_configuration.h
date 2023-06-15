@@ -64,8 +64,15 @@ class ThreadProfilerPlatformConfiguration {
 
   // Returns the fraction of the time that profiling should be randomly enabled
   // for the child |process|. The return value is in the range [0.0, 1.0].
-  virtual double GetChildProcessEnableFraction(
+  virtual double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const = 0;
+
+  // Choose a process to run profiling when profiling is enabled. Running
+  // the sampler on a single process instead of all processes at the same time
+  // will help reduce the impact on users. If absl::nullopt is returned, the
+  // setting can be ignored. All processes will be sampled.
+  virtual absl::optional<metrics::CallStackProfileParams::Process>
+  ChooseEnabledProcess() const = 0;
 
   // Returns whether the profiler is enabled for |thread| in |process|.
   virtual bool IsEnabledForThread(

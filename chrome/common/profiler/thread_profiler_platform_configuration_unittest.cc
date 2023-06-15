@@ -106,20 +106,25 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 }
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
-                             GetChildProcessEnableFraction) {
-  EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
+                             GetChildProcessPerExecutionEnableFraction) {
+  EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
                      metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(1.0,
-            config()->GetChildProcessEnableFraction(
+            config()->GetChildProcessPerExecutionEnableFraction(
                 metrics::CallStackProfileParams::Process::kNetworkService));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUnknown));
+
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(0.75, config()->GetChildProcessEnableFraction(
-                      metrics::CallStackProfileParams::Process::kRenderer));
-#else
-  EXPECT_EQ(0.2, config()->GetChildProcessEnableFraction(
+  // Android child processes that match ChooseEnabledProcess() should be
+  // profiled unconditionally.
+  EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
                      metrics::CallStackProfileParams::Process::kRenderer));
+  EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
+                     metrics::CallStackProfileParams::Process::kUnknown));
+#else
+  EXPECT_EQ(0.2, config()->GetChildProcessPerExecutionEnableFraction(
+                     metrics::CallStackProfileParams::Process::kRenderer));
+  EXPECT_EQ(0.0, config()->GetChildProcessPerExecutionEnableFraction(
+                     metrics::CallStackProfileParams::Process::kUnknown));
 #endif
 }
 
