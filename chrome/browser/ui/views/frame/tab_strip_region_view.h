@@ -98,6 +98,12 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // rechecking the child order on every layout.
   const bool render_tab_search_before_tab_strip_;
 
+  // For ChromeRefresh2023, the new tab button should be rendered above the
+  // tab strip to support shorter paddings than possible with flexlayout.
+  // if this bool is true then the new tab button will be manually layed out
+  // and rendered to its own layer.
+  const bool render_new_tab_button_over_tab_strip_;
+
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&TabStripRegionView::UpdateNewTabButtonBorder,
