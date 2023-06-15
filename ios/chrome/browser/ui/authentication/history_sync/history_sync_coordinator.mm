@@ -51,4 +51,8 @@
   _viewController = nil;
 }
 
+- (void)dealloc {
+  CHECK(_mediator);
+}
+
 @end
