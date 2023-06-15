@@ -54,18 +54,24 @@ void InterpolableFontPalette::Interpolate(const InterpolableValue& to,
   const InterpolableFontPalette& to_palette = To<InterpolableFontPalette>(to);
   InterpolableFontPalette& result_palette = To<InterpolableFontPalette>(result);
 
-  if (progress == 0 ||
+  // Percentages are required to be in the range 0% to 100% for palette-mix()
+  // function, since the color-mix() function supports percentages only from
+  // that range, compare
+  // https://drafts.csswg.org/css-color-5/#color-mix-percent-norm.
+  double normalized_progress = ClampTo<double>(progress, 0.0, 1.0);
+
+  if (normalized_progress == 0 ||
       *font_palette_.get() == *to_palette.font_palette_.get()) {
     result_palette.font_palette_ = font_palette_;
-  } else if (progress == 1) {
+  } else if (normalized_progress == 1) {
     result_palette.font_palette_ = to_palette.font_palette_;
   } else {
     // Since there is no way for user to specify which color space should be
     // used for interpolation, it defaults to Oklab.
     // https://www.w3.org/TR/css-color-4/#interpolation-space
-    result_palette.font_palette_ =
-        FontPalette::Mix(font_palette_, to_palette.font_palette_, progress,
-                         Color::ColorSpace::kOklab, absl::nullopt);
+    result_palette.font_palette_ = FontPalette::Mix(
+        font_palette_, to_palette.font_palette_, normalized_progress, 1.0,
+        Color::ColorSpace::kOklab, absl::nullopt);
   }
 }
 

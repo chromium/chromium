@@ -57,15 +57,11 @@ String FontPalette::ToString() const {
       builder.Append(start_->ToString());
       builder.Append(", ");
       builder.Append(end_->ToString());
-      if (percentage_) {
-        builder.Append(" ");
-        double normalize_percentage = percentage_ * 100;
-        builder.AppendNumber(normalize_percentage);
-        builder.Append("%");
-      } else {
-        builder.Append(" 50%");
-      }
-      builder.Append(")");
+      DCHECK(percentage_);
+      builder.Append(" ");
+      double normalized_percentage = percentage_ * 100;
+      builder.AppendNumber(normalized_percentage);
+      builder.Append("%)");
       return builder.ToString();
   }
 }
@@ -80,6 +76,7 @@ bool FontPalette::operator==(const FontPalette& other) const {
     return *start_.get() == *other.start_.get() &&
            *end_.get() == *other.end_.get() &&
            percentage_ == other.percentage_ &&
+           alpha_multiplier_ == other.alpha_multiplier_ &&
            color_interpolation_space_ == other.color_interpolation_space_ &&
            hue_interpolation_method_ == other.hue_interpolation_method_;
   }

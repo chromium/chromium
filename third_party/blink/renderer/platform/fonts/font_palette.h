@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PALETTE_H_
 
 #include <memory>
+#include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -80,11 +81,12 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
       scoped_refptr<FontPalette> start,
       scoped_refptr<FontPalette> end,
       double percentage,
+      double alpha_multiplier,
       Color::ColorSpace color_interpolation_space,
       absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
-    return base::AdoptRef(new FontPalette(start, end, percentage,
-                                          color_interpolation_space,
-                                          hue_interpolation_method));
+    return base::AdoptRef(
+        new FontPalette(start, end, percentage, alpha_multiplier,
+                        color_interpolation_space, hue_interpolation_method));
   }
 
   void SetBasePalette(BasePaletteValue base_palette) {
@@ -140,6 +142,12 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     return percentage_;
   }
 
+  double GetAlphaMultiplier() const {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    DCHECK((IsInterpolablePalette()));
+    return alpha_multiplier_;
+  }
+
   Color::ColorSpace GetColorInterpolationSpace() const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
@@ -171,12 +179,14 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
       scoped_refptr<FontPalette> start,
       scoped_refptr<FontPalette> end,
       double percentage,
+      double alpha_multiplier,
       Color::ColorSpace color_interpoaltion_space,
       absl::optional<Color::HueInterpolationMethod> hue_interpolation_method)
       : palette_keyword_(kInterpolablePalette),
         start_(start),
         end_(end),
         percentage_(percentage),
+        alpha_multiplier_(alpha_multiplier),
         color_interpolation_space_(color_interpoaltion_space),
         hue_interpolation_method_(hue_interpolation_method) {}
   FontPalette()
@@ -190,6 +200,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   scoped_refptr<FontPalette> start_;
   scoped_refptr<FontPalette> end_;
   double percentage_;
+  double alpha_multiplier_;
   Color::ColorSpace color_interpolation_space_;
   absl::optional<Color::HueInterpolationMethod> hue_interpolation_method_;
 };

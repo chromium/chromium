@@ -31,6 +31,7 @@ class PLATFORM_EXPORT PaletteInterpolation {
       Vector<FontPalette::FontPaletteOverride>&& start_color_records,
       Vector<FontPalette::FontPaletteOverride>&& end_color_records,
       double percentage,
+      double alpha_multiplier,
       Color::ColorSpace color_interpolation_space,
       absl::optional<Color::HueInterpolationMethod> hue_interpolation_method);
   sk_sp<SkTypeface> typeface_;

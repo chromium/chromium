@@ -93,18 +93,40 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
       CSSFunctionValue* result =
           MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteMix);
 
+      CSSValueList* color_space_css_value_list =
+          CSSValueList::CreateSpaceSeparated();
+      color_space_css_value_list->Append(
+          *MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("in")));
+      if (palette->GetHueInterpolationMethod().has_value()) {
+        color_space_css_value_list->Append(
+            *MakeGarbageCollected<CSSCustomIdentValue>(
+                AtomicString(Color::SerializeInterpolationSpace(
+                    palette->GetColorInterpolationSpace(),
+                    *palette->GetHueInterpolationMethod()))));
+      } else {
+        color_space_css_value_list->Append(
+            *MakeGarbageCollected<CSSCustomIdentValue>(
+                AtomicString(Color::SerializeInterpolationSpace(
+                    palette->GetColorInterpolationSpace()))));
+      }
+      result->Append(*color_space_css_value_list);
+
       CSSValue* start = ConvertFontPaletteToCSSValue(palette->GetStart().get());
       result->Append(*start);
 
+      CSSValueList* end_palette_with_percentage =
+          CSSValueList::CreateSpaceSeparated();
       CSSValue* end = ConvertFontPaletteToCSSValue(palette->GetEnd().get());
       if (*start == *end) {
         return start;
       }
-      result->Append(*end);
+      end_palette_with_percentage->Append(*end);
 
       CSSValue* param = CSSNumericLiteralValue::Create(
-          palette->GetPercentage(), CSSPrimitiveValue::UnitType::kNumber);
-      result->Append(*param);
+          palette->GetPercentage() * 100,
+          CSSPrimitiveValue::UnitType::kPercentage);
+      end_palette_with_percentage->Append(*param);
+      result->Append(*end_palette_with_percentage);
 
       return result;
     }

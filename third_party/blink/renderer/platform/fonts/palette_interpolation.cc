@@ -13,6 +13,7 @@ Vector<FontPalette::FontPaletteOverride> PaletteInterpolation::MixColorRecords(
     Vector<FontPalette::FontPaletteOverride>&& start_color_records,
     Vector<FontPalette::FontPaletteOverride>&& end_color_records,
     double percentage,
+    double alpha_multiplier,
     Color::ColorSpace color_interpolation_space,
     absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
   Vector<FontPalette::FontPaletteOverride> result_color_records;
@@ -24,13 +25,11 @@ Vector<FontPalette::FontPaletteOverride> PaletteInterpolation::MixColorRecords(
     DCHECK_EQ(start_color_records[i].index, end_color_records[i].index);
 
     Color start_color = start_color_records[i].color;
-    start_color.ConvertToColorSpace(color_interpolation_space);
     Color end_color = end_color_records[i].color;
-    end_color.ConvertToColorSpace(color_interpolation_space);
 
-    Color result_color = Color::InterpolateColors(
+    Color result_color = Color::FromColorMix(
         color_interpolation_space, hue_interpolation_method, start_color,
-        end_color, percentage);
+        end_color, percentage, alpha_multiplier);
 
     FontPalette::FontPaletteOverride result_color_record(i, result_color);
     result_color_records.push_back(result_color_record);
@@ -116,6 +115,7 @@ PaletteInterpolation::ComputeInterpolableFontPalette(
   Vector<FontPalette::FontPaletteOverride> result_color_records =
       MixColorRecords(std::move(start_color_records),
                       std::move(end_color_records), palette->GetPercentage(),
+                      palette->GetAlphaMultiplier(),
                       palette->GetColorInterpolationSpace(),
                       palette->GetHueInterpolationMethod());
   return result_color_records;
