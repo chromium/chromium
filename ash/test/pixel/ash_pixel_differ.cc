@@ -19,7 +19,8 @@ AshPixelDiffer::AshPixelDiffer(const std::string& screenshot_prefix,
 
 AshPixelDiffer::~AshPixelDiffer() = default;
 
-bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
+bool AshPixelDiffer::CompareScreenshotForRootWindowInRects(
+    aura::Window* root_window,
     const std::string& screenshot_name,
     size_t revision_number,
     const std::vector<gfx::Rect>& rects_in_screen) {
@@ -27,15 +28,14 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
   const std::string full_name = base::StrCat(
       {screenshot_name, ".rev_", base::NumberToString(revision_number)});
 
-  aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
-  const aura::WindowTreeHost* host = primary_root_window->GetHost();
+  const aura::WindowTreeHost* const host = root_window->GetHost();
 
-  // Handle the case that conversion from screen coordinates to pixel
+  // Handle the case that conversion from the root window's coordinates to pixel
   // coordinates is not needed.
   if (fabs(host->device_scale_factor() - 1.f) <
       std::numeric_limits<float>::epsilon()) {
     return pixel_diff_.CompareNativeWindowScreenshotInRects(
-        full_name, primary_root_window, primary_root_window->bounds(),
+        full_name, root_window, root_window->bounds(),
         &positive_if_only_algorithm_, rects_in_screen);
   }
 
@@ -44,15 +44,15 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
   for (const gfx::Rect& screen_bounds : rects_in_screen) {
     gfx::Point top_left = screen_bounds.origin();
     gfx::Point bottom_right = screen_bounds.bottom_right();
-    host->ConvertDIPToScreenInPixels(&top_left);
-    host->ConvertDIPToScreenInPixels(&bottom_right);
+    host->ConvertDIPToPixels(&top_left);
+    host->ConvertDIPToPixels(&bottom_right);
     rects_in_pixel.emplace_back(top_left,
                                 gfx::Size(bottom_right.x() - top_left.x(),
                                           bottom_right.y() - top_left.y()));
   }
 
   return pixel_diff_.CompareNativeWindowScreenshotInRects(
-      full_name, primary_root_window, primary_root_window->bounds(),
+      full_name, root_window, root_window->bounds(),
       &positive_if_only_algorithm_, rects_in_pixel);
 }
 

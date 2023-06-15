@@ -5,10 +5,16 @@
 #ifndef ASH_TEST_PIXEL_ASH_PIXEL_DIFFER_H_
 #define ASH_TEST_PIXEL_ASH_PIXEL_DIFFER_H_
 
+#include <iterator>
+
+#include "ash/shell.h"
 #include "ash/test/pixel/ash_pixel_diff_util.h"
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace ash {
@@ -26,13 +32,15 @@ class AshPixelDiffer {
   AshPixelDiffer& operator=(const AshPixelDiffer&) = delete;
   ~AshPixelDiffer();
 
-  // Takes a full screenshot of the primary display then compares it with the
+  // Takes a full screenshot of `root_window` then compares it with the
   // benchmark image specified by the function parameters. Only the pixels
   // within the screen bounds of `ui_components` affect the comparison result.
   // The pixels outside of `ui_components` are blacked out. Returns the
   // comparison result. The function caller has the duty to choose suitable
   // `ui_components` in their tests to avoid unnecessary pixel comparisons.
   // Otherwise, pixel tests could be fragile to the changes in production code.
+  //
+  // Checks that `root_window` is not null and is actually a root window.
   //
   // `revision_number` indicates the benchmark image version. `revision_number`
   // and `screenshot_name` collectively specify the benchmark image to compare
@@ -42,36 +50,98 @@ class AshPixelDiffer {
   //
   // `ui_components` is a variadic argument list, consisting of view pointers,
   // widget pointers or window pointers. `ui_components` can have the pointers
-  // of different categories. Example usages:
+  // of different categories.
   //
+  // Note that there exist two convenience functions,
+  // `CompareUiComponentsOnPrimaryScreen()` and
+  // `CompareUiComponentsOnSecondaryScreen()`, for comparing the UI components
+  // against the primary or secondary display's root window, respectively. They
+  // can be used in a similar way to the example below, with the difference of
+  // not having to provide a particular `root_window`.
+  //
+  // Example usages (of `CompareUiComponentsOnRootWindow()`):
+  //
+  //  aura::Window* root_window = ...;
   //  views::View* view_ptr = ...;
   //  views::Widget* widget_ptr = ...;
   //  aura::Window* window_ptr = ...;
   //
-  //  CompareUiComponentsOnPrimaryScreen("foo_name1",
-  //                                     /*revision_number=*/0,
-  //                                     view_ptr);
+  //  CompareUiComponentsOnRootWindow(root_window,
+  //                                  "foo_name1",
+  //                                  /*revision_number=*/0,
+  //                                  view_ptr);
   //
-  //  CompareUiComponentsOnPrimaryScreen("foo_name2",
-  //                                     *revision_number=*/0,
-  //                                     view_ptr,
-  //                                     widget_ptr,
-  //                                     window_ptr);
+  //  CompareUiComponentsOnRootWindow(root_window,
+  //                                  "foo_name2",
+  //                                  /*revision_number=*/0,
+  //                                  view_ptr,
+  //                                  widget_ptr,
+  //                                  window_ptr);
+  template <class... UiComponentTypes>
+  bool CompareUiComponentsOnRootWindow(aura::Window* const root_window,
+                                       const std::string& screenshot_name,
+                                       size_t revision_number,
+                                       UiComponentTypes... ui_components) {
+    CHECK(root_window && root_window->IsRootWindow());
+    CHECK_GT(sizeof...(ui_components), 0u);
+    std::vector<gfx::Rect> rects_in_screen;
+    PopulateUiComponentScreenBounds(&rects_in_screen, ui_components...);
+
+    // Adjust the UI component bounds to be relative to the origin of the
+    // specified root window.
+    std::vector<gfx::Rect> adjusted_rects_in_screen;
+    const gfx::Rect root_window_bounds = root_window->GetBoundsInScreen();
+    base::ranges::transform(
+        rects_in_screen, std::back_inserter(adjusted_rects_in_screen),
+        [&root_window_bounds](const gfx::Rect& rect) {
+          gfx::Rect adjusted_rect(rect);
+          adjusted_rect.Offset(-root_window_bounds.OffsetFromOrigin());
+          return adjusted_rect;
+        });
+
+    return CompareScreenshotForRootWindowInRects(root_window, screenshot_name,
+                                                 revision_number,
+                                                 adjusted_rects_in_screen);
+  }
+
+  // Like `CompareUiComponentsOnRootWindow()` but forces the screenshot to be of
+  // the primary display's root window.
+  //
+  // TODO(b/286916355): Rename this function.
   template <class... UiComponentTypes>
   bool CompareUiComponentsOnPrimaryScreen(const std::string& screenshot_name,
                                           size_t revision_number,
                                           UiComponentTypes... ui_components) {
-    DCHECK_GT(sizeof...(ui_components), 0u);
-    std::vector<gfx::Rect> rects_in_screen;
-    PopulateUiComponentScreenBounds(&rects_in_screen, ui_components...);
-    return ComparePrimaryScreenshotInRects(screenshot_name, revision_number,
-                                           rects_in_screen);
+    return CompareUiComponentsOnRootWindow(Shell::GetPrimaryRootWindow(),
+                                           screenshot_name, revision_number,
+                                           ui_components...);
+  }
+
+  // Like `CompareUiComponentsOnRootWindow()` but forces the screenshot to be of
+  // the secondary display's root window. There should be exactly two displays
+  // present when using this function; if there are more than two displays then
+  // consider using `CompareUiComponentsOnRootWindow()` instead to ensure the
+  // proper root window is used for the comparison.
+  //
+  // TODO(b/286916355): Rename this function.
+  template <class... UiComponentTypes>
+  bool CompareUiComponentsOnSecondaryScreen(const std::string& screenshot_name,
+                                            size_t revision_number,
+                                            UiComponentTypes... ui_components) {
+    CHECK_EQ(Shell::GetAllRootWindows().size(), 2u);
+    const display::Display& display =
+        display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+            .GetSecondaryDisplay();
+    return CompareUiComponentsOnRootWindow(
+        Shell::GetRootWindowForDisplayId(display.id()), screenshot_name,
+        revision_number, ui_components...);
   }
 
  private:
-  // Compares a screenshot of the primary screen with the specified benchmark
-  // image. Only the pixels in `rects_in_screen` affect the comparison result.
-  bool ComparePrimaryScreenshotInRects(
+  // Compares a screenshot of `root_window` with the specified benchmark image.
+  // Only the pixels in `rects_in_screen` affect the comparison result.
+  bool CompareScreenshotForRootWindowInRects(
+      aura::Window* const root_window,
       const std::string& screenshot_name,
       size_t revision_number,
       const std::vector<gfx::Rect>& rects_in_screen);

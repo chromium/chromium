@@ -65,4 +65,25 @@ TEST_F(NotificationCenterTrayPixelTest,
       /*revision_number=*/0, test_api()->GetTray()));
 }
 
+// Tests the UI of the notification center tray when connecting a secondary
+// display while two notification icons are present. This was added for
+// b/284313750.
+TEST_F(NotificationCenterTrayPixelTest,
+       NotificationTrayOnSecondaryDisplayWithTwoNotificationIcons) {
+  // Add two pinned notifications to make two notification icons show up in the
+  // notification center tray.
+  test_api()->AddPinnedNotification();
+  test_api()->AddPinnedNotification();
+
+  // Add a secondary display.
+  UpdateDisplay("800x799,800x799");
+  auto secondary_display_id = display_manager()->GetDisplayAt(1).id();
+  ASSERT_TRUE(test_api()->GetTrayOnDisplay(secondary_display_id));
+
+  // Check the UI of the notification center tray on the secondary display.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnSecondaryScreen(
+      "check_view", /*revision_number=*/0,
+      test_api()->GetTrayOnDisplay(secondary_display_id)));
+}
+
 }  // namespace ash
