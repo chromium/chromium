@@ -22,7 +22,7 @@ class AccountCapabilitiesTestMutator {
   void set_can_have_email_address_displayed(bool value);
   void set_can_offer_extended_chrome_sync_promos(bool value);
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
-  void set_can_stop_parental_supervision(bool value);
+  void set_is_opted_in_to_parental_supervision(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_is_allowed_for_machine_learning(bool value);
   void set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(

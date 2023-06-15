@@ -19,7 +19,7 @@ namespace {
 
 bool AreParentalSupervisionCapabilitiesKnown(
     const AccountCapabilities& capabilities) {
-  return capabilities.can_stop_parental_supervision() !=
+  return capabilities.is_opted_in_to_parental_supervision() !=
              signin::Tribool::kUnknown &&
          capabilities.is_subject_to_parental_controls() !=
              signin::Tribool::kUnknown;
@@ -33,9 +33,9 @@ absl::optional<LogSegment> SupervisionStatusOfProfile(
   auto is_subject_to_parental_controls =
       account_info.capabilities.is_subject_to_parental_controls();
   if (is_subject_to_parental_controls == signin::Tribool::kTrue) {
-    auto can_stop_supervision =
-        account_info.capabilities.can_stop_parental_supervision();
-    if (can_stop_supervision == signin::Tribool::kTrue) {
+    auto is_opted_in_to_parental_supervision =
+        account_info.capabilities.is_opted_in_to_parental_supervision();
+    if (is_opted_in_to_parental_supervision == signin::Tribool::kTrue) {
       return LogSegment::kSupervisionEnabledByUser;
     } else {
       // Log as a supervised user that has parental supervision enabled

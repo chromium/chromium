@@ -90,11 +90,11 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canStopParentalSupervision capability value.
+     * @return isOptedInToParentalSupervision capability value.
      */
-    public @Tribool int canStopParentalSupervision() {
+    public @Tribool int isOptedInToParentalSupervision() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME);
+                AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
     }
 
     /**

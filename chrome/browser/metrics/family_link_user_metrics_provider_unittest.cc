@@ -50,7 +50,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
   void CreateTestingProfile(const std::string& test_email,
                             const std::string& test_profile,
                             bool is_subject_to_parental_controls,
-                            bool can_stop_parental_supervision) {
+                            bool is_opted_in_to_parental_supervision) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, IdentityTestEnvironmentProfileAdaptor::
                           GetIdentityTestEnvironmentFactories());
@@ -63,7 +63,8 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_is_subject_to_parental_controls(
         is_subject_to_parental_controls);
-    mutator.set_can_stop_parental_supervision(can_stop_parental_supervision);
+    mutator.set_is_opted_in_to_parental_supervision(
+        is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
   }
@@ -98,7 +99,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -114,7 +115,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/true);
+                       /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -130,7 +131,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Adult profile
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -146,11 +147,11 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/true);
+                       /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -165,17 +166,17 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Adult profile
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/true);
+                       /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();

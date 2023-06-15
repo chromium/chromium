@@ -57,9 +57,9 @@ class AccountCapabilities {
   // Chrome can run privacy sandbox trials for accounts with this capability.
   signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
 
-  // Chrome can stop parental supervision if the user chooses to do so with
-  // this capability.
-  signin::Tribool can_stop_parental_supervision() const;
+  // The user account has opted in to parental supervision (Geller account).
+  // Chrome applies parental controls to accounts with this capability.
+  signin::Tribool is_opted_in_to_parental_supervision() const;
 
   // Chrome can toggle auto updates with this capability.
   signin::Tribool can_toggle_auto_updates() const;

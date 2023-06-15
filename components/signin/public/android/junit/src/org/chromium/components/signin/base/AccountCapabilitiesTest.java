@@ -51,8 +51,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canOfferExtendedSyncPromos();
             case AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME:
                 return capabilities.canRunChromePrivacySandboxTrials();
-            case AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME:
-                return capabilities.canStopParentalSupervision();
+            case AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME:
+                return capabilities.isOptedInToParentalSupervision();
             case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
                 return capabilities.canToggleAutoUpdates();
             case AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME:
@@ -98,9 +98,9 @@ public final class AccountCapabilitiesTest {
                         .value(AccountCapabilitiesConstants
                                         .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME),
                 new ParameterSet()
-                        .name("CanStopParentalSupervision")
+                        .name("IsOptedInToParentalSupervision")
                         .value(AccountCapabilitiesConstants
-                                        .CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME),
+                                        .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME),
                 new ParameterSet()
                         .name("CanToggleAutoUpdates")
                         .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME),

@@ -53,7 +53,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   // given parental control capabilities on this account.
   void SignIn(const std::string& email,
               bool is_subject_to_parental_controls,
-              bool can_stop_parental_supervision) {
+              bool is_opted_in_to_parental_supervision) {
     ChromeBrowserState* browser_state =
         browser_state_manager_->GetLastUsedBrowserState();
     AccountInfo account = signin::MakePrimaryAccountAvailable(
@@ -63,7 +63,8 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_is_subject_to_parental_controls(
         is_subject_to_parental_controls);
-    mutator.set_can_stop_parental_supervision(can_stop_parental_supervision);
+    mutator.set_is_opted_in_to_parental_supervision(
+        is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForBrowserState(browser_state), account);
   }
@@ -94,7 +95,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by policy
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true,
-         /*can_stop_parental_supervision=*/false);
+         /*is_opted_in_to_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -110,7 +111,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by user
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true,
-         /*can_stop_parental_supervision=*/true);
+         /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -126,7 +127,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   // Adult profile
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/false,
-         /*can_stop_parental_supervision=*/false);
+         /*is_opted_in_to_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
