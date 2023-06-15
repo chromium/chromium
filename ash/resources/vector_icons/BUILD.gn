@@ -120,6 +120,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "holding_space_download.icon",
     "holding_space_refresh.icon",
     "hollow_check_circle.icon",
+    "hollow_circle.icon",
     "hotspot_dot.icon",
     "hotspot_off.icon",
     "hotspot_on.icon",

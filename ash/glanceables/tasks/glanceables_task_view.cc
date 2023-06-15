@@ -6,9 +6,9 @@
 
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -47,7 +47,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
           &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
   button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCheckCircleIcon,
+      ui::ImageModel::FromVectorIcon(kHollowCircleIcon,
                                      cros_tokens::kFocusRingColor, kIconSize));
   // TODO(b:277268122): set accessible name once spec is available. Also update
   // button icon and styling.
@@ -96,7 +96,7 @@ void GlanceablesTaskView::MarkedAsCompleted(bool success) {
   // TODO(b:277268122): Update icons and styling.
   button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kAccountCircleIcon,
+      ui::ImageModel::FromVectorIcon(kHollowCheckCircleIcon,
                                      cros_tokens::kFocusRingColor, kIconSize));
 }
 
