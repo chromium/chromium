@@ -1946,6 +1946,12 @@ void PersonalDataManager::
   prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
+bool PersonalDataManager::IsPaymentCvcStorageAndFillingEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableCvcStorageAndFilling) &&
+         prefs::IsPaymentCvcStorageAndFillingEnabled(pref_service_);
+}
+
 AutofillProfileMigrationStrikeDatabase*
 PersonalDataManager::GetProfileMigrationStrikeDatabase() {
   return const_cast<AutofillProfileMigrationStrikeDatabase*>(

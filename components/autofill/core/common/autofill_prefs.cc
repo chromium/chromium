@@ -74,6 +74,10 @@ const char kAutofillLastVersionDisusedCreditCardsDeleted[] =
 // Boolean that is true if the orphan rows in the autofill table were removed.
 const char kAutofillOrphanRowsRemoved[] = "autofill.orphan_rows_removed";
 
+// Boolean that is true, when users can save their CVCs and use it for autofill.
+const char kAutofillPaymentCvcStorageAndFilling[] =
+    "autofill.payment_cvc_storage_and_filling";
+
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 const char kAutofillProfileEnabled[] = "autofill.profile_enabled";
 
@@ -141,6 +145,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kAutofillIBANEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillPaymentCvcStorageAndFilling, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
@@ -304,6 +311,14 @@ void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
           kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) +
           1);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+}
+
+bool IsPaymentCvcStorageAndFillingEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillPaymentCvcStorageAndFilling);
+}
+
+void SetPaymentCvcStorageAndFilling(PrefService* prefs, bool value) {
+  prefs->SetBoolean(kAutofillPaymentCvcStorageAndFilling, value);
 }
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
