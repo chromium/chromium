@@ -72,20 +72,27 @@ VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
       web_contents.GetBrowserContext()->GetPermissionController();
   CHECK(permission_controller);
 
-  auto* rfh = web_contents.GetPrimaryMainFrame();
-  CHECK(rfh);
+  bool has_camera_permission = false;
+  bool has_microphone_permission = false;
 
-  auto camera_status =
-      permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::VIDEO_CAPTURE, rfh);
-  auto microphone_status =
-      permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::AUDIO_CAPTURE, rfh);
+  // Get permission from each render frame host.
+  web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&](content::RenderFrameHost* rfh) {
+        auto camera_status =
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::VIDEO_CAPTURE, rfh);
+        auto microphone_status =
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::AUDIO_CAPTURE, rfh);
 
-  return {.has_camera_permission =
-              (camera_status == blink::mojom::PermissionStatus::GRANTED),
-          .has_microphone_permission =
-              (microphone_status == blink::mojom::PermissionStatus::GRANTED)};
+        has_camera_permission |=
+            camera_status == blink::mojom::PermissionStatus::GRANTED;
+
+        has_microphone_permission |=
+            microphone_status == blink::mojom::PermissionStatus::GRANTED;
+      });
+
+  return {has_camera_permission, has_microphone_permission};
 }
 
 bool VideoConferenceWebApp::IsInactiveExtension() {
