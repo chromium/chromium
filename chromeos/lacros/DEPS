@@ -8,7 +8,11 @@ include_rules = [
   "-chrome",
   "-content",
 
+  # Included for types referenced by ui::NativeTheme.
+  "+ui/color/color_provider_manager.h",
+  "+third_party/skia/include/core/SkColor.h",
   "+ui/native_theme",
+
   "+components/crash/core/common",
   "+media/mojo/mojom/stable/stable_video_decoder.mojom.h",
   "+services/media_session/public/mojom/audio_focus.mojom.h",

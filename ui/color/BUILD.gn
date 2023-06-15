@@ -173,5 +173,8 @@ component("mixers") {
 }
 
 mojom("mojom") {
-  sources = [ "color_id.mojom" ]
+  sources = [
+    "color_id.mojom",
+    "scheme_variant.mojom",
+  ]
 }
