@@ -8,6 +8,7 @@
 
 #import "base/threading/thread_restrictions.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/sync/service/sync_service.h"
@@ -18,7 +19,10 @@
 #import "ios/web_view/internal/cwv_user_content_controller_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "ios/web_view/internal/passwords/cwv_leak_check_service_internal.h"
+#import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
+#import "ios/web_view/internal/passwords/web_view_affiliations_prefetcher_factory.h"
 #import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
@@ -50,6 +54,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
 
 @synthesize autofillDataManager = _autofillDataManager;
 @synthesize leakCheckService = _leakCheckService;
+@synthesize reuseCheckService = _reuseCheckService;
 @synthesize preferences = _preferences;
 @synthesize syncController = _syncController;
 @synthesize userContentController = _userContentController;
@@ -174,6 +179,20 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
         initWithBulkLeakCheckService:bulkLeakCheckService];
   }
   return _leakCheckService;
+}
+
+#pragma mark - ReuseCheckService
+
+- (CWVReuseCheckService*)reuseCheckService {
+  if (!_reuseCheckService && self.persistent) {
+    password_manager::AffiliationService* affiliation_service =
+        ios_web_view::WebViewAffiliationServiceFactory::GetForBrowserState(
+            static_cast<ios_web_view::WebViewBrowserState*>(self.browserState));
+
+    _reuseCheckService = [[CWVReuseCheckService alloc]
+        initWithAffiliationService:affiliation_service];
+  }
+  return _reuseCheckService;
 }
 
 #pragma mark - Public Methods

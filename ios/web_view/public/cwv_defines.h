@@ -72,6 +72,12 @@
 // Supports -[CWVWebViewConfiguration leakCheckService].
 #define IOS_WEB_VIEW_SUPPORTS_LEAK_CHECK_SERVICE 1
 
+// Supports -[CWVWebViewConfiguration reuseCheckService].
+#define IOS_WEB_VIEW_SUPPORTS_REUSE_CHECK_SERVICE 1
+
+// Supports -[CWVWeakCheckUtils isPasswordWeak:].
+#define IOS_WEB_VIEW_SUPPORTS_CWV_WEAK_CHECK_UTILS 1
+
 // Supports -[CWVUserContentController addMessageHandler:forCommand:] and
 // -[CWVUserContentController removeMessageHandlerForCommand] APIs.
 #define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_MESSAGE_HANDLERS 1

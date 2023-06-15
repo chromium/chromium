@@ -17,7 +17,6 @@
 #import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/web_view/internal/app/application_context.h"
-#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

@@ -709,6 +709,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                        }]];
 
   [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Check reused passwords"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf checkReusedPasswords];
+                                       }]];
+
+  [alertController
       addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                          style:UIAlertActionStyleCancel
                                        handler:nil]];
@@ -923,6 +930,45 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
               password.site, isWeak ? "true" : "false");
       });
     }
+  }];
+}
+
+- (void)checkReusedPasswords {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  [dataManager fetchPasswordsWithCompletionHandler:^(
+                   NSArray<CWVPassword*>* _Nonnull passwords) {
+    NSLog(@"Checking reuse status of %@ passwords.", @(passwords.count));
+    [self.webView.configuration.reuseCheckService
+        checkReusedPasswords:passwords
+           completionHandler:^(NSSet<NSString*>* reusedPasswords) {
+             int useCount = 0;
+             for (CWVPassword* password in passwords) {
+               if ([reusedPasswords containsObject:password.password]) {
+                 useCount++;
+               }
+             }
+             NSLog(@"%@ reused password(s).", @(reusedPasswords.count));
+             NSLog(@"Used %d times.", useCount);
+
+             UIAlertController* alertController = [UIAlertController
+                 alertControllerWithTitle:@"Reuse Check Complete"
+                                  message:[NSString
+                                              stringWithFormat:
+                                                  @"%@ reused password(s). "
+                                                  @"Used %d times.",
+                                                  @(reusedPasswords.count),
+                                                  useCount]
+                           preferredStyle:UIAlertControllerStyleAlert];
+             [alertController
+                 addAction:[UIAlertAction
+                               actionWithTitle:@"OK"
+                                         style:UIAlertActionStyleDefault
+                                       handler:nil]];
+             [self presentViewController:alertController
+                                animated:YES
+                              completion:nil];
+           }];
   }];
 }
 
@@ -1182,13 +1228,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                           message:nil
                                    preferredStyle:UIAlertControllerStyleAlert];
 
-  [alertController
-      addAction:[UIAlertAction
-                    actionWithTitle:@"Show Default Prompt"
-                              style:UIAlertActionStyleDefault
-                            handler:^(UIAlertAction* action) {
-                              decisionHandler(CWVPermissionDecisionPrompt);
-                            }]];
   [alertController
       addAction:[UIAlertAction
                     actionWithTitle:@"Grant"
