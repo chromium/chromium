@@ -294,6 +294,13 @@ typedef interface IUpdaterCallbackSystem IUpdaterCallbackSystem;
 #endif 	/* __IUpdaterCallbackSystem_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterAppState_FWD_DEFINED__
+#define __IUpdaterAppState_FWD_DEFINED__
+typedef interface IUpdaterAppState IUpdaterAppState;
+
+#endif 	/* __IUpdaterAppState_FWD_DEFINED__ */
+
+
 #ifndef __IUpdaterAppStateUser_FWD_DEFINED__
 #define __IUpdaterAppStateUser_FWD_DEFINED__
 typedef interface IUpdaterAppStateUser IUpdaterAppStateUser;
@@ -3316,6 +3323,7 @@ EXTERN_C const IID IID_IUpdaterSystem;
 
 /* library UpdaterLib */
 /* [helpstring][version][uuid] */ 
+
 
 
 

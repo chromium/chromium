@@ -787,8 +787,6 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(https://crbug.com/1454979): enable test for Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, GetAppStates) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -812,7 +810,6 @@ TEST_F(IntegrationTest, GetAppStates) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif  // !BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, MarshalInterface) {

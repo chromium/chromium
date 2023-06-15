@@ -274,15 +274,17 @@ class UpdaterAppStatesCallback
       return E_INVALIDARG;
     }
 
+    // The safearray is owned by the caller of `Run`, so ownership is released
+    // here after acquiring the `LockScope`.
     base::win::ScopedSafearray safearray(V_ARRAY(&updater_app_states));
     absl::optional<base::win::ScopedSafearray::LockScope<VT_DISPATCH>>
         lock_scope = safearray.CreateLockScope<VT_DISPATCH>();
+    safearray.Release();
+
     if (!lock_scope.has_value() || !lock_scope->size()) {
       return E_INVALIDARG;
     }
 
-    // Converts `updater_app_states` into a vector of
-    // `UpdateService::AppState>`.
     for (size_t i = 0; i < lock_scope->size(); ++i) {
       Microsoft::WRL::ComPtr<IDispatch> dispatch(lock_scope->at(i));
       if (!dispatch) {
@@ -296,11 +298,8 @@ class UpdaterAppStatesCallback
       if (FAILED(hr)) {
         return hr;
       }
-
       app_states_.push_back(IUpdaterAppStateToAppState(app_state));
     }
-
-    safearray.Release();
 
     return S_OK;
   }

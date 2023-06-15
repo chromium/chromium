@@ -253,6 +253,7 @@ library UpdaterLib {
   interface IUpdaterCallbackUser;
   interface IUpdaterCallbackSystem;
 
+  interface IUpdaterAppState;
   interface IUpdaterAppStateUser;
   interface IUpdaterAppStateSystem;
 

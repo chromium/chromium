@@ -424,6 +424,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(IUpdateStateSystem), kUpdaterIndex},
           {__uuidof(IUpdaterCallbackUser), kUpdaterIndex},
           {__uuidof(IUpdaterCallbackSystem), kUpdaterIndex},
+          {__uuidof(IUpdaterAppState), kUpdaterIndex},
           {__uuidof(IUpdaterAppStateUser), kUpdaterIndex},
           {__uuidof(IUpdaterAppStateSystem), kUpdaterIndex},
           {__uuidof(IUpdaterAppStatesCallbackUser), kUpdaterIndex},

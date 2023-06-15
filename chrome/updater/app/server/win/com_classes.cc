@@ -808,12 +808,13 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
                           MakeAndInitializeComObject<UpdaterAppStateImpl>(
                               dispatch, app_state)));
 
-                      // Transfer `dispatch` ownership to the `SAFEARRAY`.
-                      updater_app_states.Insert<VT_DISPATCH>(dispatch.Detach());
+                      updater_app_states.Insert<VT_DISPATCH>(dispatch.Get());
                     }
 
-                    callback->Run(
+                    base::win::ScopedVariant variant;
+                    variant.Reset(
                         updater_app_states.ReleaseAsSafearrayVariant());
+                    callback->Run(variant);
                   },
                   Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback>(
                       callback)))));
