@@ -41,8 +41,11 @@ WebViewEarlyPageScriptProvider::FromBrowserState(
 
 WebViewEarlyPageScriptProvider::~WebViewEarlyPageScriptProvider() = default;
 
-void WebViewEarlyPageScriptProvider::SetScript(NSString* _Nonnull script) {
-  script_ = [script copy];
+void WebViewEarlyPageScriptProvider::SetScripts(
+    NSString* _Nonnull all_frames_script,
+    NSString* _Nonnull main_frame_script) {
+  all_frames_script_ = [all_frames_script copy];
+  main_frame_script_ = [main_frame_script copy];
 
   // Early page scripts must be explicitly updated after they change.
   web::WKWebViewConfigurationProvider& config_provider =
@@ -52,6 +55,8 @@ void WebViewEarlyPageScriptProvider::SetScript(NSString* _Nonnull script) {
 
 WebViewEarlyPageScriptProvider::WebViewEarlyPageScriptProvider(
     web::BrowserState* _Nonnull browser_state)
-    : browser_state_(browser_state), script_([[NSString alloc] init]) {}
+    : browser_state_(browser_state),
+      all_frames_script_([[NSString alloc] init]),
+      main_frame_script_([[NSString alloc] init]) {}
 
 }  // namespace ios_web_view

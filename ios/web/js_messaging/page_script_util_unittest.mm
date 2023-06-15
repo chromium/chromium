@@ -96,7 +96,7 @@ TEST_F(PageScriptUtilTest, WKWebViewEarlyPageScriptIsolatedWorld) {
 
 // Tests that embedder's WKWebView script is included into early script.
 TEST_F(PageScriptUtilTest, WKEmbedderScript) {
-  GetWebClient()->SetEarlyPageScript(@"__gCrEmbedder = {};");
+  GetWebClient()->SetEarlyPageScriptForMainFrame(@"__gCrEmbedder = {};");
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
   AddSharedScriptsToWebView(web_view);
   test::ExecuteJavaScript(

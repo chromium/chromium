@@ -88,4 +88,7 @@
 // webView:decidePolicyForNavigationResponse:decisionHandler:] APIs.
 #define IOS_WEB_VIEW_SUPPORTS_ASYNCCHRONOUS_POLICY_DECISION_HANDLER 1
 
+// Supports -[CWVUserScript initWithSource:forMainFrameOnly:].
+#define IOS_WEB_VIEW_SUPPORTS_INSTALLING_USER_SCRIPTS_INTO_ALL_FRAMES 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

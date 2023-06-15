@@ -32,6 +32,8 @@ class WebViewWebClient : public web::WebClient {
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
   std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
       web::BrowserState* browser_state) const override;
+  NSString* GetDocumentStartScriptForAllFrames(
+      web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
   void PrepareErrorPage(web::WebState* web_state,

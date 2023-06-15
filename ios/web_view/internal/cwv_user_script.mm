@@ -12,10 +12,18 @@
 
 @synthesize source = _source;
 
+@synthesize forMainFrameOnly = _forMainFrameOnly;
+
 - (nonnull instancetype)initWithSource:(nonnull NSString*)source {
+  return [self initWithSource:source forMainFrameOnly:true];
+}
+
+- (nonnull instancetype)initWithSource:(nonnull NSString*)source
+                      forMainFrameOnly:(BOOL)forMainFrameOnly {
   self = [super init];
   if (self) {
     _source = [source copy];
+    _forMainFrameOnly = forMainFrameOnly;
   }
   return self;
 }

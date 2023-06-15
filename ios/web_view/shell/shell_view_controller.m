@@ -855,6 +855,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          [weakSelf showEvaluateJavaScriptUI];
                                        }]];
 
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"User Scripts"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf showUserScriptsUI];
+                                       }]];
+
   if (self.downloadTask) {
     [alertController
         addAction:[UIAlertAction actionWithTitle:@"Cancel download"
@@ -974,13 +981,9 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 - (void)showEvaluateJavaScriptUI {
   UIAlertController* alertController =
-      [UIAlertController alertControllerWithTitle:@"Evaluate JavaScript"
-                                          message:nil
-                                   preferredStyle:UIAlertControllerStyleAlert];
-  alertController.popoverPresentationController.sourceView = _menuButton;
-  alertController.popoverPresentationController.sourceRect =
-      CGRectMake(CGRectGetWidth(_menuButton.bounds) / 2,
-                 CGRectGetHeight(_menuButton.bounds), 1, 1);
+      [self alertControllerWithTitle:@"Evaluate JavaScript"
+                             message:nil
+                      preferredStyle:UIAlertControllerStyleAlert];
 
   [alertController
       addTextFieldWithConfigurationHandler:^(UITextField* textField) {
@@ -1019,6 +1022,77 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                         result);
                 }
               }];
+}
+
+- (void)showUserScriptsUI {
+  UIAlertController* alertController =
+      [self alertControllerWithTitle:@"Add or Remove User Scripts"
+                             message:@"This will also recreate the web view."
+                      preferredStyle:UIAlertControllerStyleAlert];
+
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"All frames script";
+      }];
+
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Main frame script";
+      }];
+
+  __weak UIAlertController* weakAlertController = alertController;
+  __weak ShellViewController* weakSelf = self;
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:@"Add"
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              NSString* allFramesSource =
+                                  weakAlertController.textFields[0].text;
+                              NSString* mainFrameSource =
+                                  weakAlertController.textFields[1].text;
+                              [weakSelf
+                                  addUserScriptForAllFrames:allFramesSource
+                                           forMainFrameOnly:mainFrameSource];
+                            }]];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Remove All"
+                                         style:UIAlertActionStyleDestructive
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf removeAllUserScripts];
+                                       }]];
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)addUserScriptForAllFrames:(nullable NSString*)allFramesSource
+                 forMainFrameOnly:(nullable NSString*)mainFrameSource {
+  CWVWebViewConfiguration* configuration = self.webView.configuration;
+  [self removeWebView];
+  if (allFramesSource.length) {
+    CWVUserScript* allFramesScript =
+        [[CWVUserScript alloc] initWithSource:allFramesSource
+                             forMainFrameOnly:NO];
+    [configuration.userContentController addUserScript:allFramesScript];
+  }
+  if (mainFrameSource.length) {
+    CWVUserScript* mainFrameScript =
+        [[CWVUserScript alloc] initWithSource:mainFrameSource
+                             forMainFrameOnly:YES];
+    [configuration.userContentController addUserScript:mainFrameScript];
+  }
+  self.webView = [self createWebViewWithConfiguration:configuration];
+}
+
+- (void)removeAllUserScripts {
+  CWVWebViewConfiguration* configuration = self.webView.configuration;
+  [self removeWebView];
+  [configuration.userContentController removeAllUserScripts];
+  self.webView = [self createWebViewWithConfiguration:configuration];
 }
 
 - (void)resetTranslateSettings {
@@ -1149,10 +1223,19 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 - (UIAlertController*)actionSheetWithTitle:(nullable NSString*)title
                                    message:(nullable NSString*)message {
-  UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:title
-                       message:message
-                preferredStyle:UIAlertControllerStyleActionSheet];
+  return [self alertControllerWithTitle:title
+                                message:message
+                         preferredStyle:UIAlertControllerStyleActionSheet];
+}
+
+- (UIAlertController*)alertControllerWithTitle:(nullable NSString*)title
+                                       message:(nullable NSString*)message
+                                preferredStyle:
+                                    (UIAlertControllerStyle)preferredStyle {
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:message
+                                   preferredStyle:preferredStyle];
   alertController.popoverPresentationController.sourceView = _menuButton;
   alertController.popoverPresentationController.sourceRect =
       CGRectMake(CGRectGetWidth(_menuButton.bounds) / 2,

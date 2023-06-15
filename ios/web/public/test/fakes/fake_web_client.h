@@ -38,6 +38,8 @@ class FakeWebClient : public web::WebClient {
   std::vector<JavaScriptFeature*> GetJavaScriptFeatures(
       BrowserState* browser_state) const override;
 
+  NSString* GetDocumentStartScriptForAllFrames(
+      BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       BrowserState* browser_state) const override;
   void PrepareErrorPage(WebState* web_state,
@@ -55,8 +57,11 @@ class FakeWebClient : public web::WebClient {
   // Sets `plugin_not_supported_text_`.
   void SetPluginNotSupportedText(const std::u16string& text);
 
-  // Changes Early Page Script for testing purposes.
-  void SetEarlyPageScript(NSString* page_script);
+  // Changes Early Page Script for all frames for testing purposes.
+  void SetEarlyPageScriptForAllFrames(NSString* page_script_for_all_frames);
+
+  // Changes Early Page Script for the main frame for testing purposes.
+  void SetEarlyPageScriptForMainFrame(NSString* page_script_for_main_frame);
 
   // Changes Java Script Features for testing.
   void SetJavaScriptFeatures(std::vector<JavaScriptFeature*> features);
@@ -83,7 +88,8 @@ class FakeWebClient : public web::WebClient {
  private:
   std::u16string plugin_not_supported_text_;
   std::vector<JavaScriptFeature*> java_script_features_;
-  NSString* early_page_script_ = nil;
+  NSString* early_page_script_for_all_frames_ = nil;
+  NSString* early_page_script_for_main_frame_ = nil;
   UserAgentType default_user_agent_ = UserAgentType::MOBILE;
   CRWFakeFindSession* find_session_prototype_ API_AVAILABLE(ios(16)) = nil;
   bool text_search_started_ = false;

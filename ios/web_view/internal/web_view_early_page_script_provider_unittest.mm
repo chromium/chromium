@@ -48,14 +48,20 @@ class WebViewEarlyPageScriptProviderTest : public TestWithLocaleAndResources {
   }
 };
 
-// Test WebViewEarlyPageScriptProvder::SetScript properly updates the underlying
-// WKUserContentController.
-TEST_F(WebViewEarlyPageScriptProviderTest, SetScript) {
-  EXPECT_FALSE(UserScriptsContainString(@"WebViewEarlyPageScriptProvider"));
+// Test WebViewEarlyPageScriptProvder::SetScripts properly updates the
+// underlying WKUserContentController.
+TEST_F(WebViewEarlyPageScriptProviderTest, SetScripts) {
+  NSString* allFramesScript = @"WebViewEarlyPageScriptProvider-AllFrames";
+  NSString* mainFrameScript = @"WebViewEarlyPageScriptProvider-MainFrame";
+
+  EXPECT_FALSE(UserScriptsContainString(allFramesScript));
+  EXPECT_FALSE(UserScriptsContainString(mainFrameScript));
 
   WebViewEarlyPageScriptProvider::FromBrowserState(&browser_state_)
-      .SetScript(@"WebViewEarlyPageScriptProvider");
-  EXPECT_TRUE(UserScriptsContainString(@"WebViewEarlyPageScriptProvider"));
+      .SetScripts(allFramesScript, mainFrameScript);
+
+  EXPECT_TRUE(UserScriptsContainString(allFramesScript));
+  EXPECT_TRUE(UserScriptsContainString(mainFrameScript));
 }
 
 }  // namespace ios_web_view

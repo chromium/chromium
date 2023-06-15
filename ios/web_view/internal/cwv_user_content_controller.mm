@@ -74,16 +74,22 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
 // Updates the early page script associated with the BrowserState with the
 // content of _userScripts.
 - (void)updateEarlyPageScript {
-  NSMutableString* joinedScript = [[NSMutableString alloc] init];
+  NSMutableString* joinedAllFramesScript = [[NSMutableString alloc] init];
+  NSMutableString* joinedMainFrameScript = [[NSMutableString alloc] init];
   for (CWVUserScript* script in _userScripts) {
-    [joinedScript appendString:script.source];
     // Inserts "\n" between scripts to make it safer to join multiple scripts,
     // in case the first script doesn't end with ";" or "\n".
-    [joinedScript appendString:@"\n"];
+    if (script.isForMainFrameOnly) {
+      [joinedMainFrameScript appendString:script.source];
+      [joinedMainFrameScript appendString:@"\n"];
+    } else {
+      [joinedAllFramesScript appendString:script.source];
+      [joinedAllFramesScript appendString:@"\n"];
+    }
   }
   ios_web_view::WebViewEarlyPageScriptProvider::FromBrowserState(
       _configuration.browserState)
-      .SetScript(joinedScript);
+      .SetScripts(joinedAllFramesScript, joinedMainFrameScript);
 }
 
 - (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
