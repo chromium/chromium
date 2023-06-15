@@ -16,11 +16,10 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -75,14 +74,11 @@ using ::base::BucketsAre;
 using ::base::test::IsNotNullCallback;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Action;
 using ::testing::AllOf;
-using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsNull;
@@ -200,7 +196,7 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
                             bool skip_signature_verification,
                             Callback callback) override {
     // Signatures _must_ be verified during installation.
-    CHECK(!skip_signature_verification);
+    EXPECT_THAT(skip_signature_verification, IsFalse());
     if (!bundle_status_.has_value()) {
       std::move(callback).Run(base::unexpected(bundle_status_.error()));
     } else {
@@ -403,29 +399,6 @@ MATCHER(IsInstallationError, "") {
   return ExplainMatchResult(IsUnexpectedValue(_), arg, result_listener);
 }
 
-TEST_F(InstallIsolatedWebAppCommandTest,
-       ServiceWorkerIsNotRequiredForInstallation) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
-
-  EXPECT_CALL(*fake_data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  _, /*bypass_service_worker_check=*/IsTrue(), _, _))
-      .WillOnce(ReturnManifest(
-          // IsolatedWebAppUrlLoaderFactory is responsible for resolving
-          // isolated-app:// schema requests.
-          CreateDefaultManifest(url_info.origin().GetURL()),
-          CreateDefaultManifestURL(url_info.origin().GetURL())));
-
-  EXPECT_TRUE(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever))
-                  .has_value());
-}
-
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto url_loader = std::make_unique<TestWebAppUrlLoader>();
@@ -456,50 +429,6 @@ TEST_F(InstallIsolatedWebAppCommandTest,
               }),
               IsInstallationError(HasSubstr(
                   "Error during URL loading: FailedWebContentsDestroyed")));
-}
-
-TEST_F(InstallIsolatedWebAppCommandTest,
-       URLLoaderIsCalledWithURLgivenToTheInstallCommand) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kUrlLoaded);
-
-  EXPECT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                                 .url_loader = std::move(url_loader),
-                             })
-                  .has_value());
-}
-
-TEST_F(InstallIsolatedWebAppCommandTest, URLLoaderIgnoresQueryParameters) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kUrlLoaded);
-
-  absl::optional<WebAppUrlLoader::UrlComparison> last_url_comparison =
-      absl::nullopt;
-  url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
-      [&](const GURL& unused_url, content::WebContents* unused_web_contents,
-          WebAppUrlLoader::UrlComparison url_comparison) {
-        last_url_comparison = url_comparison;
-      }));
-
-  EXPECT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                                 .url_loader = std::move(url_loader),
-                             })
-                  .has_value());
-
-  EXPECT_THAT(
-      last_url_comparison,
-      Optional(Eq(WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef)));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -584,55 +513,6 @@ TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
                                     Eq(absl::nullopt))))));
 }
 
-struct InvalidVersionParam {
-  absl::optional<std::u16string> version;
-  std::string error;
-  std::string test_name;
-};
-
-class InstallIsolatedWebAppCommandInvalidVersionTest
-    : public InstallIsolatedWebAppCommandTest,
-      public ::testing::WithParamInterface<InvalidVersionParam> {};
-
-TEST_P(InstallIsolatedWebAppCommandInvalidVersionTest, InstallationFails) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
-
-  auto manifest = CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->version = GetParam().version;
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(ReturnManifest(
-          manifest, CreateDefaultManifestURL(url_info.origin().GetURL())));
-
-  EXPECT_THAT(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever)),
-              IsInstallationError(HasSubstr(GetParam().error)));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    InstallIsolatedWebAppCommandInvalidVersionTest,
-    ::testing::Values(
-        InvalidVersionParam{.version = absl::nullopt,
-                            .error = "`version` is not present",
-                            .test_name = "NoVersion"},
-        InvalidVersionParam{
-            .version = u"\xD801",
-            .error = "Failed to convert manifest `version` from UTF16 to UTF8",
-            .test_name = "InvalidUtf8"},
-        InvalidVersionParam{.version = u"10",
-                            .error = "Failed to parse `version`",
-                            .test_name = "InvalidVersionFormat"}),
-    [](const ::testing::TestParamInfo<
-        InstallIsolatedWebAppCommandInvalidVersionTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
 TEST_F(InstallIsolatedWebAppCommandTest,
        InstallationFailsWhenAppVersionDoesNotMatchExpectedVersion) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
@@ -647,7 +527,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
           HasSubstr("does not match the version provided in the manifest")));
 }
 
-TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
+TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
   base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                         InstallIsolatedWebAppCommandError>>
       test_future;
@@ -666,25 +546,6 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
       AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),
             Property(&LockDescription::app_ids,
                      UnorderedElementsAre(url_info.app_id()))));
-}
-
-TEST_F(InstallIsolatedWebAppCommandTest,
-       InstallationFailsWhenAppIsInstallableButManifestIsNull) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(ReturnManifest(
-          /*manifest=*/nullptr,
-          CreateDefaultManifestURL(url_info.origin().GetURL())));
-
-  EXPECT_THAT(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever)),
-              IsInstallationError(HasSubstr("Manifest is null")));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
@@ -803,21 +664,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
 }
 
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
-       FailsWhenManifestScopeIsNotSlash) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-
-  manifest->scope = url_info.origin().GetURL().Resolve("/scope");
-
-  EXPECT_THAT(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()),
-      IsInstallationError(HasSubstr("Scope should resolve to the origin")));
-
-  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()), IsNull());
-}
-
-TEST_F(InstallIsolatedWebAppCommandManifestTest,
        InstalledApplicationScopeIsResolvedToRootWhenManifestScopeIsSlash) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   blink::mojom::ManifestPtr manifest =
@@ -878,19 +724,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
                                Eq("other test short name"))));
-}
-
-TEST_F(InstallIsolatedWebAppCommandManifestTest,
-       UntranslatedNameIsEmptyWhenNameAndShortNameAreNotPresent) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->name = absl::nullopt;
-  manifest->short_name = absl::nullopt;
-
-  EXPECT_THAT(ExecuteCommandWithManifest(url_info, manifest.Clone()),
-              IsInstallationError(HasSubstr(
-                  "App manifest must have either 'name' or 'short_name'")));
 }
 
 class InstallIsolatedWebAppCommandManifestIconsTest
@@ -1035,76 +868,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
                   "Error during icon downloading: AbortedDueToFailure")));
 }
 
-TEST_F(InstallIsolatedWebAppCommandTest, SetDevModeLocationBeforeUrlLoading) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kUrlLoaded);
-
-  absl::optional<IsolatedWebAppLocation> location = absl::nullopt;
-  url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
-      [&](const GURL& unused_url, content::WebContents* web_contents,
-          WebAppUrlLoader::UrlComparison unused_url_comparison) {
-        location =
-            IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-                .location();
-      }));
-
-  EXPECT_TRUE(
-      ExecuteCommand(
-          Parameters{
-              .url_info = url_info,
-              .url_loader = std::move(url_loader),
-              .location =
-                  DevModeProxy{.proxy_url = url::Origin::Create(
-                                   GURL("http://some-testing-proxy-url.com/"))},
-          })
-          .has_value());
-
-  EXPECT_THAT(location, Optional(VariantWith<DevModeProxy>(Field(
-                            "proxy_url", &DevModeProxy::proxy_url,
-                            Eq(url::Origin::Create(GURL(
-                                "http://some-testing-proxy-url.com/")))))));
-}
-
-TEST_F(InstallIsolatedWebAppCommandTest,
-       SetInstalledBundleLocationBeforeUrlLoading) {
-  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kUrlLoaded);
-
-  absl::optional<IsolatedWebAppLocation> location = absl::nullopt;
-  url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
-      [&](const GURL& unused_url, content::WebContents* web_contents,
-          WebAppUrlLoader::UrlComparison unused_url_comparison) {
-        location =
-            IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-                .location();
-      }));
-
-  EXPECT_TRUE(
-      ExecuteCommand(Parameters{
-                         .url_info = url_info,
-                         .url_loader = std::move(url_loader),
-                         .location =
-                             InstalledBundle{
-                                 .path = base::FilePath{FILE_PATH_LITERAL(
-                                     "/testing/path/to/a/bundle")},
-                             },
-                     })
-          .has_value());
-
-  EXPECT_THAT(location, Optional(VariantWith<InstalledBundle>(
-                            Field("path", &InstalledBundle::path,
-                                  Eq(base::FilePath{FILE_PATH_LITERAL(
-                                      "/testing/path/to/a/bundle")})))));
-}
-
 using InstallIsolatedWebAppCommandMetricsTest =
     InstallIsolatedWebAppCommandTest;
 
@@ -1239,36 +1002,6 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
                                  .bundle_status = base::ok(),
                              })
                   .has_value());
-}
-
-TEST_P(InstallIsolatedWebAppCommandBundleTest, ErrorsOnBundleError) {
-  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
-  EXPECT_THAT(ExecuteCommand(Parameters{
-                  .url_info = url_info,
-                  .location = location_,
-                  .bundle_status = base::unexpected(UnusableSwbnFileError(
-                      UnusableSwbnFileError::Error::kMetadataParserVersionError,
-                      "test error"))}),
-              IsInstallationError(HasSubstr("test error")));
-}
-
-TEST_P(InstallIsolatedWebAppCommandBundleTest,
-       DoesNotInstallDevModeBundleWhenDevModeIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebAppDevMode);
-
-  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
-  auto installation_result =
-      ExecuteCommand(Parameters{.url_info = url_info,
-                                .location = location_,
-                                .bundle_status = base::ok()});
-  if (GetParam()) {
-    EXPECT_TRUE(installation_result.has_value());
-  } else {
-    EXPECT_THAT(installation_result,
-                IsInstallationError(HasSubstr(
-                    "Isolated Web App Developer Mode is not enabled")));
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
