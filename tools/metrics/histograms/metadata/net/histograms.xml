@@ -2299,6 +2299,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicConnection.ServerAllowsActiveMigrationForMultiPort"
+    enum="BooleanEnabled" expires_after="2024-04-03">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    When multi-port is enabled, log whether the server allows active migration
+    that's required for multi-port
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicConnection.WritePacketStatus" enum="QuicWriteStatus"
     expires_after="2023-11-19">
   <owner>wub@chromium.org</owner>
