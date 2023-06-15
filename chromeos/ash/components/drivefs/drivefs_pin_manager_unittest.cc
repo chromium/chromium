@@ -2394,92 +2394,114 @@ TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
-// Tests PinManager::SetOnline().
+// Tests PinManager::SetOnline() and BatterySaverModeStateChanged().
 TEST_F(DriveFsPinManagerTest, SetOnlineAndBatteryOk) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
+
+  auto set_online = [&](bool online) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+    manager.SetOnline(online);
+    EXPECT_EQ(manager.is_online_, online);
+  };
+
+  auto set_battery_ok = [&](bool ok) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+    power_manager::BatterySaverModeState state;
+    state.set_enabled(!ok);
+    manager.BatterySaverModeStateChanged(state);
+    EXPECT_EQ(manager.is_battery_ok_, ok);
+  };
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
   EXPECT_TRUE(manager.is_online_);
   EXPECT_TRUE(manager.is_battery_ok_);
 
-  manager.SetOnline(false);
+  // Online or battery change before starting should remain in Stopped state.
+  set_online(false);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_FALSE(manager.is_online_);
-
-  manager.SetOnline(true);
+  set_online(true);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_TRUE(manager.is_online_);
-
-  power_manager::BatterySaverModeState state;
-  state.set_enabled(true);
-  manager.BatterySaverModeStateChanged(state);
+  set_battery_ok(false);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_FALSE(manager.is_battery_ok_);
-
-  manager.Start();
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
-  EXPECT_TRUE(manager.is_online_);
-  EXPECT_FALSE(manager.is_battery_ok_);
-
-  manager.Stop();
+  set_battery_ok(true);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_TRUE(manager.is_online_);
-  EXPECT_FALSE(manager.is_battery_ok_);
 
-  state.set_enabled(false);
-  manager.BatterySaverModeStateChanged(state);
-  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_TRUE(manager.is_battery_ok_);
-
-  manager.SetOnline(false);
-  state.set_enabled(true);
-  manager.BatterySaverModeStateChanged(state);
-  EXPECT_FALSE(manager.is_online_);
-  EXPECT_FALSE(manager.is_battery_ok_);
-
+  // Start when not online should go to PausedOffline.
+  set_online(false);
+  set_battery_ok(true);
   manager.Start();
   EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
-  EXPECT_FALSE(manager.is_online_);
-  EXPECT_FALSE(manager.is_battery_ok_);
-
-  manager.SetOnline(true);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
-  state.set_enabled(false);
-  manager.BatterySaverModeStateChanged(state);
-  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
-  state.set_enabled(true);
-  manager.BatterySaverModeStateChanged(state);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
-
-  manager.SetOnline(false);
-  state.set_enabled(false);
-  manager.BatterySaverModeStateChanged(state);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
-
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
-  manager.SetOnline(true);
-  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
-  EXPECT_TRUE(manager.is_online_);
-
-  manager.SetOnline(false);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
-  EXPECT_FALSE(manager.is_online_);
-
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
-  manager.SetOnline(true);
-  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
-  EXPECT_TRUE(manager.is_online_);
-
-  manager.SetOnline(false);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
-  EXPECT_FALSE(manager.is_online_);
-
   manager.Stop();
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
-  EXPECT_FALSE(manager.is_online_);
+
+  // Start when battery saver should go to PausedBatterySaver.
+  set_online(true);
+  set_battery_ok(false);
+  manager.Start();
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  manager.Stop();
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+
+  // Start should go to state GettingFreeSpace.
+  set_online(true);
+  set_battery_ok(true);
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  manager.Start();
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  // Once started, going offline should toggle pause.
+  set_online(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  set_online(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  set_online(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  // Once started, battery saver should toggle pause.
+  set_battery_ok(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  set_battery_ok(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  set_battery_ok(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  // When both offline and battery saver are set, we should remain in the
+  // current Paused state. Resolving one of them should leave us in correct
+  // Paused state.
+  set_online(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  set_battery_ok(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  set_battery_ok(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  set_battery_ok(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  set_online(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  set_battery_ok(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  set_battery_ok(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  set_online(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  set_online(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  set_online(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+  set_battery_ok(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  set_online(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  // Stop should go to state Stopped.
+  manager.Stop();
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
 }
 
 // Tests PinManager::HandleQueryItem().

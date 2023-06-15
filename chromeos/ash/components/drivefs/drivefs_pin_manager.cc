@@ -760,7 +760,7 @@ void PinManager::BatterySaverModeStateChanged(
     return Complete(Stage::kPausedBatterySaver);
   }
 
-  if (is_online_ && is_battery_ok_ && IsPaused(progress_.stage)) {
+  if (is_battery_ok_ && IsPaused(progress_.stage)) {
     VLOG(1) << "Restarting from battery saver";
     Start();
   }
@@ -1563,13 +1563,13 @@ void PinManager::SetOnline(const bool online) {
   VLOG(2) << "Online: " << online << ", battery: " << is_battery_ok_;
   is_online_ = online;
 
-  if (InProgress(progress_.stage)) {
+  if (!is_online_ && InProgress(progress_.stage)) {
     VLOG(1) << "Going offline";
     return Complete(Stage::kPausedOffline);
   }
 
-  if (is_online_ && is_battery_ok_ && IsPaused(progress_.stage)) {
-    VLOG(1) << "Restarting from battery saver";
+  if (is_online_ && IsPaused(progress_.stage)) {
+    VLOG(1) << "Coming back online";
     Start();
   }
 }
