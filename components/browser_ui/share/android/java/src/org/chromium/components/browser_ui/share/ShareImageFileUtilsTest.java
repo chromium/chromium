@@ -9,9 +9,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -35,9 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -195,17 +190,6 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         return filepathExists(ShareImageFileUtils.getSharedFilesDirectory(), fileUri.getPath());
     }
 
-    private Bitmap getTestBitmap() {
-        int size = 10;
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        paint.setColor(android.graphics.Color.GREEN);
-        canvas.drawRect(0F, 0F, (float) size, (float) size, paint);
-        return bitmap;
-    }
-
     @Test
     @SmallTest
     public void clipboardUriDoNotClearTest() throws TimeoutException, IOException {
@@ -233,78 +217,6 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         Clipboard.getInstance().setText("");
         clearSharedImages();
         Assert.assertEquals(0, fileCountInShareDirectory());
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/1056059")
-    public void testSaveBitmap() throws IOException, TimeoutException {
-        String fileName = TEST_IMAGE_FILE_NAME + "_save_bitmap";
-        ShareImageFileUtils.OnImageSaveListener listener =
-                new ShareImageFileUtils.OnImageSaveListener() {
-                    @Override
-                    public void onImageSaved(Uri uri, String displayName) {
-                        Assert.assertNotNull(uri);
-                        Assert.assertEquals(fileName, displayName);
-                        AsyncTask.SERIAL_EXECUTOR.execute(() -> {
-                            File file = new File(uri.getPath());
-                            Assert.assertTrue(file.exists());
-                            Assert.assertTrue(file.isFile());
-                        });
-
-                        // Wait for the above checks to complete.
-                        try {
-                            waitForAsync();
-                        } catch (TimeoutException ex) {
-                        }
-                    }
-
-                    @Override
-                    public void onImageSaveError(String displayName) {
-                        Assert.fail();
-                    }
-                };
-        ShareImageFileUtils.saveBitmapToExternalStorage(
-                getActivity(), fileName, getTestBitmap(), listener);
-        waitForAsync();
-    }
-
-    @Test
-    @SmallTest
-    @MinAndroidSdkLevel(value = VERSION_CODES.Q, reason = "Added to completed downloads on P-")
-    public void testSaveBitmapAndMediaStore() throws IOException, TimeoutException {
-        String fileName = TEST_IMAGE_FILE_NAME + "_mediastore";
-        ShareImageFileUtils.OnImageSaveListener listener =
-                new ShareImageFileUtils.OnImageSaveListener() {
-                    @Override
-                    public void onImageSaved(Uri uri, String displayName) {
-                        Assert.assertNotNull(uri);
-                        Assert.assertEquals(fileName, displayName);
-                        AsyncTask.SERIAL_EXECUTOR.execute(() -> {
-                            Cursor cursor = getActivity().getContentResolver().query(
-                                    uri, null, null, null, null);
-                            Assert.assertNotNull(cursor);
-                            Assert.assertTrue(cursor.moveToFirst());
-                            Assert.assertEquals(fileName + TEST_JPG_IMAGE_FILE_EXTENSION,
-                                    cursor.getString(cursor.getColumnIndex(
-                                            MediaStore.MediaColumns.DISPLAY_NAME)));
-                        });
-
-                        // Wait for the above checks to complete.
-                        try {
-                            waitForAsync();
-                        } catch (TimeoutException ex) {
-                        }
-                    }
-
-                    @Override
-                    public void onImageSaveError(String displayName) {
-                        Assert.fail();
-                    }
-                };
-        ShareImageFileUtils.saveBitmapToExternalStorage(
-                getActivity(), fileName, getTestBitmap(), listener);
-        waitForAsync();
     }
 
     @Test

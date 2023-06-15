@@ -187,54 +187,6 @@ public class ShareImageFileUtils {
                 bitmap.hasAlpha() ? PNG_EXTENSION : JPEG_EXTENSION);
     }
 
-    /**
-     * Temporarily saves the streamed data to a file, and provides the URI of that file to the
-     * given callback.
-     *
-     * @param filename The file name without extension.
-     * @param fileWriter The {@link FileOutputStreamWriter} implementation to write to the stream.
-     * @param fileExtension The extension for the file name.
-     * @param callback A provided callback function which will act on the generated URI.
-     */
-    public static void generateTemporaryUriFromStream(String fileName,
-            FileOutputStreamWriter fileWriter, String fileExtension, Callback<Uri> callback) {
-        OnImageSaveListener listener = new OnImageSaveListener() {
-            @Override
-            public void onImageSaved(Uri uri, String displayName) {
-                callback.onResult(uri);
-            }
-            @Override
-            public void onImageSaveError(String displayName) {
-                callback.onResult(null);
-            }
-        };
-
-        saveImage(fileName, /*filePathProvider=*/null, listener, fileWriter, /*isTemporary=*/true,
-                fileExtension);
-    }
-
-    /**
-     * Saves bitmap to external storage directory.
-     *
-     * @param context The Context to use for determining download location.
-     * @param filename The filename without extension.
-     * @param bitmap The Bitmap to download.
-     * @param listener The OnImageSaveListener to notify the download results.
-     */
-    public static void saveBitmapToExternalStorage(
-            final Context context, String fileName, Bitmap bitmap, OnImageSaveListener listener) {
-        FileOutputStreamWriter fileWriter = (fos, cb) -> {
-            writeBitmap(fos, bitmap);
-            cb.onResult(/*success=*/true);
-        };
-
-        // Passing the path as a function so that it can be called on a background thread in
-        // |saveImage|.
-        saveImage(fileName, () -> {
-            return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getPath();
-        }, listener, fileWriter, false, bitmap.hasAlpha() ? PNG_EXTENSION : JPEG_EXTENSION);
-    }
-
     public static void getBitmapFromUriAsync(
             Context context, Uri imageUri, Callback<Bitmap> callback) {
         new BackgroundOnlyAsyncTask<Void>() {
