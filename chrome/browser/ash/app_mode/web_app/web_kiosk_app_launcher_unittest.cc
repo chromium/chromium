@@ -316,6 +316,8 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
         wm_helper_(std::make_unique<exo::WMHelper>()) {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff,
          ::features::kWebKioskEnableLacros},
         {});
   }
