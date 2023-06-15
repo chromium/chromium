@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -56,7 +56,7 @@ import java.util.concurrent.TimeoutException;
  */
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableIf.Build(sdk_is_less_than = VERSION_CODES.O)
+@MinAndroidSdkLevel(value = VERSION_CODES.O)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
                           ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
