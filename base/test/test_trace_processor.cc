@@ -33,7 +33,12 @@ std::unique_ptr<perfetto::TracingSession> StartTrace(
         track_event_config.SerializeAsString());
   }
   session->Setup(config);
-  session->StartBlocking();
+  // Some tests run the tracing service on the main thread and StartBlocking()
+  // can deadlock so use a RunLoop instead.
+  base::RunLoop run_loop;
+  session->SetOnStartCallback([&run_loop]() { run_loop.QuitWhenIdle(); });
+  session->Start();
+  run_loop.Run();
   return session;
 }
 

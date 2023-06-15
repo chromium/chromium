@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_trace_processor.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
@@ -285,6 +286,39 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
   EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
       0, "EventLatency.GestureScrollUpdate.TotalLatency"));
 }
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+// A basic smoke test verifying that key scroll-related events are recorded
+// during scrolling. This test performs a simple scroll and expects to see three
+// EventLatency events with the correct types.
+IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
+  LoadURL();
+  std::unique_ptr<perfetto::TracingSession> session =
+      base::test::StartTrace("input.scrolling");
+  DoSmoothWheelScroll(gfx::Vector2d(0, 100));
+  while (!VerifyRecordedSamplesForHistogram(
+      1, "EventLatency.GestureScrollUpdate.TotalLatency2")) {
+    GiveItSomeTime();
+    FetchHistogramsFromChildProcesses();
+  }
+  std::vector<char> trace = base::test::StopTrace(std::move(session));
+  ASSERT_THAT(trace, Not(testing::IsEmpty()));
+  std::string query =
+      R"(
+      SELECT EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS type
+      FROM slice
+      WHERE name = 'EventLatency'
+      )";
+  auto result = base::test::RunQuery(query, trace);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"type"},
+                  std::vector<std::string>{"GESTURE_SCROLL_BEGIN"},
+                  std::vector<std::string>{"FIRST_GESTURE_SCROLL_UPDATE"},
+                  std::vector<std::string>{"GESTURE_SCROLL_UPDATE"}));
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
  public:
