@@ -1,4 +1,4 @@
-file://chrome/browser/resources/settings/chromeos/OWNERS
+file://chrome/browser/resources/ash/settings/OWNERS
 
 per-file account_manager_*=file://chromeos/ash/components/account_manager/OWNERS
 per-file apps_section*=file://chrome/browser/ui/webui/app_management/OWNERS

@@ -3,4 +3,4 @@
 # If you are not sure, or the changes would affect a different team from your
 # own, please select a Settings owner from file below.
 
-file://chrome/browser/resources/settings/chromeos/OWNERS
+file://chrome/browser/resources/ash/settings/OWNERS

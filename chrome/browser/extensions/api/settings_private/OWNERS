@@ -1,4 +1,4 @@
 file://chrome/browser/resources/settings/OWNERS
 
 # For ChromeOS Settings changes
-file://chrome/browser/resources/settings/chromeos/OWNERS
+file://chrome/browser/resources/ash/settings/OWNERS
