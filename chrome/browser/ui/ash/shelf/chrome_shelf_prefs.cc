@@ -80,8 +80,10 @@ syncer::StringOrdinal GetFirstPinnedAppPosition(
   for (const auto& sync_peer : syncable_service->sync_items()) {
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
-    if (exclude_chrome && (sync_peer.first == app_constants::kChromeAppId ||
-                           sync_peer.first == app_constants::kLacrosAppId)) {
+    if (exclude_chrome &&
+        (sync_peer.first == app_constants::kChromeAppId ||
+         sync_peer.first == app_constants::kLacrosAppId ||
+         sync_peer.first == app_constants::kAshDebugBrowserAppId)) {
       continue;
     }
     if (!position.IsValid() ||
@@ -658,6 +660,13 @@ bool ChromeShelfPrefs::IsAshKeepListApp(const std::string& app_id) {
 }
 
 std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
+  // If it is ash-debug browser, it was replaced from kChromeAppId.
+  if (ash::switches::IsAshDebugBrowserEnabled() &&
+      !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      sync_id == app_constants::kAshDebugBrowserAppId) {
+    return app_constants::kChromeAppId;
+  }
+
   // If Lacros is the only web browser, transform the sync_id kChromeAppId to
   // the shelf id kLacrosAppId.
   if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
@@ -703,6 +712,13 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
 }
 
 std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      ash::switches::IsAshDebugBrowserEnabled() &&
+      shelf_id == app_constants::kChromeAppId) {
+    // Ash browser is pinned for development purpose.
+    return app_constants::kAshDebugBrowserAppId;
+  }
+
   // If Lacros is the only web browser, transform the shelf id kLacrosAppId to
   // the sync_id kChromeAppId.
   if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&

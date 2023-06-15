@@ -140,6 +140,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableVolumeAdjustSound[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArc[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVm[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVmRtVcpu[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableAshDebugBrowser[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableCastReceiver[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableConsumerKiosk[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableDimShelf[];
@@ -364,6 +365,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldSkipOobePostLogin();
 // Returns true if we should show a11y button on the marketing opt in screen.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting();
+
+// Returns true if ash-debug browser is enabled.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAshDebugBrowserEnabled();
 
 // Returns true if the device is of tablet form factor.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTabletFormFactor();

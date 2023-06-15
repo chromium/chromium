@@ -400,7 +400,9 @@ void ComponentLoader::AddWebStoreApp() {
 void ComponentLoader::AddChromeApp() {
   AddWithNameAndDescription(
       IDR_CHROME_APP_MANIFEST, base::FilePath(FILE_PATH_LITERAL("chrome_app")),
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME),
+      crosapi::browser_util::IsAshWebBrowserEnabled()
+          ? l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME)
+          : "Ash Chrome",  // Because this is debug only, we do not need i18n.
       l10n_util::GetStringUTF8(IDS_CHROME_SHORTCUT_DESCRIPTION));
 }
 
@@ -460,7 +462,8 @@ void ComponentLoader::AddDefaultComponentExtensions(
   if (!skip_session_components) {
     AddWebStoreApp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    if (crosapi::browser_util::IsAshWebBrowserEnabled() ||
+        ash::switches::IsAshDebugBrowserEnabled()) {
       AddChromeApp();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -18,6 +18,9 @@ namespace app_constants {
 // The ID of the Chrome component application as part of ash.
 COMPONENT_EXPORT(APP_CONSTANTS) extern const char kChromeAppId[];
 
+// The ID of Ash Browser for debugging.
+COMPONENT_EXPORT(APP_CONSTANTS) extern const char kAshDebugBrowserAppId[];
+
 // The ID of the Lacros Chrome browser application that runs outside of ash.
 COMPONENT_EXPORT(APP_CONSTANTS) extern const char kLacrosAppId[];
 
