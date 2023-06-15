@@ -707,6 +707,15 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         // only says that the device frequency reported by successive calls to
         // GetFrequency never changes during the lifetime of a stream "in
         // Windows Vista".
+        {
+            // TODO(olka): Exploratory check. Run it for a couple of days on
+            // Canary/Dev and remove.
+            UINT64 device_frequency_now = 0;
+            hr = audio_clock_->GetFrequency(&device_frequency_now);
+            if (SUCCEEDED(hr)) {
+                CHECK_EQ(device_frequency, device_frequency_now);
+            }
+        }
         CHECK_GE(position, last_position_);
         base::TimeDelta position_time_increase =
             media::AudioTimestampHelper::FramesToTime(position - last_position_,
