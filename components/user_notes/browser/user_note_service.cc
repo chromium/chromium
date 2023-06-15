@@ -133,10 +133,11 @@ void UserNoteService::OnNoteInstanceRemovedFromPage(
 
 void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
                                          bool has_selected_text) {
-  DCHECK(IsUserNotesEnabled());
-  DCHECK(frame);
+  CHECK(IsUserNotesEnabled());
+  CHECK(frame);
+  CHECK(!frame->GetParentOrOuterDocument());
   UserNoteManager* manager = UserNoteManager::GetForPage(frame->GetPage());
-  DCHECK(manager);
+  CHECK(manager);
 
   // TODO(crbug.com/1313967): `has_selected_text` is used to determine whether
   // or not to create a page-level note. This will need to be reassessed when

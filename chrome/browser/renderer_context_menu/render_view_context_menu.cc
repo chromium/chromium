@@ -3575,6 +3575,12 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 bool RenderViewContextMenu::IsAddANoteEnabled() const {
   DCHECK(user_notes::IsUserNotesEnabled());
 
+  // Generating a user note in an iframe is not currently supported.
+  if (!GetRenderFrameHost() ||
+      GetRenderFrameHost()->GetParentOrOuterDocument()) {
+    return false;
+  }
+
   return UserNotesController::IsUserNotesSupported(source_web_contents_);
 }
 
