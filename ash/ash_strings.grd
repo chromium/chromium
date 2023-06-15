@@ -1616,8 +1616,11 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED" desc="A toast message that we show when an app tries to access camera or microphone while it is disabled by hardware.">
         <ph name="APP_NAME">$1<ex>Meet</ex></ph> wants to use the <ph name="DEVICE_NAME">$2<ex>camera</ex></ph>. Turn on your device's physical <ph name="DEVICE_NAME">$2<ex>camera</ex></ph> switch.
       </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_MESSAGE" desc="A nudge message that is shown so users can opt-in or out of the speak-on-mute detection feature.">
-        Turn on mute nudge? You'll get notified if you talk while muted. Audio never leaves your device.
+      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_TITLE" desc="The title for the nudge that is shown so users can opt-in or out of the speak-on-mute detection feature.">
+        Turn on mute nudge?
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_BODY" desc="The message for the nudge that is shown so users can opt-in or out of the speak-on-mute detection feature.">
+        You'll get notified if you talk while muted. Audio never leaves your device.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_DISMISS_BUTTON" desc="A toast message that we show when an app tries to access camera or microphone while it is disabled by hardware.">
         No thanks

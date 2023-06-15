@@ -184,8 +184,11 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
       kVideoConferenceTraySpeakOnMuteOptInNudgeId,
       AnchoredNudgeCatalogName::kVideoConferenceTraySpeakOnMuteOptIn,
       l10n_util::GetStringUTF16(
-          IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_MESSAGE),
+          IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_BODY),
       anchor_view);
+
+  nudge_data.title_text = l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_TITLE);
 
   nudge_data.dismiss_text = l10n_util::GetStringUTF16(
       IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_DISMISS_BUTTON);
@@ -198,6 +201,8 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
   nudge_data.second_button_callback = base::BindRepeating(
       &VideoConferenceTrayController::OnSpeakOnMuteNudgeOptIn,
       weak_ptr_factory_.GetWeakPtr());
+
+  nudge_data.has_infinite_duration = true;
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
