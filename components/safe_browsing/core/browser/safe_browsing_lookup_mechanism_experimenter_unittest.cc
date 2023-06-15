@@ -411,10 +411,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false, /*threat_type=*/threat_type,
-        // TODO(crbug.com/1441654) [Also TODO(thefrog)]: Doesn't really matter,
-        // but set true threat source once it exists.
-        /*time_to_completion=*/time_to_completion, ThreatSource::UNKNOWN,
-        url_level_validation_details);
+        /*time_to_completion=*/time_to_completion,
+        ThreatSource::NATIVE_PVER5_REAL_TIME, url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism>
   CreateSyncHashDatabaseMechanism(

@@ -1615,6 +1615,8 @@ message ClientSafeBrowsingReportRequest {
     FLYWHEEL = 4 [deprecated = true];
     // Safe Browsing real time API.
     REAL_TIME = 5;
+    // The Safe Browsing API v5 protocol hit in real time (non-Android).
+    PVER5_NATIVE_REAL_TIME = 6;
   }
 
   // The information propagated from the client about various environment

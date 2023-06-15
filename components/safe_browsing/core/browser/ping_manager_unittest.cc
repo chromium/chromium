@@ -335,7 +335,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
         ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
-  // Threat source is real time check.
+  // Threat source is URL real-time check.
   {
     HitReport hp(base_hp);
     hp.threat_type = SB_THREAT_TYPE_URL_PHISHING;
@@ -352,6 +352,26 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=rt&m=1",
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
+  }
+
+  // Threat source is native hash real-time check.
+  {
+    HitReport hp(base_hp);
+    hp.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+    hp.threat_source = ThreatSource::NATIVE_PVER5_REAL_TIME;
+    hp.is_subresource = false;
+    hp.extended_reporting_level = SBER_LEVEL_SCOUT;
+    hp.is_metrics_reporting_active = false;
+    hp.is_enhanced_protection = false;
+    EXPECT_EQ(
+        "https://safebrowsing.google.com/safebrowsing/report?client=unittest&"
+        "appver=1.0&pver=4.0" +
+            key_param_ +
+            "&ext=2&evts=phishblhit&"
+            "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
+            "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
+            "url.com%2F&evtb=0&src=n5rt&m=0",
         ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 }

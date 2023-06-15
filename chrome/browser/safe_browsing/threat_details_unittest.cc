@@ -1956,4 +1956,31 @@ TEST_F(ThreatDetailsTest, CanCancelDuringCollection) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Tests a simple threat report with the NATIVE_PVER5_REAL_TIME threat source.
+TEST_F(ThreatDetailsTest, NativePver5RealTimeThreatSource) {
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kLandingURL), web_contents());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
+  navigation->Commit();
+
+  UnsafeResource resource;
+  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::NATIVE_PVER5_REAL_TIME,
+               /*is_subresource=*/false, GURL(kThreatURL), &resource);
+
+  auto report = std::make_unique<ThreatDetailsWrap>(
+      ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
+      referrer_chain_provider_.get());
+  report->StartCollection();
+
+  std::string serialized = WaitForThreatDetailsDone(
+      report.get(), /*did_proceed=*/true, /*num_visit=*/1);
+
+  ClientSafeBrowsingReportRequest report_pb;
+  report_pb.ParseFromString(serialized);
+  EXPECT_TRUE(report_pb.client_properties().has_url_api_type());
+  EXPECT_EQ(report_pb.client_properties().url_api_type(),
+            ClientSafeBrowsingReportRequest::PVER5_NATIVE_REAL_TIME);
+}
+
 }  // namespace safe_browsing

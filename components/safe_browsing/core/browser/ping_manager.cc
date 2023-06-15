@@ -316,6 +316,9 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
       threat_source = "rt";
       break;
+    case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
+      threat_source = "n5rt";
+      break;
     case safe_browsing::ThreatSource::UNKNOWN:
       NOTREACHED();
   }

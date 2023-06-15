@@ -1644,6 +1644,9 @@ std::string SerializeHitReport(const HitReport& hit_report) {
     case ThreatSource::URL_REAL_TIME_CHECK:
       threat_source = "URL_REAL_TIME_CHECK";
       break;
+    case ThreatSource::NATIVE_PVER5_REAL_TIME:
+      threat_source = "NATIVE_PVER5_REAL_TIME";
+      break;
     case ThreatSource::UNKNOWN:
       threat_source = "UNKNOWN";
       break;

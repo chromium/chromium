@@ -1349,7 +1349,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                             /*did_check_allowlist=*/false))
       .Times(1);
   EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1376,7 +1377,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   // while we perform a real-time check.
   EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1402,8 +1404,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
                             /*did_perform_real_time_check=*/false,
                             /*did_check_allowlist=*/false))
       .Times(1);
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::NATIVE_PVER5_REAL_TIME), _, _, _, _))
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1428,8 +1432,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
   // Note that the callback is not called, because resource fetch is not blocked
   // while we perform a real-time check.
   EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::NATIVE_PVER5_REAL_TIME), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1457,7 +1463,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   // while we perform a real-time check.
   EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1486,7 +1493,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   // while we perform a real-time check.
   EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();

@@ -4929,7 +4929,10 @@ chromium-metrics-reviews@google.com.
              {Local,Remote}SafeBrowsingDatabaseManager."/>
   <suffix name="from_real_time_check"
       label="Interstitial for a resource classified as unsafe by the Safe
-             Browsing real time API."/>
+             Browsing URL real-time API."/>
+  <suffix name="from_hash_prefix_real_time_check_v5"
+      label="Interstitial for a resource classified as unsafe by the Safe
+             Browsing hash-prefix real-time API version 5."/>
   <affected-histogram name="interstitial.harmful.decision"/>
   <affected-histogram name="interstitial.harmful.decision.repeat_visit"/>
   <affected-histogram name="interstitial.harmful.interaction"/>

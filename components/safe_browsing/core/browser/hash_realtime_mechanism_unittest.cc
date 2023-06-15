@@ -312,7 +312,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
                   /*matched_high_confidence_allowlist*/ false,
                   /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
                   /*real_time_request_failed=*/false,
-                  /*threat_source=*/ThreatSource::UNKNOWN)))
+                  /*threat_source=*/ThreatSource::NATIVE_PVER5_REAL_TIME)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -337,7 +337,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
           /*matched_high_confidence_allowlist*/ false,
           /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
           /*real_time_request_failed=*/false,
-          /*threat_source=*/ThreatSource::UNKNOWN)))
+          /*threat_source=*/ThreatSource::NATIVE_PVER5_REAL_TIME)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }

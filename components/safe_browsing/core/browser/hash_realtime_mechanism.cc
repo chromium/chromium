@@ -110,8 +110,7 @@ void HashRealTimeMechanism::OnLookupResponse(
   DCHECK(threat_type.has_value());
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url_, threat_type.value(), ThreatMetadata(),
-      // TODO(crbug.com/1441654) [Also TODO(thefrog)]: Set true threat source.
-      /*threat_source=*/database_manager_->GetThreatSource(),
+      /*threat_source=*/ThreatSource::NATIVE_PVER5_REAL_TIME,
       /*url_real_time_lookup_response=*/nullptr,
       /*matched_high_confidence_allowlist=*/false,
       /*locally_cached_results_threat_type=*/locally_cached_results_threat_type,

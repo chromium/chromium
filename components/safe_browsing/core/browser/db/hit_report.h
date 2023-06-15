@@ -16,10 +16,11 @@ namespace safe_browsing {
 // What service classified this threat as unsafe.
 enum class ThreatSource {
   UNKNOWN,
-  LOCAL_PVER4,            // From V4LocalDatabaseManager, protocol v4
-  REMOTE,                 // From RemoteSafeBrowsingDatabaseManager
-  CLIENT_SIDE_DETECTION,  // From ClientSideDetectionHost
-  URL_REAL_TIME_CHECK,    // From RealTimeUrlLookupService
+  LOCAL_PVER4,             // From V4LocalDatabaseManager, protocol v4
+  REMOTE,                  // From RemoteSafeBrowsingDatabaseManager
+  CLIENT_SIDE_DETECTION,   // From ClientSideDetectionHost
+  URL_REAL_TIME_CHECK,     // From RealTimeUrlLookupService
+  NATIVE_PVER5_REAL_TIME,  // From HashRealTimeService
 };
 
 // Data to report about the contents of a particular threat (malware, phishing,

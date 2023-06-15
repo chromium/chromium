@@ -29,10 +29,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // for measuring user friction, or security sensitive actions. They are used
   // as keys of the SafeBrowsingEventTimestamps pref. They are used for logging
   // histograms, entries must not be removed or reordered. Please update the
-  // enums.xml file if new values are added. They are also used to construct
-  // suffixes of histograms. Please update the MetricsCollectorBypassEventType
-  // or MetricsCollectorSecuritySensitiveEventType
-  // variants in the histograms.xml file if new event values are added.
+  // enums.xml file if new values are added.
   enum EventType {
     // The user state is disabled.
     USER_STATE_DISABLED = 0,
@@ -72,8 +69,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // User committed a security sensitive action related to downloads, as
     // checked by Safe Browsing.
     SECURITY_SENSITIVE_DOWNLOAD = 12,
+    // The user bypasses an interstitial that is triggered by the hash-prefix
+    // real-time lookup.
+    HASH_PREFIX_REAL_TIME_INTERSTITIAL_BYPASS = 13,
 
-    kMaxValue = SECURITY_SENSITIVE_DOWNLOAD
+    kMaxValue = HASH_PREFIX_REAL_TIME_INTERSTITIAL_BYPASS
   };
 
   using EventTypeFilter = base::RepeatingCallback<bool(const EventType&)>;
