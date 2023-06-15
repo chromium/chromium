@@ -104,7 +104,7 @@ void CellularPolicyHandler::InstallESim(const base::Value::Dict& onc_config) {
 
   NET_LOG(EVENT) << "Queueing a policy eSIM profile installation request with "
                  << "activation code found in the provided ONC configuration: "
-                 << activation_code.value();
+                 << activation_code->ToString();
 
   PushRequestAndProcess(std::make_unique<InstallPolicyESimRequest>(
       std::move(activation_code.value()), onc_config));
@@ -151,7 +151,7 @@ void CellularPolicyHandler::ProcessRequests() {
 
   is_installing_ = true;
   NET_LOG(EVENT) << "Installing policy eSIM profile: "
-                 << GetCurrentActivationCode();
+                 << GetCurrentActivationCode().ToString();
   AttemptInstallESim();
 }
 
@@ -161,7 +161,7 @@ void CellularPolicyHandler::ScheduleRetry(
   if (reason != InstallRetryReason::kInternalError &&
       request->retry_backoff.failure_count() >= kInstallRetryLimit) {
     NET_LOG(ERROR) << "Failed to install policy eSIM profile: "
-                   << request->activation_code;
+                   << request->activation_code.ToErrorString();
     ProcessRequests();
     return;
   }
@@ -181,7 +181,8 @@ void CellularPolicyHandler::ScheduleRetry(
       request->retry_backoff.GetTimeUntilRelease();
 
   NET_LOG(ERROR) << "Failed to install policy eSIM profile. Retrying in "
-                 << retry_delay << ": " << request->activation_code;
+                 << retry_delay << ": "
+                 << request->activation_code.ToErrorString();
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -219,7 +220,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
     // before continuing with installation.
     NET_LOG(EVENT)
         << "Waiting for the cellular device to become available to install "
-        << "policy eSIM profile: " << GetCurrentActivationCode();
+        << "policy eSIM profile: " << GetCurrentActivationCode().ToString();
     wait_timer_.Start(FROM_HERE, kCellularDeviceWaitTime,
                       base::BindOnce(&CellularPolicyHandler::OnWaitTimeout,
                                      weak_ptr_factory_.GetWeakPtr()));
@@ -232,7 +233,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
     // Hermes may not be ready and available EUICC list is empty. Wait for
     // AvailableEuiccListChanged notification to continue with installation.
     NET_LOG(EVENT) << "Waiting for EUICC to be found to install policy eSIM "
-                   << "profile: " << GetCurrentActivationCode();
+                   << "profile: " << GetCurrentActivationCode().ToString();
     wait_timer_.Start(FROM_HERE, kEuiccWaitTime,
                       base::BindOnce(&CellularPolicyHandler::OnWaitTimeout,
                                      weak_ptr_factory_.GetWeakPtr()));
@@ -260,7 +261,8 @@ void CellularPolicyHandler::PerformInstallESim(
   if (profile_path) {
     NET_LOG(EVENT) << "Found an existing installed profile that matches the "
                    << "policy eSIM installation request. Configuring a Shill "
-                   << "service for the profile: " << GetCurrentActivationCode();
+                   << "service for the profile: "
+                   << GetCurrentActivationCode().ToString();
     cellular_esim_installer_->ConfigureESimService(
         std::move(new_shill_properties), euicc_path, *profile_path,
         base::BindOnce(&CellularPolicyHandler::OnConfigureESimService,
@@ -271,7 +273,8 @@ void CellularPolicyHandler::PerformInstallESim(
   if (!HasNonCellularInternetConnectivity()) {
     NET_LOG(ERROR)
         << "Failed to install the policy eSIM profile due to missing a "
-        << "non-cellular internet connection: " << GetCurrentActivationCode();
+        << "non-cellular internet connection: "
+        << GetCurrentActivationCode().ToErrorString();
     auto current_request = std::move(remaining_install_requests_.front());
     PopRequest();
     ScheduleRetry(std::move(current_request),
@@ -281,14 +284,14 @@ void CellularPolicyHandler::PerformInstallESim(
   }
 
   NET_LOG(EVENT) << "Installing policy eSIM profile: "
-                 << GetCurrentActivationCode();
+                 << GetCurrentActivationCode().ToString();
 
   // TODO(b/278135304): Implement ash::features::IsSmdsSupportEnabled().
   if (!ash::features::IsSmdsSupportEnabled()) {
     // Remote provisioning of eSIM profiles via SM-DP+ activation code in policy
     // does not require confirmation code.
     cellular_esim_installer_->InstallProfileFromActivationCode(
-        GetCurrentActivationCode().value, /*confirmation_code=*/std::string(),
+        GetCurrentActivationCode().value(), /*confirmation_code=*/std::string(),
         euicc_path, std::move(new_shill_properties),
         base::BindOnce(
             &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
@@ -328,7 +331,7 @@ void CellularPolicyHandler::OnConfigureESimService(
   }
 
   NET_LOG(EVENT) << "Successfully configured a Shill service for the existing "
-                 << "profile: " << current_request->activation_code;
+                 << "profile: " << current_request->activation_code.ToString();
 
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   const std::string* iccid =
@@ -336,7 +339,7 @@ void CellularPolicyHandler::OnConfigureESimService(
   // TODO(b/278135304): Implement ash::features::IsSmdsSupportEnabled().
   if (!ash::features::IsSmdsSupportEnabled()) {
     managed_cellular_pref_handler_->AddIccidSmdpPair(
-        *iccid, current_request->activation_code.value);
+        *iccid, current_request->activation_code.value());
   }
   ProcessRequests();
 }
@@ -353,7 +356,8 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
     if (!base::Contains(kHermesUserErrorCodes, hermes_status)) {
       NET_LOG(ERROR) << "Failed to install the policy eSIM profile due to a "
                      << "non-user error: " << hermes_status << ". Scheduling "
-                     << "another attempt: " << current_request->activation_code;
+                     << "another attempt: "
+                     << current_request->activation_code.ToErrorString();
       ScheduleRetry(std::move(current_request),
                     base::Contains(kHermesInternalErrorCodes, hermes_status)
                         ? InstallRetryReason::kInternalError
@@ -362,14 +366,14 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
       NET_LOG(ERROR)
           << "Failed to install the policy eSIM profile due to a user error: "
           << hermes_status << ". Will not schedule another attempt: "
-          << current_request->activation_code;
+          << current_request->activation_code.ToErrorString();
     }
     ProcessRequests();
     return;
   }
 
   NET_LOG(EVENT) << "Successfully installed policy eSIM profile: "
-                 << current_request->activation_code.value;
+                 << current_request->activation_code.ToString();
 
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   HermesProfileClient::Properties* profile_properties =
@@ -378,7 +382,7 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   if (!ash::features::IsSmdsSupportEnabled()) {
     managed_cellular_pref_handler_->AddIccidSmdpPair(
         profile_properties->iccid().value(),
-        current_request->activation_code.value,
+        current_request->activation_code.value(),
         /*sync_stub_networks=*/false);
   }
 

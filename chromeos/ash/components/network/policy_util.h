@@ -20,7 +20,8 @@ namespace policy_util {
 
 // This class represents a cellular activation code and its corresponding type
 // and is used to simplify all cellular code related to enterprise policy.
-struct COMPONENT_EXPORT(CHROMEOS_NETWORK) SmdxActivationCode {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) SmdxActivationCode {
+ public:
   enum class Type {
     SMDP = 0,
     SMDS = 1,
@@ -33,15 +34,21 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) SmdxActivationCode {
   SmdxActivationCode& operator=(const SmdxActivationCode&) = delete;
   ~SmdxActivationCode() = default;
 
-  Type type;
-  std::string value;
-};
+  // These functions return a string with information about this activation code
+  // that is safe for logging. The ToErrorString() function will include a
+  // sanitized version of the activation code value itself.
+  std::string ToString() const;
+  std::string ToErrorString() const;
 
-// This function is used to output the activation code type and, when the type
-// is SM-DS, the activation code value.
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::ostream& operator<<(std::ostream& stream,
-                         const SmdxActivationCode& activation_code);
+  Type type() const { return type_; }
+  const std::string& value() const { return value_; }
+
+ private:
+  std::string GetString(bool for_error_message) const;
+
+  Type type_;
+  std::string value_;
+};
 
 // This fake credential contains a random postfix which is extremely unlikely to
 // be used by any user. Used to determine saved but unknown credential

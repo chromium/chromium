@@ -31,6 +31,7 @@ include_rules = [
   "+services/preferences/public/cpp",
   "+testing",
   "+third_party/cros_system_api",
+  "+third_party/re2",
   "+url",
 
   # Abseil is allowed by default, but some features are banned. See
