@@ -1506,6 +1506,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onAccessibilityModeChanged(boolean enabled) {
+        if (mIsAccessibilityTabSwitcherEnabled != null
+                && mIsAccessibilityTabSwitcherEnabled != enabled) {
+            // TODO(https://crbug.com/1455234): This is a temporary solution to prevent a crash when
+            // toggling a11y state (e.g. through TalkBack) while using tab groups in the grid tab
+            // switcher and the legacy a11y list switcher. When TabGroupsContinuationAndroid
+            // launches, we can clean up the legacy a11y switcher along with this check.
+            if (isTablet()) {
+                if (getTabReparentingControllerSupplier().get() != null) {
+                    getTabReparentingControllerSupplier().get().prepareTabsForReparenting();
+                }
+                recreate();
+            }
+        }
         onAccessibilityTabSwitcherModeChanged();
     }
 
