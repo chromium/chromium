@@ -114,7 +114,21 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
 GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane()) {
-    return viz::GLInternalFormat(format.resource_format());
+    // In GLES2, the internal format must match the texture format. (It no
+    // longer is true in GLES3, however it still holds for the BGRA extension.)
+    // GL_EXT_texture_norm16 follows GLES3 semantics and only exposes a sized
+    // internal format (GL_R16_EXT).
+    if (format == viz::SinglePlaneFormat::kR_16) {
+      return GL_R16_EXT;
+    } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+      return GL_RG16_EXT;
+    } else if (format == viz::SinglePlaneFormat::kETC1) {
+      return GL_ETC1_RGB8_OES;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
+               format == viz::SinglePlaneFormat::kBGRA_1010102) {
+      return GL_RGB10_A2_EXT;
+    }
+    return GLDataFormat(format);
   }
 
   // For multiplanar formats without external sampler, GL formats are per plane.

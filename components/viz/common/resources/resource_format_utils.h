@@ -23,7 +23,6 @@ namespace viz {
 // ui/gl/gl_bindings.h. See http://crbug.com/512833 for more information.
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataType(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataFormat(ResourceFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(ResourceFormat format);
 
 // |use_angle_rgbx_format| should be true when the GL_ANGLE_rgbx_internal_format
 // extension is available.

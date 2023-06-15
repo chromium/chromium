@@ -82,26 +82,6 @@ unsigned int GLDataFormat(ResourceFormat format) {
   return format_gl_data_format[format];
 }
 
-unsigned int GLInternalFormat(ResourceFormat format) {
-  // In GLES2, the internal format must match the texture format. (It no longer
-  // is true in GLES3, however it still holds for the BGRA extension.)
-  // GL_EXT_texture_norm16 follows GLES3 semantics and only exposes a sized
-  // internal format (GL_R16_EXT).
-  switch (format) {
-    case R16_EXT:
-      return GL_R16_EXT;
-    case RG16_EXT:
-      return GL_RG16_EXT;
-    case ETC1:
-      return GL_ETC1_RGB8_OES;
-    case RGBA_1010102:
-    case BGRA_1010102:
-      return GL_RGB10_A2_EXT;
-    default:
-      return GLDataFormat(format);
-  }
-}
-
 unsigned int TextureStorageFormat(ResourceFormat format,
                                   bool use_angle_rgbx_format) {
   switch (format) {
