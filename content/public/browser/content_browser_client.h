@@ -2248,11 +2248,22 @@ class CONTENT_EXPORT ContentBrowserClient {
                               absl::optional<content::SmsFetchFailureType>)>
           callback);
 
-  // Check whether paste is allowed. To paste, an implementation may require a
-  // `render_frame_host` to have user activation or various permissions.
-  // Primary checks should be done in the renderer, to allow for errors to be
-  // emitted, but this allows for a security recheck in the browser in case of
-  // compromised renderers.
+  // Uploads an enterprise legacy tech event to the enterprise management server
+  // if the `url` that triggers the event is matched to any enterprise policies
+  // that are set by administrators.
+  virtual void ReportLegacyTechEvent(
+      content::RenderFrameHost* render_frame_host,
+      const std::string type,
+      const GURL& url,
+      const std::string& filename,
+      uint64_t line,
+      uint64_t column);
+
+  // Check whether paste is allowed. To paste, an implementation may require
+  // a `render_frame_host` to have user activation or various permissions.
+  // Primary checks should be done in the renderer, to allow for errors to
+  // be emitted, but this allows for a security recheck in the browser in
+  // case of compromised renderers.
   //
   // Due to potential race conditions, permissions may be disallowed here in
   // uncompromised renderers. For example, a permission may be granted when

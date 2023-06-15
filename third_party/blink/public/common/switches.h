@@ -60,6 +60,7 @@ BLINK_COMMON_EXPORT extern const char
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottlingPolicy_ForceEnable[];
 BLINK_COMMON_EXPORT extern const char kIntensiveWakeUpThrottlingPolicy[];
+BLINK_COMMON_EXPORT extern const char kLegacyTechReportPolicyEnabled[];
 BLINK_COMMON_EXPORT extern const char kJavaScriptFlags[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerHeight[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerWidth[];

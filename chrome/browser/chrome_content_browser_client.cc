@@ -66,6 +66,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
+#include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -2797,6 +2799,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                       kSendMouseEventsDisabledFormControlsPolicy_ForceEnable
                 : blink::switches::
                       kSendMouseEventsDisabledFormControlsPolicy_ForceDisable);
+      }
+
+      if (!prefs->GetList(enterprise_reporting::kCloudLegacyTechReportAllowlist)
+               .empty()) {
+        command_line->AppendSwitch(
+            blink::switches::kLegacyTechReportPolicyEnabled);
       }
 
       // The IntensiveWakeUpThrottling feature is typically managed via a
@@ -6804,6 +6812,25 @@ ChromeContentBrowserClient::GetUrlLookupService(
         profile);
   }
   return nullptr;
+}
+
+void ChromeContentBrowserClient::ReportLegacyTechEvent(
+    content::RenderFrameHost* render_frame_host,
+    const std::string type,
+    const GURL& url,
+    const std::string& filename,
+    uint64_t line,
+    uint64_t column) {
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host);
+  DCHECK(web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+  enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile)
+      ->ReportEvent(type, url, filename, line, column);
 }
 
 bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {

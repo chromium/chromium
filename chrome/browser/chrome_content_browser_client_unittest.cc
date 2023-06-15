@@ -20,12 +20,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -1064,6 +1066,22 @@ TEST_F(ChromeContentBrowserClientSwitchTest,
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
   EXPECT_FALSE(result.HasSwitch(
       switches::kDisableBackForwardCacheForCacheControlNoStorePage));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportDisabled) {
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(
+      result.HasSwitch(blink::switches::kLegacyTechReportPolicyEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportEnabled) {
+  base::Value::List policy;
+  policy.Append("www.example.com");
+  profile()->GetPrefs()->SetList(
+      enterprise_reporting::kCloudLegacyTechReportAllowlist, std::move(policy));
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(
+      result.HasSwitch(blink::switches::kLegacyTechReportPolicyEnabled));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

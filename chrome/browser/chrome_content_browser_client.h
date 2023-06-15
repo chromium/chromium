@@ -969,6 +969,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_enterprise_lookup_enabled,
       bool is_consumer_lookup_enabled);
 
+  // Try to upload an enterprise legacy tech event to the enterprise management
+  // server for admins.
+  void ReportLegacyTechEvent(content::RenderFrameHost* render_frame_host,
+                             const std::string type,
+                             const GURL& url,
+                             const std::string& filename,
+                             uint64_t line,
+                             uint64_t column) override;
+
   void SafeBrowsingWebApiHandshakeChecked(
       std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
       int process_id,

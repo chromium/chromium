@@ -119,6 +119,11 @@ extern const char kIntensiveWakeUpThrottlingPolicy[] =
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceDisable[] = "0";
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceEnable[] = "1";
 
+// A command line to indicate if there ia any legacy tech report urls being set.
+// If so, we will send report from blink to browser process.
+extern const char kLegacyTechReportPolicyEnabled[] =
+    "legacy-tech-report-policy-enabled";
+
 // Sets the width and height above which a composited layer will get tiled.
 const char kMaxUntiledLayerHeight[] = "max-untiled-layer-height";
 const char kMaxUntiledLayerWidth[] = "max-untiled-layer-width";

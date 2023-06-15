@@ -1300,6 +1300,14 @@ base::OnceClosure ContentBrowserClient::FetchRemoteSms(
   return base::NullCallback();
 }
 
+void ContentBrowserClient::ReportLegacyTechEvent(
+    content::RenderFrameHost* render_frame_host,
+    const std::string type,
+    const GURL& url,
+    const std::string& filename,
+    uint64_t line,
+    uint64_t column) {}
+
 bool ContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   return true;
