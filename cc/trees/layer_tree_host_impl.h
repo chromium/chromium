@@ -967,8 +967,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // is available to raster the tree.
   void NotifyPendingTreeFullyPainted();
 
-  // Returns true if status changed.
-  bool UpdateGpuRasterizationStatus();
+  void UpdateRasterCapabilities();
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
   bool AnimateScrollbars(base::TimeTicks monotonic_time);

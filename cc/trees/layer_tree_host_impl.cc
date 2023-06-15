@@ -91,6 +91,7 @@
 #include "cc/trees/mobile_optimized_viewport_util.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "cc/trees/raster_capabilities.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
@@ -522,9 +523,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   frame_trackers_.set_custom_tracker_results_added_callback(
       base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
                           weak_factory_.GetWeakPtr()));
-
-  raster_caps_.use_dmsaa_for_tiles =
-      base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -2856,48 +2854,46 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
   return settings_.gpu_rasterization_msaa_sample_count;
 }
 
-bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
+void LayerTreeHostImpl::UpdateRasterCapabilities() {
   CHECK(layer_tree_frame_sink_);
 
-  RasterCapabilities new_raster_caps;
-  [this](RasterCapabilities& gpu_caps) {
-    if (settings_.gpu_rasterization_disabled) {
-      return;
-    }
+  raster_caps_ = RasterCapabilities();
 
-    if (!(layer_tree_frame_sink_->context_provider() &&
-          layer_tree_frame_sink_->worker_context_provider())) {
-      return;
-    }
+  auto* context_provider = layer_tree_frame_sink_->context_provider();
+  auto* worker_context_provider =
+      layer_tree_frame_sink_->worker_context_provider();
 
-    viz::RasterContextProvider* context_provider =
-        layer_tree_frame_sink_->worker_context_provider();
-    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-        context_provider);
-
-    const auto& caps = context_provider->ContextCapabilities();
-    gpu_caps.use_gpu_rasterization = caps.gpu_rasterization;
-    if (!gpu_caps.use_gpu_rasterization) {
-      return;
-    }
-
-    DCHECK(caps.supports_oop_raster);
-    gpu_caps.can_use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  }(new_raster_caps);
-
-  // Changes in MSAA settings require that we re-raster resources for the
-  // settings to take effect. But we don't need to trigger any raster
-  // invalidation in this case since these settings change only if the context
-  // changed. In this case we already re-allocate and re-raster all resources.
-  if (new_raster_caps.use_gpu_rasterization ==
-          raster_caps().use_gpu_rasterization &&
-      new_raster_caps.can_use_msaa == raster_caps().can_use_msaa) {
-    return false;
+  if (!context_provider) {
+    // No context provider means software raster + compositing.
+    CHECK(!worker_context_provider);
+    raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
+    return;
   }
 
-  raster_caps_.use_gpu_rasterization = new_raster_caps.use_gpu_rasterization;
-  raster_caps_.can_use_msaa = new_raster_caps.can_use_msaa;
-  return true;
+  if (!worker_context_provider) {
+    // For Android UI it's possible to only have a compositor context and no
+    // worker context. Raster is not supported in this mode.
+    raster_caps_.max_texture_size =
+        context_provider->ContextCapabilities().max_texture_size;
+    return;
+  }
+
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_lock(
+      worker_context_provider);
+  const auto& context_caps = worker_context_provider->ContextCapabilities();
+
+  raster_caps_.max_texture_size = context_caps.max_texture_size;
+
+  if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
+    return;
+  }
+
+  // GPU rasterization is enabled if we get this far.
+  CHECK(context_caps.supports_oop_raster);
+  raster_caps_.use_gpu_rasterization = true;
+
+  raster_caps_.can_use_msaa =
+      !context_caps.msaa_is_slow && !context_caps.avoid_stencil_buffers;
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
@@ -3863,37 +3859,12 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   layer_tree_frame_sink_ = layer_tree_frame_sink;
   has_valid_layer_tree_frame_sink_ = true;
 
-  auto* context_provider = layer_tree_frame_sink_->context_provider();
-  auto* worker_context_provider =
-      layer_tree_frame_sink_->worker_context_provider();
-
-  if (worker_context_provider) {
-    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-        worker_context_provider);
-    raster_caps_.max_texture_size =
-        worker_context_provider->ContextCapabilities().max_texture_size;
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, DMSAA is only enabled for vulkan until GL regressions are
-    // fixed.
-    raster_caps_.use_dmsaa_for_tiles &=
-        worker_context_provider->ContextCapabilities().using_vulkan_context;
-#endif
-  } else if (context_provider) {
-    raster_caps_.max_texture_size =
-        context_provider->ContextCapabilities().max_texture_size;
-  } else {
-    raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
-  }
+  UpdateRasterCapabilities();
 
   resource_pool_ = std::make_unique<ResourcePool>(
-      &resource_provider_, context_provider, GetTaskRunner(),
-      ResourcePool::kDefaultExpirationDelay,
+      &resource_provider_, layer_tree_frame_sink_->context_provider(),
+      GetTaskRunner(), ResourcePool::kDefaultExpirationDelay,
       settings_.disallow_non_exact_resource_reuse);
-
-  // Since the new context may support GPU raster or be capable of MSAA, update
-  // status here. We don't need to check the return value since we are
-  // recreating all resources already.
-  UpdateGpuRasterizationStatus();
 
   // See note in LayerTreeImpl::UpdateDrawProperties, new LayerTreeFrameSink
   // means a new max texture size which affects draw properties. Also, if the

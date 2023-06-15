@@ -11,14 +11,13 @@ namespace cc {
 
 struct CC_EXPORT RasterCapabilities {
   RasterCapabilities() = default;
-  RasterCapabilities(const RasterCapabilities& other) = delete;
-  RasterCapabilities& operator=(const RasterCapabilities& other) = delete;
+  RasterCapabilities(const RasterCapabilities& other) = default;
+  RasterCapabilities& operator=(const RasterCapabilities& other) = default;
   ~RasterCapabilities() = default;
 
   bool use_gpu_rasterization = false;
 
   bool can_use_msaa = false;
-  bool use_dmsaa_for_tiles = false;
 
   // The maximum size (either width or height) that any texture can be. Also
   // holds a reasonable value for software compositing bitmaps.
