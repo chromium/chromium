@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -255,11 +256,15 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiIconEnterprise) {
   std::unique_ptr<TestingProfile> profile_supervised =
       builder_supervised.Build();
 
-  EXPECT_EQ(vector_icons::kBusinessIcon.name,
+  EXPECT_EQ(features::IsChromeRefresh2023()
+                ? vector_icons::kBusinessChromeRefreshIcon.name
+                : vector_icons::kBusinessIcon.name,
             chrome::GetManagedUiIcon(profile.get()).name);
   // Enterprise management takes precedence over supervision in the management
   // UI.
-  EXPECT_EQ(vector_icons::kBusinessIcon.name,
+  EXPECT_EQ(features::IsChromeRefresh2023()
+                ? vector_icons::kBusinessChromeRefreshIcon.name
+                : vector_icons::kBusinessIcon.name,
             chrome::GetManagedUiIcon(profile_supervised.get()).name);
 }
 
