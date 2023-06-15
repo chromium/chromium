@@ -173,6 +173,7 @@ public class AccessibilityState {
             AccessibilityState::onApplicationStateChange;
     private static ServicesObserver sAccessibilityServicesObserver;
     private static ServicesObserver sAnimationDurationScaleObserver;
+    private static AccessibilityManager sAccessibilityManager;
 
     /**
      * Whether the user has enabled the Android-OS speak password when in accessibility mode,
@@ -263,6 +264,28 @@ public class AccessibilityState {
         return sRecommendedTimeoutMultiplier;
     }
 
+    /**
+     * Convenience method to send an AccessibilityEvent to the system's AccessibilityManager
+     * without requiring a hard dependency on AccessibilityManager or an instance of a View. If
+     * this method is called when accessibility has been disabled (e.g. stale state after calling
+     * off the main thread), then the event will be ignored. If an event is sent, this does not
+     * guarantee a correct user experience for downstream AT.
+     *
+     * Note: This should only be used in exceptional situations. Apps can generally achieve the
+     *       correct behavior for accessibility with a semantically correct UI. Deprecated to
+     *       prompt dev to reconsider their approach.
+     *
+     * @param event AccessibilityEvent to send to the AccessibilityManager
+     */
+    @Deprecated
+    public static void sendAccessibilityEvent(AccessibilityEvent event) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        if (sAccessibilityManager.isEnabled()) {
+            sAccessibilityManager.sendAccessibilityEvent(event);
+        }
+    }
+
     static void updateAccessibilityServices() {
         if (!sInitialized) {
             sState = new State(false, false, false, false, false, false, false, false);
@@ -289,21 +312,22 @@ public class AccessibilityState {
         boolean isAnyAccessibilityServiceEnabled = false;
         boolean isAccessibilityToolPresent = false;
 
-        // Get the list of currently running accessibility services.
         Context context = ContextUtils.getApplicationContext();
-        AccessibilityManager accessibilityManager =
-                (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        sAccessibilityManager =
+                (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.ACCESSIBILITY_SERVICE);
 
         sRecommendedTimeoutMultiplier = 1.0f;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             sRecommendedTimeoutMultiplier =
-                    accessibilityManager.getRecommendedTimeoutMillis(
+                    sAccessibilityManager.getRecommendedTimeoutMillis(
                             100, FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS)
                     / 100.0f;
         }
 
+        // Get the list of currently running accessibility services.
         List<AccessibilityServiceInfo> services =
-                accessibilityManager.getEnabledAccessibilityServiceList(
+                sAccessibilityManager.getEnabledAccessibilityServiceList(
                         AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
         sServiceIds = new String[services.size()];
         ArrayList<String> runningServiceNames = new ArrayList<String>();
