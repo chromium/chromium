@@ -226,8 +226,10 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
   input_context->metadata_args.emplace("url", validated_url_);
-  input_context->metadata_args.emplace("maskable_icon",
-                                       a2hs_params_->HasMaskablePrimaryIcon());
+  input_context->metadata_args.emplace(
+      "maskable_icon",
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          a2hs_params_->HasMaskablePrimaryIcon()));
   segmentation_platform_service_->GetClassificationResult(
       segmentation_platform::kWebAppInstallationPromoKey, prediction_options,
       input_context,
