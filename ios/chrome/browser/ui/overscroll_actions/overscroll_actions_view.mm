@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -902,7 +903,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   _style = style;
   switch (self.style) {
     case OverscrollStyle::NTP_NON_INCOGNITO:
-      self.backgroundColor = ntp_home::NTPBackgroundColor();
+      self.backgroundColor = IsMagicStackEnabled()
+                                 ? [UIColor colorNamed:@"ntp_background_color"]
+                                 : ntp_home::NTPBackgroundColor();
       break;
     case OverscrollStyle::NTP_INCOGNITO:
       self.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
