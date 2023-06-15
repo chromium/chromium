@@ -1483,14 +1483,14 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
                   sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0;
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
-              if (config_.hdr_metadata.has_value()) {
+              if (!config_.hdr_metadata.has_value()) {
                 config_.hdr_metadata.emplace();
               }
               config_.hdr_metadata->smpte_st_2086 =
                   sei_msg.mastering_display_info.ToGfx();
               break;
             case H265SEIMessage::kSEIContentLightLevelInfo:
-              if (config_.hdr_metadata.has_value()) {
+              if (!config_.hdr_metadata.has_value()) {
                 config_.hdr_metadata.emplace();
               }
               config_.hdr_metadata->cta_861_3 =
