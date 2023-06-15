@@ -1024,6 +1024,7 @@ TEST_F(DIPSBounceDetectorTest, StorageRecording_NotThrottled_AfterRefresh) {
 
 const std::vector<std::string>& GetAllRedirectMetrics() {
   static const std::vector<std::string> kAllRedirectMetrics = {
+      // clang-format off
       "ClientBounceDelay",
       "CookieAccessType",
       "HasStickyActivation",
@@ -1034,6 +1035,8 @@ const std::vector<std::string>& GetAllRedirectMetrics() {
       "RedirectChainLength",
       "RedirectType",
       "SiteEngagementLevel",
+      "WebAuthnAssertionRequestSucceeded",
+      // clang-format on
   };
   return kAllRedirectMetrics;
 }
@@ -1079,7 +1082,6 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
       /*expected_count=*/1);
 }
 
-// TODO(crbug.com/1446678): Ensure test coverage for web authn assertions.
 TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -1089,6 +1091,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   NavigateTo("http://b.test", kWithUserGesture);
   AdvanceDIPSTime(base::Seconds(2));
   AccessClientCookie(CookieOperation::kRead);
+  TriggerWebAuthnAssertionRequestSucceeded();
   StartNavigation("http://c.test", kNoUserGesture)
       .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://d.test")
@@ -1112,7 +1115,8 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kClient),
-                  Pair("SiteEngagementLevel", 0)));
+                  Pair("SiteEngagementLevel", 0),
+                  Pair("WebAuthnAssertionRequestSucceeded", true)));
 
   EXPECT_THAT(URLForRedirectSourceId(&ukm_recorder, ukm_entries[1].source_id),
               Eq("c.test/"));
@@ -1126,7 +1130,8 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 1), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kServer),
-                  Pair("SiteEngagementLevel", 1)));
+                  Pair("SiteEngagementLevel", 1),
+                  Pair("WebAuthnAssertionRequestSucceeded", false)));
 }
 
 using ChainPair =

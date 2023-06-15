@@ -7775,8 +7775,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HasStickyActivation" enum="BooleanHasUserActivation">
     <summary>
-      Populated for client redirects only. Whether the user ever interacted with
-      the page. (See the HTML spec for a definition.)
+      Populated for client redirects only. Whether the user interacted with the
+      page (See the HTML spec for a definition). This info is persistem within
+      DIPS for a duration of `dips::kInteractionTtl`.
     </summary>
   </metric>
   <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
@@ -7822,6 +7823,14 @@ be describing additional metrics about the same event.
     <summary>
       The site engagement level of the redirect URL, at the time the redirect
       took place.
+    </summary>
+  </metric>
+  <metric name="WebAuthnAssertionRequestSucceeded"
+      enum="BooleanWebAuthnAssertionRequestSucceeded">
+    <summary>
+      Populated for client redirects only. Whether the user triggered a
+      successful web authn assertion. This info is persistem within DIPS for a
+      duration of `dips::kInteractionTtl`.
     </summary>
   </metric>
 </event>

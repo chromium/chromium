@@ -13769,6 +13769,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="WebAPK notification permission enabled"/>
 </enum>
 
+<enum name="BooleanWebAuthnAssertionRequestSucceeded">
+  <int value="0" label="Did not get a successful web authn assertion"/>
+  <int value="1" label="Got a successful web authn assertion"/>
+</enum>
+
 <enum name="BooleanWillReadFrequently">
   <int value="0" label="Not initialized to be read frequently"/>
   <int value="1" label="Initialized to be read frequently"/>
