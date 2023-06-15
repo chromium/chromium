@@ -9308,6 +9308,7 @@ test("unit_tests") {
       "../browser/supervised_user/kids_chrome_management/kids_profile_manager_unittest.cc",
       "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
       "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
+      "../browser/supervised_user/supervised_user_service_unittest.cc",
     ]
     deps += [ "//components/supervised_user/core/browser:fetcher" ]
 
