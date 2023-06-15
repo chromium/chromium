@@ -5789,6 +5789,7 @@ data/gpu/pixel_repeated_webgl_to_2d.html
 data/gpu/pixel_scissor.html
 data/gpu/pixel_scissor_expectations.json
 data/gpu/pixel_svg_huge.html
+data/gpu/pixel_video_av1.html
 data/gpu/pixel_video_backdrop_filter.html
 data/gpu/pixel_video_context_loss.html
 data/gpu/pixel_video_from_canvas.js
@@ -5796,6 +5797,7 @@ data/gpu/pixel_video_from_canvas_2d.html
 data/gpu/pixel_video_from_canvas_2d_alpha.html
 data/gpu/pixel_video_from_canvas_webgl2.html
 data/gpu/pixel_video_from_canvas_webgl2_alpha.html
+data/gpu/pixel_video_hevc.html
 data/gpu/pixel_video_media_stream_incompatible_stride.html
 data/gpu/pixel_video_media_stream_test.js
 data/gpu/pixel_video_mp4.html

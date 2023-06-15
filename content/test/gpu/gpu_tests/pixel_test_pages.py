@@ -272,6 +272,22 @@ class PixelTestPages():
                           pixel_delta_threshold=30,
                           edge_threshold=20,
                           ignored_border_thickness=1)),
+        PixelTestPage('pixel_video_av1.html?width=240&height=135&use_timer=1',
+                      base_name + '_Video_AV1',
+                      test_rect=[0, 0, 240, 135],
+                      matching_algorithm=algo.SobelMatchingAlgorithm(
+                          max_different_pixels=114000,
+                          pixel_delta_threshold=30,
+                          edge_threshold=20,
+                          ignored_border_thickness=1)),
+        PixelTestPage('pixel_video_hevc.html?width=240&height=135&use_timer=1',
+                      base_name + '_Video_HEVC',
+                      test_rect=[0, 0, 240, 135],
+                      matching_algorithm=algo.SobelMatchingAlgorithm(
+                          max_different_pixels=114000,
+                          pixel_delta_threshold=30,
+                          edge_threshold=20,
+                          ignored_border_thickness=1)),
         PixelTestPage(
             'pixel_video_media_stream_incompatible_stride.html',
             base_name + '_Video_Media_Stream_Incompatible_Stride',

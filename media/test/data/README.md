@@ -502,6 +502,23 @@ converted from four-colors.mp4 by ffmpeg.
 A 960x540 yuva420p vp9 video with 4 color blocks (Y,R,G,B) in every frame. This
 is converted from four-colors.mp4 by adding an opacity of 0.5 using ffmpeg.
 
+
+#### four-colors-av1.mp4
+```
+ffmpeg -y -i four-colors.png -t 2 \
+       -vf "colorspace=bt709:iall=bt709:fast=1,scale=960:540,setsar=1:1" \
+       -c:v libaom-av1 -b:v 2M \
+       -pix_fmt yuv420p -movflags +write_colr four-colors-av1.mp4
+```
+
+#### four-colors-hevc.mp4
+```
+ffmpeg -y -i four-colors.png -t 2 \
+       -vf "colorspace=bt709:iall=bt709:fast=1,scale=960:540,setsar=1:1" \
+       -c:v libx265 -crf 26 \
+       -pix_fmt yuv420p -movflags +write_colr four-colors-hevc.mp4
+```
+
 #### bear-320x180-hi10p.mp4
 #### bear-320x240-vp9_profile2.webm
 VP9 encoded video with profile 2 (10-bit, 4:2:0).

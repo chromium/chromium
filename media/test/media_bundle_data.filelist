@@ -332,6 +332,8 @@ data/eme_player_js/widevine_player.js
 data/eme_remove_session_test.html
 data/encrypted_frame_size_change.html
 data/four-colors-aspect-4x3.mp4
+data/four-colors-av1.mp4
+data/four-colors-hevc.mp4
 data/four-colors-incompatible-stride.y4m
 data/four-colors-rot-180.mp4
 data/four-colors-rot-270.mp4

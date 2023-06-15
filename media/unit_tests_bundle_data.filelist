@@ -344,6 +344,8 @@
 //media/test/data/eme_remove_session_test.html
 //media/test/data/encrypted_frame_size_change.html
 //media/test/data/four-colors-aspect-4x3.mp4
+//media/test/data/four-colors-av1.mp4
+//media/test/data/four-colors-hevc.mp4
 //media/test/data/four-colors-incompatible-stride.y4m
 //media/test/data/four-colors-rot-180.mp4
 //media/test/data/four-colors-rot-270.mp4
