@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
@@ -1984,6 +1985,12 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
     blink::mojom::GetAssertionAuthenticatorResponsePtr response,
     blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   DCHECK(get_assertion_response_callback_);
+
+  if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
+    static_cast<RenderFrameHostImpl*>(GetRenderFrameHost())
+        ->WebAuthnAssertionRequestSucceeded();
+  }
+
   std::move(get_assertion_response_callback_)
       .Run(status, std::move(response), std::move(dom_exception_details));
   Cleanup();

@@ -264,6 +264,9 @@ class DIPSBounceDetectorTest : public ::testing::Test {
   }
 
   void ActivatePage() { detector_.OnUserActivation(); }
+  void TriggerWebAuthnAssertionRequestSucceeded() {
+    detector_.WebAuthnAssertionRequestSucceeded();
+  }
 
   void AdvanceDIPSTime(base::TimeDelta delta) {
     task_environment_.AdvanceClock(delta);
@@ -909,6 +912,57 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_NotThrottled_AfterRefresh) {
                                  /*event=*/DIPSRecordedEvent::kInteraction)));
 }
 
+TEST_F(DIPSBounceDetectorTest, successfulWebAuthnAssertionRecording_Throttled) {
+  base::Time first_time = GetCurrentTime();
+  NavigateTo("http://a.test", kNoUserGesture);
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  base::Time last_time = GetCurrentTime();
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  // Verify only the first and last web authn assertions were recorded. The
+  // second assertion happened less than |kTimestampUpdateInterval| after the
+  // first, so it should be ignored.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
+  EXPECT_THAT(
+      GetRecordedEvents(),
+      testing::UnorderedElementsAre(
+          MakeEventTuple("http://a.test", first_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion),
+          MakeEventTuple("http://a.test", last_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion)));
+}
+
+TEST_F(DIPSBounceDetectorTest,
+       successfulWebAuthnAssertionRecording_NotThrottled_AfterRefresh) {
+  base::Time first_time = GetCurrentTime();
+  NavigateTo("http://a.test", kNoUserGesture);
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  base::Time last_time = GetCurrentTime();
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  // Verify the first and last web authn assertions were both recorded. Despite
+  // the last assertion happening less than |kTimestampUpdateInterval| after the
+  // first, it happened after the page was refreshed, so it should be recorded.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
+  EXPECT_THAT(
+      GetRecordedEvents(),
+      testing::UnorderedElementsAre(
+          MakeEventTuple("http://a.test", first_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion),
+          MakeEventTuple("http://a.test", last_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion)));
+}
+
 TEST_F(DIPSBounceDetectorTest, StorageRecording_Throttled) {
   base::Time first_time = GetCurrentTime();
 
@@ -1025,6 +1079,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
       /*expected_count=*/1);
 }
 
+// TODO(crbug.com/1446678): Ensure test coverage for web authn assertions.
 TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -1108,7 +1163,8 @@ DIPSRedirectInfoPtr MakeClientRedirect(
       /*source_id=*/ukm::SourceId(),
       /*time=*/base::Time::Now(),
       /*client_bounce_delay=*/base::Seconds(1),
-      /*has_sticky[[_activation=*/false);
+      /*has_sticky_activation=*/false,
+      /*web_authn_assertion_request_succeeded*/ false);
 }
 
 MATCHER_P(HasUrl, url, "") {

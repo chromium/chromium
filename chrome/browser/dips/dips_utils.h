@@ -213,6 +213,7 @@ inline GURL GetFirstPartyURL(content::RenderFrameHost* rfh) {
 enum class DIPSRecordedEvent {
   kStorage,
   kInteraction,
+  kWebAuthnAssertion,
 };
 
 // RedirectCategory is basically the cross-product of SiteDataAccessType and a

@@ -28,7 +28,8 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                        source_id,
                        time,
                        /*client_bounce_delay=*/base::TimeDelta(),
-                       /*has_sticky_activation=*/false) {
+                       /*has_sticky_activation=*/false,
+                       /*web_authn_assertion_request_succeeded=*/false) {
   // This constructor should only be called for server-side redirects;
   // client-side redirects should call the constructor with extra arguments.
   DCHECK_EQ(redirect_type, DIPSRedirectType::kServer);
@@ -40,13 +41,16 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    ukm::SourceId source_id,
                                    base::Time time,
                                    base::TimeDelta client_bounce_delay,
-                                   bool has_sticky_activation)
+                                   bool has_sticky_activation,
+                                   bool web_authn_assertion_request_succeeded)
     : url(url),
       redirect_type(redirect_type),
       access_type(access_type),
       source_id(source_id),
       time(time),
       client_bounce_delay(client_bounce_delay),
-      has_sticky_activation(has_sticky_activation) {}
+      has_sticky_activation(has_sticky_activation),
+      web_authn_assertion_request_succeeded(
+          web_authn_assertion_request_succeeded) {}
 
 DIPSRedirectInfo::~DIPSRedirectInfo() = default;

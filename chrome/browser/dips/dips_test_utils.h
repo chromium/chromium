@@ -89,6 +89,13 @@ constexpr char kStorageAccessScript[] = R"(
 
 using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
 
+// Helper function to close (and waits for closure of) a `web_contents` tab.
+void CloseTab(content::WebContents* web_contents);
+
+// Helper function for performing client side cookie access via JS.
+void AccessCookieViaJSIn(content::WebContents* web_contents,
+                         content::RenderFrameHost* frame);
+
 class URLCookieAccessObserver : public content::WebContentsObserver {
  public:
   URLCookieAccessObserver(content::WebContents* web_contents,

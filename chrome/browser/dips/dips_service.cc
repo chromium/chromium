@@ -442,6 +442,7 @@ void DIPSService::HandleRedirect(
         .SetClientBounceDelay(
             BucketizeBounceDelay(redirect.client_bounce_delay))
         .SetHasStickyActivation(redirect.has_sticky_activation)
+        // TODO(crbug.com/1446678): Record UKM metric.
         .Record(ukm::UkmRecorder::Get());
   }
 

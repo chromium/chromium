@@ -56,6 +56,7 @@ class ClientBounceDetectionState {
   base::TimeTicks page_load_time;
   absl::optional<base::Time> last_activation_time;
   absl::optional<base::Time> last_storage_time;
+  absl::optional<base::Time> last_successful_web_authn_assertion_time;
   SiteDataAccessType site_data_access_type = SiteDataAccessType::kUnknown;
 };
 
@@ -240,6 +241,9 @@ class DIPSBounceDetector {
   // Only records a new user activation event once per
   // |kTimestampUpdateInterval| for a given page.
   void OnUserActivation();
+  // Only records a new Web authn assertion event once per
+  // |kTimestampUpdateInterval| for a given page.
+  void WebAuthnAssertionRequestSucceeded();
   // Makes a call to process the current chain before its state is destroyed by
   // the tab closure.
   void BeforeDestruction();
@@ -316,7 +320,7 @@ class DIPSWebContentsObserver
                    const base::Time& time) override;
   void IncrementPageSpecificBounceCount(const GURL& final_url) override;
 
-  // WebContentsObserver overrides:
+  // Start WebContentsObserver overrides:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
@@ -327,7 +331,10 @@ class DIPSWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
+  void WebAuthnAssertionRequestSucceeded(
+      content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
+  // End WebContentsObserver overrides:
 
   // Start SiteDataObserver overrides:
   void OnSiteDataAccessed(

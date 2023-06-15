@@ -7194,6 +7194,10 @@ void RenderFrameHostImpl::DidReceiveUserActivation() {
   delegate_->DidReceiveUserActivation(this);
 }
 
+void RenderFrameHostImpl::WebAuthnAssertionRequestSucceeded() {
+  delegate_->WebAuthnAssertionRequestSucceeded(this);
+}
+
 void RenderFrameHostImpl::MaybeIsolateForUserActivation() {
   // If user activation occurs in a frame that previously triggered a site
   // isolation hint based on the Cross-Origin-Opener-Policy header, isolate the

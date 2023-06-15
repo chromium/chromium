@@ -375,6 +375,10 @@ void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
           .WithArgs(url, time, dips_service_->GetCookieMode());
       return;
     }
+    case DIPSRecordedEvent::kWebAuthnAssertion: {
+      // TODO(crbug.com/1446678): Record this events in a dedicated db column.
+      return;
+    }
   }
 }
 
@@ -502,7 +506,10 @@ void DIPSBounceDetector::DidStartNavigation(
           /*time=*/clock_->Now(),
           /*client_bounce_delay=*/client_bounce_delay,
           /*has_sticky_activation=*/
-          client_detection_state_->last_activation_time.has_value());
+          client_detection_state_->last_activation_time.has_value(),
+          /*web_authn_assertion_request_succeeded=*/
+          client_detection_state_->last_successful_web_authn_assertion_time
+              .has_value());
 }
 
 void DIPSWebContentsObserver::OnSiteDataAccessed(
@@ -737,6 +744,36 @@ void DIPSBounceDetector::OnUserActivation() {
   }
 
   delegate_->RecordEvent(DIPSRecordedEvent::kInteraction, url, now);
+}
+
+void DIPSBounceDetector::WebAuthnAssertionRequestSucceeded() {
+  GURL url = delegate_->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  base::Time now = clock_->Now();
+  if (client_detection_state_.has_value()) {
+    // To decrease the number of writes made to the database, after a user web
+    // authn assertion happens, subsequent events will not be recorded for the
+    // next `kTimestampUpdateInterval`.
+    if (!ShouldUpdateTimestamp(
+            client_detection_state_->last_successful_web_authn_assertion_time,
+            now)) {
+      return;
+    }
+    client_detection_state_->last_successful_web_authn_assertion_time = now;
+  }
+
+  delegate_->RecordEvent(DIPSRecordedEvent::kWebAuthnAssertion, url, now);
+}
+
+void DIPSWebContentsObserver::WebAuthnAssertionRequestSucceeded(
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  detector_.WebAuthnAssertionRequestSucceeded();
 }
 
 bool DIPSBounceDetector::ShouldUpdateTimestamp(

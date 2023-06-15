@@ -8,12 +8,29 @@
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using content::CookieAccessDetails;
 using content::NavigationHandle;
 using content::RenderFrameHost;
 using content::WebContents;
+
+void CloseTab(content::WebContents* web_contents) {
+  content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
+  web_contents->Close();
+  destruction_watcher.Wait();
+}
+
+void AccessCookieViaJSIn(content::WebContents* web_contents,
+                         content::RenderFrameHost* frame) {
+  FrameCookieAccessObserver observer(web_contents, frame,
+                                     CookieOperation::kChange);
+  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+}
 
 URLCookieAccessObserver::URLCookieAccessObserver(WebContents* web_contents,
                                                  const GURL& url,

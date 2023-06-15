@@ -578,6 +578,11 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) {
   }
 
+  // Called when the given `render_frame_host` successfully completes a Web
+  // Authentication API assertion request.
+  virtual void WebAuthnAssertionRequestSucceeded(
+      RenderFrameHost* render_frame_host) {}
+
   // Invoked when the display state of the frame changes.
   virtual void FrameDisplayStateChanged(RenderFrameHost* render_frame_host,
                                         bool is_display_none) {}

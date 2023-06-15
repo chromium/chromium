@@ -214,6 +214,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) {}
 
+  // Called when a RenderFrameHost gets a successful web authn assertion
+  // request.
+  virtual void WebAuthnAssertionRequestSucceeded(
+      RenderFrameHostImpl* render_frame_host) {}
+
   // Binds a DisplayCutoutHost object associated to |render_frame_host|.
   virtual void BindDisplayCutoutHost(
       RenderFrameHostImpl* render_frame_host,

@@ -7880,6 +7880,16 @@ void WebContentsImpl::DidReceiveUserActivation(
                              render_frame_host);
 }
 
+void WebContentsImpl::WebAuthnAssertionRequestSucceeded(
+    RenderFrameHostImpl* render_frame_host) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::WebAuthnAssertionRequestSucceeded",
+                        "render_frame_host", render_frame_host);
+  observers_.NotifyObservers(
+      &WebContentsObserver::WebAuthnAssertionRequestSucceeded,
+      render_frame_host);
+}
+
 void WebContentsImpl::BindDisplayCutoutHost(
     RenderFrameHostImpl* render_frame_host,
     mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver) {
