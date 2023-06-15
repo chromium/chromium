@@ -2585,6 +2585,12 @@ Press an assigned switch or key to remove assignment.
     Loading apps...
   </message>
 
+  <!-- Graphics tablet page (OS settings)-->
+  <!-- TODO(b/286930911): Translate string for peripherals customization launch. -->
+  <message name="IDS_SETTINGS_GRAPHICS_TABLET_TITLE" translateable="false" desc="Title of Graphics tablet settings page">
+    Graphics tablet
+  </message>
+
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">
     Connected

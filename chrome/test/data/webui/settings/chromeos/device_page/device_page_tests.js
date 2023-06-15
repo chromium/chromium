@@ -485,6 +485,16 @@ suite('SettingsDevicePage', function() {
     });
   }
 
+  /**
+   * Set enablePeripheralCustomization feature flag to true for split tests.
+   * @param {!boolean} isEnabled
+   */
+  function setPeripheralCustomizationEnabled(isEnabled) {
+    loadTimeData.overrideValues({
+      enablePeripheralCustomization: isEnabled,
+    });
+  }
+
   test(assert(TestNames.DevicePage), async function() {
     const provider = new FakeInputDeviceSettingsProvider();
     setInputDeviceSettingsProviderForTesting(provider);
@@ -508,6 +518,9 @@ suite('SettingsDevicePage', function() {
     assertFalse(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
     assertFalse(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
 
+    // enablePeripheralCustomization feature flag by default is turned on.
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
+
     // Turn off the enableInputDeviceSettingsSplit feature flag.
     setDeviceSplitEnabled(false);
     await init();
@@ -529,6 +542,11 @@ suite('SettingsDevicePage', function() {
     webUIListenerCallback('has-mouse-changed', true);
     await flushTasks();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    // Turn off the enablePeripheralCustomization feature flag.
+    setPeripheralCustomizationEnabled(false);
+    await init();
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
   });
 
   test('per-device-mouse row visibility', async function() {

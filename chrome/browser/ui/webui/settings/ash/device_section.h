@@ -85,6 +85,8 @@ class DeviceSection : public OsSettingsSection,
       crosapi::mojom::DisplayLayoutInfoPtr display_layout_info);
 
   void AddDevicePointersStrings(content::WebUIDataSource* html_source);
+  void AddDeviceGraphicsTabletStrings(
+      content::WebUIDataSource* html_source) const;
   void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) const;
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;

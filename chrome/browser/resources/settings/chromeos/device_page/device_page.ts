@@ -117,6 +117,17 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       },
 
       /**
+       * Whether users are allowed to customize buttons on their peripherals.
+       */
+      isPeripheralCustomizationEnabled: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePeripheralCustomization');
+        },
+        readOnly: true,
+      },
+
+      /**
        * Whether storage management info should be hidden.
        */
       hideStorageInfo_: {
@@ -236,6 +247,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private hasTouchpad_: boolean;
   private hasHapticTouchpad_: boolean;
   private isDeviceSettingsSplitEnabled_: boolean;
+  private isPeripheralCustomizationEnabled: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
   private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
@@ -428,6 +440,14 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
    */
   private onStylusClick_() {
     Router.getInstance().navigateTo(routes.STYLUS);
+  }
+
+  /**
+   * Handler for tapping the Graphics tablet settings menu item.
+   */
+  private onGraphicsTabletClick() {
+    // TODO(yyhyyh@): Add Graphics tablet route and subpage, then implement
+    // the click function.
   }
 
   /**

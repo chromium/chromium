@@ -47,6 +47,7 @@ var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
     return {
       enabled: [
         'ash::features::kInputDeviceSettingsSplit',
+        'ash::features::kPeripheralCustomization',
       ],
     };
   }

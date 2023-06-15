@@ -1186,7 +1186,16 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isDemoSession", DemoSession::IsDeviceInDemoMode());
 
+  html_source->AddBoolean(
+      "enableInputDeviceSettingsSplit",
+      base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit));
+
+  html_source->AddBoolean(
+      "enablePeripheralCustomization",
+      base::FeatureList::IsEnabled(ash::features::kPeripheralCustomization));
+
   AddDevicePointersStrings(html_source);
+  AddDeviceGraphicsTabletStrings(html_source);
   AddDeviceKeyboardStrings(html_source);
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
@@ -1701,10 +1710,14 @@ void DeviceSection::AddDevicePointersStrings(
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
   html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
+}
 
-  html_source->AddBoolean(
-      "enableInputDeviceSettingsSplit",
-      base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit));
+void DeviceSection::AddDeviceGraphicsTabletStrings(
+    content::WebUIDataSource* html_source) const {
+  static constexpr webui::LocalizedString kGraphicsTabletStrings[] = {
+      {"tabletTitle", IDS_SETTINGS_GRAPHICS_TABLET_TITLE},
+  };
+  html_source->AddLocalizedStrings(kGraphicsTabletStrings);
 }
 
 void DeviceSection::AddDeviceDisplayStrings(
