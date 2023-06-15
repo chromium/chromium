@@ -215,9 +215,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                                         bool needs_depth,
                                         bool needs_stencil) override;
 
-  // Resize an offscreen frame buffer.
-  bool ResizeOffscreenFramebuffer(const gfx::Size& size) override;
-
   // Make this decoder's GL context current.
   bool MakeCurrent() override;
 
@@ -769,33 +766,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool CheckErrorCallbackState();
   bool had_error_callback_ = false;
 
-  // Default framebuffer emulation
-  struct EmulatedDefaultFramebufferFormat {
-    GLenum color_texture_internal_format = GL_NONE;
-    GLenum color_texture_format = GL_NONE;
-    GLenum color_texture_type = GL_NONE;
-  };
-
-  struct EmulatedColorBuffer {
-    explicit EmulatedColorBuffer(const GLES2DecoderPassthroughImpl*);
-
-    EmulatedColorBuffer(const EmulatedColorBuffer&) = delete;
-    EmulatedColorBuffer& operator=(const EmulatedColorBuffer&) = delete;
-
-    ~EmulatedColorBuffer();
-
-    gl::GLApi* api() const { return impl_->api(); }
-
-    void Resize(const gfx::Size& new_size);
-    void Destroy(bool have_context);
-
-    raw_ptr<const GLES2DecoderPassthroughImpl> impl_;
-
-    scoped_refptr<TexturePassthrough> texture;
-
-    gfx::Size size;
-  };
-
   struct EmulatedDefaultFramebuffer {
     EmulatedDefaultFramebuffer(const GLES2DecoderPassthroughImpl*);
 
@@ -807,14 +777,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     gl::GLApi* api() const { return impl_->api(); }
 
-    // Set a new color buffer, return the old one
-    std::unique_ptr<EmulatedColorBuffer> SetColorBuffer(
-        std::unique_ptr<EmulatedColorBuffer> new_color_buffer);
-
-    // Blit this framebuffer into another same-sized color buffer
-    void Blit(EmulatedColorBuffer* target);
-
-    bool Resize(const gfx::Size& new_size);
+    bool Initialize(const gfx::Size& size);
     void Destroy(bool have_context);
 
     raw_ptr<const GLES2DecoderPassthroughImpl> impl_;
@@ -822,12 +785,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     // Service ID of the framebuffer
     GLuint framebuffer_service_id = 0;
 
-    // Color buffer texture (if not multisampled)
-    std::unique_ptr<EmulatedColorBuffer> color_texture;
-
-    gfx::Size size;
+    // Color buffer texture
+    scoped_refptr<TexturePassthrough> texture;
   };
-  EmulatedDefaultFramebufferFormat emulated_default_framebuffer_format_;
+
+  GLenum emulated_default_framebuffer_format_;
   std::unique_ptr<EmulatedDefaultFramebuffer> emulated_back_buffer_;
   std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 

@@ -565,11 +565,26 @@ GLES2DecoderPassthroughImpl::BufferShadowUpdate&
 GLES2DecoderPassthroughImpl::BufferShadowUpdate::operator=(
     BufferShadowUpdate&&) = default;
 
-GLES2DecoderPassthroughImpl::EmulatedColorBuffer::EmulatedColorBuffer(
-    const GLES2DecoderPassthroughImpl* impl)
-    : impl_(impl) {
+GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
+    EmulatedDefaultFramebuffer(const GLES2DecoderPassthroughImpl* impl)
+    : impl_(impl) {}
+
+GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
+    ~EmulatedDefaultFramebuffer() = default;
+
+bool GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Initialize(
+    const gfx::Size& size) {
+  DCHECK(!size.IsEmpty());
+
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
+  ScopedFramebufferBindingReset scoped_fbo_reset(
+      api(), impl_->supports_separate_fbo_bindings_);
   ScopedTextureBindingReset scoped_texture_reset(api(), GL_TEXTURE_2D);
+
+  api()->glGenFramebuffersEXTFn(1, &framebuffer_service_id);
+  api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
+
+  const auto format = impl_->emulated_default_framebuffer_format_;
 
   GLuint color_buffer_texture = 0;
   api()->glGenTexturesFn(1, &color_buffer_texture);
@@ -578,136 +593,23 @@ GLES2DecoderPassthroughImpl::EmulatedColorBuffer::EmulatedColorBuffer(
   api()->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   api()->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   api()->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  api()->glTexImage2DFn(GL_TEXTURE_2D, 0, format, size.width(), size.height(),
+                        0, format, GL_UNSIGNED_BYTE, nullptr);
+
   texture = new TexturePassthrough(color_buffer_texture, GL_TEXTURE_2D);
-}
-
-GLES2DecoderPassthroughImpl::EmulatedColorBuffer::~EmulatedColorBuffer() =
-    default;
-
-void GLES2DecoderPassthroughImpl::EmulatedColorBuffer::Resize(
-    const gfx::Size& new_size) {
-  if (size == new_size) {
-    return;
-  }
-  size = new_size;
-
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-  ScopedTextureBindingReset scoped_texture_reset(api(), GL_TEXTURE_2D);
-
-  DCHECK(texture);
-  DCHECK(texture->target() == GL_TEXTURE_2D);
-
-  const EmulatedDefaultFramebufferFormat& format =
-      impl_->emulated_default_framebuffer_format_;
-  api()->glBindTextureFn(texture->target(), texture->service_id());
-  api()->glTexImage2DFn(texture->target(), 0,
-                        format.color_texture_internal_format, size.width(),
-                        size.height(), 0, format.color_texture_format,
-                        format.color_texture_type, nullptr);
   UpdateBoundTexturePassthroughSize(api(), texture.get());
-}
 
-void GLES2DecoderPassthroughImpl::EmulatedColorBuffer::Destroy(
-    bool have_context) {
-  if (!have_context) {
-    texture->MarkContextLost();
-  }
-  texture = nullptr;
-}
-
-GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
-    EmulatedDefaultFramebuffer(const GLES2DecoderPassthroughImpl* impl)
-    : impl_(impl) {
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-  ScopedFramebufferBindingReset scoped_fbo_reset(
-      api(), impl_->supports_separate_fbo_bindings_);
-
-  api()->glGenFramebuffersEXTFn(1, &framebuffer_service_id);
-  api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
-
-  color_texture = std::make_unique<EmulatedColorBuffer>(impl_);
   api()->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                     GL_TEXTURE_2D,
-                                     color_texture->texture->service_id(), 0);
-}
-
-GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
-    ~EmulatedDefaultFramebuffer() = default;
-
-std::unique_ptr<GLES2DecoderPassthroughImpl::EmulatedColorBuffer>
-GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::SetColorBuffer(
-    std::unique_ptr<EmulatedColorBuffer> new_color_buffer) {
-  DCHECK(color_texture != nullptr);
-  DCHECK(new_color_buffer != nullptr);
-  DCHECK_EQ(color_texture->size, new_color_buffer->size);
-  std::unique_ptr<EmulatedColorBuffer> old_buffer(std::move(color_texture));
-  color_texture = std::move(new_color_buffer);
-
-  // Bind the new texture to this FBO
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-  ScopedFramebufferBindingReset scoped_fbo_reset(
-      api(), impl_->supports_separate_fbo_bindings_);
-  api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
-  api()->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                     GL_TEXTURE_2D,
-                                     color_texture->texture->service_id(), 0);
-
-  return old_buffer;
-}
-
-void GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Blit(
-    EmulatedColorBuffer* target) {
-  DCHECK(target != nullptr);
-  DCHECK_EQ(target->size, size);
-
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-  ScopedFramebufferBindingReset scoped_fbo_reset(
-      api(), impl_->supports_separate_fbo_bindings_);
-
-  api()->glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER, framebuffer_service_id);
-
-  GLuint temp_fbo;
-  api()->glGenFramebuffersEXTFn(1, &temp_fbo);
-  api()->glBindFramebufferEXTFn(GL_DRAW_FRAMEBUFFER, temp_fbo);
-  api()->glFramebufferTexture2DEXTFn(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                     GL_TEXTURE_2D,
-                                     target->texture->service_id(), 0);
-
-  api()->glBlitFramebufferFn(0, 0, size.width(), size.height(), 0, 0,
-                             target->size.width(), target->size.height(),
-                             GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-  api()->glDeleteFramebuffersEXTFn(1, &temp_fbo);
-}
-
-bool GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Resize(
-    const gfx::Size& new_size) {
-  DCHECK(!new_size.IsEmpty());
-  if (size == new_size) {
-    return true;
-  }
-  size = new_size;
-
-  if (color_texture) {
-    color_texture->Resize(size);
-  }
+                                     GL_TEXTURE_2D, texture->service_id(), 0);
 
   // Check that the framebuffer is complete
-  {
-    ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-    ScopedFramebufferBindingReset scoped_fbo_reset(
-        api(), impl_->supports_separate_fbo_bindings_);
-    api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
-    if (api()->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
-        GL_FRAMEBUFFER_COMPLETE) {
-      LOG(ERROR)
-          << "GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer failed "
-          << "because the resulting framebuffer was not complete.";
-      return false;
-    }
+  if (api()->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
+      GL_FRAMEBUFFER_COMPLETE) {
+    LOG(ERROR)
+        << "GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer failed "
+        << "because the resulting framebuffer was not complete.";
+    return false;
   }
-
-  DCHECK(color_texture == nullptr || color_texture->size == size);
 
   return true;
 }
@@ -717,10 +619,10 @@ void GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Destroy(
   if (have_context) {
     api()->glDeleteFramebuffersEXTFn(1, &framebuffer_service_id);
     framebuffer_service_id = 0;
+  } else {
+    texture->MarkContextLost();
   }
-  if (color_texture) {
-    color_texture->Destroy(have_context);
-  }
+  texture = nullptr;
 }
 
 GLES2DecoderPassthroughImpl::GLES2DecoderPassthroughImpl(
@@ -1111,11 +1013,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 #else
     const bool alpha_channel_requested = false;
 #endif
-    emulated_default_framebuffer_format_.color_texture_internal_format =
+    emulated_default_framebuffer_format_ =
         alpha_channel_requested ? GL_RGBA : GL_RGB;
-    emulated_default_framebuffer_format_.color_texture_format =
-        emulated_default_framebuffer_format_.color_texture_internal_format;
-    emulated_default_framebuffer_format_.color_texture_type = GL_UNSIGNED_BYTE;
 
     CheckErrorCallbackState();
     emulated_back_buffer_ = std::make_unique<EmulatedDefaultFramebuffer>(this);
@@ -1129,7 +1028,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                  attrib_helper.offscreen_framebuffer_size_for_testing.width()),
         std::max(
             64, attrib_helper.offscreen_framebuffer_size_for_testing.height()));
-    if (!emulated_back_buffer_->Resize(initial_size)) {
+    if (!emulated_back_buffer_->Initialize(initial_size)) {
       bool was_lost = CheckResetStatus();
       Destroy(true);
       LOG(ERROR) << (was_lost ? "ContextResult::kTransientFailure: "
@@ -1398,46 +1297,6 @@ void GLES2DecoderPassthroughImpl::SetDefaultFramebufferSharedImage(
       api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, default_framebuffer_id);
     }
   }
-}
-
-bool GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer(
-    const gfx::Size& size) {
-  DCHECK(offscreen_);
-  if (!emulated_back_buffer_) {
-    LOG(ERROR)
-        << "GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer called "
-        << " with an onscreen framebuffer.";
-    return false;
-  }
-
-  if (emulated_back_buffer_->size == size) {
-    return true;
-  }
-
-  if (size.width() < 0 || size.height() < 0 ||
-      size.width() > max_offscreen_framebuffer_size_ ||
-      size.height() > max_offscreen_framebuffer_size_) {
-    LOG(ERROR) << "GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer "
-                  "failed to allocate storage due to excessive dimensions.";
-    return false;
-  }
-
-  CheckErrorCallbackState();
-
-  if (!emulated_back_buffer_->Resize(size)) {
-    LOG(ERROR) << "GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer "
-                  "failed to resize the emulated framebuffer.";
-    return false;
-  }
-
-  if (CheckErrorCallbackState()) {
-    LOG(ERROR) << "GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer "
-                  "failed to resize the emulated framebuffer because errors "
-                  "were generated.";
-    return false;
-  }
-
-  return true;
 }
 
 bool GLES2DecoderPassthroughImpl::MakeCurrent() {

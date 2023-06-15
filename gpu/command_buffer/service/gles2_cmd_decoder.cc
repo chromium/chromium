@@ -578,7 +578,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                         bool preserve,
                                         bool needs_depth,
                                         bool needs_stencil) override;
-  bool ResizeOffscreenFramebuffer(const gfx::Size& size) override;
+  bool ResizeOffscreenFramebuffer(const gfx::Size& size);
   bool MakeCurrent() override;
   gl::GLApi* api() const { return state_.api(); }
   GLES2Util* GetGLES2Util() override { return &util_; }
