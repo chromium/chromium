@@ -40,6 +40,15 @@ std::string ConvertToRegex(const blink::UrlPattern& url_pattern) {
   return pattern.GenerateRegexString();
 }
 
+std::string ConvertToPattern(const blink::UrlPattern& url_pattern) {
+  liburlpattern::Options options = {.delimiter_list = "/",
+                                    .prefix_list = "/",
+                                    .sensitive = true,
+                                    .strict = false};
+  liburlpattern::Pattern pattern(url_pattern.pathname, options, "[^/]+?");
+  return pattern.GeneratePatternString();
+}
+
 bool IsValidSources(
     const std::vector<blink::ServiceWorkerRouterSource> sources) {
   if (sources.empty()) {
@@ -131,6 +140,30 @@ ServiceWorkerRouterEvaluator::Evaluate(
     }
   }
   return std::vector<blink::ServiceWorkerRouterSource>();
+}
+
+base::Value ServiceWorkerRouterEvaluator::ToValue() const {
+  base::Value::List out;
+  for (const auto& r : rules_.rules) {
+    base::Value::Dict rule;
+    base::Value::List condition;
+    base::Value::List source;
+    for (const auto& c : r.conditions) {
+      base::Value::Dict out_c;
+      CHECK_EQ(c.type,
+               blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern);
+      out_c.Set("urlPattern", ConvertToPattern(*c.url_pattern));
+      condition.Append(std::move(out_c));
+    }
+    for (const auto& s : r.sources) {
+      CHECK_EQ(s.type, blink::ServiceWorkerRouterSource::SourceType::kNetwork);
+      source.Append("network");
+    }
+    rule.Set("condition", std::move(condition));
+    rule.Set("source", std::move(source));
+    out.Append(std::move(rule));
+  }
+  return base::Value(std::move(out));
 }
 
 }  // namespace content

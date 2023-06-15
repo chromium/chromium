@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
@@ -26,6 +27,8 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
       const network::ResourceRequest& request) const;
 
   const blink::ServiceWorkerRouterRules& rules() const { return rules_; }
+
+  base::Value ToValue() const;
 
  private:
   struct RouterRule;
