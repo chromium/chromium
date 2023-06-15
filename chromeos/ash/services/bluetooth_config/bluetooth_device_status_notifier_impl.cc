@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/bluetooth_config/device_cache.h"
@@ -74,11 +75,6 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
   const std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices =
       device_cache_->GetPairedDevices();
 
-  if (paired_devices.empty()) {
-    devices_id_to_properties_map_.clear();
-    return;
-  }
-
   // Store old map in a temporary map, this is done so if a device is unpaired
   // |devices_id_to_properties_map_| will always contain only currently paired
   // devices.
@@ -106,6 +102,8 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
     if (it == previous_devices_id_to_properties_map.end()) {
       if (device->device_properties->connection_state ==
           mojom::DeviceConnectionState::kConnected) {
+        BLUETOOTH_LOG(EVENT)
+            << "Device was newly paired: " << device->device_properties->id;
         NotifyDeviceNewlyPaired(device);
       }
       continue;
@@ -127,6 +125,8 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
         continue;
       }
 
+      BLUETOOTH_LOG(EVENT) << "Device was newly disconnected: "
+                           << device->device_properties->id;
       NotifyDeviceNewlyDisconnected(device);
       continue;
     }
@@ -136,8 +136,32 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
             mojom::DeviceConnectionState::kConnected &&
         device->device_properties->connection_state ==
             mojom::DeviceConnectionState::kConnected) {
+      BLUETOOTH_LOG(EVENT) << "Device was newly connected: "
+                           << device->device_properties->id;
       NotifyDeviceNewlyConnected(device);
       continue;
+    }
+  }
+
+  // For some devices, when they are forgotten while still connected, they will
+  // be removed from the paired devices list before their connection status is
+  // updated to disconnected. To ensure observers are notified of these devices
+  // disconnecting, check if there are any devices in the previous paired
+  // devices list which were connected that are now missing (b/282640314).
+  for (const auto& [previous_device_id, previous_device] :
+       previous_devices_id_to_properties_map) {
+    if (base::Contains(devices_id_to_properties_map_, previous_device_id)) {
+      continue;
+    }
+
+    // Device was unpaired. Check if it was last seen as connected.
+    if (previous_device->device_properties->connection_state ==
+        mojom::DeviceConnectionState::kConnected) {
+      BLUETOOTH_LOG(EVENT)
+          << "Connected device is no longer found in paired device list, "
+          << "notifying device was disconnected: "
+          << previous_device->device_properties->id;
+      NotifyDeviceNewlyDisconnected(previous_device);
     }
   }
 }
