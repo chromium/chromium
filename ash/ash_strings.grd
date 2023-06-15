@@ -3521,12 +3521,6 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_BRIGHTNESS_UP" desc="Label for accelerator action - Turn brightness up.">
         Turn brightness up
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" desc="Label for accelerator action - Go through windows from the least used window.">
-        Go through windows from the least used window
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" desc="Label for accelerator action - Go through windows from the most recently used window.">
-        Go through windows from the most recently used window
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_LEFT" desc="Label for accelerator action - Activate desk on left.">
         Activate desk on left
       </message>
@@ -4040,9 +4034,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_MINUS" desc="Label for accelerator action - Zoom out on page.">
         Zoom out on page
       </message>
-      <!-- TODO(b/286268215): Translate this string -->
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_LOCATION" translateable="false" desc="Label for accelerator action - Focus address bar.">
-        Focus address bar
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_ADDRESS_BAR" desc="Label for accelerator action - Focus address bar.">
+        Focus on address bar
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_TOOLBAR" desc="Label for accelerator action - Select first icon to the left of address bar.">
         Select first icon to the left of address bar
@@ -4083,9 +4076,6 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" desc="Label for accelerator action - Go through tabs 1 to 8.">
         Go through tabs 1 to 8
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator description - Switch quickly between windows.">
-        Switch quickly between windows
-      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_NEW_TAB" desc="Label for accelerator description - Open link in new tab.">
         Open link in new tab
       </message>
@@ -4104,8 +4094,11 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_PAGE_IN_NEW_TAB" desc="Label for accelerator description - Open the website in the address bar in a new tab.">
         Open the website in the address bar in a new tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" desc="Label for accelerator description - Cycle backwards in the most recently used window list.">
-        Cycle backwards in the most recently used window list
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" desc="Label for accelerator description - Cycle backward through windows.">
+        Cycle backward through windows
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" desc="Label for accelerator action - Cycle forward through windows.">
+        Cycle forward through windows
       </message>
       <!-- TODO(b/286268215): Translate this string -->
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator description - Right-click a link.">

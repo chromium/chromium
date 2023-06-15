@@ -489,6 +489,10 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                 // TODO(longbowei): Confirm if we want to keep this accelerator
                 // or remove it.
                 ui::Accelerator(ui::VKEY_RETURN, ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kBrowserFocusAddressBar,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_L, ui::EF_CONTROL_DOWN),
+                ui::Accelerator(ui::VKEY_D, ui::EF_ALT_DOWN)})},
           {NonConfigurableActions::kBrowserFocusSearch,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_K, ui::EF_CONTROL_DOWN),
