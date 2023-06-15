@@ -78,8 +78,27 @@ class ArcVmmManager : public KeyedService,
   void SendSwapRequest(vm_tools::concierge::SwapOperation operation,
                        base::OnceClosure success_callback);
 
+  // Wrapped function of `SendSwapRequest`. Verify if the latest operation still
+  // match the calling operation. If so, pass the params to SendSwapRequest, or
+  // do nothing.
+  // Prefer use it in the chain of callbacks. Before enable vmm swap, the memory
+  // shrink may need take several minutes. During this time, if the "disable"
+  // request come, we need make sure not send the "enable" request after finish
+  // memory shrink.
+  void VerifyThenSendSwapRequest(vm_tools::concierge::SwapOperation operation,
+                                 base::OnceClosure success_callback);
+
   void SendAggressiveBalloonRequest(bool enable,
                                     base::OnceClosure success_callback);
+
+  // Wrapped function of `SendAggressiveBalloonRequest`. Verify if the latest
+  // operation still match the calling operation. If so, pass the params to
+  // SendAggressiveBalloonRequest, or do nothing.
+  // Prefer use it in the chain of callbacks, as the same with
+  // `VerifyThenSendSwapRequest`.
+  void VerifyThenSendAggressiveBalloonRequest(
+      bool enable,
+      base::OnceClosure success_callback);
 
   void PostWithSwapDelay(base::OnceClosure callback);
 
@@ -94,7 +113,7 @@ class ArcVmmManager : public KeyedService,
   // called by other caller. Update shrink result.
   void SetShrinkResult(bool success);
 
-  SwapState last_swap_state_ = SwapState::DISABLE;
+  SwapState latest_swap_state_ = SwapState::DISABLE;
 
   // Log the time stamp and result of last shrink memory request.
   absl::optional<base::Time> last_shrink_timestamp_;

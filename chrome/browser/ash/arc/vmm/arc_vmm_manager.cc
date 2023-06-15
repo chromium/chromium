@@ -119,22 +119,25 @@ void ArcVmmManager::SetSwapState(SwapState state) {
   }
 
   if (state == SwapState::DISABLE) {
-    if (last_swap_state_ == state) {
+    if (latest_swap_state_ == state) {
       return;
     }
-    last_swap_state_ = state;
+    latest_swap_state_ = state;
+    // The disable request will be sent immediately so the verify is
+    // unnecessarily.
     SendSwapRequest(op, base::DoNothing());
     enabled_state_heartbeat_timer_.Reset();
     return;
   }
 
-  if (last_swap_state_ == state && enabled_state_heartbeat_timer_.IsRunning()) {
+  if (latest_swap_state_ == state &&
+      enabled_state_heartbeat_timer_.IsRunning()) {
     // The state is not update, do not send request now but leave it to heart
     // beat timer.
     return;
   }
 
-  last_swap_state_ = state;
+  latest_swap_state_ = state;
 
   // Reset the timer anyway since the enable state and force enable state may
   // overwrite each other.
@@ -158,7 +161,7 @@ void ArcVmmManager::SetSwapState(SwapState state) {
     if (last_shrink_result_.value_or(false)) {
       // If recently the memory shrinking succeed, just send enable request
       // rather than shrink memory again.
-      SendSwapRequest(op, base::DoNothing());
+      VerifyThenSendSwapRequest(op, base::DoNothing());
     } else {
       // If recently the memory failed to shrink, skip the request.
       VLOG(0) << "Skip enable swap request due to last arcvm memory shrink "
@@ -173,7 +176,7 @@ bool ArcVmmManager::IsSwapped() const {
   // In the future, is should be replaced by real swap state from the concierge,
   // because only the memory swapped and has been written to the disk can be
   // assumed as "swapped".
-  return last_swap_state_ != SwapState::DISABLE;
+  return latest_swap_state_ != SwapState::DISABLE;
 }
 
 void ArcVmmManager::OnConnectionReady() {
@@ -192,8 +195,8 @@ void ArcVmmManager::SendSwapRequest(
     return;
   }
 
-  DVLOG(1) << "SendSwapRequest " << static_cast<int>(operation)
-           << " to concierge.";
+  VLOG(0) << "SendSwapRequest " << static_cast<int>(operation)
+          << " to concierge.";
   vm_tools::concierge::SwapVmRequest request;
   request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash_);
@@ -212,6 +215,22 @@ void ArcVmmManager::SendSwapRequest(
             }
           },
           operation, std::move(success_callback)));
+}
+
+void ArcVmmManager::VerifyThenSendSwapRequest(
+    vm_tools::concierge::SwapOperation operation,
+    base::OnceClosure success_callback) {
+  auto request_disable = latest_swap_state_ == SwapState::DISABLE;
+  auto going_to_disable =
+      operation == vm_tools::concierge::SwapOperation::DISABLE;
+  if (request_disable != going_to_disable) {
+    LOG(WARNING) << "Vmm swap request conflict in callback chain, ignored. "
+                    "latest state: "
+                 << static_cast<int>(latest_swap_state_)
+                 << ", pending operation: " << static_cast<int>(operation);
+    return;
+  }
+  SendSwapRequest(operation, std::move(success_callback));
 }
 
 void ArcVmmManager::SendAggressiveBalloonRequest(
@@ -246,6 +265,20 @@ void ArcVmmManager::SendAggressiveBalloonRequest(
           enable, std::move(success_callback)));
 }
 
+void ArcVmmManager::VerifyThenSendAggressiveBalloonRequest(
+    bool enable,
+    base::OnceClosure success_callback) {
+  auto request_disable = latest_swap_state_ == SwapState::DISABLE;
+  if (request_disable == enable) {
+    LOG(WARNING) << "Vmm swap request conflict in callback chain, ignored. "
+                    "latest state: "
+                 << static_cast<int>(latest_swap_state_)
+                 << ", pending aggressive balloon: " << enable;
+    return;
+  }
+  SendAggressiveBalloonRequest(enable, std::move(success_callback));
+}
+
 void ArcVmmManager::PostWithSwapDelay(base::OnceClosure callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(callback), swap_out_delay_);
@@ -272,14 +305,14 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
           },
           // If successfully execute trim, request enable aggressive balloon.
           base::BindOnce(
-              &ArcVmmManager::SendAggressiveBalloonRequest,
+              &ArcVmmManager::VerifyThenSendAggressiveBalloonRequest,
               weak_ptr_factory_.GetWeakPtr(), true,
               // If enable aggressive balloon successful, set shrink
               // result and re-send enable swap request.
               base::BindOnce(&ArcVmmManager::SetShrinkResult,
                              weak_ptr_factory_.GetWeakPtr(), true)
                   .Then(base::BindOnce(
-                      &ArcVmmManager::SendSwapRequest,
+                      &ArcVmmManager::VerifyThenSendSwapRequest,
                       weak_ptr_factory_.GetWeakPtr(), requested_operation,
                       // Drop ARCVM page cache after successful enable swap.
                       base::BindOnce(

@@ -62,16 +62,45 @@ class TestConciergeClient : public ash::FakeConciergeClient {
         FROM_HERE, base::BindOnce(std::move(callback), response));
   }
 
+  void SetAggressiveBalloonLatencyAndResponse(
+      absl::optional<base::TimeDelta> latency,
+      vm_tools::concierge::AggressiveBalloonResponse response) {
+    aggressive_balloon_latency_ = latency;
+    aggressive_balloon_response_ = response;
+  }
+
+  void AggressiveBalloon(
+      const vm_tools::concierge::AggressiveBalloonRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::AggressiveBalloonResponse> callback) override {
+    if (!aggressive_balloon_latency_.has_value()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), aggressive_balloon_response_));
+      return;
+    }
+    if (aggressive_balloon_timer_.IsRunning()) {
+      LOG(WARNING) << "Already waiting for last AggressiveBalloon return.";
+    }
+    aggressive_balloon_timer_.Start(
+        FROM_HERE, aggressive_balloon_latency_.value(),
+        base::BindOnce(std::move(callback), aggressive_balloon_response_));
+  }
+
   int enable_count() { return enable_count_; }
   int swap_out_count() { return swap_out_count_; }
   int disable_count() { return disable_count_; }
   int force_enable_count() { return force_enable_count_; }
 
  private:
+  absl::optional<base::TimeDelta> aggressive_balloon_latency_;
+  vm_tools::concierge::AggressiveBalloonResponse aggressive_balloon_response_;
+
   int enable_count_ = 0;
   int swap_out_count_ = 0;
   int disable_count_ = 0;
   int force_enable_count_ = 0;
+  base::OneShotTimer aggressive_balloon_timer_;
 };
 
 }  // namespace
@@ -118,10 +147,15 @@ class ArcVmmManagerTest : public testing::Test {
     manager_->set_user_id_hash("test_user_hash_id");
   }
 
-  void InitAggressiveBallonResponse() {
+  void InitAggressiveBallonResponse(bool delay_response) {
     vm_tools::concierge::AggressiveBalloonResponse response;
     response.set_success(true);
-    client()->set_aggressive_balloon_response(response);
+    if (delay_response) {
+      client()->SetAggressiveBalloonLatencyAndResponse(base::Seconds(5),
+                                                       response);
+    } else {
+      client()->SetAggressiveBalloonLatencyAndResponse(absl::nullopt, response);
+    }
   }
 
   void SetTrimCall(bool trim_result) {
@@ -168,7 +202,7 @@ TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   // Send "ENABLE".
   EXPECT_EQ(0, client()->enable_count());
@@ -184,7 +218,7 @@ TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(false);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   // Send "ENABLE".
   EXPECT_EQ(0, client()->enable_count());
@@ -200,7 +234,7 @@ TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   manager()->SetSwapState(SwapState::FORCE_ENABLE);
   base::RunLoop().RunUntilIdle();
@@ -214,7 +248,7 @@ TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
 TEST_F(ArcVmmManagerTest, NotSendSwapRequestIfArcNotReady) {
   InitVmmManager();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   manager()->SetSwapState(SwapState::FORCE_ENABLE);
   base::RunLoop().RunUntilIdle();
@@ -229,7 +263,7 @@ TEST_F(ArcVmmManagerTest, DropCachesAfterEnableSuccess) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   manager()->SetSwapState(SwapState::FORCE_ENABLE);
   base::RunLoop().RunUntilIdle();
@@ -247,7 +281,7 @@ TEST_F(ArcVmmManagerTest, EnableSwapRequestWillEnableHeartbeat) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   manager()->SetSwapState(SwapState::FORCE_ENABLE);
   task_environment_.RunUntilIdle();
@@ -297,7 +331,7 @@ TEST_F(ArcVmmManagerTest, NotResendSameStateRequestButHeartbeat) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   manager()->SetSwapState(SwapState::ENABLE);
   task_environment_.RunUntilIdle();
@@ -335,7 +369,7 @@ TEST_F(ArcVmmManagerTest, ReForceEnable) {
   InitVmmManager();
   EnableAndConnectArcVm();
   SetTrimCall(true);
-  InitAggressiveBallonResponse();
+  InitAggressiveBallonResponse(false);
 
   manager()->SetSwapState(SwapState::FORCE_ENABLE);
   task_environment_.RunUntilIdle();
@@ -370,6 +404,40 @@ TEST_F(ArcVmmManagerTest, ReForceEnable) {
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(2, client()->disable_count());
+}
+
+TEST_F(ArcVmmManagerTest, EnableAndDisableRaceCondition) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+
+  // Mock real system, aggressive balloon need take time.
+  InitAggressiveBallonResponse(true);
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // The request haven't been sent since the aggressive balloon haven't
+  // finished.
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  // Disable immediately.
+  manager()->SetSwapState(SwapState::DISABLE);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  // Expect the disable will be sent immediately.
+  EXPECT_EQ(1, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  // Still not expect any enable request be sent.
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(1, client()->disable_count());
 }
 
 // This test verify the weak ptr safety in scheduler.
