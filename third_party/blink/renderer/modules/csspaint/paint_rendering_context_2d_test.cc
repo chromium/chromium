@@ -77,7 +77,8 @@ TEST(PaintRenderingContext2DTest, testBasicState) {
   EXPECT_EQ(kShadowBlurAfter, ctx->shadowBlur());
   EXPECT_EQ(line_join_after, ctx->lineJoin());
 
-  ctx->restore();
+  NonThrowableExceptionState exception_state;
+  ctx->restore(exception_state);
 
   EXPECT_EQ(kShadowBlurBefore, ctx->shadowBlur());
   EXPECT_EQ(line_join_before, ctx->lineJoin());

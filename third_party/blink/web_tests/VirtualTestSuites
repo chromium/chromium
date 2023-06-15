@@ -1218,7 +1218,27 @@
   {
     "prefix": "no-alloc-direct-call",
     "platforms": ["Linux"],
-    "bases": ["fast/canvas"],
+    "bases": [
+      "fast/canvas",
+      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.html",
+      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.beginLayer-restore.html",
+      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.html",
+      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.endLayer.html",
+      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.save-beginLayer-restore.html",
+      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.save-endLayer.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.worker.js",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-restore.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-restore.worker.js",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.worker.js",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.endLayer.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.endLayer.worker.js",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-beginLayer-restore.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-beginLayer-restore.worker.js",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-endLayer.html",
+      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-endLayer.worker.js"
+    ],
     "args": ["--enable-fake-no-alloc-direct-call-for-testing"],
     "expires": "Jul 1, 2023"
   },

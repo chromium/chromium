@@ -245,8 +245,6 @@ fast/canvas/canvas-drawImage-svg.html
 fast/canvas/canvas-drawImage-video-reset.html
 fast/canvas/canvas-resize-after-paint.html
 fast/canvas/disconnected-canvas-lost-gpu-context.html
-fast/canvas/layers-lonebeginlayer.html
-fast/canvas/layers-unmatched-beginlayer.html
 fast/canvas/offscreencanvas-lost-gpu-context.html
 fast/canvas/offscreencanvas-oncontextlost.html
 fast/canvas/pixelated.html

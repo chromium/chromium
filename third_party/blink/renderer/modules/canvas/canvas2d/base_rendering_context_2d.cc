@@ -135,8 +135,6 @@ void BaseRenderingContext2D::save() {
 
   ValidateStateStack();
 
-  DCHECK_GE(state_stack_.size(), 1u);
-
   // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
   // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
   // ensure canvas is synced prior to adjusting state_stack_.
@@ -154,7 +152,7 @@ void BaseRenderingContext2D::save() {
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::restore() {
+void BaseRenderingContext2D::restore(ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
   }
@@ -164,20 +162,17 @@ void BaseRenderingContext2D::restore() {
   }
   ValidateStateStack();
   if (state_stack_.size() <= 1)
+    // State stack is empty. Extra `restore()` are silently ignored.
     return;
-
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
 
   // Verify that the top of the stack was pushed with Save.
-  if (RuntimeEnabledFeatures::Canvas2dLayersEnabled() &&
-      state_stack_.back()->GetSaveType() !=
-          CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+  if (GetState().GetSaveType() !=
+      CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Called `restore()` with no matching `save()` inside layer.");
     return;
   }
-
-  // Verify that the current state's transform is invertible.
-  if (IsTransformInvertible())
-    GetModifiablePath().Transform(GetState().GetTransform());
 
   PopAndRestore();
   ValidateStateStack();
@@ -193,8 +188,6 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   ValidateStateStack();
-
-  DCHECK_GE(state_stack_.size(), 1u);
 
   // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
   // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
@@ -226,17 +219,9 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
         kInterpolationSpaceSRGB));
   }
 
-  using SaveType = CanvasRenderingContext2DState::SaveType;
-  SaveType save_type = SaveLayerForState(state, *canvas);
-
-#if DCHECK_IS_ON()
-  if (save_type == SaveType::kBeginEndLayerTwoSaves) {
-    ++layer_extra_saves_;
-  }
-#endif
-
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      state, CanvasRenderingContext2DState::kDontCopyClipList, save_type));
+      state, CanvasRenderingContext2DState::kDontCopyClipList,
+      SaveLayerForState(state, *canvas)));
   max_state_stack_depth_ =
       std::max(state_stack_.size(), max_state_stack_depth_);
 
@@ -296,7 +281,7 @@ BaseRenderingContext2D::SaveLayerForState(
                         : SaveType::kBeginEndLayerOneSave;
 }
 
-void BaseRenderingContext2D::endLayer() {
+void BaseRenderingContext2D::endLayer(ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
   }
@@ -304,24 +289,21 @@ void BaseRenderingContext2D::endLayer() {
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   ValidateStateStack();
-  if (state_stack_.size() <= 1 || layer_count_ <= 0)
+  if (state_stack_.size() <= 1 || layer_count_ <= 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Called `endLayer()` with no matching `beginLayer()`.");
     return;
-
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
-
-  // Verify that the current state's transform is invertible.
-  if (IsTransformInvertible())
-    GetModifiablePath().Transform(GetState().GetTransform());
-
-  // All saves performed since the last beginLayer are no-ops.
-  while (state_stack_.back()->GetSaveType() ==
-         CanvasRenderingContext2DState::SaveType::kSaveRestore) {
-    PopAndRestore();
   }
 
-  // If we do an endLayer, we have to be sure that we did a beginLayer (that
-  // could have introduced an extra state).
-  DCHECK(state_stack_.back()->IsLayerSaveType());
+  // Verify that the top of the stack was pushed with `beginLayer`.
+  if (!GetState().IsLayerSaveType()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Called `endLayer()` with no matching `beginLayer()` inside parent "
+        "`save()`/`restore()` pair.");
+    return;
+  }
 
   PopAndRestore();
 
@@ -330,22 +312,17 @@ void BaseRenderingContext2D::endLayer() {
 }
 
 void BaseRenderingContext2D::PopAndRestore() {
-  if (state_stack_.size() <= 1) {
-    NOTREACHED();
-    return;
-  }
-
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-
   if (!canvas)
     return;
 
   if (state_stack_.back()->GetSaveType() ==
       CanvasRenderingContext2DState::SaveType::kBeginEndLayerTwoSaves) {
     canvas->restore();
-#if DCHECK_IS_ON()
-    --layer_extra_saves_;
-#endif
+  }
+
+  if (IsTransformInvertible()) {
+    GetModifiablePath().Transform(GetState().GetTransform());
   }
 
   canvas->restore();
@@ -358,6 +335,48 @@ void BaseRenderingContext2D::PopAndRestore() {
   SetIsTransformInvertible(GetState().IsTransformInvertible());
   if (IsTransformInvertible())
     GetModifiablePath().Transform(GetState().GetTransform().Inverse());
+}
+
+void BaseRenderingContext2D::ValidateStateStackImpl(
+    const cc::PaintCanvas* canvas) const {
+  if (canvas == nullptr) {
+    canvas = GetPaintCanvas();
+  }
+
+  DCHECK_GE(state_stack_.size(), 1u);
+  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
+
+  using SaveType = CanvasRenderingContext2DState::SaveType;
+  DCHECK_EQ(state_stack_[0]->GetSaveType(), SaveType::kInitial);
+
+  int actual_layer_count = 0;
+  int extra_layer_saves = 0;
+  for (wtf_size_t i = 1; i < state_stack_.size(); ++i) {
+    if (RuntimeEnabledFeatures::Canvas2dLayersEnabled()) {
+      DCHECK_NE(state_stack_[i]->GetSaveType(), SaveType::kInitial);
+    } else {
+      DCHECK_EQ(state_stack_[i]->GetSaveType(), SaveType::kSaveRestore);
+    }
+
+    if (state_stack_[i]->IsLayerSaveType()) {
+      ++actual_layer_count;
+    }
+    if (state_stack_[i]->GetSaveType() == SaveType::kBeginEndLayerTwoSaves) {
+      ++extra_layer_saves;
+    }
+  }
+  DCHECK_EQ(layer_count_, actual_layer_count);
+
+  if (canvas) {
+    // The canvas should always have an initial save frame, to support
+    // resetting the top level matrix and clip.
+    DCHECK_GT(canvas->getSaveCount(), 1);
+
+    if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
+      DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
+                state_stack_.size() + extra_layer_saves + 1);
+    }
+  }
 }
 
 void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
@@ -392,7 +411,7 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
 
     prev_state = curr_state.Get();
   }
-  ValidateStateStackWithCanvas(c);
+  ValidateStateStack(c);
 }
 
 void BaseRenderingContext2D::ResetInternal() {
@@ -402,6 +421,7 @@ void BaseRenderingContext2D::ResetInternal() {
   ValidateStateStack();
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
+  layer_count_ = 0;
   SetIsTransformInvertible(true);
   Clear();
   if (cc::PaintCanvas* c = GetPaintCanvas()) {

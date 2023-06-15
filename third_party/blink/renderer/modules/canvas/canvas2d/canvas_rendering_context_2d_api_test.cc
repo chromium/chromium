@@ -224,7 +224,8 @@ TEST_F(CanvasRenderingContext2DAPITest, LineDashStateSave) {
   // Realize the save.
   Context2D()->scale(2, 2);
   EXPECT_EQ(simple_dash, Context2D()->getLineDash());
-  Context2D()->restore();
+  NonThrowableExceptionState exception_state;
+  Context2D()->restore(exception_state);
   EXPECT_EQ(simple_dash, Context2D()->getLineDash());
 }
 

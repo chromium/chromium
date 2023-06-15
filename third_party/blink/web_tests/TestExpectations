@@ -298,9 +298,6 @@ crbug.com/713049 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflecti
 # This test was attributed to site isolation but times out with or without it. Broken test?
 crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.https.html [ Skip Timeout ]
 
-crbug.com/1237275 fast/canvas/layers-lonebeginlayer.html [ Failure Pass ]
-crbug.com/1237275 fast/canvas/layers-unmatched-beginlayer.html [ Failure Pass ]
-
 # Assorted WPT canvas tests failing
 crbug.com/1093709 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.shadow.html [ Failure ]

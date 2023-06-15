@@ -102,13 +102,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void setFilter(ScriptState*, const V8UnionCanvasFilterOrString* input);
 
   void save();
-  void restore();
+  void restore(ExceptionState& exception_state);
   // Push state on state stack and creates bitmap for subsequent draw ops.
   void beginLayer(ScriptState*,
                   const V8CanvasFilterInput* filter_init,
                   ExceptionState& exception_state);
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
-  void endLayer();
+  void endLayer(ExceptionState& exception_state);
   void reset();          // Called by the javascript interface
   void ResetInternal();  // Called from within blink
 
@@ -287,12 +287,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   ExecutionContext* GetTopExecutionContext() const override = 0;
 
-  void ValidateStateStack() const {
+  void ValidateStateStack(const cc::PaintCanvas* canvas = nullptr) const {
 #if DCHECK_IS_ON()
-    ValidateStateStackWithCanvas(GetPaintCanvas());
+    ValidateStateStackImpl(canvas);
 #endif
   }
-  void ValidateStateStackWithCanvas(const cc::PaintCanvas* canvas) const;
 
   virtual bool HasAlpha() const = 0;
 
@@ -468,9 +467,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned max_state_stack_depth_ = 1;
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;
-#if DCHECK_IS_ON()
-  int layer_extra_saves_ = 0;
-#endif
   AntiAliasingMode clip_antialiasing_;
 
   virtual void FinalizeFrame(CanvasResourceProvider::FlushReason) {}
@@ -550,6 +546,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
   void PopAndRestore();
+
+  void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 
   bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
 
@@ -681,22 +679,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   std::unique_ptr<CanvasColorCache> color_cache_;
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
 };
-
-ALWAYS_INLINE void BaseRenderingContext2D::ValidateStateStackWithCanvas(
-    const cc::PaintCanvas* canvas) const {
-#if DCHECK_IS_ON()
-  if (canvas) {
-    // The canvas should always have an initial save frame, to support
-    // resetting the top level matrix and clip.
-    DCHECK_GT(canvas->getSaveCount(), 1);
-
-    if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
-      DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-                state_stack_.size() + layer_extra_saves_ + 1);
-    }
-  }
-#endif
-}
 
 namespace {
 
