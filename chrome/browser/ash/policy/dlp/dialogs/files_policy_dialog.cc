@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 
 #include <cstddef>
 #include <memory>
@@ -14,8 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_error_dialog.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_warn_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"

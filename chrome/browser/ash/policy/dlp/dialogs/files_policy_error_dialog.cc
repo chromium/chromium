@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_error_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 

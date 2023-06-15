@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
 
 #include <vector>
 
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -43,4 +43,4 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_FILES_POLICY_BLOCK_DIALOG_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_BLOCK_DIALOG_H_
