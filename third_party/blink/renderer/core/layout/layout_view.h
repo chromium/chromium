@@ -203,6 +203,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     NOT_DESTROYED();
     page_size_ = size;
   }
+  PhysicalSize PageSize() const {
+    NOT_DESTROYED();
+    return page_size_;
+  }
 
   // TODO(1229581): Make non-virtual.
   virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const = 0;

@@ -104,8 +104,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
 
  private:
   void ComputePageRects(const gfx::SizeF& print_size);
-  void ComputePageRectsWithPageSizeInternal(
-      const gfx::SizeF& page_size_in_pixels);
   void CollectLinkedDestinations(Node*);
 
   // Used to prevent misuses of BeginPrintMode() and EndPrintMode() (e.g., call

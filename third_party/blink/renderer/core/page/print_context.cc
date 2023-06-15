@@ -74,33 +74,16 @@ void PrintContext::ComputePageRects(const gfx::SizeF& print_size) {
   }
 
   auto* view = frame_->GetDocument()->GetLayoutView();
-  const PhysicalRect& document_rect = view->DocumentRect();
-  gfx::SizeF page_size = frame_->ResizePageRectsKeepingRatio(
-      print_size, gfx::SizeF(document_rect.size));
-  ComputePageRectsWithPageSizeInternal(page_size);
-}
-
-void PrintContext::ComputePageRectsWithPageSizeInternal(
-    const gfx::SizeF& page_size_in_pixels) {
-  if (!IsFrameValid())
-    return;
-
-  auto* view = frame_->GetDocument()->GetLayoutView();
-
   gfx::Rect snapped_doc_rect = ToPixelSnappedRect(view->DocumentRect());
-
-  // We scaled with floating point arithmetic and need to ensure results like
-  // 13329.99 are treated as 13330 so that we don't mistakenly assign an extra
-  // page for the stray pixel.
-  int page_width = page_size_in_pixels.width() + LayoutUnit::Epsilon();
-  int page_height = page_size_in_pixels.height() + LayoutUnit::Epsilon();
+  LogicalSize page_size =
+      view->PageSize().ConvertToLogical(view->StyleRef().GetWritingMode());
 
   bool is_horizontal = view->StyleRef().IsHorizontalWritingMode();
 
   int doc_logical_height =
       is_horizontal ? snapped_doc_rect.height() : snapped_doc_rect.width();
-  int page_logical_height = is_horizontal ? page_height : page_width;
-  int page_logical_width = is_horizontal ? page_width : page_height;
+  int page_logical_height = page_size.block_size.ToInt();
+  int page_logical_width = page_size.inline_size.ToInt();
 
   int inline_direction_start = snapped_doc_rect.x();
   int inline_direction_end = snapped_doc_rect.right();
