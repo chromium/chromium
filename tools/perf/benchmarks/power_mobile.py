@@ -13,7 +13,8 @@ from telemetry.web_perf import timeline_based_measurement
 
 
 @benchmark.Info(
-    emails=['chrometto-team@google.com'],
+    emails=['chrometto-team@google.com', 'carlscab@chromium.org',
+            'khokhlov@chromium.org', 'eseckler@chromium.org'],
     documentation_url='https://goto.google.com/power-mobile-benchmark')
 class PowerMobile(perf_benchmark.PerfBenchmark):
   """A benchmark for power measurements using on-device power monitor (ODPM).

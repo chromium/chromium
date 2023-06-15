@@ -12,7 +12,7 @@ import page_sets
 from benchmarks import press
 
 
-@benchmark.Info(emails=['ahaas@chromium.org'],
+@benchmark.Info(emails=['ahaas@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript>WebAssembly')
 class WasmPsPdfKit(press._PressBenchmark):  # pylint: disable=protected-access
   @classmethod

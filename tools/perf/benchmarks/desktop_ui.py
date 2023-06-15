@@ -14,7 +14,7 @@ import page_sets
 
 @benchmark.Info(
     emails=[
-        'yuhengh@chromium.org', 'tluk@chromium.org', 'romanarora@chromium.org'
+        'yuhengh@chromium.org', 'tluk@chromium.org'
     ],
     component='UI>Browser',
     documentation_url=

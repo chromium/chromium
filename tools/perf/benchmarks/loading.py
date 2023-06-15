@@ -37,7 +37,7 @@ class _LoadingBase(perf_benchmark.PerfBenchmark):
     return tbm_options
 
 
-@benchmark.Info(emails=['kouhei@chromium.org', 'ksakamoto@chromium.org'],
+@benchmark.Info(emails=['kouhei@chromium.org'],
                 component='Blink>Loader',
                 documentation_url='https://bit.ly/loading-benchmarks')
 class LoadingDesktop(_LoadingBase):
@@ -57,7 +57,7 @@ class LoadingDesktop(_LoadingBase):
     return 'loading.desktop'
 
 
-@benchmark.Info(emails=['kouhei@chromium.org', 'ksakamoto@chromium.org'],
+@benchmark.Info(emails=['kouhei@chromium.org'],
                 component='Blink>Loader',
                 documentation_url='https://bit.ly/loading-benchmarks')
 class LoadingMobile(_LoadingBase):
@@ -81,7 +81,8 @@ class LoadingMobile(_LoadingBase):
     return 'loading.mobile'
 
 
-@benchmark.Info(emails=['blink-isolation-dev@chromium.org'],
+@benchmark.Info(emails=['blink-isolation-dev@chromium.org',
+                        'kouhei@chromium.org'],
                 component='Blink>Internals>Modularization',
                 documentation_url='https://bit.ly/loading-benchmarks')
 class LoadingMBI(_LoadingBase):

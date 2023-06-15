@@ -21,7 +21,7 @@ class _V8BrowsingBenchmark(v8_helper.V8PerfMixin, perf_benchmark.PerfBenchmark):
 
 
 @benchmark.Info(emails=[
-    'cbruni@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
+    'cbruni@chromium.org', 'vahl@chromium.org', 'almuthanna@chromium.org'
 ],
                 component='Blink>JavaScript',
                 documentation_url='https://bit.ly/system-health-v8-benchmarks')
@@ -40,8 +40,7 @@ class V8DesktopBrowsingBenchmark(_V8BrowsingBenchmark):
 
 
 @benchmark.Info(emails=[
-    'cbruni@chromium.org', 'leszeks@chromium.org', 'tmrts@chromium.org'
-],
+    'cbruni@chromium.org', 'leszeks@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://bit.ly/system-health-v8-benchmarks')
 class V8MobileBrowsingBenchmark(
@@ -60,8 +59,7 @@ class V8MobileBrowsingBenchmark(
 
 
 @benchmark.Info(emails=[
-    'cbruni@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
-],
+    'cbruni@chromium.org', 'almuthanna@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://bit.ly/system-health-v8-benchmarks')
 class V8FutureDesktopBrowsingBenchmark(_V8BrowsingBenchmark):
@@ -84,8 +82,7 @@ class V8FutureDesktopBrowsingBenchmark(_V8BrowsingBenchmark):
 
 
 @benchmark.Info(emails=[
-    'cbruni@chromium.org', 'leszeks@chromium.org', 'tmrts@chromium.org'
-],
+    'cbruni@chromium.org', 'leszeks@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://bit.ly/system-health-v8-benchmarks')
 class V8FutureMobileBrowsingBenchmark(_V8BrowsingBenchmark):

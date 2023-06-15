@@ -40,7 +40,7 @@ class _JetStream2Base(press._PressBenchmark):  # pylint: disable=protected-acces
 
 
 @benchmark.Info(
-    emails=['hablich@chromium.org', 'tcwang@chromium.org'],
+    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
     component='Blink>JavaScript',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
 class JetStream20(_JetStream2Base):

@@ -9,7 +9,7 @@ from telemetry.web_perf import timeline_based_measurement
 from benchmarks import press
 
 
-@benchmark.Info(emails=['qiangchen@chromium.org', # For smoothness metrics
+@benchmark.Info(emails=['mbonadei@chromium.org',
                         'video-cmi-apis@google.com',
                         'herre@google.com'],
                 component='Blink>WebRTC',
