@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -46,7 +46,7 @@ public class AppMenuUtil {
                 ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, offsetYPx, 0.f));
         animation.setStartDelay(startDelay);
         animation.setDuration(ENTER_ITEM_DURATION_MS);
-        animation.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        animation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
 
         animation.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -95,7 +95,7 @@ public class AppMenuUtil {
             builder.with(translate);
         }
         animation.setStartDelay(ENTER_ITEM_BASE_DELAY_MS);
-        animation.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        animation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
 
         animation.addListener(new AnimatorListenerAdapter() {
             @Override

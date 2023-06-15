@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 

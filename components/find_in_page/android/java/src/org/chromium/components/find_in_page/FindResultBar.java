@@ -23,7 +23,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,7 +127,7 @@ public class FindResultBar extends View {
 
         mVisibilityAnimation = ObjectAnimator.ofFloat(this, TRANSLATION_X, 0);
         mVisibilityAnimation.setDuration(VISIBILITY_ANIMATION_DURATION_MS);
-        mVisibilityAnimation.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        mVisibilityAnimation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
 
         mWindowAndroid = windowAndroid;
         if (windowAndroid == null) {
@@ -147,7 +147,7 @@ public class FindResultBar extends View {
         mVisibilityAnimation = ObjectAnimator.ofFloat(this, TRANSLATION_X,
                 MathUtils.flipSignIf(mBarTouchWidth, LocalizationUtils.isLayoutRtl()));
         mVisibilityAnimation.setDuration(VISIBILITY_ANIMATION_DURATION_MS);
-        mVisibilityAnimation.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        mVisibilityAnimation.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mWindowAndroid.startAnimationOverContent(mVisibilityAnimation);
         mVisibilityAnimation.addListener(new AnimatorListenerAdapter() {
             @Override

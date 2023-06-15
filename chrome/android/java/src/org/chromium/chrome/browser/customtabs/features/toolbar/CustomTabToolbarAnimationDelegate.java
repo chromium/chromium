@@ -19,7 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * A delegate class to handle the title animation and security icon animation in
@@ -126,13 +126,14 @@ class CustomTabToolbarAnimationDelegate {
                         .translationX(0)
                         .translationY(0)
                         .setDuration(SecurityButtonAnimationDelegate.SLIDE_DURATION_MS)
-                        .setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE)
+                        .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                         .setListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 mTitleBar.animate()
                                         .alpha(1f)
-                                        .setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE)
+                                        .setInterpolator(
+                                                Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR)
                                         .setDuration(
                                                 SecurityButtonAnimationDelegate.FADE_DURATION_MS)
                                         .setListener(new AnimatorListenerAdapter() {

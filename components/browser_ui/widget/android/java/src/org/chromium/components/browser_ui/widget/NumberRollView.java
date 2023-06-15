@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.text.NumberFormat;
 
@@ -77,7 +77,7 @@ public class NumberRollView extends FrameLayout {
 
         if (animate) {
             Animator rollAnimator = ObjectAnimator.ofFloat(this, NUMBER_PROPERTY, number);
-            rollAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+            rollAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
             rollAnimator.start();
             mLastRollAnimator = rollAnimator;
         } else {

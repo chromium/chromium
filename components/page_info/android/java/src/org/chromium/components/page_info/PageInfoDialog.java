@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -230,10 +230,10 @@ public class PageInfoDialog {
             if (isEnter) {
                 mScrollView.setTranslationY(animHeight);
                 translateAnim = ObjectAnimator.ofFloat(mScrollView, View.TRANSLATION_Y, 0f);
-                translateAnim.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+                translateAnim.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
             } else {
                 translateAnim = ObjectAnimator.ofFloat(mScrollView, View.TRANSLATION_Y, animHeight);
-                translateAnim.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+                translateAnim.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
             }
             translateAnim.setDuration(ENTER_EXIT_DURATION_MS);
             dialogAnimation = translateAnim;

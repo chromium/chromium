@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 import androidx.annotation.DimenRes;
 
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * Helper class to animate the security status icon.
@@ -37,11 +37,11 @@ public class SecurityButtonAnimationDelegate {
 
         mSecurityButtonShowAnimator = new AnimatorSet();
         Animator translateRight = ObjectAnimator.ofFloat(mTitleUrlContainer, View.TRANSLATION_X, 0);
-        translateRight.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        translateRight.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         translateRight.setDuration(SLIDE_DURATION_MS);
 
         Animator fadeIn = ObjectAnimator.ofFloat(mSecurityButton, View.ALPHA, 1);
-        fadeIn.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        fadeIn.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         fadeIn.setDuration(FADE_DURATION_MS);
         fadeIn.addListener(new CancelAwareAnimatorListener() {
             @Override
@@ -53,7 +53,7 @@ public class SecurityButtonAnimationDelegate {
 
         mSecurityButtonHideAnimator = new AnimatorSet();
         Animator fadeOut = ObjectAnimator.ofFloat(mSecurityButton, View.ALPHA, 0);
-        fadeOut.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        fadeOut.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         fadeOut.setDuration(FADE_DURATION_MS);
         fadeOut.addListener(new CancelAwareAnimatorListener() {
             @Override
@@ -64,7 +64,7 @@ public class SecurityButtonAnimationDelegate {
 
         Animator translateLeft = ObjectAnimator.ofFloat(
                 mTitleUrlContainer, View.TRANSLATION_X, -mSecurityButtonWidth);
-        translateLeft.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        translateLeft.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         translateLeft.setDuration(SLIDE_DURATION_MS);
         mSecurityButtonHideAnimator.playSequentially(fadeOut, translateLeft);
     }

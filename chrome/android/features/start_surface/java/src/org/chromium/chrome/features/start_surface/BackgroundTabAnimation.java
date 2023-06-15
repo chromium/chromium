@@ -20,7 +20,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 import java.util.Collection;

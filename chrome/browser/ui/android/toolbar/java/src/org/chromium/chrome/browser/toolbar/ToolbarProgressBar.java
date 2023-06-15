@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ProgressBar;
 
@@ -27,7 +28,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
 /**
@@ -362,8 +363,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
 
         long duration = (long) Math.abs(alphaDiff * ALPHA_ANIMATION_DURATION_MS);
 
-        BakedBezierInterpolator interpolator = BakedBezierInterpolator.FADE_IN_CURVE;
-        if (alphaDiff < 0) interpolator = BakedBezierInterpolator.FADE_OUT_CURVE;
+        Interpolator interpolator = Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR;
+        if (alphaDiff < 0) interpolator = Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR;
 
         if (mFadeAnimator != null) mFadeAnimator.cancel();
 

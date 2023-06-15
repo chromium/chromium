@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +81,7 @@ public class LoadingView extends ProgressBar {
 
             animate()
                     .alpha(0.0f)
-                    .setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE)
+                    .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {

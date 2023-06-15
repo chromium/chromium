@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class holds the animation and related business logic for the scrim. */
@@ -86,7 +86,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (mOverlayFadeInAnimator == null) {
             mOverlayFadeInAnimator = ValueAnimator.ofFloat(0, 1);
             mOverlayFadeInAnimator.setDuration(fadeDurationMs);
-            mOverlayFadeInAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+            mOverlayFadeInAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
             mOverlayFadeInAnimator.addListener(new CancelAwareAnimatorListener() {
                 @Override
                 public void onEnd(Animator animation) {
@@ -125,7 +125,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (mOverlayFadeOutAnimator == null) {
             mOverlayFadeOutAnimator = ValueAnimator.ofFloat(1, 0);
             mOverlayFadeOutAnimator.setDuration(fadeDurationMs);
-            mOverlayFadeOutAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+            mOverlayFadeOutAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
             mOverlayFadeOutAnimator.addListener(new CancelAwareAnimatorListener() {
                 @Override
                 public void onEnd(Animator animation) {

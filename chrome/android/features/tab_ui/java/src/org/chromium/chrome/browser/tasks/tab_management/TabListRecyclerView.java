@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
@@ -253,7 +253,7 @@ class TabListRecyclerView
         setAlpha(0);
         setVisibility(View.VISIBLE);
         mFadeInAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, 1);
-        mFadeInAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        mFadeInAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         mFadeInAnimator.setDuration(duration);
         mFadeInAnimator.start();
         mFadeInAnimator.addListener(new AnimatorListenerAdapter() {
@@ -524,7 +524,7 @@ class TabListRecyclerView
     private void hideAnimation(boolean animate) {
         mListener.startedHiding(animate);
         mFadeOutAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, 0);
-        mFadeOutAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        mFadeOutAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mFadeOutAnimator.setDuration(BASE_ANIMATION_DURATION_MS);
         mFadeOutAnimator.addListener(new AnimatorListenerAdapter() {
             @Override

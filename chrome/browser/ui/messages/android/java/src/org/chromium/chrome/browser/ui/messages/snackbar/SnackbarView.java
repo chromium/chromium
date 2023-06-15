@@ -30,11 +30,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * Visual representation of a snackbar. On phone it matches the width of the activity; on tablet it
@@ -136,7 +135,7 @@ public class SnackbarView {
                 mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation());
         moveAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
         Animator fadeOut = ObjectAnimator.ofFloat(mContainerView, View.ALPHA, 0f);
-        fadeOut.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        fadeOut.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
 
         animatorSet.playTogether(fadeOut, moveAnimator);
         startAnimatorOnSurfaceView(animatorSet);

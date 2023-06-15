@@ -25,7 +25,7 @@ import androidx.core.view.animation.PathInterpolatorCompat;
 import org.chromium.base.MathUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * A custom {@link Drawable} that will animate a pulse using the {@link PulseInterpolator}.  Meant

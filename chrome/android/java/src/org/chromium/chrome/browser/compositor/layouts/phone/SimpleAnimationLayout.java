@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
@@ -186,7 +186,7 @@ public class SimpleAnimationLayout extends Layout {
                 handler, newLayoutTab, LayoutTab.Y, originY, 0f, FOREGROUND_ANIMATION_DURATION);
 
         mTabCreatedForegroundAnimation = new AnimatorSet();
-        mTabCreatedForegroundAnimation.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        mTabCreatedForegroundAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         mTabCreatedForegroundAnimation.playTogether(
                 scaleAnimation, alphaAnimation, xAnimation, yAnimation);
         mTabCreatedForegroundAnimation.start();
@@ -237,7 +237,7 @@ public class SimpleAnimationLayout extends Layout {
                 LayoutTab.BORDER_ALPHA, 0f, 1f, BACKGROUND_STEP1_DURATION));
 
         AnimatorSet step1Source = new AnimatorSet();
-        step1Source.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        step1Source.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         step1Source.playTogether(animationList);
 
         float pauseX = margin;
@@ -261,7 +261,7 @@ public class SimpleAnimationLayout extends Layout {
                 handler, newLayoutTab, LayoutTab.Y, originY, pauseY, BACKGROUND_STEP1_DURATION));
 
         AnimatorSet step1New = new AnimatorSet();
-        step1New.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        step1New.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         step1New.playTogether(animationList);
 
         AnimatorSet step1 = new AnimatorSet();
@@ -273,19 +273,19 @@ public class SimpleAnimationLayout extends Layout {
         animationList = new ArrayList<>(7);
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, scale, 1f, BACKGROUND_STEP3_DURATION,
-                BakedBezierInterpolator.TRANSFORM_CURVE));
+                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.X, margin, 0f, BACKGROUND_STEP3_DURATION,
-                BakedBezierInterpolator.TRANSFORM_CURVE));
+                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.Y, margin, 0f, BACKGROUND_STEP3_DURATION,
-                BakedBezierInterpolator.TRANSFORM_CURVE));
+                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.BORDER_SCALE, 1f, 1f / scale, BACKGROUND_STEP3_DURATION,
-                BakedBezierInterpolator.TRANSFORM_CURVE));
+                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.BORDER_ALPHA, 1f, 0f, BACKGROUND_STEP3_DURATION,
-                BakedBezierInterpolator.TRANSFORM_CURVE));
+                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
                 handler, newLayoutTab, LayoutTab.ALPHA, 1f, 0f, BACKGROUND_STEP3_DURATION));
@@ -293,11 +293,11 @@ public class SimpleAnimationLayout extends Layout {
         if (getOrientation() == Orientation.PORTRAIT) {
             animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, newLayoutTab,
                     LayoutTab.Y, pauseY, getHeight(), BACKGROUND_STEP3_DURATION,
-                    BakedBezierInterpolator.FADE_OUT_CURVE));
+                    Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR));
         } else {
             animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, newLayoutTab,
                     LayoutTab.X, pauseX, getWidth(), BACKGROUND_STEP3_DURATION,
-                    BakedBezierInterpolator.FADE_OUT_CURVE));
+                    Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR));
         }
 
         AnimatorSet step3 = new AnimatorSet();
