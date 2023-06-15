@@ -2810,9 +2810,6 @@ extern const char kDevToolsTabTargetLiteralDescription[];
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
-extern const char kCloudApAuthName[];
-extern const char kCloudApAuthDescription[];
-
 extern const char kCloudApAuthAttachAsHeaderName[];
 extern const char kCloudApAuthAttachAsHeaderDescription[];
 

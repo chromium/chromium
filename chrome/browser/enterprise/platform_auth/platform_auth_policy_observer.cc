@@ -6,10 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,10 +34,8 @@ void PlatformAuthPolicyObserver::RegisterPrefs(
 void PlatformAuthPolicyObserver::OnPrefChanged() {
   // 0 == Disabled
   // 1 == Enabled
-  const bool enabled =
-      base::FeatureList::IsEnabled(enterprise_auth::kCloudApAuth) &&
-      pref_change_registrar_.prefs()->GetInteger(prefs::kCloudApAuthEnabled) !=
-          0;
+  const bool enabled = pref_change_registrar_.prefs()->GetInteger(
+                           prefs::kCloudApAuthEnabled) != 0;
   enterprise_auth::PlatformAuthProviderManager::GetInstance().SetEnabled(
       enabled, base::OnceClosure());
 }

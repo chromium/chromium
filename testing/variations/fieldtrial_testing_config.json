@@ -3194,21 +3194,6 @@
             ]
         }
     ],
-    "CloudApAuth": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CloudApAuth"
-                    ]
-                }
-            ]
-        }
-    ],
     "CodeBasedRBD": [
         {
             "platforms": [

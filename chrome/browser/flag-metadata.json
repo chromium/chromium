@@ -1167,11 +1167,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "cloud-ap-auth",
-    "owners": [ "igorruvinov", "zmin" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "cloud-ap-auth-attach-as-header",
     "owners": [ "igorruvinov", "zmin" ],
     "expiry_milestone": 120
