@@ -80,7 +80,8 @@ enum class PresentedState {
                                     BookmarksFolderEditorCoordinatorDelegate,
                                     BookmarksFolderChooserCoordinatorDelegate,
                                     BookmarksHomeViewControllerDelegate,
-                                    UIAdaptivePresentationControllerDelegate>
+                                    UIAdaptivePresentationControllerDelegate,
+                                    UINavigationControllerDelegate>
 
 // The type of view controller that is being presented.
 @property(nonatomic, assign) PresentedState currentPresentedState;
@@ -380,6 +381,7 @@ enum class PresentedState {
   self.bookmarkBrowser.homeDelegate = nil;
   self.bookmarkBrowser = nil;
   self.bookmarkNavigationController.presentationController.delegate = nil;
+  self.bookmarkNavigationController.delegate = nil;
   self.bookmarkNavigationController = nil;
   self.currentPresentedState = PresentedState::NONE;
 }
@@ -653,6 +655,7 @@ enum class PresentedState {
   if (replacementViewControllers) {
     [navController setViewControllers:replacementViewControllers];
   }
+  self.bookmarkNavigationController.delegate = self;
 
   navController.toolbarHidden = YES;
   navController.presentationController.delegate = self;
@@ -755,6 +758,26 @@ enum class PresentedState {
   base::RecordAction(
       base::UserMetricsAction("IOSBookmarkManagerCloseWithSwipe"));
   [self bookmarkBrowserDismissed];
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (id<UIViewControllerAnimatedTransitioning>)
+               navigationController:
+                   (UINavigationController*)navigationController
+    animationControllerForOperation:(UINavigationControllerOperation)operation
+                 fromViewController:(UIViewController*)fromVC
+                   toViewController:(UIViewController*)toVC {
+  if (operation == UINavigationControllerOperationPop) {
+    BookmarksHomeViewController* poppedHome =
+        base::mac::ObjCCastStrict<BookmarksHomeViewController>(fromVC);
+    // `shutdown` must wait for the next run of the main loop, so that
+    // methods such as `textFieldDidEndEditing` have time to be run.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [poppedHome shutdown];
+    });
+  }
+  return nil;
 }
 
 #pragma mark - Debugging

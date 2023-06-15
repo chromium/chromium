@@ -264,7 +264,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)dealloc {
-  [self shutdown];
+  CHECK(!_browser);
 }
 
 - (void)shutdown {
@@ -981,7 +981,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   __weak BookmarksHomeViewController* weakSelf = self;
   auto completion = ^{
+    NSArray<__kindof UIViewController*>* previousStack =
+        weakSelf.navigationController.viewControllers;
     [weakSelf.navigationController setViewControllers:stack animated:YES];
+    for (UIViewController* controller in previousStack) {
+      BookmarksHomeViewController* bookmarksHomeViewController =
+          base::mac::ObjCCastStrict<BookmarksHomeViewController>(controller);
+      [bookmarksHomeViewController shutdown];
+    }
   };
 
   [self.searchController dismissViewControllerAnimated:YES

@@ -92,6 +92,7 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    [controller shutdown];
   }
 }
 
@@ -156,6 +157,7 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    [controller shutdown];
   }
 }
 
@@ -196,6 +198,7 @@ TEST_P(BookmarksHomeViewControllerTest, Metrics) {
     [controller keyCommand_close];
 
     EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+    [controller shutdown];
   }
 }
 
