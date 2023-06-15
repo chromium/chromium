@@ -298,8 +298,24 @@ wheel: <
   version: "version:1.2.2"
 >
 wheel: <
+  name: "infra/python/wheels/blessed-py2_py3"
+  version: "version:1.20.0"
+>
+wheel: <
+  name: "infra/python/wheels/wcwidth-py2_py3"
+  version: "version:0.2.5"
+>
+wheel: <
+  name: "infra/python/wheels/jinxed-py2_py3"
+  version: "version:1.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/ansicon-py2_py3"
+  version: "version:1.89.0"
+>
+wheel: <
   name: "infra/python/wheels/mozlog-py2_py3"
-  version: "version:7.1.0"
+  version: "version:8.0.0"
 >
 wheel: <
   name: "infra/python/wheels/mozprocess-py3"
