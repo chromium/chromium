@@ -101,7 +101,7 @@ DeskButtonWidget::DeskButtonWidget(Shelf* shelf)
 DeskButtonWidget::~DeskButtonWidget() = default;
 
 int DeskButtonWidget::GetPreferredLength() const {
-  return is_horizontal_shelf_ ? GetPreferredExpandedWidth() : kDeskButtonHeight;
+  return is_expanded_ ? GetPreferredExpandedWidth() : kDeskButtonHeight;
 }
 
 int DeskButtonWidget::GetPreferredExpandedWidth() const {
@@ -151,10 +151,24 @@ bool DeskButtonWidget::ShouldBeVisible() const {
 }
 
 void DeskButtonWidget::SetExpanded(bool expanded) {
-  CHECK(!is_horizontal_shelf_);
   is_expanded_ = expanded;
-  CalculateTargetBounds();
-  SetBounds(GetTargetBounds());
+
+  if (is_horizontal_shelf_ && ShouldBeVisible()) {
+    // If we are in horizontal alignment, then we need to recalculate and update
+    // the hotseat bounds with the new button state before recalculating and
+    // updating the desk button bounds so that the hotseat provides the correct
+    // shelf padding and so that it does not think that it is still overflown
+    // when the desk button shrinks. We call `LayoutShelf` to achieve this.
+    shelf_->shelf_layout_manager()->LayoutShelf();
+  } else {
+    // For vertical shelf, the desk button expanded state does not affect
+    // overall shelf layout, as it always uses up the same amount of space.
+    // In this case, it's sufficient to update the `DeskButtonWidget` bounds
+    // only.
+    CalculateTargetBounds();
+    SetBounds(GetTargetBounds());
+  }
+
   delegate_view_->OnExpandedStateUpdate(is_expanded_);
 }
 
@@ -170,9 +184,8 @@ void DeskButtonWidget::PrepareForAlignmentChange(ShelfAlignment new_alignment) {
 }
 
 void DeskButtonWidget::CalculateTargetBounds() {
-  target_bounds_ = is_horizontal_shelf_ || is_expanded_
-                       ? GetTargetExpandedBounds()
-                       : GetTargetShrunkBounds();
+  target_bounds_ =
+      is_expanded_ ? GetTargetExpandedBounds() : GetTargetShrunkBounds();
 }
 
 gfx::Rect DeskButtonWidget::GetTargetBounds() const {
