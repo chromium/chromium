@@ -10,7 +10,8 @@ class CompanionStorySet(story.StorySet):
   COMPANION_STORIES = [
       basic_companion_story.CompanionStoryBasicOpen,
       basic_companion_story.CompanionStoryBasicOpenLoggedOut,
-      basic_companion_story.CompanionStorySRP
+      basic_companion_story.CompanionStorySRP,
+      basic_companion_story.CompanionStoryScreenshot
   ]
 
   def __init__(self):

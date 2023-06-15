@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import json
+import subprocess
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn, InputText, \
     PressKey, SHIFT_DOWN
@@ -10,6 +11,9 @@ from page_sets.companion.browser_element_identifiers import \
 from page_sets.companion.histograms import _CQ, _PROMO_EVENT, _SEARCH_BOX, \
     _STARTUP, _ZERO_STATE
 from page_sets.login_helpers import google_login
+from page_sets.data.companion_test_sites import SITES
+
+SCREENSHOT_PATH = "/tmp/"
 
 _GOOGLE_URL = "https://www.google.com/"
 _TEST_SEARCH_URL = "https://www.google.com/search?q=test"
@@ -32,13 +36,14 @@ class CompanionStory(MultiTabStory):
 
   def ToggleSidePanel(self, action_runner):
     ClickOn(self._devtools, element_id=kSidePanelButtonElementId)
-    action_runner.Wait(1)
+    action_runner.Wait(3)
 
   def OpenCompanion(self, action_runner):
     self.ToggleSidePanel(action_runner)
     combobox_node_id = self._devtools.QueryNodes("id:%s" %
                                                  kSidePanelComboboxElementId)[0]
     PressKey(self._devtools, combobox_node_id, " ")
+    action_runner.Wait(1)
     window_node_id = self._devtools.QueryNodes("<Window>")[0]
     PressKey(self._devtools, window_node_id, "ArrowUp")
     PressKey(self._devtools, window_node_id, "Return")
@@ -91,7 +96,7 @@ class CompanionStoryBasicOpen(CompanionStory):
 
     # Open companion and ensure features loaded.
     self.OpenCompanion(action_runner)
-    action_runner.Wait(3)
+    action_runner.Wait(10)
     self.ConductHistogramCheck(action_runner, _ZERO_STATE)
     self.ConductHistogramCheck(action_runner, _CQ)
 
@@ -106,7 +111,7 @@ class CompanionStoryBasicOpenLoggedOut(CompanionStory):
 
     # Open companion and ensure features loaded.
     self.OpenCompanion(action_runner)
-    action_runner.Wait(3)
+    action_runner.Wait(10)
     self.ConductHistogramCheck(action_runner, _ZERO_STATE)
     self.ConductHistogramCheck(action_runner, _PROMO_EVENT)
     self.ConductHistogramCheck(action_runner, _CQ, expected_empty=True)
@@ -139,7 +144,7 @@ class CompanionStorySRP(CompanionStory):
 
     # Open companion and ensure features loaded.
     self.OpenCompanion(action_runner)
-    action_runner.Wait(3)
+    action_runner.Wait(10)
     self.ConductHistogramCheck(action_runner, _ZERO_STATE)
     self.ConductHistogramCheck(action_runner, _PROMO_EVENT)
     self.ConductHistogramCheck(action_runner, _CQ)
@@ -148,3 +153,18 @@ class CompanionStorySRP(CompanionStory):
     self.ConductHistogramCheck(action_runner, _SEARCH_BOX, expected_empty=True)
     self.ConductSideSearch(action_runner)
     self.ConductHistogramCheck(action_runner, _SEARCH_BOX)
+
+
+class CompanionStoryScreenshot(CompanionStory):
+  NAME = 'companion:screenshot'
+
+  def InteractWithPage(self, action_runner):
+    self.SanityHistogramCheck(action_runner)
+    self.LogIn(action_runner)
+    action_runner.Wait(5)
+    self.OpenCompanion(action_runner)
+
+    for count, site in enumerate(SITES):
+      action_runner.tab.Navigate(site)
+      action_runner.Wait(15)
+      subprocess.call(["scrot", SCREENSHOT_PATH + str(count) + ".png"])

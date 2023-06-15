@@ -612,6 +612,7 @@ page_sets/companion/browser_element_identifiers.py
 page_sets/companion/companion_stories.py
 page_sets/companion/histograms.py
 page_sets/cros_ui_cases.py
+page_sets/data/companion_test_sites.py
 page_sets/desktop_power.py
 page_sets/desktop_ui/__init__.py
 page_sets/desktop_ui/browser_element_identifiers.py

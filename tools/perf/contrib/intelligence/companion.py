@@ -38,7 +38,6 @@ class Companion(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs(
         '--disable-checking-companion-user-permissions')
     options.AppendExtraBrowserArgs('--disable-features=SideSearch')
-    options.AppendExtraBrowserArgs('--disable-web-security')
 
   @classmethod
   def Name(cls):
