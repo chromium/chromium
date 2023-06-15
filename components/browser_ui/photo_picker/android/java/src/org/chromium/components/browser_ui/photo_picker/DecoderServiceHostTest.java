@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -328,6 +329,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
 
     @Test
     @LargeTest
+    @DisabledTest(message = "See crbug.com/1306924") // Disabled because it is flaky
     public void testCancelation() throws Throwable {
         DecoderServiceHost host = new DecoderServiceHost(this, mContext);
         host.bind();
