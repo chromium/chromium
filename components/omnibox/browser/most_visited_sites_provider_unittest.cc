@@ -138,7 +138,6 @@ class MostVisitedSitesProviderTest : public testing::Test,
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   scoped_refptr<FakeTopSites> top_sites_;
   scoped_refptr<MostVisitedSitesProvider> provider_;
-  base::test::ScopedFeatureList features_;
   std::unique_ptr<AutocompleteController> controller_;
 };
 
@@ -245,16 +244,13 @@ void MostVisitedSitesProviderTest::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {}
 
-class MostVisitedSitesProviderWithMatchesTest
-    : public MostVisitedSitesProviderTest {
- public:
-  void SetUp() override {
-    features_.InitAndDisableFeature(omnibox::kMostVisitedTiles);
-    MostVisitedSitesProviderTest::SetUp();
-  }
-};
+TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
+  base::test::ScopedFeatureList features;
+  // Note: Grouping framework for ZPS suppresses URL suggestions on affected
+  // platforms.
+  features.InitWithFeatures(
+      {}, {omnibox::kMostVisitedTiles, omnibox::kGroupingFrameworkForZPS});
 
-TEST_F(MostVisitedSitesProviderWithMatchesTest, TestMostVisitedCallback) {
   auto input = BuildAutocompleteInputForWebOnFocus();
   controller_->Start(input);
   EXPECT_EQ(0u, NumMostVisitedMatches());
@@ -296,8 +292,7 @@ TEST_F(MostVisitedSitesProviderWithMatchesTest, TestMostVisitedCallback) {
   controller_->Stop(false);
 }
 
-TEST_F(MostVisitedSitesProviderWithMatchesTest,
-       TestMostVisitedNavigateToSearchPage) {
+TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
   EXPECT_EQ(0u, NumMostVisitedMatches());
   // Stop() doesn't always get called.
@@ -315,37 +310,7 @@ TEST_F(MostVisitedSitesProviderWithMatchesTest,
   EXPECT_EQ(0u, NumMostVisitedMatches());
 }
 
-class ParameterizedMostVisitedSitesProviderTest
-    : public MostVisitedSitesProviderTest,
-      public ::testing::WithParamInterface<bool> {
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    bool isEnabled = GetParam();
-    if (isEnabled) {
-      enabled_features.push_back(omnibox::kMostVisitedTiles);
-      enabled_features.push_back(omnibox::kOmniboxMostVisitedTilesOnSrp);
-    } else {
-      disabled_features.push_back(omnibox::kMostVisitedTiles);
-      disabled_features.push_back(omnibox::kOmniboxMostVisitedTilesOnSrp);
-    }
-
-    features_.InitWithFeatures(enabled_features, disabled_features);
-    MostVisitedSitesProviderTest::SetUp();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedMostVisitedSitesProviderTest,
-                         ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "SingleMatchWithTiles"
-                                             : "IndividualMatches";
-                         });
-
-TEST_P(ParameterizedMostVisitedSitesProviderTest,
-       AllowMostVisitedSitesSuggestions) {
+TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   using OEP = metrics::OmniboxEventProto;
   using OFT = metrics::OmniboxFocusType;
 
@@ -368,25 +333,42 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   EXPECT_TRUE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
           WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_CLOBBER)));
-
-  // Offer MV sites when the User searched for a query and focus on omnibox.
-  EXPECT_EQ(
-      GetParam(),
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-          OFT::INTERACTION_FOCUS)));
 }
 
-TEST_P(ParameterizedMostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
+TEST_F(MostVisitedSitesProviderTest, SrpCoverageIsControlledWithFeatureFlag) {
+  using OEP = metrics::OmniboxEventProto;
+  using OFT = metrics::OmniboxFocusType;
+
+  {  // Feature flag enabled: offer MV Tiles on SRP.
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(omnibox::kOmniboxMostVisitedTilesOnSrp);
+    EXPECT_TRUE(
+        provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+            WEB_URL, WEB_URL,
+            OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+            OFT::INTERACTION_FOCUS)));
+  }
+
+  {  // Feature flag disabled: no MV Tiles on SRP.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(omnibox::kOmniboxMostVisitedTilesOnSrp);
+    EXPECT_FALSE(
+        provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+            WEB_URL, WEB_URL,
+            OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+            OFT::INTERACTION_FOCUS)));
+  }
+}
+
+TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
   EXPECT_EQ(0u, NumMostVisitedMatches());
   // Accept only direct TopSites data.
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo(top_sites_->urls(), GetParam());
+  CheckMatchesEquivalentTo(top_sites_->urls(), true);
 }
 
-TEST_P(ParameterizedMostVisitedSitesProviderTest,
-       NoMatchesWhenNoMostVisitedSites) {
+TEST_F(MostVisitedSitesProviderTest, NoMatchesWhenNoMostVisitedSites) {
   // Start with no URLs.
   top_sites_->urls().clear();
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
@@ -396,7 +378,7 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   EXPECT_EQ(0u, NumMostVisitedMatches());
 }
 
-TEST_P(ParameterizedMostVisitedSitesProviderTest,
+TEST_F(MostVisitedSitesProviderTest,
        NoMatchesWhenTopSitesNotLoadedAndWantAsyncMatchesFalse) {
   // Assume that top sites list has not been loaded yet from the DB.
   ASSERT_FALSE(top_sites_->loaded());
@@ -411,45 +393,36 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   EXPECT_EQ(0u, NumMostVisitedMatches());
 }
 
-TEST_P(ParameterizedMostVisitedSitesProviderTest,
-       TestDeleteMostVisitedElement) {
+TEST_F(MostVisitedSitesProviderTest, TestDeleteMostVisitedElement) {
   // Make a copy (intentional - we'll modify this later)
   auto urls = top_sites_->urls();
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
   // Accept only direct TopSites data.
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo(urls, GetParam());
+  CheckMatchesEquivalentTo(urls, true);
 
   // Commence delete.
-  if (GetParam()) {
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.Search", 1);
-    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.Search", 0,
-                                 1);
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1);
-    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.URL", 5,
-                                 1);
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 0);
-    auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
-    ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
-    controller_->DeleteMatchElement(*match, 1);
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 1);
-    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.DeletedTileIndex", 1, 1);
-    // Note: TileTypeCounts are not emitted after deletion.
-  } else {
-    auto* match = GetMatch(AutocompleteMatchType::NAVSUGGEST, 1);
-    ASSERT_NE(nullptr, match) << "No NAVSUGGEST Match found";
-    controller_->DeleteMatch(*match);
-  }
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.Search", 1);
+  histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.Search", 0,
+                               1);
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1);
+  histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.URL", 5, 1);
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 0);
+  auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
+  ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
+  controller_->DeleteMatchElement(*match, 1);
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 1);
+  histogram_.ExpectBucketCount("Omnibox.SuggestTiles.DeletedTileIndex", 1, 1);
+  // Note: TileTypeCounts are not emitted after deletion.
 
   // Observe that the URL is now blocked and removed from suggestion.
   auto deleted_url = urls[1].url;
   urls.erase(urls.begin() + 1);
-  CheckMatchesEquivalentTo(urls, GetParam());
+  CheckMatchesEquivalentTo(urls, true);
   EXPECT_TRUE(top_sites_->IsBlocked(deleted_url));
 }
 
-TEST_P(ParameterizedMostVisitedSitesProviderTest,
-       NoMatchesWhenLastURLIsDeleted) {
+TEST_F(MostVisitedSitesProviderTest, NoMatchesWhenLastURLIsDeleted) {
   // Start with just one URL.
   auto& urls = top_sites_->urls();
   urls.clear();
@@ -457,28 +430,21 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
 
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
   EXPECT_TRUE(top_sites_->EmitURLs());
-  CheckMatchesEquivalentTo(urls, GetParam());
+  CheckMatchesEquivalentTo(urls, true);
 
   // Commence delete of the only item that we have.
-  if (GetParam()) {
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.Search", 1);
-    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.Search", 0,
-                                 1);
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1);
-    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1,
-                                 1);
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 0);
-    auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
-    ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
-    controller_->DeleteMatchElement(*match, 0);
-    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 1);
-    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.DeletedTileIndex", 0, 1);
-    // Note: TileTypeCounts are not emitted after deletion.
-  } else {
-    auto* match = GetMatch(AutocompleteMatchType::NAVSUGGEST, 0);
-    ASSERT_NE(nullptr, match) << "No NAVSUGGEST Match found";
-    controller_->DeleteMatch(*match);
-  }
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.Search", 1);
+  histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.Search", 0,
+                               1);
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1);
+  histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1, 1);
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 0);
+  auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
+  ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
+  controller_->DeleteMatchElement(*match, 0);
+  histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 1);
+  histogram_.ExpectBucketCount("Omnibox.SuggestTiles.DeletedTileIndex", 0, 1);
+  // Note: TileTypeCounts are not emitted after deletion.
 
   // Confirm no more NAVSUGGEST matches are offered.
   EXPECT_EQ(0u, NumMostVisitedMatches());

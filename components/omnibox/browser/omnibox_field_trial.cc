@@ -1140,20 +1140,6 @@ const base::FeatureParam<bool> kRealboxSecondaryZeroSuggestCounterfactual(
 
 // <- Two-column realbox
 // ---------------------------------------------------------
-// Inspire Me ->
-
-const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
-    &omnibox::kInspireMe,
-    "AdditionalRelatedQueries",
-    0);
-
-const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
-    &omnibox::kInspireMe,
-    "AdditionalTrendingQueries",
-    0);
-
-// <- Inspire Me
-// ---------------------------------------------------------
 // Android UI Revamp ->
 const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(
     &omnibox::kOmniboxModernizeVisualUpdate,

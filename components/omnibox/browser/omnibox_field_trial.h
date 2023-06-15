@@ -701,8 +701,15 @@ extern const base::FeatureParam<bool>
 
 // Specify number of additional Related and Trending queries appended to the
 // suggestion list, when the Inspire Me feature is enabled.
-extern const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries;
-extern const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries;
+constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
+    &omnibox::kInspireMe,
+    "AdditionalRelatedQueries",
+    0);
+
+constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
+    &omnibox::kInspireMe,
+    "AdditionalTrendingQueries",
+    10);
 
 // <- Inspire Me
 // ---------------------------------------------------------
