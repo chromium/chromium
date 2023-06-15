@@ -2916,6 +2916,10 @@ void SpdySession::OnRstStream(spdy::SpdyStreamId stream_id,
                               spdy::SpdyErrorCode error_code) {
   CHECK(in_io_loop_);
 
+  // Use sparse histogram to record the unlikely case that a server sends
+  // an unknown error code.
+  base::UmaHistogramSparse("Net.SpdySession.RstStreamReceived", error_code);
+
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_RST_STREAM, [&] {
     return NetLogSpdyRecvRstStreamParams(stream_id, error_code);
   });
