@@ -46,7 +46,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 }  // namespace
 
 // Tests defaulting typed omnibox navigations to HTTPS.
-@interface TypedNavigationUpgradeTestCase : HttpsUpgradeTestCase {
+@interface TypedNavigationUpgradeTestCase : HttpsUpgradeTestCaseBase {
 }
 @end
 

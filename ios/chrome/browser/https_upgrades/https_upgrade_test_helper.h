@@ -17,8 +17,8 @@ class EmbeddedTestServer;
 }
 }  // namespace net
 
-// Test helper for HTTPS upgrade features (HTTPS-Only Mode and Typed Omnibox
-// Navigation Upgrades).
+// Base test class for HTTPS upgrade related features (HTTPS-Only Mode,
+// HTTPS Upgrades and Typed Omnibox Navigation Upgrades).
 // The tests here use WKWebView and don't go through Chrome's net stack. Due to
 // this, we can't serve valid HTTPS over the test server due to platform
 // limitations on iOS. Instead, we use a faux-HTTPS server (goodHTTPSServer)
@@ -26,7 +26,7 @@ class EmbeddedTestServer;
 // different text than self.testServer. badHTTPSServer is a proper HTTPS_SERVER
 // that just serves bad HTTPS responses. slowServer is a server that serves hung
 // responses.
-@interface HttpsUpgradeTestCase : ChromeTestCase {
+@interface HttpsUpgradeTestCaseBase : ChromeTestCase {
   // Counts the number of HTTP responses returned by the test server. Doesn't
   // count the faux-HTTPS or bad-HTTPS responses. Used to check if prerender
   // navigations are successfully cancelled (the server shouldn't return a

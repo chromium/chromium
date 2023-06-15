@@ -41,6 +41,7 @@ source_set("unit_tests") {
   deps = [
     ":https_upgrades",
     "//base/test:test_support",
+    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs:test_support",
     "//components/security_interstitials/core",
@@ -49,6 +50,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/https_only_mode:test_util",
     "//ios/web/public",
     "//ios/web/public/test",

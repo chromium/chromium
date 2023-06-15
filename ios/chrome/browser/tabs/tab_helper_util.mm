@@ -285,7 +285,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   NetExportTabHelper::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
+          security_interstitials::features::kHttpsOnlyMode) ||
+      base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsUpgrades)) {
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         web_state, browser_state->GetPrefs(),
         PrerenderServiceFactory::GetForBrowserState(browser_state),

@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
@@ -21,11 +23,27 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+enum class HttpsUpgradesTestType {
+  // Neither HTTPS-Only Mode or HTTPS-Upgrades is enabled.
+  kNone,
+  // HTTPS-Only Mode is enabled (both the feature and the UI preference).
+  kHttpsOnlyMode,
+  // HTTPS-Upgrades is enabled.
+  kHttpsUpgrades,
+  // Both HTTPS-Only Mode and HTTPS-Upgrades are enabled.
+  kBoth
+};
+
+}
 
 std::unique_ptr<KeyedService> BuildFakePrerenderService(
     web::BrowserState* context) {
@@ -37,7 +55,8 @@ std::unique_ptr<KeyedService> BuildFakeHttpsUpgradeService(
   return std::make_unique<FakeHttpsUpgradeService>();
 }
 
-class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
+class HttpsOnlyModeUpgradeTabHelperTest
+    : public testing::TestWithParam<HttpsUpgradesTestType> {
  protected:
   HttpsOnlyModeUpgradeTabHelperTest() {
     TestChromeBrowserState::Builder builder;
@@ -50,13 +69,50 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
     browser_state_ = builder.Build();
     web_state_.SetBrowserState(browser_state_.get());
 
+    switch (GetParam()) {
+      case HttpsUpgradesTestType::kNone:
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/{},
+            /*disabled_features=*/
+            {security_interstitials::features::kHttpsOnlyMode,
+             security_interstitials::features::kHttpsUpgrades});
+        break;
+
+      case HttpsUpgradesTestType::kHttpsOnlyMode:
+        browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               true);
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/{security_interstitials::features::
+                                      kHttpsOnlyMode},
+            /*disabled_features=*/{
+                security_interstitials::features::kHttpsUpgrades});
+        break;
+
+      case HttpsUpgradesTestType::kHttpsUpgrades:
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/{security_interstitials::features::
+                                      kHttpsUpgrades},
+            /*disabled_features=*/{
+                security_interstitials::features::kHttpsOnlyMode});
+        break;
+
+      case HttpsUpgradesTestType::kBoth:
+        browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               true);
+        scoped_feature_list_
+            .InitWithFeatures(/*enabled_features=*/
+                              {security_interstitials::features::kHttpsOnlyMode,
+                               security_interstitials::features::
+                                   kHttpsUpgrades},
+                              /*disabled_features=*/{});
+        break;
+    }
+
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         &web_state_, browser_state_->GetPrefs(),
         PrerenderServiceFactory::GetForBrowserState(browser_state_.get()),
         HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_.get()));
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
-
-    browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
   }
 
   void TearDown() override {
@@ -98,13 +154,14 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
  private:
   std::unique_ptr<ChromeBrowserState> browser_state_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that ShouldAllowResponse properly upgrades navigations and
 // ignores subframe navigations. ShouldAllowRequest should always allow
 // the navigation.
 // Also tests that UMA records correctly.
-TEST_F(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
+TEST_P(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
   // Create a navigation item.
   auto fake_navigation_manager_ =
       std::make_unique<web::FakeNavigationManager>();
@@ -121,10 +178,16 @@ TEST_F(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
   EXPECT_TRUE(ShouldAllowResponseUrl(https_url, /*main_frame=*/false)
                   .ShouldAllowNavigation());
 
-  // Main frame HTTP navigations should be disallowed.
+  // If either HTTPS-Only Mode or HTTPS-Upgrades is enabled, m
+  // main frame HTTP navigations should be disallowed.
   GURL http_url("http://example.com/");
-  EXPECT_FALSE(ShouldAllowResponseUrl(http_url, /*main_frame=*/true)
-                   .ShouldAllowNavigation());
+  if (GetParam() != HttpsUpgradesTestType::kNone) {
+    EXPECT_FALSE(ShouldAllowResponseUrl(http_url, /*main_frame=*/true)
+                     .ShouldAllowNavigation());
+  } else {
+    EXPECT_TRUE(ShouldAllowResponseUrl(http_url, /*main_frame=*/true)
+                    .ShouldAllowNavigation());
+  }
   // Non-main frame HTTP navigations should be allowed.
   EXPECT_TRUE(ShouldAllowResponseUrl(http_url, /*main_frame=*/false)
                   .ShouldAllowNavigation());
@@ -137,7 +200,7 @@ TEST_F(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
                   .ShouldAllowNavigation());
 }
 
-TEST_F(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
+TEST_P(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
   HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
       web_state_.GetBrowserState());
 
@@ -165,3 +228,11 @@ TEST_F(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
   EXPECT_EQ(GURL("http://example.com:8001/test#fake-https"),
             service->GetUpgradedHttpsUrl(GURL("http://example.com:8000/test")));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    HttpsOnlyModeUpgradeTabHelperTest,
+    testing::Values(HttpsUpgradesTestType::kNone,
+                    HttpsUpgradesTestType::kHttpsOnlyMode,
+                    HttpsUpgradesTestType::kHttpsUpgrades,
+                    HttpsUpgradesTestType::kBoth));

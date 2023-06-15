@@ -47,20 +47,29 @@ namespace {
 const char kInterstitialText[] =
     "You are seeing this warning because this site does not support HTTPS";
 
+enum class TestType {
+  kHttpsOnlyMode,
+  kHttpsUpgrades,
+};
+
 }  // namespace
 
 // Tests for HTTPS-Only Mode.
-@interface HttpsOnlyModeUpgradeTestCase : HttpsUpgradeTestCase {
+// TODO(crbug.com/1338585): Remove the "ZZZ" when the bug is fixed.
+@interface ZZZ_HttpsOnlyModeTestCase : HttpsUpgradeTestCaseBase {
 }
 @end
 
-@implementation HttpsOnlyModeUpgradeTestCase
+@implementation ZZZ_HttpsOnlyModeTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(
       security_interstitials::features::kHttpsOnlyMode);
+
+  config.features_disabled.push_back(
+      security_interstitials::features::kHttpsUpgrades);
   // Disable omnibox navigation upgrades.
   // typed_navigation_upgrade_tab_helper_egtest.mm already has a
   // test case with both features enabled.
@@ -74,7 +83,9 @@ const char kInterstitialText[] =
   [ChromeEarlGrey clearBrowsingHistory];
   [HttpsUpgradeAppInterface clearAllowlist];
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
+  if ([self testType] == TestType::kHttpsOnlyMode) {
+    [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
+  }
 }
 
 - (void)tearDown {
@@ -82,6 +93,16 @@ const char kInterstitialText[] =
   [HttpsUpgradeAppInterface clearAllowlist];
 
   [super tearDown];
+}
+
+// Returns true if the HTTPS-Only Mode interstitial is enabled.
+- (bool)isInterstitialEnabled {
+  return [self testType] == TestType::kHttpsOnlyMode &&
+         [ChromeEarlGrey userBooleanPref:prefs::kHttpsOnlyModeEnabled];
+}
+
+- (TestType)testType {
+  return TestType::kHttpsOnlyMode;
 }
 
 // Asserts that the navigation wasn't upgraded.
@@ -190,7 +211,7 @@ const char kInterstitialText[] =
                     expectTotalCount:(repeatCount * 2)
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
-                @"Incorrect numbber of records in event histogram");
+                @"Incorrect number of records in event histogram");
 
   GREYAssertNil([MetricsAppInterface
                      expectCount:repeatCount
@@ -224,19 +245,29 @@ const char kInterstitialText[] =
 
 #pragma mark - Tests
 
-// Disable the feature and navigate to an HTTP URL directly. Since the feature
-// is disabled, this should load the HTTP URL even though the upgraded HTTPS
-// version serves good SSL.
-- (void)test_FeatureDisabled_ShouldNotUpgrade {
+// Disable HTTPS-Only Mode and navigate to an HTTP URL directly.
+// - If HTTPS Upgrades is disabled, this should load the HTTP URL even though
+//   the upgraded HTTPS version serves good SSL.
+// - Otherwise, it should load the HTTPS URL.
+- (void)test_HttpsOnlyModeDisabled {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
 
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
+
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  [self assertNoUpgrade];
+
+  if ([self testType] == TestType::kHttpsUpgrades) {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
+    [self assertSuccessfulUpgrade];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+    [self assertNoUpgrade];
+  }
 }
 
 // Tests that navigations to localhost URLs aren't upgraded.
@@ -315,11 +346,14 @@ const char kInterstitialText[] =
   GURL testURL = upgradedURL.ReplaceComponents(replacements);
 
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
-  [self assertFailedUpgrade:1];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    [self assertFailedUpgrade:1];
 
-  // Click through the interstitial. This should load the HTTP page.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+    // Click through the interstitial. This should load the HTTP page.
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  }
+
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
@@ -491,6 +525,12 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL and allowlist the URL. Then clear browsing data.
 // This should clear the HTTP allowlist.
 - (void)test_RemoveBrowsingData_ShouldClearAllowlist {
+  if (![self isInterstitialEnabled]) {
+    // Only relevant for HTTPS-Only Mode.
+    // TODO(crbug.com/1449050): Enable for HTTPS-Upgrades when it implements
+    // allowlisting.
+    return;
+  }
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -529,6 +569,10 @@ const char kInterstitialText[] =
 // Click on the "Learn more" link in the interstitial. This should open a
 // new tab.
 - (void)test_ClickLearnMore_ShouldOpenNewTab {
+  if (![self isInterstitialEnabled]) {
+    // Only relevant for HTTPS-Only mode tests.
+    return;
+  }
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -558,11 +602,19 @@ const char kInterstitialText[] =
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  }
   [self assertFailedUpgrade:1];
 
   [ChromeEarlGrey reload];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  }
   [self assertFailedUpgrade:2];
 }
 
@@ -578,11 +630,19 @@ const char kInterstitialText[] =
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  }
   [self assertTimedOutUpgrade:1];
 
   [ChromeEarlGrey reload];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  }
   [self assertTimedOutUpgrade:2];
 }
 
@@ -596,11 +656,12 @@ const char kInterstitialText[] =
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    // Click through the interstitial. This should load the HTTP page.
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  }
   [self assertFailedUpgrade:1];
-
-  // Click through the interstitial. This should load the HTTP page.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
@@ -609,11 +670,20 @@ const char kInterstitialText[] =
   // HTTP without trying to upgrade.
   [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:2
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"Unexpected histogram event recorded.");
+
+  if ([self isInterstitialEnabled]) {
+    // If HTTPS-Only mode is enabled, clicking through the interstitial will
+    // allowlist the site so no new histogram entry will be recorded.
+    // Failed upgrades record two entries and this number shouldn't change.
+    GREYAssertNil([MetricsAppInterface
+                      expectTotalCount:2
+                          forHistogram:@(security_interstitials::
+                                             https_only_mode::kEventHistogram)],
+                  @"Unexpected histogram event recorded.");
+  } else {
+    // HTTPS-Upgrades will attempt to upgrade and fail for the second time.
+    [self assertFailedUpgrade:2];
+  }
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
@@ -624,7 +694,12 @@ const char kInterstitialText[] =
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
-  [self assertFailedUpgrade:1];
+  if ([self isInterstitialEnabled]) {
+    [self assertFailedUpgrade:1];
+  } else {
+    // HTTPS-Upgrades will attempt to upgrade and fail for the third time.
+    [self assertFailedUpgrade:3];
+  }
 
   // Open an incognito tab and try there. Should show the interstitial as
   // allowlist decisions don't carry over to incognito.
@@ -632,19 +707,31 @@ const char kInterstitialText[] =
   // Set the testing information for the incognito tab.
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
-
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
-  // Click through the interstitial. This should load the HTTP page.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    // Click through the interstitial. This should load the HTTP page.
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+    [self assertFailedUpgrade:2];
+  } else {
+    // HTTPS-Upgrades will attempt to upgrade and fail for the fourth time.
+    [self assertFailedUpgrade:4];
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
-  // Reload. Since the URL is now allowlisted, this should immediately load
-  // HTTP without trying to upgrade.
   [ChromeEarlGreyUI reload];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  if ([self isInterstitialEnabled]) {
+    // If HTTPS-Only mode is enabled, this should immediately load HTTP without
+    // trying to upgrade because it was allowlisted.
+    [self assertFailedUpgrade:2];
+  } else {
+    // HTTPS-Upgrades will attempt to upgrade and fail for the fifth time.
+    [self assertFailedUpgrade:5];
+  }
 }
 
 // Same as testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted but uses
@@ -662,24 +749,32 @@ const char kInterstitialText[] =
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    // Click through the interstitial. This should load the HTTP page.
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  }
   [self assertTimedOutUpgrade:1];
-
-  // Click through the interstitial. This should load the HTTP page.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
-  // Reload. Since the URL is now allowlisted, this should immediately load
-  // HTTP without trying to upgrade.
+  // Reload.
   [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:2
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"Unexpected histogram event recorded.");
+  if ([self isInterstitialEnabled]) {
+    // If HTTPS-Only mode is enabled, clicking through the interstitial will
+    // allowlist the site so no new histogram entry will be recorded.
+    // Failed upgrades record two entries and this number shouldn't change.
+    GREYAssertNil([MetricsAppInterface
+                      expectTotalCount:2
+                          forHistogram:@(security_interstitials::
+                                             https_only_mode::kEventHistogram)],
+                  @"Unexpected histogram event recorded.");
+  } else {
+    // HTTPS-Upgrades will attempt to upgrade and fail for the second time.
+    [self assertTimedOutUpgrade:2];
+  }
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 }
@@ -697,17 +792,32 @@ const char kInterstitialText[] =
   // Load a site with a bad HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  }
   [self assertFailedUpgrade:1];
 
-  // Tap "Go back" on the interstitial. This should go back to chrome://version.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  if ([self isInterstitialEnabled]) {
+    // Tap "Go back" on the interstitial. This should go back to
+    // chrome://version.
+    [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  } else {
+    [ChromeEarlGrey goBack];
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
 
   // Go forward. Should hit the interstitial again.
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
-  [self assertFailedUpgrade:2];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    [self assertFailedUpgrade:2];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+    // TODO(crbug.com/1449050): This should equal to 2 instead.
+    [self assertFailedUpgrade:1];
+  }
 }
 
 // Same as testUpgrade_BadHTTPS_GoBack but uses a slow HTTPS response instead:
@@ -727,18 +837,32 @@ const char kInterstitialText[] =
   // Load a site with a slow HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  }
   [self assertTimedOutUpgrade:1];
 
-  // Tap "Go back" on the interstitial. This should go back to
-  // chrome://version.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  if ([self isInterstitialEnabled]) {
+    // Tap "Go back" on the interstitial. This should go back to
+    // chrome://version.
+    [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  } else {
+    [ChromeEarlGrey goBack];
+  }
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
 
   // Go forward. Should hit the interstitial again.
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
-  [self assertTimedOutUpgrade:2];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    [self assertTimedOutUpgrade:2];
+  } else {
+    [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+    // TODO(crbug.com/1449050): This should equal to 2 instead.
+    [self assertTimedOutUpgrade:1];
+  }
 }
 
 // Navigate to an HTTP URL and click through the interstitial. Then,
@@ -753,11 +877,14 @@ const char kInterstitialText[] =
   // Load a site with a bad HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
-  [self assertFailedUpgrade:1];
 
-  // Click through the interstitial. This should load the HTTP page.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    [self assertFailedUpgrade:1];
+    // Click through the interstitial. This should load the HTTP page.
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  }
+
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
 
   // Go to a new page.
@@ -789,11 +916,14 @@ const char kInterstitialText[] =
   // Load a site with a bad HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
-  [self assertTimedOutUpgrade:1];
 
-  // Click through the interstitial. This should load the HTTP page.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  if ([self isInterstitialEnabled]) {
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+    [self assertTimedOutUpgrade:1];
+    // Click through the interstitial. This should load the HTTP page.
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  }
+
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
@@ -808,6 +938,32 @@ const char kInterstitialText[] =
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   // Histogram numbers shouldn't change.
   [self assertTimedOutUpgrade:1];
+}
+
+@end
+
+// Tests for HTTPS-Upgrades feature.
+// TODO(crbug.com/1338585): Remove the "ZZZ" when the bug is fixed.
+@interface ZZZ_HttpsUpgradesTestCase : ZZZ_HttpsOnlyModeTestCase
+@end
+
+@implementation ZZZ_HttpsUpgradesTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled = {omnibox::kDefaultTypedNavigationsToHttps};
+
+  config.features_enabled.push_back(
+      security_interstitials::features::kHttpsUpgrades);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+- (TestType)testType {
+  return TestType::kHttpsUpgrades;
 }
 
 @end

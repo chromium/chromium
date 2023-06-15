@@ -84,7 +84,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungResponse(
 
 }  // namespace
 
-@implementation HttpsUpgradeTestCase
+@implementation HttpsUpgradeTestCaseBase
 
 - (net::EmbeddedTestServer*)goodHTTPSServer {
   if (!_goodHTTPSServer) {
