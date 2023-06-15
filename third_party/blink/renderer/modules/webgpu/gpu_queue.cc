@@ -10,12 +10,12 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -91,16 +91,14 @@ struct ExternalSource {
 };
 
 ExternalSource GetExternalSourceFromExternalImage(
-    const V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas*
-        external_image,
+    const V8GPUImageCopyExternalImageSource* external_image,
     ExceptionState& exception_state) {
   ExternalSource external_source;
   ExternalTextureSource external_texture_source;
   CanvasImageSource* canvas_image_source = nullptr;
   CanvasRenderingContextHost* canvas = nullptr;
   switch (external_image->GetContentType()) {
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kHTMLVideoElement:
+    case V8GPUImageCopyExternalImageSource::ContentType::kHTMLVideoElement:
       external_texture_source = GetExternalTextureSourceFromVideoElement(
           external_image->GetAsHTMLVideoElement(), exception_state);
       if (external_texture_source.valid) {
@@ -113,17 +111,27 @@ ExternalSource GetExternalSourceFromExternalImage(
         external_source.valid = true;
       }
       return external_source;
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kHTMLCanvasElement:
+    case V8GPUImageCopyExternalImageSource::ContentType::kVideoFrame:
+      external_texture_source = GetExternalTextureSourceFromVideoFrame(
+          external_image->GetAsVideoFrame(), exception_state);
+      if (external_texture_source.valid) {
+        external_source.external_texture_source = external_texture_source;
+        DCHECK(external_texture_source.media_video_frame);
+        external_source.width = static_cast<uint32_t>(
+            external_texture_source.media_video_frame->coded_size().width());
+        external_source.height = static_cast<uint32_t>(
+            external_texture_source.media_video_frame->coded_size().height());
+        external_source.valid = true;
+      }
+      return external_source;
+    case V8GPUImageCopyExternalImageSource::ContentType::kHTMLCanvasElement:
       canvas_image_source = external_image->GetAsHTMLCanvasElement();
       canvas = external_image->GetAsHTMLCanvasElement();
       break;
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kImageBitmap:
+    case V8GPUImageCopyExternalImageSource::ContentType::kImageBitmap:
       canvas_image_source = external_image->GetAsImageBitmap();
       break;
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kOffscreenCanvas:
+    case V8GPUImageCopyExternalImageSource::ContentType::kOffscreenCanvas:
       canvas_image_source = external_image->GetAsOffscreenCanvas();
       canvas = external_image->GetAsOffscreenCanvas();
       break;

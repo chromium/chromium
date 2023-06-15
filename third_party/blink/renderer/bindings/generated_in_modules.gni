@@ -2848,6 +2848,8 @@ generated_typedef_sources_in_modules = [
 ]
 
 generated_union_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas_videoframe.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas_videoframe.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_abortsignal_schedulersignalinherit.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_abortsignal_schedulersignalinherit.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_authenticationresponsejson_registrationresponsejson.cc",

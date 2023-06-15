@@ -1785,8 +1785,6 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_float_stringelementrecord.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_float_stringelementrecord.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_htmlelement_long.cc",
