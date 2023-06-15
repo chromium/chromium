@@ -376,7 +376,7 @@ NSInteger kFeedSymbolPointSize = 17;
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
   titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.accessibilityIdentifier =
@@ -398,7 +398,8 @@ NSInteger kFeedSymbolPointSize = 17;
   [segmentedControl setApportionsSegmentWidthsByContent:NO];
 
   // Set text font and color.
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  UIFont* font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
   NSDictionary* attributes =
       [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
   [segmentedControl setTitleTextAttributes:attributes

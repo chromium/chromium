@@ -243,6 +243,7 @@ UIView* IconInSquare(NSString* symbol,
     return;
   }
 
+  self.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
   _typeIcon = [self createTypeIcon];
   _checkmark = IconForSymbol(
       kCheckmarkCircleFillSymbol, _compactLayout,

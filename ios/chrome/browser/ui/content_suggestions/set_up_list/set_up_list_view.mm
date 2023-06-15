@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -215,6 +216,13 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   self.accessibilityIdentifier = set_up_list::kAccessibilityID;
 
   UILabel* listTitle = [self createListTitle];
+  _menuButton = [self createMenuButton];
+  UIStackView* titleContainer = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ listTitle, _menuButton ]];
+  titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  titleContainer.axis = UILayoutConstraintAxisHorizontal;
+  titleContainer.distribution = UIStackViewDistributionFill;
+
   _items = [self createItems];
   _itemsStack = [self createItemsStack];
   if (_items.count > kInitialItemCount && ![self allItemsComplete]) {
@@ -223,7 +231,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   }
 
   UIStackView* containerStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ listTitle, _itemsStack ]];
+      initWithArrangedSubviews:@[ titleContainer, _itemsStack ]];
   containerStack.translatesAutoresizingMaskIntoConstraints = NO;
   containerStack.axis = UILayoutConstraintAxisVertical;
   containerStack.spacing = kPadding;
@@ -231,15 +239,6 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   AddSameConstraintsWithInsets(
       containerStack, self,
       NSDirectionalEdgeInsetsMake(0, kMargin, kMargin, kMargin));
-
-  _menuButton = [self createMenuButton];
-  [self addSubview:_menuButton];
-  [NSLayoutConstraint activateConstraints:@[
-    [_menuButton.trailingAnchor
-        constraintEqualToAnchor:containerStack.trailingAnchor],
-    [_menuButton.firstBaselineAnchor
-        constraintEqualToAnchor:listTitle.firstBaselineAnchor],
-  ]];
 
   if (_expandButton) {
     self.accessibilityElements =
@@ -302,9 +301,12 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 - (UILabel*)createListTitle {
   UILabel* label = [[UILabel alloc] init];
   label.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  label.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.accessibilityTraits = UIAccessibilityTraitHeader;
+  label.numberOfLines = 0;
+  label.lineBreakMode = NSLineBreakByWordWrapping;
   return label;
 }
 
@@ -316,6 +318,8 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
       DefaultSymbolTemplateWithPointSize(kMenuSymbol, kButtonPointSize);
   [button setImage:icon forState:UIControlStateNormal];
   button.tintColor = [UIColor colorNamed:kGrey600Color];
+  [button setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                            forAxis:UILayoutConstraintAxisHorizontal];
 
   button.accessibilityIdentifier = set_up_list::kMenuButtonID;
   button.isAccessibilityElement = YES;
