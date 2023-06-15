@@ -777,7 +777,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kWebKioskEnableLacros, ash::features::kLacrosSupport,
-         ash::features::kLacrosPrimary},
+         ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
         {});
   }
 
