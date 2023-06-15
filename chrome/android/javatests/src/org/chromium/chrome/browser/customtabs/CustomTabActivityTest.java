@@ -73,6 +73,7 @@ import androidx.test.runner.lifecycle.Stage;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,6 +87,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -168,6 +170,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -1811,7 +1814,29 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
+        WindowManager wm = (WindowManager) ContextUtils.getApplicationContext().getSystemService(
+                Context.WINDOW_SERVICE);
+        DisplayMetrics metrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(metrics);
+
+        Assume.assumeTrue("BottomSheet PCCT does not support landscape.",
+                metrics.heightPixels > metrics.widthPixels);
+        doTestLaunchPartialCustomTabWithInitialHeight();
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_BottomSheet_SideSheetFlagEnabled() throws Exception {
+        doTestLaunchPartialCustomTabWithInitialHeight();
+    }
+
+    private void doTestLaunchPartialCustomTabWithInitialHeight() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -1830,9 +1855,21 @@ public class CustomTabActivityTest {
         BaseCustomTabRootUiCoordinator coordinator =
                 (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
                         .getRootUiCoordinatorForTesting();
-        assertTrue("Incorrect strategy type",
-                coordinator.getCustomTabSizeStrategyForTesting()
-                                instanceof PartialCustomTabBottomSheetStrategy);
+
+        boolean useDisplayManager =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET);
+        if (useDisplayManager) {
+            PartialCustomTabDisplayManager displayManager =
+                    (PartialCustomTabDisplayManager)
+                            coordinator.getCustomTabSizeStrategyForTesting();
+            assertEquals("Incorrect strategy type with display manager.",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertEquals("Incorrect strategy type is not bottom sheet.",
+                    PartialCustomTabBottomSheetStrategy.class.toString(),
+                    coordinator.getCustomTabSizeStrategyForTesting().getClass().toString());
+        }
 
         // Verify the hierarchy of the enclosing layouts that PCCT relies on for its operation.
         CallbackHelper eventHelper = new CallbackHelper();
@@ -1915,6 +1952,8 @@ public class CustomTabActivityTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    // Screen rotation is not relevant on automotive.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void
     testLaunchPartialCustomTabActivity_Transition() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
