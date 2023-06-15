@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/ip_address.h"
@@ -316,6 +317,52 @@ TEST_F(QuicEndToEndTest, UberTest) {
 
   for (const auto& consumer : consumers)
     CheckResponse(*consumer.get(), "HTTP/1.1 200", kResponseBody);
+}
+
+TEST_F(QuicEndToEndTest, EnableKyber) {
+  // Enable Kyber on the client.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kPostQuantumKyber}, {});
+
+  // Configure the server to only support Kyber.
+  server_->crypto_config()->set_preferred_groups(
+      {SSL_GROUP_X25519_KYBER768_DRAFT00});
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+
+  // Will terminate when the last consumer completes.
+  base::RunLoop().Run();
+
+  CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
+  EXPECT_EQ(consumer.response_info()->ssl_info.key_exchange_group,
+            SSL_GROUP_X25519_KYBER768_DRAFT00);
+}
+
+TEST_F(QuicEndToEndTest, KyberDisabled) {
+  // Disable Kyber on the client.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {features::kPostQuantumKyber});
+
+  // Configure the server to only support Kyber.
+  server_->crypto_config()->set_preferred_groups(
+      {SSL_GROUP_X25519_KYBER768_DRAFT00});
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+
+  // Will terminate when the last consumer completes.
+  base::RunLoop().Run();
+
+  // Connection should fail because there's no supported group in common between
+  // client and server.
+  EXPECT_EQ(consumer.error(), net::ERR_QUIC_PROTOCOL_ERROR);
 }
 
 }  // namespace test
