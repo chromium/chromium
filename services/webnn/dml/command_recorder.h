@@ -11,6 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/webnn/dml/command_queue.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn::dml {
 
@@ -49,8 +50,7 @@ class CommandRecorder final {
   HRESULT Open();
   HRESULT CloseAndExecute();
 
-  void ResourceBarrier(
-      const std::vector<const D3D12_RESOURCE_BARRIER>& barriers);
+  void ResourceBarrier(base::span<const D3D12_RESOURCE_BARRIER> barriers);
 
   void CopyBufferRegion(ID3D12Resource* dst_buffer,
                         uint64_t dst_offset,
@@ -58,8 +58,30 @@ class CommandRecorder final {
                         uint64_t src_offset,
                         uint64_t byte_length);
 
-  HRESULT InitializeGraph(GraphDMLImpl* graph,
-                          const DML_BINDING_DESC& input_array_binding);
+  // Initialize a compiled DirectML operator, which may also represent a
+  // DirectML graph, on the GPU, before it can be executed. For a compiled
+  // operator, this method should be called only once.
+  //
+  // If the compiled operator has any input tensors flagged with
+  // `DML_TENSOR_FLAG_OWNED_BY_DML`, their corresponding resources binding
+  // should be created by the caller and supplied via `input_array_binding` of
+  // `DML_BINDING_TYPE_BUFFER_ARRAY` type. It's the caller's responsibility to
+  // keep these input resources alive until the GPU work is completed, e.g. by
+  // calling `CommandQueue::ReferenceUntilCompleted()`.
+  //
+  // If the compiled operator requires any persistent resources, their resource
+  // binding should be created by the caller and supplied via
+  // `persistent_resource_binding` of `DML_BINDING_TYPE_BUFFER` type. The
+  // persistent resource will be initialized after the GPU work is completed and
+  // it will be used for the following operator executions.
+  //
+  // Internally, this method will create necessary temporary resources for the
+  // operator initializer and these temporary resources will be kept alive until
+  // the GPU work is done.
+  HRESULT InitializeOperator(
+      IDMLCompiledOperator* compiled_operator,
+      const absl::optional<DML_BINDING_DESC>& input_array_binding,
+      const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
   HRESULT ExecuteGraph(GraphDMLImpl* graph,
                        const std::vector<DML_BINDING_DESC>& input_bindings,

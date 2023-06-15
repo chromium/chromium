@@ -7,10 +7,21 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/error.h"
 
 namespace webnn::dml {
+
+namespace {
+
+D3D12_RESOURCE_BARRIER CreateUAVBarrier(ID3D12Resource* resource) {
+  return {.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV,
+          .Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
+          .UAV = {.pResource = resource}};
+}
+
+}  // namespace
 
 // Static
 std::unique_ptr<CommandRecorder> CommandRecorder::Create(
@@ -78,9 +89,10 @@ HRESULT CommandRecorder::CloseAndExecute() {
 }
 
 void CommandRecorder::ResourceBarrier(
-    const std::vector<const D3D12_RESOURCE_BARRIER>& barriers) {
+    base::span<const D3D12_RESOURCE_BARRIER> barriers) {
   CHECK(is_open_);
-  command_list_->ResourceBarrier(barriers.size(), barriers.data());
+  command_list_->ResourceBarrier(base::checked_cast<uint32_t>(barriers.size()),
+                                 barriers.data());
 }
 
 void CommandRecorder::CopyBufferRegion(ID3D12Resource* dst_buffer,
@@ -93,14 +105,105 @@ void CommandRecorder::CopyBufferRegion(ID3D12Resource* dst_buffer,
                                   src_offset, byte_length);
 }
 
-HRESULT CommandRecorder::InitializeGraph(
-    GraphDMLImpl* graph,
-    const DML_BINDING_DESC& input_array_binding) {
+HRESULT CommandRecorder::InitializeOperator(
+    IDMLCompiledOperator* compiled_operator,
+    const absl::optional<DML_BINDING_DESC>& input_array_binding,
+    const absl::optional<DML_BINDING_DESC>& persistent_resource_binding) {
   CHECK(is_open_);
-  CHECK(graph);
-  // TODO(crbug.com/1273291): This method will be implemented after the
-  // GraphDMLImpl class has been defined.
-  NOTIMPLEMENTED();
+  CHECK(compiled_operator);
+
+  ComPtr<IDMLOperatorInitializer> initializer;
+  IDMLCompiledOperator* compiled_operators[] = {compiled_operator};
+  RETURN_IF_FAILED(adapter_->dml_device()->CreateOperatorInitializer(
+      /* operatorCount */ 1, compiled_operators, IID_PPV_ARGS(&initializer)));
+
+  DML_BINDING_PROPERTIES initialization_binding_properties =
+      initializer->GetBindingProperties();
+
+  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+  // Some operator initializers, such as Relu, requires 0 descriptors. However,
+  // the DirectML binding table requires valid CPU and GPU descriptor handles.
+  // So create a descriptor heap with at least 1 descriptor.
+  const uint32_t num_descriptors_in_heap =
+      std::max(1u, initialization_binding_properties.RequiredDescriptorCount);
+  D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc{
+      .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+      .NumDescriptors = num_descriptors_in_heap,
+      .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
+  RETURN_IF_FAILED(adapter_->d3d12_device()->CreateDescriptorHeap(
+      &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+
+  ID3D12DescriptorHeap* descriptor_heaps[] = {descriptor_heap.Get()};
+  command_list_->SetDescriptorHeaps(/* NumDescriptorHeaps */ 1,
+                                    descriptor_heaps);
+
+  DML_BINDING_TABLE_DESC binding_table_desc = {
+      .Dispatchable = initializer.Get(),
+      .CPUDescriptorHandle =
+          descriptor_heap->GetCPUDescriptorHandleForHeapStart(),
+      .GPUDescriptorHandle =
+          descriptor_heap->GetGPUDescriptorHandleForHeapStart(),
+      .SizeInDescriptors =
+          initialization_binding_properties.RequiredDescriptorCount};
+  ComPtr<IDMLBindingTable> binding_table;
+  RETURN_IF_FAILED(adapter_->dml_device()->CreateBindingTable(
+      &binding_table_desc, IID_PPV_ARGS(&binding_table)));
+
+  // Create and bind the temporary resource if the operator initializer
+  // requires.
+  auto temp_resource_size =
+      initialization_binding_properties.TemporaryResourceSize;
+  if (temp_resource_size > 0) {
+    ComPtr<ID3D12Resource> temp_resource;
+    RETURN_IF_FAILED(
+        adapter_->CreateDefaultBuffer(temp_resource_size, temp_resource));
+    DML_BUFFER_BINDING temp_buffer_binding{.Buffer = temp_resource.Get(),
+                                           .Offset = 0,
+                                           .SizeInBytes = temp_resource_size};
+    DML_BINDING_DESC temp_binding_desc{.Type = DML_BINDING_TYPE_BUFFER,
+                                       .Desc = &temp_buffer_binding};
+    binding_table->BindTemporaryResource(&temp_binding_desc);
+    adapter_->command_queue()->ReferenceUntilCompleted(
+        std::move(temp_resource));
+  }
+
+  // The input resources with DML_TENSOR_FLAG_OWNED_BY_DML flag (e.g. weights)
+  // should be bound as input during operator initialization.
+  if (input_array_binding.has_value()) {
+    CHECK_EQ(input_array_binding.value().Type, DML_BINDING_TYPE_BUFFER_ARRAY);
+    binding_table->BindInputs(/* bindingCount */ 1,
+                              &input_array_binding.value());
+  }
+
+  // The persistent resource should be bound as output during operator
+  // initialization.
+  if (persistent_resource_binding.has_value()) {
+    CHECK_EQ(persistent_resource_binding.value().Type, DML_BINDING_TYPE_BUFFER);
+    binding_table->BindOutputs(/* bindingCount */ 1,
+                               &persistent_resource_binding.value());
+  }
+
+  command_recorder_->RecordDispatch(command_list_.Get(), initializer.Get(),
+                                    binding_table.Get());
+
+  // The operator initializer owns GPU resources, it should be kept alive until
+  // the dispatch using it have completed execution on the GPU.
+  adapter_->command_queue()->ReferenceUntilCompleted(std::move(initializer));
+
+  // It's safe to release the binding table right after the dispatch has been
+  // recorded into the command list. However, the heap which is referred to by
+  // the GPU descriptor handle should be kept alive until all work referencing
+  // it has completed execution on the GPU.
+  adapter_->command_queue()->ReferenceUntilCompleted(
+      std::move(descriptor_heap));
+
+  // Record a UAV barrier when the persistent is used, because the following
+  // operator dispatches may depend on it.
+  if (persistent_resource_binding.has_value()) {
+    auto uav = CreateUAVBarrier(nullptr);
+    command_list_->ResourceBarrier(/* NumBarriers */ 1, &uav);
+  }
+
   return S_OK;
 }
 
