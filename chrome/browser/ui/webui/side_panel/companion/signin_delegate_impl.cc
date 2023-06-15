@@ -63,11 +63,18 @@ void SigninDelegateImpl::StartSigninFlow() {
   DCHECK(AllowedSignin());
 
   // Show the promo here.
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
-      GetProfile(),
-      IdentityManagerFactory::GetForProfile(GetProfile())
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION);
+  if (SyncServiceFactory::GetForProfile(GetProfile())->GetTransportState() !=
+      syncer::SyncService::TransportState::PAUSED) {
+    signin_ui_util::EnableSyncFromSingleAccountPromo(
+        GetProfile(),
+        IdentityManagerFactory::GetForProfile(GetProfile())
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+        signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION);
+    return;
+  }
+
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+      GetProfile(), signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION);
 }
 
 void SigninDelegateImpl::EnableMsbb(bool enable_msbb) {
