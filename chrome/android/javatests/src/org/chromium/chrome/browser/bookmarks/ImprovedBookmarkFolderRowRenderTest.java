@@ -151,6 +151,27 @@ public class ImprovedBookmarkFolderRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testNoImageDrawableProperty() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
+            // Don't set START_IMAGE_FOLDER_DRAWABLES, it should default to something sane.
+            mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
+                    BookmarkUtils.getFolderIcon(mActivityTestRule.getActivity(),
+                            BookmarkType.NORMAL, BookmarkRowDisplayPref.VISUAL));
+            mModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                    ChromeColors.getSurfaceColor(
+                            mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
+            mModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+                    AppCompatResources.getColorStateList(mActivityTestRule.getActivity(),
+                            R.color.default_icon_color_secondary_tint_list));
+        });
+        mRenderTestRule.render(mContentView, "no_image_drawable_property");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testNoImage_readingList() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,

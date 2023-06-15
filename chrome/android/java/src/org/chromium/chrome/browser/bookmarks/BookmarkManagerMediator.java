@@ -11,7 +11,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -1124,27 +1123,29 @@ class BookmarkManagerMediator
                                              : StartImageVisibility.DRAWABLE);
 
         if (item.isFolder()) {
-            int type = item.getId().getType();
-            Drawable folderDrawable;
+            final @BookmarkType int type = item.getId().getType();
+            // TODO(https://crbug.com/1454593): Rework to not require another model call.
+            boolean isSpecialFolder =
+                    Objects.equals(item.getParentId(), mBookmarkModel.getRootFolderId());
+            final Drawable folderDrawable;
             if (useImages) {
                 model.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
                         BookmarkUtils.getChildCountForDisplay(item.getId(), mBookmarkModel));
-                folderDrawable = ResourcesCompat.getDrawable(mContext.getResources(),
-                        R.drawable.ic_folder_outline_24dp, mContext.getTheme());
-
-                model.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
-                        new Pair<>(null, null));
-                mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(item, imagePair -> {
-                    model.set(
-                            ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES, imagePair);
-                });
-
+                if (isSpecialFolder) {
+                    folderDrawable = BookmarkUtils.getFolderIcon(mContext, type, displayPref);
+                } else {
+                    folderDrawable = ResourcesCompat.getDrawable(mContext.getResources(),
+                            R.drawable.ic_folder_outline_24dp, mContext.getTheme());
+                    mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(item, imagePair -> {
+                        model.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
+                                imagePair);
+                    });
+                }
             } else {
                 folderDrawable = BookmarkUtils.getFolderIcon(mContext, type, displayPref);
             }
 
-            if (type == BookmarkType.READING_LIST) {
-                folderDrawable = BookmarkUtils.getFolderIcon(mContext, type, displayPref);
+            if (isSpecialFolder) {
                 model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                         SemanticColorUtils.getColorPrimaryContainer(mContext));
                 model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,

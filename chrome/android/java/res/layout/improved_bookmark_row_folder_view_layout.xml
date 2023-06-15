@@ -44,7 +44,8 @@ found in the LICENSE file.
       app:layout_constraintRight_toRightOf="parent"
       android:scaleType="fitCenter"
       android:clipToOutline="true"
-      android:importantForAccessibility="no" />
+      android:importantForAccessibility="no"
+      android:visibility="gone" />
 
   <!--
     The secondary image has a container because it serves as the padding
@@ -56,7 +57,8 @@ found in the LICENSE file.
       android:layout_width="@dimen/improved_bookmark_row_secondary_outer_size"
       android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintRight_toRightOf="parent">
+      app:layout_constraintRight_toRightOf="parent"
+      android:visibility="gone">
 
     <ImageView
         android:id="@+id/secondary_image"
@@ -83,7 +85,8 @@ found in the LICENSE file.
         android:layout_width="@dimen/improved_bookmark_row_secondary_outer_size"
         android:layout_height="@dimen/improved_bookmark_row_secondary_outer_size"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone" />
 
     <!-- Background for child count when there's one image. -->
     <FrameLayout
@@ -91,7 +94,8 @@ found in the LICENSE file.
       android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
       android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintRight_toRightOf="parent">
+      app:layout_constraintRight_toRightOf="parent"
+      android:visibility="gone">
         <View
         android:id="@+id/child_count_background_one_image_top"
         android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
@@ -109,7 +113,8 @@ found in the LICENSE file.
         android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
         android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone" />
 
   <TextView
           android:id="@+id/child_count_text"
