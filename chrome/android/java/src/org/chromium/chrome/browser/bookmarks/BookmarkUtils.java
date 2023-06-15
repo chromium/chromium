@@ -558,17 +558,6 @@ public class BookmarkUtils {
     }
 
     /**
-     * Retrieve the save flow start icon for the given bookmark.
-     *
-     * @param bookmarkId The {@link BookmarkId} to get the start icon for.
-     * @return The start icon associated with the given bookmarkId.
-     */
-    public static Drawable getSaveFlowStartIconForBookmark(BookmarkId bookmarkId) {
-        // TODO(crbug.com/1243383): Add start icon for price tracking.
-        return null;
-    }
-
-    /**
      * Closes the {@link BookmarkActivity} on Phone. Does nothing on tablet.
      */
     public static void finishActivityOnPhone(Context context) {
