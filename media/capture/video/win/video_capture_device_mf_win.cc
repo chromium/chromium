@@ -1938,11 +1938,22 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
   // To serialize all access to this class we post to the task
   // runner which is used for Video capture service API calls
   // (E.g. DeallocateAndStop).
-  main_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal,
-                     weak_factory_.GetWeakPtr(), std::move(buffer),
-                     reference_time, timestamp));
+
+  bool need_to_post = false;
+  {
+    base::AutoLock lock(queueing_lock_);
+    need_to_post = !input_buffer_;
+    input_buffer_ = std::move(buffer);
+    input_reference_time_ = reference_time;
+    input_timestamp_ = timestamp;
+  }
+
+  if (need_to_post) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
@@ -2125,13 +2136,20 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
   return hr;
 }
 
-void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
-    Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
-    base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer;
+  base::TimeTicks reference_time;
+  base::TimeDelta timestamp;
+  {
+    base::AutoLock lock(queueing_lock_);
+    buffer = std::move(input_buffer_);
+    reference_time = input_reference_time_;
+    timestamp = input_timestamp_;
+  }
 
   SendOnStartedIfNotYetSent();
 
