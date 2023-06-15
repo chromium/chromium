@@ -290,15 +290,13 @@ void MediaDialogView::UpdateBubbleSize() {
         width, live_translate_label_wrapper_->GetPreferredSize().height()));
 
     // Align the combo box with the text labels.
-    const int target_language_container_height =
-        target_language_container_->GetPreferredSize().height();
-    target_language_container_->SetPreferredSize(
-        gfx::Size(width, target_language_container_height));
+    target_language_container_->SetPreferredSize(gfx::Size(
+        width, target_language_container_->GetPreferredSize().height()));
     target_language_combobox_->SetPreferredSize(
         gfx::Size(width - 2 * (kImageWidthDip + kHorizontalMarginDip +
                                ChromeLayoutProvider::Get()->GetDistanceMetric(
                                    views::DISTANCE_RELATED_LABEL_HORIZONTAL)),
-                  target_language_container_height));
+                  target_language_combobox_->GetPreferredSize().height()));
 
     separator_->SetPreferredLength(width);
     caption_settings_button_->SetPreferredSize(
