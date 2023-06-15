@@ -629,7 +629,8 @@ void PasswordAccessoryControllerImpl::FillSelection(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
     show_migration_warning_callback_.Run(
-        GetWebContents().GetTopLevelNativeWindow());
+        GetWebContents().GetTopLevelNativeWindow(),
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
   }
 }
 

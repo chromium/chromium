@@ -407,7 +407,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
                         ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
             PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
                     new PasswordMigrationWarningCoordinator(getContext(), mBottomSheetController);
-            passwordMigrationWarningCoordinator.showWarning();
+            passwordMigrationWarningCoordinator.showWarning(mProfile);
         }
     }
 

@@ -30,6 +30,7 @@ class WebContents;
 }  // namespace content
 
 class AllPasswordsBottomSheetView;
+class Profile;
 
 // This class gets credentials and creates AllPasswordsBottomSheetView.
 class AllPasswordsBottomSheetController
@@ -38,7 +39,7 @@ class AllPasswordsBottomSheetController
   using RequestsToFillPassword =
       base::StrongAlias<struct RequestsToFillPasswordTag, bool>;
   using ShowMigrationWarningCallback =
-      base::RepeatingCallback<void(gfx::NativeWindow)>;
+      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>;
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,

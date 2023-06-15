@@ -28,14 +28,16 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
     private String mChannelString;
     private RadioButtonWithDescription mSignInOrSyncButton;
     private RadioButtonWithDescription mPasswordExportButton;
+    private String mAccountDisplayName;
 
     public PasswordMigrationWarningOptionsFragment(Context context, Callback<Integer> nextCallback,
-            Runnable cancelCallback, String channelString) {
+            Runnable cancelCallback, String channelString, String accountDisplayName) {
         super(R.layout.pwd_migration_warning_options);
         mContext = context;
         mNextCallback = nextCallback;
         mCancelCallback = cancelCallback;
         mChannelString = channelString;
+        mAccountDisplayName = accountDisplayName;
     }
 
     @Override
@@ -46,6 +48,10 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
         Button cancelButton = view.findViewById(R.id.password_migration_cancel_button);
 
         mSignInOrSyncButton.setChecked(true);
+        if (mAccountDisplayName != null) {
+            mSignInOrSyncButton.setDescriptionText(mAccountDisplayName);
+        }
+
         mPasswordExportButton.setDescriptionText(
                 mContext.getString(R.string.password_migration_warning_password_export_subtitle)
                         .replace("%1$s", mChannelString));

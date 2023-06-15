@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ACCOUNT_DISPLAY_NAME;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ON_CLICK_HANDLER;
@@ -33,6 +34,8 @@ class PasswordMigrationWarningViewBinder {
             view.setScreen(model.get(CURRENT_SCREEN));
         } else if (propertyKey == ON_CLICK_HANDLER) {
             view.setOnClickHandler(model.get(ON_CLICK_HANDLER));
+        } else if (propertyKey == ACCOUNT_DISPLAY_NAME) {
+            view.setAccountDisplayName((String) model.get(ACCOUNT_DISPLAY_NAME));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

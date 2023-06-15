@@ -37,6 +37,7 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     private FragmentManager mFragmentManager;
     private final RelativeLayout mContentView;
     private Context mContext;
+    private String mAccountDisplayName;
 
     private @ScreenType int mScreenType = ScreenType.NONE;
 
@@ -136,12 +137,16 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                     new PasswordMigrationWarningOptionsFragment(mContext, mOnClickHandler::onNext,
                             ()
                                     -> mOnClickHandler.onCancel(mBottomSheetController),
-                            getChannelString());
+                            getChannelString(), mAccountDisplayName);
             mFragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.fragment_container_view, optionsFragment)
                     .commit();
         }
+    }
+
+    void setAccountDisplayName(String accountDisplayName) {
+        mAccountDisplayName = accountDisplayName;
     }
 
     private String getChannelString() {

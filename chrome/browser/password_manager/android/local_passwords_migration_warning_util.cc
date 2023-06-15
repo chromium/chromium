@@ -4,13 +4,15 @@
 
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/pwd_migration/jni_headers/PasswordMigrationWarningBridge_jni.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "ui/android/window_android.h"
 
 using base::android::AttachCurrentThread;
 
 namespace password_manager {
-void ShowWarning(const gfx::NativeWindow window) {
-  Java_PasswordMigrationWarningBridge_showWarning(AttachCurrentThread(),
-                                                  window->GetJavaObject());
+void ShowWarning(const gfx::NativeWindow window, Profile* profile) {
+  Java_PasswordMigrationWarningBridge_showWarning(
+      AttachCurrentThread(), window->GetJavaObject(),
+      ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
 }  // namespace password_manager

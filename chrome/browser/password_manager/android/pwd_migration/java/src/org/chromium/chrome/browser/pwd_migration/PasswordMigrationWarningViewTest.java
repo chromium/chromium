@@ -10,12 +10,14 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ACCOUNT_DISPLAY_NAME;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -71,6 +73,8 @@ public class PasswordMigrationWarningViewTest {
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
     private PropertyModel mModel;
+
+    private static final String TEST_EMAIL = "user@domain.com";
 
     @Before
     public void setupTest() throws InterruptedException {
@@ -230,6 +234,24 @@ public class PasswordMigrationWarningViewTest {
         onView(withId(R.id.migration_warning_sheet_subtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.acknowledge_password_migration_button)).check(matches(isDisplayed()));
         onView(withId(R.id.password_migration_more_options_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountNameIsSet() {
+        // Setting the options screen.
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
+        // Setting the profile.
+        runOnUiThreadBlocking(() -> mModel.set(ACCOUNT_DISPLAY_NAME, TEST_EMAIL));
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.password_migration_next_button)
+                        != null);
+        onView(withText(TEST_EMAIL)).check(matches(isDisplayed()));
     }
 
     private @SheetState int getBottomSheetState() {

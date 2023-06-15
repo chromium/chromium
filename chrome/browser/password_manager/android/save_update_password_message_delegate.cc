@@ -14,7 +14,6 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,14 +93,17 @@ bool UPMExploratoryStringsEnabledWithSupportedParam() {
 }
 
 void TryToShowPasswordMigrationWarning(
-    base::RepeatingCallback<void(gfx::NativeWindow)> callback,
+    base::RepeatingCallback<void(gfx::NativeWindow, Profile*)> callback,
     raw_ptr<content::WebContents> web_contents) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
     // TODO(crbug.com/1439853): Check if the bottom sheet was shown a month ago
     // or more.
-    callback.Run(web_contents->GetTopLevelNativeWindow());
+
+    callback.Run(
+        web_contents->GetTopLevelNativeWindow(),
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   }
 }
 
@@ -114,7 +116,7 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     PasswordEditDialogFactory password_edit_dialog_factory,
-    base::RepeatingCallback<void(gfx::NativeWindow)>
+    base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
         create_migration_warning_callback)
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
       create_migration_warning_callback_(

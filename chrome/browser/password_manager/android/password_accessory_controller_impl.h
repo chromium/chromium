@@ -30,6 +30,7 @@
 
 class ManualFillingController;
 class AllPasswordsBottomSheetController;
+class Profile;
 
 // Use either PasswordAccessoryController::GetOrCreate or
 // PasswordAccessoryController::GetIfExisting to obtain instances of this class.
@@ -43,7 +44,7 @@ class PasswordAccessoryControllerImpl
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
   using ShowMigrationWarningCallback =
-      base::RepeatingCallback<void(gfx::NativeWindow)>;
+      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>;
 
   PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
       delete;

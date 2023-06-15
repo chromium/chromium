@@ -4,19 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-source_set("utils") {
-  sources = [
-    "../local_passwords_migration_warning_util.cc",
-    "../local_passwords_migration_warning_util.h",
-  ]
-
-  deps = [
-    ":jni_headers",
-    "//ui/android:android",
-    "//ui/gfx:native_widget_types",
-  ]
-}
-
 generate_jni("jni_headers") {
   visibility = [
     ":*",
@@ -30,10 +17,15 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/signin/public/android:java",
     "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -68,9 +60,15 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//components/sync/android:sync_java",
     "//third_party/espresso:espresso_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
@@ -97,12 +95,15 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//components/browser_ui/widget/android:java",
+    "//components/signin/public/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_core_java",

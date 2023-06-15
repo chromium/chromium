@@ -150,7 +150,7 @@ class SaveUpdatePasswordMessageDelegateTest
   // expectations.
   MockPasswordEditDialog* PreparePasswordEditDialog();
 
-  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow)>>&
+  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow, Profile*)>>&
   GetMigrationWarningCallback();
 
   void TriggerDialogAcceptedCallback(const std::u16string& username,
@@ -198,7 +198,7 @@ class SaveUpdatePasswordMessageDelegateTest
   PasswordEditDialog::LegacyDialogAcceptedCallback
       legacy_dialog_accepted_callback_;
   PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback_;
-  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow)>>
+  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow, Profile*)>>
       mock_password_migration_warning_callback_;
 };
 
@@ -380,7 +380,7 @@ SaveUpdatePasswordMessageDelegateTest::PreparePasswordEditDialog() {
   return mock_password_edit_dialog_.get();
 }
 
-base::MockCallback<RepeatingCallback<void(gfx::NativeWindow)>>&
+base::MockCallback<RepeatingCallback<void(gfx::NativeWindow, Profile*)>>&
 SaveUpdatePasswordMessageDelegateTest::GetMigrationWarningCallback() {
   return mock_password_migration_warning_callback_;
 }
@@ -620,7 +620,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -640,14 +640,14 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_dialog, ShowPasswordEditDialog);
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_)).Times(0);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run).Times(0);
   TriggerPasswordEditDialog(/*update_password=*/false);
 
   EXPECT_EQ(nullptr, GetMessageWrapper());
   EXPECT_CALL(*form_manager_pointer, Save());
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
@@ -664,7 +664,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   DismissMessage(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -687,7 +687,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -708,7 +708,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   DismissMessage(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -732,11 +732,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_)).Times(0);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run).Times(0);
   TriggerActionClick();
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
@@ -759,9 +759,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_)).Times(0);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run).Times(0);
   TriggerActionClick();
-  EXPECT_CALL(GetMigrationWarningCallback(), Run(_));
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
 }
 
