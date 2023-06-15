@@ -561,7 +561,6 @@ if (current_toolchain == default_toolchain) {
       "//content/public/common:common_java",
       "//device/gamepad:java",
       "//media/base/android:media_java",
-      "//media/capture/content/android:screen_capture_java",
       "//media/capture/video/android:capture_java",
       "//media/midi:midi_java",
       "//mojo/public/java:bindings_java",
