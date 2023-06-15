@@ -53,7 +53,7 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
   // executing any GL calls. Return true on success, false otherwise.
   using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
   // Bind |image| to |client_texture_id| given |texture_target|, marking the
   // texture as not needing binding by the decoder.
   // Return true on success, false otherwise.

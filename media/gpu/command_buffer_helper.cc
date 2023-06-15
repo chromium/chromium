@@ -197,7 +197,7 @@ class CommandBufferHelperImpl
     textures_[service_id]->SetCleared();
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
   bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override {
     DVLOG(2) << __func__ << "(" << service_id << ")";
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

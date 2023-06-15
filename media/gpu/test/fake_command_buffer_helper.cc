@@ -153,7 +153,7 @@ void FakeCommandBufferHelper::SetCleared(GLuint service_id) {
   DCHECK(service_ids_.count(service_id));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
 bool FakeCommandBufferHelper::BindClientManagedImage(GLuint service_id,
                                                      gl::GLImage* image) {
   DVLOG(2) << __func__ << "(" << service_id << ")";

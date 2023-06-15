@@ -58,7 +58,7 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
   return CommandBufferHelper::Create(stub);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
 bool BindClientManagedImage(
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     uint32_t client_texture_id,
@@ -84,7 +84,7 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
         &CommandBufferHelper::GetGLContext, command_buffer_helper);
     gl_client.make_context_current = base::BindRepeating(
         &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
     gl_client.bind_image =
         base::BindRepeating(&BindClientManagedImage, command_buffer_helper);
 #endif

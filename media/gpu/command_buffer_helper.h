@@ -128,7 +128,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Sets the cleared flag on level 0 of the texture.
   virtual void SetCleared(GLuint service_id) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
   // Binds level 0 of the texture to an image for which the sampler binding
   // already exists.
   //

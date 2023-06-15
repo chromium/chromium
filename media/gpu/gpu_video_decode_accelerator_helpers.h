@@ -41,7 +41,7 @@ using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
 // executing any GL calls. Return true on success, false otherwise.
 using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
 // Bind |image| to |client_texture_id| given |texture_target|, marking the
 // texture as not needing binding by the decoder.
 // Return true on success, false otherwise.
@@ -81,7 +81,7 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   // executing any GL calls. Return true on success, false otherwise.
   using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
   // Bind |image| to |client_texture_id| given |texture_target|, marking the
   // texture as not needing binding by the decoder.
   // Return true on success, false otherwise.
@@ -101,7 +101,7 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   // Callback for making the relevant context current for GL calls.
   MakeGLContextCurrentCallback make_context_current;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
   // Callback to bind a GLImage to a given texture id and target.
   BindGLImageCallback bind_image;
 #endif
