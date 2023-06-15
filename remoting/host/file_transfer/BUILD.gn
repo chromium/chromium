@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("file_transfer") {
-  sources = [ "get_desktop_directory.h" ]
+  sources = [ "directory_helpers.h" ]
 
   public_deps = [ ":common" ]
 
@@ -32,11 +32,11 @@ source_set("file_transfer") {
 
   if (is_win) {
     sources += [
+      "directory_helpers_win.cc",
       "ensure_user_win.cc",
       "file_chooser_common_win.h",
       "file_chooser_main_win.cc",
       "file_chooser_win.cc",
-      "get_desktop_directory_win.cc",
     ]
     deps += [
       "//ipc:ipc",
@@ -46,7 +46,7 @@ source_set("file_transfer") {
       "//remoting/host/win",
     ]
   } else {
-    sources += [ "get_desktop_directory.cc" ]
+    sources += [ "directory_helpers.cc" ]
   }
 
   if (is_chromeos_ash) {
@@ -71,11 +71,11 @@ source_set("file_transfer") {
 source_set("common") {
   public = [
     "buffered_file_writer.h",
+    "directory_helpers.h",
     "ensure_user.h",
     "file_chooser.h",
     "file_operations.h",
     "file_transfer_message_handler.h",
-    "get_desktop_directory.h",
     "ipc_file_operations.h",
     "local_file_operations.h",
     "rtc_log_file_operations.h",
@@ -106,10 +106,10 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "directory_helpers.cc",
     "ensure_user_no_op.cc",
     "fake_file_operations.cc",
     "fake_file_operations.h",
-    "get_desktop_directory.cc",
     "test_byte_vector_utils.h",
   ]
   deps = [

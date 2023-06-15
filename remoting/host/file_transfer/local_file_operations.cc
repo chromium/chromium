@@ -17,9 +17,9 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "remoting/base/result.h"
+#include "remoting/host/file_transfer/directory_helpers.h"
 #include "remoting/host/file_transfer/ensure_user.h"
 #include "remoting/host/file_transfer/file_chooser.h"
-#include "remoting/host/file_transfer/get_desktop_directory.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

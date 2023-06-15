@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/file_transfer/get_desktop_directory.h"
+#include "remoting/host/file_transfer/directory_helpers.h"
 
-#include <windows.h>
 #include <shlobj.h>
+#include <windows.h>
 
 #include "base/logging.h"
 #include "base/win/scoped_handle.h"

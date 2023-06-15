@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_FILE_TRANSFER_GET_DESKTOP_DIRECTORY_H_
-#define REMOTING_HOST_FILE_TRANSFER_GET_DESKTOP_DIRECTORY_H_
+#ifndef REMOTING_HOST_FILE_TRANSFER_DIRECTORY_HELPERS_H_
+#define REMOTING_HOST_FILE_TRANSFER_DIRECTORY_HELPERS_H_
 
 #include "base/files/file_path.h"
 #include "remoting/protocol/file_transfer_helpers.h"
@@ -17,4 +17,4 @@ protocol::FileTransferResult<base::FilePath> GetDesktopDirectory();
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_FILE_TRANSFER_GET_DESKTOP_DIRECTORY_H_
+#endif  // REMOTING_HOST_FILE_TRANSFER_DIRECTORY_HELPERS_H_
