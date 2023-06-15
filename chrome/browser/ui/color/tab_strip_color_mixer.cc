@@ -17,7 +17,7 @@
 #include "ui/gfx/color_utils.h"
 
 void AddTabStripColorMixer(ui::ColorProvider* provider,
-                           const ui::ColorProviderManager::Key& key) {
+                           const ui::ColorProviderKey& key) {
   using TP = ThemeProperties;
   struct ColorPropertiesMapEntry {
     int property_id;

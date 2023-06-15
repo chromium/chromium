@@ -20,9 +20,8 @@
 namespace ui {
 
 void AddCoreDefaultColorMixer(ColorProvider* provider,
-                              const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
+                              const ColorProviderKey& key) {
+  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
   DVLOG(2) << "Adding CoreDefaultColorMixer to ColorProvider for "
            << (dark_mode ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = provider->AddMixer();

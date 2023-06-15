@@ -14,9 +14,8 @@
 
 namespace {
 
-void ApplyDefaultChromeRefreshToolbarColors(
-    ui::ColorMixer& mixer,
-    const ui::ColorProviderManager::Key& key) {
+void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
+                                            const ui::ColorProviderKey& key) {
   mixer[kColorAppMenuHighlightDefault] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorAppMenuExpandedForegroundDefault] = {
@@ -29,7 +28,7 @@ void ApplyDefaultChromeRefreshToolbarColors(
 }  // namespace
 
 void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
-                                 const ui::ColorProviderManager::Key& key) {
+                                 const ui::ColorProviderKey& key) {
   // Adds the color recipes for browser UI colors (toolbar, bookmarks bar,
   // downloads bar etc). While both design systems continue to exist, the
   // material recipes are intended to leverage the existing chrome color mixers,

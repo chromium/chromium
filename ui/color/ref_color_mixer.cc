@@ -11,7 +11,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/dynamic_color/palette.h"
@@ -132,7 +132,7 @@ void AddBaselinePalette(ColorProvider* provider) {
 // palette so it is independent of ColorMode.
 void AddGeneratedPalette(ColorProvider* provider,
                          SkColor seed_color,
-                         ColorProviderManager::SchemeVariant variant) {
+                         ColorProviderKey::SchemeVariant variant) {
   std::unique_ptr<Palette> palette = GeneratePalette(seed_color, variant);
 
   ColorMixer& mixer = provider->AddMixer();
@@ -239,14 +239,13 @@ void AddGeneratedPalette(ColorProvider* provider,
   mixer[kColorRefNeutralVariant100] = {palette->neutral_variant().get(100)};
 }
 
-void AddRefColorMixer(ColorProvider* provider,
-                      const ColorProviderManager::Key& key) {
+void AddRefColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   if (!key.user_color.has_value()) {
     AddBaselinePalette(provider);
   } else {
     // The default value for schemes is Tonal Spot.
     auto variant = key.scheme_variant.value_or(
-        ColorProviderManager::SchemeVariant::kTonalSpot);
+        ColorProviderKey::SchemeVariant::kTonalSpot);
     AddGeneratedPalette(provider, key.user_color.value(), variant);
   }
 }

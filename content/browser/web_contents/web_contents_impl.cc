@@ -177,6 +177,7 @@
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -499,7 +500,7 @@ class DefaultColorProviderSource : public ui::ColorProviderSource,
 
  protected:
   // ui::ColorProviderSource:
-  ui::ColorProviderManager::Key GetColorProviderKey() const override {
+  ui::ColorProviderKey GetColorProviderKey() const override {
     return ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
   }
 
@@ -1723,7 +1724,7 @@ void WebContentsImpl::SetColorProviderSource(ui::ColorProviderSource* source) {
   ColorProviderSourceObserver::Observe(source);
 }
 
-ui::ColorProviderManager::ColorMode WebContentsImpl::GetColorMode() const {
+ui::ColorProviderKey::ColorMode WebContentsImpl::GetColorMode() const {
   // A ColorProviderSource should always be set.
   auto* source = GetColorProviderSource();
   CHECK(source);

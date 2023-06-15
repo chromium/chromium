@@ -5,7 +5,7 @@
 #ifndef UI_COLOR_MATERIAL_UI_COLOR_MIXER_H_
 #define UI_COLOR_MATERIAL_UI_COLOR_MIXER_H_
 
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 
@@ -13,7 +13,7 @@ class ColorProvider;
 
 // Adds a color mixer to `provider` for material mappings.
 void AddMaterialUiColorMixer(ColorProvider* provider,
-                             const ColorProviderManager::Key& key);
+                             const ColorProviderKey& key);
 
 }  // namespace ui
 

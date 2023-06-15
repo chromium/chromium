@@ -109,7 +109,7 @@ class BrowserThemePack : public CustomThemeSupplier {
       ui::ResourceScaleFactor scale_factor) const override;
   bool HasCustomImage(int id) const override;
   void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderManager::Key& key) const override;
+                      const ui::ColorProviderKey& key) const override;
 
  private:
   friend class BrowserThemePackTest;

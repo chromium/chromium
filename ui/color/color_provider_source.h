@@ -9,18 +9,17 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 
 class ColorProviderSourceObserver;
 
 // Encapsulates the theme bits that are used to uniquely identify a
-// ColorProvider instance (i.e. the bits that comprise the
-// ColorProviderManager::ColorProviderKey). Notifies observers when the
-// ColorProvider instance that maps to these theme bits changes. References are
-// managed to avoid dangling pointers in the case the source or the observer are
-// deleted.
+// ColorProvider instance (i.e. the bits that comprise the ColorProviderKey).
+// Notifies observers when the ColorProvider instance that maps to these theme
+// bits changes. References are managed to avoid dangling pointers in the case
+// the source or the observer are deleted.
 class COMPONENT_EXPORT(COLOR) ColorProviderSource {
  public:
   ColorProviderSource();
@@ -40,16 +39,16 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   void NotifyColorProviderChanged();
 
   // Gets the ColorMode currently associated with this source.
-  ui::ColorProviderManager::ColorMode GetColorMode() const;
+  ColorProviderKey::ColorMode GetColorMode() const;
 
   base::ObserverList<ColorProviderSourceObserver>& observers_for_testing() {
     return observers_;
   }
 
  protected:
-  // Implementations should return the ColorProviderManager::Key associated with
+  // Implementations should return the ColorProviderKey associated with
   // this source.
-  virtual ColorProviderManager::Key GetColorProviderKey() const = 0;
+  virtual ColorProviderKey GetColorProviderKey() const = 0;
 
  private:
   base::ObserverList<ColorProviderSourceObserver> observers_;

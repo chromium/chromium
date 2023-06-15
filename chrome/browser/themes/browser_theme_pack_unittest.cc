@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/gfx/color_utils.h"
@@ -34,7 +35,7 @@
 
 using extensions::Extension;
 using TP = ThemeProperties;
-using ThemeType = ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType;
+using ThemeType = ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType;
 
 // Maps scale factors (enum values) to file path.
 // A similar typedef in BrowserThemePack is private.
@@ -756,7 +757,7 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
                                 "omnibox_text": [60, 80, 100],
                                 "omnibox_background": [120, 140, 160] })";
   LoadColorJSON(color_json);
-  theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  theme_pack().AddColorMixers(&provider, ui::ColorProviderKey());
   provider.GenerateColorMap();
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));

@@ -5,4 +5,4 @@
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderManager::Key& key) {}
+                               const ui::ColorProviderKey& key) {}

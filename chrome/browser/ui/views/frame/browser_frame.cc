@@ -279,8 +279,8 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }
 
-ui::ColorProviderManager::ThemeInitializerSupplier*
-BrowserFrame::GetCustomTheme() const {
+ui::ColorProviderKey::ThemeInitializerSupplier* BrowserFrame::GetCustomTheme()
+    const {
   // Do not return any custom theme if this is an incognito browser.
   if (IsIncognitoBrowser()) {
     return nullptr;
@@ -409,11 +409,10 @@ void BrowserFrame::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   UserChangedTheme(BrowserThemeChangeType::kNativeTheme);
 }
 
-ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
+ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
-  key.frame_type = UseCustomFrame()
-                       ? ui::ColorProviderManager::FrameType::kChromium
-                       : ui::ColorProviderManager::FrameType::kNative;
+  key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
+                                    : ui::ColorProviderKey::FrameType::kNative;
   auto* app_controller = browser_view_->browser()->app_controller();
   key.app_controller = app_controller;
   return key;
@@ -440,10 +439,10 @@ absl::optional<SkColor> BrowserFrame::GetUserColor() const {
              : views::Widget::GetUserColor();
 }
 
-ui::ColorProviderManager::ColorMode BrowserFrame::GetColorMode() const {
+ui::ColorProviderKey::ColorMode BrowserFrame::GetColorMode() const {
   // Currently the incognito browser is implemented as unthemed dark mode.
   if (IsIncognitoBrowser()) {
-    return ui::ColorProviderManager::ColorMode::kDark;
+    return ui::ColorProviderKey::ColorMode::kDark;
   }
 
   const auto* theme_service =
@@ -455,8 +454,8 @@ ui::ColorProviderManager::ColorMode BrowserFrame::GetColorMode() const {
   }
 
   return browser_color_scheme == ThemeService::BrowserColorScheme::kLight
-             ? ui::ColorProviderManager::ColorMode::kLight
-             : ui::ColorProviderManager::ColorMode::kDark;
+             ? ui::ColorProviderKey::ColorMode::kLight
+             : ui::ColorProviderKey::ColorMode::kDark;
 }
 
 void BrowserFrame::OnMenuClosed() {

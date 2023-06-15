@@ -12,7 +12,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/qt/qt_interface.h"
@@ -93,7 +93,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
 
  private:
   void AddNativeColorMixer(ui::ColorProvider* provider,
-                           const ui::ColorProviderManager::Key& key);
+                           const ui::ColorProviderKey& key);
 
   void ScaleFactorMaybeChangedImpl();
 

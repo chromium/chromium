@@ -150,7 +150,7 @@ void InsertIntoMixer(ui::ColorMixer& mixer,
 }  // namespace
 
 void AddHarmonizedColors(ui::ColorMixer& mixer,
-                         const ui::ColorProviderManager::Key& key) {
+                         const ui::ColorProviderKey& key) {
   // Zip the arrays into a map indexed by the angle lower bound.
   static const base::flat_map<int, HarmonizedSeeds> kSeedMap = MakeMap();
 

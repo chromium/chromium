@@ -55,6 +55,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/native_theme/native_theme.h"
@@ -400,8 +401,8 @@ class PrefersColorSchemeTest
   class MockColorProviderSource : public ui::ColorProviderSource {
    public:
     explicit MockColorProviderSource(bool is_dark) {
-      key_.color_mode = is_dark ? ui::ColorProviderManager::ColorMode::kDark
-                                : ui::ColorProviderManager::ColorMode::kLight;
+      key_.color_mode = is_dark ? ui::ColorProviderKey::ColorMode::kDark
+                                : ui::ColorProviderKey::ColorMode::kLight;
       provider_.GenerateColorMap();
     }
     MockColorProviderSource(const MockColorProviderSource&) = delete;
@@ -412,13 +413,11 @@ class PrefersColorSchemeTest
     const ui::ColorProvider* GetColorProvider() const override {
       return &provider_;
     }
-    ui::ColorProviderManager::Key GetColorProviderKey() const override {
-      return key_;
-    }
+    ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
 
    private:
     ui::ColorProvider provider_;
-    ui::ColorProviderManager::Key key_;
+    ui::ColorProviderKey key_;
   };
 
   base::test::ScopedFeatureList feature_list_;
