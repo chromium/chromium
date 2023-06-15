@@ -100,7 +100,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //
   // This is optional and should only be used by components that have to live
   // elsewhere in the tree due to layering violations. (For example, because of
-  // a dependency on chrome's extension system.)
+  // a dependency on chrome's extension system.) Takes ownership of `factory`,
+  // destroying it on the next SetFactory() call, and leaking otherwise.
   static void SetFactory(SelectFileDialogFactory* factory);
 
   // Creates a dialog box helper. This is an inexpensive wrapper around the

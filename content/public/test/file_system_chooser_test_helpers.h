@@ -12,6 +12,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -27,7 +28,7 @@ struct SelectFileDialogParams {
   int file_type_index = -1;
   base::FilePath default_path;
   std::u16string title;
-  raw_ptr<const GURL> caller = nullptr;
+  absl::optional<GURL> caller;
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of

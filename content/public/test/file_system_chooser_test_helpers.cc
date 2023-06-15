@@ -41,7 +41,11 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
       out_params_->title = title;
-      out_params_->caller = caller;
+      if (caller) {
+        out_params_->caller = *caller;
+      } else {
+        out_params_->caller = absl::nullopt;
+      }
     }
     listener_->FileSelectionCanceled(params);
   }
@@ -88,7 +92,11 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
       out_params_->title = title;
-      out_params_->caller = caller;
+      if (caller) {
+        out_params_->caller = *caller;
+      } else {
+        out_params_->caller = absl::nullopt;
+      }
     }
     // The selected files are passed by reference to the listener. Ensure they
     // outlive the dialog if it is immediately deleted by the listener.
