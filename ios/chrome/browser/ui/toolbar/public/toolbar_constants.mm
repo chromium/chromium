@@ -49,6 +49,7 @@ const CGFloat kLocationBarVerticalMarginDynamicType = -1.0f;
 const CGFloat kTopToolbarUnsplitMargin = 6;
 const CGFloat kPrimaryToolbarHeight = 50;
 const CGFloat kSecondaryToolbarHeight = 44;
+const CGFloat kSecondaryToolbarOmniboxHeight = 50;
 const CGFloat kNonDynamicToolbarHeight = 14;
 const CGFloat kToolbarHeightFullscreen = 20;
 const CGFloat kNonDynamicToolbarHeightFullscreen = 3;

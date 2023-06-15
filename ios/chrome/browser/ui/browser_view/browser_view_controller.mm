@@ -2938,6 +2938,13 @@ enum HeaderBehaviour {
   return self.toolbarCoordinator.primaryToolbarViewController.view;
 }
 
+#pragma mark - ToolbarHeightDelegate
+
+- (void)toolbarsHeightChanged {
+  // TODO(crbug.com/1454590): React to toolbar size change.
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+}
+
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {

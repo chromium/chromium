@@ -913,6 +913,7 @@ enum class ToolbarKind {
 
   _toolbarCoordinator.omniboxFocusDelegate = self.viewController;
   _toolbarCoordinator.popupPresenterDelegate = self.viewController;
+  _toolbarCoordinator.toolbarHeightDelegate = self.viewController;
   [_toolbarCoordinator start];
 
   _loadQueryCommandsHandler =

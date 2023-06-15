@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;
@@ -96,6 +97,7 @@ typedef struct {
                         OmniboxFocusDelegate,
                         OmniboxPopupPresenterDelegate,
                         ThumbStripSupporting,
+                        ToolbarHeightDelegate,
                         WebStateContainerViewProvider,
                         BrowserCommands>
 

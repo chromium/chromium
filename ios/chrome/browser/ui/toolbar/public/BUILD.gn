@@ -9,6 +9,7 @@ source_set("public") {
     "side_swipe_toolbar_interacting.h",
     "side_swipe_toolbar_snapshot_providing.h",
     "toolbar_coordinating.h",
+    "toolbar_height_delegate.h",
     "toolbar_utils.h",
     "toolbar_utils.mm",
   ]

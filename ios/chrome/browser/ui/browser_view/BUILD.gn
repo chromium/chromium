@@ -201,6 +201,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/fullscreen",
     "//ios/chrome/browser/ui/toolbar/fullscreen:fullscreen_broadcasting_util",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/ui/webui",
     "//ios/chrome/browser/ui/whats_new",

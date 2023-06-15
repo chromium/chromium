@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_coordinating.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
@@ -33,6 +34,8 @@
 /// Delegate for presenting the popup in `locationBarCoordinator`.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 /// Initializes this coordinator with its `browser` and a nil base view
 /// controller.

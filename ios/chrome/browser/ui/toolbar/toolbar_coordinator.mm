@@ -266,11 +266,21 @@
 #pragma mark ToolbarHeightProviding
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
+  if (_omniboxPosition == ToolbarType::kSecondary) {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    return 0.0;
+  }
+
   return ToolbarCollapsedHeight(
       self.traitEnvironment.traitCollection.preferredContentSizeCategory);
 }
 
 - (CGFloat)expandedPrimaryToolbarHeight {
+  if (_omniboxPosition == ToolbarType::kSecondary) {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    return 0.0;
+  }
+
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
   if (!IsSplitToolbarMode(self.traitEnvironment)) {
@@ -281,6 +291,11 @@
 }
 
 - (CGFloat)collapsedSecondaryToolbarHeight {
+  if (_omniboxPosition == ToolbarType::kSecondary) {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    return ToolbarCollapsedHeight(
+        self.traitEnvironment.traitCollection.preferredContentSizeCategory);
+  }
   return 0.0;
 }
 
@@ -290,6 +305,10 @@
   }
   CGFloat height =
       self.secondaryToolbarViewController.view.intrinsicContentSize.height;
+  if (_omniboxPosition == ToolbarType::kSecondary) {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    height += kSecondaryToolbarOmniboxHeight;
+  }
   return height;
 }
 
@@ -444,6 +463,7 @@
       [self.primaryToolbarCoordinator setLocationBarViewController:nil];
       break;
   }
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
 #pragma mark - Private
