@@ -4,8 +4,8 @@ FAIL split float32 2D tensor number splits default options / async promise_test:
 FAIL split float32 3D tensor number splits default options / async promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'split' on 'MLGraphBuilder': The provided value cannot be converted to a sequence."
 FAIL split float32 4D tensor number splits default options / async promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'split' on 'MLGraphBuilder': The provided value cannot be converted to a sequence."
 FAIL split float32 5D tensor number splits default options / async promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'split' on 'MLGraphBuilder': The provided value cannot be converted to a sequence."
-FAIL split float32 4D tensor array splits default options / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (split) is not supported."
+PASS split float32 4D tensor array splits default options / async
 FAIL split float32 4D tensor number splits options.axis / async promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'split' on 'MLGraphBuilder': The provided value cannot be converted to a sequence."
-FAIL split float32 5D tensor array splits options.axis / async promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (split) is not supported."
+PASS split float32 5D tensor array splits options.axis / async
 Harness: the test ran to completion.
 

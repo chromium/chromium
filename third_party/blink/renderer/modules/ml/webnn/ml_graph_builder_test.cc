@@ -3984,7 +3984,7 @@ TEST_F(MLGraphBuilderTest, Split) {
     }
     auto* split = static_cast<const MLSplitOperator*>(outputs[0]->Operator());
     EXPECT_NE(split, nullptr);
-    EXPECT_EQ(split->isEvenSplit(), true);
+    EXPECT_EQ(split->IsEvenSplit(), true);
     EXPECT_EQ(split->SplitNumber(), splits);
     EXPECT_EQ(split->Kind(), MLOperator::OperatorKind::kSplit);
     EXPECT_EQ(split->IsConnected(), true);
@@ -4009,7 +4009,7 @@ TEST_F(MLGraphBuilderTest, Split) {
     }
     auto* split = static_cast<const MLSplitOperator*>(outputs[0]->Operator());
     EXPECT_NE(split, nullptr);
-    EXPECT_EQ(split->isEvenSplit(), false);
+    EXPECT_EQ(split->IsEvenSplit(), false);
     EXPECT_EQ(split->SplitSizes(), splits);
     EXPECT_EQ(split->Kind(), MLOperator::OperatorKind::kSplit);
     EXPECT_EQ(split->IsConnected(), true);

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
@@ -1257,6 +1258,103 @@ TEST_P(MLGraphTest, ReshapeTest) {
                          .new_shape = {1, absl::nullopt},
                          .expected_output_shape = {1, 4}}
         .Test(*this, scope);
+  }
+}
+
+template <typename T, typename S>
+struct SplitTester {
+  OperandInfo<T> input;
+  S splits;
+  Vector<Vector<T>> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLSplitOptions* options = MLSplitOptions::Create()) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto output_operands = builder->split(input_operand, splits, options,
+                                          scope.GetExceptionState());
+    MLNamedOperands named_operands;
+    for (uint32_t i = 0; i < output_operands.size(); ++i) {
+      named_operands.push_back(
+          std::pair<WTF::String, blink::Member<blink::MLOperand>>{
+              "output" + String::Number(i), output_operands[i]});
+    }
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, named_operands);
+    ASSERT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs;
+    for (uint32_t i = 0; i < output_operands.size(); ++i) {
+      outputs.push_back(
+          std::pair<WTF::String, blink::NotShared<blink::DOMArrayBufferView>>{
+              "output" + String::Number(i),
+              CreateArrayBufferViewForOperand(output_operands[i])});
+    }
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    for (uint32_t i = 0; i < outputs.size(); ++i) {
+      auto result = GetArrayBufferViewValues<T>(outputs[i].second);
+      EXPECT_EQ(result, expected[i]);
+    }
+  }
+};
+
+TEST_P(MLGraphTest, SplitTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test split operator with default options.
+    auto* options = MLSplitOptions::Create();
+    SplitTester<float, uint32_t>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {0.0, 1.0, 2.0, 3.0}},
+        .splits = 2u,
+        .expected = {{0.0, 1.0}, {2.0, 3.0}}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test split operator with axis = 1 when splits is an unsigned long.
+    auto* options = MLSplitOptions::Create();
+    options->setAxis(1);
+    SplitTester<float, uint32_t>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 4},
+                  .values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
+        .splits = 2u,
+        .expected = {{0.0, 1.0, 4.0, 5.0}, {2.0, 3.0, 6.0, 7.0}}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test split operator with default options when splits is a sequence of
+    // unsigned long.
+    auto* options = MLSplitOptions::Create();
+    SplitTester<float, Vector<uint32_t>>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {0.0, 1.0, 2.0, 3.0}},
+        .splits = {1, 1},
+        .expected = {{0.0, 1.0}, {2.0, 3.0}}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test split operator with axis = 1 when splits is a sequence of unsigned
+    // long.
+    auto* options = MLSplitOptions::Create();
+    options->setAxis(1);
+    SplitTester<float, Vector<uint32_t>>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 4},
+                  .values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
+        .splits = {1, 2, 1},
+        .expected = {{0.0, 4.0}, {1.0, 2.0, 5.0, 6.0}, {3.0, 7.0}}}
+        .Test(*this, scope, builder, options);
   }
 }
 

@@ -170,7 +170,7 @@ MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
 
 MLSplitOperator::~MLSplitOperator() = default;
 
-bool MLSplitOperator::isEvenSplit() const {
+bool MLSplitOperator::IsEvenSplit() const {
   return is_even_split_;
 }
 

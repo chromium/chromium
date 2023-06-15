@@ -160,7 +160,7 @@ class MODULES_EXPORT MLSplitOperator : public MLOperator {
 
   ~MLSplitOperator();
 
-  bool isEvenSplit() const;
+  bool IsEvenSplit() const;
   uint32_t SplitNumber() const;
   const Vector<uint32_t>& SplitSizes() const;
 

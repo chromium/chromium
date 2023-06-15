@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -1453,6 +1454,75 @@ xnn_status DefineXnnNodeForResample2d(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForSplit(xnn_subgraph_t subgraph,
+                                 const MLOperator* ml_operator,
+                                 const OperandValueIdMap& operand_value_id_map,
+                                 String& error_message) {
+  const MLSplitOperator* split =
+      static_cast<const MLSplitOperator*>(ml_operator);
+  const uint32_t input_id =
+      GetOperatorInputValueId(split, operand_value_id_map);
+  const auto outputs_size = split->Outputs().size();
+  Vector<uint32_t> output_ids(outputs_size);
+  for (uint32_t i = 0; i < outputs_size; ++i) {
+    output_ids[i] = GetOperatorOutputValueId(split, operand_value_id_map, i);
+  }
+  const MLSplitOptions* options =
+      static_cast<const MLSplitOptions*>(ml_operator->Options());
+  const auto axis = options->axis();
+  const uint32_t flags = 0;
+  if (split->IsEvenSplit()) {
+    const auto split_number = split->SplitNumber();
+    switch (split_number) {
+      case 1u:
+        // Use XNNPACK copy operator to supoprt single output.
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+            xnn_define_copy(subgraph, input_id, output_ids[0], flags));
+        break;
+      case 2u:
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_even_split2(
+            subgraph, axis, input_id, output_ids[0], output_ids[1], flags));
+        break;
+      case 3u:
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+            xnn_define_even_split3(subgraph, axis, input_id, output_ids[0],
+                                   output_ids[1], output_ids[2], flags));
+        break;
+      case 4u:
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_even_split4(
+            subgraph, axis, input_id, output_ids[0], output_ids[1],
+            output_ids[2], output_ids[3], flags));
+        break;
+      default:
+        // TODO(crbug.com/1273291): Consider decomposing the split with splits >
+        // 4 into multiple XNNPACK Slice Nodes.
+        error_message = "XNNPACK backend doesn't support evenly split in to " +
+                        String::Number(split_number);
+        return xnn_status_unsupported_parameter;
+    }
+  } else {
+    const auto input_shape = split->Inputs()[0]->Dimensions();
+    const auto input_rank = input_shape.size();
+    const auto split_sizes = split->SplitSizes();
+    Vector<size_t> offsets(input_rank, 0);
+    Vector<size_t> sizes(input_shape);
+    size_t offset = 0;
+    for (uint32_t i = 0; i < outputs_size; ++i) {
+      sizes[axis] = split_sizes[i];
+      // XNNPACK will memcpy the content of `offsets` and `sizes` vectors to its
+      // internal structure, so it is safe to release `offsets` and `sizes`
+      // vectors after this call. Please refer to the implementation at:
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-slice.c;l=254
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_slice(
+          subgraph, input_rank, offsets.data(), sizes.data(), input_id,
+          output_ids[i], flags));
+      offset += split_sizes[i];
+      offsets[axis] = offset;
+    }
+  }
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForTranspose(
     xnn_subgraph_t subgraph,
     const MLOperator* transpose,
@@ -1659,6 +1729,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       break;
     case MLOperator::OperatorKind::kResample2d: {
       XNN_CHECK_STATUS(DefineXnnNodeForResample2d(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kSplit: {
+      XNN_CHECK_STATUS(DefineXnnNodeForSplit(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
