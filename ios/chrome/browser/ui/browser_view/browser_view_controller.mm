@@ -1734,6 +1734,10 @@ enum HeaderBehaviour {
     }
   }
 
+  // TODO(crbug.com/1329087): Remove this and let `ToolbarCoordinator` call the
+  // update, somehow. Toolbar needs to know when NTP isActive state changes.
+  [self.toolbarCoordinator updateToolbar];
+
   [self updateWebStateVisibility:YES];
 }
 
