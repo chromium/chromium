@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+using device_signals::prefs::kDeviceSignalsConsentReceived;
+
 namespace {
 std::unique_ptr<ConsentRequester>* GetTestInstanceStorage() {
   static base::NoDestructor<std::unique_ptr<ConsentRequester>> storage;
@@ -116,23 +118,18 @@ std::u16string ConsentDialogCoordinator::GetDialogBodyText() {
 }
 
 void ConsentDialogCoordinator::Show() {
-  if (dialog_widget_) {
-    dialog_widget_->Hide();
-    dialog_widget_->Show();
+  if (dialog_widget_ && !dialog_widget_->IsClosed()) {
+    if (!dialog_widget_->IsVisible()) {
+      dialog_widget_->Show();
+    }
+    return;
   }
   dialog_widget_ = chrome::ShowBrowserModal(
       browser_, CreateDeviceSignalsConsentDialogModel());
 }
 
-void ConsentDialogCoordinator::Hide() {
-  if (dialog_widget_) {
-    dialog_widget_->Hide();
-  }
-}
-
 void ConsentDialogCoordinator::OnConsentDialogAccept() {
-  profile_->GetPrefs()->SetBoolean(
-      device_signals::prefs::kDeviceSignalsConsentReceived, true);
+  profile_->GetPrefs()->SetBoolean(kDeviceSignalsConsentReceived, true);
 }
 
 void ConsentDialogCoordinator::OnConsentDialogCancel() {
@@ -145,6 +142,11 @@ void ConsentDialogCoordinator::OnConsentDialogCancel() {
 
 void ConsentDialogCoordinator::OnConsentPreferenceUpdated(
     RequestConsentCallback callback) {
-  Hide();
-  callback.Run();
+  if (profile_->GetPrefs()->GetBoolean(kDeviceSignalsConsentReceived)) {
+    if (dialog_widget_) {
+      dialog_widget_->CloseWithReason(
+          views::Widget::ClosedReason::kAcceptButtonClicked);
+    }
+    callback.Run();
+  }
 }
