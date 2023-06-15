@@ -49,20 +49,17 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForSampleSystemWebApp() {
     info->share_target->params.files.push_back(std::move(icon_files));
   }
 
-  {
-    WebAppShortcutsMenuItemInfo shortcut;
-    shortcut.name = u"Inter Frame Communication Demo";
-    shortcut.url =
-        GURL("chrome://sample-system-web-app/inter_frame_communication.html");
-    info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
-  }
-  {
-    WebAppShortcutsMenuItemInfo shortcut;
-    shortcut.name = u"Component Playground";
-    shortcut.url =
-        GURL("chrome://sample-system-web-app/component_playground.html");
-    info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
-  }
+  web_app::CreateShortcutsMenuItemForSystemWebApp(
+      u"Inter Frame Communication Demo",
+      GURL("chrome://sample-system-web-app/inter_frame_communication.html"),
+      {{"test.png", 192, IDR_ASH_SAMPLE_SYSTEM_WEB_APP_APP_ICON_192_PNG}},
+      *info);
+
+  web_app::CreateShortcutsMenuItemForSystemWebApp(
+      u"Component Playground",
+      GURL("chrome://sample-system-web-app/component_playground.html"),
+      {{"test.png", 192, IDR_ASH_SAMPLE_SYSTEM_WEB_APP_APP_ICON_192_PNG}},
+      *info);
 
   return info;
 }
