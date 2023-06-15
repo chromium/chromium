@@ -185,7 +185,7 @@ void ScopedAppGLStateRestoreImpl::SaveHWUIState(bool save_restore) {
   base::ScopedClosureRunner uma_runner(base::BindOnce(
       [](base::TimeTicks start_time) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "Android.WebView.Gfx.SaveHWUIStateMicroseconds",
+            "Android.WebView.Gfx.SaveHWUIStateNonANGLEMicroseconds",
             base::TimeTicks::Now() - start_time, base::Microseconds(1),
             base::Seconds(1), 100);
       },

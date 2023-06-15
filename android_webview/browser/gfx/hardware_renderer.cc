@@ -560,14 +560,10 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
       output_surface_provider_.shared_context_state().get(),
       output_surface_provider_.gl_surface().get());
 
-  // When doing GL draws via ANGLE, state saving occurred within ANGLE as part
-  // of making the context current above (when not using ANGLE, this metric is
-  // recorded when state saving occurs in ScopedAppGLStateRestoreImpl
-  // creation).
   if (!IsUsingVulkan() && gl::GLSurfaceEGL::GetGLDisplayEGL()
                               ->IsANGLEExternalContextAndSurfaceSupported()) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Android.WebView.Gfx.SaveHWUIStateMicroseconds",
+        "Android.WebView.Gfx.MakeANGLEContextCurrentMicroseconds",
         base::TimeTicks::Now() - make_context_current_start_time,
         base::Microseconds(1), base::Seconds(1), 100);
   }
