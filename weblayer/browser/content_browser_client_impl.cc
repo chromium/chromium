@@ -123,7 +123,6 @@
 #include "base/android/path_utils.h"
 #include "base/functional/bind.h"
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
-#include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
@@ -1000,11 +999,6 @@ void ContentBrowserClientImpl::RegisterBrowserInterfaceBindersForFrame(
 
 void ContentBrowserClientImpl::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-#if BUILDFLAG(IS_ANDROID)
-  host->AddFilter(new cdm::CdmMessageFilterAndroid(
-      !host->GetBrowserContext()->IsOffTheRecord(),
-      /*force_to_support_secure_codecs*/ false));
-#endif
   PageSpecificContentSettingsDelegate::InitializeRenderer(host);
 }
 
