@@ -2,7 +2,8 @@
 
 Chromium is an open-source browser project that aims to build a safer, faster,
 and more stable way for all users to experience the web.
-
+проверка содержания
+проверка содержания
 The project's web site is https://www.chromium.org.
 
 To check out the source code locally, don't use `git clone`! Instead,
