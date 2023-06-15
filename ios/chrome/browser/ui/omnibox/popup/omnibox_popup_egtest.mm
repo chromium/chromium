@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -50,6 +51,13 @@ void TapSwitchToTabButton(const GURL& url) {
   [[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
                                                  grey_interactable(), nil)]
       performAction:grey_tap()];
+}
+
+id<GREYMatcher> OmniboxWithLeadingImageElement(
+    NSString* const leadingImageIdentifier) {
+  return grey_allOf(
+      grey_ancestor(grey_kindOfClassName(@"OmniboxContainerView")),
+      grey_accessibilityID(leadingImageIdentifier), grey_interactable(), nil);
 }
 
 void ScrollToSwitchToTabElement(const GURL& url) {
@@ -652,6 +660,51 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       chrome_test_util::OmniboxContainingText("testupdown")];
+}
+
+// Tests that leading image in omnibox changes based on the suggestion
+// hilighted.
+- (void)testOmniboxLeadingImage {
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL _URL1 = self.testServer->GetURL(kPage1URL);
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // Focus omnibox from Web.
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Typing the title of page1.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:base::SysUTF8ToNSString(
+                                                    std::string(kPage1Title))
+                                          flags:0];
+
+  // Wait for suggestions to show.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PopupRowWithUrl(_URL1)];
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
+
+  // We expect to have the default leading image.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(OmniboxWithLeadingImageElement(
+                         kOmniboxLeadingImageDefaultAccessibilityIdentifier),
+                     nil)];
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
+
+  // The popup row is a url suggestion so we expect to have the leading
+  // suggestion image .
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(
+              OmniboxWithLeadingImageElement(
+                  kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier),
+              nil)];
 }
 
 @end

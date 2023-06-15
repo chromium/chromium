@@ -284,6 +284,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/omnibox:eg_test_support+eg2",
     "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
