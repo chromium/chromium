@@ -9059,6 +9059,7 @@
                     },
                     "enable_features": [
                         "Cr2023ActionChips",
+                        "Cr2023ActionChipsIcons",
                         "OmniboxExpandedStateHeight",
                         "OmniboxExpandedStateShape",
                         "OmniboxSteadyStateBackgroundColor",

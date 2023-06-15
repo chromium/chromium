@@ -1274,7 +1274,9 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
             GURL()) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kIncognitoIcon;
+    return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
+               ? omnibox::kIncognitoCr2023Icon
+               : omnibox::kIncognitoIcon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(

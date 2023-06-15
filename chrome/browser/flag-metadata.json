@@ -5616,7 +5616,14 @@
   {
     "name": "omnibox-cr23-action-chips",
     "owners": [
-      "yohanes", "manukh", "chrome-omnibox-team@google.com"
+      "manukh", "chrome-omnibox-team@google.com"
+    ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-cr23-action-chips-icons",
+    "owners": [
+      "manukh", "chrome-omnibox-team@google.com"
     ],
     "expiry_milestone": 120
   },
@@ -5627,7 +5634,7 @@
   },
   {
     "name": "omnibox-cr23-expanded-state-height",
-    "owners": [ "yohanes", "manukh", "chrome-omnibox-team@google.com" ],
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -5637,7 +5644,7 @@
   },
   {
     "name": "omnibox-cr23-expanded-state-shape",
-    "owners": [ "yohanes", "manukh", "chrome-omnibox-team@google.com" ],
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -5657,7 +5664,7 @@
   },
   {
     "name": "omnibox-cr23-umbrella",
-    "owners": [ "manukh", "yohanes", "khalid", "chrome-omnibox-team@google.com" ],
+    "owners": [ "manukh", "khalid", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -5903,7 +5910,7 @@
   {
     "name": "omnibox-square-suggest-icons",
     "owners": [
-      "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"
+      "manukh", "chrome-omnibox-team@google.com"
     ],
     "expiry_milestone": 120
   },
@@ -5936,7 +5943,7 @@
   },
   {
     "name": "omnibox-uniform-suggestion-height",
-    "owners": [ "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"],
+    "owners": [ "manukh", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120
   },
   {

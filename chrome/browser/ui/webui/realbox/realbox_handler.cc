@@ -713,7 +713,8 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     return kGoogleGIconResourceName;
   }
 #endif
-  if (icon.name == omnibox::kIncognitoIcon.name) {
+  if (icon.name == omnibox::kIncognitoIcon.name ||
+      icon.name == omnibox::kIncognitoCr2023Icon.name) {
     return kIncognitoIconResourceName;
   }
   if (icon.name == omnibox::kJourneysIcon.name ||

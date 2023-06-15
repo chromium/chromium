@@ -302,10 +302,16 @@ BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
              "SuppressClipboardSuggestionAfterFirstUsed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, uses Chrome Refresh 2023 Action Chips in the omnibox suggestion
-// popup.
+// If enabled, uses the Chrome Refresh 2023 design's shape for action chips in
+// the omnibox suggestion popup.
 BASE_FEATURE(kCr2023ActionChips,
              "Cr2023ActionChips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, uses the Chrome Refresh 2023 design's icons for action chips in
+// the omnibox suggestion popup.
+BASE_FEATURE(kCr2023ActionChipsIcons,
+             "Cr2023ActionChipsIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, finance ticker answer from omnibox will reverse the color for

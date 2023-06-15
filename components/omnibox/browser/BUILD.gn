@@ -70,6 +70,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "http_chrome_refresh.icon",
     "https_valid_in_chip.icon",
     "incognito.icon",
+    "incognito_cr2023.icon",
     "install_desktop.icon",
     "journeys.icon",
     "journeys_chrome_refresh.icon",

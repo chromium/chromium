@@ -62242,6 +62242,7 @@ from previous Chrome versions.
   <int value="-414398582" label="UpcomingFollowFeatures:disabled"/>
   <int value="-413779344" label="SyncAutofillWalletUsageData:disabled"/>
   <int value="-413562235" label="MessagesForAndroidUpdatePassword:disabled"/>
+  <int value="-413350010" label="Cr2023ActionChipsIcons:enabled"/>
   <int value="-413286115"
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
@@ -65941,6 +65942,7 @@ from previous Chrome versions.
   <int value="1533392685"
       label="ContextMenuGoogleLensSearchOptimizations:disabled"/>
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>
+  <int value="1534323718" label="Cr2023ActionChipsIcons:disabled"/>
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
   <int value="1535497541" label="FillingAcrossGroupedSites:disabled"/>

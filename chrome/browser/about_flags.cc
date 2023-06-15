@@ -6091,6 +6091,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxCR23ActionChipsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kCr2023ActionChips)},
 
+    {"omnibox-cr23-action-chips-icons",
+     flag_descriptions::kOmniboxCR23ActionChipsIconsName,
+     flag_descriptions::kOmniboxCR23ActionChipsIconsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kCr2023ActionChipsIcons)},
+
     {"omnibox-cr23-expanded-state-height",
      flag_descriptions::kOmniboxCR23ExpandedStateHeightName,
      flag_descriptions::kOmniboxCR23ExpandedStateHeightDescription, kOsDesktop,

@@ -1239,6 +1239,9 @@ extern const char kOmniboxConsumesImeInsetsDescription[];
 extern const char kOmniboxCR23ActionChipsName[];
 extern const char kOmniboxCR23ActionChipsDescription[];
 
+extern const char kOmniboxCR23ActionChipsIconsName[];
+extern const char kOmniboxCR23ActionChipsIconsDescription[];
+
 extern const char kOmniboxCR23ExpandedStateColorsName[];
 extern const char kOmniboxCR23ExpandedStateColorsDescription[];
 

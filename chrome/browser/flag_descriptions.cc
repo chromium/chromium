@@ -2202,7 +2202,12 @@ const char kOmniboxConsumesImeInsetsDescription[] =
 
 const char kOmniboxCR23ActionChipsName[] = "Omnibox CR 2023 Action Chips";
 const char kOmniboxCR23ActionChipsDescription[] =
-    "Updates Omnibox Action Chips to comply with CR23 guidelines.";
+    "Updates Omnibox Action Chips to comply with CR23 shape guidelines.";
+
+const char kOmniboxCR23ActionChipsIconsName[] =
+    "Omnibox CR 2023 Action Chips Icons";
+const char kOmniboxCR23ActionChipsIconsDescription[] =
+    "Updates Omnibox Action Chips to comply with CR23 icons design.";
 
 const char kOmniboxCR23ExpandedStateColorsName[] =
     "Omnibox Expanded State Colors";

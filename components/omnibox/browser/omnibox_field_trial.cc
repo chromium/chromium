@@ -706,7 +706,7 @@ bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
 bool OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled() {
   return features::GetChromeRefresh2023Level() ==
              features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips);
+         base::FeatureList::IsEnabled(omnibox::kCr2023ActionChipsIcons);
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() {
