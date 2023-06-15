@@ -81,6 +81,7 @@
                              // needs to be nil, otherwise stopWithCompletion:
                              // will call dismiss with nothing to dismiss and
                              // therefore not trigger its own completionHandler.
+                             [self.clearBrowsingDataTableViewController stop];
                              self.clearBrowsingDataTableViewController = nil;
                              self.historyClearBrowsingDataNavigationController =
                                  nil;

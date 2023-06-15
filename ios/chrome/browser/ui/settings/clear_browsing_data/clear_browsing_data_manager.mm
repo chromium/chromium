@@ -253,6 +253,11 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   _browsingDataRemoverObserver.reset();
   _scoped_observation.reset();
   _countersByMasks.clear();
+  _counterWrapperProducer = nil;
+}
+
+- (void)dealloc {
+  CHECK(!_counterWrapperProducer);
 }
 
 // Add items for types of browsing data to clear.

@@ -115,6 +115,15 @@
   return self;
 }
 
+- (void)stop {
+  _identityManagerObserverBridge.reset();
+  [_dataManager disconnect];
+  _dataManager.consumer = nil;
+  _dataManager = nil;
+  _browser = nil;
+  _browserState = nil;
+}
+
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
   if (!parent) {
