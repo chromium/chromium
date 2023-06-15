@@ -1359,6 +1359,45 @@ xnn_status DefineXnnNodeForSigmoid(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForSlice(xnn_subgraph_t subgraph,
+                                 const MLOperator* slice,
+                                 const OperandValueIdMap& operand_value_id_map,
+                                 String& error_message) {
+  const MLSliceOperator* slice_operator =
+      static_cast<const MLSliceOperator*>(slice);
+  const uint32_t input_id =
+      GetOperatorInputValueId(slice_operator, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(slice_operator, operand_value_id_map);
+
+  const auto* input = slice->Inputs()[0].Get();
+  CHECK(input);
+  const auto input_rank = input->Dimensions().size();
+  const Vector<uint32_t>& starts = slice_operator->Starts();
+  CHECK_EQ(input_rank, starts.size());
+  Vector<size_t> offsets(input_rank);
+  base::ranges::transform(starts, offsets.begin(), [](uint32_t value) {
+    return base::checked_cast<size_t>(value);
+  });
+  const Vector<uint32_t>& lengths = slice_operator->Sizes();
+  CHECK_EQ(input_rank, lengths.size());
+  Vector<size_t> sizes(input_rank);
+  base::ranges::transform(lengths, sizes.begin(), [](uint32_t value) {
+    return base::checked_cast<size_t>(value);
+  });
+
+  const uint32_t flags = 0;
+  // XNNPACK will memcpy the content of `offsets` and `sizes`
+  // vectors to its internal structure, so it is safe to release `offsets`
+  // and `sizes` vectors after this call. Please refer to the
+  // implementation at:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-slice.c;l=254
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_static_slice(subgraph, input_rank, offsets.data(),
+                              sizes.data(), input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForSoftmax(
     xnn_subgraph_t subgraph,
     const MLOperator* softmax,
@@ -1608,6 +1647,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       break;
     case MLOperator::OperatorKind::kSigmoid:
       XNN_CHECK_STATUS(DefineXnnNodeForSigmoid(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kSlice:
+      XNN_CHECK_STATUS(DefineXnnNodeForSlice(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     case MLOperator::OperatorKind::kSoftmax:

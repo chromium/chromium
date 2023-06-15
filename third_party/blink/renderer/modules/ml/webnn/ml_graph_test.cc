@@ -1519,6 +1519,59 @@ TEST_P(MLGraphTest, PadTest) {
   }
 }
 
+template <typename T>
+struct SliceTester {
+  OperandInfo<T> input;
+  Vector<uint32_t> starts;
+  Vector<uint32_t> sizes;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->slice(input_operand, starts, sizes, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, SliceTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test slice with input_shape = {3, 4, 5}, starts = {0, 0, 1} and sizes =
+    // {2, 3, 4}.
+    SliceTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {3, 4, 5},
+                  .values = {1,  4,  4,  -6, -3, -1, 7,  3,  1,  -8, 1,  -1,
+                             -2, -3, 6,  7,  6,  1,  -5, -7, 1,  1,  5,  3,
+                             3,  3,  -3, -8, 2,  -1, 8,  -1, -6, 1,  -7, 1,
+                             4,  1,  -5, 1,  -8, 4,  1,  -1, 9,  -4, 1,  -5,
+                             -4, -1, 4,  -1, -3, 7,  1,  9,  -4, -9, -8, -9}},
+        .starts = {0, 0, 1},
+        .sizes = {2, 3, 4},
+        .expected = {4, 4, -6, -3, 7,  3,  1, -8, -1, -2, -3, 6,
+                     1, 5, 3,  3,  -3, -8, 2, -1, -1, -6, 1,  -7}}
+        .Test(*this, scope, builder);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     MLGraphTest,
