@@ -239,6 +239,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   size_t InjectAdHocMatch(AutocompleteMatch match);
 
  private:
+  friend class AutocompleteControllerTest;
   friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;

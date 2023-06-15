@@ -20,6 +20,7 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/fake_on_device_tail_model_service.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -71,6 +72,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
+  AutocompleteScoringModelService* GetAutocompleteScoringModelService()
+      const override;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Test-only setters
@@ -102,6 +105,13 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     shortcuts_backend_ = std::move(backend);
   }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  void set_scoring_model_service(
+      std::unique_ptr<AutocompleteScoringModelService> scoring_model_service) {
+    scoring_model_service_ = std::move(scoring_model_service);
+  }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
  private:
   base::ScopedTempDir history_dir_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -119,6 +129,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;
+  std::unique_ptr<AutocompleteScoringModelService> scoring_model_service_;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 };
 

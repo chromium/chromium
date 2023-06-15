@@ -13,6 +13,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/prefs/testing_pref_service.h"
@@ -99,5 +100,10 @@ scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
 OnDeviceTailModelService*
 FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
   return on_device_tail_model_service_.get();
+}
+
+AutocompleteScoringModelService*
+FakeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
+  return scoring_model_service_.get();
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

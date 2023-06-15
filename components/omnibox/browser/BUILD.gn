@@ -742,6 +742,7 @@ source_set("unit_tests") {
     "actions/omnibox_pedal_unittest.cc",
     "answers_cache_unittest.cc",
     "autocomplete_controller_metrics_unittest.cc",
+    "autocomplete_controller_unittest.cc",
     "autocomplete_grouper_groups_unittest.cc",
     "autocomplete_grouper_sections_unittest.cc",
     "autocomplete_input_unittest.cc",
