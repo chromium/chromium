@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
@@ -543,6 +544,7 @@ void GPUCanvasContext::unconfigure() {
 }
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
+    ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!configured_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -608,6 +610,10 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   } else {
     texture_ = swap_texture_;
   }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  UseCounter::Count(execution_context,
+                    WebFeature::kWebGPUCanvasContextGetCurrentTexture);
 
   return texture_;
 }

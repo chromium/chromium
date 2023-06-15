@@ -13,5 +13,5 @@
 
     [RaisesException] void configure(GPUCanvasConfiguration descriptor);
     void unconfigure();
-    [RaisesException] GPUTexture getCurrentTexture();
+    [CallWith=ScriptState, RaisesException] GPUTexture getCurrentTexture();
 };

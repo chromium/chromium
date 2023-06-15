@@ -42025,7 +42025,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3886" label="OBSOLETE_NewCanvas2DAPI"/>
   <int value="3887"
       label="OBSOLETE_ServiceWorkerSubresourceFilterBypassedRequest"/>
-  <int value="3888" label="WebGPU"/>
+  <int value="3888" label="WebGPURequestAdapter"/>
   <int value="3889" label="CSSFilterColorMatrix"/>
   <int value="3890" label="HTMLFencedFrameElement"/>
   <int value="3891" label="CSSFilterLuminanceToAlpha"/>
@@ -42759,6 +42759,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4583" label="FedCmIdpSigninStatusApi"/>
   <int value="4584" label="FedCmIdpSigninStatusJsApi"/>
   <int value="4585" label="ExecCommand"/>
+  <int value="4586" label="WebGPUQueueSubmit"/>
+  <int value="4587" label="WebGPUCanvasContextGetCurrentTexture"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

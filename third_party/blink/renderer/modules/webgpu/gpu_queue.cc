@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
@@ -278,7 +279,8 @@ gfx::Rect GetSourceImageSubrect(StaticBitmapImage* image,
 GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
     : DawnObject<WGPUQueue>(device, queue) {}
 
-void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
+void GPUQueue::submit(ScriptState* script_state,
+                      const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   std::unique_ptr<WGPUCommandBuffer[]> commandBuffers = AsDawnType(buffers);
 
   GetProcs().queueSubmit(GetHandle(), buffers.size(), commandBuffers.get());
@@ -286,6 +288,9 @@ void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   // need to ensure commands are flushed. Flush immediately so the GPU process
   // eagerly processes commands to maximize throughput.
   FlushNow();
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  UseCounter::Count(execution_context, WebFeature::kWebGPUQueueSubmit);
 }
 
 void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,

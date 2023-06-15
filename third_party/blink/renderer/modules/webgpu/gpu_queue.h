@@ -37,7 +37,8 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   GPUQueue& operator=(const GPUQueue&) = delete;
 
   // gpu_queue.idl
-  void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);
+  void submit(ScriptState* script_state,
+              const HeapVector<Member<GPUCommandBuffer>>& buffers);
   ScriptPromise onSubmittedWorkDone(ScriptState* script_state);
   void writeBuffer(ScriptState* script_state,
                    GPUBuffer* buffer,

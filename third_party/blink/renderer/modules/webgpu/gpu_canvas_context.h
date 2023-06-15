@@ -107,7 +107,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
   void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
-  GPUTexture* getCurrentTexture(ExceptionState&);
+  GPUTexture* getCurrentTexture(ScriptState*, ExceptionState&);
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;

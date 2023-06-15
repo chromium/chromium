@@ -8,7 +8,7 @@
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUQueue {
-    void submit(sequence<GPUCommandBuffer> buffers);
+    [CallWith=ScriptState] void submit(sequence<GPUCommandBuffer> buffers);
 
     [CallWith=ScriptState] Promise<void> onSubmittedWorkDone();
 

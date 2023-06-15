@@ -3193,7 +3193,7 @@ enum WebFeature {
 
   kOBSOLETE_NewCanvas2DAPI = 3886,
   kOBSOLETE_ServiceWorkerSubresourceFilterBypassedRequest = 3887,
-  kWebGPU = 3888,
+  kWebGPURequestAdapter = 3888,
   kCSSFilterColorMatrix = 3889,
   kHTMLFencedFrameElement = 3890,
   kCSSFilterLuminanceToAlpha = 3891,
@@ -3923,6 +3923,8 @@ enum WebFeature {
   kFedCmIdpSigninStatusApi = 4583,
   kFedCmIdpSigninStatusJsApi = 4584,
   kExecCommand = 4585,
+  kWebGPUQueueSubmit = 4586,
+  kWebGPUCanvasContextGetCurrentTexture = 4587,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

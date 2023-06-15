@@ -300,6 +300,9 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
            WebFeature::kCascadedCSSZoomNotEqualToOne,
            WebFeature::kV8Window_QueryLocalFonts_Method,
            WebFeature::kHiddenUntilFoundAttribute,
-           WebFeature::kDanglingMarkupInWindowName}));
+           WebFeature::kDanglingMarkupInWindowName,
+           WebFeature::kWebGPURequestAdapter,
+           WebFeature::kWebGPUQueueSubmit,
+           WebFeature::kWebGPUCanvasContextGetCurrentTexture}));
   return *opt_in_features;
 }

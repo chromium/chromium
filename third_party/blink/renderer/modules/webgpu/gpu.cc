@@ -342,7 +342,7 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
   dawn_control_client_->EnsureFlush(
       *execution_context->GetAgent()->event_loop());
 
-  UseCounter::Count(execution_context, WebFeature::kWebGPU);
+  UseCounter::Count(execution_context, WebFeature::kWebGPURequestAdapter);
 }
 
 ScriptPromise GPU::requestAdapter(ScriptState* script_state,
