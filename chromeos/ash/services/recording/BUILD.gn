@@ -57,6 +57,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chromeos/ash/services/recording",
     "//chromeos/ash/services/recording/public/mojom",
     "//media",

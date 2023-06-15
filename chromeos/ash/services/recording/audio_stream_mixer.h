@@ -11,7 +11,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -40,11 +42,22 @@ using OnAudioMixerOutputCallback =
 // All the operations of this class, including construction and destruction must
 // happen on the same sequence.
 class AudioStreamMixer {
+ private:
+  using PassKey = base::PassKey<AudioStreamMixer>;
+
  public:
-  explicit AudioStreamMixer(OnAudioMixerOutputCallback callback);
+  explicit AudioStreamMixer(PassKey);
+  // A constructor used only by tests.
+  explicit AudioStreamMixer(PassKey, OnAudioMixerOutputCallback callback);
   AudioStreamMixer(const AudioStreamMixer&) = delete;
   AudioStreamMixer& operator=(const AudioStreamMixer&) = delete;
   ~AudioStreamMixer();
+
+  // Creates an instance of the mixer that is bound to the given `task_runner`.
+  // All the operations of the mixer, including its construction and destruction
+  // will be done on this `task_runner`.
+  static base::SequenceBound<AudioStreamMixer> Create(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Creates a new `AudioCapturer` and a corresponding `AudioStream` to capture
   // the audio input device whose ID is the given `device_id`. The pending
@@ -62,13 +75,19 @@ class AudioStreamMixer {
                         bool use_automatic_gain_control,
                         bool use_echo_canceller);
 
-  // Starts and stops capturing the so-far added audio capturers.
-  void Start();
+  // Starts and stops capturing the so-far added audio capturers. `callback`
+  // will be called repeatedly to provide the output mixed audio buses.
+  void Start(OnAudioMixerOutputCallback callback);
   void Stop();
 
  private:
   friend class RecordingServiceTestApi;
   friend class AudioStreamMixerTest;
+
+  static PassKey PassKeyForTesting();
+
+  // Returns the number of audio capturers managed by this mixer.
+  int GetNumberOfCapturers() const;
 
   // Will be called by the audio capturer that corresponds with the given
   // `audio_stream` to provide an `audio_bus` that was captured at

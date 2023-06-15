@@ -125,6 +125,12 @@ class RecordingService : public mojom::RecordingService,
       const base::FilePath& output_file_path,
       std::unique_ptr<VideoCaptureParams> capture_params);
 
+  // Called asynchronously by the encoder to provide the `callback` that will be
+  // called repeatedly by the `audio_stream_mixer_` to provide the mixed audio
+  // buses along with their timestamps to the encoder. This happens only if we
+  // are recording audio.
+  void OnEncodeAudioCallbackReady(EncodeAudioCallback callback);
+
   // Called on the main thread during an on-going recording to reconfigure an
   // existing video encoder.
   void ReconfigureVideoEncoder();
@@ -141,14 +147,6 @@ class RecordingService : public mojom::RecordingService,
   // ongoing recording, this attempts to reconnect to a new capturer and resumes
   // capturing with the same |current_video_capture_params_|.
   void OnVideoCapturerDisconnected();
-
-  // The captured audio data is delivered to Capture() on a dedicated thread
-  // created by the audio capturer. However, we can only schedule tasks on the
-  // |encoder_muxer_| using its |base::SequenceBound| wrapper on the main
-  // thread. This function is called on the main thread, and is scheduled using
-  // |main_task_runner_| from Capture().
-  void OnAudioCaptured(std::unique_ptr<media::AudioBus> audio_bus,
-                       base::TimeTicks audio_capture_time);
 
   // This is called by |encoder_muxer_| on the main thread (since we bound it as
   // a callback to be invoked on the main thread. See BindOnceToMainThread()),
@@ -173,6 +171,9 @@ class RecordingService : public mojom::RecordingService,
   // `kVideoFramesRefreshInterval` since the last video frame was delivered, at
   // which point we request a new refresh video frame.
   void OnRefreshTimerFired();
+
+  // Stops audio recording if any is being done.
+  void MaybeStopAudioRecording();
 
   // By default, the `encoder_muxer_` will invoke any callback we provide it
   // with to notify us of certain events (such as failure errors, or flush done)
@@ -258,7 +259,10 @@ class RecordingService : public mojom::RecordingService,
   // if either microphone or system audio recording was requested, or contains
   // two capturers if both are desired to be recorded an mixed together in one
   // stream.
-  std::unique_ptr<AudioStreamMixer> audio_stream_mixer_
+  // All the operations performed by the mixer (including its construction and
+  // destruction) are done on `encoding_task_runner_` to avoid stalling the main
+  // thread (on which the video frames are received).
+  base::SequenceBound<AudioStreamMixer> audio_stream_mixer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // Abstracts querying the supported capabilities of the currently used encoder

@@ -88,6 +88,10 @@ class AudioStreamMixerTest : public AudioCaptureTestBase {
   AudioStreamMixerTest& operator=(const AudioStreamMixerTest&) = delete;
   ~AudioStreamMixerTest() override = default;
 
+  static AudioStreamMixer::PassKey PassKey() {
+    return AudioStreamMixer::PassKeyForTesting();
+  }
+
   // Adds a new stream to the given `stream_mixer` and returns a reference to
   // it.
   AudioStream* AddStreamToMixer(AudioStreamMixer& stream_mixer) {
@@ -117,7 +121,7 @@ class AudioStreamMixerTest : public AudioCaptureTestBase {
 // the client immediately.
 TEST_F(AudioStreamMixerTest, SingleStream) {
   MixedOutputReceiver mixer_client;
-  AudioStreamMixer mixer(mixer_client.GetCallback());
+  AudioStreamMixer mixer(PassKey(), mixer_client.GetCallback());
   AudioStream* stream1 = AddStreamToMixer(mixer);
 
   auto timestamp = GetTimestamp(base::Milliseconds(10));
@@ -138,7 +142,7 @@ TEST_F(AudioStreamMixerTest, SingleStream) {
 
 TEST_F(AudioStreamMixerTest, TwoStreamsPerfectlyAligned) {
   MixedOutputReceiver mixer_client;
-  AudioStreamMixer mixer(mixer_client.GetCallback());
+  AudioStreamMixer mixer(PassKey(), mixer_client.GetCallback());
   AudioStream* stream1 = AddStreamToMixer(mixer);
   AudioStream* stream2 = AddStreamToMixer(mixer);
 
@@ -156,7 +160,7 @@ TEST_F(AudioStreamMixerTest, TwoStreamsPerfectlyAligned) {
 
 TEST_F(AudioStreamMixerTest, StreamWithLaterTimestampsArrivesFirst) {
   MixedOutputReceiver mixer_client;
-  AudioStreamMixer mixer(mixer_client.GetCallback());
+  AudioStreamMixer mixer(PassKey(), mixer_client.GetCallback());
   AudioStream* stream1 = AddStreamToMixer(mixer);
   AudioStream* stream2 = AddStreamToMixer(mixer);
 
@@ -244,7 +248,7 @@ TEST_F(AudioStreamMixerTest, StreamWithLaterTimestampsArrivesFirst) {
 
 TEST_F(AudioStreamMixerTest, OneStreamReachedMaxDuration) {
   MixedOutputReceiver mixer_client;
-  AudioStreamMixer mixer(mixer_client.GetCallback());
+  AudioStreamMixer mixer(PassKey(), mixer_client.GetCallback());
   AudioStream* stream1 = AddStreamToMixer(mixer);
   AddStreamToMixer(mixer);
 

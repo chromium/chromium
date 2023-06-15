@@ -94,8 +94,7 @@ class WebmEncoderMuxer : public RecordingEncoder {
   void InitializeVideoEncoder(
       const media::VideoEncoder::Options& video_encoder_options) override;
   void EncodeVideo(scoped_refptr<media::VideoFrame> frame) override;
-  void EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                   base::TimeTicks capture_time) override;
+  EncodeAudioCallback GetEncodeAudioCallback() override;
   void FlushAndFinalize(base::OnceClosure on_done) override;
 
  private:
@@ -133,6 +132,13 @@ class WebmEncoderMuxer : public RecordingEncoder {
   // be triggered.
   void OnVideoEncoderInitialized(media::VpxVideoEncoder* encoder,
                                  media::EncoderStatus status);
+
+  // Encodes and muxes the given audio frames in `audio_bus` captured at
+  // `capture_time`. If `did_failure_occur()` is true, all `audio_bus`s will be
+  // ignored.
+  // It is bound to the callback returned by `GetEncodeAudioCallback()`.
+  void EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
+                   base::TimeTicks capture_time);
 
   // Performs the actual encoding of the given audio |frame|. It should never be
   // called before the audio encoder is initialized. Audio frames received

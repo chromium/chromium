@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/recording/audio_stream_mixer.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -31,13 +32,24 @@ bool DidStreamReachMaxDuration(const AudioStream& stream) {
 
 }  // namespace
 
-AudioStreamMixer::AudioStreamMixer(OnAudioMixerOutputCallback callback)
+AudioStreamMixer::AudioStreamMixer(PassKey) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+AudioStreamMixer::AudioStreamMixer(PassKey, OnAudioMixerOutputCallback callback)
     : on_mixer_output_callback_(std::move(callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 AudioStreamMixer::~AudioStreamMixer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+// static
+base::SequenceBound<AudioStreamMixer> AudioStreamMixer::Create(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return base::SequenceBound<AudioStreamMixer>(std::move(task_runner),
+                                               PassKey());
 }
 
 void AudioStreamMixer::AddAudioCapturer(
@@ -68,9 +80,11 @@ void AudioStreamMixer::AddAudioCapturer(
           streams_.back().get()))));
 }
 
-void AudioStreamMixer::Start() {
+void AudioStreamMixer::Start(OnAudioMixerOutputCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  on_mixer_output_callback_ = std::move(callback);
+  DCHECK(on_mixer_output_callback_);
   for (auto& capturer : audio_capturers_) {
     capturer->Start();
   }
@@ -82,6 +96,16 @@ void AudioStreamMixer::Stop() {
   for (auto& capturer : audio_capturers_) {
     capturer->Stop();
   }
+}
+
+// static
+AudioStreamMixer::PassKey AudioStreamMixer::PassKeyForTesting() {
+  return PassKey();
+}
+
+int AudioStreamMixer::GetNumberOfCapturers() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return audio_capturers_.size();
 }
 
 void AudioStreamMixer::OnAudioCaptured(

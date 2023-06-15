@@ -126,7 +126,7 @@ class MEDIA_EXPORT AliveChecker {
   bool detected_dead_ = false;
 
   // The task runner on which this object lives.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Dead notification callback.
   base::RepeatingClosure dead_callback_;
