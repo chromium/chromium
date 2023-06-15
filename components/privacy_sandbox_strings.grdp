@@ -1348,4 +1348,850 @@
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349" desc="Taxonomy Member. Meaning: [amateur and professional publications, directories and portals related to traveling and tourism; travel guides, travel blogs, travel periodicals, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2340477805275742936">
     Travel guides &amp; travelogues
   </message>
+
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_350" desc="Taxonomy Member. Meaning: [Entertainment news media, and popular culture celebrities (e.g. the Kardashians). Content on the professional and private lives of the aforementioned celebrities.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2359507604498937230">
+    Celebrities &amp; Entertainment News
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_351" desc="Taxonomy Member. Meaning: [umbrella category covering comics, cartoons, and animated films and tv series] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7112466056859718834">
+    Comics &amp; Animation
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_352" desc="Taxonomy Member. Meaning: [entertainment event listings and calendars; resources providing information such as dates and times of concerts, exhibitions, performances, showings, airdates, and similar entertainment events] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/396996609836026629">
+    Events &amp; Listings
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_353" desc="Taxonomy Member. Meaning: [bars, pubs, music clubs, nightclubs, entertainment venues, parties, raves, and other evening social events] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2946823013311370588">
+    Bars, Clubs &amp; Nightlife
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_354" desc="Taxonomy Member. Meaning: [event tickets and ticket vendor services] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2478916950884289760">
+    Event Ticket Sales
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_355" desc="Taxonomy Member. Meaning: [Expos, exhibitions and conventions; not limited to trade or industry fairs and events, but encompassing events for fans and enthusiasts, such as comic conventions, gardening expos, political conventions, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6527097077229847169">
+    Expos &amp; Conventions
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_356" desc="Taxonomy Member. Meaning: [festivals and competitions where movies are presented, promoted, workshopped, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6698840165378088130">
+    Film Festivals
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_357" desc="Taxonomy Member. Meaning: [food and wine festivals; food and wine tasting events; beverage festivals; public cooking competitions, like chili cook-offs, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1608643420194689630">
+    Food &amp; Beverage Events
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_358" desc="Taxonomy Member. Meaning: [Sci-fi films featuring futuristic elements such as spacecrafts, robots, cyborgs, interstellar space travel or other technologies; fantasy films featuring magic, supernatural events, mythology, folklore, or exotic fantasy worlds (source: Wikipedia).] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3001105446079599729">
+    Science Fiction &amp; Fantasy Films
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_359" desc="Taxonomy Member. Meaning: [resources for professional or amateur DJs: DJ turntables, media controllers and mixing equipment; DJ lighting, equipment cases and other support equipment] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7998961768145776715">
+    DJ Resources &amp; Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_360" desc="Taxonomy Member. Meaning: [a genre of rock music that developed in the late 1960s and early 1970s, largely in the United Kingdom and the United States; heavy metal is traditionally characterized by loud distorted guitars, emphatic rhythms, dense bass-and-drum sound, and vigorous vocals] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2589158100489252173">
+    Metal (Music)
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_361" desc="Taxonomy Member. Meaning: [arts, such as dance, drama, opera, comedy and magic, that are performed live before an audience] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6755545426696948379">
+    Performing Arts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_362" desc="Taxonomy Member. Meaning: [a form of theatre combining music, songs, spoken dialogue and dance; since the early 20th century, musical theatre stage works have generally been called simply, &quot;musicals&quot;; They may be presented in large venues, such as big budget West End and Broadway theatre productions in London and New York City, or in smaller Fringe Theatre, Off-Broadway or regional productions, on tour, or by amateur groups in schools, theatres and other performance spaces
+
+(Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/219984125523124545">
+    Broadway &amp; Musical Theater
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_363" desc="Taxonomy Member. Meaning: [television programming and digital video content, inclusive of terrestrial television station broadcasts (including cable &amp; satellite programming), as well as online video distributors, on both the Youtube model of uploaded video clips, and the Hulu model of live video content streaming or on-demand; also, all content related to TV shows and TV celebrities (as opposed to television sets, equipment and technologies)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2085024451619235602">
+    TV &amp; Video
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_364" desc="Taxonomy Member. Meaning: [Video content delivered live over the internet as it happens. Sports, award shows, video gaming playthroughs, and other live events different from TV shows and movies; live video streaming platforms that allow customers to broadcast live video content (e.g. Livestream, Ustream). Does not include static webcam feeds such as surf cams and traffic cams.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7308797941653136766">
+    Live Video Streaming
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_365" desc="Taxonomy Member. Meaning: [Services that enable users to stream (either live or on demand) or download movies, series, and TV programming (e.g. Netflix, Hulu, Sling TV, Google Play, YouTube Red, etc.) Does not include movie &amp; tv show torrents.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2380941492613469812">
+    Movie &amp; TV Streaming
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_366" desc="Taxonomy Member. Meaning: [television programs in which members of the public or celebrities, sometimes as part of a team, play a game which involves answering questions or solving problems usually for money and/or prizes (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7460183592518504461">
+    TV Game Shows
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_367" desc="Taxonomy Member. Meaning: [television programs where one person (or a group of people) will discuss various topics put forth by a talk show host; also known as &quot;chat shows&quot; (British);  includes late-night talk shows, where guests are often celebrities (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8792877577188280873">
+    TV Talk Shows
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_368" desc="Taxonomy Member. Meaning: [architecture as an art or design process; architectural styles and architectural history; architectural firms, tools, and services] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/280188126952874844">
+    Architecture
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_369" desc="Taxonomy Member. Meaning: [bicycles for sport and leisure; bike retailers and customization services] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2369739359326640788">
+    Bicycles &amp; Accessories
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_370" desc="Taxonomy Member. Meaning: [any consumer vehicle designed to float or navigate on the water (e.g. ships, boats, rafts, yachts, etc)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2298642330922208936">
+    Boats &amp; Watercraft
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_371" desc="Taxonomy Member. Meaning: [enclosed vehicles equipped with living space and amenities, either towed or autonomous] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3499717342642444177">
+    Campers &amp; RVs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_372" desc="Taxonomy Member. Meaning: [motor vehicles for business use or for use in carrying commercial goods or passengers; includes semi-trucks, coaches, buses, and vehicles for cargo, freight and mass passenger transportation] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5849794389341191428">
+    Commercial Vehicles
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_373" desc="Taxonomy Member. Meaning: [Cars larger than subcompacts but smaller than mid-size cars. Also known as small family cars and C-segment cars, examples include the Toyota Corolla, Honda Civic, Volkswagen Golf, Ford Focus, and Hyundai Elantra. Excludes other vehicle classes such as compact crossovers, compact trucks, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2782278835648522274">
+    Compact Cars
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_374" desc="Taxonomy Member. Meaning: [Vehicles with a diesel engine; examples include the Volkswagen TDI, Mercedes-Benz BlueTEC, and Ram EcoDiesel.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1636266439963807902">
+    Diesel Vehicles
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_375" desc="Taxonomy Member. Meaning: [Vehicles with fully electric or plug-in hybrid powertrains; examples include the Tesla Model S, Toyota Prius Plug-in, and Chevrolet Volt.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8317889414201733777">
+    Electric &amp; Plug-In Vehicles
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_376" desc="Taxonomy Member. Meaning: [Cars that self-identify or are generally perceived to be very sporty, designed for spirited performance and nimble handling. Examples include the Mazda MX-5 Miata, Subara WRX, Chevrolet Camaro &amp; Corvette, BMW M3, Porsche 911, and Lamborghini Huracán.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3961752778680257230">
+    Sports Cars
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_377" desc="Taxonomy Member. Meaning: [consumer vehicles with larger cargo and passenger capacities than regular cars; these vehicles span many segments, from family minivans, to heavy duty pickup trucks, to SUVs, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5689947657930380559">
+    Trucks, Vans &amp; SUVs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_378" desc="Taxonomy Member. Meaning: [After-market parts that alter the performance of a passenger vehicle, usually improving or enhancing its appearance; different than &quot;stock&quot; parts that would be one-to-one replacements of the parts originally on the car.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3254774693241811093">
+    High Performance &amp; Aftermarket Auto Parts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_379" desc="Taxonomy Member. Meaning: [vehicle wheels and tires] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1537468052207777236">
+    Vehicle Wheels &amp; Tires
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_380" desc="Taxonomy Member. Meaning: [Beauty salons, tanning salons, nail salons, spas, beauty resorts, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2599923065924451726">
+    Beauty Services &amp; Spas
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_381" desc="Taxonomy Member. Meaning: [Manicure &amp; Pedicure services] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6598357915903500532">
+    Manicures &amp; Pedicures
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_382" desc="Taxonomy Member. Meaning: [training and resources for beauty professionals; includes cosmetology, beauty schools, barber schools, esthetician schools, etc., as well as related equipment and other professional resources] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6159187064997038172">
+    Cosmetology &amp; Beauty Professionals
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_383" desc="Taxonomy Member. Meaning: [soap, personal hygiene products, toiletries, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/9089258902053851127">
+    Hygiene &amp; Toiletries
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_384" desc="Taxonomy Member. Meaning: [Feminine hygiene products (also called menstrual products) are personal care products used by women to help with menstrual period and related fluids; includes menstrual pads, cups, tampons, pantiliners, etc. (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1850019532870493035">
+    Feminine Hygiene Products
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_385" desc="Taxonomy Member. Meaning: [products for personal body, nail, and skin care] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8210782098897035516">
+    Skin &amp; Nail Care
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_386" desc="Taxonomy Member. Meaning: [Cleansers, moisturizers, treatment and serums, exfoliators and masks, toner, eye care and lip care.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3855660657259694176">
+    Face Care Products
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_387" desc="Taxonomy Member. Meaning: [sunscreens and tanning products such as self tanners and bronzer lotions; after-sun products; does not include tanning services such as tanning beds] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8219786700041071955">
+    Sun Care &amp; Tanning Products
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_388" desc="Taxonomy Member. Meaning: [products and procedures designed for the removal of body hair] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1085107972942315303">
+    Unwanted Body &amp; Facial Hair Removal
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_389" desc="Taxonomy Member. Meaning: [equipment and gear used in weight training and fitness workouts, including information such as equipment and product reviews and comparisons] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1151003548125042951">
+    Fitness Equipment &amp; Accessories
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_390" desc="Taxonomy Member. Meaning: [Fitness and activity trackers, heart rate monitors, pedometers, GPS units and wearable fitness technology products such as fitbit and jawbone.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8776808475357551998">
+    Fitness Technology Products
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_391" desc="Taxonomy Member. Meaning: [exercise programs, classes, and training to promote physical fitness, typically conducted by fitness professionals such as personal trainers and strength and conditioning coaches] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/441710941938923418">
+    Fitness Instruction &amp; Personal Training
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_392" desc="Taxonomy Member. Meaning: [health clubs (also known as fitness clubs, fitness centers, and commonly referred to as gyms) are places which house exercise equipment for the purpose of physical exercise (Source: Wikipedia); services providing access to workout rooms, fitness centers, gyms, swimming pools, and similar venues for aerobic and bodybuilding activities] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1507621951283794104">
+    Gyms &amp; Health Clubs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_393" desc="Taxonomy Member. Meaning: [High-intensity interval training (HIIT), also called high-intensity intermittent exercise (HIIE) or sprint interval training (SIT), is a form of interval training, an exercise strategy alternating short periods of intense anaerobic exercise with less-intense recovery periods. (source: Wikipedia) Includes crossfit.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/9153004686666501701">
+    High Intensity Interval Training
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_394" desc="Taxonomy Member. Meaning: [yoga and pilates training, practice and resources] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7635292055738157164">
+    Yoga &amp; Pilates
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_395" desc="Taxonomy Member. Meaning: [Products used for routine hair cleaning and conditioning, intended to promote hair cleanliness and hair health, rather than a specific hair style.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7906200772285775135">
+    Shampoos &amp; Conditioners
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_396" desc="Taxonomy Member. Meaning: [An audiobook is a recording of a book being read. (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1089432301531415205">
+    Audiobooks
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_397" desc="Taxonomy Member. Meaning: [online and offline retailers of books and printed matter] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1062085601996392523">
+    Book Retailers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_398" desc="Taxonomy Member. Meaning: [original fiction based on characters and situations from television, books, movies, and celebrity lives; such fiction is usually written by fans and amateurs; an example might be Star Trek fan-fiction in which Captain Kirk and Mr. Spock are portrayed as lovers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1403965505965751277">
+    Fan Fiction
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_399" desc="Taxonomy Member. Meaning: [works broadly recognized as falling into a traditional canon of &quot;great works&quot; or the body of &quot;Literature&quot; (capital-L); though it's somewhat controversial t define what a literary classic is, these are typically famous books in the public domain, prizewinners, or books and authors taught in colleges and universities] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8196702018179983441">
+    Literary Classics
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_400" desc="Taxonomy Member. Meaning: [print publications in a magazine or journal format: Time, Newsweek, US News &amp; World Report, etc; also, the online versions of major print magazines and journals] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1629783415559007213">
+    Magazines
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_401" desc="Taxonomy Member. Meaning: [resources and information about the art, craft and/or business of writing; includes writing exercises, events, market listings, workshops, organizations, chat, publications, webrings, style guides and software; also, information for fiction and non-fiction writers as well as young writers, songwriters, screenwriters and poets; material about freelancing and small-press and self-publishing
+
+(Source: ODP)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7557850640491991023">
+    Writers Resources
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_402" desc="Taxonomy Member. Meaning: [construction materials and supplies: mortars, roofing, electrical, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8025837681035038433">
+    Building Materials &amp; Supplies
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_403" desc="Taxonomy Member. Meaning: [Business or corporate finance refers to the area of finance that deals with the financing strategies adopted by corporations to ensure sustainability and growth. It includes such activities as capital investment, capital management, current assets and liabilities, cash flow and inventory management (source: adapted from Wikipedia).] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2070718763468069052">
+    Business Finance
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_404" desc="Taxonomy Member. Meaning: [services to businesses and business managers, including office, facilities and printing services; B2B service providers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4837003284076185426">
+    Business Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_405" desc="Taxonomy Member. Meaning: [Corporate events are private events held by corporations or businesses for their staff, clients or stakeholders. These events can be for large audiences such as conventions and conferences, or smaller events such as retreats, holiday parties or even private concerts. (Source: WIkipedia.) Includes corporate event planning and production products and services.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5313080650218248451">
+    Corporate Events
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_406" desc="Taxonomy Member. Meaning: [Corporate access control, security, fire prevention, etc. for private enterprises and corporate entities. This category is not about public fire fighting and security services.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3053737472973650374">
+    Fire &amp; Security Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_407" desc="Taxonomy Member. Meaning: [Financial services that allow businesses to process transaction payments, money transfers, and check and credit card handling.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3291136821902838664">
+    Merchant Services &amp; Payment Systems
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_408" desc="Taxonomy Member. Meaning: [Office supplies are consumables and equipment regularly used in offices by businesses and other organizations, by individuals engaged in written communications, recordkeeping or bookkeeping, janitorial and cleaning, and for storage of supplies or data. The range of items classified as office supplies varies, and typically includes small, expendable, daily use items, consumable products, small machines, higher cost equipment such as computers, as well as office furniture. (Source: Wikipedia.) Includes office supplies producers and retailers.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5557754335379449643">
+    Office Supplies
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_409" desc="Taxonomy Member. Meaning: [office furniture (filing cabinets, desks, chairs, etc.); office furniture producers and retailers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8609267617302149985">
+    Office Furniture
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_410" desc="Taxonomy Member. Meaning: [business and commercial signage, including signs, flags, banners, electrical and LED signs, vinyl graphics and lettering, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6155502775319320704">
+    Signage
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_411" desc="Taxonomy Member. Meaning: [commercial and residential building contractors and consultants; groups or individuals that contract with another organization or individual (the owner) for the construction, renovation or demolition of a building, road or other structure (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2190429438161436168">
+    Construction Consulting &amp; Contracting
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_412" desc="Taxonomy Member. Meaning: [document duplication and printing services for business, office and industry] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/577769564959255532">
+    Document &amp; Printing Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_413" desc="Taxonomy Member. Meaning: [the process of budgeting for and planning an event (e.g. a festival, ceremony, party etc.); services that do event planning and production, to include conventions and trade shows as well as corporate and private events] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6208960066319263842">
+    Event Planning
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_414" desc="Taxonomy Member. Meaning: [the food service industry; businesses that deal with the preparation and service of food] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3720970873784500032">
+    Food Service
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_415" desc="Taxonomy Member. Meaning: [industrial equipment, materials and supplies used in manufacturing or in large-scale industry operations] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4902070383838507716">
+    Industrial Materials &amp; Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_416" desc="Taxonomy Member. Meaning: [protective clothing, helmets, goggles, or other garments or equipment designed to protect the wearer's body from workplace injuries and illnesses (source:Wikipedia)
+] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3434628571852593524">
+    Work Safety Protective Gear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_417" desc="Taxonomy Member. Meaning: [moving services, residential and corporate relocation, truck rentals, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/9141741734760653813">
+    Moving &amp; Relocation
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_418" desc="Taxonomy Member. Meaning: [payroll management resources and services] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2825792501987345514">
+    Payroll Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_419" desc="Taxonomy Member. Meaning: [resources and services for employee recruiting and staffing] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3073165294457765296">
+    Recruitment &amp; Staffing
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_420" desc="Taxonomy Member. Meaning: [computer hardware refers to the physical parts and components of a computer system, including peripherals] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4556441627801255412">
+    Computer Hardware
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_421" desc="Taxonomy Member. Meaning: [computer hardware components are physical components of the computer that are typically housed by the computer case; includes motherboards, integrated circuits, processors, RAM, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5136966338157403223">
+    Computer Components
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_422" desc="Taxonomy Member. Meaning: [computer data storage refers to computer components and recording media used to store digital data] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2581157070530388988">
+    Computer Drives &amp; Storage
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_423" desc="Taxonomy Member. Meaning: [the protection of computing system resources and data from unauthorized use or access, in stand alone or networked environment; actions, devices, procedures and techniques to reduce threats, vulnerabilities and attacks; authentication systems, biometrics, security measures, security by design, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8998504156505069307">
+    Computer Security
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_424" desc="Taxonomy Member. Meaning: [consumer electronics equipment to play, amplify, or listen to music and sound] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8294638672017086386">
+    Audio Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_425" desc="Taxonomy Member. Meaning: [headphones are a pair of small loudspeakers, or less commonly a single speaker, with a way of holding them close to a user\'s ears and a means of connecting them to a signal source such as an audio amplifier, radio, CD player or portable media player; they are also known as stereophones or headsets; also includes the in-ear version, known as earphones or earbuds (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5460717589341865604">
+    Headphones
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_426" desc="Taxonomy Member. Meaning: [speakers for audio and video systems] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1585672496321703270">
+    Speakers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_427" desc="Taxonomy Member. Meaning: [home stereo equipment, including receivers, amplifiers, phonographs, CD players, speakers, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3757069145317353553">
+    Stereo Systems &amp; Components
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_428" desc="Taxonomy Member. Meaning: [camera, photo, and optical equipment and related accessories, to include still cameras, video cameras, camcorders, photo lenses, binoculars, telescopes, rangefinders, etc.; equipment that involves viewing and capturing images, or enlarging images, typically through a photographic lens] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4804774906251991820">
+    Camera &amp; Photo Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_429" desc="Taxonomy Member. Meaning: [audio equipment used in cars and other road vehicles] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8327540931312588117">
+    Car Audio
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_430" desc="Taxonomy Member. Meaning: [portable (also known as &quot;mobile&quot; or &quot;handheld&quot;) electronic devices; gadgets, gizmos and &quot;personal electronics&quot;] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7730822001625234854">
+    Gadgets &amp; Portable Electronics
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_431" desc="Taxonomy Member. Meaning: [video game consoles and electronic gaming equipment] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5505503187606413417">
+    Game Systems &amp; Consoles
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_432" desc="Taxonomy Member. Meaning: [lightweight, portable electronic machines for playing video games (source: Wikipedia); popular examples include Nintendo 3DS, PSP Go, and Gameboy devices] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7033222086143722050">
+    Handheld Game Consoles
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_433" desc="Taxonomy Member. Meaning: [all kinds of televisions, includes related accessories] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/268424474847354984">
+    Televisions
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_434" desc="Taxonomy Member. Meaning: [electronic and electrical devices and components; includes suppliers, information, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4219549982057897712">
+    Electronics &amp; Electrical
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_435" desc="Taxonomy Member. Meaning: [A power supply is an electronic device that supplies electric energy to an electrical component or portion of a circuit that consumes electric power. Includes AC and DC power supplies, power adapters, power converters/inverters, batteries, and chargers.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5811328909301744343">
+    Power Supplies
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_436" desc="Taxonomy Member. Meaning: [business computing and IT solutions; technologies used to operate a business and integrate its resources, staff and clientele; general term used to describe networks and other computing needs implemented throughout a large, often widely dispersed corporation] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2779791224217090575">
+    Enterprise Technology
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_437" desc="Taxonomy Member. Meaning: [Network monitoring is the use of a system that constantly monitors a computer network and notifies the network administrator in case of failures or outages. It is part of network management. (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6614722071639292425">
+    Network Monitoring &amp; Management
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_438" desc="Taxonomy Member. Meaning: [Hardware products and solutions for computer data communications. Networking devices may include gateways, routers, modems, wireless access points, networking cables, switches, hubs, and repeaters, proxy servers, firewalls, network address translators and other related hardware (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2915877273615614835">
+    Networking Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_439" desc="Taxonomy Member. Meaning: [productivity software (sometimes called personal productivity software or office productivity software) is application software dedicated to producing information, such as documents, presentations, worksheets, databases, charts, graphs, etc (source: Wikipedia); software suites like Microsoft Office, LibreOffice, iWork etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1919687866164320963">
+    Business &amp; Productivity Software
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_440" desc="Taxonomy Member. Meaning: [software for accounting and finance; includes tax software, trading platforms, and back-office accounting programs] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/881638380712204593">
+    Accounting &amp; Financial Software
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_441" desc="Taxonomy Member. Meaning: [business software, systems and platforms intended to allow multiple participants to communicate (via video, audio, text and/or shared documentation) and work collaboratively on shared material; sometimes also referred to as groupware] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6535771323611680696">
+    Collaboration &amp; Conferencing Software
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_442" desc="Taxonomy Member. Meaning: [Software that provides users the ability to create, edit, manage and manipulate various kinds of graphics and multimedia, including photo, video, audio and text.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2633030582331538802">
+    Multimedia Software
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_443" desc="Taxonomy Member. Meaning: [software (including utilities and plugins) for editing and processing images and video; also photo, video and camera applications for mobile phones] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/959995021436237914">
+    Photo &amp; Video Software
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_444" desc="Taxonomy Member. Meaning: [banking services and institutions, including online banking, credit unions, electronic cash and checking services, automatic teller machines, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3652884139638966946">
+    Banking
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_445" desc="Taxonomy Member. Meaning: [debit card, check cards, checking accounts and other checking services; services related to transactional accounts, which are deposit accounts held at a bank or other financial institution, for the purpose of securely and quickly providing frequent access to funds on demand, through a variety of different channels; transactional accounts are meant neither for the purpose of earning interest nor for the purpose of savings, but for convenience of the business or personal client; hence they tend not to bear interest (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7807702108592377102">
+    Debit &amp; Checking Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_446" desc="Taxonomy Member. Meaning: [accounts maintained by retail financial institutions that pay interest but cannot be used directly as money (for example, by writing a check)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4346421151827007553">
+    Savings Accounts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_447" desc="Taxonomy Member. Meaning: [loans, financing, and other forms of lending, credit information and counseling (chiefly for individual or family consumers)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8382051678973758992">
+    Credit &amp; Lending
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_448" desc="Taxonomy Member. Meaning: [credit, financing or other financial products that allow someone to purchase a an automotive vehicle, including cars and trucks; auto financing and refinancing, auto loans, etc;] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4726776096484584794">
+    Auto Financing
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_449" desc="Taxonomy Member. Meaning: [credit history, credit scores and ratings; services and bureaus that monitor consumer credit history and issue scores and ratings; services that monitor credit reports in order to protect consumer credit scores, in the face of problems such as identity theft] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1652733782109834526">
+    Credit Reporting &amp; Monitoring
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_450" desc="Taxonomy Member. Meaning: [food items that are typically available at a grocer or supermarket] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7594226152002546383">
+    Food
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_451" desc="Taxonomy Member. Meaning: [breads, cookies, pies, pastry and other baked goods] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6986904597879939918">
+    Baked Goods
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_452" desc="Taxonomy Member. Meaning: [Food typically consumed for breakfast; in the US, typical examples include breakfast cereals, pancakes, crepes, waffles, porridge, etc., but breakfast foods can vary widely per geographic region.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2436086325903879874">
+    Breakfast Foods
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_453" desc="Taxonomy Member. Meaning: [candy, sweets and confections; includes chocolate, candy bars, gums and mints] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1345830227678769920">
+    Candy &amp; Sweets
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_454" desc="Taxonomy Member. Meaning: [condiments, dressings, garnishes, topping, salsa and sauces that accompany or complement a main dish for flavor or seasoning] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4133836461669343514">
+    Condiments &amp; Dressings
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_455" desc="Taxonomy Member. Meaning: [dairy products, and eggs; dairy products are generally defined as food produced from the milk of mammals, including milk, butter, cheese, yogurt, and other milk by-products; eggs are added here as another farm animal by-product] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3556392777064271880">
+    Dairy &amp; Eggs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_456" desc="Taxonomy Member. Meaning: [gourmet foods and delicacies; examples include truffles, foie gras, caviar, escargot, exotic meats and pates, etc; stores and vendors of such foods] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5067150739565057425">
+    Gourmet &amp; Specialty Foods
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_457" desc="Taxonomy Member. Meaning: [meat and seafood used in cooking; meat and seafood dishes] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2300344168158455119">
+    Meat &amp; Seafood
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_458" desc="Taxonomy Member. Meaning: [any form of marine life regarded as food by humans; seafoods include fish, molluscs (e.g. octopus and shellfish), crustaceans (e.g. shrimp and lobster), echinoderms (e.g. sea cucumber and sea urchins), and edible sea plants (e.g. seaweeds and microalgae) (source: WIkipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2575120823128215433">
+    Fish &amp; Seafood
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_459" desc="Taxonomy Member. Meaning: [terms assumed to imply foods that are minimally processed and do not contain manufactured ingredients; &quot;natural foods&quot; and &quot;all natural foods&quot; are widely used terms in food labeling and marketing with a variety of definitions, some of which are vague; but the lack of standards in some jurisdictions means that the term assures nothing; the term &quot;organic&quot; has similar implications and has an established legal definition in many countries and an international standard, where in some places, the term &quot;natural&quot; is defined and enforced (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3684769871027341530">
+    Organic &amp; Natural Foods
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_460" desc="Taxonomy Member. Meaning: [Services that deliver grocery items and recipe ingredients to homes, businesses or other locations; includes grocery store, supermarket, food market, and local farmer &amp; producer operated delivery services, as well as independent services that contract with them. Examples include AmazonFresh, Instacart, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5276041523153673206">
+    Grocery Delivery Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_461" desc="Taxonomy Member. Meaning: [Services that deliver restaurant menu items to homes, businesses or other locations; includes restaurant operated delivery services, as well as independent services that contract with restaurants. Examples include Grubhub, Uber Eats, Deliveroo, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2904286753196378598">
+    Restaurant Delivery Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_462" desc="Taxonomy Member. Meaning: [restaurants and eateries and related content] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6314789861891966663">
+    Restaurants
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_463" desc="Taxonomy Member. Meaning: [fast food restaurants, restaurant chains and franchises; cheap food prepared quickly and typically to-go, exemplified by burger joints, chicken shacks, hot dog stands, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3727432317933131881">
+    Fast Food
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_464" desc="Taxonomy Member. Meaning: [pizza restaurants, pizza chains, pizza delivery, and pizza as cuisine] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2027243244330275830">
+    Pizzerias
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_465" desc="Taxonomy Member. Meaning: [Tabletop games involving counters or pieces moved or placed on a pre-marked surface (aka &quot;board&quot;) according to a set of rules. Examples include Monopoly, The Settlers of Catan, Go, and Scrabble.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4051545728120873460">
+    Board Games
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_466" desc="Taxonomy Member. Meaning: [Games where players race or drive a vehicle in an arcade style. This can involve racing against opponents or a clock, avoiding obstacles, performing vehicular stunts, driving aimlessly, or any vehicular activity which uses non-realistic gameplay.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/575348578743278813">
+    Driving &amp; Racing Games
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_467" desc="Taxonomy Member. Meaning: [Games where controlling a character and shooting enemies and other targets with projectile weapons is the primary element of gameplay. Examples include Halo, Doom, Gears of War, Rainbow Six, and Time Crisis.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6468593343283925726">
+    Shooter Games
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_468" desc="Taxonomy Member. Meaning: [family-friendly games and activities oriented toward a parent-youth demographic, whether online or offline] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6217026387247884367">
+    Family-Oriented Games &amp; Activities
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_469" desc="Taxonomy Member. Meaning: [materials and supplies for artmaking and craftmaking; stores that sell art materials and crafting supplies; the substances, raw ingredients, or tools that are utilized by an artist to create a work of art or craft a handmade good] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6456975727224908780">
+    Art &amp; Craft Supplies
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_470" desc="Taxonomy Member. Meaning: [boating as a recreational and leisure pastime as well as an athletic sport] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8167511671107048292">
+    Boating
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_471" desc="Taxonomy Member. Meaning: [holidays, holy days, seasonal festivals, recurring annual events and festive occasions] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7645990229529051001">
+    Holidays &amp; Seasonal Events
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_472" desc="Taxonomy Member. Meaning: [long distance outdoors walks and excursions; spending prolonged periods in outdoors settings, typically in a tent or recreational vehicle, with the purpose of getting away from civilization and enjoying nature] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8783863337686602055">
+    Hiking &amp; Camping
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_473" desc="Taxonomy Member. Meaning: [furnishings, accessories and other products for the bedroom and bathroom] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/650970688246772388">
+    Bed &amp; Bath
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_474" desc="Taxonomy Member. Meaning: [products, furniture and design accessories for bathrooms] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4459993082624871747">
+    Bathroom
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_475" desc="Taxonomy Member. Meaning: [products, furniture and design accessories for bedrooms] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4362003150420225911">
+    Bedroom
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_476" desc="Taxonomy Member. Meaning: [bedding, sheets, blankets, quilts, comforters, pillows, bed skirts, and other linens for the bedroom] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3330360561377996422">
+    Bedding &amp; Bed Linens
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_477" desc="Taxonomy Member. Meaning: [beds of all kinds, bed frames, headboards, futons, and other furniture used primarily for sleeping] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7277633630905773423">
+    Beds &amp; Headboards
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_478" desc="Taxonomy Member. Meaning: [a mat or pad, usually placed on top of a bed, upon which to sleep or lie (Source: Wikipedia); mattresses, mattress covers and toppers, and related products] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2762932602620935121">
+    Mattresses
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_479" desc="Taxonomy Member. Meaning: [cleaning services for upkeep and beautification of the home] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/983757191953263398">
+    Cleaning Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_480" desc="Taxonomy Member. Meaning: [Vacuums and other floor cleaning appliances such as carpet cleaners, and hard floor cleaners. Includes vacuum and floor cleaning robots. Excludes content about floor cleaning solutions and polishes.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7958848471846356411">
+    Vacuums &amp; Floor Care
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_481" desc="Taxonomy Member. Meaning: [appliances and systems for home or office water treatment, including filters, distillers and purifiers; this category is intended for products used by individuals instead of industrial or public water treatment systems and methodologies] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4736108525871638881">
+    Water Filters &amp; Purifiers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_482" desc="Taxonomy Member. Meaning: [home furniture and accessories] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7538506586650052101">
+    Home Furnishings
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_483" desc="Taxonomy Member. Meaning: [content related to counters (or countertops) for the home; chiefly kitchen and bathroom countertops and associated elements, like backsplashes and laminate] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7053755498090057564">
+    Countertops
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_484" desc="Taxonomy Member. Meaning: [curtains, drapes, blinds, windowshades and other window treatments, i.e. interior decorating elements for windows or window frames] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8247958252356674501">
+    Curtains &amp; Window Treatments
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_485" desc="Taxonomy Member. Meaning: [furnishings for the dining room or kitchen, to include dining room tables and chairs, kitchen islands and carts, sideboards and hutches, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5867778456783362897">
+    Kitchen &amp; Dining Furniture
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_486" desc="Taxonomy Member. Meaning: [lamps and other lighting sources for the home or office, to include shades, fixtures, stands and associated lighting equipment] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3142676708338313970">
+    Lamps &amp; Lighting
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_487" desc="Taxonomy Member. Meaning: [content related to home furnishings for the living room, den or other central living spaces] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5221829886749447422">
+    Living Room Furniture
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_488" desc="Taxonomy Member. Meaning: [home furniture for seating, including chairs, couches, sofas, settles, loveseats, recliners, stools, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/623384150220968195">
+    Sofas &amp; Armchairs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_489" desc="Taxonomy Member. Meaning: [Furniture for the yard, patio, deck and other outdoor environs around a residence; to include patio tables and chairs, picnic tables and benches, patio umbrellas and shades, patio swings and hammocks, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8473209799758644177">
+    Outdoor Furniture
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_490" desc="Taxonomy Member. Meaning: [rugs, carpets and other soft floor coverings, usually made from textiles or woven materials] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4872615842157256230">
+    Rugs &amp; Carpets
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_491" desc="Taxonomy Member. Meaning: [tools and equipment for home construction and home improvement tasks, e.g. drills, heat guns, planers, sanders] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1217886872816114965">
+    Construction &amp; Power Tools
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_492" desc="Taxonomy Member. Meaning: [doors, windows, frames and related hardware; home improvement and repair related to door, windows, frames and related hardware] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8950741314369013484">
+    Doors &amp; Windows
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_493" desc="Taxonomy Member. Meaning: [all types of flooring (laminate, hardwood, linoleum, concrete, tiles, etc.); varnishes and finishes; flooring installation and repair] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/322409260117036672">
+    Flooring
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_494" desc="Taxonomy Member. Meaning: [exterior and interior house painting, varnishing and finishing; wall treatments and finishes; related coatings and varnishes] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3673144053434472030">
+    House Painting &amp; Finishing
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_495" desc="Taxonomy Member. Meaning: [locks, and services related to making or repairing locks; inclusive of key making and copying] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8948351245704794325">
+    Locks &amp; Locksmiths
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_496" desc="Taxonomy Member. Meaning: [the skilled trade of working with pipes, tubing and plumbing fixtures for domestic water systems and the drainage of waste; professional plumbing services, do-it-yourself pipe-fitting and plumbing, drain and bathroom repair work] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6549681168744043801">
+    Plumbing
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_497" desc="Taxonomy Member. Meaning: [roofs and roofing planning, installation, replacement, maintenance, and repair; roofing materials such as roof pitch, flat roofs, green roofs, flashing, shingles, roof leaks, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/804651300565361386">
+    Roofing
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_498" desc="Taxonomy Member. Meaning: [home structures and products for organization and storage of personal items and consumer goods; includes closets, organizers, shelving, cabinets, cases, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1592352935986117189">
+    Home Storage &amp; Shelving
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_499" desc="Taxonomy Member. Meaning: [content related to cabinetry for the home, including kitchen cabinets, bath cabinets, wall cabinets and other cabinet sets] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4838298827007110089">
+    Cabinetry
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_500" desc="Taxonomy Member. Meaning: [Home and garden swimming pools, spas, saunas and related equipment, products and services; does not include &quot;kiddie pools&quot;. Excludes public swimming pools or spas and thermal establishments. ] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8182213423855067893">
+    Home Swimming Pools, Saunas &amp; Spas
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_501" desc="Taxonomy Member. Meaning: [This category includes multi-purpose household batteries, such as AAA, AA, C, D, etc. and also includes chargers that are used for re-charging multi-purpose household batteries. It includes both rechargeable batteries and disposable batteries.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7905006396974640190">
+    Household Batteries
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_502" desc="Taxonomy Member. Meaning: [All sorts of cleaning products for the home.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1406002288489710482">
+    Household Cleaning Supplies
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_503" desc="Taxonomy Member. Meaning: [Heating, ventilation and air conditioning (HVAC) refers to technology that provides indoor and vehicular environmental comfort (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5694463003227759246">
+    HVAC &amp; Climate Control
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_504" desc="Taxonomy Member. Meaning: [Home air conditioners, both those integrated into the buildings and those that are portable or in window.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7811796271091142113">
+    Air Conditioners
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_505" desc="Taxonomy Member. Meaning: [fireplaces and accessories; wood, gas and pellet stoves for home heating; electric fireplaces, etc. excludes cooking stoves.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6146584280119640608">
+    Fireplaces &amp; Stoves
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_506" desc="Taxonomy Member. Meaning: [household apparatus with rotating blades that creates a current of air for cooling or ventilation] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2534275500785023679">
+    Household Fans
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_507" desc="Taxonomy Member. Meaning: [furnishings, appliances, accessories and other products for the kitchen and dining room] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3201255208604817244">
+    Kitchen &amp; Dining
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_508" desc="Taxonomy Member. Meaning: [kitchen utensils, glassware, cutlery, pots, pans, plates, etc; manufacturers and distributors of cookware, diningware, and silverware] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5855221214790213200">
+    Cookware &amp; Diningware
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_509" desc="Taxonomy Member. Meaning: [Pots, pans, or dishes for cooking food; includes bakeware] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5443768481862094337">
+    Cookware
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_510" desc="Taxonomy Member. Meaning: [Dishes, utensils, and glassware used for serving and eating meals at a table.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8651697130084764217">
+    Diningware
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_511" desc="Taxonomy Member. Meaning: [Mechanical appliances used to clean dishes and eating utensils.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6781229293034590928">
+    Dishwashers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_512" desc="Taxonomy Member. Meaning: [Microwave ovens and microwave convection ovens. Excludes toaster ovens.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/9134163988323595423">
+    Microwaves
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_513" desc="Taxonomy Member. Meaning: [Kitchen ranges, cooktops, stoves and ovens. Excludes hot plates, camp stoves, grills, woodstoves, and hot pots. Also excludes hoods.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/395413254874261333">
+    Ranges, Cooktops &amp; Ovens
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_514" desc="Taxonomy Member. Meaning: [Refrigerators and freezers, used to cool food and beverages.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8448291450656047844">
+    Refrigerators &amp; Freezers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_515" desc="Taxonomy Member. Meaning: [kitchen gadgets and appliances of a smaller, generally portable, nature] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5756136300826534537">
+    Small Kitchen Appliances
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_516" desc="Taxonomy Member. Meaning: [Blenders, fruit juicers and drink mixers, including bar blenders and other machines with blades for blending or pureeing food and drink. Includes reviews, rating and buying advice.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2664884290885272432">
+    Blenders &amp; Juicers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_517" desc="Taxonomy Member. Meaning: [All kinds of coffee makers and tea makers, including drip coffee makers, espresso makers, french press coffee makers, etc. Includes coffee maker accessories and replacement parts, including filters and grinders. Excludes coffee beans, coffee recipes, coffee houses &amp; restaurants/cafes, coffee shops. Excludes coffee pots, tea pots and tea kettles.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4914293832281187107">
+    Coffee &amp; Espresso Makers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_518" desc="Taxonomy Member. Meaning: [content related to mixing equipment used in food preparation] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1542294513300378893">
+    Food Mixers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_519" desc="Taxonomy Member. Meaning: [Lawn, patio, and garden resources, equipment, furnishings, and supplies.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3331205404518844714">
+    Patio, Lawn &amp; Garden
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_520" desc="Taxonomy Member. Meaning: [Outdoor barbecues, gas grills and other equipment for cooking outdoors, includes BBQ &amp; grill accessories (e.g., grill carts, grill covers, grill thermometers, grilling planks, etc.)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2729198078928927547">
+    Barbecues &amp; Grills
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_521" desc="Taxonomy Member. Meaning: [Yard and lawn maintenance equipment, supplies, and services (e.g.,mowers, trimmers, blowers, etc.)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7320972583559663776">
+    Yard Maintenance
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_522" desc="Taxonomy Member. Meaning: [mowers for lawn care, including riding mowers and walk-behind lawn mowers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3960398587649554684">
+    Lawn Mowers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_523" desc="Taxonomy Member. Meaning: [resources and products for keeping down the numbers and/or eradicating animals that are invasive or intrusive, like termites and other types of insects, mice, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5772988374675736944">
+    Pest Control
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_524" desc="Taxonomy Member. Meaning: [content related to washing machines and clothes dryers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4083384488830226041">
+    Washers &amp; Dryers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_525" desc="Taxonomy Member. Meaning: [equipment used to facilitate the transmission of communications or data] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6891672151467440779">
+    Communications Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_526" desc="Taxonomy Member. Meaning: [equipment designed specifically for the radio market, both amateur (CB, General Radio Service, Family Radio Service, General Mobile Radio Service) and for the radio broadcast industry] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6330629078450341543">
+    Radio Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_527" desc="Taxonomy Member. Meaning: [accessories for mobile phones and wireless devices; chargers, batteries, memory cards, cables, speakers, headsets, car kits, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/86373834566562897">
+    Mobile &amp; Wireless Accessories
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_528" desc="Taxonomy Member. Meaning: [mobile phones and mobile phone retailers and resellers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4886018310422382988">
+    Mobile Phones
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_529" desc="Taxonomy Member. Meaning: [Services that repair, fix, or modify mobile phones.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7932180855930444145">
+    Mobile Phone Repair &amp; Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_530" desc="Taxonomy Member. Meaning: [An umbrella category that includes telecommunications services and the companies that provide them] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1080046974624809247">
+    Service Providers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_531" desc="Taxonomy Member. Meaning: [companies that provide users access to cable and satellite TV] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8277511896760337207">
+    Cable &amp; Satellite Providers
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_532" desc="Taxonomy Member. Meaning: [Using the internet to transmit voice and video communications. Includes voice chat, video chat, VoIP-based technologies, etc. Popular examples include Skype, Facebook Video Chat, FaceTime, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7579792189001792715">
+    Voice &amp; Video Chat
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_533" desc="Taxonomy Member. Meaning: [online services, free or for-pay, to enable online navigation, searching, communication, commerce, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3994867641435193549">
+    Web Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_534" desc="Taxonomy Member. Meaning: [Also known as online data backup, cloud storage services store digital data on remote services accessed via the internet or cloud. Examples include Google Drive, Microsoft OneDrive, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8275418226417736024">
+    Cloud Storage
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_535" desc="Taxonomy Member. Meaning: [maximizing the number of visitors to a particular website by ensuring that the site appears high on the list of results returned by a search engine; website promotion, search engine placement, advertising, link exchanges, and traffic marketing] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3834802280450878116">
+    Search Engine Optimization &amp; Marketing
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_536" desc="Taxonomy Member. Meaning: [the activity or business of providing storage space and access for websites, or registering a domain name] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6219357360018258252">
+    Web Hosting &amp; Domain Registration
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_537" desc="Taxonomy Member. Meaning: [business schools and training institutes; business and management degrees and educational programs, suchs as MBAs] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5894718071799858737">
+    Business Education
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_538" desc="Taxonomy Member. Meaning: [education in computer-related fields: computer schools, courses, classes, etc.; academic departments of computer science, as well as vocational and extension courses emphasizing computer skills and computer literacy] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6630134059754554669">
+    Computer Education
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_539" desc="Taxonomy Member. Meaning: [medical schools and professional medical training resources] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8017156032186345326">
+    Health Education &amp; Medical Training
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_540" desc="Taxonomy Member. Meaning: [legal training, organizations offering legal training and law degrees] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/368280015157123096">
+    Legal Education
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_541" desc="Taxonomy Member. Meaning: [Online open access courses with unlimited class capacity, which do not count towards a traditional university degree, and do not require enrollment at an educational institution. Open online courses (aka MOOCs) include filmed lectures, readings, and automatically-graded and peer-graded problem sets and quizzes, and user discussion forums. They are typically focused on specific skills, and are aimed at individuals hoping to supplement their education without enrolling as full time or part time students, and without going through a full degree program. (e.g. Coursera, Udemy, edX, Khan Academy)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5942435762755532026">
+    Open Online Courses
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_542" desc="Taxonomy Member. Meaning: [education at the elementary (primary) and secondary levels; issues involving parents, students, teachers, advocates, and administrators related to education of children and teenagers roughly between the ages of 4-18] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3877964710278991621">
+    Primary &amp; Secondary Schooling (K-12)
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_543" desc="Taxonomy Member. Meaning: [Private instructors who teach a specific subject or skill to an individual student or group of students. Such attention ideally allows the student to improve knowledge or skills more rapidly than in a classroom setting. Tutors are often privately hired and paid by the student, the student's family or an agency. (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2805563295806435525">
+    Private Tutoring Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_544" desc="Taxonomy Member. Meaning: [school and classroom equipment, such as desks, chairs, whiteboards, blackboards, chalkboards, etc; student school supplies such as folders, notebooks, lunchboxes, backpacks, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2875372004317126476">
+    School Supplies &amp; Classroom Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_545" desc="Taxonomy Member. Meaning: [study outside one's native country; international schools, educational institutions for expatriates, student exchange and study abroad programs for visiting students from other countries] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4568596345814947254">
+    Study Abroad
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_546" desc="Taxonomy Member. Meaning: [education focused on the visual arts and design; includes art classes and informal arts instruction, as well as accredited art colleges and institutes leading to a degree, such as a Master of Fine Arts] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7991729440066635634"> <!-- nocheck -->
+    Visual Arts &amp; Design Education
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_547" desc="Taxonomy Member. Meaning: [content and resources related to internships; an internship is a system of on-the-job training for white-collar jobs; interns are usually college or university students, but they can also be high school students or postgraduate adults seeking skills for a new career (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8165774424486586164">
+    Internships
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_548" desc="Taxonomy Member. Meaning: [job listings, sites and resources for financial professionals and career opportunities in the field of accountancy, banking, and finance] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3758551221166110265">
+    Accounting &amp; Finance Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_549" desc="Taxonomy Member. Meaning: [job listings, sites and resources for clerical and administrative professionals, including clerks, secretaries, receptionists and office assistants ] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/40931800099970097">
+    Clerical &amp; Administrative Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_550" desc="Taxonomy Member. Meaning: [job listings, sites and resources for teachers and professionals in the educational field] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/886832742702871600">
+    Education Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_551" desc="Taxonomy Member. Meaning: [job listings, sites and resources for executive level and management positions and career opportunities] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1453029198199958328">
+    Executive &amp; Management Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_552" desc="Taxonomy Member. Meaning: [job listings, sites and resources for public sector professionals and career opportunities in government] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6520721443869960242">
+    Government &amp; Public Sector Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_553" desc="Taxonomy Member. Meaning: [job listings, sites and resources for health professionals and career opportunities in the field of medicine] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1837719139250491369">
+    Health &amp; Medical Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_554" desc="Taxonomy Member. Meaning: [job listings, sites and resources for software developers, engineers and IT positions] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5323161447364382963">
+    IT &amp; Technical Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_555" desc="Taxonomy Member. Meaning: [job listings, sites and resources for legal professionals and career opportunities in the field of law] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/963327031230577010">
+    Legal Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_556" desc="Taxonomy Member. Meaning: [job listings, sites and resources in the retail industry; careers in retail sales and management] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1530880472530353339">
+    Retail Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_557" desc="Taxonomy Member. Meaning: [job listings, sites and resources for sales and marketing professionals; career opportunities in sales, marketing, advertising and public relations] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2868995632243308886">
+    Sales &amp; Marketing Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_558" desc="Taxonomy Member. Meaning: [job listings, sites and resources for temporary, fixed-length or contractor positions, including summer and seasonal employment] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/412301735266266810">
+    Temporary &amp; Seasonal Jobs
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_559" desc="Taxonomy Member. Meaning: [summaries or listings of relevant job experience and education, usually for the purpose of obtaining an interview when seeking employment; online resumes, CVs (curriculum vitae) and portfolios; also includes resume writing guides, templates, and samples] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6219303300893045293">
+    Resumes &amp; Portfolios
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_560" desc="Taxonomy Member. Meaning: [the body of laws and jurisprudence that affect the substantive rights between employees and their employers; worker's compensation, discriminatory practices, etc; attorneys who specialize in labor and employment law] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8828352949600653041">
+    Labor &amp; Employment Law
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_561" desc="Taxonomy Member. Meaning: [news content about business and finance topics, stock quotes, market reports, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8630117089793004694">
+    Business News
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_562" desc="Taxonomy Member. Meaning: [philanthropic and charitable work; legally constituted organizations whose objective is to support or engage in activities of public or private interest without any commercial or monetary profit] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1420931065062610591">
+    Charity &amp; Philanthropy
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_563" desc="Taxonomy Member. Meaning: [caring for children; day care centers, child care homes, nannies, au pairs, baby-sitters] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4656947547823829931">
+    Child Care
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_564" desc="Taxonomy Member. Meaning: [the planning, financing, construction, renovation or re-lease of real estate, both residential and commercial; individuals or companies dedicated to property development] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3199330758445939276">
+    Property Development
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_565" desc="Taxonomy Member. Meaning: [real properties for sale or rent, to include housing, commercial listings, and land] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1109079539386386936">
+    Real Estate Listings
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_566" desc="Taxonomy Member. Meaning: [listings and content related to commercial properties for sale or lease; includes office buildings, industrial property, retail stores, warehouses, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2797539359257290765">
+    Commercial Properties
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_567" desc="Taxonomy Member. Meaning: [listings and content related to the rental of apartments, homes, and other residential real estate; services intended to help persons find a roommate or other persons to share housing costs] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4074002171800333756">
+    Residential Rentals
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_568" desc="Taxonomy Member. Meaning: [furnished rental listings, including corporate housing, temporary housing, and sublets; excludes vacation rentals] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5392508103667775572">
+    Furnished Rentals
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_569" desc="Taxonomy Member. Meaning: [listings and content related to the purchase or sale of homes, condos, co-ops, lofts, townhouses, duplexes and other residential real estate] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/10635307797565023">
+    Residential Sales
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_570" desc="Taxonomy Member. Meaning: [services associated with the real estate industry, primarily involving real estate transactions, both rentals and sales; includes real estate agencies and brokerages, property management services, inspections, appraisals, staging services, title &amp; escrow, and other services associated with closing/settlement] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8437063321951370344">
+    Real Estate Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_571" desc="Taxonomy Member. Meaning: [content related to the appraisal of commercial and residential real estate and property inspection] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2673741793311896417">
+    Property Inspections &amp; Appraisals
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_572" desc="Taxonomy Member. Meaning: [General umbrella category for all types of clothing, footwear and accessories, as well as apparel brands and retailers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2945889033488139998">
+    Apparel
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_573" desc="Taxonomy Member. Meaning: [consumer services to clean, maintain, alter or customize apparel] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7953295251041762544">
+    Apparel Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_574" desc="Taxonomy Member. Meaning: [clothing, including footwear, worn for sport or exercise, including retailers that specialize in this apparel] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6619324354819583399">
+    Athletic Apparel
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_575" desc="Taxonomy Member. Meaning: [apparel which emphasizes comfort and personal expression over presentation and uniformity, to include retailers that specialize in this apparel] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/117940112212806523">
+    Casual Apparel
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_576" desc="Taxonomy Member. Meaning: [a t-shirt is a long- or short-sleeved casual top, generally made of cotton; includes famous t-shirt brands and manufacturers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/395331697307271680">
+    T-Shirts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_577" desc="Taxonomy Member. Meaning: [items normally worn with or that are part of clothing outfits to include gloves, handbags, wallets, belts, watches, jewelry, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4540219802783780112">
+    Clothing Accessories
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_578" desc="Taxonomy Member. Meaning: [personal ornaments, such as necklaces, rings, earrings or bracelets, that are typically made from or contain jewels and precious metal; precious or semi-precious stones, especially when cut and polished or engraved] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8083455634932562566">
+    Gems &amp; Jewelry
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_579" desc="Taxonomy Member. Meaning: [a small circular band, typically of precious metal and often set with one or more gemstones, worn around a finger or toe as an ornament] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7095252272386230033">
+    Rings
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_580" desc="Taxonomy Member. Meaning: [content about handbags, purses, clutches, totes, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2318250746182437477">
+    Handbags &amp; Purses
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_581" desc="Taxonomy Member. Meaning: [stockings, socks, and tights] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3408234919479255138">
+    Socks &amp; Hosiery
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_582" desc="Taxonomy Member. Meaning: [watches and watch accessories] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2246970352859693033">
+    Watches
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_583" desc="Taxonomy Member. Meaning: [eyeglasses and sunglasses] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6944039883470228932">
+    Eyewear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_584" desc="Taxonomy Member. Meaning: [a form of protective eyewear designed primarily to prevent bright sunlight and high-energy visible light from damaging or discomforting the eyes (Source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3845207277473740114">
+    Sunglasses
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_585" desc="Taxonomy Member. Meaning: [shoes, boots, sandals and other apparel to be worn on the feet; footwear brands and retailers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5249320752711746024">
+    Footwear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_586" desc="Taxonomy Member. Meaning: [athletic footwear, including running shoes, tennis shoes, gym shoes, basketball shoes and sneakers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/656603357495391803">
+    Athletic Shoes
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_587" desc="Taxonomy Member. Meaning: [a type of shoe that mainly covers the foot and the ankle, and may extend up the leg as far as the knee (and sometimes, the hip) (source: Wikipedia); includes all kinds of boots, such as rain boots, riding boots, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4374280630738301556">
+    Boots
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_588" desc="Taxonomy Member. Meaning: [shoes designed for comfort and casual wear, including sandals, loafers, slip-ons, flip-flops, moccasins, slippers and clogs] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1711528212817617881">
+    Casual Shoes
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_589" desc="Taxonomy Member. Meaning: [clothing suitable for formal social events (weddings, cocktail parties, official events etc.)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4986299321319692606">
+    Formal Wear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_590" desc="Taxonomy Member. Meaning: [any item of apparel which is worn on one's head, such as hats, caps, berets, beanies; it excludes items of jewelry such as tiaras] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6840741551924348148">
+    Headwear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_591" desc="Taxonomy Member. Meaning: [outdoor outerwear such as coats, jackets, parkas, raincoats, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3162357980769211682">
+    Outerwear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_592" desc="Taxonomy Member. Meaning: [Also commonly known as trousers or slacks, pants are outer garments covering each leg separately and usually extending from the waist to the ankle; shorts are short pants that reach only to the thighs or knees.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3511585495488500988">
+    Pants &amp; Shorts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_593" desc="Taxonomy Member. Meaning: [Clothing that covers the upper body, including halter tops, tank tops, polos, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6784711675589253129">
+    Shirts &amp; Tops
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_594" desc="Taxonomy Member. Meaning: [nightwear, nightclothes, pajamas, night robes; apparel worn while sleeping, or for comfort in bed, while resting at home] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7606847684345708426">
+    Sleepwear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_595" desc="Taxonomy Member. Meaning: [a set of outer clothes made of the same fabric and designed to be worn together, typically consisting of a jacket and trousers or a jacket and skirt; also suit separates, such as blazers and sports coats; jackets and tie worn in a business or a semi-formal setting] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2050788086617926941">
+    Suits &amp; Business Attire
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_596" desc="Taxonomy Member. Meaning: [swimsuits, bathing suits or swimming costumes: items of clothing designed to be worn for swimming; major swimwear brands and retailers] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6278316581786881929">
+    Swimwear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_597" desc="Taxonomy Member. Meaning: [Clothes worn under other clothes, often next to the skin such as underpants, undershirts, bras, slips, etc; major underwear brands or retailers.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/180357452724878690">
+    Undergarments
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_598" desc="Taxonomy Member. Meaning: [The distinctive clothing worn by members of the same organization or body while participating in that organization\'s or employer\'s activity. Also heavy-duty clothes for physical or manual work.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7362231325355622382">
+    Uniforms &amp; Workwear
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_599" desc="Taxonomy Member. Meaning: [all kinds of women's dresses -- business dresses, casual dresses, special occasion dresses, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/675427102722118415">
+    Dresses
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_600" desc="Taxonomy Member. Meaning: [all types of women's skirts] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/118107246203029802">
+    Skirts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_601" desc="Taxonomy Member. Meaning: [an umbrella category that encompasses gifts, flowers, greetings and other consumer items given or sent to people on the occasion of a special or seasonal event] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6536397981374786876">
+    Gifts &amp; Special Event Items
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_602" desc="Taxonomy Member. Meaning: [luxury brand items and expensive goods marketed to individuals with disposable income; all goods for which demand increases more than proportionally as income rises (source: Wikipedia)] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4123639976932593314">
+    Luxury Goods
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_603" desc="Taxonomy Member. Meaning: [department stores with a national or international presence; major discount chains, national or international stores and catalog companies offering a variety of merchandise; large merchandisers (like Walmart, Target or Macy's), that have both an online and offline presence] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4358791195997721313">
+    Mass Merchants &amp; Department Stores
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_604" desc="Taxonomy Member. Meaning: [professional photographers and photographic services; professional photo editing and development services; video shooting and editing services, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3360437999381368376">
+    Photo &amp; Video Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_605" desc="Taxonomy Member. Meaning: [Photography and videography services for special occasions, such as weddings, graduations, etc.; also includes photography and videography studios.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4318081487756772206">
+    Event &amp; Studio Photography
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_606" desc="Taxonomy Member. Meaning: [Photo printing services; also includes photo books, photo cards and photo stationery printing services.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2942783020321485281">
+    Photo Printing Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_607" desc="Taxonomy Member. Meaning: [consumer opinion and reviews; content that allows consumers to compare and contrast products and services] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/5564833276061071680">
+    Product Reviews &amp; Price Comparisons
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_608" desc="Taxonomy Member. Meaning: [toys and toy manufacturers, retailers, and resources] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3150432915397101226">
+    Toys
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_609" desc="Taxonomy Member. Meaning: [contact sports and martial arts involving physical combat by striking, grappling, or use of weapons] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/441507587476362021">
+    Combat Sports
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_610" desc="Taxonomy Member. Meaning: [competitive events and races that involve motorized vehicles (cars, trucks, boats, airplanes, and off-road vehicles); also includes non-racing events such as drifting competitions and freestyle motocross] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3257438504790608241">
+    Motor Sports
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_611" desc="Taxonomy Member. Meaning: [sports merchandise, equipment and apparel, including collectibles] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1234830117702992446">
+    Sporting Goods
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_612" desc="Taxonomy Member. Meaning: [Goods and products associated with playing baseball &amp; softball, mostly as recreation. Includes information such as equipment reviews. Does not include baseball as entertainment, such as products &amp; services related to seeing baseball games, etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7181853883784727661">
+    Baseball &amp; Softball Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_613" desc="Taxonomy Member. Meaning: [products and equipment related to playing golf] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/6937371881142441341">
+    Golf Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_614" desc="Taxonomy Member. Meaning: [Goods and products used for roller and ice hockey. Category includes information such as equipment reviews.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4238668514791147346">
+    Hockey Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_615" desc="Taxonomy Member. Meaning: [products and equipment related to skateboarding] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3551355247938895522">
+    Skateboarding Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_616" desc="Taxonomy Member. Meaning: [Equipment and accessories used in the game of soccer. Includes information such as product reviews.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3843240759465304109">
+    Soccer Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_617" desc="Taxonomy Member. Meaning: [products and equipment related to playing squash and racquetball] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/400350331085315057">
+    Squash &amp; Racquetball Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_618" desc="Taxonomy Member. Meaning: [Equipment and products used for swimming and other aquatic sports and in aquatic fitness regimens. Category includes information such as equipment reviews.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/980285403855417391">
+    Water Sports Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_619" desc="Taxonomy Member. Meaning: [Products and accessories for winter sports activities. Includes ski and snowboard goggles, gloves, protective gear, skis and snowboards. Also includes snowshoes and snowshoeing equipment and sleds. Includes information, such as product comparisons and reviews.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/2390228672319431994">
+    Winter Sports Equipment
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_620" desc="Taxonomy Member. Meaning: [competitive sporting activities (amateur, organized or professional) involving large bodies of water] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/7969362778703173634">
+    Water Sports
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_621" desc="Taxonomy Member. Meaning: [sport played in winter conditions on snow or ice, including skiing, snowboarding, ice and speed skating, curling, sledding, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3386973401563839739">
+    Winter Sports
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_622" desc="Taxonomy Member. Meaning: [vacation rentals or exchanges, either directly by the owner or by a property manager, as an alternative form of travel accommodation; includes villas, condos, apartments, homes, etc.; includes services like Airbnb, HomeAway etc.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4491486961531283834">
+    Vacation Rentals &amp; Short-Term Stays
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_623" desc="Taxonomy Member. Meaning: [Includes gym bags, messenger bags, backpacks, bookbags, kitbags, knapsacks, rucksacks, packs, sackpacks, etc] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8677930216842745157">
+    Backpacks &amp; Utility Bags
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_624" desc="Taxonomy Member. Meaning: [Travel that is considered luxury in nature, usually by self-description or by inclusion in lists or description provided by other third-party sources that specialize in identifying luxury generally or luxury travel specifically.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/4758635659657142027">
+    Luxury Travel
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_625" desc="Taxonomy Member. Meaning: [tourist destinations that are focused on hiking, camping or skiing at high elevations or in mountainous environments; often featuring cabins, resorts, chalets or facilities for snow sports] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/8439477302311142698">
+    Mountain &amp; Ski Resorts
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_626" desc="Taxonomy Member. Meaning: [travel agencies, tour operators, travel consolidators and other services that arrange, schedule and facilitate traveling and travel planning] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/392188458461071059">
+    Travel Agencies &amp; Services
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_627" desc="Taxonomy Member. Meaning: [Vacations with a fixed itinerary and a guide present.] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/1538899512188980689">
+    Guided Tours &amp; Escorted Vacations
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_628" desc="Taxonomy Member. Meaning: [tours of local attractions and historical sites, often by bus, shuttle, helicopter, hot air balloon, or foot; sightseeing tour companies, tour operators and tour packages] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/9171748461365666189">
+    Sightseeing Tours
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629" desc="Taxonomy Member. Meaning: [holiday &amp; vacation packages, these typically include transportation &amp; accommodation and sometimes meals; also theme or activity-based travel packages] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3495940381581141578">
+    Vacation Offers
+  </message>
 </grit-part>

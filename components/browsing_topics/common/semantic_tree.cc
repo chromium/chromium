@@ -4,7 +4,10 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -12,39 +15,421 @@ namespace browsing_topics {
 
 namespace {
 
-const uint16_t kChildToParent[] = {
-    0,   1,   1,   1,   1,   1,   1,   7,   1,   1,   1,   1,   12,  12,  12,
-    12,  12,  12,  12,  12,  12,  12,  1,   23,  23,  23,  23,  23,  23,  23,
-    23,  23,  23,  33,  33,  33,  23,  23,  23,  23,  40,  1,   1,   1,   1,
-    45,  45,  45,  48,  45,  45,  45,  1,   53,  53,  53,  0,   57,  57,  57,
-    57,  57,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,
-    62,  76,  62,  57,  57,  57,  57,  57,  83,  57,  0,   86,  86,  88,  88,
-    88,  88,  88,  88,  88,  86,  86,  97,  86,  0,   100, 100, 0,   103, 104,
-    103, 106, 103, 103, 103, 110, 110, 103, 103, 114, 103, 103, 117, 103, 103,
-    103, 103, 103, 103, 103, 0,   126, 126, 126, 129, 129, 129, 129, 126, 126,
-    126, 126, 137, 126, 126, 140, 140, 140, 140, 140, 140, 140, 140, 0,   149,
-    150, 149, 149, 153, 149, 155, 149, 149, 158, 158, 158, 158, 158, 149, 164,
-    164, 164, 164, 164, 149, 149, 0,   172, 173, 173, 175, 176, 173, 172, 0,
-    180, 180, 180, 183, 183, 183, 183, 183, 183, 183, 183, 183, 180, 180, 180,
-    0,   196, 196, 196, 196, 196, 201, 201, 196, 196, 196, 0,   207, 207, 207,
-    207, 207, 207, 207, 0,   215, 215, 215, 215, 215, 215, 215, 215, 215, 215,
-    0,   226, 227, 227, 227, 227, 231, 227, 227, 227, 226, 236, 236, 0,   239,
-    239, 241, 0,   243, 243, 243, 243, 243, 243, 0,   250, 250, 250, 0,   254,
-    255, 255, 255, 258, 258, 258, 254, 0,   263, 263, 265, 265, 265, 265, 265,
-    263, 0,   272, 272, 0,   275, 275, 275, 0,   279, 279, 281, 279, 279, 279,
-    279, 279, 279, 0,   289, 289, 289, 292, 289, 289, 289, 289, 289, 0,   299,
-    299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 312, 299, 299,
-    299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299,
-    299, 0,   332, 332, 332, 332, 332, 332, 332, 332, 332, 332, 332, 332, 344,
-    344, 344, 344, 332,
+constexpr size_t kInitialNumTopics = 349;
+constexpr int kMaxTaxonomyVersion = 2;
+
+const std::vector<std::vector<uint16_t>>& GetChildToParents() {
+  static const base::NoDestructor<std::vector<std::vector<uint16_t>>>
+      kChildToParents(
+          {{},    {1},   {1},   {352}, {1},   {1},   {1},        {7},   {352},
+           {1},   {1},   {1},   {12},  {12},  {12},  {12},       {12},  {12},
+           {12},  {12},  {12},  {12},  {1},   {23},  {23},       {23},  {23},
+           {23},  {23},  {23},  {23},  {23},  {23},  {33},       {33},  {33},
+           {23},  {23},  {23},  {23},  {40},  {1},   {1},        {1},   {1},
+           {45},  {45},  {45},  {48},  {45},  {45},  {45},       {1},   {53},
+           {53},  {53},  {},    {57},  {57},  {57},  {57},       {57},  {62},
+           {62},  {62},  {62},  {62},  {62},  {62},  {62},       {62},  {377},
+           {62},  {62},  {62},  {377}, {76},  {377}, {57},       {57},  {57},
+           {57},  {57},  {83},  {57},  {},    {86},  {86},       {383}, {385},
+           {88},  {88},  {385}, {88},  {388}, {86},  {86},       {97},  {86},
+           {},    {100}, {100}, {},    {103}, {104}, {103},      {106}, {103},
+           {103}, {103}, {110}, {110}, {403}, {103}, {114},      {103}, {103},
+           {117}, {103}, {103}, {103}, {103}, {103}, {103},      {103}, {},
+           {126}, {420}, {126}, {129}, {129}, {129}, {129},      {420}, {420},
+           {126}, {126}, {137}, {126}, {126}, {442}, {140},      {140}, {442},
+           {140}, {140}, {140}, {140}, {},    {149}, {150},      {447}, {149},
+           {153}, {149}, {155}, {447}, {149}, {158}, {158},      {158}, {158},
+           {158}, {149}, {164}, {164}, {164}, {164}, {164},      {447}, {447},
+           {},    {172}, {173}, {173}, {175}, {176}, {173},      {172}, {},
+           {180}, {180}, {180}, {183}, {183}, {183}, {183},      {183}, {183},
+           {183}, {183}, {183}, {180}, {180}, {180}, {},         {196}, {196},
+           {196}, {196}, {196}, {201}, {201}, {196}, {196},      {196}, {},
+           {519}, {207}, {207}, {207}, {207}, {207}, {519},      {},    {215},
+           {530}, {530}, {215}, {215}, {215}, {215}, {215},      {533}, {215},
+           {},    {226}, {227}, {227}, {227}, {227}, {231},      {227}, {227},
+           {227}, {226}, {236}, {236}, {},    {239}, {239},      {241}, {},
+           {243}, {243}, {243}, {243}, {243}, {243}, {},         {250}, {250},
+           {250}, {},    {254}, {255}, {255}, {255}, {258},      {258}, {258},
+           {254}, {},    {263}, {263}, {265}, {265}, {265},      {265}, {265},
+           {263}, {},    {272}, {272}, {},    {275}, {275, 227}, {275}, {},
+           {279}, {279}, {281}, {279}, {279}, {279}, {279},      {279}, {279},
+           {},    {289}, {572}, {289}, {292}, {572}, {601},      {572}, {601},
+           {572}, {},    {299}, {299}, {299}, {299}, {299},      {299}, {299},
+           {299}, {299}, {299}, {299}, {299}, {299}, {312},      {299}, {299},
+           {299}, {299}, {299}, {299}, {299}, {299}, {299},      {299}, {621},
+           {299}, {299}, {620}, {299}, {299}, {299}, {299},      {},    {332},
+           {332}, {332}, {332}, {332}, {332}, {332}, {332},      {332}, {332},
+           {332}, {332}, {344}, {344}, {344}, {344}, {332},      {1},   {1},
+           {1},   {352}, {352}, {352}, {352}, {352}, {12},       {23},  {33},
+           {1},   {361}, {1},   {363}, {363}, {363}, {363},      {53},  {57},
+           {57},  {57},  {57},  {62},  {62},  {67},  {62},       {62},  {81},
+           {81},  {86},  {380}, {86},  {88},  {383}, {88},       {385}, {88},
+           {88},  {97},  {389}, {97},  {97},  {97},  {97},       {99},  {100},
+           {100}, {100}, {100}, {100}, {100}, {103}, {103},      {103}, {404},
+           {404}, {404}, {404}, {408}, {404}, {103}, {103},      {103}, {103},
+           {103}, {415}, {103}, {103}, {103}, {126}, {420},      {420}, {126},
+           {129}, {424}, {424}, {424}, {129}, {129}, {129},      {129}, {431},
+           {129}, {126}, {434}, {126}, {137}, {137}, {140},      {439}, {439},
+           {140}, {442}, {149}, {444}, {444}, {149}, {447},      {447}, {172},
+           {450}, {450}, {450}, {450}, {450}, {450}, {450},      {457}, {450},
+           {172}, {172}, {172}, {462}, {462}, {180}, {183},      {183}, {180},
+           {196}, {196}, {196}, {201}, {207}, {473}, {473},      {475}, {475},
+           {475}, {207}, {210}, {210}, {207}, {482}, {482},      {482}, {482},
+           {482}, {487}, {482}, {482}, {211}, {211}, {211},      {211}, {211},
+           {211}, {211}, {207}, {498}, {207}, {213}, {213},      {207}, {503},
+           {503}, {503}, {207}, {507}, {508}, {508}, {507},      {507}, {507},
+           {507}, {507}, {515}, {515}, {515}, {207}, {519},      {519}, {521},
+           {207}, {207}, {215}, {525}, {215}, {215}, {528},      {215}, {530},
+           {215}, {215}, {533}, {533}, {533}, {227}, {227},      {227}, {227},
+           {227}, {227}, {227}, {227}, {227}, {227}, {226},      {238}, {238},
+           {238}, {238}, {238}, {238}, {238}, {238}, {238},      {238}, {238},
+           {236}, {239}, {243}, {254}, {258}, {272}, {272},      {565}, {565},
+           {567}, {565}, {272}, {570}, {289}, {572}, {572},      {572}, {575},
+           {572}, {577}, {578}, {577}, {577}, {577}, {572},      {583}, {572},
+           {585}, {585}, {585}, {572}, {572}, {572}, {572},      {572}, {572},
+           {572}, {572}, {572}, {572}, {298}, {298}, {289},      {289}, {289},
+           {289}, {604}, {604}, {289}, {289}, {299}, {299},      {299}, {611},
+           {611}, {611}, {611}, {611}, {611}, {611}, {611},      {299}, {299},
+           {340}, {343}, {332}, {332}, {332}, {626}, {626},      {626}});
+  CHECK_EQ(static_cast<size_t>(SemanticTree::kNumTopics),
+           kChildToParents->size());
+  return *kChildToParents;
+}
+// TaxonomyUpdate represents the incremental change from one taxonomy to the
+// next. The structure assumes that a topic won't be added back after being
+// deleted. It can be modified to support that use case by adding a field of
+// IDs that are reintroduced.
+struct TaxonomyUpdate {
+  // The number of topics in the new taxonomy.
+  const size_t taxonomy_size;
+  // The maximum topic ID in the new taxonomy.
+  const size_t max_topic_id;
+  // A map from the new or renamed topic ids to their associated localized name
+  // message ID.
+  const base::flat_map<uint16_t, int> renamed_topics;
+  // The topics that have been deleted since the prior taxonomy version.
+  const base::flat_set<uint16_t> deleted_topics;
 };
 
-constexpr Topic kNullTopic = Topic(0);
+TaxonomyUpdate* GetTaxonomyUpdateForTaxonomy2() {
+  static base::NoDestructor<TaxonomyUpdate> taxonomy_update(
+      {.taxonomy_size = 469,
+       .max_topic_id = 629,
+       .renamed_topics =
+           {{350, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_350},
+            {351, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_351},
+            {352, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_352},
+            {353, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_353},
+            {354, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_354},
+            {355, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_355},
+            {356, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_356},
+            {357, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_357},
+            {358, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_358},
+            {359, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_359},
+            {360, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_360},
+            {361, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_361},
+            {362, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_362},
+            {363, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_363},
+            {364, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_364},
+            {365, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_365},
+            {366, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_366},
+            {367, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_367},
+            {368, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_368},
+            {369, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_369},
+            {370, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_370},
+            {371, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_371},
+            {372, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_372},
+            {373, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_373},
+            {374, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_374},
+            {375, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_375},
+            {376, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_376},
+            {377, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_377},
+            {378, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_378},
+            {379, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_379},
+            {380, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_380},
+            {381, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_381},
+            {382, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_382},
+            {383, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_383},
+            {384, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_384},
+            {385, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_385},
+            {386, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_386},
+            {387, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_387},
+            {388, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_388},
+            {389, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_389},
+            {390, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_390},
+            {391, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_391},
+            {392, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_392},
+            {393, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_393},
+            {394, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_394},
+            {395, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_395},
+            {396, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_396},
+            {397, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_397},
+            {398, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_398},
+            {399, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_399},
+            {400, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_400},
+            {401, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_401},
+            {402, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_402},
+            {403, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_403},
+            {404, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_404},
+            {405, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_405},
+            {406, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_406},
+            {407, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_407},
+            {408, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_408},
+            {409, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_409},
+            {410, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_410},
+            {411, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_411},
+            {412, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_412},
+            {413, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_413},
+            {414, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_414},
+            {415, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_415},
+            {416, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_416},
+            {417, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_417},
+            {418, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_418},
+            {419, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_419},
+            {420, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_420},
+            {421, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_421},
+            {422, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_422},
+            {423, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_423},
+            {424, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_424},
+            {425, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_425},
+            {426, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_426},
+            {427, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_427},
+            {428, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_428},
+            {429, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_429},
+            {430, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_430},
+            {431, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_431},
+            {432, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_432},
+            {433, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_433},
+            {434, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_434},
+            {435, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_435},
+            {436, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_436},
+            {437, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_437},
+            {438, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_438},
+            {439, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_439},
+            {440, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_440},
+            {441, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_441},
+            {442, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_442},
+            {443, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_443},
+            {444, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_444},
+            {445, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_445},
+            {446, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_446},
+            {447, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_447},
+            {448, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_448},
+            {449, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_449},
+            {450, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_450},
+            {451, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_451},
+            {452, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_452},
+            {453, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_453},
+            {454, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_454},
+            {455, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_455},
+            {456, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_456},
+            {457, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_457},
+            {458, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_458},
+            {459, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_459},
+            {460, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_460},
+            {461, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_461},
+            {462, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_462},
+            {463, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_463},
+            {464, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_464},
+            {465, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_465},
+            {466, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_466},
+            {467, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_467},
+            {468, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_468},
+            {469, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_469},
+            {470, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_470},
+            {471, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_471},
+            {472, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_472},
+            {473, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_473},
+            {474, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_474},
+            {475, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_475},
+            {476, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_476},
+            {477, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_477},
+            {478, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_478},
+            {479, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_479},
+            {480, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_480},
+            {481, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_481},
+            {482, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_482},
+            {483, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_483},
+            {484, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_484},
+            {485, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_485},
+            {486, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_486},
+            {487, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_487},
+            {488, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_488},
+            {489, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_489},
+            {490, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_490},
+            {491, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_491},
+            {492, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_492},
+            {493, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_493},
+            {494, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_494},
+            {495, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_495},
+            {496, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_496},
+            {497, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_497},
+            {498, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_498},
+            {499, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_499},
+            {500, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_500},
+            {501, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_501},
+            {502, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_502},
+            {503, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_503},
+            {504, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_504},
+            {505, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_505},
+            {506, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_506},
+            {507, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_507},
+            {508, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_508},
+            {509, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_509},
+            {510, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_510},
+            {511, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_511},
+            {512, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_512},
+            {513, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_513},
+            {514, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_514},
+            {515, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_515},
+            {516, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_516},
+            {517, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_517},
+            {518, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_518},
+            {519, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_519},
+            {520, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_520},
+            {521, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_521},
+            {522, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_522},
+            {523, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_523},
+            {524, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_524},
+            {525, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_525},
+            {526, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_526},
+            {527, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_527},
+            {528, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_528},
+            {529, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_529},
+            {530, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_530},
+            {531, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_531},
+            {532, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_532},
+            {533, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_533},
+            {534, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_534},
+            {535, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_535},
+            {536, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_536},
+            {537, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_537},
+            {538, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_538},
+            {539, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_539},
+            {540, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_540},
+            {541, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_541},
+            {542, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_542},
+            {543, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_543},
+            {544, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_544},
+            {545, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_545},
+            {546, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_546},
+            {547, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_547},
+            {548, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_548},
+            {549, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_549},
+            {550, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_550},
+            {551, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_551},
+            {552, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_552},
+            {553, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_553},
+            {554, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_554},
+            {555, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_555},
+            {556, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_556},
+            {557, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_557},
+            {558, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_558},
+            {559, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_559},
+            {560, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_560},
+            {561, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_561},
+            {562, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_562},
+            {563, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_563},
+            {564, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_564},
+            {565, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_565},
+            {566, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_566},
+            {567, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_567},
+            {568, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_568},
+            {569, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_569},
+            {570, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_570},
+            {571, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_571},
+            {572, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_572},
+            {573, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_573},
+            {574, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_574},
+            {575, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_575},
+            {576, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_576},
+            {577, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_577},
+            {578, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_578},
+            {579, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_579},
+            {580, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_580},
+            {581, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_581},
+            {582, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_582},
+            {583, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_583},
+            {584, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_584},
+            {585, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_585},
+            {586, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_586},
+            {587, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_587},
+            {588, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_588},
+            {589, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_589},
+            {590, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_590},
+            {591, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_591},
+            {592, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_592},
+            {593, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_593},
+            {594, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_594},
+            {595, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_595},
+            {596, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_596},
+            {597, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_597},
+            {598, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_598},
+            {599, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_599},
+            {600, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_600},
+            {601, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_601},
+            {602, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_602},
+            {603, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_603},
+            {604, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_604},
+            {605, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_605},
+            {606, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_606},
+            {607, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_607},
+            {608, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_608},
+            {609, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_609},
+            {610, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_610},
+            {611, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_611},
+            {612, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_612},
+            {613, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_613},
+            {614, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_614},
+            {615, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_615},
+            {616, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_616},
+            {617, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_617},
+            {618, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_618},
+            {619, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_619},
+            {620, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_620},
+            {621, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_621},
+            {622, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_622},
+            {623, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_623},
+            {624, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_624},
+            {625, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_625},
+            {626, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_626},
+            {627, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_627},
+            {628, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_628},
+            {629, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629}},
+       .deleted_topics = {
+           2,   3,   5,   6,   7,   8,   10,  11,  14,  16,  17,  22,  34,  35,
+           37,  38,  39,  40,  41,  42,  43,  44,  45,  49,  54,  55,  58,  61,
+           77,  79,  80,  85,  87,  98,  105, 106, 107, 108, 109, 110, 111, 112,
+           114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 127, 130,
+           133, 136, 138, 139, 142, 143, 145, 146, 147, 148, 155, 156, 165, 166,
+           167, 168, 169, 174, 175, 178, 179, 181, 182, 188, 189, 190, 193, 195,
+           197, 198, 199, 200, 203, 204, 205, 206, 216, 219, 220, 221, 222, 223,
+           225, 228, 232, 235, 240, 241, 244, 246, 248, 251, 252, 255, 256, 257,
+           261, 262, 266, 269, 270, 271, 273, 274, 275, 276, 278, 279, 280, 281,
+           282, 283, 284, 285, 286, 287, 288, 290, 292, 302, 305, 306, 307, 308,
+           311, 312, 313, 314, 316, 318, 319, 320, 326, 329, 330, 331, 333, 339,
+           342, 344, 346, 347, 348, 349}});
+  return taxonomy_update.get();
+}
 
-static_assert(SemanticTree::kNumTopics == std::size(kChildToParent));
+// Each incremental taxonomy update after taxonomy 1.
+const std::vector<TaxonomyUpdate*>& GetTaxonomyUpdates() {
+  static const base::NoDestructor<std::vector<TaxonomyUpdate*>>
+      kTaxonomyUpdates{{GetTaxonomyUpdateForTaxonomy2()}};
+  return *kTaxonomyUpdates;
+}
+
+// Stores pre-computed results from GetTopicsInTaxonomy for each
+// TaxonomyUpdate.
+std::vector<std::vector<Topic>>& GetTopicsForEachTaxonomyUpdate() {
+  static base::NoDestructor<std::vector<std::vector<Topic>>>
+      topics_in_taxonomies(GetTaxonomyUpdates().size());
+  return *topics_in_taxonomies;
+}
+
 static_assert(IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349 -
                   IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 + 1 ==
-              SemanticTree::kNumTopics);
+              kInitialNumTopics);
 
 // These asserts also have a side-effect of preventing unused resource
 // removal from removing them.
@@ -406,20 +791,53 @@ bool IsTopicValid(Topic topic) {
   return i > 0 && i <= static_cast<int>(SemanticTree::kNumTopics);
 }
 
-Topic GetParentTopic(Topic topic) {
-  return Topic(kChildToParent[static_cast<int>(topic) - 1]);
+std::vector<Topic> GetParentTopics(Topic topic) {
+  std::vector<Topic> topics;
+  for (uint16_t parent_id : GetChildToParents()[static_cast<int>(topic) - 1]) {
+    topics.emplace_back(parent_id);
+  }
+  return topics;
 }
 
 bool IsAncestorTopic(Topic src, Topic target) {
-  while (src != kNullTopic) {
-    src = GetParentTopic(src);
-    if (src == target) {
+  std::vector<Topic> parent_topics = GetParentTopics(src);
+  for (Topic topic : parent_topics) {
+    if (topic == target || IsAncestorTopic(topic, target)) {
       return true;
     }
   }
   return false;
 }
 
+// Get the topics that are part of a taxonomy for taxonomy_version. Use
+// this function only for taxonomy_version>1, since the first taxonomy is
+// trivial (1-349).
+const std::vector<Topic>& GetTopicsInTaxonomy(int taxonomy_version) {
+  CHECK_GT(taxonomy_version, 1);
+  CHECK_LE(taxonomy_version, kMaxTaxonomyVersion);
+  if (GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2].empty()) {
+    // Include topics up to the maximum topic id for the `taxonomy_version`,
+    // and then remove the deleted topics.
+    uint16_t max_topic_id =
+        GetTaxonomyUpdates()[taxonomy_version - 2]->max_topic_id;
+    base::flat_set<Topic> topics;
+    for (uint16_t i = 1; i <= max_topic_id; ++i) {
+      topics.emplace(i);
+    }
+    for (int taxonomy_version_i = 2; taxonomy_version_i <= taxonomy_version;
+         ++taxonomy_version_i) {
+      for (uint16_t i :
+           GetTaxonomyUpdates()[taxonomy_version - 2]->deleted_topics) {
+        topics.erase(Topic(i));
+      }
+    }
+    CHECK_EQ(topics.size(),
+             GetTaxonomyUpdates()[taxonomy_version - 2]->taxonomy_size);
+    GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2] =
+        std::vector(topics.begin(), topics.end());
+  }
+  return GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2];
+}
 }  // namespace
 
 SemanticTree::SemanticTree() = default;
@@ -427,13 +845,18 @@ SemanticTree::~SemanticTree() = default;
 
 Topic SemanticTree::GetRandomTopic(int taxonomy_version,
                                    uint64_t random_topic_index_decision) {
-  CHECK_EQ(taxonomy_version, 1);
-  size_t random_topic_index = random_topic_index_decision % kNumTopics;
-  return Topic(base::checked_cast<int>(random_topic_index + 1));
+  CHECK(IsTaxonomySupported(taxonomy_version));
+  if (taxonomy_version == 1) {
+    size_t random_topic_index = random_topic_index_decision % kInitialNumTopics;
+    return Topic(base::checked_cast<int>(random_topic_index + 1));
+  }
+  auto topics = GetTopicsInTaxonomy(taxonomy_version);
+  size_t random_topic_index = random_topic_index_decision % topics.size();
+  return topics[random_topic_index];
 }
 
 bool SemanticTree::IsTaxonomySupported(int taxonomy_version) {
-  return taxonomy_version == 1;
+  return taxonomy_version > 0 && taxonomy_version <= kMaxTaxonomyVersion;
 }
 
 std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
@@ -448,15 +871,25 @@ std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
 }
 
 std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
-  std::vector<Topic> ancestor_topics;
-
-  if (IsTopicValid(topic)) {
-    Topic cur_topic = GetParentTopic(topic);
-    while (cur_topic != kNullTopic) {
-      ancestor_topics.push_back(cur_topic);
-      cur_topic = GetParentTopic(cur_topic);
-    }
+  if (!IsTopicValid(topic)) {
+    return {};
   }
+
+  std::vector<Topic> ancestor_topics = GetParentTopics(topic);
+  size_t unvisited_start_idx = 0;
+
+  while (unvisited_start_idx < ancestor_topics.size()) {
+    for (Topic parent : GetParentTopics(ancestor_topics[unvisited_start_idx])) {
+      ancestor_topics.emplace_back(parent);
+    }
+    unvisited_start_idx++;
+  }
+
+  // Remove duplicate topics; duplicates can occur when a topic has two or more
+  // parents which share part of a lineage.
+  sort(ancestor_topics.begin(), ancestor_topics.end());
+  ancestor_topics.erase(unique(ancestor_topics.begin(), ancestor_topics.end()),
+                        ancestor_topics.end());
   return ancestor_topics;
 }
 
@@ -469,11 +902,26 @@ absl::optional<int> SemanticTree::GetLatestLocalizedNameMessageId(
 absl::optional<int> SemanticTree::GetLocalizedNameMessageId(
     const Topic& topic,
     int taxonomy_version) {
-  if (!IsTopicValid(topic) || taxonomy_version != 1) {
+  if (!IsTopicValid(topic) || !IsTaxonomySupported(taxonomy_version)) {
     return absl::nullopt;
   }
-  return IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 +
-         static_cast<int>(topic) - 1;
+  // Get the most recent name for a topic by iterating through the taxonomy
+  // updates backwards.
+  for (int taxonomy_version_i = taxonomy_version; taxonomy_version_i > 0;
+       --taxonomy_version_i) {
+    if (taxonomy_version_i == 1) {
+      return IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 +
+             static_cast<int>(topic) - 1;
+    }
+    auto renamed_topics_iterator =
+        GetTaxonomyUpdates()[taxonomy_version_i - 2]->renamed_topics.find(
+            static_cast<int>(topic));
+    if (renamed_topics_iterator !=
+        GetTaxonomyUpdates()[taxonomy_version_i - 2]->renamed_topics.end()) {
+      return renamed_topics_iterator->second;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace browsing_topics
