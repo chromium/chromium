@@ -856,5 +856,25 @@ TEST(AttributionStorageDelegateImplTest,
               IsEmpty());
 }
 
+TEST(AttributionStorageDelegateImplTest, GetMaxAttributionsPerSource) {
+  EXPECT_EQ(1, AttributionStorageDelegateImpl().GetMaxAttributionsPerSource(
+                   SourceType::kEvent));
+  EXPECT_EQ(3, AttributionStorageDelegateImpl().GetMaxAttributionsPerSource(
+                   SourceType::kNavigation));
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kConversionMeasurement,
+          {{"max_attributions_per_event_source", "5"}}}},
+        /*disabled_features=*/{});
+
+    EXPECT_EQ(5, AttributionStorageDelegateImpl().GetMaxAttributionsPerSource(
+                     SourceType::kEvent));
+    EXPECT_EQ(3, AttributionStorageDelegateImpl().GetMaxAttributionsPerSource(
+                     SourceType::kNavigation));
+  }
+}
+
 }  // namespace
 }  // namespace content

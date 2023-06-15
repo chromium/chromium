@@ -21,7 +21,12 @@ const base::FeatureParam<int> kMaxReportingOriginsPerSiteParam{
     AttributionConfig::RateLimitConfig::
         kDefaultMaxReportingOriginsPerSourceReportingSite};
 
-}
+const base::FeatureParam<int> kMaxAttributionsPerEventSourceParam{
+    &blink::features::kConversionMeasurement,
+    "max_attributions_per_event_source",
+    AttributionConfig::EventLevelLimit::kDefaultMaxAttributionsPerEventSource};
+
+}  // namespace
 
 bool AttributionConfig::Validate() const {
   if (max_sources_per_origin <= 0) {
@@ -174,7 +179,14 @@ AttributionConfig& AttributionConfig::operator=(const AttributionConfig&) =
     default;
 AttributionConfig& AttributionConfig::operator=(AttributionConfig&&) = default;
 
-AttributionConfig::EventLevelLimit::EventLevelLimit() = default;
+AttributionConfig::EventLevelLimit::EventLevelLimit()
+    : max_attributions_per_event_source(
+          kMaxAttributionsPerEventSourceParam.Get()) {
+  if (max_attributions_per_event_source <= 0) {
+    max_attributions_per_event_source = kDefaultMaxAttributionsPerEventSource;
+  }
+}
+
 AttributionConfig::EventLevelLimit::EventLevelLimit(const EventLevelLimit&) =
     default;
 AttributionConfig::EventLevelLimit::EventLevelLimit(EventLevelLimit&&) =
