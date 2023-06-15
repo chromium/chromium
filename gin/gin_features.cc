@@ -219,6 +219,11 @@ BASE_FEATURE(kJavaScriptCompileHintsMagic,
              "JavaScriptCompileHintsMagic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the iterator helpers proposal.
+BASE_FEATURE(kJavaScriptIteratorHelpers,
+             "kJavaScriptIteratorHelpers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:
