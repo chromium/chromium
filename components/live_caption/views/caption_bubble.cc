@@ -200,7 +200,7 @@ class CaptionBubbleEventObserver : public ui::EventObserver {
     // a context menu is brought up, which might cause the caption bubble to be
     // stuck in the "in" state when some other window is on top of the caption
     // bubble.
-    caption_bubble_->UpdateControlsVisibility(IsMouseInBounds());
+    caption_bubble_->OnMouseEnteredOrExitedWindow(IsMouseInBounds());
   }
 
  private:
@@ -813,6 +813,10 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
                                               bool active) {
   DCHECK_EQ(widget, GetWidget());
 
+  if (!active && mouse_inside_window_) {
+    active = true;
+  }
+
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
     UpdateControlsVisibility(active);
   }
@@ -1049,6 +1053,11 @@ void CaptionBubble::UpdateControlsVisibility(bool show_controls) {
   } else {
     controls_animation_.Hide();
   }
+}
+
+void CaptionBubble::OnMouseEnteredOrExitedWindow(bool entered) {
+  mouse_inside_window_ = entered;
+  UpdateControlsVisibility(mouse_inside_window_);
 }
 
 void CaptionBubble::UpdateBubbleAndTitleVisibility() {

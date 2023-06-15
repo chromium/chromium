@@ -122,6 +122,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 #endif
 
   void UpdateControlsVisibility(bool show_controls);
+  void OnMouseEnteredOrExitedWindow(bool entered);
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -306,6 +307,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   gfx::SlideAnimation controls_animation_;
 
   bool render_active_ = false;
+  bool mouse_inside_window_ = false;
   std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
