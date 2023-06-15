@@ -101,6 +101,8 @@ KeyedService* BrowsingTopicsServiceFactory::BuildServiceInstanceFor(
   // should be incremented any time there is a client code change to how the
   // topics model works that needs to be side-channeled to the server.
   model_metadata.set_version(2);
+  model_metadata.set_taxonomy_version(
+      blink::features::kBrowsingTopicsTaxonomyVersion.Get());
   model_metadata.SerializeToString(any_metadata.mutable_value());
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
