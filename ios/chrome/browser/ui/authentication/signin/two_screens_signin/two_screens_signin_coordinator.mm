@@ -58,7 +58,6 @@ using base::UserMetricsAction;
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _screenProvider = [[SigninSyncScreenProvider alloc] init];
     // This coordinator should not be used in the FRE.
     CHECK_NE(accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
     _accessPoint = accessPoint;
@@ -71,6 +70,7 @@ using base::UserMetricsAction;
 
 - (void)start {
   [super start];
+  _screenProvider = [[SigninSyncScreenProvider alloc] init];
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];

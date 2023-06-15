@@ -13,6 +13,7 @@
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -62,6 +63,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using set_up_list_prefs::SetUpListItemState;
 
 @protocol ContentSuggestionsMediatorDispatcher <BrowserCoordinatorCommands,
                                                 SnackbarCommands>
@@ -337,4 +340,21 @@ TEST_F(ContentSuggestionsMediatorTest, TestSetUpListConsumerCall) {
   set_up_list_prefs::MarkItemComplete(local_state_.Get(),
                                       SetUpListItemType::kAutofill);
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that when the user changes the setting to disable signin, the
+// SetUpList signin item is marked complete.
+TEST_F(ContentSuggestionsMediatorTest, TestOnServiceStatusChanged) {
+  // Verify the initial state.
+  SetUpListItemState item_state = set_up_list_prefs::GetItemState(
+      local_state_.Get(), SetUpListItemType::kSignInSync);
+  EXPECT_EQ(item_state, SetUpListItemState::kNotComplete);
+
+  // Simulate the user disabling signin.
+  chrome_browser_state_.get()->GetPrefs()->SetBoolean(prefs::kSigninAllowed,
+                                                      false);
+  // Verify that the signin item is complete.
+  item_state = set_up_list_prefs::GetItemState(local_state_.Get(),
+                                               SetUpListItemType::kSignInSync);
+  EXPECT_EQ(item_state, SetUpListItemState::kCompleteInList);
 }

@@ -148,7 +148,7 @@ struct ViewConfig {
 #pragma mark - Public methods
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
-  if (sender.state == UIGestureRecognizerStateEnded) {
+  if (sender.state == UIGestureRecognizerStateEnded && !self.complete) {
     [self.tapDelegate didTapSetUpListItemView:self];
   }
 }
