@@ -42,6 +42,7 @@ sync_protocol_sources = [
   "os_preference_specifics.proto",
   "os_priority_preference_specifics.proto",
   "password_sharing_invitation_specifics.proto",
+  "password_sharing_recipients.proto",
   "password_specifics.proto",
   "persisted_entity_data.proto",
   "power_bookmark_specifics.proto",
