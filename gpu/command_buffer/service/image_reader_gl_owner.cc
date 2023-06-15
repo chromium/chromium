@@ -284,7 +284,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
   // just return if error occurs.
   switch (return_code) {
     case AMEDIA_ERROR_INVALID_PARAMETER:
-      LOG(ERROR) << " Image is null";
+      LOG(ERROR) << "AImageReader: Invalid parameter";
       return;
     case AMEDIA_IMGREADER_MAX_IMAGES_ACQUIRED:
       LOG(ERROR)
@@ -300,6 +300,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
       // Method call succeeded.
       break;
     default:
+      LOG(ERROR) << "AImageReader: Unknown error: " << return_code;
       // No other error code should be returned.
       NOTREACHED();
       return;
@@ -309,6 +310,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
   // If there is no new image simply return. At this point previous image will
   // still be bound to the texture.
   if (!image) {
+    LOG(ERROR) << "AImageReader: image is nullptr: " << return_code;
     return;
   }
 
@@ -334,9 +336,12 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
     return nullptr;
 
   AHardwareBuffer* buffer = nullptr;
-  loader_->AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
-  if (!buffer)
+  auto error =
+      loader_->AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
+  if (!buffer) {
+    LOG(ERROR) << "AImage_getHardwareBuffer returned nullptr: " << error;
     return nullptr;
+  }
 
   // TODO(1179206): We suspect that buffer is already freed here and it causes
   // crash later. Trying to crash earlier.
