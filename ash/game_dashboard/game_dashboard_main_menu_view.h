@@ -31,10 +31,16 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   void OnRecordGameTilePressed();
   // Handles taking a screenshot of the game window when pressed.
   void OnScreenshotTilePressed();
+  // Handles when the Screen Size Settings is pressed.
+  void OnScreenSizeSettingsButtonPressed();
 
   // Adds a row of shortcut tiles to the main menu view for users to quickly
   // access common functionality.
   void AddShortcutTilesRow();
+
+  // Adds a row to access a settings page controlling the screen size if the
+  // given game window is an ARC app.
+  void MaybeAddScreenSizeSettingsRow();
 
   const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 };

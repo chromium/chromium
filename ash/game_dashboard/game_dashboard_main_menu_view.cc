@@ -70,6 +70,10 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
 
   AddShortcutTilesRow();
 
+  // TODO(b/273641402): Add in Game Controls row.
+
+  MaybeAddScreenSizeSettingsRow();
+
   SizeToPreferredSize();
 }
 
@@ -86,6 +90,10 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window_);
   GetWidget()->Close();
+}
+
+void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
+  // TODO(b/283988495): Add support when screen size setting is pressed.
 }
 
 void GameDashboardMainMenuView::AddShortcutTilesRow() {
@@ -116,6 +124,19 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       VIEW_ID_GD_SCREENSHOT_TILE, vector_icons::kVideocamIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE)));
+}
+
+void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow() {
+  if (IsArcWindow(game_window_)) {
+    AddChildView(CreateTile(
+        base::BindRepeating(
+            &GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed,
+            base::Unretained(this)),
+        /*is_togglable=*/false, ash::FeatureTile::TileType::kPrimary,
+        VIEW_ID_GD_SCREEN_SIZE_TILE, vector_icons::kSelectWindowIcon,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE)));
+  }
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)
