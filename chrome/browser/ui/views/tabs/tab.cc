@@ -792,7 +792,7 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
         kColorTabAlertAudioPlayingActiveFrameActive}}};
   return color_ids[group][tab_style_views()->GetApparentActiveState() ==
                           TabActive::kActive]
-                  [controller_->ShouldPaintAsActiveFrame()];
+                  [GetWidget()->ShouldPaintAsActive()];
 }
 
 bool Tab::IsActive() const {

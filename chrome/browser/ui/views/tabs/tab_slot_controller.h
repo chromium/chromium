@@ -174,10 +174,6 @@ class TabSlotController {
   // frame.
   virtual bool HasVisibleBackgroundTabShapes() const = 0;
 
-  // Returns whether the tab strip should be painted as if the window frame is
-  // active.
-  virtual bool ShouldPaintAsActiveFrame() const = 0;
-
   // Returns the color of the separator between the tabs.
   virtual SkColor GetTabSeparatorColor() const = 0;
 

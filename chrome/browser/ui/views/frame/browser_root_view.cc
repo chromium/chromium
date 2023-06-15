@@ -370,7 +370,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     DCHECK(widget);
     const SkColor toolbar_top_separator_color =
         widget->GetColorProvider()->GetColor(
-            tabstrip()->ShouldPaintAsActiveFrame()
+            GetWidget()->ShouldPaintAsActive()
                 ? kColorToolbarTopSeparatorFrameActive
                 : kColorToolbarTopSeparatorFrameInactive);
 

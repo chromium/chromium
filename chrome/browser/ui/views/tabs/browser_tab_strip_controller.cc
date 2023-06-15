@@ -571,10 +571,6 @@ bool BrowserTabStripController::EverHasVisibleBackgroundTabShapes() const {
   return GetFrameView()->EverHasVisibleBackgroundTabShapes();
 }
 
-bool BrowserTabStripController::ShouldPaintAsActiveFrame() const {
-  return GetFrameView()->ShouldPaintAsActive();
-}
-
 bool BrowserTabStripController::CanDrawStrokes() const {
   return GetFrameView()->CanDrawStrokes();
 }

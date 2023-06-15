@@ -1674,10 +1674,6 @@ bool TabStrip::HasVisibleBackgroundTabShapes() const {
   return controller_->HasVisibleBackgroundTabShapes();
 }
 
-bool TabStrip::ShouldPaintAsActiveFrame() const {
-  return controller_->ShouldPaintAsActiveFrame();
-}
-
 SkColor TabStrip::GetTabSeparatorColor() const {
   return separator_color_;
 }
@@ -1697,9 +1693,9 @@ SkColor TabStrip::GetTabBackgroundColor(
 
   using State = BrowserFrameActiveState;
   const bool tab_active = active == TabActive::kActive;
-  const bool frame_active =
-      (active_state == State::kActive) ||
-      ((active_state == State::kUseCurrent) && ShouldPaintAsActiveFrame());
+  const bool frame_active = (active_state == State::kActive) ||
+                            ((active_state == State::kUseCurrent) &&
+                             GetWidget()->ShouldPaintAsActive());
   return cp->GetColor(kColorIds[tab_active][frame_active]);
 }
 
@@ -1715,7 +1711,7 @@ SkColor TabStrip::GetTabForegroundColor(TabActive active) const {
        kColorTabForegroundActiveFrameActive}};
 
   const bool tab_active = active == TabActive::kActive;
-  const bool frame_active = ShouldPaintAsActiveFrame();
+  const bool frame_active = GetWidget()->ShouldPaintAsActive();
   return cp->GetColor(kColorIds[tab_active][frame_active]);
 }
 
@@ -1763,7 +1759,7 @@ tab_groups::TabGroupColorId TabStrip::GetGroupColorId(
 SkColor TabStrip::GetPaintedGroupColor(
     const tab_groups::TabGroupColorId& color_id) const {
   return GetColorProvider()->GetColor(
-      GetTabGroupTabStripColorId(color_id, ShouldPaintAsActiveFrame()));
+      GetTabGroupTabStripColorId(color_id, GetWidget()->ShouldPaintAsActive()));
 }
 
 void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {

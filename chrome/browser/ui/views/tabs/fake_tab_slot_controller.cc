@@ -67,10 +67,6 @@ int FakeTabSlotController::GetBackgroundOffset() const {
   return 0;
 }
 
-bool FakeTabSlotController::ShouldPaintAsActiveFrame() const {
-  return true;
-}
-
 int FakeTabSlotController::GetStrokeThickness() const {
   return 0;
 }

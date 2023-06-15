@@ -826,9 +826,8 @@ void GM2TabStyleViews::PaintTabBackground(gfx::Canvas* canvas,
   const auto* widget = tab_->GetWidget();
   DCHECK(widget);
   const SkColor tab_stroke_color = widget->GetColorProvider()->GetColor(
-      tab_->controller()->ShouldPaintAsActiveFrame()
-          ? kColorTabStrokeFrameActive
-          : kColorTabStrokeFrameInactive);
+      tab_->GetWidget()->ShouldPaintAsActive() ? kColorTabStrokeFrameActive
+                                               : kColorTabStrokeFrameInactive);
 
   PaintBackgroundStroke(canvas, active, group_color.value_or(tab_stroke_color));
   PaintSeparators(canvas);
@@ -1019,7 +1018,7 @@ SkColor ChromeRefresh2023TabStyleViews::GetTabBackgroundColor(
        kColorTabBackgroundActiveFrameActive}};
 
   return cp->GetColor(kColorIds[int(active == TabActive::kActive)][int(
-      tab()->controller()->ShouldPaintAsActiveFrame())]);
+      tab()->GetWidget()->ShouldPaintAsActive())]);
 }
 
 int ChromeRefresh2023TabStyleViews::GetStrokeThickness(
@@ -1041,7 +1040,7 @@ void ChromeRefresh2023TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
   // Override the color for ChromeRefresh2023
   const auto* cp = tab()->GetWidget()->GetColorProvider();
   const SkColor color =
-      cp->GetColor(tab()->controller()->ShouldPaintAsActiveFrame()
+      cp->GetColor(tab()->GetWidget()->ShouldPaintAsActive()
                        ? kColorTabBackgroundHoverFrameActive
                        : kColorTabBackgroundHoverFrameInactive);
   const SkColor4f color_with_alpha_animation = SkColor4f::FromColor(
@@ -1062,7 +1061,7 @@ SkColor ChromeRefresh2023TabStyleViews::GetTabSeparatorColor() const {
     return gfx::kPlaceholderColor;
   }
 
-  return cp->GetColor(tab()->controller()->ShouldPaintAsActiveFrame()
+  return cp->GetColor(tab()->GetWidget()->ShouldPaintAsActive()
                           ? kColorTabDividerFrameActive
                           : kColorTabDividerFrameInactive);
 }

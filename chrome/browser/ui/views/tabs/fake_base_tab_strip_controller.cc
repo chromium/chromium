@@ -276,10 +276,6 @@ bool FakeBaseTabStripController::EverHasVisibleBackgroundTabShapes() const {
   return false;
 }
 
-bool FakeBaseTabStripController::ShouldPaintAsActiveFrame() const {
-  return true;
-}
-
 bool FakeBaseTabStripController::CanDrawStrokes() const {
   return false;
 }

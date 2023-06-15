@@ -71,7 +71,6 @@ class FakeTabSlotController : public TabSlotController {
   bool ShowDomainInHoverCards() const override;
   bool HoverCardIsShowingForTab(Tab* tab) override;
   int GetBackgroundOffset() const override;
-  bool ShouldPaintAsActiveFrame() const override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
   bool HasVisibleBackgroundTabShapes() const override;

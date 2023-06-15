@@ -112,7 +112,7 @@ void NewTabButton::FrameColorsChanged() {
   const auto* const color_provider = GetColorProvider();
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
   views::InkDrop::Get(this)->SetBaseColor(
-      color_provider->GetColor(tab_strip_->ShouldPaintAsActiveFrame()
+      color_provider->GetColor(GetWidget()->ShouldPaintAsActive()
                                    ? kColorNewTabButtonInkDropFrameActive
                                    : kColorNewTabButtonInkDropFrameInactive));
   SchedulePaint();
@@ -134,7 +134,7 @@ void NewTabButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
 SkColor NewTabButton::GetForegroundColor() const {
   if (features::IsChromeRefresh2023()) {
     return GetColorProvider()->GetColor(
-        tab_strip_->ShouldPaintAsActiveFrame()
+        GetWidget()->ShouldPaintAsActive()
             ? foreground_frame_active_color_id_
             : foreground_frame_inactive_color_id_);
   }
@@ -280,7 +280,7 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
         SkTileMode::kRepeat, &flags);
   } else {
     flags.setColor(GetColorProvider()->GetColor(
-        tab_strip_->ShouldPaintAsActiveFrame()
+        GetWidget()->ShouldPaintAsActive()
             ? background_frame_active_color_id_
             : background_frame_inactive_color_id_));
   }
