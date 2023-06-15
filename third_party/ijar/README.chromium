@@ -1,6 +1,6 @@
 Name: ijar
 URL: https://github.com/bazelbuild/bazel
-Version: 5d173f18dc33e967a8f509b422ee7afe75acbf77
+Version: fed23d5a08cecbdcc4725adf77824a6c5bde1b4e
 License: Apache 2.0
 License File: NOT_SHIPPED
 Security Critical: No
@@ -13,3 +13,11 @@ Local Modifications:
 - Removed code from platform_utils.cc that referenced "blaze_util".
 - Removed mapped_file_windows.cc since it caused checkdeps to fail.
 - Added BUILD.gn
+
+Update instructions:
+git clone https://github.com/bazelbuild/bazel
+cd bazel/third_party/ijar
+cp * $CHROMIUM_SRC/third_party/ijar
+# Then apply Local Modifications
+# Update Version in this README.chromium
+

@@ -1191,7 +1191,8 @@ struct MethodParametersAttribute : Attribute {
     u1 parameters_count = get_u1(p);
     for (int ii = 0; ii < parameters_count; ++ii) {
       MethodParameter* parameter = new MethodParameter;
-      parameter->name_ = constant(get_u2be(p));
+      int name_id = get_u2be(p);
+      parameter->name_ = name_id == 0 ? NULL : constant(name_id);
       parameter->access_flags_ = get_u2be(p);
       attr->parameters_.push_back(parameter);
     }
@@ -1203,7 +1204,7 @@ struct MethodParametersAttribute : Attribute {
     u1 *payload_start = p - 4;
     put_u1(p, parameters_.size());
     for (MethodParameter* parameter : parameters_) {
-      put_u2be(p, parameter->name_->slot());
+      put_u2be(p, parameter->name_ == NULL ? 0 : parameter->name_->slot());
       put_u2be(p, parameter->access_flags_);
     }
     put_u4be(payload_start, p - 4 - payload_start);  // backpatch length
@@ -1249,10 +1250,22 @@ struct NestMembersAttribute : Attribute {
   }
 
   void Write(u1 *&p) {
-    WriteProlog(p, classes_.size() * 2 + 2);
-    put_u2be(p, classes_.size());
+    std::set<int> kept_entries;
     for (size_t ii = 0; ii < classes_.size(); ++ii) {
-      put_u2be(p, classes_[ii]->slot());
+      Constant *class_ = classes_[ii];
+      if (class_->Kept() || (used_class_names.find(class_->Display()) !=
+                             used_class_names.end())) {
+        kept_entries.insert(ii);
+      }
+    }
+    if (kept_entries.empty()) {
+      return;
+    }
+    WriteProlog(p, kept_entries.size() * 2 + 2);
+    put_u2be(p, kept_entries.size());
+    for (std::set<int>::iterator it = kept_entries.begin();
+         it != kept_entries.end(); ++it) {
+      put_u2be(p, classes_[*it]->slot());
     }
   }
 
@@ -1464,6 +1477,20 @@ struct ClassFile : HasAttrs {
 
     if (inner_classes != NULL) {
       attributes.push_back(inner_classes);
+    }
+
+    Attribute* nest_members = NULL;
+
+    for (size_t ii = 0; ii < attributes.size(); ii++) {
+      if (attributes[ii]->attribute_name_->Display() == "NestMembers") {
+        nest_members = attributes[ii];
+        attributes.erase(attributes.begin() + ii);
+        break;
+      }
+    }
+
+    if (nest_members != NULL) {
+      attributes.push_back(nest_members);
     }
 
     WriteAttrs(p);
