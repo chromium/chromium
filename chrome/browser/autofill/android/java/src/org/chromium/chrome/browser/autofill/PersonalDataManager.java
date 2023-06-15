@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
@@ -1509,23 +1508,16 @@ public class PersonalDataManager {
      * @param context required to get resources.
      * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
      *         it is fetched from this URL.
-     * @param widthId Resource id of the width spec.
-     * @param heightId Resource id of the height spec.
-     * @param cornerRadiusId Resource id of the corner radius spec.
+     * @param cardIconSpecs {@code CardIconSpecs} instance containing the specs for the card icon.
      * @return Bitmap if found in the local cache, else return null.
      */
     public Bitmap getCustomImageForAutofillSuggestionIfAvailable(
-            Context context, GURL customImageUrl, int widthId, int heightId, int cornerRadiusId) {
-        Resources res = context.getResources();
-        int width = res.getDimensionPixelSize(widthId);
-        int height = res.getDimensionPixelSize(heightId);
-        float cornerRadius = res.getDimension(cornerRadiusId);
-
+            GURL customImageUrl, AutofillUiUtils.CardIconSpecs cardIconSpecs) {
         // TODO(crbug.com/1313616): The Capital One icon for virtual cards is available in a single
         // size via a static URL. Cache this image at different sizes so it can be used by different
         // surfaces.
-        GURL urlToCache =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(customImageUrl, width, height);
+        GURL urlToCache = AutofillUiUtils.getCreditCardIconUrlWithParams(
+                customImageUrl, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         GURL urlToFetch = customImageUrl.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL)
                 ? customImageUrl
                 : urlToCache;
@@ -1543,8 +1535,7 @@ public class PersonalDataManager {
             // When adding new sizes for card icons, check if the corner radius needs to be added as
             // a suffix for caching (crbug.com/1431283).
             mCreditCardArtImages.put(urlToCache.getSpec(),
-                    AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, width, height,
-                            cornerRadius,
+                    AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, cardIconSpecs,
                             ChromeFeatureList.isEnabled(
                                     ChromeFeatureList
                                             .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));

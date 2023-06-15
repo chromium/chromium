@@ -26,7 +26,7 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_suggestion_height">48dp</dimen>
     <dimen name="keyboard_accessory_suggestion_icon_size">20dp</dimen>
     <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>
-    <dimen name="keyboard_accessory_bar_item_cc_icon_width">32dp</dimen>
+    <dimen name="keyboard_accessory_bar_item_cc_icon_width">@dimen/small_card_icon_width</dimen>
     <dimen name="keyboard_accessory_tab_icon_width">40dp</dimen>
     <dimen name="keyboard_accessory_tab_size">@dimen/keyboard_accessory_height</dimen>
     <dimen name="all_passwords_bottom_sheet_padding">20dp</dimen>

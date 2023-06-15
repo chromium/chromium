@@ -13,6 +13,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -76,9 +77,7 @@ class CreditCardAccessorySheetViewBinder {
                             ? View.VISIBLE
                             : View.GONE);
             view.setIcon(getCardIcon(view.getContext(), info.getIconUrl(),
-                    getDrawableForOrigin(info.getOrigin()),
-                    R.dimen.keyboard_accessory_bar_item_cc_icon_width,
-                    R.dimen.keyboard_accessory_suggestion_icon_size, R.dimen.card_art_corner_radius,
+                    getDrawableForOrigin(info.getOrigin()), AutofillUiUtils.CardIconSize.SMALL,
                     /* showCustomIcon= */ true));
         }
 

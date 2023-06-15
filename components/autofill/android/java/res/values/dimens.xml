@@ -11,11 +11,6 @@ found in the LICENSE file.
     <dimen name="autofill_dropdown_item_label_margin">10dp</dimen>
     <dimen name="autofill_dropdown_icon_margin">8dp</dimen>
 
-    <dimen name="autofill_dropdown_icon_width">32dp</dimen>
-    <dimen name="autofill_dropdown_icon_height">20dp</dimen>
-    <dimen name="autofill_dropdown_icon_width_new">40dp</dimen>
-    <dimen name="autofill_dropdown_icon_height_new">24dp</dimen>
-
     <!-- Preferences dimensions
       pref_autofill_field_horizontal_padding exists because TextInputLayouts have an internal
       padding set.
@@ -46,22 +41,18 @@ found in the LICENSE file.
     <dimen name="editable_option_section_logo_vertical_padding">13dp</dimen>
 
     <!-- Settings page -->
-    <dimen name="settings_page_card_icon_width">32dp</dimen>
-    <dimen name="settings_page_card_icon_height">20dp</dimen>
-    <dimen name="settings_page_card_icon_width_new">40dp</dimen>
-    <dimen name="settings_page_card_icon_height_new">24dp</dimen>
     <dimen name="settings_page_card_icon_end_margin">20dp</dimen>
     <dimen name="settings_page_margin_between_card_name_and_last_four_digits">4dp</dimen>
 
     <!-- Card Unmask dialog -->
-    <dimen name="card_unmask_dialog_credit_card_icon_width">32dp</dimen>
-    <dimen name="card_unmask_dialog_credit_card_icon_height">20dp</dimen>
-    <dimen name="card_unmask_dialog_credit_card_icon_width_new">40dp</dimen>
-    <dimen name="card_unmask_dialog_credit_card_icon_height_new">24dp</dimen>
     <dimen name="card_unmask_dialog_credit_card_icon_end_margin">16dp</dimen>
 
-    <!-- Card art -->
-    <dimen name="card_art_border_width">1dp</dimen>
-    <dimen name="card_art_corner_radius">3dp</dimen>
-    <dimen name="keyboard_accessory_card_art_corner_radius">2dp</dimen>
+    <!-- Credit card icon -->
+    <dimen name="large_card_icon_width">40dp</dimen>
+    <dimen name="large_card_icon_height">24dp</dimen>
+    <dimen name="small_card_icon_width">32dp</dimen>
+    <dimen name="small_card_icon_height">@dimen/chip_icon_size</dimen>
+    <dimen name="card_icon_border_width">1dp</dimen>
+    <dimen name="large_card_icon_corner_radius">3dp</dimen>
+    <dimen name="small_card_icon_corner_radius">2dp</dimen>
 </resources>

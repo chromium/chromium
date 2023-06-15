@@ -8,7 +8,5 @@ found in the LICENSE file.
 <resources>
     <dimen name="ttf_for_payments_product_icon_height">32dp</dimen>
     <dimen name="ttf_for_payments_product_icon_margin_vertical">12dp</dimen>
-    <dimen name="touch_to_fill_payments_favicon_width">40dp</dimen>
-    <dimen name="touch_to_fill_payments_favicon_height">24dp</dimen>
     <dimen name="ttf_for_payments_menu_item_icon_padding">12dp</dimen>
 </resources>

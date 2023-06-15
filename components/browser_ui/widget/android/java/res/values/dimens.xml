@@ -175,7 +175,6 @@ found in the LICENSE file.
     <dimen name="chip_element_leading_padding">8dp</dimen>
     <dimen name="chip_element_extended_leading_padding">16dp</dimen>
     <dimen name="chip_bg_vertical_inset">8dp</dimen>
-    <dimen name="chip_icon_size">20dp</dimen>
     <dimen name="chip_loading_view_size">12dp</dimen>
     <dimen name="chip_end_icon_margin_start">8dp</dimen>
     <dimen name="chip_end_icon_extended_margin_start">16dp</dimen>

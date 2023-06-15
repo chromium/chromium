@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getSpannableStringForLegalMessageLines;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.SpannableString;
@@ -159,7 +161,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
             LinkedList<LegalMessageLine> legalMessageLines,
             @VirtualCardEnrollmentLinkType int virtualCardEnrollmentLinkType) {
         SpannableStringBuilder legalMessageLinesText =
-                AutofillUiUtils.getSpannableStringForLegalMessageLines(context, legalMessageLines,
+                getSpannableStringForLegalMessageLines(context, legalMessageLines,
                         /* underlineLinks= */ true,
                         url
                         -> AutofillVirtualCardEnrollmentInfoBarJni.get().onInfobarLinkClicked(
@@ -211,12 +213,10 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                 spanOffsetStart, cardContainerText.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         // Get and resize the issuer icon.
-        Bitmap scaledIssuerIcon = Bitmap.createScaledBitmap(mIssuerIcon,
-                layout.getResources().getDimensionPixelSize(
-                        AutofillUiUtils.getVirtualCardEnrollmentDialogIconWidthId()),
-                layout.getResources().getDimensionPixelSize(
-                        AutofillUiUtils.getVirtualCardEnrollmentDialogIconHeightId()),
-                true);
+        AutofillUiUtils.CardIconSpecs cardIconSpecs = AutofillUiUtils.CardIconSpecs.create(
+                layout.getContext(), AutofillUiUtils.CardIconSize.LARGE);
+        Bitmap scaledIssuerIcon = Bitmap.createScaledBitmap(
+                mIssuerIcon, cardIconSpecs.getWidth(), cardIconSpecs.getHeight(), true);
 
         // Add the issuer icon and the card container text.
         control.addIcon(scaledIssuerIcon, 0, cardContainerText, null,

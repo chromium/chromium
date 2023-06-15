@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -79,8 +80,7 @@ class TouchToFillCreditCardViewBinder {
         ImageView icon = view.findViewById(R.id.favicon);
         if (propertyKey == CARD_ICON_ID) {
             icon.setImageDrawable(getCardIcon(view.getContext(), model.get(CARD_ART_URL),
-                    model.get(CARD_ICON_ID), R.dimen.touch_to_fill_payments_favicon_width,
-                    R.dimen.touch_to_fill_payments_favicon_height, R.dimen.card_art_corner_radius,
+                    model.get(CARD_ICON_ID), AutofillUiUtils.CardIconSize.LARGE,
                     ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
         } else if (propertyKey == CARD_ART_URL) {
             // Skip, because it is already handled in the `CARD_ICON_ID` case.

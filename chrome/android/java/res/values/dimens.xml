@@ -416,10 +416,6 @@ found in the LICENSE file.
     <dimen name="virtual_card_enrollment_dialog_description_margin_top">16dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_legal_message_margin_top">20dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
-    <dimen name="virtual_card_enrollment_dialog_card_art_width">32dp</dimen>
-    <dimen name="virtual_card_enrollment_dialog_card_art_height">20dp</dimen>
-    <dimen name="virtual_card_enrollment_dialog_card_art_width_new">40dp</dimen>
-    <dimen name="virtual_card_enrollment_dialog_card_art_height_new">24dp</dimen>
 
     <!-- Section tab dimensions -->
     <dimen name="section_tab_background_corner_radius">60dp</dimen>

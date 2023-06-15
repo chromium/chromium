@@ -91,6 +91,80 @@ public class AutofillUiUtils {
         int NONE = 7;
     }
 
+    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CardIconSize {
+        int SMALL = 0;
+        int LARGE = 1;
+    }
+
+    /**
+     * Contains dimensional specs for credit card icons.
+     */
+    public static class CardIconSpecs {
+        private final Context mContext;
+        private final int mWidthId;
+        private final int mHeightId;
+        private final int mCornerRadiusId;
+        private final int mBorderWidthId;
+
+        /**
+         * @param context to get the resources.
+         * @param widthId Resource Id for the icon's width spec.
+         * @param heightId Resource Id for the icon's height spec.
+         * @param cornerRadiusId Resource Id for the icon's corner radius spec.
+         * @param borderWidthId Resource Id for the icon's border width spec.
+         */
+        private CardIconSpecs(
+                Context context, int widthId, int heightId, int cornerRadiusId, int borderWidthId) {
+            mContext = context;
+            mWidthId = widthId;
+            mHeightId = heightId;
+            mCornerRadiusId = cornerRadiusId;
+            mBorderWidthId = borderWidthId;
+        }
+
+        /**
+         * Create the {@link CardIconSpecs} for the icon based on the size (small or large) of the
+         * icon to be rendered.
+         * @param context to get the resources.
+         * @param cardIconSize Enum that specifies the icon's size (small or large).
+         * @return {@link CardIconSpecs} instance containing the specs for the card icon.
+         */
+        public static CardIconSpecs create(Context context, @CardIconSize int cardIconSize) {
+            int borderWidthId = R.dimen.card_icon_border_width;
+            int widthId = R.dimen.small_card_icon_width;
+            int heightId = R.dimen.small_card_icon_height;
+            int cornerRadiusId = R.dimen.small_card_icon_corner_radius;
+
+            if (cardIconSize == CardIconSize.LARGE
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                widthId = R.dimen.large_card_icon_width;
+                heightId = R.dimen.large_card_icon_height;
+                cornerRadiusId = R.dimen.large_card_icon_corner_radius;
+            }
+
+            return new CardIconSpecs(context, widthId, heightId, cornerRadiusId, borderWidthId);
+        }
+
+        public @Px int getWidth() {
+            return mContext.getResources().getDimensionPixelSize(mWidthId);
+        }
+
+        public @Px int getHeight() {
+            return mContext.getResources().getDimensionPixelSize(mHeightId);
+        }
+
+        public @Px int getCornerRadius() {
+            return mContext.getResources().getDimensionPixelSize(mCornerRadiusId);
+        }
+
+        public @Px int getBorderWidth() {
+            return mContext.getResources().getDimensionPixelSize(mBorderWidthId);
+        }
+    }
+
     /**
      * Show Tooltip UI.
      *
@@ -462,16 +536,13 @@ public class AutofillUiUtils {
      * @param cardArtUrl The URL to fetch the icon.
      * @param defaultIconId Resource Id for the default (network) icon if the card art could not be
      *        retrieved.
-     * @param widthId Resource Id for the width spec.
-     * @param heightId Resource Id for the height spec.
-     * @param cornerRadiusId Resource Id for the corner radius spec.
+     * @param cardIconSize Enum that specifies the icon's size (small or large).
      * @param showCustomIcon If true, custom card icon is fetched, else, default icon is fetched.
      * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
      *         default icon is available, returns null.
      */
     public static @Nullable Drawable getCardIcon(Context context, @Nullable GURL cardArtUrl,
-            int defaultIconId, int widthId, int heightId, int cornerRadiusId,
-            boolean showCustomIcon) {
+            int defaultIconId, @CardIconSize int cardIconSize, boolean showCustomIcon) {
         Drawable defaultIcon =
                 defaultIconId == 0 ? null : AppCompatResources.getDrawable(context, defaultIconId);
         if (!showCustomIcon || cardArtUrl == null || !cardArtUrl.isValid()) {
@@ -486,7 +557,7 @@ public class AutofillUiUtils {
 
         Bitmap customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                        context, cardArtUrl, widthId, heightId, cornerRadiusId);
+                        cardArtUrl, CardIconSpecs.create(context, cardIconSize));
         if (customIconBitmap == null) {
             return defaultIcon;
         }
@@ -494,75 +565,27 @@ public class AutofillUiUtils {
         return new BitmapDrawable(context.getResources(), customIconBitmap);
     }
 
-    public static int getSettingsPageIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.settings_page_card_icon_width_new;
-        }
-        return R.dimen.settings_page_card_icon_width;
-    }
-
-    public static int getSettingsPageIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.settings_page_card_icon_height_new;
-        }
-        return R.dimen.settings_page_card_icon_height;
-    }
-
-    public static int getCardUnmaskDialogIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.card_unmask_dialog_credit_card_icon_width_new;
-        }
-        return R.dimen.card_unmask_dialog_credit_card_icon_width;
-    }
-
-    public static int getCardUnmaskDialogIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.card_unmask_dialog_credit_card_icon_height_new;
-        }
-        return R.dimen.card_unmask_dialog_credit_card_icon_height;
-    }
-
-    public static int getVirtualCardEnrollmentDialogIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.virtual_card_enrollment_dialog_card_art_width_new;
-        }
-        return R.dimen.virtual_card_enrollment_dialog_card_art_width;
-    }
-
-    public static int getVirtualCardEnrollmentDialogIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.virtual_card_enrollment_dialog_card_art_height_new;
-        }
-        return R.dimen.virtual_card_enrollment_dialog_card_art_height;
-    }
-
     /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
      * @param bitmap to be updated.
-     * @param width of the bitmap.
-     * @param height of the bitmap.
-     * @param cornerRadius for the bitmap.
+     * @param cardIconSpecs {@link CardIconSpecs} instance containing the specs for the card icon.
      * @param addRoundedCornersAndGreyBorder If true, the bitmap corners are rounded, and a grey
      *         border is added. If false, no enhancements are applied to the bitmap.
      * @return Resized {@link Bitmap} with rounded corners and grey border.
      */
-    public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(Bitmap bitmap, @Px int width,
-            @Px int height, float cornerRadius, boolean addRoundedCornersAndGreyBorder) {
+    public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(
+            Bitmap bitmap, CardIconSpecs cardIconSpecs, boolean addRoundedCornersAndGreyBorder) {
         // The server maintains the card art image's aspect ratio, so the fetched image might not be
         // the exact required size. Scale the icon to the desired dimension.
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, /* filter= */ true);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(
+                bitmap, cardIconSpecs.getWidth(), cardIconSpecs.getHeight(), /* filter= */ true);
 
         if (!addRoundedCornersAndGreyBorder) {
             return scaledBitmap;
         }
 
         // Round the corners.
+        float cornerRadius = cardIconSpecs.getCornerRadius();
         Bitmap scaledBitmapWithEnhancements = Bitmap.createBitmap(
                 scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(scaledBitmapWithEnhancements);
@@ -579,7 +602,7 @@ public class AutofillUiUtils {
         int greyColor = ContextCompat.getColor(context, R.color.modern_grey_100);
         paint.setColor(greyColor);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(context.getResources().getDimension(R.dimen.card_art_border_width));
+        paint.setStrokeWidth(cardIconSpecs.getBorderWidth());
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
 
         return scaledBitmapWithEnhancements;
@@ -595,9 +618,9 @@ public class AutofillUiUtils {
      * @param cardArtUrl URL to fetch custom card art.
      * @param defaultIconId Resource Id for the default (network) icon if the card art doesn't exist
      *         or couldn't be retrieved.
-     * @param iconWidthId Resource Id for the icon's width spec.
-     * @param iconHeightId Resource Id for the icon's height spec.
-     * @param iconEndMarginId Resource Id for the margin spec between the icon and the card name.
+     * @param cardIconSize Enum that specifies the icon's size (small or large).
+     * @param iconEndMarginId Resource Id for the margin between the icon and the card details
+     *         section.
      * @param cardNameAndNumberTextAppearance Text appearance Id for the card name and the card
      *         number.
      * @param cardLabelTextAppearance Text appearance Id for the card label.
@@ -605,12 +628,12 @@ public class AutofillUiUtils {
      */
     public static void addCardDetails(Context context, View parentView, String cardName,
             String cardNumber, String cardLabel, GURL cardArtUrl, int defaultIconId,
-            int iconWidthId, int iconHeightId, int iconEndMarginId,
+            @CardIconSize int cardIconSize, int iconEndMarginId,
             int cardNameAndNumberTextAppearance, int cardLabelTextAppearance,
             boolean showCustomIcon) {
         ImageView cardIconView = parentView.findViewById(R.id.card_icon);
-        cardIconView.setImageDrawable(getCardIcon(context, cardArtUrl, defaultIconId, iconWidthId,
-                iconHeightId, R.dimen.card_art_corner_radius, showCustomIcon));
+        cardIconView.setImageDrawable(
+                getCardIcon(context, cardArtUrl, defaultIconId, cardIconSize, showCustomIcon));
 
         // Set margin between the card icon and the card details.
         MarginLayoutParams params = (MarginLayoutParams) cardIconView.getLayoutParams();
