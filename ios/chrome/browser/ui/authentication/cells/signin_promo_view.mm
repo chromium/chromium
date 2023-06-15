@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -355,6 +356,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.imageView.image = nil;
       self.imageView.backgroundColor =
           [UIColor colorNamed:kPrimaryBackgroundColor];
+      // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
+      // promo after experiment.
+      if (IsMagicStackEnabled()) {
+        self.imageView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+      }
       self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
 
       logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -850,9 +856,14 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
               fontWithSize:kCompactStyleTextSize];
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
-
       self.primaryButton.backgroundColor =
           [UIColor colorNamed:kBackgroundColor];
+      // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
+      // promo after experiment.
+      if (IsMagicStackEnabled()) {
+        self.primaryButton.backgroundColor =
+            [UIColor colorNamed:kBlueHaloColor];
+      }
       self.primaryButton.layer.cornerRadius =
           kCompactVerticalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
