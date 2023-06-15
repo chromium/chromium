@@ -10,9 +10,9 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
-#include "chrome/browser/ash/printing/test_cups_printers_manager.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
@@ -129,7 +129,7 @@ class PrintingPrinterAuthenticatorTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   testing::Sequence sequence_;
-  TestCupsPrintersManager cups_manager_;
+  FakeCupsPrintersManager cups_manager_;
   testing::StrictMock<oauth2::MockAuthorizationZoneManager> auth_manager_;
   chromeos::Printer printer_;
   std::unique_ptr<PrinterAuthenticator> authenticator_;

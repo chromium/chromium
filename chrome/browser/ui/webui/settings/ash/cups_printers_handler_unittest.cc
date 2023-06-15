@@ -18,7 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/printing/printing_stubs.h"
+#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
@@ -64,41 +64,6 @@ void RemovedPrinter(base::OnceClosure quit_closure,
   *expected = result;
   std::move(quit_closure).Run();
 }
-
-class TestCupsPrintersManager : public StubCupsPrintersManager {
- public:
-  absl::optional<Printer> GetPrinter(const std::string& id) const override {
-    return printer_;
-  }
-  void RemoveSavedPrinter(const std::string& id) override {
-    UninstallPrinter(id);
-  }
-  bool IsPrinterInstalled(const chromeos::Printer& printer) const override {
-    return printers_installed_.count(printer.id());
-  }
-
-  std::vector<chromeos::Printer> GetPrinters(
-      chromeos::PrinterClass printer_class) const override {
-    return {Printer(), Printer()};
-  }
-
-  void SetUpPrinter(const chromeos::Printer& printer,
-                    PrinterSetupCallback callback) override {
-    printers_installed_.insert(printer.id());
-    std::move(callback).Run(PrinterSetupResult::kSuccess);
-  }
-
-  void UninstallPrinter(const std::string& printer_id) override {
-    printers_installed_.erase(printer_id);
-  }
-
-  // Used to configured our test manager for specific tests.
-  void SetPrinter(absl::optional<Printer> printer) { printer_ = printer; }
-
- private:
-  absl::optional<Printer> printer_ = Printer();
-  base::flat_set<std::string> printers_installed_;
-};
 
 class FakePpdProvider : public chromeos::PpdProvider {
  public:
@@ -271,9 +236,10 @@ class CupsPrintersHandlerTest : public testing::Test {
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
 
-  void CallRetrieveCupsPpd(std::string license_url = "") {
+  void CallRetrieveCupsPpd(const std::string& printer_id,
+                           const std::string& license_url = "") {
     base::Value::List args;
-    args.Append("printer_id");
+    args.Append(printer_id);
     args.Append(kPpdPrinterName);
     args.Append(license_url);
 
@@ -304,7 +270,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<CupsPrintersHandler> printers_handler_;
-  TestCupsPrintersManager printers_manager_;
+  FakeCupsPrintersManager printers_manager_;
   base::RunLoop run_loop_;
   scoped_refptr<printing::TestPrintBackend> print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
@@ -329,21 +295,21 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   ConciergeClient::InitializeFake(
       /*fake_cicerone_client=*/nullptr);
 
-  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
-  ASSERT_TRUE(printer);
-
-  printers_manager_.SetUpPrinter(*printer, base::DoNothing());
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+  printers_manager_.SetUpPrinter(printer, base::DoNothing());
+  printers_manager_.PrinterInstalled(printer, /*is_automatic=*/true);
 
   const std::string remove_list = R"(
-    [")" + printer->id() + R"(", "Test Printer 1"]
+    [")" + printer.id() + R"(", "Test Printer 1"]
   )";
   std::string error;
   base::Value remove_printers = base::test::ParseJson(remove_list);
   ASSERT_TRUE(remove_printers.is_list());
 
-  EXPECT_TRUE(printers_manager_.IsPrinterInstalled(*printer));
+  EXPECT_TRUE(printers_manager_.IsPrinterInstalled(printer));
   web_ui_.HandleReceivedMessage("removeCupsPrinter", remove_printers.GetList());
-  EXPECT_FALSE(printers_manager_.IsPrinterInstalled(*printer));
+  EXPECT_FALSE(printers_manager_.IsPrinterInstalled(printer));
 
   profile_.reset();
   ConciergeClient::Shutdown();
@@ -368,10 +334,11 @@ TEST_F(CupsPrintersHandlerTest, ViewPPD) {
   static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
       ->SetPpdDataForTesting(kPpdData);
 
-  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
-  ASSERT_TRUE(printer);
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
   print_backend_->AddValidPrinter(
-      printer->id(),
+      printer.id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
   EXPECT_CALL(*new_window_delegate_primary_,
@@ -381,7 +348,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPD) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
 
-  CallRetrieveCupsPpd();
+  CallRetrieveCupsPpd(printer.id());
 
   // Check for the downloaded PPD file.
   std::string contents;
@@ -396,10 +363,11 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
   static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
       ->SetPpdDataForTesting(kPpdDataWithHeader);
 
-  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
-  ASSERT_TRUE(printer);
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
   print_backend_->AddValidPrinter(
-      printer->id(),
+      printer.id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
   EXPECT_CALL(*new_window_delegate_primary_,
@@ -410,7 +378,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
 
   const std::string license_url("chrome://os-credits/xerox-printing-license");
-  CallRetrieveCupsPpd(license_url);
+  CallRetrieveCupsPpd(printer.id(), license_url);
 
   // Check that the downloaded PPD file contains the license URL.
   std::string contents;
@@ -427,10 +395,11 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {
   static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
       ->SetPpdDataForTesting(kPpdData);
 
-  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
-  ASSERT_TRUE(printer);
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
   print_backend_->AddValidPrinter(
-      printer->id(),
+      printer.id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
   EXPECT_CALL(*new_window_delegate_primary_,
@@ -441,7 +410,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
 
   const std::string license_url("chrome://os-credits/xerox-printing-license");
-  CallRetrieveCupsPpd(license_url);
+  CallRetrieveCupsPpd(printer.id(), license_url);
 
   // Check that the downloaded PPD file contains the error message.
   std::string contents;
@@ -451,9 +420,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
   // Test the case where the printer is not known to the printer manager.
-
-  // Set an empty printer to simluate not being able to find the printer.
-  printers_manager_.SetPrinter(absl::optional<Printer>());
+  // No printers were added to CupsPrintersManager.
 
   EXPECT_CALL(*new_window_delegate_primary_,
               OpenUrl(testing::Property(&GURL::ExtractFileName,
@@ -462,7 +429,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
 
-  CallRetrieveCupsPpd();
+  CallRetrieveCupsPpd("printer_id");
 
   // Check that the downloaded PPD file contains the error message.
   std::string contents;
@@ -476,10 +443,11 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
   static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
       ->SetPpdDataForTesting(kPpdData);
 
-  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
-  ASSERT_TRUE(printer);
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
   print_backend_->AddValidPrinter(
-      printer->id(),
+      printer.id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
   EXPECT_CALL(*new_window_delegate_primary_,
@@ -489,7 +457,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
 
-  CallRetrieveCupsPpd();
+  CallRetrieveCupsPpd(printer.id());
 
   // Check for the downloaded PPD file.
   std::string contents;
@@ -503,10 +471,11 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
   static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
       ->SetPpdDataForTesting({});
 
-  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
-  ASSERT_TRUE(printer);
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
   print_backend_->AddValidPrinter(
-      printer->id(),
+      printer.id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
   EXPECT_CALL(*new_window_delegate_primary_,
@@ -516,7 +485,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
 
-  CallRetrieveCupsPpd();
+  CallRetrieveCupsPpd(printer.id());
 
   // Check that the downloaded PPD file contains the error message.
   std::string contents;
@@ -525,6 +494,13 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
 }
 
 TEST_F(CupsPrintersHandlerTest, GetSavedPrinters) {
+  Printer printer("id");
+  printer.SetUri("http://printer/uri");
+  printers_manager_.SavePrinter(printer);
+  Printer printer2("id2");
+  printer2.SetUri("http://printer/uri2");
+  printers_manager_.SavePrinter(printer2);
+
   CallGetCupsSavedPrintersList();
 
   // Expect 2 printers are recorded to the histogram from the `GetPrinters()`

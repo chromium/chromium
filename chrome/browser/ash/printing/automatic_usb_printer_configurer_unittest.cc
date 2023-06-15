@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,61 +92,6 @@ class FakeObservablePrintersManager {
   PrintersMap printers_;
 };
 
-class FakePrinterInstallationManager : public PrinterInstallationManager {
- public:
-  FakePrinterInstallationManager() = default;
-  ~FakePrinterInstallationManager() override = default;
-
-  // CupsPrintersManager overrides
-  void PrinterInstalled(const Printer& printer, bool is_automatic) override {
-    DCHECK(is_automatic);
-
-    installed_printers_.insert(printer.id());
-  }
-
-  bool IsPrinterInstalled(const Printer& printer) const override {
-    return installed_printers_.contains(printer.id());
-  }
-
-  void PrinterIsNotAutoconfigurable(const Printer& printer) override {
-    printers_marked_as_not_autoconf_.insert(printer.id());
-  }
-
-  void AssignPrinterSetupResult(const std::string& printer_id,
-                                PrinterSetupResult result) {
-    setup_results_[printer_id] = result;
-  }
-
-  void SetUpPrinter(const chromeos::Printer& printer,
-                    PrinterSetupCallback callback) override {
-    configured_printers_.insert(printer.id());
-    if (setup_results_.contains(printer.id())) {
-      std::move(callback).Run(setup_results_[printer.id()]);
-    } else {
-      std::move(callback).Run(PrinterSetupResult::kSuccess);
-    }
-  }
-
-  void UninstallPrinter(const std::string& printer_id) override {
-    configured_printers_.erase(printer_id);
-    setup_results_.erase(printer_id);
-  }
-
-  bool IsConfigured(const std::string& printer_id) const {
-    return configured_printers_.contains(printer_id);
-  }
-
-  bool IsMarkedAsNotAutoconfigurable(const Printer& printer) {
-    return printers_marked_as_not_autoconf_.contains(printer.id());
-  }
-
- private:
-  base::flat_set<std::string> configured_printers_;
-  base::flat_set<std::string> installed_printers_;
-  base::flat_set<std::string> printers_marked_as_not_autoconf_;
-  base::flat_map<std::string, PrinterSetupResult> setup_results_;
-};
-
 class FakeUsbPrinterNotificationController
     : public UsbPrinterNotificationController {
  public:
@@ -179,8 +125,7 @@ class FakeUsbPrinterNotificationController
 class AutomaticUsbPrinterConfigurerTest : public testing::Test {
  public:
   AutomaticUsbPrinterConfigurerTest() {
-    fake_installation_manager_ =
-        std::make_unique<FakePrinterInstallationManager>();
+    fake_installation_manager_ = std::make_unique<FakeCupsPrintersManager>();
     fake_notification_controller_ =
         std::make_unique<FakeUsbPrinterNotificationController>();
 
@@ -202,7 +147,7 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
 
  protected:
   FakeObservablePrintersManager fake_observable_printers_manager_;
-  std::unique_ptr<FakePrinterInstallationManager> fake_installation_manager_;
+  std::unique_ptr<FakeCupsPrintersManager> fake_installation_manager_;
   std::unique_ptr<FakeUsbPrinterNotificationController>
       fake_notification_controller_;
   std::unique_ptr<AutomaticUsbPrinterConfigurer> auto_usb_printer_configurer_;
@@ -365,7 +310,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, RegisterAutoconfFailureForIppUsb) {
   const Printer printer1 = CreateIppUsbPrinter(printer1_id);
   const Printer printer2 = CreateIppUsbPrinter(printer2_id);
 
-  fake_installation_manager_->AssignPrinterSetupResult(
+  fake_installation_manager_->SetPrinterSetupResult(
       printer1_id, PrinterSetupResult::kPrinterIsNotAutoconfigurable);
 
   fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer1);
