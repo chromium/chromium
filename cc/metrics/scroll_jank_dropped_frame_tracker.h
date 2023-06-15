@@ -27,9 +27,11 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
       "Event.ScrollJank.DelayedFramesPercentage.FixedWindow";
   static constexpr const char* kMissedVsyncsSumInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsSum.FixedWindow";
+  static constexpr const char* kMissedVsyncsPerFrameHistogram =
+      "Event.ScrollJank.MissedVsyncs.PerFrame";
 
  private:
-  void EmitHistogramsAndResetCounters();
+  void EmitPerWindowHistogramsAndResetCounters();
 
   // We could have two different frames with same presentation time and due to
   // this just having previous frame's data is not enough for calculating the

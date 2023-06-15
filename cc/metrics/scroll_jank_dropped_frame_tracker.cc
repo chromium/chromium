@@ -24,7 +24,7 @@ constexpr int kVsyncCountsBuckets = 25;
 ScrollJankDroppedFrameTracker::ScrollJankDroppedFrameTracker() = default;
 ScrollJankDroppedFrameTracker::~ScrollJankDroppedFrameTracker() = default;
 
-void ScrollJankDroppedFrameTracker::EmitHistogramsAndResetCounters() {
+void ScrollJankDroppedFrameTracker::EmitPerWindowHistogramsAndResetCounters() {
   DCHECK_EQ(num_presented_frames_, kHistogramEmitFrequency);
 
   UMA_HISTOGRAM_PERCENTAGE(kDelayedFramesWindowHistogram,
@@ -71,17 +71,25 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
       (vsync_interval + vsync_interval / 2);
   if (missed_frame && input_available) {
     missed_frames_++;
-    missed_vsyncs_ +=
+    int curr_frame_missed_vsyncs =
         (presentation_ts - prev_presentation_ts_ - (vsync_interval / 2)) /
         vsync_interval;
+    UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsPerFrameHistogram,
+                                curr_frame_missed_vsyncs, kVsyncCountsMin,
+                                kVsyncCountsMax, kVsyncCountsBuckets);
+    missed_vsyncs_ += curr_frame_missed_vsyncs;
     TRACE_EVENT_INSTANT("input", "MissedFrame", "missed_frames_",
                         missed_frames_, "missed_vsyncs_", missed_vsyncs_,
                         "vsync_interval", vsync_interval);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsPerFrameHistogram, 0,
+                                kVsyncCountsMin, kVsyncCountsMax,
+                                kVsyncCountsBuckets);
   }
 
   ++num_presented_frames_;
   if (num_presented_frames_ == kHistogramEmitFrequency) {
-    EmitHistogramsAndResetCounters();
+    EmitPerWindowHistogramsAndResetCounters();
   }
   DCHECK_LT(num_presented_frames_, kHistogramEmitFrequency);
 
