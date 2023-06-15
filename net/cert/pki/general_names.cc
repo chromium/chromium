@@ -39,9 +39,13 @@ DEFINE_CERT_ERROR_ID(kFailedReadingGeneralName,
 bool IsSuffixZero(const IPAddressBytes& mask, unsigned prefix_length) {
   size_t zero_bits = mask.size() * CHAR_BIT - prefix_length;
   size_t zero_bytes = zero_bits / CHAR_BIT;
-  std::vector<uint8_t> zeros(zero_bytes, 0);
-  if (memcmp(zeros.data(), mask.data() + mask.size() - zero_bytes, zero_bytes))
+  // We allocate the vector one byte bigger than needed to ensure there is a
+  // valid pointer to pass to memcmp for a zero length comparison.
+  std::vector<uint8_t> zeros(zero_bytes + 1, 0);
+  if (memcmp(zeros.data(), mask.data() + mask.size() - zero_bytes,
+             zero_bytes)) {
     return false;
+  }
   size_t leftover_bits = zero_bits % CHAR_BIT;
   if (leftover_bits) {
     uint8_t b = mask[mask.size() - zero_bytes - 1];
