@@ -3718,9 +3718,6 @@ if (!is_android) {
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
         ]
       }
-      if (enable_supervised_users) {
-        sources += [ "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc" ]
-      }
       deps += [
         ":test_support_ui",
         "//components/commerce/core:shopping_service_test_support",
@@ -3784,6 +3781,11 @@ if (!is_android) {
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
         ]
       }
+      sources += [
+        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
+        "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
+      ]
+
       if (is_chromeos_ash) {
         sources += [
           "../browser/supervised_user/permission_request_creator_mock.cc",
@@ -3791,7 +3793,6 @@ if (!is_android) {
           "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
           "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
           "../browser/supervised_user/supervised_user_service_browsertest.cc",
-          "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
         ]
         if (enable_extensions) {
           sources += [ "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc" ]
@@ -9526,6 +9527,8 @@ if (!is_android) {
 
     if (enable_supervised_users) {
       sources += [
+        "supervised_user/embedded_test_server_setup_mixin.cc",
+        "supervised_user/embedded_test_server_setup_mixin.h",
         "supervised_user/supervision_mixin.cc",
         "supervised_user/supervision_mixin.h",
       ]
