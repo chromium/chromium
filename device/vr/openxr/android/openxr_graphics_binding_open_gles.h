@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "device/vr/android/xr_renderer.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/vr_export.h"
@@ -36,8 +37,13 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   int64_t GetSwapchainFormat(XrSession session) const override;
   XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain) override;
-  void ClearSwapChainInfo() override;
-  base::span<SwapChainInfo> GetSwapChainInfo() override;
+  void ClearSwapChainImages() override;
+  base::span<SwapChainInfo> GetSwapChainImages() override;
+  bool CanUseSharedImages() const override;
+  void CreateSharedImages(gpu::SharedImageInterface* sii) override;
+  const SwapChainInfo& GetActiveSwapchainImage() override;
+  bool Render() override;
+  bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
 
  private:
   bool initialized_ = false;
@@ -48,6 +54,9 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLContextEGL> egl_context_;
+
+  std::unique_ptr<XrRenderer> renderer_;
+  GLuint back_buffer_fbo_ = 0;
 };
 
 }  // namespace device

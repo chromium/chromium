@@ -252,6 +252,8 @@ if (enable_vr) {
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]
+
+        deps += [ "//device/vr/android:vr_android" ]
       }
 
       deps += [

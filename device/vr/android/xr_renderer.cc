@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/android/arcore/ar_renderer.h"
+#include "device/vr/android/xr_renderer.h"
 
 #include "device/vr/vr_gl_util.h"
 
@@ -47,7 +47,7 @@ static constexpr char const* kFragmentShader = OEIE_SHADER(
 
 }  // namespace
 
-ArRenderer::ArRenderer() {
+XrRenderer::XrRenderer() {
   std::string error;
   GLuint vertex_shader_handle =
       vr::CompileShader(GL_VERTEX_SHADER, kVertexShader, error);
@@ -73,7 +73,7 @@ ArRenderer::ArRenderer() {
   uv_transform_ = glGetUniformLocation(program_handle_, "u_UvTransform");
 }
 
-void ArRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
+void XrRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
   if (!vertex_buffer_ || !index_buffer_) {
     GLuint buffers[2];
     glGenBuffersARB(2, buffers);
@@ -122,6 +122,6 @@ void ArRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
 // Note that we don't explicitly delete gl objects here, they're deleted
 // automatically when we call ShutdownGL, and deleting them here leads to
 // segfaults.
-ArRenderer::~ArRenderer() = default;
+XrRenderer::~XrRenderer() = default;
 
 }  // namespace device

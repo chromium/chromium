@@ -2,24 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
-#define DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
+#ifndef DEVICE_VR_ANDROID_XR_RENDERER_H_
+#define DEVICE_VR_ANDROID_XR_RENDERER_H_
 
+#include "base/component_export.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace device {
 
-// Issues GL for rendering a texture for AR.
-// TODO(crbug.com/838013): Share code with WebVrRenderer.
-class ArRenderer {
+// Issues GL for rendering a texture for WebXr.
+class XrRenderer {
  public:
-  ArRenderer();
+  XrRenderer();
 
-  ArRenderer(const ArRenderer&) = delete;
-  ArRenderer& operator=(const ArRenderer&) = delete;
+  XrRenderer(const XrRenderer&) = delete;
+  XrRenderer& operator=(const XrRenderer&) = delete;
 
-  ~ArRenderer();
+  ~XrRenderer();
 
+  // Blits the provided texture handle onto the currently bound framebuffer,
+  // applying the provided uv_transform.
   void Draw(int texture_handle, const float (&uv_transform)[16]);
 
  private:
@@ -34,4 +36,4 @@ class ArRenderer {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
+#endif  // DEVICE_VR_ANDROID_XR_RENDERER_H_

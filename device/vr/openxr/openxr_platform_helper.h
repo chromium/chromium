@@ -61,12 +61,9 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // XrInstance and/or XrSession.
   // The caller is responsible for ensuring that the TextureHelper outlives the
   // GraphicsBinding.
-  // TODO(https://crbug.com/1441073): D3D11TextureHelper should be converted to
-  // either an interface that can be shared by the graphics bindings for the
-  // information that is needed (though that may require a downcast in the
-  // concrete helper), or to be entirely owned by the OpenXrGraphicsBinding and
-  // any relevant logic ported there with the necessary interfaces exposed on
-  // OpenXrGraphicsBinding.
+  // TODO(https://crbug.com/1454938): D3D11TextureHelper should be entirely
+  // owned by the OpenXrGraphicsBinding and any relevant logic ported there with
+  // the necessary interfaces exposed on OpenXrGraphicsBinding.
   virtual std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding(
       D3D11TextureHelper* texture_helper) = 0;
 #else

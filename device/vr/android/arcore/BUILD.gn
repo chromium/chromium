@@ -15,8 +15,6 @@ component("arcore") {
     "ar_compositor_frame_sink.h",
     "ar_image_transport.cc",
     "ar_image_transport.h",
-    "ar_renderer.cc",
-    "ar_renderer.h",
     "arcore.cc",
     "arcore.h",
     "arcore_anchor_manager.cc",

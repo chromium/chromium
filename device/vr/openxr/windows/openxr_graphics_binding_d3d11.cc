@@ -9,13 +9,21 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/openxr/windows/openxr_platform_helper_windows.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/windows/d3d11_texture_helper.h"
+#include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gfx/gpu_fence.h"
 
 namespace device {
 
@@ -108,12 +116,161 @@ XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
   return XR_SUCCESS;
 }
 
-void OpenXrGraphicsBindingD3D11::ClearSwapChainInfo() {
+void OpenXrGraphicsBindingD3D11::ClearSwapChainImages() {
   color_swapchain_images_.clear();
 }
 
-base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainInfo() {
+base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
   return color_swapchain_images_;
+}
+
+bool OpenXrGraphicsBindingD3D11::CanUseSharedImages() const {
+  // Put shared image feature behind a flag until remaining issues with overlays
+  // are resolved.
+  return !base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages);
+}
+
+void OpenXrGraphicsBindingD3D11::CreateSharedImages(
+    gpu::SharedImageInterface* sii) {
+  CHECK(sii);
+
+  for (auto& swap_chain_info : color_swapchain_images_) {
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    HRESULT hr = swap_chain_info.d3d11_texture->QueryInterface(
+        IID_PPV_ARGS(&dxgi_resource));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
+                  << std::hex << hr;
+      return;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+    hr = dxgi_resource.As(&d3d11_texture);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "QueryInterface for ID3D11Texture2D failed with error "
+                  << std::hex << hr;
+      return;
+    }
+
+    D3D11_TEXTURE2D_DESC texture2d_desc;
+    d3d11_texture->GetDesc(&texture2d_desc);
+
+    // Shared handle creation can fail on platforms where the texture, for
+    // whatever reason, cannot be shared. We need to fallback gracefully to
+    // texture copies.
+    HANDLE shared_handle;
+    hr = dxgi_resource->CreateSharedHandle(
+        nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+        nullptr, &shared_handle);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Unable to create shared handle for DXGIResource "
+                  << std::hex << hr;
+      return;
+    }
+
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
+    gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
+    gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
+    gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gfx::Size buffer_size =
+        gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
+
+    std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> gpu_memory_buffer =
+        gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
+            std::move(gpu_memory_buffer_handle), buffer_size,
+            gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
+            base::DoNothing(), nullptr, nullptr);
+
+    const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                        gpu::SHARED_IMAGE_USAGE_GLES2;
+
+    gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
+    mailbox_holder.mailbox = sii->CreateSharedImage(
+        viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
+        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                        gfx::ColorSpace::TransferID::LINEAR),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+        "OpenXrSwapChain", gpu_memory_buffer->CloneHandle());
+    mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
+    mailbox_holder.texture_target = GL_TEXTURE_2D;
+  }
+}
+
+const SwapChainInfo& OpenXrGraphicsBindingD3D11::GetActiveSwapchainImage() {
+  CHECK(has_active_swapchain_image());
+  CHECK(active_swapchain_index() < color_swapchain_images_.size());
+
+  // We don't do any index translation on the images returned from the system;
+  // so whatever the system says is the active swapchain image, it is in the
+  // same spot in our vector.
+  return color_swapchain_images_[active_swapchain_index()];
+}
+
+bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
+  if (!has_active_swapchain_image() ||
+      active_swapchain_index() >= color_swapchain_images_.size()) {
+    return false;
+  }
+
+  // We don't do any index translation on the images returned from the system;
+  // so whatever the system says is the active swapchain image, it is in the
+  // same spot in our vector.
+  auto& swap_chain_info = color_swapchain_images_[active_swapchain_index()];
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      texture_helper_->GetDevice();
+  Microsoft::WRL::ComPtr<ID3D11Device5> d3d11_device5;
+  HRESULT hr = d3d11_device.As(&d3d11_device5);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to retrieve ID3D11Device5 interface " << std::hex
+                << hr;
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
+  hr = d3d11_device5->OpenSharedFence(
+      gpu_fence.GetGpuFenceHandle().owned_handle.Get(),
+      IID_PPV_ARGS(&d3d11_fence));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to open a shared fence " << std::hex << hr;
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
+  d3d11_device5->GetImmediateContext(&d3d11_device_context);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext4> d3d11_device_context4;
+  hr = d3d11_device_context.As(&d3d11_device_context4);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to retrieve ID3D11DeviceContext4 interface "
+                << std::hex << hr;
+    return false;
+  }
+
+  hr = d3d11_device_context4->Wait(d3d11_fence.Get(), 1);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to Wait on D3D11 fence " << std::hex << hr;
+    return false;
+  }
+
+  // In order for the fence to be respected by the system, it needs to stick
+  // around until the next time the texture comes up for use.
+  swap_chain_info.d3d11_fence = std::move(d3d11_fence);
+
+  return true;
+}
+
+void OpenXrGraphicsBindingD3D11::OnFrameSizeChanged() {
+  texture_helper_->SetDefaultSize(GetFrameSize());
+}
+
+void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated() {
+  CHECK(has_active_swapchain_image());
+  CHECK(active_swapchain_index() < color_swapchain_images_.size());
+
+  texture_helper_->SetBackbuffer(
+      color_swapchain_images_[active_swapchain_index()].d3d11_texture.get());
 }
 
 }  // namespace device

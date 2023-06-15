@@ -119,11 +119,12 @@ const char* GetXrSessionStateName(XrSessionState state) {
 }  // namespace
 
 std::unique_ptr<OpenXrApiWrapper> OpenXrApiWrapper::Create(
-    XrInstance instance) {
+    XrInstance instance,
+    OpenXrGraphicsBinding* graphics_binding) {
   std::unique_ptr<OpenXrApiWrapper> openxr =
       std::make_unique<OpenXrApiWrapper>();
 
-  if (!openxr->Initialize(instance)) {
+  if (!openxr->Initialize(instance, graphics_binding)) {
     return nullptr;
   }
 
@@ -176,7 +177,6 @@ void OpenXrApiWrapper::Reset() {
   view_space_ = XR_NULL_HANDLE;
   color_swapchain_ = XR_NULL_HANDLE;
   ReleaseColorSwapchainImages();
-  swapchain_size_ = gfx::Size();
   session_ = XR_NULL_HANDLE;
   blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
   stage_bounds_ = {};
@@ -197,9 +197,15 @@ void OpenXrApiWrapper::Reset() {
   visibility_changed_callback_.Reset();
 }
 
-bool OpenXrApiWrapper::Initialize(XrInstance instance) {
+bool OpenXrApiWrapper::Initialize(XrInstance instance,
+                                  OpenXrGraphicsBinding* graphics_binding) {
   Reset();
 
+  if (!graphics_binding) {
+    return false;
+  }
+
+  graphics_binding_ = graphics_binding;
   session_running_ = false;
   pending_frame_ = false;
 
@@ -209,6 +215,10 @@ bool OpenXrApiWrapper::Initialize(XrInstance instance) {
   DCHECK(HasInstance());
 
   if (XR_FAILED(InitializeSystem())) {
+    return false;
+  }
+
+  if (!graphics_binding_->Initialize(instance_, system_)) {
     return false;
   }
 
@@ -278,7 +288,7 @@ bool OpenXrApiWrapper::HasSession() const {
 
 bool OpenXrApiWrapper::HasColorSwapChain() const {
   return color_swapchain_ != XR_NULL_HANDLE && graphics_binding_ &&
-         graphics_binding_->GetSwapChainInfo().size() > 0;
+         graphics_binding_->GetSwapChainImages().size() > 0;
 }
 
 bool OpenXrApiWrapper::HasSpace(XrReferenceSpaceType type) const {
@@ -451,21 +461,13 @@ OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
 // objects that may have been created before the failure.
 XrResult OpenXrApiWrapper::InitSession(
     const std::unordered_set<mojom::XRSessionFeature>& enabled_features,
-    OpenXrGraphicsBinding* graphics_binding,
     const OpenXrExtensionHelper& extension_helper,
     SessionStartedCallback on_session_started_callback,
     SessionEndedCallback on_session_ended_callback,
     VisibilityChangedCallback visibility_changed_callback) {
-  CHECK(graphics_binding);
   DCHECK(IsInitialized());
 
   enabled_features_ = enabled_features;
-  graphics_binding_ = graphics_binding;
-
-  if (!graphics_binding_->Initialize(instance_, system_)) {
-    DLOG(ERROR) << __func__ << " Failed to initialize graphics binding";
-    return XR_ERROR_INITIALIZATION_FAILED;
-  }
 
   // These are the only features that use stage parameters. If none of them were
   // requested for the session, we can avoid querying this every frame.
@@ -525,18 +527,21 @@ XrResult OpenXrApiWrapper::CreateSession() {
 }
 
 XrResult OpenXrApiWrapper::CreateSwapchain() {
+  // TODO(https://crbug.com/1454936): Move CreateSwapchain (and related methods)
+  // to the `OpenXrGraphicsBinding` instead of here.
   DCHECK(IsInitialized());
   DCHECK(HasSession());
   DCHECK(!HasColorSwapChain());
-  DCHECK(graphics_binding_->GetSwapChainInfo().empty());
+  DCHECK(graphics_binding_->GetSwapChainImages().empty());
 
   XrSwapchainCreateInfo swapchain_create_info = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
   swapchain_create_info.arraySize = 1;
   swapchain_create_info.format =
       graphics_binding_->GetSwapchainFormat(session_);
 
-  swapchain_create_info.width = swapchain_size_.width();
-  swapchain_create_info.height = swapchain_size_.height();
+  auto frame_size = graphics_binding_->GetFrameSize();
+  swapchain_create_info.width = frame_size.width();
+  swapchain_create_info.height = frame_size.height();
   swapchain_create_info.mipCount = 1;
   swapchain_create_info.faceCount = 1;
   swapchain_create_info.sampleCount = GetRecommendedSwapchainSampleCount();
@@ -595,9 +600,10 @@ bool OpenXrApiWrapper::RecomputeSwapchainSizeAndViewports() {
     }
   }
 
-  if (swapchain_size_.width() != static_cast<int>(total_width) ||
-      swapchain_size_.height() != static_cast<int>(total_height)) {
-    swapchain_size_ = gfx::Size(total_width, total_height);
+  auto frame_size = graphics_binding_->GetFrameSize();
+  if (frame_size.width() != static_cast<int>(total_width) ||
+      frame_size.height() != static_cast<int>(total_height)) {
+    graphics_binding_->SetFrameSize(gfx::Size(total_width, total_height));
     return true;
   }
 
@@ -624,6 +630,9 @@ XrSpace OpenXrApiWrapper::GetReferenceSpace(
 // Based on the capabilities of the system and runtime, determine whether
 // to use shared images to draw into OpenXR swap chain buffers.
 bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
+  // TODO(https://crbug.com/1454940): Investigate moving the remaining Windows-
+  // only checks out of this class and into the GraphicsBinding.
+#if BUILDFLAG(IS_WIN)
   // ANGLE's render_to_texture extension on Windows fails to render correctly
   // for EGL images. Until that is fixed, we need to disable shared images if
   // CanEnableAntiAliasing is true.
@@ -643,18 +652,15 @@ bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
       (view_configuration_props.fovMutable == XR_FALSE)) {
     return false;
   }
+#endif
 
-  // Put shared image feature behind a flag until remaining issues with overlays
-  // are resolved.
-  if (!base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages)) {
-    return false;
-  }
-
-  return true;
+  return graphics_binding_->CanUseSharedImages();
 }
 
 void OpenXrApiWrapper::OnContextProviderCreated(
     scoped_refptr<viz::ContextProvider> context_provider) {
+  // TODO(https://crbug.com/1454935): Move `context_provider_` to
+  // `OpenXrGraphicsBinding`.
   // We need to store the context provider because the shared mailboxes are
   // re-created when secondary view configurations become active or non active.
   context_provider_ = std::move(context_provider);
@@ -667,7 +673,7 @@ void OpenXrApiWrapper::OnContextProviderLost() {
   if (context_provider_ && graphics_binding_) {
     // Mark the shared mailboxes as invalid since the underlying GPU process
     // associated with them has gone down.
-    for (SwapChainInfo& info : graphics_binding_->GetSwapChainInfo()) {
+    for (SwapChainInfo& info : graphics_binding_->GetSwapChainImages()) {
       info.Clear();
     }
     context_provider_ = nullptr;
@@ -678,7 +684,7 @@ void OpenXrApiWrapper::ReleaseColorSwapchainImages() {
   if (context_provider_ && graphics_binding_) {
     gpu::SharedImageInterface* shared_image_interface =
         context_provider_->SharedImageInterface();
-    for (SwapChainInfo& info : graphics_binding_->GetSwapChainInfo()) {
+    for (SwapChainInfo& info : graphics_binding_->GetSwapChainImages()) {
       if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
           info.mailbox_holder.sync_token.HasData()) {
         shared_image_interface->DestroySharedImage(
@@ -689,7 +695,7 @@ void OpenXrApiWrapper::ReleaseColorSwapchainImages() {
   }
 
   if (graphics_binding_) {
-    graphics_binding_->ClearSwapChainInfo();
+    graphics_binding_->ClearSwapChainImages();
   }
 }
 
@@ -698,74 +704,10 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
     return;
   }
 
-// TODO(https://crbug.com/1441073): Refactor OpenXR Rendering.
-#if BUILDFLAG(IS_WIN)
   gpu::SharedImageInterface* shared_image_interface =
       context_provider_->SharedImageInterface();
-
   // Create the MailboxHolders for each texture in the swap chain
-  for (SwapChainInfo& swap_chain_info : graphics_binding_->GetSwapChainInfo()) {
-    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-    HRESULT hr = swap_chain_info.d3d11_texture->QueryInterface(
-        IID_PPV_ARGS(&dxgi_resource));
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
-                  << std::hex << hr;
-      return;
-    }
-
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-    hr = dxgi_resource.As(&d3d11_texture);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "QueryInterface for ID3D11Texture2D failed with error "
-                  << std::hex << hr;
-      return;
-    }
-
-    D3D11_TEXTURE2D_DESC texture2d_desc;
-    d3d11_texture->GetDesc(&texture2d_desc);
-
-    // Shared handle creation can fail on platforms where the texture, for
-    // whatever reason, cannot be shared. We need to fallback gracefully to
-    // texture copies.
-    HANDLE shared_handle;
-    hr = dxgi_resource->CreateSharedHandle(
-        nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
-        nullptr, &shared_handle);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Unable to create shared handle for DXGIResource "
-                  << std::hex << hr;
-      return;
-    }
-
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
-    gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
-    gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
-    gfx::Size buffer_size =
-        gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
-
-    std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> gpu_memory_buffer =
-        gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-            std::move(gpu_memory_buffer_handle), buffer_size,
-            gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
-            base::DoNothing(), nullptr, nullptr);
-
-    const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                        gpu::SHARED_IMAGE_USAGE_GLES2;
-
-    gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
-    mailbox_holder.mailbox = shared_image_interface->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
-        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                        gfx::ColorSpace::TransferID::LINEAR),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-        "OpenXrSwapChain", gpu_memory_buffer->CloneHandle());
-    mailbox_holder.sync_token = shared_image_interface->GenVerifiedSyncToken();
-    mailbox_holder.texture_target = GL_TEXTURE_2D;
-  }
-#endif
+  graphics_binding_->CreateSharedImages(shared_image_interface);
 }
 
 bool OpenXrApiWrapper::IsUsingSharedImages() const {
@@ -773,24 +715,10 @@ bool OpenXrApiWrapper::IsUsingSharedImages() const {
     return false;
   }
 
-  const auto swapchain_info = graphics_binding_->GetSwapChainInfo();
+  const auto swapchain_info = graphics_binding_->GetSwapChainImages();
   return ((swapchain_info.size() > 1) &&
           !swapchain_info[0].mailbox_holder.mailbox.IsZero());
 }
-
-// TODO(https://crbug.com/1441073): Refactor OpenXR Rendering.
-#if BUILDFLAG(IS_WIN)
-void OpenXrApiWrapper::StoreFence(
-    Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
-    int16_t frame_index) {
-  const size_t swapchain_images_size =
-      graphics_binding_->GetSwapChainInfo().size();
-  if (swapchain_images_size > 0) {
-    graphics_binding_->GetSwapChainInfo()[frame_index % swapchain_images_size]
-        .d3d11_fence = std::move(d3d11_fence);
-  }
-}
-#endif
 
 XrResult OpenXrApiWrapper::CreateSpace(XrReferenceSpaceType type,
                                        XrSpace* space) {
@@ -837,10 +765,9 @@ XrResult OpenXrApiWrapper::BeginSession() {
   return xr_result;
 }
 
-XrResult OpenXrApiWrapper::BeginFrame(SwapChainInfo** swap_chain_info) {
+XrResult OpenXrApiWrapper::BeginFrame() {
   DCHECK(HasSession());
   DCHECK(HasColorSwapChain());
-  *swap_chain_info = nullptr;
 
   if (!session_running_)
     return XR_ERROR_SESSION_NOT_RUNNING;
@@ -877,20 +804,10 @@ XrResult OpenXrApiWrapper::BeginFrame(SwapChainInfo** swap_chain_info) {
   RETURN_IF_XR_FAILED(xrBeginFrame(session_, &begin_frame_info));
   pending_frame_ = true;
 
-  XrSwapchainImageAcquireInfo acquire_info = {
-      XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-  uint32_t color_swapchain_image_index;
-  RETURN_IF_XR_FAILED(xrAcquireSwapchainImage(color_swapchain_, &acquire_info,
-                                              &color_swapchain_image_index));
-
-  XrSwapchainImageWaitInfo wait_info = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-  wait_info.timeout = XR_INFINITE_DURATION;
-  RETURN_IF_XR_FAILED(xrWaitSwapchainImage(color_swapchain_, &wait_info));
+  RETURN_IF_XR_FAILED(
+      graphics_binding_->ActivateSwapchainImage(color_swapchain_));
 
   RETURN_IF_XR_FAILED(UpdateViewConfigurations());
-
-  *swap_chain_info =
-      &graphics_binding_->GetSwapChainInfo()[color_swapchain_image_index];
 
   return XR_SUCCESS;
 }
@@ -1006,7 +923,8 @@ XrResult OpenXrApiWrapper::PrepareViewConfigForRender(
       projection_view.fov.angleDown = view.fov.angleUp;
     } else {
       projection_view.subImage.imageRect.offset.y =
-          swapchain_size_.height() - properties.recommendedImageRectHeight;
+          graphics_binding_->GetFrameSize().height() -
+          properties.recommendedImageRectHeight;
       projection_view.fov.angleUp = view.fov.angleUp;
       projection_view.fov.angleDown = view.fov.angleDown;
     }
@@ -1023,9 +941,8 @@ XrResult OpenXrApiWrapper::EndFrame() {
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
   DCHECK(HasFrameState());
 
-  XrSwapchainImageReleaseInfo release_info = {
-      XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-  RETURN_IF_XR_FAILED(xrReleaseSwapchainImage(color_swapchain_, &release_info));
+  RETURN_IF_XR_FAILED(
+      graphics_binding_->ReleaseActiveSwapchainImage(color_swapchain_));
 
   // Each view configuration has its own layer, which was populated in
   // PrepareViewConfigForRender. These layers are all put into XrFrameEndInfo
@@ -1383,10 +1300,6 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
   return xr_result;
 }
 
-gfx::Size OpenXrApiWrapper::GetSwapchainSize() const {
-  return swapchain_size_;
-}
-
 uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {
   DCHECK(IsInitialized());
 
@@ -1398,24 +1311,8 @@ uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {
       ->recommendedSwapchainSampleCount;
 }
 
-// From the OpenXR Spec:
-// maxSwapchainSampleCount is the maximum number of sub-data element samples
-// supported for swapchain images that will be rendered into for this view.
-//
-// To ease the workload on low end devices, we disable anti-aliasing when the
-// max sample count is 1.
 bool OpenXrApiWrapper::CanEnableAntiAliasing() const {
-  DCHECK(IsInitialized());
-
-  const auto compareMaxSwapchainSampleCounts =
-      [](const XrViewConfigurationView& i, const XrViewConfigurationView& j) {
-        return (i.maxSwapchainSampleCount < j.maxSwapchainSampleCount);
-      };
-
-  const auto it_min_element = std::min_element(
-      primary_view_config_.Properties().begin(),
-      primary_view_config_.Properties().end(), compareMaxSwapchainSampleCounts);
-  return (it_min_element->maxSwapchainSampleCount > 1);
+  return primary_view_config_.CanEnableAntiAliasing();
 }
 
 // stage bounds is fixed unless we received event

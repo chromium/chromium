@@ -5,18 +5,34 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "device/vr/android/xr_image_transport_base.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_context_egl.h"
+#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/scoped_egl_image.h"
 
 namespace device {
+
+namespace {
+int next_memory_buffer_id = 0;
+}  // namespace
 
 // static
 void OpenXrGraphicsBinding::GetRequiredExtensions(
@@ -110,6 +126,8 @@ bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
   binding_.config = (EGLConfig)0;
   binding_.context = egl_context_->GetHandle();
 
+  renderer_ = std::make_unique<XrRenderer>();
+
   initialized_ = true;
   return true;
 }
@@ -129,8 +147,16 @@ int64_t OpenXrGraphicsBindingOpenGLES::GetSwapchainFormat(
       xrEnumerateSwapchainFormats(session, (uint32_t)swapchain_formats.size(),
                                   &format_length, swapchain_formats.data()));
   DCHECK(!swapchain_formats.empty());
-  // TODO(alcooper): Care about the swapchain format that we pick.
-  return swapchain_formats[0];
+
+  // If the runtime doesn't support the swapchain format we need, log it. We'll
+  // still return it anyway as that will cause an error with creating the
+  // swapchain, which is better than arbitrarily returning a type that the
+  // runtime supports, but we don't.
+  if (!base::Contains(swapchain_formats, GL_RGBA8)) {
+    LOG(ERROR) << "No matching supported swapchain formats with OpenXr Runtime";
+  }
+
+  return GL_RGBA8;
 }
 
 XrResult OpenXrGraphicsBindingOpenGLES::EnumerateSwapchainImages(
@@ -157,12 +183,134 @@ XrResult OpenXrGraphicsBindingOpenGLES::EnumerateSwapchainImages(
   return XR_SUCCESS;
 }
 
-void OpenXrGraphicsBindingOpenGLES::ClearSwapChainInfo() {
+void OpenXrGraphicsBindingOpenGLES::ClearSwapChainImages() {
   color_swapchain_images_.clear();
 }
 
-base::span<SwapChainInfo> OpenXrGraphicsBindingOpenGLES::GetSwapChainInfo() {
+base::span<SwapChainInfo> OpenXrGraphicsBindingOpenGLES::GetSwapChainImages() {
   return color_swapchain_images_;
+}
+
+bool OpenXrGraphicsBindingOpenGLES::CanUseSharedImages() const {
+  return XrImageTransportBase::UseSharedBuffer();
+}
+
+// This is more or less copied from XrImageTransportBase::ResizeSharedBuffer,
+// with just the types changed as needed, and logic extracted out of the
+// mailbox_to_surface_bridge.
+void OpenXrGraphicsBindingOpenGLES::CreateSharedImages(
+    gpu::SharedImageInterface* sii) {
+  CHECK(sii);
+
+  for (auto& swap_chain_info : color_swapchain_images_) {
+    // Unbind previous image (if any).
+    if (!swap_chain_info.mailbox_holder.mailbox.IsZero()) {
+      DVLOG(2) << ": DestroySharedImage, mailbox="
+               << swap_chain_info.mailbox_holder.mailbox.ToDebugString();
+      // Note: the sync token in mailbox_holder may not be accurate. See comment
+      // in TransferFrame below.
+      sii->DestroySharedImage(swap_chain_info.mailbox_holder.sync_token,
+                              swap_chain_info.mailbox_holder.mailbox);
+    }
+
+    // Remove reference to previous image (if any).
+    swap_chain_info.local_eglimage.reset();
+
+    static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+    static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
+
+    glGenTextures(1, &swap_chain_info.shared_buffer_texture);
+
+    gfx::GpuMemoryBufferId kBufferId(next_memory_buffer_id++);
+    swap_chain_info.gmb = gpu::GpuMemoryBufferImplAndroidHardwareBuffer::Create(
+        kBufferId, GetFrameSize(), format, usage,
+        gpu::GpuMemoryBufferImpl::DestructionCallback());
+
+    uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                  gpu::SHARED_IMAGE_USAGE_GLES2;
+
+    swap_chain_info.mailbox_holder.mailbox = sii->CreateSharedImage(
+        viz::SinglePlaneFormat::kRGBA_8888, swap_chain_info.gmb->GetSize(),
+        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        shared_image_usage, "OpenXrGraphicsBinding",
+        swap_chain_info.gmb->CloneHandle());
+    swap_chain_info.mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
+    DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
+        swap_chain_info.gmb->GetFormat()));
+    swap_chain_info.mailbox_holder.texture_target = GL_TEXTURE_2D;
+
+    DVLOG(2) << ": CreateSharedImage, mailbox="
+             << swap_chain_info.mailbox_holder.mailbox.ToDebugString()
+             << ", SyncToken="
+             << swap_chain_info.mailbox_holder.sync_token.ToDebugString();
+
+    base::android::ScopedHardwareBufferHandle ahb =
+        swap_chain_info.gmb->CloneHandle().android_hardware_buffer;
+
+    // Create an EGLImage for the buffer.
+    auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
+    if (!egl_image.is_valid()) {
+      DLOG(WARNING) << __func__ << ": ERROR: failed to initialize image!";
+      return;
+    }
+
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES,
+                  swap_chain_info.shared_buffer_texture);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+    swap_chain_info.local_eglimage = std::move(egl_image);
+  }
+}
+
+const SwapChainInfo& OpenXrGraphicsBindingOpenGLES::GetActiveSwapchainImage() {
+  CHECK(has_active_swapchain_image());
+  CHECK(active_swapchain_index() < color_swapchain_images_.size());
+
+  // We don't do any index translation on the images returned from the system;
+  // so whatever the system says is the active swapchain image, it is in the
+  // same spot in our vector.
+  return color_swapchain_images_[active_swapchain_index()];
+}
+
+bool OpenXrGraphicsBindingOpenGLES::Render() {
+  if (!has_active_swapchain_image() ||
+      active_swapchain_index() >= color_swapchain_images_.size()) {
+    return false;
+  }
+
+  // We don't do any index translation on the images returned from the system;
+  // so whatever the system says is the active swapchain image, it is in the
+  // same spot in our vector.
+  auto& swap_chain_info = color_swapchain_images_[active_swapchain_index()];
+
+  gfx::Size frame_size = GetFrameSize();
+
+  if (!back_buffer_fbo_) {
+    glGenFramebuffersEXT(1, &back_buffer_fbo_);
+  }
+  glBindFramebufferEXT(GL_FRAMEBUFFER, back_buffer_fbo_);
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                            swap_chain_info.openxr_texture, 0);
+
+  glDisable(GL_CULL_FACE);
+  glDisable(GL_SCISSOR_TEST);
+  glDisable(GL_POLYGON_OFFSET_FILL);
+  glViewport(0, 0, frame_size.width(), frame_size.height());
+
+  gfx::Transform transform;
+  float transform_floats[16];
+  transform.GetColMajorF(transform_floats);
+  renderer_->Draw(swap_chain_info.shared_buffer_texture, transform_floats);
+
+  return true;
+}
+
+bool OpenXrGraphicsBindingOpenGLES::WaitOnFence(gfx::GpuFence& gpu_fence) {
+  std::unique_ptr<gl::GLFence> local_fence =
+      gl::GLFence::CreateFromGpuFence(gpu_fence);
+  local_fence->ServerWait();
+
+  return true;
 }
 
 }  // namespace device

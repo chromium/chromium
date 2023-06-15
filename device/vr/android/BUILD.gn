@@ -16,10 +16,15 @@ static_library("vr_android") {
     "xr_image_transport_base.cc",
     "xr_image_transport_base.h",
     "xr_java_coordinator.h",
+    "xr_renderer.cc",
+    "xr_renderer.h",
   ]
+
+  public_deps = [ "//device/vr:vr_gl_bindings" ]
 
   deps = [
     "//components/viz/common",
+    "//device/vr:vr_base",
     "//device/vr/public/cpp:features",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common:common",

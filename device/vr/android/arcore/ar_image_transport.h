@@ -9,8 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "device/vr/android/arcore/ar_renderer.h"
 #include "device/vr/android/xr_image_transport_base.h"
+#include "device/vr/android/xr_renderer.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
                                 const gfx::Size& frame_size,
                                 const gfx::Transform& uv_transform);
 
-  std::unique_ptr<ArRenderer> ar_renderer_;
+  std::unique_ptr<XrRenderer> renderer_;
   // samplerExternalOES texture for the camera image.
   GLuint camera_texture_id_arcore_ = 0;
   GLuint camera_fbo_ = 0;
