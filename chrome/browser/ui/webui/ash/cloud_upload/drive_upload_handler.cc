@@ -265,13 +265,8 @@ void DriveUploadHandler::OnIOTaskStatus(
       }
       return;
     case file_manager::io_task::State::kNeedPassword:
-      if (status.type == file_manager::io_task::OperationType::kCopy) {
-        OnEndUpload(GURL(), OfficeFilesUploadResult::kCopyOperationNeedPassword,
-                    "Copy error: kNeedPassword");
-      } else {
-        OnEndUpload(GURL(), OfficeFilesUploadResult::kMoveOperationNeedPassword,
-                    "Move error: kNeedPassword");
-      }
+      NOTREACHED() << "Encrypted file should not need password to be copied or "
+                      "moved. Case should not be reached.";
       return;
   }
 }

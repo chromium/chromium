@@ -237,15 +237,8 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       }
       return;
     case file_manager::io_task::State::kNeedPassword:
-      if (status.type == file_manager::io_task::OperationType::kCopy) {
-        OnEndUpload(FileSystemURL(),
-                    OfficeFilesUploadResult::kCopyOperationNeedPassword,
-                    "Copy error: kNeedPassword");
-      } else {
-        OnEndUpload(FileSystemURL(),
-                    OfficeFilesUploadResult::kMoveOperationNeedPassword,
-                    "Move error: kNeedPassword");
-      }
+      NOTREACHED() << "Encrypted file should not need password to be copied or "
+                      "moved. Case should not be reached.";
       return;
   }
 }
