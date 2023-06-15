@@ -559,7 +559,6 @@ crbug.com/1278935 [ ventura amd renderer-skia-gl angle-opengl ] deqp/functional/
 
 crbug.com/1276186 [ mac amd-0x679e angle-opengl passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/1276186 [ mac amd-0x67ef angle-opengl passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
-crbug.com/1240443 [ mac amd-0x67ef angle-opengl passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 crbug.com/angleproject/5224 [ mac passthrough angle-opengl amd ] conformance2/rendering/instanced-arrays.html [ Failure ]
 crbug.com/angleproject/5225 [ mac passthrough angle-opengl amd ] conformance2/rendering/vertex-id.html [ Failure ]
@@ -581,9 +580,8 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
 
-crbug.com/1449922 [ mac amd angle-opengl ] conformance2/transform_feedback/transform_feedback.html [ RetryOnFailure ]
 
-crbug.com/1450355 [ mac amd ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/1450355 [ amd angle-opengl mac ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 ## Mac Intel ##
 
