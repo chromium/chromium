@@ -2135,10 +2135,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiWindowMode.TotalDuration" units="ms"
-    expires_after="2022-08-16">
-  <owner>jinsukkim@chromium.org</owner>
+    expires_after="2023-12-16">
+  <owner>skavuluru@google.com</owner>
   <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Total time spent in Android N+ multi-window (aka split-screen) mode.
     Recorded when multi-window mode is exited.
