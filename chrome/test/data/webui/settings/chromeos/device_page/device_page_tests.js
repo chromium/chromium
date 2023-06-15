@@ -25,6 +25,7 @@ const TestNames = {
   DevicePage: 'device page',
   Audio: 'audio',
   Display: 'display',
+  GraphicsTablet: 'graphics tablet',
   Keyboard: 'keyboard',
   PerDeviceMouse: 'per-device mouse',
   PerDeviceTouchpad: 'per-device touchpad',
@@ -717,9 +718,7 @@ suite('SettingsDevicePage', function() {
       const page =
           devicePage.shadowRoot.querySelector('settings-per-device-keyboard');
       assert(page);
-      return Promise.resolve(page).then(function(page) {
-        perDeviceKeyboardPage = page;
-      });
+      perDeviceKeyboardPage = page;
     });
 
     test('per-device keyboard subpage visibility', function() {
@@ -2064,6 +2063,30 @@ suite('SettingsDevicePage', function() {
           keyboardPage.shadowRoot.querySelector('#keyboardShortcutViewer')
               .shadowRoot.querySelector('cr-icon-button'),
           'Keyboard shortcuts button');
+    });
+  });
+
+  suite(assert(TestNames.GraphicsTablet), function() {
+    let graphicsTabletPage;
+    setup(async function() {
+      setPeripheralCustomizationEnabled(true);
+      await init();
+      const row =
+          assert(devicePage.shadowRoot.querySelector(`#main #tabletRow`));
+      row.click();
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      const page = devicePage.shadowRoot.querySelector(
+          'settings-graphics-tablet-subpage');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        graphicsTabletPage = page;
+      });
+    });
+
+    test('graphics tablet subpage visibility', function() {
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      assertTrue(isVisible(graphicsTabletPage.shadowRoot.querySelector(
+          '#graphicsTabletSubpageTitle')));
     });
   });
 

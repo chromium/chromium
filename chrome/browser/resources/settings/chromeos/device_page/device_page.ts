@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './audio.js';
 import './display.js';
+import './graphics_tablet_subpage.js';
 import './keyboard.js';
 import './per_device_keyboard.js';
 import './per_device_keyboard_remap_keys.js';
@@ -188,6 +189,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           }
           if (routes.POWER) {
             map.set(routes.POWER.path, '#powerRow');
+          }
+          if (routes.GRAPHICS_TABLET) {
+            map.set(routes.GRAPHICS_TABLET.path, '#tabletRow');
           }
           return map;
         },
@@ -446,8 +450,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
    * Handler for tapping the Graphics tablet settings menu item.
    */
   private onGraphicsTabletClick() {
-    // TODO(yyhyyh@): Add Graphics tablet route and subpage, then implement
-    // the click function.
+    Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
   }
 
   /**

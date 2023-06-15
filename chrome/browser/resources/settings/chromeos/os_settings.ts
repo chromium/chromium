@@ -23,6 +23,7 @@ import './device_page/fake_input_device_data.js';
 import './device_page/fake_input_device_settings_provider.js';
 import './device_page/input_device_mojo_interface_provider.js';
 import './device_page/input_device_settings_types.js';
+import './device_page/graphics_tablet_subpage.js';
 import './device_page/keyboard.js';
 import './device_page/per_device_keyboard.js';
 import './device_page/per_device_keyboard_remap_keys.js';
@@ -101,6 +102,7 @@ export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClo
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakePointingSticks, fakePointingSticks2, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
+export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_tablet_subpage.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {InputDeviceSettingsPolicy, Keyboard, MetaKey, ModifierKey, Mouse, PolicyStatus} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';

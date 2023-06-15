@@ -359,6 +359,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
       ChromePage::PERDEVICEKEYBOARD,
       base_url.Resolve(
           chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::GRAPHICSTABLET,
+      base_url.Resolve(chromeos::settings::mojom::kGraphicsTabletSubpagePath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

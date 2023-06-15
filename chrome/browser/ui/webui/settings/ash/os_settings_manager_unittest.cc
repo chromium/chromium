@@ -55,7 +55,8 @@ class OsSettingsManagerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {::features::kAccessibilityChromeVoxPageMigration,
          ::features::kAccessibilitySelectToSpeakPageMigration,
-         ash::features::kInputDeviceSettingsSplit},
+         ash::features::kInputDeviceSettingsSplit,
+         ash::features::kPeripheralCustomization},
         {});
     ASSERT_TRUE(profile_manager_.SetUp());
     TestingProfile* profile =

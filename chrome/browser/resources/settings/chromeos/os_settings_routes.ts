@@ -159,6 +159,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   FILES: Route;
   GOOGLE_ASSISTANT: Route;
   GOOGLE_DRIVE: Route;
+  GRAPHICS_TABLET: Route;
   HOTSPOT_DETAIL: Route;
   INTERNET: Route;
   INTERNET_NETWORKS: Route;
@@ -348,6 +349,11 @@ export function createRoutes(): OsSettingsRoutes {
         r.PER_DEVICE_KEYBOARD,
         routesMojom.PER_DEVICE_KEYBOARD_REMAP_KEYS_SUBPAGE_PATH,
         Subpage.kPerDeviceKeyboardRemapKeys);
+  }
+  if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
+    r.GRAPHICS_TABLET = createSubpage(
+        r.DEVICE, routesMojom.GRAPHICS_TABLET_SUBPAGE_PATH,
+        Subpage.kGraphicsTablet);
   }
   r.STORAGE = createSubpage(
       r.DEVICE, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);

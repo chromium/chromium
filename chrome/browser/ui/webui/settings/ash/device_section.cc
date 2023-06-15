@@ -51,6 +51,7 @@ using ::chromeos::settings::mojom::kAudioSubpagePath;
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kDisplaySubpagePath;
 using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
+using ::chromeos::settings::mojom::kGraphicsTabletSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath;
@@ -1324,6 +1325,16 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::SearchResultIcon::kDisplay,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::kPerDevicePointingStickSubpagePath);
+  }
+
+  if (base::FeatureList::IsEnabled(ash::features::kPeripheralCustomization)) {
+    // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
+    // stylus icon.
+    generator->RegisterTopLevelSubpage(IDS_SETTINGS_GRAPHICS_TABLET_TITLE,
+                                       mojom::Subpage::kGraphicsTablet,
+                                       mojom::SearchResultIcon::kStylus,
+                                       mojom::SearchResultDefaultRank::kMedium,
+                                       mojom::kGraphicsTabletSubpagePath);
   }
 
   // Keyboard.
