@@ -12,6 +12,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -264,6 +265,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       title = authenticatedIdentity.userEmail;
     }
   }
+  if ([self isAccountSignedInNotSyncing]) {
+    title = l10n_util::GetNSString(
+        IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE);
+  }
   self.title = title;
 
   [super loadModel];
@@ -423,7 +428,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
   item.text =
       l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
-  item.textColor = [UIColor colorNamed:kRedColor];
+  item.textColor = [self isAccountSignedInNotSyncing]
+                       ? [UIColor colorNamed:kBlueColor]
+                       : [UIColor colorNamed:kRedColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
   return item;
@@ -975,6 +982,16 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
       _browser->GetCommandDispatcher());
   [self.navigationController pushViewController:controllerToPush animated:YES];
+}
+
+#pragma mark - Private methods
+
+// Returns YES if the account is signed in not syncing, NO otherwise.
+- (BOOL)isAccountSignedInNotSyncing {
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) &&
+         !SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState())
+              ->HasSyncConsent();
 }
 
 @end
