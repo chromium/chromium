@@ -10,9 +10,11 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -37,6 +39,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner() {
     return task_runner_;
   }
+  bool IsMockDelegateCreatedFor(Profile* profile);
 
   void ShutdownScalableIph();
 
@@ -44,13 +47,14 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static void SetTestingFactories(content::BrowserContext* browser_context);
   static std::unique_ptr<KeyedService> CreateMockTracker(
       content::BrowserContext* browser_context);
-  static std::unique_ptr<scalable_iph::ScalableIphDelegate>
-  CreateMockDelegate();
+  static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(
+      Profile* profile);
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::CallbackListSubscription subscription_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   raw_ptr<test::MockScalableIphDelegate> mock_delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace ash

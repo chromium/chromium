@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -41,8 +42,11 @@ class ScalableIph : public KeyedService {
 
   void OverrideFeatureListForTesting(
       const std::vector<const base::Feature*> features);
+  void OverrideTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
+  void EnsureTimerStarted();
   void RecordTimeTickEvent();
   void RecordEventInternal(Event event, bool init_success);
   void CheckTriggerConditions();

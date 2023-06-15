@@ -49,9 +49,7 @@ ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
   CHECK(tracker_);
   CHECK(delegate_);
 
-  timer_.Start(FROM_HERE, kTimeTickEventInterval,
-               base::BindRepeating(&ScalableIph::RecordTimeTickEvent,
-                                   weak_ptr_factory_.GetWeakPtr()));
+  EnsureTimerStarted();
 }
 
 ScalableIph::~ScalableIph() = default;
@@ -72,6 +70,15 @@ void ScalableIph::OverrideFeatureListForTesting(
   feature_list_for_testing_ = feature_list;
 }
 
+void ScalableIph::OverrideTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  CHECK(timer_.IsRunning())
+      << "Timer is expected to be always running until Shutdown";
+  timer_.Stop();
+  timer_.SetTaskRunner(task_runner);
+  EnsureTimerStarted();
+}
+
 void ScalableIph::RecordEvent(ScalableIph::Event event) {
   if (!tracker_) {
     DCHECK(false) << kFunctionCallAfterKeyedServiceShutdown;
@@ -83,6 +90,12 @@ void ScalableIph::RecordEvent(ScalableIph::Event event) {
   tracker_->AddOnInitializedCallback(
       base::BindOnce(&ScalableIph::RecordEventInternal,
                      weak_ptr_factory_.GetWeakPtr(), event));
+}
+
+void ScalableIph::EnsureTimerStarted() {
+  timer_.Start(FROM_HERE, kTimeTickEventInterval,
+               base::BindRepeating(&ScalableIph::RecordTimeTickEvent,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScalableIph::RecordTimeTickEvent() {

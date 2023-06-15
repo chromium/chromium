@@ -75,6 +75,9 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   void InitializePrimaryProfileServices(Profile* profile,
                                         const user_manager::User* user);
 
+  // Initialize a `ScalableIph` service for a profile.
+  void InitializeScalableIph(Profile* profile);
+
   // Initializes RLZ. If `disabled` is true, RLZ pings are disabled.
   void InitRlzImpl(Profile* profile, const RlzInitParams& params);
 

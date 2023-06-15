@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
@@ -22,10 +23,16 @@
 
 namespace ash {
 
+namespace {
+std::set<std::string> mock_delegate_created_;
+}
+
 ScalableIphBrowserTestBase::ScalableIphBrowserTestBase() = default;
 ScalableIphBrowserTestBase::~ScalableIphBrowserTestBase() = default;
 
 void ScalableIphBrowserTestBase::SetUp() {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kScalableIph);
+
   // Keyed service is a service which is tied to an object. For our use cases,
   // the object is `BrowserContext` (e.g. `Profile`). See
   // //components/keyed_service/README.md for details on keyed service.
@@ -58,6 +65,11 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
   CustomizableTestEnvBrowserTestBase::SetUpOnMainThread();
   CHECK(browser()->profile());
 
+  CHECK(IsMockDelegateCreatedFor(browser()->profile()))
+      << "ScalableIph service has a timer inside. The service must be created "
+         "at a login time. We check the behavior by confirming creation of a "
+         "delegate.";
+
   mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser()->profile()));
@@ -73,18 +85,20 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
 
   ON_CALL(*mock_tracker_, IsInitialized).WillByDefault(testing::Return(true));
 
-  // A timer for time tick event will be created in
-  // `ScalableIphFactory::GetForProfile` below. Create a scoped context of the
-  // mock time task runner for it.
-  task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::TestMockTimeTaskRunner::ScopedContext context(task_runner());
-
   CHECK(ScalableIphFactory::GetInstance()->has_delegate_factory_for_testing())
       << "This test uses MockScalableIphDelegate. A factory for testing must "
          "be set.";
   scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
   CHECK(scalable_iph);
+
+  // `ScalableIph` for the profile is initialzied in
+  // `CustomizableTestEnvBrowserTestBase::SetUpOnMainThread` above. We cannot
+  // simply use `TestMockTimeTaskRunner::ScopedContext` as `RunLoop` is used
+  // there and it's not supported by `ScopedContext`. We override a task runner
+  // after a timer has created and started.
+  task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  scalable_iph->OverrideTaskRunnerForTesting(task_runner());
 
   mock_delegate_ = static_cast<test::MockScalableIphDelegate*>(
       scalable_iph->delegate_for_testing());
@@ -102,9 +116,13 @@ void ScalableIphBrowserTestBase::TearDownOnMainThread() {
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
+bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {
+  return mock_delegate_created_.contains(profile->GetProfileUserName());
+}
+
 void ScalableIphBrowserTestBase::ShutdownScalableIph() {
   scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
   CHECK(scalable_iph) << "ScalableIph does not exist for a current profile";
 
   // `ScalableIph::Shutdown` destructs a delegate. Release the pointer to the
@@ -146,7 +164,11 @@ std::unique_ptr<KeyedService> ScalableIphBrowserTestBase::CreateMockTracker(
 
 // static
 std::unique_ptr<scalable_iph::ScalableIphDelegate>
-ScalableIphBrowserTestBase::CreateMockDelegate() {
+ScalableIphBrowserTestBase::CreateMockDelegate(Profile* profile) {
+  std::pair<std::set<std::string>::iterator, bool> result =
+      mock_delegate_created_.insert(profile->GetProfileUserName());
+  CHECK(result.second) << "Delegate is created twice for a profile";
+
   return std::make_unique<test::MockScalableIphDelegate>();
 }
 

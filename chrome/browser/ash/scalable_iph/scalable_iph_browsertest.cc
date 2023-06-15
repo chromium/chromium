@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
@@ -17,6 +18,7 @@
 
 namespace {
 
+using ScalableIphBrowserTestFlagOff = ::ash::CustomizableTestEnvBrowserTestBase;
 using ScalableIphBrowserTest = ::ash::ScalableIphBrowserTestBase;
 using TestEnvironment =
     ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
@@ -42,11 +44,16 @@ constexpr char kFiveMinTickEventName[] = "ScalableIphFiveMinTick";
 
 }  // namespace
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, NoService) {
+  EXPECT_FALSE(ash::features::IsScalableIphEnabled());
+  EXPECT_FALSE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+}
+
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent) {
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName));
 
   scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 }
 
@@ -70,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
           });
 
   scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
   std::vector<const base::Feature*> features = {&kScalableIphTest};
   scalable_iph->OverrideFeatureListForTesting(features);
 
@@ -81,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
   // We test a timer inside ScalableIph service. Make sure that ScalableIph
   // service is running.
   scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForProfile(browser()->profile());
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
   ASSERT_TRUE(scalable_iph);
 
   base::TestMockTimeTaskRunner::ScopedContext context(task_runner());
@@ -141,7 +148,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
                        ScalableIphNotAvailable) {
-  EXPECT_EQ(nullptr, ScalableIphFactory::GetForProfile(browser()->profile()));
+  EXPECT_EQ(nullptr,
+            ScalableIphFactory::GetForBrowserContext(browser()->profile()));
 }
 
 // TODO(b/284053005): Add a test case for invalid event name.
