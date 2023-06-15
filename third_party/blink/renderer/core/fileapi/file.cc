@@ -67,50 +67,42 @@ static String GetContentTypeFromFileName(const String& name,
   return type;
 }
 
-static std::unique_ptr<BlobData> CreateBlobDataForFileWithType(
+static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithType(
     const String& path,
     const String& content_type) {
-  std::unique_ptr<BlobData> blob_data =
-      BlobData::CreateForFileWithUnknownSize(path);
-  blob_data->SetContentType(content_type);
-  return blob_data;
+  return BlobDataHandle::CreateForFile(
+      path, /*offset=*/0, BlobData::kToEndOfFile,
+      /*expected_modification_time=*/absl::nullopt, content_type);
 }
 
-static std::unique_ptr<BlobData> CreateBlobDataForFile(
+static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
     const String& path,
     File::ContentTypeLookupPolicy policy) {
   if (path.empty()) {
     auto blob_data = std::make_unique<BlobData>();
     blob_data->SetContentType("application/octet-stream");
-    return blob_data;
+    return BlobDataHandle::Create(std::move(blob_data), /*size=*/0);
   }
-  return CreateBlobDataForFileWithType(
+  return CreateBlobDataHandleForFileWithType(
       path, GetContentTypeFromFileName(path, policy));
 }
 
-static std::unique_ptr<BlobData> CreateBlobDataForFileWithName(
+static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithName(
     const String& path,
     const String& file_system_name,
     File::ContentTypeLookupPolicy policy) {
-  return CreateBlobDataForFileWithType(
+  return CreateBlobDataHandleForFileWithType(
       path, GetContentTypeFromFileName(file_system_name, policy));
 }
 
-static std::unique_ptr<BlobData> CreateBlobDataForFileWithMetadata(
+static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
     const String& file_system_name,
     const FileMetadata& metadata) {
-  std::unique_ptr<BlobData> blob_data;
-  if (metadata.length == BlobData::kToEndOfFile) {
-    blob_data = BlobData::CreateForFileWithUnknownSize(
-        metadata.platform_path, metadata.modification_time);
-  } else {
-    blob_data = std::make_unique<BlobData>();
-    blob_data->AppendFile(metadata.platform_path, 0, metadata.length,
-                          metadata.modification_time);
-  }
-  blob_data->SetContentType(GetContentTypeFromFileName(
-      file_system_name, File::kWellKnownContentTypes));
-  return blob_data;
+  return BlobDataHandle::CreateForFile(
+      metadata.platform_path, /*offset=*/0, metadata.length,
+      metadata.modification_time,
+      GetContentTypeFromFileName(file_system_name,
+                                 File::kWellKnownContentTypes));
 }
 
 // static
@@ -201,8 +193,7 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
 File::File(const String& path,
            ContentTypeLookupPolicy policy,
            UserVisibility user_visibility)
-    : Blob(BlobDataHandle::Create(CreateBlobDataForFile(path, policy),
-                                  std::numeric_limits<uint64_t>::max())),
+    : Blob(CreateBlobDataHandleForFile(path, policy)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),
@@ -212,9 +203,7 @@ File::File(const String& path,
            const String& name,
            ContentTypeLookupPolicy policy,
            UserVisibility user_visibility)
-    : Blob(BlobDataHandle::Create(
-          CreateBlobDataForFileWithName(path, name, policy),
-          std::numeric_limits<uint64_t>::max())),
+    : Blob(CreateBlobDataHandleForFileWithName(path, name, policy)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),
@@ -255,9 +244,7 @@ File::File(const String& name,
 File::File(const String& name,
            const FileMetadata& metadata,
            UserVisibility user_visibility)
-    : Blob(BlobDataHandle::Create(
-          CreateBlobDataForFileWithMetadata(name, metadata),
-          metadata.length)),
+    : Blob(CreateBlobDataHandleForFileWithMetadata(name, metadata)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(metadata.platform_path),

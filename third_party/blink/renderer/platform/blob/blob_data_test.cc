@@ -263,11 +263,40 @@ TEST_F(BlobDataHandleTest, CreateFromUUID) {
   EXPECT_EQ(kUuid, mock_blob_registry_.owned_receivers[0].uuid);
 }
 
+TEST_F(BlobDataHandleTest, CreateFromFile) {
+  String kPath = "path";
+  uint64_t kOffset = 0;
+  uint64_t kSize = 1234;
+  base::Time kModificationTime = base::Time();
+  String kType = "content/type";
+
+  scoped_refptr<BlobDataHandle> handle = BlobDataHandle::CreateForFile(
+      kPath, kOffset, kSize, kModificationTime, kType);
+
+  EXPECT_EQ(kType, handle->GetType());
+  EXPECT_EQ(kSize, handle->size());
+  EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
+
+  blob_registry_remote_.FlushForTesting();
+  EXPECT_EQ(1u, mock_blob_registry_.registrations.size());
+  ASSERT_EQ(0u, mock_blob_registry_.owned_receivers.size());
+  const auto& reg = mock_blob_registry_.registrations[0];
+  EXPECT_EQ(handle->Uuid(), reg.uuid);
+  EXPECT_EQ(kType, reg.content_type);
+  EXPECT_EQ("", reg.content_disposition);
+  EXPECT_EQ(1u, reg.elements.size());
+  auto& element = reg.elements.front();
+  ASSERT_TRUE(element->is_file());
+  EXPECT_EQ(WebStringToFilePath(kPath), element->get_file()->path);
+  EXPECT_EQ(kSize, element->get_file()->length);
+  EXPECT_EQ(kOffset, element->get_file()->offset);
+  EXPECT_EQ(kModificationTime, element->get_file()->expected_modification_time);
+}
+
 TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
   auto data = std::make_unique<BlobData>();
   data->AppendBytes(small_test_data_.data(), 0);
   data->AppendBlob(empty_blob_, 0, 0);
-  data->AppendFile("path", 0, 0, base::Time::UnixEpoch());
 
   TestCreateBlob(std::move(data), {});
 }
@@ -338,15 +367,6 @@ TEST_F(BlobDataHandleTest, CreateFromMergedSmallAndLargeBytes) {
       ExpectedElement::LargeBytes(std::move(expected_data)));
 
   TestCreateBlob(std::move(data), std::move(expected_elements));
-}
-
-TEST_F(BlobDataHandleTest, CreateFromFileWithUnknownSize) {
-  Vector<ExpectedElement> expected_elements;
-  expected_elements.push_back(
-      ExpectedElement::File("path", 0, uint64_t(-1), base::Time()));
-
-  TestCreateBlob(BlobData::CreateForFileWithUnknownSize("path"),
-                 std::move(expected_elements));
 }
 
 TEST_F(BlobDataHandleTest, CreateFromBlob) {

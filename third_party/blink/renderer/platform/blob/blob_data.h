@@ -112,15 +112,6 @@ class PLATFORM_EXPORT BlobData {
   BlobData& operator=(const BlobData&) = delete;
   ~BlobData();
 
-  // Calling append* on objects returned by createFor___WithUnknownSize will
-  // check-fail. The caller can only have an unknown-length file if it is the
-  // only item in the blob.
-  static std::unique_ptr<BlobData> CreateForFileWithUnknownSize(
-      const String& path);
-  static std::unique_ptr<BlobData> CreateForFileWithUnknownSize(
-      const String& path,
-      const absl::optional<base::Time>& expected_modification_time);
-
   const String& ContentType() const { return content_type_; }
   void SetContentType(const String&);
 
@@ -131,10 +122,6 @@ class PLATFORM_EXPORT BlobData {
 
   void AppendBytes(const void*, size_t length);
   void AppendData(scoped_refptr<RawData>);
-  void AppendFile(const String& path,
-                  int64_t offset,
-                  int64_t length,
-                  const absl::optional<base::Time>& expected_modification_time);
 
   // The given blob must not be a file with unknown size. Please use the
   // File::appendTo instead.
@@ -181,6 +168,12 @@ class PLATFORM_EXPORT BlobDataHandle
   static scoped_refptr<BlobDataHandle> Create() {
     return base::AdoptRef(new BlobDataHandle());
   }
+  static scoped_refptr<BlobDataHandle> CreateForFile(
+      const String& path,
+      int64_t offset,
+      int64_t length,
+      const absl::optional<base::Time>& expected_modification_time,
+      const String& content_type);
 
   // For initial creation.
   static scoped_refptr<BlobDataHandle> Create(std::unique_ptr<BlobData> data,
@@ -236,6 +229,9 @@ class PLATFORM_EXPORT BlobDataHandle
  private:
   BlobDataHandle();
   BlobDataHandle(std::unique_ptr<BlobData>, uint64_t size);
+  BlobDataHandle(mojom::blink::DataElementFilePtr file_element,
+                 const String& content_type,
+                 uint64_t size);
   BlobDataHandle(const String& uuid, const String& type, uint64_t size);
   BlobDataHandle(const String& uuid,
                  const String& type,
