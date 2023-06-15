@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -130,6 +131,12 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    return status_ == CookieControlsStatus::kDisabledForSite
+               ? views::kEyeRefreshIcon
+               : views::kEyeCrossedRefreshIcon;
+  }
+
   return status_ == CookieControlsStatus::kDisabledForSite
              ? views::kEyeIcon
              : views::kEyeCrossedIcon;

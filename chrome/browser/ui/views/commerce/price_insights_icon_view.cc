@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,7 +24,9 @@ PriceInsightsIconView::PriceInsightsIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "PriceInsights"),
-      icon_(&vector_icons::kShoppingBagIcon) {
+      icon_(OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+                ? &vector_icons::kShoppingBagRefreshIcon
+                : &vector_icons::kShoppingBagIcon) {
   SetProperty(views::kElementIdentifierKey, kPriceInsightsChipElementId);
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
@@ -36,7 +39,9 @@ views::BubbleDialogDelegate* PriceInsightsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& PriceInsightsIconView::GetVectorIcon() const {
-  return vector_icons::kShoppingBagIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? vector_icons::kShoppingBagRefreshIcon
+             : vector_icons::kShoppingBagIcon;
 }
 
 void PriceInsightsIconView::UpdateImpl() {

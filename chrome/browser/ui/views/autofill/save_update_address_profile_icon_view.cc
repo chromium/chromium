@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,7 +71,9 @@ void SaveUpdateAddressProfileIconView::OnExecuting(
 
 const gfx::VectorIcon& SaveUpdateAddressProfileIconView::GetVectorIcon() const {
   // TODO(crbug.com/1167060): Update the icon upon having final mocks.
-  return vector_icons::kLocationOnIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? vector_icons::kLocationOnChromeRefreshIcon
+             : vector_icons::kLocationOnIcon;
 }
 
 SaveUpdateAddressProfileIconController*

@@ -31,6 +31,8 @@ aggregate_vector_icons("views_vector_icons") {
     "drag_general_selection.icon",
     "eye.icon",
     "eye_crossed.icon",
+    "eye_crossed_refresh.icon",
+    "eye_refresh.icon",
     "ic_close.icon",
     "info.icon",
     "info_chrome_refresh.icon",

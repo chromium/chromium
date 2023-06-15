@@ -16,6 +16,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -66,7 +67,9 @@ std::u16string SmsRemoteFetcherUiController::GetContentType() const {
 }
 
 const gfx::VectorIcon& SmsRemoteFetcherUiController::GetVectorIcon() const {
-  return kSmartphoneIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kSmartphoneRefreshIcon
+             : kSmartphoneIcon;
 }
 
 bool SmsRemoteFetcherUiController::ShouldShowLoadingIcon() const {
