@@ -22,6 +22,7 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//ash/public/cpp",
     "//ash/public/cpp/holding_space:test_support",
+    "//ash/style",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
