@@ -2082,7 +2082,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/permissions-policy"],
     "args": [
-      "--enable-features=CSPWildcardsInPermissionsPolicies"
+      "--disable-features=CSPWildcardsInPermissionsPolicies"
     ],
     "expires": "Dec 1, 2023"
   }
