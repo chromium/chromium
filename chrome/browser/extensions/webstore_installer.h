@@ -169,10 +169,9 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
       const download::DownloadItem& download);
 
   // Creates a WebstoreInstaller for downloading and installing the extension
-  // with the given `id` from the Chrome Web Store. If `success_callback` is
-  // non-null, it will be run if the install succeeds. If `failure_callback`
-  // is non-null, it will be run if the install fails. This also associates
-  // the `approval` with this install.
+  // with the given `id` from the Chrome Web Store. The `success_callback` and
+  // `failure_callback` parameters must not be null. This also associates the
+  // `approval` with this install.
   WebstoreInstaller(Profile* profile,
                     SuccessCallback success_callback,
                     FailureCallback failure_callback,

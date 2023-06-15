@@ -270,6 +270,8 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
       approval_(approval.release()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_contents);
+  CHECK(success_callback_);
+  CHECK(failure_callback_);
 
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
