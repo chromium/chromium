@@ -106,6 +106,9 @@ base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
   debug_value.Set("bundle_type",
                   static_cast<int>(url_info_.web_bundle_id().type()));
   debug_value.Set("location", IsolatedWebAppLocationAsDebugValue(location_));
+  debug_value.Set("expected_version", expected_version_.has_value()
+                                          ? expected_version_->GetString()
+                                          : "unknown");
   return base::Value(std::move(debug_value));
 }
 
