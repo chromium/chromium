@@ -331,22 +331,6 @@ class VideoEncoderTest : public ::testing::Test {
 
   std::unique_ptr<RawDataHelper> raw_data_helper_;
 };
-
-absl::optional<std::string> SupportsDynamicFramerate() {
-  return g_env->IsKeplerUsed()
-             ? absl::make_optional<std::string>(
-                   "The rate controller in the kepler firmware doesn't handle "
-                   "frame rate changes correctly.")
-             : absl::nullopt;
-}
-
-absl::optional<std::string> SupportsNV12DmaBufInput() {
-  return g_env->IsKeplerUsed() ? absl::make_optional<std::string>(
-                                     "Encoding with dmabuf input frames is not "
-                                     "supported in kepler.")
-                               : absl::nullopt;
-}
-
 }  // namespace
 
 // Encode video from start to end. Wait for the kFlushDone event at the end of
@@ -547,8 +531,6 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
         << "Skip dynamic framerate change checks for non-CBR bitrate mode";
   }
 
-  if (auto skip_reason = SupportsDynamicFramerate())
-    GTEST_SKIP() << *skip_reason;
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
@@ -582,9 +564,6 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
 }
 
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
-  if (auto skip_reason = SupportsNV12DmaBufInput())
-    GTEST_SKIP() << *skip_reason;
-
   RawVideo* nv12_video = g_env->GenerateNV12Video();
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
                                   g_env->SpatialLayers(),
@@ -607,8 +586,6 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 // and there are two VideoEncodeAccelerator for 360p and 180p. VideoEncoder for
 // 180p is fed 360p and thus has to perform the scaling from 360p to 180p.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
-  if (auto skip_reason = SupportsNV12DmaBufInput())
-    GTEST_SKIP() << *skip_reason;
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip simulcast test case for spatial SVC encoding";
 
@@ -667,8 +644,6 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
 // requested, a camera cannot produce the resolution and instead produces
 // 640x480 frames with visible_rect=0, 60, 640x360.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
-  if (auto skip_reason = SupportsNV12DmaBufInput())
-    GTEST_SKIP() << *skip_reason;
   constexpr int kGrowHeight = 120;
   const gfx::Size original_resolution = g_env->Video()->Resolution();
   const gfx::Rect expanded_visible_rect(0, kGrowHeight / 2,
@@ -710,8 +685,6 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
 // requested, a camera cannot produce the resolution and instead produces
 // 760x360 frames with visible_rect=60, 0, 640x360.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
-  if (auto skip_reason = SupportsNV12DmaBufInput())
-    GTEST_SKIP() << *skip_reason;
   constexpr int kGrowWidth = 120;
   const gfx::Size original_resolution = g_env->Video()->Resolution();
   const gfx::Rect expanded_visible_rect(kGrowWidth / 2, 0,
@@ -749,9 +722,6 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
 
 // This tests deactivate and activating spatial layers during encoding.
 TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
-  if (auto skip_reason = SupportsNV12DmaBufInput())
-    GTEST_SKIP() << *skip_reason;
-
   const auto& spatial_layers = g_env->SpatialLayers();
   if (spatial_layers.size() <= 1)
     GTEST_SKIP() << "Skip (de)activate spatial layers test for simple encoding";

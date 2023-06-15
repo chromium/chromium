@@ -91,9 +91,6 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // individual test is completed.
   gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
 
-  // Returns whether kepler will be used in the test.
-  bool IsKeplerUsed() const;
-
  private:
   // TODO(crbug.com/1335251): merge |use_vbr| and |bitrate| into a single
   // Bitrate-typed field.
