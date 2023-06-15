@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -242,12 +244,16 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * @param tabModelStartupInfoSupplier A supplier for the {@link TabModelStartupInfo}.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for registering this class
      *         to lifecycle events.
+     * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link TabDragSource} for
+     *         drag and drop.
+     * @param toolbarContainerView @{link View} passed to @{link TabDragSource} for drag and drop.
      */
     public StripLayoutHelperManager(Context context, LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            MultiInstanceManager multiInstanceManager, View toolbarContainerView) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -343,10 +349,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         mBrowserScrimShowing = false;
 
-        mNormalHelper = new StripLayoutHelper(
-                context, managerHost, updateHost, renderHost, false, mModelSelectorButton);
-        mIncognitoHelper = new StripLayoutHelper(
-                context, managerHost, updateHost, renderHost, true, mModelSelectorButton);
+        mNormalHelper = new StripLayoutHelper(context, managerHost, updateHost, renderHost, false,
+                mModelSelectorButton, multiInstanceManager, toolbarContainerView);
+        mIncognitoHelper = new StripLayoutHelper(context, managerHost, updateHost, renderHost, true,
+                mModelSelectorButton, multiInstanceManager, toolbarContainerView);
 
         if (tabModelStartupInfoSupplier != null) {
             if (tabModelStartupInfoSupplier.hasValue()) {
@@ -355,6 +361,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 tabModelStartupInfoSupplier.addObserver(this::setTabModelStartupInfo);
             }
         }
+
+        mNormalHelper.prepareForDragDrop();
 
         onContextChanged(context);
     }

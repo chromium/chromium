@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
+import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -67,6 +69,10 @@ public class StripLayoutHelperManagerTest {
     private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
     @Mock
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock
+    private MultiInstanceManager mMultiInstanceManager;
+    @Mock
+    private View mToolbarContainerView;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -97,7 +103,7 @@ public class StripLayoutHelperManagerTest {
         mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
         mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
                 mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mTabModelStartupInfoSupplier,
-                mLifecycleDispatcher);
+                mLifecycleDispatcher, mMultiInstanceManager, mToolbarContainerView);
     }
 
     private void initializeTestWithTsrArm(BooleanCachedFieldTrialParameter param) {

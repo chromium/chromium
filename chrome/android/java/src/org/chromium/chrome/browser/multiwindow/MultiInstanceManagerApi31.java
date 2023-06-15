@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -126,12 +127,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (targetActivity != null) {
             reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab);
         } else {
-            onMultiInstanceModeStarted();
-            Intent intent = MultiWindowUtils.createNewWindowIntent(mActivity, info.instanceId,
-                    /*preferNew=*/false, /*openAdjacently=*/true, /*addTrustedIntentExtras=*/true);
-            ReparentingTask.from(tab).begin(mActivity, intent,
-                    mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+            moveAndReparentTabToNewWindow(tab, info.instanceId, /*preferNew=*/false,
+                    /*openAdjacently=*/true, /*addTrustedIntentExtras=*/true);
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void moveAndReparentTabToNewWindow(Tab tab, int instanceId, boolean preferNew,
+            boolean openAdjacently, boolean addTrustedIntentExtras) {
+        onMultiInstanceModeStarted();
+        Intent intent = MultiWindowUtils.createNewWindowIntent(
+                mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
+        ReparentingTask.from(tab).begin(mActivity, intent,
+                mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
     }
 
     private void reparentTabToRunningActivity(ChromeTabbedActivity targetActivity, Tab tab) {
@@ -693,5 +701,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     "Android.MultiInstance.TotalDuration", current - startTime);
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME, 0);
         }
+    }
+
+    /**
+     * Open a new instance of the ChromeTabbedActivity window and move the
+     * specified tab from existing instance to the new one.
+     * @param tab Tab that is to be moved to a new Chrome instance.
+     */
+    @Override
+    public void moveTabToNewWindow(Tab tab) {
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        moveAndReparentTabToNewWindow(tab, INVALID_INSTANCE_ID, /*preferNew=*/true,
+                /*openAdjacently=*/false, /*addTrustedIntentExtras=*/true);
     }
 }

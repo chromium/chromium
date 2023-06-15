@@ -77,6 +77,8 @@ public class TabDragSourceTest {
     private TabGroupModelFilter mTabGroupModelFilter;
     @Mock
     private TabModelSelector mTabModelSelector;
+    @Mock
+    private View mToolbarContainerView;
 
     private Activity mActivity;
     private Context mContext;
@@ -152,8 +154,9 @@ public class TabDragSourceTest {
 
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
         LocalizationUtils.setRtlForTesting(rtl);
-        final StripLayoutHelper stripLayoutHelper = new StripLayoutHelper(
-                mActivity, mManagerHost, mUpdateHost, mRenderHost, incognito, mModelSelectorBtn);
+        final StripLayoutHelper stripLayoutHelper =
+                new StripLayoutHelper(mActivity, mManagerHost, mUpdateHost, mRenderHost, incognito,
+                        mModelSelectorBtn, mMultiInstanceManager, mToolbarContainerView);
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
     }

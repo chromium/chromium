@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 public class TabDragSource {
     private static final String TAG = "TabDragSource";
 
-    // TODO(b/285585036) Expand the ClipData definition to support dropping of the Tab info to be
+    // TODO(b/285585036): Expand the ClipData definition to support dropping of the Tab info to be
     // used by SysUI that can parse this format.
     public static final String MIMETYPE_CHROME_TAB = "cr_tab/*";
     public static final String[] SUPPORTED_MIMETYPES = new String[] {MIMETYPE_CHROME_TAB};
@@ -89,7 +89,7 @@ public class TabDragSource {
                 case DragEvent.ACTION_DRAG_LOCATION:
                     float curXPos = dragEvent.getX() * mPxToDp;
                     float curYPos = dragEvent.getY() * mPxToDp;
-                    // TODO(b/285590087) Enter Android drag mode until tab is torn vertically to
+                    // TODO(b/285590087): Enter Android drag mode until tab is torn vertically to
                     // prevent forwarding drag events back into SripLayoutHelper #drag,
                     // #onUpOrCancel, #onDownInternal, etc.
                     if (mPointerInView) {
@@ -151,8 +151,7 @@ public class TabDragSource {
     @VisibleForTesting
     void openTabInNewWindow() {
         if (mTabBeingDragged != null) {
-            // To be implemented.
-            // MultiInstanceManager api's will be used here.
+            mMultiInstanceManager.moveTabToNewWindow(mTabBeingDragged);
             mTabBeingDragged = null;
         }
     }
@@ -201,7 +200,7 @@ public class TabDragSource {
 
             // Set the touch point's position to be in the middle of the drag
             // shadow.
-            // TODO(b/285584145) Update to accurate x and y posiiton of user hold/touch relative
+            // TODO(b/285584145): Update to accurate x and y posiiton of user hold/touch relative
             // to the Drag Shadow/Chrome Window.
             touch.set(width / 2, 50);
         }

@@ -15,6 +15,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -24,6 +26,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -47,6 +52,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -60,6 +66,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -73,6 +80,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +89,8 @@ import java.util.List;
 // clang-format off
 @Features.EnableFeatures({
         ChromeFeatureList.TAB_STRIP_REDESIGN,
-        ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
+        ChromeFeatureList.TAB_GROUPS_FOR_TABLETS,
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
 
 public class StripLayoutHelperTest {
@@ -102,12 +111,23 @@ public class StripLayoutHelperTest {
     private TabGroupModelFilter mTabGroupModelFilter;
     @Mock
     private StripLayoutHelperManager mStripLayoutHelperManager;
+    @Mock
+    private MultiInstanceManager mMultiInstanceManager;
+    @Mock
+    private View mToolbarContainerView;
+    @Mock
+    private ActivityInfo mActivityInfo;
+    @Mock
+    private PackageManager mPackageManager;
 
     private Activity mActivity;
     private Context mContext;
+    private Context mContextForDragDrop;
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
+    private TabDragSource mTabDragSource;
+
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
     private static final String EXPECTED_NO_MARGIN = "The tab should not have a trailing margin.";
@@ -1147,7 +1167,22 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_OnTab() {
+        onLongPress_OnTab();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    public void testOnLongPress_WithDragDrop_OnTab() {
+        // Extra setup for DragDrop
+        setTabDragSourceMock();
+        onLongPress_OnTab();
+        // Cleanup for DragDrop
+        clearTabDragSourceMock();
+    }
+
+    private void onLongPress_OnTab() {
         // Initialize.
         initializeTest(false, false, 0);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
@@ -1190,7 +1225,22 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_OffTab() {
+        onLongPress_OffTab();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    public void testOnLongPress_WithDragDrop_OffTab() {
+        // Extra setup for DragDrop
+        setTabDragSourceMock();
+        onLongPress_OffTab();
+        // Cleanup for DragDrop
+        clearTabDragSourceMock();
+    }
+
+    private void onLongPress_OffTab() {
         // Initialize.
         initializeTest(false, false, 0);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
@@ -2165,8 +2215,9 @@ public class StripLayoutHelperTest {
 
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
         LocalizationUtils.setRtlForTesting(rtl);
-        final StripLayoutHelper stripLayoutHelper = new StripLayoutHelper(
-                mActivity, mManagerHost, mUpdateHost, mRenderHost, incognito, mModelSelectorBtn);
+        final StripLayoutHelper stripLayoutHelper =
+                new StripLayoutHelper(mActivity, mManagerHost, mUpdateHost, mRenderHost, incognito,
+                        mModelSelectorBtn, mMultiInstanceManager, mToolbarContainerView);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
@@ -2256,5 +2307,91 @@ public class StripLayoutHelperTest {
             when(mTabGroupModelFilter.getRootId(eq(mModel.getTabAt(i)))).thenReturn(groupRootId);
         }
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(groupRootId))).thenReturn(numTabs);
+    }
+
+    private void setTabDragSourceMock() {
+        mTabDragSource = mock(TabDragSource.class);
+        try {
+            Field instance = TabDragSource.class.getDeclaredField("sTabDragSource");
+            instance.setAccessible(true);
+            instance.set(instance, mTabDragSource);
+        } catch (Exception ex) {
+            assert (false);
+        }
+        when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
+
+        try {
+            mContextForDragDrop = Mockito.spy(ContextUtils.getApplicationContext());
+            when(mContextForDragDrop.getPackageManager()).thenReturn(mPackageManager);
+            when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
+            ContextUtils.initApplicationContextForTests(mContextForDragDrop);
+            mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        } catch (NameNotFoundException nameNotFoundException) {
+            assertTrue("setTabDragSourceMock failed - NameNotFoundException thrown .", false);
+        }
+    }
+
+    private void clearTabDragSourceMock() {
+        try {
+            Field instance = TabDragSource.class.getDeclaredField("sTabDragSource");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (Exception ex) {
+            assert (false);
+        }
+        mTabDragSource = null;
+        mContextForDragDrop = null;
+    }
+
+    @Test
+    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = 31)
+    public void testDrag_AllowMovingTabOutOfStripLayout_SetActiveTab() {
+        // Setup with 10 tabs and select tab 5.
+        setTabDragSourceMock();
+        initializeTest(false, false, false, 5, 10);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 10);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        mStripLayoutHelper.tabSelected(1, 5, 0, false);
+        // Trigger update to set foreground container visibility.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        StripLayoutTab theClickedTab = tabs[5];
+
+        // Clean active tab environment and ensure.
+        mStripLayoutHelper.clearActiveClickedTab();
+        assertTrue("Dragged Tab should be empty before drag action.",
+                mStripLayoutHelper.getActiveClickedTab() == null);
+
+        // Act and verify.
+        mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab);
+
+        verify(mTabDragSource, atLeastOnce()).startTabDragAction(any(), any(), any());
+        verify(mTabDragSource, atMostOnce()).startTabDragAction(any(), any(), any());
+        assertTrue("Tab being dragged should exist during drag action.",
+                mStripLayoutHelper.getActiveClickedTab() != null);
+        assertTrue("Dragged Tab should match selected tab during drag action.",
+                mStripLayoutHelper.getActiveClickedTab() == theClickedTab);
+        mStripLayoutHelper.clearActiveClickedTab();
+        assertTrue("Dragged Tab should be cleared at the end of drag action.",
+                mStripLayoutHelper.getActiveClickedTab() == null);
+
+        // Windup
+        clearTabDragSourceMock();
+    }
+
+    @Test
+    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = 31)
+    public void testDrag_PrepareForDragDrop_verify() {
+        // Setup with 5 tabs and select tab 3.
+        setTabDragSourceMock();
+        initializeTest(false, false, 3);
+
+        // Act and verify.
+        mStripLayoutHelper.prepareForDragDrop();
+        verify(mTabDragSource, atLeastOnce()).prepareForDragDrop(any(), any());
+
+        // Windup
+        clearTabDragSourceMock();
     }
 }

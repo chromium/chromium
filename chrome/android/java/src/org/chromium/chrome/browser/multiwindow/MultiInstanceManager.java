@@ -473,6 +473,14 @@ public class MultiInstanceManager
         return false;
     }
 
+    public void moveTabToNewWindow(Tab tab) {
+        // Not implemented
+    }
+
+    public void moveTabToCurrentWindow(Tab tab) {
+        // Not implemented
+    }
+
     protected void moveTabToOtherWindow(Tab tab) {
         Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
         if (intent == null) return;

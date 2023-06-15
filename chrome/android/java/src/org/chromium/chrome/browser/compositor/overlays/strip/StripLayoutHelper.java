@@ -46,6 +46,8 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabL
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -250,6 +252,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private int mCurrentPlaceholderIndex;
 
     // Tab Drag and Drop state to hold clicked tab being dragged.
+    private MultiInstanceManager mMultiInstanceManager;
+    private View mToolbarContainerView;
     private StripLayoutTab mActiveClickedTab;
 
     /**
@@ -261,10 +265,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param incognito       Whether or not this tab strip is incognito.
      * @param modelSelectorButton The {@link CompositorButton} used to toggle between regular and
      *         incognito models.
+     * @param multiInstanceManager The @{link MultiInstanceManager} passed to @{link TabDragSource}
+     *         for drag and drop.
+     * @param toolbarContainerView The @{link View} passed to @{link TabDragSource} for drag and
+     *         drop.
      */
     public StripLayoutHelper(Context context, LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost, LayoutRenderHost renderHost, boolean incognito,
-            CompositorButton modelSelectorButton) {
+            CompositorButton modelSelectorButton, MultiInstanceManager multiInstanceManager,
+            View toolbarContainerView) {
         mTabOverlapWidth = ChromeFeatureList.sTabStripRedesign.isEnabled()
                 ? TAB_OVERLAP_WIDTH_LARGE_DP
                 : TAB_OVERLAP_WIDTH_DP;
@@ -274,6 +283,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mNewTabButtonWidth = NEW_TAB_BUTTON_WIDTH_DP;
         }
         mModelSelectorButton = modelSelectorButton;
+        mMultiInstanceManager = multiInstanceManager;
+        mToolbarContainerView = toolbarContainerView;
 
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             // Use toolbar menu button padding to align NTB with menu button.
@@ -1327,6 +1338,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         } else {
             resetResizeTimeout(false);
             startReorderMode(time, x, x);
+
+            // Allow the user to drag the selected tab out of the tab toolbar.
+            if (clickedTab != null) {
+                allowMovingTabOutOfStripLayout(clickedTab);
+            }
         }
     }
 
@@ -3107,5 +3123,39 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     protected void clearActiveClickedTab() {
         mActiveClickedTab = null;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    StripLayoutTab getActiveClickedTab() {
+        return mActiveClickedTab;
+    }
+
+    protected void prepareForDragDrop() {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        TabDragSource.getInstance().prepareForDragDrop(
+                mToolbarContainerView, mMultiInstanceManager);
+    }
+
+    @VisibleForTesting
+    void allowMovingTabOutOfStripLayout(StripLayoutTab clickedTab) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
+        // Also start the tab drag only if there are more than one tabs and a tab has been selected
+        // with the long press.
+        if (clickedTab != null && mStripTabsVisuallyOrdered.length > 1) {
+            Tab tabBeingDragged = getTabById(clickedTab.getId());
+            if (tabBeingDragged != null) {
+                // TODO(b/285624813): Verify if setting onDragListener on toolbar container view
+                // causes any conflict with images drop work.
+                if (TabDragSource.getInstance().startTabDragAction(
+                            mToolbarContainerView, this, tabBeingDragged)) {
+                    mActiveClickedTab = clickedTab;
+                }
+            }
+        }
     }
 }
