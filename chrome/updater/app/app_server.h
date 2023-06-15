@@ -95,7 +95,8 @@ class AppServer : public App {
   // the system is consistent with an incomplete swap, ModeCheck may have the
   // side effect of promoting this candidate to the active candidate.
   base::OnceClosure ModeCheck();
-  bool SwapVersions(GlobalPrefs* global_prefs);
+  bool SwapVersions(GlobalPrefs* global_prefs,
+                    scoped_refptr<LocalPrefs> local_prefs);
 
   // Uninstalls the updater if it doesn't manage any apps, aside from itself.
   void MaybeUninstall();

@@ -105,7 +105,7 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (this_version > active_version || global_prefs->GetSwapping()) {
-    if (!SwapVersions(global_prefs.get())) {
+    if (!SwapVersions(global_prefs.get(), CreateLocalPrefs(updater_scope()))) {
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
     }
   }
@@ -210,7 +210,8 @@ void AppServer::FirstTaskRun() {
                         base::WrapRefCounted(this)));
 }
 
-bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
+bool AppServer::SwapVersions(GlobalPrefs* global_prefs,
+                             scoped_refptr<LocalPrefs> local_prefs) {
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   if (!global_prefs->GetMigratedLegacyUpdaters()) {
@@ -228,6 +229,12 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   global_prefs->SetActiveVersion(kUpdaterVersion);
   global_prefs->SetSwapping(false);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
+
+  // Clear the qualified bit: if ActiveVersion downgrades, something has gone
+  // wrong and this instance should double-check its qualification before taking
+  // back over.
+  local_prefs->SetQualified(false);
+  PrefsCommitPendingWrites(local_prefs->GetPrefService());
   return true;
 }
 

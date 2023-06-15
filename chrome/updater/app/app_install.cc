@@ -186,8 +186,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
   }
 
   // It's possible that a previous updater existed but is nonresponsive. In
-  // this case, clear the active version in global prefs so that the system can
-  // recover.
+  // this case, set the active version in global prefs so that this instance
+  // will take over without qualification.
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives()})
       ->PostTaskAndReply(
@@ -196,7 +196,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
               [](UpdaterScope scope) {
                 scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
                 if (prefs) {
-                  prefs->SetActiveVersion("");
+                  prefs->SetActiveVersion(kUpdaterVersion);
+                  prefs->SetSwapping(true);
                   PrefsCommitPendingWrites(prefs->GetPrefService());
                 }
               },
