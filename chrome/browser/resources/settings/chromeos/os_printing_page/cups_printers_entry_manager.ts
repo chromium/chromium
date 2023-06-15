@@ -52,6 +52,8 @@ export class CupsPrintersEntryManager {
   private onNearbyPrintersChangedListeners_: PrintersListCallback[];
   private onSavedPrintersChangedListeners_: PrintersListWithDeltasCallback[];
   private savedPrinters_: PrinterListEntry[];
+  // Only true after the first call to setSavedPrintersList().
+  private haveInitialSavedPrintersLoaded_: boolean;
 
   constructor() {
     this.savedPrinters_ = [];
@@ -63,6 +65,7 @@ export class CupsPrintersEntryManager {
     this.onNearbyPrintersChangedListener_ = null;
     this.onEnterprisePrintersChangedListeners_ = [];
     this.onEnterprisePrintersChangedListener_ = null;
+    this.haveInitialSavedPrintersLoaded_ = false;
   }
 
   addWebUiListeners(): void {
@@ -142,25 +145,20 @@ export class CupsPrintersEntryManager {
    * changes.
    */
   setSavedPrintersList(printerList: PrinterListEntry[]): void {
-    if (printerList.length > this.savedPrinters_.length) {
-      const diff = findDifference(printerList, this.savedPrinters_);
-      this.savedPrinters_ = printerList;
-      this.notifyOnSavedPrintersChangedListeners_(
-          this.savedPrinters_, diff, [] /* printersRemoved */);
-      return;
-    }
+    let printersAdded: PrinterListEntry[] = [];
+    let printersRemoved: PrinterListEntry[] = [];
 
-    if (printerList.length < this.savedPrinters_.length) {
-      const diff = findDifference(this.savedPrinters_, printerList);
-      this.savedPrinters_ = printerList;
-      this.notifyOnSavedPrintersChangedListeners_(
-          this.savedPrinters_, [] /* printersAdded */, diff);
-      return;
+    if (!this.haveInitialSavedPrintersLoaded_) {
+      this.haveInitialSavedPrintersLoaded_ = true;
+    } else if (printerList.length > this.savedPrinters_.length) {
+      printersAdded = findDifference(printerList, this.savedPrinters_);
+    } else if (printerList.length < this.savedPrinters_.length) {
+      printersRemoved = findDifference(this.savedPrinters_, printerList);
     }
 
     this.savedPrinters_ = printerList;
     this.notifyOnSavedPrintersChangedListeners_(
-        this.savedPrinters_, [] /* printersAdded */, [] /* printersRemoved */);
+        this.savedPrinters_, printersAdded, printersRemoved);
   }
 
   /**
