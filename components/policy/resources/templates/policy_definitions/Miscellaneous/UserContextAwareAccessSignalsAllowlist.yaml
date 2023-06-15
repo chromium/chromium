@@ -19,9 +19,9 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:116-
+- chrome_os:116-
 owners:
 - hmare@google.com
 - seblalancette@chromium.org
