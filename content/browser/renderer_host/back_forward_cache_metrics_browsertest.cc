@@ -657,21 +657,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
-  // This test should only run if the feature is disabled.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheDedicatedWorker))
-    return;
-
-  ukm::TestAutoSetUkmRecorder recorder;
-  const GURL url(embedded_test_server()->GetURL(
-      "/back_forward_cache/page_with_dedicated_worker.html"));
-
-  NavigateAndWaitForDisablingFeature(
-      url,
-      blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet);
-}
-
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker

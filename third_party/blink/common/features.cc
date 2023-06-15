@@ -97,12 +97,6 @@ const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
         AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
         &kAutomaticLazyFrameLoadingToEmbedLoadingStrategies};
 
-// Allows pages with DedicatedWorker to stay eligible for the back/forward
-// cache.
-BASE_FEATURE(kBackForwardCacheDedicatedWorker,
-             "BackForwardCacheDedicatedWorker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              "BackForwardCacheDWCOnJavaScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);

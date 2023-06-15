@@ -505,10 +505,6 @@ void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
 
 void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
-  if (!base::FeatureList::IsEnabled(
-          features::kBackForwardCacheDedicatedWorker)) {
-    return;
-  }
   if (!back_forward_cache_controller_host_.is_bound()) {
     return;
   }

@@ -60,30 +60,7 @@ namespace content {
 
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
-class BackForwardCacheDedicatedWorkerFlagBrowserTest
-    : public BackForwardCacheBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(blink::features::kBackForwardCacheDedicatedWorker,
-                              "", "");
-    if (IsDedicatedWorkerEnabled()) {
-      EnableFeatureAndSetParams(
-          blink::features::kBackForwardCacheDedicatedWorker, "", "");
-    } else {
-      DisableFeature(blink::features::kBackForwardCacheDedicatedWorker);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool IsDedicatedWorkerEnabled() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheDedicatedWorkerFlagBrowserTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheDedicatedWorkerFlagBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        PageWithDedicatedWorkerCachedOrNot) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -102,17 +79,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheDedicatedWorkerFlagBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Check the outcome.
-  if (IsDedicatedWorkerEnabled()) {
-    EXPECT_EQ(rfh.get(), current_frame_host());
-    ExpectRestored(FROM_HERE);
-  } else {
-    // The page with the dedicated worker should be deleted (not cached).
-    ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
-    ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                      {blink::scheduler::WebSchedulerTrackedFeature::
-                           kDedicatedWorkerOrWorklet},
-                      {}, {}, {}, FROM_HERE);
-  }
+  EXPECT_EQ(rfh.get(), current_frame_host());
+  ExpectRestored(FROM_HERE);
 }
 
 // The bool parameter is used for switching PlzDedicatedWorker.
@@ -126,8 +94,6 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
   BackForwardCacheWithDedicatedWorkerBrowserTest() { server_.Start(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(blink::features::kBackForwardCacheDedicatedWorker,
-                              "", "");
     if (IsPlzDedicatedWorkerEnabled())
       EnableFeatureAndSetParams(blink::features::kPlzDedicatedWorker, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);

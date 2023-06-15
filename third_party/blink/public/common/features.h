@@ -44,7 +44,6 @@ enum class AutomaticLazyFrameLoadingToEmbedLoadingStrategy {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
     kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheDedicatedWorker);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheDWCOnJavaScriptExecution);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);

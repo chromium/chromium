@@ -190,7 +190,6 @@ bool ShouldIgnoreBlocklists() {
 WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
   return {WebSchedulerTrackedFeature::kBroadcastChannel,
           WebSchedulerTrackedFeature::kContainsPlugins,
-          WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
           WebSchedulerTrackedFeature::kDummy,
           WebSchedulerTrackedFeature::kIdleManager,
           WebSchedulerTrackedFeature::kIndexedDBConnection,
@@ -232,23 +231,26 @@ WebSchedulerTrackedFeatures GetNetworkWebSchedulerTrackedFeatures() {
 // A list of WebSchedulerTrackedFeatures that should never block back/forward
 // cache.
 WebSchedulerTrackedFeatures GetAllowedWebSchedulerTrackedFeatures() {
-  return {WebSchedulerTrackedFeature::kDocumentLoaded,
-          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
-          // This is handled in |UpdateCanStoreToIncludeCacheControlNoStore()|,
-          // and no need to include in |GetDisallowedFeatures()|.
-          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
-          // TODO(crbug.com/1357482): Figure out if these two should be allowed.
-          WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket,
-          WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
-          // We don't block on subresource cache-control:no-store or no-cache.
-          WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
-          WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
-          // We only record this if "Cache-Control: no-store" header is present
-          // on the main frame.
-          WebSchedulerTrackedFeature::
-              kJsNetworkRequestReceivedCacheControlNoStoreResource,
-          // TODO(crbug.com/1357482): Figure out if this should be allowed.
-          WebSchedulerTrackedFeature::kWebNfc};
+  return {
+      WebSchedulerTrackedFeature::kDocumentLoaded,
+      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
+      // This is handled in |UpdateCanStoreToIncludeCacheControlNoStore()|,
+      // and no need to include in |GetDisallowedFeatures()|.
+      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
+      // TODO(crbug.com/1357482): Figure out if these two should be allowed.
+      WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket,
+      WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
+      // We don't block on subresource cache-control:no-store or no-cache.
+      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
+      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
+      // We only record this if "Cache-Control: no-store" header is present
+      // on the main frame.
+      WebSchedulerTrackedFeature::
+          kJsNetworkRequestReceivedCacheControlNoStoreResource,
+      // TODO(crbug.com/1357482): Figure out if this should be allowed.
+      WebSchedulerTrackedFeature::kWebNfc,
+      WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
+  };
 }
 
 // WebSchedulerTrackedFeatures that do not affect back/forward cache, but
