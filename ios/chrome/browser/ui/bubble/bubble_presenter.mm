@@ -294,7 +294,7 @@ const CGFloat kBubblePresentationDelay = 1;
   // the tip, then end early to prevent the potential reassignment of the
   // existing `whatsNewBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHFollowWhileBrowsingFeature
+      presentBubbleForFeature:feature_engagement::kIPHWhatsNewFeature
                     direction:arrowDirection
                     alignment:BubbleAlignmentTrailing
                          text:text
