@@ -182,7 +182,8 @@ suite('searchResultRowTest', function() {
         getBoldedDescription(
             mojoString16ToString(searchResultRowElement.searchResult
                                      .acceleratorLayoutInfo.description),
-            query),
+            query)
+            .toString(),
         strictQuery(
             '#description', searchResultRowElement.shadowRoot, HTMLDivElement)
             .innerHTML);

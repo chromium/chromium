@@ -93,7 +93,8 @@ export class TextAcceleratorElement extends PolymerElement {
   private parseAndDisplayTextParts(): void {
     const container =
         this.shadowRoot!.querySelector('.parts-container') as HTMLDivElement;
-    container.innerHTML = '';
+    assert(window.trustedTypes);
+    container.innerHTML = window.trustedTypes.emptyHTML;
     const textParts: Node[] = [];
     for (const part of this.parts) {
       const text = mojoString16ToString(part.text);

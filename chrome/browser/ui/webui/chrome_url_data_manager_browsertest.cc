@@ -428,6 +428,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
+    "chrome://shortcut-customization",
     "chrome://slow",
     "chrome://smb-credentials-dialog/",
     "chrome://smb-share-dialog/",

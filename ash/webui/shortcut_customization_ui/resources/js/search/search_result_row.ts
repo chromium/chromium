@@ -153,7 +153,7 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
         'navigated-to-result-route', {bubbles: true, composed: true}));
   }
 
-  private getSearchResultDescriptionInnerHtml(): string {
+  private getSearchResultDescriptionInnerHtml(): TrustedHTML {
     return getBoldedDescription(
         mojoString16ToString(
             this.searchResult.acceleratorLayoutInfo.description),
