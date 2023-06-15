@@ -855,4 +855,77 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// TODO(crbug.com/1455032): Enable these tests on Android once
+// SignInPrimaryAccount() doesn't enable Sync anymore.
+#if !BUILDFLAG(IS_ANDROID)
+
+class SingleClientHistoryWithReplaceSyncWithSigninSyncTest
+    : public SingleClientHistorySyncTest {
+ public:
+  SingleClientHistoryWithReplaceSyncWithSigninSyncTest() {
+    override_features_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  ~SingleClientHistoryWithReplaceSyncWithSigninSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistoryWithReplaceSyncWithSigninSyncTest,
+                       DataTypesEnabledInTransportMode) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  // Opt in to history.
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // With `kReplaceSyncPromosWithSignInPromos`, both HISTORY and
+  // HISTORY_DELETE_DIRECTIVES should be enabled in transport mode.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::HISTORY_DELETE_DIRECTIVES));
+}
+
+class SingleClientHistoryWithoutReplaceSyncWithSigninSyncTest
+    : public SingleClientHistorySyncTest {
+ public:
+  SingleClientHistoryWithoutReplaceSyncWithSigninSyncTest() {
+    override_features_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  ~SingleClientHistoryWithoutReplaceSyncWithSigninSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistoryWithoutReplaceSyncWithSigninSyncTest,
+                       DataTypesNotEnabledInTransportMode) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  // Opt in to history.
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // Without `kReplaceSyncPromosWithSignInPromos`, neither HISTORY nor
+  // HISTORY_DELETE_DIRECTIVES should be enabled in transport mode (even if the
+  // user has opted in).
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::HISTORY_DELETE_DIRECTIVES));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
