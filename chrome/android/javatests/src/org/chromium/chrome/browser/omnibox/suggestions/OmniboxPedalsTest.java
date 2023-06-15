@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -327,8 +326,9 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1434836 - IncognitoTab version is flaky")
     public void testOpenIncognitoTabOmniboxPedalSuggestion() throws InterruptedException {
+        // This test does not apply to incognito mode.
+        if (mIncognito) return;
         HistogramWatcher histogramWatcher =
                 newHistogramExpectations(OmniboxPedalId.LAUNCH_INCOGNITO);
 
