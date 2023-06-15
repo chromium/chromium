@@ -668,6 +668,12 @@ export class DirectoryTreeContainer {
       return;
     }
     const navigationKey = treeItem.dataset['navigationKey']!;
+    // When the navigation item selection changed from the store (e.g. triggered
+    // by other parts of the UI), we don't want to activate the directory again
+    // because it's already activated.
+    if (this.isCurrentDirectoryActive_(navigationKey)) {
+      return;
+    }
     const navigationData = this.getNavigationDataFromKey(navigationKey);
     if (!navigationData) {
       console.warn(
@@ -1001,5 +1007,15 @@ export class DirectoryTreeContainer {
     await element.updateComplete;
     window.fileManager.directoryTreeNamingController.attachAndStart(
         element, false, null);
+  }
+
+  /**
+   * Given a NavigationKey, check if the entry it represents is the current
+   * directory in the store or not.
+   */
+  private isCurrentDirectoryActive_(navigationKey: NavigationKey) {
+    const {currentDirectory} = this.store_.getState();
+    return currentDirectory?.key === navigationKey &&
+        currentDirectory.status === PropStatus.SUCCESS;
   }
 }
