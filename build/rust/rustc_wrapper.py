@@ -94,6 +94,7 @@ def main():
   parser.add_argument('--rustc', required=True, type=pathlib.Path)
   parser.add_argument('--depfile', type=pathlib.Path)
   parser.add_argument('--rsp', type=pathlib.Path)
+  parser.add_argument('--target-windows', action='store_true')
   parser.add_argument('args', metavar='ARG', nargs='+')
 
   args = parser.parse_args()
@@ -106,7 +107,7 @@ def main():
   ldflags = remaining_args[ldflags_separator + 1:rustenv_separator]
   rustenv = remaining_args[rustenv_separator + 1:]
 
-  is_windows = os.name == 'nt'
+  is_windows = sys.platform == 'win32' or args.target_windows
 
   rustc_args.extend(["-Clink-arg=%s" % arg for arg in ldflags])
 
@@ -115,9 +116,6 @@ def main():
     with open(args.rsp) as rspfile:
       rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]
     if is_windows:
-      # Work around for hard-coded string in gn; full fix will come from
-      # https://gn-review.googlesource.com/c/gn/+/12460
-      rsp_args = [arg for arg in rsp_args if not arg.endswith("-Bdynamic")]
       # Work around for "-l<foo>.lib", where ".lib" suffix is undesirable.
       # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
       rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
