@@ -1096,14 +1096,11 @@ TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
   }
 }
 
-class RenderViewContestMenuAutofillTest
+class RenderViewContextMenuAutofillTest
     : public RenderViewContextMenuPrefsTest,
       public testing::WithParamInterface<bool> {
  public:
-  RenderViewContestMenuAutofillTest() {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillShowManualFallbackInContextMenu);
-  }
+  RenderViewContextMenuAutofillTest() = default;
 
   void SetUp() override {
     RenderViewContextMenuPrefsTest::SetUp();
@@ -1122,17 +1119,14 @@ class RenderViewContestMenuAutofillTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillShowManualFallbackInContextMenu};
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
-                         RenderViewContestMenuAutofillTest,
-                         testing::Bool());
-
 // Verify that Autofill context menu items are displayed on a plain text field.
-TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
+TEST_P(RenderViewContextMenuAutofillTest, ShowAutofillOptions) {
   autofill::PersonalDataManager* pdm =
       autofill::PersonalDataManagerFactory::GetForProfile(
           profile()->GetOriginalProfile());
@@ -1152,6 +1146,47 @@ TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
   EXPECT_TRUE(
       menu->IsItemInRangePresent(IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST,
                                  IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST));
+}
+
+INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
+                         RenderViewContextMenuAutofillTest,
+                         testing::Bool());
+
+class RenderViewContextMenuHideAutofillPopupTest
+    : public RenderViewContextMenuPrefsTest {
+ public:
+  RenderViewContextMenuHideAutofillPopupTest() = default;
+
+ protected:
+  autofill::TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillPopupDoesNotOverlapWithContextMenu};
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      autofill_client_injector_;
+};
+
+// Always hide the autofill popup when the context menu opens.
+TEST_F(RenderViewContextMenuHideAutofillPopupTest, HideAutofillPopup) {
+  NavigateAndCommit(GURL("http://www.foo.com/"));
+  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
+  params.input_field_type =
+      blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+
+  const autofill::AutofillClient::PopupOpenArgs args;
+  autofill_client()->ShowAutofillPopup(args, /*delegate=*/nullptr);
+  EXPECT_TRUE(autofill_client()->IsShowingAutofillPopup());
+
+  menu->Init();
+
+  EXPECT_FALSE(autofill_client()->IsShowingAutofillPopup());
+  EXPECT_EQ(autofill_client()->popup_hiding_reason(),
+            autofill::PopupHidingReason::kContextMenuOpened);
 }
 
 // Verify that the Lens Image Search menu item is disabled on non-image content
