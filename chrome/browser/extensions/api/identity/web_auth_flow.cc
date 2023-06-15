@@ -432,7 +432,12 @@ void WebAuthFlow::DidStartNavigation(
   // If the navigation is initiated by the user, the tab will exit the auth
   // flow screen, this should result in a declined authentication and deleting
   // the flow.
+  // These conditions do not apply for the Popup Window, where the url bar is
+  // deactivated and the user cannot navigate away directly, to allow going back
+  // and forth within the same flow.
   if (IsDisplayingAuthPageInTab() &&
+      features::kWebAuthFlowInBrowserTabMode.Get() !=
+          features::WebAuthFlowInBrowserTabMode::kPopupWindow &&
       !navigation_handle->IsRendererInitiated()) {
     // Stop observing the web contents since it is not part of the flow anymore.
     WebContentsObserver::Observe(nullptr);
