@@ -98,15 +98,6 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   // 400 milliseconds
   const int64_t kDelayBetweenAttemptsNanoSecs = 0.4 * NSEC_PER_SEC;
   if (_repostAttemptCount >= kMaximumNumberAttempts) {
-    if (!self.baseViewController.view.window) {
-      NOTREACHED() << "no window is found";
-    } else {
-      UIViewController* presented =
-          self.baseViewController.presentedViewController;
-      NOTREACHED() << "presenting view controller "
-                   << base::SysNSStringToUTF8(
-                          NSStringFromClass([presented class]));
-    }
     [self stop];
     return;
   }
