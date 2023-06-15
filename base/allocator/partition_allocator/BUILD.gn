@@ -373,9 +373,12 @@ component("partition_alloc") {
 
   # Partition alloc is relatively hot (>1% of cycles for users of CrOS). Use speed-focused
   # optimizations for it.
-  if (!is_debug) {
+  if (!is_debug || partition_alloc_optimized_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_speed" ]
+  } else {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:no_optimize" ]
   }
 
   # We want to be able to test pkey mode without access to the default pkey.
