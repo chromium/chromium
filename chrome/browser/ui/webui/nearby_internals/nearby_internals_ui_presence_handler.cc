@@ -138,11 +138,17 @@ void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(
     const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
-        presence_device) {}
+        presence_device) {
+  FireWebUIListener("presence-device-changed",
+                    PresenceDeviceToDictionary(presence_device));
+}
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceLost(
     const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
-        presence_device) {}
+        presence_device) {
+  FireWebUIListener("presence-device-lost",
+                    PresenceDeviceToDictionary(presence_device));
+}
 
 void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
   scan_session_.reset();

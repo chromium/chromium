@@ -46,6 +46,11 @@ Polymer({
     this.browserProxy_.initialize();
     this.addWebUIListener(
         'presence-device-found', device => this.onPresenceDeviceFound_(device));
+    this.addWebUIListener(
+        'presence-device-changed',
+        device => this.onPresenceDeviceChanged_(device));
+    this.addWebUIListener(
+        'presence-device-lost', device => this.onPresenceDeviceLost_(device));
   },
 
   onStartScanClicked() {
@@ -74,5 +79,51 @@ Polymer({
         'endpoint_id': endpointId,
       });
     }
+  },
+
+  // TODO(b/277820435): Add and update device name for devices that have names
+  // included.
+  onPresenceDeviceChanged_(device) {
+    const type = device['type'];
+    const endpointId = device['endpoint_id'];
+
+    const index = this.npDiscoveredDevicesList_.findIndex(
+        list_device => list_device.endpoint_id === endpointId);
+
+    // If a device was changed but we don't have a record of it being found,
+    // add it to the array like onPresenceDeviceFound_().
+    if (index === -1) {
+      this.unshift('npDiscoveredDevicesList_', {
+        'connectable': true,
+        'type': type,
+        'endpoint_id': endpointId,
+      });
+      return;
+    }
+
+    this.npDiscoveredDevicesList_[index] = {
+      'connectable': true,
+      'type': type,
+      'endpoint_id': endpointId,
+    };
+  },
+
+  onPresenceDeviceLost_(device) {
+    const type = device['type'];
+    const endpointId = device['endpoint_id'];
+
+    const index = this.npDiscoveredDevicesList_.findIndex(
+        list_device => list_device.endpoint_id === endpointId);
+
+    // The device was not found in the list.
+    if (index === -1) {
+      return;
+    }
+
+    this.npDiscoveredDevicesList_[index] = {
+      'connectable': false,
+      'type': type,
+      'endpoint_id': endpointId,
+    };
   },
 });

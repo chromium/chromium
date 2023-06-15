@@ -103,7 +103,7 @@ export let TimestampedMessage;
 /**
  * A Nearby Presence Device object to be used for displaying nearby devices
  * during testing.
- * @typedef {{status_text: string,
+ * @typedef {{connectable: boolean,
  *            type: string,
  *            endpoint_id: string}}
  */
