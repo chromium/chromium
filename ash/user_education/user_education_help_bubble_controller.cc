@@ -11,6 +11,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble.h"
@@ -58,6 +59,10 @@ UserEducationHelpBubbleController::~UserEducationHelpBubbleController() {
 
 // static
 UserEducationHelpBubbleController* UserEducationHelpBubbleController::Get() {
+  // Should only be `nullptr` in testing.
+  if (!g_instance) {
+    CHECK_IS_TEST();
+  }
   return g_instance;
 }
 

@@ -4,6 +4,7 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 
+#include <array>
 #include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -14,7 +15,6 @@
 #include "ash/user_education/user_education_types.h"
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -42,6 +42,7 @@ namespace {
 WelcomeTourScrim* g_instance = nullptr;
 
 // Appearance.
+constexpr float kBlurSigma = 3.f;
 constexpr float kClipCornerRadius = 24.f;
 
 // Helpers ---------------------------------------------------------------------
@@ -56,17 +57,13 @@ gfx::RectF TranslateRectFromScreen(const aura::Window* root_window,
 std::vector<gfx::RectF> GetHelpBubbleAnchorBoundsInRootWindow(
     const aura::Window* root_window) {
   std::vector<gfx::RectF> bounds_in_root_window;
-  if (auto* controller = UserEducationHelpBubbleController::Get()) {
-    for (const auto& [_, metadata] :
-         controller->help_bubble_metadata_by_key()) {
+  if (auto* ctrl = UserEducationHelpBubbleController::Get()) {
+    for (const auto& [_, metadata] : ctrl->help_bubble_metadata_by_key()) {
       if (metadata.anchor_root_window == root_window) {
         bounds_in_root_window.emplace_back(TranslateRectFromScreen(
             metadata.anchor_root_window, metadata.anchor_bounds_in_screen));
       }
     }
-  } else {
-    // NOTE: `controller` may only be `nullptr` in testing.
-    CHECK_IS_TEST();
   }
   return bounds_in_root_window;
 }
@@ -138,15 +135,12 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     if (auto* controller = UserEducationHelpBubbleController::Get()) {
       base::RepeatingCallback invalidate = base::BindRepeating(
           &MaskLayerOwner::Invalidate, base::Unretained(this));
-      help_bubble_anchor_bounds_changed_subscription_ =
+      help_bubble_event_subscriptions_[0] =
           controller->AddHelpBubbleAnchorBoundsChangedCallback(invalidate);
-      help_bubble_closed_subscription_ =
+      help_bubble_event_subscriptions_[1] =
           controller->AddHelpBubbleClosedCallback(invalidate);
-      help_bubble_shown_subscription_ =
+      help_bubble_event_subscriptions_[2] =
           controller->AddHelpBubbleShownCallback(invalidate);
-    } else {
-      // NOTE: `controller` may only be `nullptr` in testing.
-      CHECK_IS_TEST();
     }
   }
 
@@ -159,10 +153,8 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
   // Subscriptions for help bubble related events which are held for the life of
   // `this` object in order to clip the scrim around help bubble anchor views so
   // that they are emphasized by the scrim and not obstructed by it.
-  base::CallbackListSubscription
-      help_bubble_anchor_bounds_changed_subscription_;
-  base::CallbackListSubscription help_bubble_closed_subscription_;
-  base::CallbackListSubscription help_bubble_shown_subscription_;
+  std::array<base::CallbackListSubscription, 3>
+      help_bubble_event_subscriptions_;
 };
 
 }  // namespace
@@ -172,7 +164,6 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
 // The class which applies a scrim to the help bubble container for a single
 // root window while in existence. On destruction, the scrim for the associated
 // root window is automatically removed.
-// TODO(http://b/277091650): Add background blur.
 class WelcomeTourScrim::Scrim : public aura::WindowObserver,
                                 public ui::ColorProviderSourceObserver {
  public:
@@ -221,6 +212,7 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
     layer_owner_.layer()->SetName(WelcomeTourScrim::kLayerName);
 
     // Configure dynamic scrim layer properties.
+    UpdateBlur();
     UpdateBounds();
     UpdateColor();
 
@@ -229,13 +221,33 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
     help_bubble_container->layer()->Add(layer_owner_.layer());
     help_bubble_container->layer()->StackAtBottom(layer_owner_.layer());
 
+    // Update blur in response to help bubble related events in order to apply
+    // blur behind the scrim layer if and only if help bubbles are present.
+    if (auto* controller = UserEducationHelpBubbleController::Get()) {
+      base::RepeatingCallback update_blur = base::BindRepeating(
+          &WelcomeTourScrim::Scrim::UpdateBlur, base::Unretained(this));
+      help_bubble_event_subscriptions_[0] =
+          controller->AddHelpBubbleClosedCallback(update_blur);
+      help_bubble_event_subscriptions_[1] =
+          controller->AddHelpBubbleShownCallback(update_blur);
+    }
+
     // Observe the `help_bubble_container` and associated color provider source
     // so that dynamic scrim layer properties can be updated appropriately.
     window_observation_.Observe(help_bubble_container);
     Observe(GetRootWindowController()->color_provider_source());
   }
 
-  // Invoked to updates bounds of the scrim and mask layers. Note that scrim and
+  // Invoked to update blur applied behind the scrim layer. Note that blur is
+  // applied if and only if help bubbles are present.
+  void UpdateBlur() {
+    if (auto* controller = UserEducationHelpBubbleController::Get()) {
+      layer_owner_.layer()->SetBackgroundBlur(
+          controller->help_bubble_metadata_by_key().empty() ? 0.f : kBlurSigma);
+    }
+  }
+
+  // Invoked to update bounds of the scrim and mask layers. Note that scrim and
   // mask layer bounds must remain in sync.
   void UpdateBounds() {
     const gfx::Rect bounds(GetHelpBubbleContainer()->bounds().size());
@@ -261,6 +273,12 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
   // scrim around help bubble anchor views so that they are emphasized by the
   // scrim and not obstructed by it.
   MaskLayerOwner mask_layer_owner_;
+
+  // Subscriptions for help bubble related events which are held for the life of
+  // `this` object in order to apply blur behind the scrim layer if and only if
+  // help bubbles are present.
+  std::array<base::CallbackListSubscription, 2>
+      help_bubble_event_subscriptions_;
 
   // Used to observe the associated help bubble container in order to keep the
   // bounds of the scrim layer in sync.

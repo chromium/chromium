@@ -13,6 +13,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider_source.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,6 +35,10 @@ using ::testing::Matches;
 using ::testing::Not;
 
 // Matchers --------------------------------------------------------------------
+
+MATCHER_P(BackgroundBlur, matcher, "") {
+  return Matches(matcher)(arg->background_blur());
+}
 
 MATCHER_P(BackgroundColor, matcher, "") {
   return Matches(matcher)(arg->background_color());
@@ -76,6 +81,13 @@ aura::Window* GetHelpBubbleContainer(RootWindowController* controller) {
       kShellWindowId_HelpBubbleContainer);
 }
 
+bool HelpBubblesExist() {
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    return !controller->help_bubble_metadata_by_key().empty();
+  }
+  return false;
+}
+
 }  // namespace
 
 // Utilities -------------------------------------------------------------------
@@ -87,14 +99,16 @@ void ExpectScrimsOnAllRootWindows(bool exist) {
         help_bubble_container->layer()->children(),
         Conditional(
             exist,
-            Index(0,
-                  AllOf(Name(Eq(WelcomeTourScrim::kLayerName)),
-                        BackgroundColor(
-                            GetColor(controller, cros_tokens::kCrosSysScrim)),
-                        Bounds(GetLocalBounds(help_bubble_container)),
-                        MaskLayer(AllOf(
-                            Name(Eq(WelcomeTourScrim::kMaskLayerName)),
-                            Bounds(GetLocalBounds(help_bubble_container)))))),
+            Index(
+                0,
+                AllOf(Name(Eq(WelcomeTourScrim::kLayerName)),
+                      BackgroundBlur(Conditional(HelpBubblesExist(), 3.f, 0.f)),
+                      BackgroundColor(
+                          GetColor(controller, cros_tokens::kCrosSysScrim)),
+                      Bounds(GetLocalBounds(help_bubble_container)),
+                      MaskLayer(AllOf(
+                          Name(Eq(WelcomeTourScrim::kMaskLayerName)),
+                          Bounds(GetLocalBounds(help_bubble_container)))))),
             Not(Contains(Name(Eq(WelcomeTourScrim::kLayerName))))));
   }
 }
