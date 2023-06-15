@@ -133,11 +133,10 @@ class BigQueryQuerier(object):
     # passing large amounts of data between processes. See crbug.com/1182459 for
     # more information on performance considerations.
     num_jobs = self._num_jobs or len(builders)
-    process_pool = multiprocessing_utils.GetProcessPool(nodes=num_jobs)
-
     args = [(b, expectation_map) for b in builders]
 
-    results = process_pool.map(self._QueryAddCombined, args)
+    with multiprocessing_utils.GetProcessPoolContext(num_jobs) as pool:
+      results = pool.map(self._QueryAddCombined, args)
 
     tmp_expectation_map = data_types.TestExpectationMap()
     all_unmatched_results = {}

@@ -157,8 +157,8 @@ class Builders():
     mirrored_builders = set()
     no_output_builders = set()
 
-    pool = multiprocessing_utils.GetProcessPool()
-    results = pool.map(self._GetMirroredBuildersForCiBuilder, ci_builders)
+    with multiprocessing_utils.GetProcessPoolContext() as pool:
+      results = pool.map(self._GetMirroredBuildersForCiBuilder, ci_builders)
     for (builders, found_mirror) in results:
       if found_mirror:
         mirrored_builders |= builders
