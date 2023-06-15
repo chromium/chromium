@@ -10,6 +10,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -109,6 +110,121 @@ TEST_F(WidgetDelegateTest, AppIconFallsBackToWindowIcon) {
   EXPECT_TRUE(
       delegate->GetWindowAppIcon().Rasterize(nullptr).BackedBySameObjectAs(
           window_icon));
+}
+
+class TestWidgetDelegate : public WidgetDelegate {
+ public:
+  TestWidgetDelegate() = default;
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate operator=(const TestWidgetDelegate&) = delete;
+  ~TestWidgetDelegate() override = default;
+
+  // WidgetDelegate:
+  void GetAccessiblePanes(std::vector<View*>* panes) override {
+    base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
+  }
+
+  void SetAccessiblePanes(const std::vector<View*>& panes) {
+    accessible_panes_ = panes;
+  }
+
+ private:
+  std::vector<View*> accessible_panes_;
+};
+
+TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
+  // Ordering matters, delegate must outlive widget.
+  TestWidgetDelegate delegate;
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  params.bounds = gfx::Rect(0, 0, 1024, 768);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(params));
+
+  views::AccessiblePaneView* pane1 = new AccessiblePaneView();
+  widget.GetContentsView()->AddChildView(pane1);
+
+  views::View* v1 = new View;
+  v1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  pane1->AddChildView(v1);
+
+  views::View* v2 = new View;
+  v2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  pane1->AddChildView(v2);
+
+  views::AccessiblePaneView* pane2 = new AccessiblePaneView();
+  widget.GetContentsView()->AddChildView(pane2);
+
+  views::View* v3 = new View;
+  v3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  pane2->AddChildView(v3);
+
+  views::View* v4 = new View;
+  v4->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  pane2->AddChildView(v4);
+
+  std::vector<views::View*> panes;
+  panes.push_back(pane1);
+  panes.push_back(pane2);
+  delegate.SetAccessiblePanes(panes);
+
+  widget.Show();
+
+  auto* focus_manager = widget.GetFocusManager();
+  auto get_focused_view = [focus_manager] {
+    return focus_manager->GetFocusedView();
+  };
+
+  // Start rotating from no focus. This should set the focus on the first pane.
+  EXPECT_TRUE(delegate.RotatePaneFocusFromView(nullptr, true, true));
+  EXPECT_EQ(v1, get_focused_view());
+
+  // Attempt to rotate with a view that is not contained by the widget without
+  // wrapping enabled, this should result in no rotation.
+  EXPECT_FALSE(delegate.RotatePaneFocusFromView(nullptr, true, false));
+
+  // Rotate to the next.
+  EXPECT_TRUE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), true, false));
+  EXPECT_EQ(v3, get_focused_view());
+
+  // Attempting to rotate again at the end should result in a non-rotation.
+  EXPECT_FALSE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), true, false));
+
+  // Now attempt to rotate again with wrapping enabled. It should wrap around.
+  EXPECT_TRUE(delegate.RotatePaneFocusFromView(get_focused_view(), true, true));
+  EXPECT_EQ(v1, get_focused_view());
+
+  // Attempt to rotate backwards without wrapping. This should fail.
+  EXPECT_FALSE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), false, false));
+  EXPECT_EQ(v1, get_focused_view());
+
+  // Now wrap around and rotate to the end again.
+  EXPECT_TRUE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), false, true));
+  EXPECT_EQ(v3, get_focused_view());
+
+  EXPECT_TRUE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), false, false));
+  EXPECT_EQ(v1, get_focused_view());
+
+  // Now clear the view and try to start again from the back.
+  focus_manager->ClearFocus();
+  EXPECT_EQ(nullptr, get_focused_view());
+  EXPECT_TRUE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), false, true));
+
+  // Set the focus to the first pane then attempt to rotate the focus. There
+  // should be logic to prevent the focus from cycling infinitely.
+  focus_manager->SetFocusedView(v1);
+  pane2->SetVisible(false);
+  EXPECT_FALSE(
+      delegate.RotatePaneFocusFromView(get_focused_view(), true, true));
+
+  widget.Close();
 }
 
 }  // namespace

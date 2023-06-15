@@ -379,6 +379,17 @@ class VIEWS_EXPORT WidgetDelegate
   bool enable_arrow_key_traversal() const {
     return params_.enable_arrow_key_traversal;
   }
+  // Rotates focus for panes contained in the current widget from the provided
+  // view. If wrapping is enabled, rotation will continue after reaching the
+  // end. This method will return  true if a rotation was performed and false
+  // otherwise.
+  // If the provided |focused_view| is not included by the widget's panes,
+  // the method will not perform any rotation unless |enable_wrapping| is
+  // set to true.
+  virtual bool RotatePaneFocusFromView(views::View* focused_view,
+                                       bool forward,
+                                       bool enable_wrapping);
+
   bool owned_by_widget() const { return params_.owned_by_widget; }
 
   void set_internal_name(std::string name) { params_.internal_name = name; }

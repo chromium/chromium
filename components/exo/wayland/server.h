@@ -117,6 +117,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<SecurityDelegate> security_delegate_;
   // Deleting wl_display depends on SerialTracker.
   std::unique_ptr<SerialTracker> serial_tracker_;
+  std::unique_ptr<SerialTracker> rotation_serial_tracker_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wl_display_;
   base::flat_map<int64_t, std::unique_ptr<WaylandDisplayOutput>> outputs_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_data_;

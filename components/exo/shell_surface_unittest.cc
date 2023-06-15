@@ -23,6 +23,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/permission.h"
@@ -718,6 +719,101 @@ TEST_F(ShellSurfaceTest, SetStartupId) {
 
   shell_surface->SetStartupId(nullptr);
   EXPECT_EQ(nullptr, GetShellStartupId(window));
+}
+
+TEST_F(ShellSurfaceTest, AckRotateFocus) {
+  std::unique_ptr<ShellSurface> surface1 =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  uint32_t serial = 0;
+
+  auto dummy_cb = base::BindLambdaForTesting(
+      [&serial](ash::FocusCycler::Direction, bool) { return serial; });
+
+  views::View* v1 = new views::View();
+  v1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  surface1->AddChildView(v1);
+  surface1->set_rotate_focus_callback(dummy_cb);
+
+  std::unique_ptr<ShellSurface> surface2 =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  views::View* v2 = new views::View();
+  v2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  surface2->AddChildView(v2);
+  surface2->set_rotate_focus_callback(dummy_cb);
+
+  std::unique_ptr<ShellSurface> surface3 =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  views::View* v3 = new views::View();
+  v3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  surface3->AddChildView(v3);
+  surface3->set_rotate_focus_callback(dummy_cb);
+
+  ash::Shell::Get()->focus_cycler()->AddWidget(surface1->GetWidget());
+  ash::Shell::Get()->focus_cycler()->AddWidget(surface2->GetWidget());
+  ash::Shell::Get()->focus_cycler()->AddWidget(surface3->GetWidget());
+
+  // We will do most of our testing with surface2 because it is in the middle.
+  // This will allow us to easily test directional logic.
+  ash::Shell::Get()->focus_cycler()->FocusWidget(surface2->GetWidget());
+  ASSERT_TRUE(surface2->GetWidget()->IsActive());
+
+  // Test handled. This should result in no rotation.
+  surface2->RotatePaneFocusFromView(v2, true, false);
+  surface2->AckRotateFocus(serial++, true);
+  ASSERT_TRUE(surface2->GetWidget()->IsActive());
+
+  surface2->RotatePaneFocusFromView(v2, true, false);
+  surface2->AckRotateFocus(serial++, true);
+  ASSERT_TRUE(surface2->GetWidget()->IsActive());
+
+  // Now test unhandled in the forward direction. The next widget should be
+  // focused.
+  surface2->RotatePaneFocusFromView(v2, true, false);
+  surface2->AckRotateFocus(serial++, false);
+  ASSERT_TRUE(surface3->GetWidget()->IsActive());
+
+  // Reset
+  ash::Shell::Get()->focus_cycler()->FocusWidget(surface2->GetWidget());
+  ASSERT_TRUE(surface2->GetWidget()->IsActive());
+
+  // Now test unhandled in the forward direction. The next widget should be
+  // focused.
+  surface2->RotatePaneFocusFromView(v2, false, false);
+  surface2->AckRotateFocus(serial++, false);
+  ASSERT_TRUE(surface1->GetWidget()->IsActive());
+}
+
+TEST_F(ShellSurfaceTest, RotatePaneFocusFromView) {
+  using ::testing::Return;
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  base::MockRepeatingCallback<uint32_t(ash::FocusCycler::Direction, bool)> cb;
+  shell_surface->set_rotate_focus_callback(cb.Get());
+
+  auto serial = 0;
+
+  EXPECT_CALL(cb, Run(ash::FocusCycler::FORWARD, true))
+      .WillOnce(Return(serial++));
+  auto rotated = shell_surface->RotatePaneFocusFromView(nullptr, true, true);
+  // Async operations always return successful rotation immediately.
+  EXPECT_TRUE(rotated);
+
+  EXPECT_CALL(cb, Run(ash::FocusCycler::BACKWARD, false))
+      .WillOnce(Return(serial++));
+  rotated = shell_surface->RotatePaneFocusFromView(nullptr, false, false);
+  EXPECT_TRUE(rotated);
+}
+
+TEST_F(ShellSurfaceTest, RotatePaneFocusFromView_NoCallback) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  auto rotated = shell_surface->RotatePaneFocusFromView(nullptr, true, true);
+  // No focusable view for the shell surface. This should result in a
+  // non-rotation using the base rotation logic.
+  EXPECT_FALSE(rotated);
 }
 
 TEST_F(ShellSurfaceTest, StartMove) {

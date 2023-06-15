@@ -380,6 +380,72 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
   EXPECT_EQ(focus_manager->GetFocusedView(), view1);
 }
 
+TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes_MoveOntoNext) {
+  SetUpTrayFocusCycle();
+
+  InstallFocusCycleOnShelf();
+
+  std::unique_ptr<views::Widget> browser_widget =
+      std::make_unique<views::Widget>();
+  std::unique_ptr<PanedWidgetDelegate> test_widget_delegate =
+      std::make_unique<PanedWidgetDelegate>(browser_widget.get());
+  views::Widget::InitParams widget_params(
+      views::Widget::InitParams::TYPE_WINDOW);
+  widget_params.delegate = test_widget_delegate.get();
+  widget_params.ownership =
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+
+  widget_params.context = GetContext();
+  browser_widget->Init(std::move(widget_params));
+  browser_widget->Show();
+
+  aura::Window* browser_window = browser_widget->GetNativeView();
+
+  views::View* root_view = browser_widget->GetRootView();
+
+  // pane1 contains view1 and view2, pane2 contains view3 and view4.
+  views::AccessiblePaneView* pane1 = new views::AccessiblePaneView();
+  root_view->AddChildView(pane1);
+
+  views::View* view1 = new views::View();
+  view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  pane1->AddChildView(view1);
+
+  views::AccessiblePaneView* pane2 = new views::AccessiblePaneView();
+  root_view->AddChildView(pane2);
+
+  views::View* view2 = new views::View();
+  view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  pane2->AddChildView(view2);
+
+  test_widget_delegate->SetAccessiblePanes({pane1, pane2});
+
+  views::FocusManager* focus_manager = browser_widget->GetFocusManager();
+
+  // Cycle focus to the status area.
+  focus_cycler()->RotateFocus(FocusCycler::FORWARD);
+  EXPECT_TRUE(GetPrimaryStatusAreaWidget()->IsActive());
+
+  // Cycle focus to the shelf.
+  focus_cycler()->RotateFocus(FocusCycler::FORWARD);
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
+
+  // Cycle focus to the first pane in the browser.
+  focus_cycler()->RotateFocus(FocusCycler::FORWARD);
+  EXPECT_TRUE(wm::IsActiveWindow(browser_window));
+  EXPECT_EQ(focus_manager->GetFocusedView(), view1);
+
+  // Cycle focus back to the status area by asking the focus_cycler to move
+  // onto the next widget. This should skip the next accessible pane.
+  focus_cycler()->RotateFocus(FocusCycler::FORWARD, true);
+  EXPECT_FALSE(wm::IsActiveWindow(browser_window));
+  EXPECT_TRUE(GetPrimaryStatusAreaWidget()->IsActive());
+
+  // Manually deallocate to ensure delegate outlives widget.
+  browser_widget.release();
+  test_widget_delegate.release();
+}
+
 // Test that when the shelf widget & status area widget are removed, they should
 // also be removed from focus cycler.
 TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {

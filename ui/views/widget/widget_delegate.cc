@@ -137,6 +137,63 @@ bool WidgetDelegate::ShouldCenterWindowTitleText() const {
 #endif
 }
 
+// TODO(ffred): refactor this method.
+bool WidgetDelegate::RotatePaneFocusFromView(View* focused_view,
+                                             bool forward,
+                                             bool enable_wrapping) {
+  // Get the list of all accessible panes.
+  std::vector<View*> panes;
+  GetAccessiblePanes(&panes);
+
+  // Count the number of panes and set the default index if no pane
+  // is initially focused.
+  const size_t count = panes.size();
+  if (!count) {
+    return false;
+  }
+
+  // Initialize |index| to an appropriate starting index if nothing is
+  // focused initially.
+  size_t index = forward ? (count - 1) : 0;
+
+  // Check to see if a pane already has focus and update the index accordingly.
+  if (focused_view) {
+    const auto i =
+        base::ranges::find_if(panes, [focused_view](const auto* pane) {
+          return pane && pane->Contains(focused_view);
+        });
+    if (i != panes.cend()) {
+      index = static_cast<size_t>(i - panes.cbegin());
+    }
+  }
+
+  // Rotate focus.
+  for (const size_t start_index = index;;) {
+    index = (!forward ? (index + count - 1) : (index + 1)) % count;
+
+    if (!enable_wrapping && (index == (forward ? 0 : (count - 1)))) {
+      return false;
+    }
+
+    // Ensure that we don't loop more than once.
+    if (index == start_index) {
+      return false;
+    }
+
+    views::View* pane = panes[index];
+    DCHECK(pane);
+    if (pane->GetVisible()) {
+      pane->RequestFocus();
+      // |pane| may be in a different widget, so don't assume its focus manager
+      // is |this|.
+      focused_view = pane->GetWidget()->GetFocusManager()->GetFocusedView();
+      if (pane == focused_view || pane->Contains(focused_view)) {
+        return true;
+      }
+    }
+  }
+}
+
 bool WidgetDelegate::ShouldShowCloseButton() const {
   return params_.show_close_button;
 }
