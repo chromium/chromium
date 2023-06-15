@@ -105,7 +105,11 @@ class It2MeConfirmationDialogProxyTest : public testing::Test {
   base::Thread dialog_thread_;
 
   // |dialog_| is owned by |dialog_proxy_| but we keep an alias for testing.
-  raw_ptr<StubIt2MeConfirmationDialog> dialog_ = nullptr;
+  // This dangling raw_ptr occurred in:
+  // remoting_unittests: It2MeConfirmationDialogProxyTest.Show
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425645/test-results?q=ExactID%3Aninja%3A%2F%2Fremoting%3Aremoting_unittests%2FIt2MeConfirmationDialogProxyTest.Show+VHash%3A5b63361209a49b2c
+  raw_ptr<StubIt2MeConfirmationDialog, FlakyDanglingUntriaged> dialog_ =
+      nullptr;
   std::unique_ptr<It2MeConfirmationDialogProxy> dialog_proxy_;
 };
 

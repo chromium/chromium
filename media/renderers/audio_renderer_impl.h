@@ -269,7 +269,10 @@ class MEDIA_EXPORT AudioRendererImpl
 
   std::unique_ptr<AudioDecoderStream> audio_decoder_stream_;
 
-  raw_ptr<MediaLog> media_log_;
+  // This dangling raw_ptr occurred in:
+  // Webkit_unit_tests: WebMediaPlayerImplTest.MediaPositionState_Playing
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425332/test-results?q=ExactID%3Aninja%3A%2F%2Fthird_party%2Fblink%2Frenderer%2Fcontroller%3Ablink_unittests%2FWebMediaPlayerImplTest.MediaPositionState_Playing+VHash%3A896f1103f2d1008d
+  raw_ptr<MediaLog, FlakyDanglingUntriaged> media_log_;
 
   MediaPlayerLoggingID player_id_;
 
