@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -49,8 +50,11 @@ std::unique_ptr<FeatureTile> CreateTile(base::RepeatingClosure callback,
 }  // namespace
 
 GameDashboardMainMenuView::GameDashboardMainMenuView(
-    views::Widget* main_menu_button_widget) {
+    views::Widget* main_menu_button_widget,
+    aura::Window* game_window)
+    : game_window_(game_window) {
   DCHECK(main_menu_button_widget);
+  DCHECK(game_window_);
 
   set_corner_radius(kBubbleCornerRadius);
   set_close_on_deactivate(false);
@@ -80,7 +84,8 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
-  // TODO(b/273641464): Add support when screenshot tile is pressed.
+  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window_);
+  GetWidget()->Close();
 }
 
 void GameDashboardMainMenuView::AddShortcutTilesRow() {

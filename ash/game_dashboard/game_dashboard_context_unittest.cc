@@ -6,9 +6,13 @@
 
 #include "ash/game_dashboard/game_dashboard_context.h"
 
+#include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
+#include "ash/public/cpp/ash_view_ids.h"
+#include "ash/system/unified/feature_tile.h"
+#include "base/check.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -29,7 +33,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   void SetUp() override {
     GameDashboardTestBase::SetUp();
     game_window_ = CreateAppWindow(TestGameDashboardDelegate::kGameAppId,
-                                   AppType::ARC_APP, gfx::Rect(0, 0, 400, 200));
+                                   AppType::ARC_APP, game_window_bounds_);
     game_context_ = GameDashboardController::Get()->GetGameDashboardContext(
         game_window_.get());
     DCHECK(game_context_);
@@ -48,9 +52,18 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     return game_context_->main_menu_widget_.get();
   }
 
+  views::View* GetMainMenuViewById(int tile_view_id) {
+    CHECK(GetMainMenuDialogWidget())
+        << "The main menu must be opened first before trying to retrieve a "
+           "main menu View.";
+    return GetMainMenuDialogWidget()->GetContentsView()->GetViewByID(
+        tile_view_id);
+  }
+
  protected:
   std::unique_ptr<aura::Window> game_window_;
   const GameDashboardContext* game_context_;
+  const gfx::Rect game_window_bounds_ = gfx::Rect(0, 0, 400, 200);
 };
 
 // Tests
@@ -106,6 +119,21 @@ TEST_F(GameDashboardContextTest, CloseMainMenuButtonWidget) {
 
   // Verifies that the menu is no longer visible.
   EXPECT_FALSE(GetMainMenuDialogWidget());
+}
+
+TEST_F(GameDashboardContextTest, TakeScreenshot) {
+  // Retrieve the screenshot button and verify the initial state.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  FeatureTile* screenshot_tile = static_cast<FeatureTile*>(
+      GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
+  ASSERT_TRUE(screenshot_tile);
+
+  LeftClickOn(screenshot_tile);
+
+  // Verify that a screenshot is taken of the game window.
+  const auto file_path = WaitForCaptureFileToBeSaved();
+  const gfx::Image image = ReadAndDecodeImageFile(file_path);
+  EXPECT_EQ(image.Size(), game_window_bounds_.size());
 }
 
 }  // namespace ash

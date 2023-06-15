@@ -16,7 +16,8 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(GameDashboardMainMenuView);
 
-  explicit GameDashboardMainMenuView(views::Widget* main_menu_button_widget);
+  GameDashboardMainMenuView(views::Widget* main_menu_button_widget,
+                            aura::Window* game_window);
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;
   GameDashboardMainMenuView& operator=(const GameDashboardMainMenuView) =
       delete;
@@ -34,6 +35,8 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // Adds a row of shortcut tiles to the main menu view for users to quickly
   // access common functionality.
   void AddShortcutTilesRow();
+
+  const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 };
 
 }  // namespace ash

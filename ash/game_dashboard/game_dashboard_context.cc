@@ -34,7 +34,11 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
   CreateAndAddMainMenuButtonWidget();
 }
 
-GameDashboardContext::~GameDashboardContext() = default;
+GameDashboardContext::~GameDashboardContext() {
+  if (main_menu_widget_) {
+    main_menu_widget_->CloseNow();
+  }
+}
 
 void GameDashboardContext::OnWindowBoundsChanged() {
   UpdateMainMenuButtonWidgetBounds();
@@ -43,7 +47,7 @@ void GameDashboardContext::OnWindowBoundsChanged() {
 void GameDashboardContext::ToggleMainMenu() {
   if (!main_menu_widget_) {
     auto menu_delegate = std::make_unique<GameDashboardMainMenuView>(
-        main_menu_button_widget_.get());
+        main_menu_button_widget_.get(), game_window_);
     main_menu_widget_ =
         base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
             std::move(menu_delegate)));
