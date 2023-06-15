@@ -730,7 +730,10 @@ class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
   LegacyPackagedAppLacrosPrimaryPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
+        {});
   }
 
   LegacyPackagedAppLacrosPrimaryPublisherTest(
@@ -783,7 +786,8 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {features::kWebAppsCrosapi, ash::features::kLacrosSupport,
-         ash::features::kLacrosPrimary},
+         ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
         {});
   }
 
@@ -870,9 +874,9 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 };
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
-  VerifyApp(AppType::kStandaloneBrowser, app_constants::kLacrosAppId, "Lacros",
+  VerifyApp(AppType::kStandaloneBrowser, app_constants::kLacrosAppId, "Chrome",
             Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
-            {"chrome"}, base::Time(), base::Time(), apps::Permissions(),
+            {}, base::Time(), base::Time(), apps::Permissions(),
             /*is_platform_app=*/false,
             /*recommendable=*/true, /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
