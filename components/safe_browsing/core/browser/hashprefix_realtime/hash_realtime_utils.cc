@@ -36,6 +36,9 @@ bool IsHashRealTimeLookupEligibleInSession() {
 }
 HashRealTimeSelection DetermineHashRealTimeSelection(bool is_off_the_record,
                                                      PrefService* prefs) {
+  // All prefs used in this method must match the ones returned by
+  // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
+  // changes can receive them correctly.
 #if BUILDFLAG(IS_ANDROID)
   return HashRealTimeSelection::kNone;
 #else
@@ -43,10 +46,16 @@ HashRealTimeSelection DetermineHashRealTimeSelection(bool is_off_the_record,
       hash_realtime_utils::IsHashRealTimeLookupEligibleInSession() &&
       !is_off_the_record &&
       safe_browsing::GetSafeBrowsingState(*prefs) ==
-          SafeBrowsingState::STANDARD_PROTECTION;
+          SafeBrowsingState::STANDARD_PROTECTION &&
+      safe_browsing::AreHashPrefixRealTimeLookupsAllowedByPolicy(*prefs);
   return can_do_lookup ? HashRealTimeSelection::kHashRealTimeService
                        : HashRealTimeSelection::kNone;
 #endif
+}
+
+std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs() {
+  return {prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingEnhanced,
+          prefs::kHashPrefixRealTimeChecksAllowedByPolicy};
 }
 
 }  // namespace safe_browsing::hash_realtime_utils

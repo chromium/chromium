@@ -132,6 +132,8 @@ const char kRealTimeDownloadProtectionRequestAllowedByPolicy[] =
     "safebrowsing.real_time_download_protection_request_allowed_by_policy";
 const char kSafeBrowsingExtensionProtectionAllowedByPolicy[] =
     "safebrowsing.extension_protection_allowed_by_policy";
+const char kHashPrefixRealTimeChecksAllowedByPolicy[] =
+    "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -216,6 +218,10 @@ bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs) {
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
 }
 
+bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
+}
+
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // This metric tracks the extended browsing opt-in based on whichever setting
   // the user is currently seeing. It tells us whether extended reporting is
@@ -282,6 +288,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
+  registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                                true);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {

@@ -320,7 +320,23 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             original_expiration);
 
+  auto new_expiration = base::Time::Now() + base::Days(7);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            new_expiration);
+
+  pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                           false);
+  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            new_expiration);
+
+  pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                           true);
   task_environment_.RunUntilIdle();
   // The service is re-enabled, so the expiration date is updated.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,

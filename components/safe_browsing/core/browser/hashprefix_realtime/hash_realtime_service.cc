@@ -784,6 +784,12 @@ HashRealTimeService::GetTrafficAnnotationTagForOhttp() const {
         SafeBrowsingEnabled: false
       }
     }
+    chrome_policy {
+      SafeBrowsingProxiedRealTimeChecksAllowed {
+        policy_options {mode: MANDATORY}
+        SafeBrowsingProxiedRealTimeChecksAllowed: false
+      }
+    }
     deprecated_policies: "SafeBrowsingEnabled"
   })");
 }

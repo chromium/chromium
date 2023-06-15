@@ -39,6 +39,11 @@ bool IsHashRealTimeLookupEligibleInSession();
 HashRealTimeSelection DetermineHashRealTimeSelection(bool is_off_the_record,
                                                      PrefService* prefs);
 
+// A helper for consumers that want to recompute DetermineHashRealTimeSelection
+// when there are pref changes. This returns all prefs that modify the outcome
+// of that method.
+std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs();
+
 }  // namespace safe_browsing::hash_realtime_utils
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_UTILS_H_

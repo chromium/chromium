@@ -174,6 +174,12 @@ extern const char kRealTimeDownloadProtectionRequestAllowedByPolicy[];
 // This policy does not impact extension blocklist due to Omaha updater.
 extern const char kSafeBrowsingExtensionProtectionAllowedByPolicy[];
 
+// A boolean indicating if hash-prefix real-time lookups are allowed by policy.
+// If false, the lookups will instead be hash-prefix database lookups. If true,
+// there is no such override; the hash-prefix real-time lookups might still not
+// occur for unrelated reasons.
+extern const char kHashPrefixRealTimeChecksAllowedByPolicy[];
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -296,6 +302,10 @@ bool IsCsdPhishingProtectionAllowed(const PrefService& prefs);
 // Returns whether Safe Browsing extension protection is allowed for
 // the user.
 bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs);
+
+// Returns whether hash-prefix real-time lookups are allowed for the user based
+// on enterprise policy.
+bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs);
 
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);

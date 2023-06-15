@@ -33085,6 +33085,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1114"
       label="AllowBackForwardCacheForCacheControlNoStorePageEnabled"/>
   <int value="1115" label="DeviceLoginScreenWebHidAllowDevicesForUrls"/>
+  <int value="1116" label="SafeBrowsingProxiedRealTimeChecksAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

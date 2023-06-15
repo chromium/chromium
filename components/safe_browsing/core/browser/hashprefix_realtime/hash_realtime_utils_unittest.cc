@@ -64,6 +64,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
         SafeBrowsingState::STANDARD_PROTECTION;
     bool is_off_the_record = false;
     bool is_feature_on = true;
+    absl::optional<bool> lookups_allowed_by_policy = absl::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
   } test_cases[] = {
 #if BUILDFLAG(IS_ANDROID)
@@ -82,6 +83,14 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     // Lookups disabled because the feature is disabled.
     {.is_feature_on = false,
      .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+    // Lookups allowed because policy allows them and nothing else prevents
+    // them.
+    {.lookups_allowed_by_policy = true,
+     .expected_selection =
+         hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService},
+    // Lookups disabled because policy prevents them.
+    {.lookups_allowed_by_policy = false,
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
 #endif
   };
 
@@ -95,6 +104,10 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     }
     RegisterProfilePrefs(prefs.registry());
     SetSafeBrowsingState(&prefs, test_case.safe_browsing_state);
+    if (test_case.lookups_allowed_by_policy.has_value()) {
+      prefs.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                       test_case.lookups_allowed_by_policy.value());
+    }
     EXPECT_EQ(hash_realtime_utils::DetermineHashRealTimeSelection(
                   test_case.is_off_the_record, &prefs),
               test_case.expected_selection);

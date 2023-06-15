@@ -78,8 +78,8 @@ class OhttpKeyService : public KeyedService {
   absl::optional<OhttpKeyAndExpiration> get_ohttp_key_for_testing();
 
  private:
-  // Listens to Safe Browsing state changes to enable/disable the service.
-  void OnSafeBrowsingStateChanged();
+  // Listens to prefs changes that configure enabling/disabling the service.
+  void OnConfiguringPrefsChanged();
 
   // Enables/disables the service.
   void SetEnabled(bool enable);
@@ -136,12 +136,14 @@ class OhttpKeyService : public KeyedService {
   // the OHTTP key service.
   raw_ptr<PrefService> pref_service_;
 
-  // Observes changes in Safe Browsing state.
+  // Observes changes prefs that configure whether the service is enabled.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Keeps track of the state of the service. The service should be enabled when
-  // standard protection is on, and disabled when Safe Browsing is off or
-  // enhanced protection is on.
+  // Keeps track of the state of the service.
+  //  - When the temporary feature kHashRealTimeOverOhttp is on, the service is
+  //    enabled only when enhanced protection is on.
+  //  - Otherwise, it's enabled when standard protection is on and the policy
+  //    kHashPrefixRealTimeChecksAllowedByPolicy isn't disabled.
   bool enabled_ = false;
 
   // Used to schedule async key fetch.

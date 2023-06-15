@@ -40,6 +40,8 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
         prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, true);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kHashPrefixRealTimeChecksAllowedByPolicy, true);
   }
 
   void ResetPrefs(bool scout_reporting) {
@@ -208,5 +210,11 @@ TEST_F(SafeBrowsingPrefsTest, VerifySafeBrowsingExtensionProtectionAllowed) {
   prefs_.SetBoolean(prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
                     false);
   EXPECT_FALSE(IsSafeBrowsingExtensionProtectionAllowed(prefs_));
+}
+
+TEST_F(SafeBrowsingPrefsTest, VerifyHashPrefixRealTimeChecksAllowedByPolicy) {
+  EXPECT_TRUE(AreHashPrefixRealTimeLookupsAllowedByPolicy(prefs_));
+  prefs_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy, false);
+  EXPECT_FALSE(AreHashPrefixRealTimeLookupsAllowedByPolicy(prefs_));
 }
 }  // namespace safe_browsing

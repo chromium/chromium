@@ -97,6 +97,12 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
         SafeBrowsingProtectionLevel: 0
       }
     }
+    chrome_policy {
+      SafeBrowsingProxiedRealTimeChecksAllowed {
+        policy_options {mode: MANDATORY}
+        SafeBrowsingProxiedRealTimeChecksAllowed: false
+      }
+    }
   }
   comments:
       "SafeBrowsingProtectionLevel value of 0 or 2 disables fetching this "
@@ -151,21 +157,19 @@ OhttpKeyService::OhttpKeyService(
   PopulateKeyFromPref();
 
   pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kSafeBrowsingEnabled,
-      base::BindRepeating(&OhttpKeyService::OnSafeBrowsingStateChanged,
-                          weak_factory_.GetWeakPtr()));
-  pref_change_registrar_.Add(
-      prefs::kSafeBrowsingEnhanced,
-      base::BindRepeating(&OhttpKeyService::OnSafeBrowsingStateChanged,
-                          weak_factory_.GetWeakPtr()));
+  for (const char* pref :
+       hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs()) {
+    pref_change_registrar_.Add(
+        pref, base::BindRepeating(&OhttpKeyService::OnConfiguringPrefsChanged,
+                                  weak_factory_.GetWeakPtr()));
+  }
 
   SetEnabled(IsEnabled(pref_service_));
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
-void OhttpKeyService::OnSafeBrowsingStateChanged() {
+void OhttpKeyService::OnConfiguringPrefsChanged() {
   SetEnabled(IsEnabled(pref_service_));
 }
 
