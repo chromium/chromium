@@ -78,12 +78,6 @@ void PlatformWindowDelegate::SetFrameRateThrottleEnabled(bool enabled) {}
 void PlatformWindowDelegate::OnTooltipShownOnServer(const std::u16string& text,
                                                     const gfx::Rect& bounds) {}
 
-bool PlatformWindowDelegate::OnRotateFocus(
-    PlatformWindowDelegate::RotateDirection direction,
-    bool reset) {
-  return false;
-}
-
 void PlatformWindowDelegate::OnTooltipHiddenOnServer() {}
 
 gfx::Rect PlatformWindowDelegate::ConvertRectToPixels(
