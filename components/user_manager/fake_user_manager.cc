@@ -340,13 +340,14 @@ bool FakeUserManager::IsUserAllowed(const User& user) const {
   return true;
 }
 
-bool FakeUserManager::IsEphemeralAccountId(const AccountId& account_id) const {
-  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
-}
-
 void FakeUserManager::SetEphemeralModeConfig(
     EphemeralModeConfig ephemeral_mode_config) {
   UserManagerBase::SetEphemeralModeConfig(std::move(ephemeral_mode_config));
+}
+
+bool FakeUserManager::IsEphemeralAccountIdByPolicy(
+    const AccountId& account_id) const {
+  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
 }
 
 const std::string& FakeUserManager::GetApplicationLocale() const {

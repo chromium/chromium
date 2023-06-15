@@ -125,7 +125,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
-  bool IsEphemeralAccountId(const AccountId& account_id) const override;
   const AccountId& GetGuestAccountId() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
@@ -196,6 +195,9 @@ class FakeChromeUserManager : public ChromeUserManager {
   void SetMockUserImageManagerForTesting() {
     mock_user_image_manager_enabled_ = true;
   }
+
+ protected:
+  bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:
   using UserImageManagerMap =

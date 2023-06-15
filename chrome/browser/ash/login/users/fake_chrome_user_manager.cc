@@ -193,11 +193,6 @@ user_manager::User* FakeChromeUserManager::AddActiveDirectoryUser(
       /*profile=*/nullptr);
 }
 
-bool FakeChromeUserManager::IsEphemeralAccountId(
-    const AccountId& account_id) const {
-  return fake_ephemeral_mode_config_.IsAccountIdIncluded(account_id);
-}
-
 void FakeChromeUserManager::LoginUser(const AccountId& account_id,
                                       bool set_profile_created_flag) {
   UserLoggedIn(account_id,
@@ -656,6 +651,11 @@ void FakeChromeUserManager::SetUserAffiliationForTesting(
   }
   user->SetAffiliation(is_affiliated);
   NotifyUserAffiliationUpdated(*user);
+}
+
+bool FakeChromeUserManager::IsEphemeralAccountIdByPolicy(
+    const AccountId& account_id) const {
+  return fake_ephemeral_mode_config_.IsAccountIdIncluded(account_id);
 }
 
 user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {

@@ -828,6 +828,32 @@ bool UserManagerBase::IsUserCryptohomeDataEphemeral(
   return false;
 }
 
+bool UserManagerBase::IsEphemeralAccountId(const AccountId& account_id) const {
+  // Data belonging to the device owner is never ephemeral.
+  if (account_id == GetOwnerAccountId()) {
+    return false;
+  }
+
+  // Data belonging to the stub users is never ephemeral.
+  if (IsStubAccountId(account_id)) {
+    return false;
+  }
+
+  // Data belonging to the guest user is always ephemeral.
+  if (IsGuestAccountId(account_id)) {
+    return true;
+  }
+
+  // Data belonging to the public accounts (e.g. managed guest sessions) is
+  // always ephemeral.
+  if (const User* user = FindUser(account_id);
+      user && user->GetType() == USER_TYPE_PUBLIC_ACCOUNT) {
+    return true;
+  }
+
+  return IsEphemeralAccountIdByPolicy(account_id);
+}
+
 void UserManagerBase::AddObserver(UserManager::Observer* obs) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   observer_list_.AddObserver(obs);

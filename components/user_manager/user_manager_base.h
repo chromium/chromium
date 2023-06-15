@@ -145,6 +145,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
       const AccountId& account_id) const override;
   bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
+  bool IsEphemeralAccountId(const AccountId& account_id) const final;
   void AddObserver(UserManager::Observer* obs) override;
   void RemoveObserver(UserManager::Observer* obs) override;
   void AddSessionStateObserver(
@@ -286,6 +287,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void UpdateLoginState(const User* active_user,
                                 const User* primary_user,
                                 bool is_current_user_owner) const = 0;
+
+  virtual bool IsEphemeralAccountIdByPolicy(
+      const AccountId& account_id) const = 0;
 
   // Getters/setters for private members.
 
