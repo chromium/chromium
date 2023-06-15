@@ -89,6 +89,10 @@
 #include "services/network/public/mojom/network_interface_change_listener.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/content_switches.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -115,6 +119,8 @@ mojo::Remote<network::mojom::EmptyNetworkService>*
     g_empty_network_service_remote = nullptr;
 bool IsEmptyNetworkServiceEnabledForUMA() {
   return IsInProcessNetworkService() &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kSingleProcess) &&
          base::FeatureList::IsEnabled(
              network::features::kNetworkServiceEmptyOutOfProcess);
 }
@@ -390,7 +396,11 @@ void CreateInProcessNetworkService(
       FROM_HERE, base::BindOnce(&CreateInProcessNetworkServiceOnThread,
                                 std::move(receiver)));
 #if BUILDFLAG(IS_ANDROID)
-  if (IsEmptyNetworkServiceEnabledForUMA()) {
+  if (IsEmptyNetworkServiceEnabledForUMA() &&
+      // DownloadManagerService.java calls this in ServiceManagerOnlyMode, where
+      // this is called before the browser threads are initialized and UI thread
+      // is not named Chrome_UIThread at that point. We avoid such rare case.
+      BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     if (!g_empty_network_service_remote) {
       g_empty_network_service_remote =
           new mojo::Remote<network::mojom::EmptyNetworkService>;
@@ -398,10 +408,11 @@ void CreateInProcessNetworkService(
     g_empty_network_service_remote->reset();
     mojo::PendingReceiver<network::mojom::EmptyNetworkService> empty_receiver =
         g_empty_network_service_remote->BindNewPipeAndPassReceiver();
-    ServiceProcessHost::Launch(std::move(empty_receiver),
-                               ServiceProcessHost::Options()
-                                   .WithDisplayName(u"Empty Network Service")
-                                   .Pass());
+    ServiceProcessHost::Options options;
+    options.WithDisplayName(u"Empty Network Service");
+    options.WithExtraCommandLineSwitches(
+        {network::switches::kRegisterEmptyNetworkService});
+    ServiceProcessHost::Launch(std::move(empty_receiver), std::move(options));
   }
 #endif
 }

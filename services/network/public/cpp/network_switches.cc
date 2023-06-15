@@ -135,4 +135,7 @@ const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 // ThreadDelegate::GetHighPriorityTaskRunner().
 const char kNetworkServiceScheduler[] = "network-service-scheduler";
 
+// Enables register the empty network service in utility process.
+const char kRegisterEmptyNetworkService[] = "register-empty-network-service";
+
 }  // namespace network::switches

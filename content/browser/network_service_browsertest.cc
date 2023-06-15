@@ -1665,10 +1665,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithUDPSocketLimit,
 class EmptyNetworkServiceTest : public ContentBrowserTest {
  public:
   EmptyNetworkServiceTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kNetworkServiceInProcess, {}},
-         {network::features::kNetworkServiceEmptyOutOfProcess, {}}},
-        {});
+    scoped_feature_list_.InitWithFeatures(
+        {network::features::kNetworkServiceEmptyOutOfProcess}, {});
+    ForceInProcessNetworkService();
   }
   EmptyNetworkServiceTest(const EmptyNetworkServiceTest&) = delete;
   EmptyNetworkServiceTest& operator=(const EmptyNetworkServiceTest&) = delete;
@@ -1677,13 +1676,7 @@ class EmptyNetworkServiceTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/1448414): Reenable this test.
-IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, DISABLED_Base) {
-  // This test is only for high-RAM device to create another process.
-  if (!IsInProcessNetworkService()) {
-    GTEST_SKIP();
-  }
-
+IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, Base) {
   // Check if EmptyNetworkService is available.
   network::mojom::EmptyNetworkService* empty_network_service =
       GetEmptyNetworkServiceForTesting();

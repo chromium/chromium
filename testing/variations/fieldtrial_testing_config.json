@@ -9753,6 +9753,21 @@
             ]
         }
     ],
+    "OutOfProcessNetworkServiceEmptyService": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Over_6500_mb_20230427",
+                    "enable_features": [
+                        "NetworkServiceEmptyOutOfProcess"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfProcessNetworkServiceMemoryControls": [
         {
             "platforms": [
