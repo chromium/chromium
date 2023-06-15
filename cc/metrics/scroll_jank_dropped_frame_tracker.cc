@@ -14,16 +14,24 @@
 
 namespace cc {
 
+namespace {
+// Histogram min, max and no. of buckets.
+constexpr int kVsyncCountsMin = 1;
+constexpr int kVsyncCountsMax = 50;
+constexpr int kVsyncCountsBuckets = 25;
+}  // namespace
+
 ScrollJankDroppedFrameTracker::ScrollJankDroppedFrameTracker() = default;
 ScrollJankDroppedFrameTracker::~ScrollJankDroppedFrameTracker() = default;
 
 void ScrollJankDroppedFrameTracker::EmitHistogramsAndResetCounters() {
   DCHECK_EQ(num_presented_frames_, kHistogramEmitFrequency);
 
-  UMA_HISTOGRAM_PERCENTAGE(kDelayedFramesHistogram,
+  UMA_HISTOGRAM_PERCENTAGE(kDelayedFramesWindowHistogram,
                            (100 * missed_frames_) / kHistogramEmitFrequency);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsHistogram, missed_vsyncs_, 1, 50,
-                              25);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsSumInWindowHistogram, missed_vsyncs_,
+                              kVsyncCountsMin, kVsyncCountsMax,
+                              kVsyncCountsBuckets);
 
   missed_frames_ = 0;
   missed_vsyncs_ = 0;

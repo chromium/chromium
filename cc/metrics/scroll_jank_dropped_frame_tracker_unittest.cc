@@ -37,10 +37,10 @@ struct FrameTimestamps {
 constexpr int kHistogramEmitFrequency =
     ScrollJankDroppedFrameTracker::kHistogramEmitFrequency;
 constexpr int kFirstWindowSize = kHistogramEmitFrequency + 1;
-constexpr const char* kDelayedFramesHistogram =
-    ScrollJankDroppedFrameTracker::kDelayedFramesHistogram;
-constexpr const char* kMissedVsyncsHistogram =
-    ScrollJankDroppedFrameTracker::kMissedVsyncsHistogram;
+constexpr const char* kDelayedFramesWindowHistogram =
+    ScrollJankDroppedFrameTracker::kDelayedFramesWindowHistogram;
+constexpr const char* kMissedVsyncsSumInWindowHistogram =
+    ScrollJankDroppedFrameTracker::kMissedVsyncsSumInWindowHistogram;
 }  // namespace
 
 class ScrollJankDroppedFrameTrackerTest : public testing::Test {
@@ -86,20 +86,20 @@ TEST_F(ScrollJankDroppedFrameTrackerTest, EmitsHistograms) {
   FrameTimestamps last_frame =
       ProduceAndReportMockFrames(f1, kHistogramEmitFrequency);
 
-  histogram_tester->ExpectUniqueSample(kDelayedFramesHistogram, 0, 0);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsHistogram, 0, 0);
+  histogram_tester->ExpectUniqueSample(kDelayedFramesWindowHistogram, 0, 0);
+  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumInWindowHistogram, 0, 0);
 
   // For first window we emit histogram at 65th reported frame.
   last_frame = ProduceAndReportMockFrames(last_frame, 1);
 
-  histogram_tester->ExpectUniqueSample(kDelayedFramesHistogram, 0, 1);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsHistogram, 0, 1);
+  histogram_tester->ExpectUniqueSample(kDelayedFramesWindowHistogram, 0, 1);
+  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumInWindowHistogram, 0, 1);
 
   // For subsequent windows we emit histogram every 64 frames.
   ProduceAndReportMockFrames(last_frame, kHistogramEmitFrequency);
 
-  histogram_tester->ExpectUniqueSample(kDelayedFramesHistogram, 0, 2);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsHistogram, 0, 2);
+  histogram_tester->ExpectUniqueSample(kDelayedFramesWindowHistogram, 0, 2);
+  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumInWindowHistogram, 0, 2);
 }
 
 /*
@@ -125,8 +125,8 @@ TEST_F(ScrollJankDroppedFrameTrackerTest, FrameProducedEveryVsync) {
   int frames_to_emit_histogram = kFirstWindowSize - 2;
   ProduceAndReportMockFrames(f2, frames_to_emit_histogram);
 
-  histogram_tester->ExpectUniqueSample(kDelayedFramesHistogram, 0, 1);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsHistogram, 0, 1);
+  histogram_tester->ExpectUniqueSample(kDelayedFramesWindowHistogram, 0, 1);
+  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumInWindowHistogram, 0, 1);
 }
 
 /*
@@ -153,8 +153,8 @@ TEST_F(ScrollJankDroppedFrameTrackerTest, NoFrameProducedForMissingInput) {
   int frames_to_emit_histogram = kFirstWindowSize - 2;
   ProduceAndReportMockFrames(f2, frames_to_emit_histogram);
 
-  histogram_tester->ExpectUniqueSample(kDelayedFramesHistogram, 0, 1);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsHistogram, 0, 1);
+  histogram_tester->ExpectUniqueSample(kDelayedFramesWindowHistogram, 0, 1);
+  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumInWindowHistogram, 0, 1);
 }
 
 /*
@@ -184,15 +184,15 @@ TEST_F(ScrollJankDroppedFrameTrackerTest, MissedVsyncWhenInputWasPresent) {
   int expected_missed_frames = 1;
   int expected_bucket =
       (100 * expected_missed_frames) / kHistogramEmitFrequency;
-  histogram_tester->ExpectUniqueSample(kDelayedFramesHistogram, expected_bucket,
-                                       1);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsHistogram, 2, 1);
+  histogram_tester->ExpectUniqueSample(kDelayedFramesWindowHistogram,
+                                       expected_bucket, 1);
+  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumInWindowHistogram, 2, 1);
 
   // The counters were reset for next set of `kHistogramEmitFrequency` frames.
   ProduceAndReportMockFrames(last_frame_ts, kHistogramEmitFrequency);
 
-  histogram_tester->ExpectBucketCount(kDelayedFramesHistogram, 0, 1);
-  histogram_tester->ExpectBucketCount(kMissedVsyncsHistogram, 0, 1);
+  histogram_tester->ExpectBucketCount(kDelayedFramesWindowHistogram, 0, 1);
+  histogram_tester->ExpectBucketCount(kMissedVsyncsSumInWindowHistogram, 0, 1);
 }
 
 }  // namespace cc

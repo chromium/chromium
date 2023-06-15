@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
                eventually remove the non-v2 version"/>
 </variants>
 
+<variants name="ScrollJankEmissionTrigger">
+  <variant name="FixedWindow" summary="window of size 64"/>
+  <variant name="PerScroll" summary="scroll"/>
+</variants>
+
+<variants name="ScrollJankOperator">
+  <variant name="Max" summary="maximum number of vsyncs a frames was delayed"/>
+  <variant name="Sum" summary="sum of missed vsyncs across all frames"/>
+</variants>
+
 <variants name="TopControlsState">
   <variant name=".NoTopControlsMoved" summary="Top controls did not change."/>
   <variant name=".TopControlsMoved" summary="Top controls changed."/>
@@ -208,11 +218,17 @@ chromium-metrics-reviews@google.com.
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
+    NOTE: The metric is deprecated and renamed to
+    Event.ScrollJank.DelayedFramesPercentage.FixedWindow
+
     A frame is deemed janky during a scroll if there was no presented frame in
-    previous vsync while the delta in timestamp of earliest input of current
-    frame and timestamp of last input of previous frame is less than vsync. This
-    metric reports the percentage of delayed frames within an arbitrary window
-    of 64 frames.
+    the previous vsync, and the current frame contains input that was not
+    presented during the missed frame. Missed input is determined by comparing
+    the timestamp of the earliest input of the current frame, to that of the
+    last input of the previously presented frame. If the delta of the timestamps
+    is less than a vsync + vsync/2, then the input is considered to have been
+    intended for the missed frame. This metric reports the percentage of delayed
+    frames within an arbitrary window of 64 frames.
 
     For more details about this metric, please check
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
@@ -225,11 +241,18 @@ chromium-metrics-reviews@google.com.
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
+    NOTE: The metric is deprecated and renamed to
+    Event.ScrollJank.MissedVsyncsSum.FixedWindow
+
     A frame is deemed janky during a scroll if there was no presented frame in
-    previous vsync while the delta in timestamp of earliest input of current
-    frame and timestamp of last input of previous frame is less than vsync. For
-    janky frames, this metric counts number of vsyncs the frame was delayed by.
-    The metric gets reported for a windows of 64 reported frames.
+    the previous vsync, and the current frame contains input that was not
+    presented during the missed frame. Missed input is determined by comparing
+    the timestamp of the earliest input of the current frame, to that of the
+    last input of the previously presented frame. If the delta of the timestamps
+    is less than a vsync + vsync/2, then the input is considered to have been
+    intended for the missed frame. For janky frames, this metric counts number
+    of vsyncs the frame was delayed by. The metric gets reported for a windows
+    of 64 reported frames.
 
     For more details about this metric, please check
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
@@ -946,6 +969,50 @@ chromium-metrics-reviews@google.com.
 
     Team: input-dev@chromium.org.
   </summary>
+</histogram>
+
+<histogram name="Event.ScrollJank.DelayedFramesPercentage.{EmissionTrigger}"
+    units="%" expires_after="2024-03-20">
+  <owner>kartarsingh@google.com</owner>
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    A frame is deemed janky during a scroll if there was no presented frame in
+    the previous vsync, and the current frame contains input that was not
+    presented during the missed frame. Missed input is determined by comparing
+    the timestamp of the earliest input of the current frame, to that of the
+    last input of the previously presented frame. If the delta of the timestamps
+    is less than a vsync + vsync/2, then the input is considered to have been
+    intended for the missed frame. This metric reports the percentage of delayed
+    frames within a {EmissionTrigger}.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+  </summary>
+  <token key="EmissionTrigger" variants="ScrollJankEmissionTrigger"/>
+</histogram>
+
+<histogram name="Event.ScrollJank.MissedVsyncs{Operator}.{EmissionTrigger}"
+    units="counts" expires_after="2024-03-20">
+  <owner>kartarsingh@google.com</owner>
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    A frame is deemed janky during a scroll if there was no presented frame in
+    the previous vsync, and the current frame contains input that was not
+    presented during the missed frame. Missed input is determined by comparing
+    the timestamp of the earliest input of the current frame, to that of the
+    last input of the previously presented frame. If the delta of the timestamps
+    is less than a vsync + vsync/2, then the input is considered to have been
+    intended for the missed frame. This metric reports the {Operator} in
+    {EmissionTrigger}. Metric emits zeros as well i.e. the case when no frames
+    were delayed.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+  </summary>
+  <token key="Operator" variants="ScrollJankOperator"/>
+  <token key="EmissionTrigger" variants="ScrollJankEmissionTrigger"/>
 </histogram>
 
 <histogram name="Event.SingleTapType" enum="TapDelayType" expires_after="M97">

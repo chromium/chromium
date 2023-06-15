@@ -23,10 +23,10 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
                                     base::TimeDelta vsync_interval);
 
   static constexpr int kHistogramEmitFrequency = 64;
-  static constexpr const char* kDelayedFramesHistogram =
-      "Event.Jank.DelayedFramesPercentage";
-  static constexpr const char* kMissedVsyncsHistogram =
-      "Event.Jank.MissedVsyncCount";
+  static constexpr const char* kDelayedFramesWindowHistogram =
+      "Event.ScrollJank.DelayedFramesPercentage.FixedWindow";
+  static constexpr const char* kMissedVsyncsSumInWindowHistogram =
+      "Event.ScrollJank.MissedVsyncsSum.FixedWindow";
 
  private:
   void EmitHistogramsAndResetCounters();
