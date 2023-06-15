@@ -421,6 +421,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.Discardable.FreeListReleaseTime" units="microseconds"
     expires_after="2022-11-13">
+  <obsolete>
+    No longer needed since the experiment was not launched.
+  </obsolete>
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>

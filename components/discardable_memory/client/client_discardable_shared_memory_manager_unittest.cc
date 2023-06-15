@@ -9,7 +9,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -457,9 +456,6 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
 }
 
 TEST_F(ClientDiscardableSharedMemoryManagerTest, MarkDirtyFreelistPages) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndDisableFeature(
-      discardable_memory::kReleaseDiscardableFreeListPages);
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
 
@@ -499,38 +495,6 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, MarkDirtyFreelistPages) {
   client->ReleaseFreeMemory();
 
   // All pages should be freed now, so there are no dirty pages in the freelist.
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-}
-
-TEST_F(ClientDiscardableSharedMemoryManagerTest,
-       MarkDirtyFreelistPagesReleaseFreeListPages) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(discardable_memory::kReleaseDiscardableFreeListPages);
-  auto client =
-      base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  auto mem1 = client->AllocateLockedDiscardableMemory(base::GetPageSize() / 2u);
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  auto mem2 =
-      client->AllocateLockedDiscardableMemory(base::GetPageSize() * 1.2);
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  mem1 = nullptr;
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  mem2 = nullptr;
-
-  // Freelist memory is released immediately, so there's no dirty memory.
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  client->ReleaseFreeMemory();
-
   ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
 }
 
