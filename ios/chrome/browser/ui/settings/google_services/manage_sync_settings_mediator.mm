@@ -11,6 +11,7 @@
 #import "base/notreached.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
@@ -30,8 +31,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
@@ -78,7 +84,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <BooleanObserver,
-                                          IdentityManagerObserverBridgeDelegate>
+                                          IdentityManagerObserverBridgeDelegate,
+                                          ChromeAccountManagerServiceObserver>
 
 // Model item for sync everything.
 @property(nonatomic, strong) TableViewItem* syncEverythingItem;
@@ -113,13 +120,24 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+  // Authentication service.
+  AuthenticationService* _authenticationService;
+  // Account manager service to retrieve Chrome identities.
+  ChromeAccountManagerService* _chromeAccountManagerService;
+  // Chrome account manager service observer bridge.
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountAccountManagerServiceObserver;
+  // Signed-in identity. Note: may be nil while signing out.
+  id<SystemIdentity> _signedInIdentity;
 }
 
-- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
-                    userPrefService:(PrefService*)userPrefService
-                    identityManager:(signin::IdentityManager*)identityManager
-                initialAccountState:
-                    (SyncSettingsAccountState)initialAccountState {
+- (instancetype)
+      initWithSyncService:(syncer::SyncService*)syncService
+          userPrefService:(PrefService*)userPrefService
+          identityManager:(signin::IdentityManager*)identityManager
+    authenticationService:(AuthenticationService*)authenticationService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+      initialAccountState:(SyncSettingsAccountState)initialAccountState {
   self = [super init];
   if (self) {
     DCHECK(syncService);
@@ -132,6 +150,13 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    _authenticationService = authenticationService;
+    _chromeAccountManagerService = accountManagerService;
+    _accountAccountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _chromeAccountManagerService);
+    _signedInIdentity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
     _initialAccountState = initialAccountState;
   }
   return self;
@@ -144,19 +169,48 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   [_autocompleteWalletPreference stop];
   _autocompleteWalletPreference = nil;
   _identityManagerObserver.reset();
+  _authenticationService = nullptr;
+  _chromeAccountManagerService = nullptr;
+  _accountAccountManagerServiceObserver.reset();
+  _signedInIdentity = nil;
 }
 
 #pragma mark - Loads sync data type section
 
+// Loads the centered identity account section.
+- (void)loadIdentityAccountSection {
+  TableViewModel* model = self.consumer.tableViewModel;
+  switch (self.syncAccountState) {
+    case SyncSettingsAccountState::kSignedOut:
+    case SyncSettingsAccountState::kSyncing:
+    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+      return;
+    case SyncSettingsAccountState::kSignedIn:
+      [model addSectionWithIdentifier:AccountSectionIdentifier];
+      CHECK(_signedInIdentity);
+      TableViewCentralAccountItem* identityAccountItem =
+          [[TableViewCentralAccountItem alloc]
+              initWithType:IdentityAccountItemType];
+      identityAccountItem.avatarImage =
+          _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
+              _signedInIdentity, IdentityAvatarSize::ExtraLarge);
+      identityAccountItem.name = _signedInIdentity.userFullName;
+      identityAccountItem.email = _signedInIdentity.userEmail;
+      [model addItem:identityAccountItem
+          toSectionWithIdentifier:AccountSectionIdentifier];
+      break;
+  }
+}
+
 // Loads the sync data type section.
 - (void)loadSyncDataTypeSection {
   TableViewModel* model = self.consumer.tableViewModel;
-  [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   switch (self.syncAccountState) {
     case SyncSettingsAccountState::kSignedOut:
       return;
     case SyncSettingsAccountState::kSyncing:
     case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+      [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       if (self.allItemsAreSynceable) {
         SyncSwitchItem* button =
             [[SyncSwitchItem alloc] initWithType:SyncEverythingItemType];
@@ -180,6 +234,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
           toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       break;
     case SyncSettingsAccountState::kSignedIn:
+      [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       TableViewTextHeaderFooterItem* headerItem =
           [[TableViewTextHeaderFooterItem alloc]
               initWithType:TypesListHeaderOrFooterType];
@@ -264,6 +319,29 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       }
       break;
   }
+}
+
+- (void)updateIdentityAccountSection {
+  if (![self.consumer.tableViewModel
+          hasItemForItemType:IdentityAccountItemType
+           sectionIdentifier:AccountSectionIdentifier]) {
+    return;
+  }
+
+  NSIndexPath* accountCellIndexPath = [self.consumer.tableViewModel
+      indexPathForItemType:IdentityAccountItemType
+         sectionIdentifier:AccountSectionIdentifier];
+  TableViewCentralAccountItem* identityAccountItem =
+      base::mac::ObjCCast<TableViewCentralAccountItem>(
+          [self.consumer.tableViewModel itemAtIndexPath:accountCellIndexPath]);
+  CHECK(identityAccountItem);
+  CHECK(_signedInIdentity);
+  identityAccountItem.avatarImage =
+      _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
+          _signedInIdentity, IdentityAvatarSize::ExtraLarge);
+  identityAccountItem.name = _signedInIdentity.userFullName;
+  identityAccountItem.email = _signedInIdentity.userEmail;
+  [self.consumer reloadItem:identityAccountItem];
 }
 
 // Updates all the items related to sync (sync data items and autocomplete
@@ -641,6 +719,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 - (void)manageSyncSettingsTableViewControllerLoadModel:
     (id<ManageSyncSettingsConsumer>)controller {
   DCHECK_EQ(self.consumer, controller);
+  [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
   [self loadSyncDataTypeSection];
   [self loadSignOutSection];
@@ -671,13 +750,27 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      [self updateSyncErrorsSection:YES];
+      _signedInIdentity = _authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+      [self updateIdentityAccountSection];
       break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      // Temporary state, we can ignore this event, until the UI is signed out.
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
+  }
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  if ([_signedInIdentity isEqual:identity]) {
+    [self updateIdentityAccountSection];
+    [self updateSyncItemsNotifyConsumer:YES];
+    [self updateSyncErrorsSection:YES];
+    [self updateEncryptionItem:YES];
   }
 }
 
@@ -761,6 +854,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       case SyncDisabledByAdministratorErrorItemType:
       case SignOutItemFooterType:
       case TypesListHeaderOrFooterType:
+      case IdentityAccountItemType:
         NOTREACHED();
         break;
     }
@@ -818,6 +912,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     case SyncDisabledByAdministratorErrorItemType:
     case SignOutItemFooterType:
     case TypesListHeaderOrFooterType:
+    case IdentityAccountItemType:
       // Nothing to do.
       break;
   }

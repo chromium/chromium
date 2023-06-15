@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
@@ -117,11 +118,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   }
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
-      initWithSyncService:self.syncService
-          userPrefService:browserState->GetPrefs()
-          identityManager:IdentityManagerFactory::GetForBrowserState(
-                              browserState)
-      initialAccountState:_accountState];
+        initWithSyncService:self.syncService
+            userPrefService:browserState->GetPrefs()
+            identityManager:IdentityManagerFactory::GetForBrowserState(
+                                browserState)
+      authenticationService:self.authService
+      accountManagerService:ChromeAccountManagerServiceFactory::
+                                GetForBrowserState(browserState)
+        initialAccountState:_accountState];
   self.mediator.syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browserState);
   self.mediator.commandHandler = self;
