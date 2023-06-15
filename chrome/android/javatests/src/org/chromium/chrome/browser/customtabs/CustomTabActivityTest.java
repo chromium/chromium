@@ -514,6 +514,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
+    @DisabledTest(message = "https://crbug.com/1455040")
     public void testMultipleActionButtons() throws TimeoutException {
         Bitmap expectedIcon1 = createVectorDrawableBitmap(R.drawable.ic_content_copy_black, 48, 48);
         Bitmap expectedIcon2 =
