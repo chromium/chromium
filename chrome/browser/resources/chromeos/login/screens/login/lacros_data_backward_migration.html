@@ -31,8 +31,21 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'lacrosDataBackwardMigrationErrorTitle')]]
   </h1>
+  <div slot="subtitle">
+    <p>
+      [[i18nDynamic(locale, 'lacrosDataBackwardMigrationErrorSubtitle')]]
+    </p>
+  </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
     </iron-icon>
+  </div>
+
+  <!-- Cancel button -->
+  <div slot="bottom-buttons" class="layout horizontal end-justified">
+    <oobe-text-button id="cancelButton"
+                      on-click="onCancelButtonClicked_"
+                      text-key="lacrosDataBackwardMigrationErrorCancelButton">
+    </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

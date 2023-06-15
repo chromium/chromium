@@ -96,6 +96,10 @@ class LacrosDataBackwardMigrationScreen extends
     super.ready();
     this.initializeLoginScreen('LacrosDataBackwardMigrationScreen');
   }
+
+  onCancelButtonClicked_() {
+    this.userActed('cancel');
+  }
 }
 
 customElements.define(
