@@ -312,6 +312,8 @@ source_set("display_interactive_ui_tests") {
   if (is_mac) {
     sources = [ "mac/test/virtual_display_mac_util_interactive_uitest.mm" ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
+
     deps = [
       ":display",
       ":test_support",

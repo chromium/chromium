@@ -9,14 +9,19 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/size.h"
 
-class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
- protected:
-  VirtualDisplayMacUtilInteractiveUitest() = default;
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
+class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
+ public:
   VirtualDisplayMacUtilInteractiveUitest(
       const VirtualDisplayMacUtilInteractiveUitest&) = delete;
   VirtualDisplayMacUtilInteractiveUitest& operator=(
       const VirtualDisplayMacUtilInteractiveUitest&) = delete;
+
+ protected:
+  VirtualDisplayMacUtilInteractiveUitest() = default;
 
   void SetUp() override {
     if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
