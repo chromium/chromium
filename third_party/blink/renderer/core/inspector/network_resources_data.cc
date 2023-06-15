@@ -138,6 +138,12 @@ void NetworkResourcesData::ResourceData::ProcessCustomWeakness(
   if (!cached_resource_ || info.IsHeapObjectAlive(cached_resource_))
     return;
 
+  // Don't update data about network resources non-deterministically.
+  if (recordreplay::AreEventsDisallowed()) {
+    cached_resource_ = nullptr;
+    return;
+  }
+
   // Mark loaded resources or resources without the buffer as loaded.
   if (cached_resource_->IsLoaded() || !cached_resource_->ResourceBuffer()) {
     if (!IsHTTPErrorStatusCode(

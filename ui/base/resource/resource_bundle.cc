@@ -68,6 +68,8 @@
 #undef LoadBitmap
 #endif
 
+#include "base/record_replay.h"
+
 namespace ui {
 
 namespace {
@@ -972,6 +974,9 @@ void ResourceBundle::AddDataPackFromPathInternal(
     const base::FilePath& path,
     ResourceScaleFactor scale_factor,
     bool optional) {
+  recordreplay::Diagnostic("[RUN-2142] Data pack file corruption %s",
+                           path.AsUTF8Unsafe().c_str());
+
   // Do not pass an empty |path| value to this method. If the absolute path is
   // unknown pass just the pack file name.
   DCHECK(!path.empty());

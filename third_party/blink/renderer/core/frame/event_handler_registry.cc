@@ -230,6 +230,10 @@ void EventHandlerRegistry::NotifyHandlersChanged(
   if (!GetPage())
     return;
 
+  // Avoid updating state in other components at non-deterministic points.
+  if (recordreplay::AreEventsDisallowed("EventHandlerRegistry::NotifyHandlersChanged"))
+    return;
+
   switch (handler_class) {
     case kScrollEvent:
       GetPage()->GetChromeClient().SetHasScrollEventHandlers(
