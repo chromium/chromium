@@ -1767,6 +1767,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "drive-fs-show-cse-files",
+    "owners": [ "cros-dlp-extended@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "drop-input-events-before-first-paint",
     "owners": [ "mustaq", "blink-interactions-team@google.com" ],
     "expiry_milestone": 117

@@ -5686,6 +5686,11 @@ const char kDriveFsChromeNetworkingDescription[] =
     "Enable the bridge bewteen DriveFS and the Chrome Network Service for "
     "communication with the Drive backend.";
 
+const char kDriveFsShowCSEFilesName[] = "Enable listing of CSE files";
+const char kDriveFsShowCSEFilesDescription[] =
+    "Enable listing of CSE files in DriveFS, which will result in these files "
+    "being visible in the Files App's Google Drive item.";
+
 const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";

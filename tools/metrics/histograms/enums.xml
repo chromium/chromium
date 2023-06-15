@@ -60899,6 +60899,7 @@ from previous Chrome versions.
       label="AutofillEnableSurfacingServerCardNickname:enabled"/>
   <int value="-1127996427" label="enable-files-details-panel"/>
   <int value="-1127963300" label="CrostiniUsername:enabled"/>
+  <int value="-1126242237" label="DriveFsShowCSEFiles:disabled"/>
   <int value="-1126217973" label="IdleTimeSpellChecking:disabled"/>
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
@@ -64720,6 +64721,7 @@ from previous Chrome versions.
   <int value="880201245" label="NewTabPageTilesTitleWrapAround:disabled"/>
   <int value="880510010" label="enable-permissions-bubbles"/>
   <int value="880552542" label="ImeUsEnglishModelUpdate:enabled"/>
+  <int value="880638328" label="DriveFsShowCSEFiles:enabled"/>
   <int value="882103442" label="FloatWindow:disabled"/>
   <int value="882893584" label="UseOfHashAffiliationFetcher:disabled"/>
   <int value="883190338" label="PrintWithReducedRasterization:disabled"/>
