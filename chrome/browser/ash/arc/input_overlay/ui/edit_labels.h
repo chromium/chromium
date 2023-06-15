@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDIT_LABELS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -43,6 +44,8 @@ class EditLabels : public views::View {
   ~EditLabels() override;
 
   void OnActionUpdated();
+
+  std::u16string GetTextForNameTag();
 
  private:
   friend class EditLabelTest;

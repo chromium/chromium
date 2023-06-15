@@ -4,17 +4,12 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 
-#include "ash/bubble/bubble_utils.h"
-#include "ash/style/typography.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/view.h"
 
 namespace arc::input_overlay {
 
@@ -47,22 +42,6 @@ constexpr char16_t kCtrl[] = u"ctrl";
 constexpr char16_t kShift[] = u"shift";
 constexpr char16_t kCap[] = u"cap";
 }  // namespace
-
-std::unique_ptr<views::View> CreateNameTag(const std::u16string& title,
-                                           const std::u16string& sub_title) {
-  auto name_tag = std::make_unique<views::View>();
-  name_tag->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  name_tag->AddChildView(
-      ash::bubble_utils::CreateLabel(ash::TypographyToken::kCrosButton1, title,
-                                     cros_tokens::kCrosRefNeutral100));
-  name_tag->AddChildView(ash::bubble_utils::CreateLabel(
-      ash::TypographyToken::kCrosAnnotation2, sub_title,
-      cros_tokens::kCrosSysSecondary));
-  return name_tag;
-}
 
 std::u16string GetDisplayText(const ui::DomCode code) {
   switch (code) {

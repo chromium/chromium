@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -29,6 +30,7 @@ ActionViewListItem::~ActionViewListItem() = default;
 
 void ActionViewListItem::OnActionUpdated() {
   labels_view_->OnActionUpdated();
+  labels_name_tag_->SetSubtitle(labels_view_->GetTextForNameTag());
 }
 
 void ActionViewListItem::Init() {
@@ -50,10 +52,11 @@ void ActionViewListItem::Init() {
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
+  auto labels_view = EditLabels::CreateEditLabels(controller_, action_);
   // TODO(b/270969479): Replace the hardcoded string.
-  container->AddChildView(CreateNameTag(u"title", u"sub-title"));
-  labels_view_ = container->AddChildView(
-      EditLabels::CreateEditLabels(controller_, action_));
+  labels_name_tag_ = container->AddChildView(
+      NameTag::CreateNameTag(u"title", labels_view->GetTextForNameTag()));
+  labels_view_ = container->AddChildView(std::move(labels_view));
 }
 
 }  // namespace arc::input_overlay

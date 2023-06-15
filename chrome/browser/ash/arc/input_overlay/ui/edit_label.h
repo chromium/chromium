@@ -29,6 +29,7 @@ class EditLabel : public views::LabelButton {
   ~EditLabel() override;
 
   void OnActionUpdated();
+  bool IsInputUnbound();
 
  private:
   friend class EditLabelTest;
@@ -36,7 +37,6 @@ class EditLabel : public views::LabelButton {
   void Init();
   void SetTextLabel(const std::u16string& text);
   std::u16string CalculateAccessibleName();
-  bool IsInputUnbound();
 
   void SetToDefault();
   void SetToFocused();

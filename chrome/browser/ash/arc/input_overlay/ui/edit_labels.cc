@@ -42,6 +42,24 @@ void EditLabels::OnActionUpdated() {
   }
 }
 
+std::u16string EditLabels::GetTextForNameTag() {
+  std::u16string key_string = u"";
+  bool unassigned = true;
+  for (auto* label : labels_) {
+    key_string.append(label->GetText());
+    key_string.append(u", ");
+    if (!label->IsInputUnbound()) {
+      unassigned = false;
+    }
+  }
+  key_string.erase(key_string.end() - 2, key_string.end());
+  // TODO(b/274690042): Replace placeholder text with localized strings.
+  if (unassigned) {
+    key_string = u"unassigned";
+  }
+  return labels_.size() == 1 ? u"Key " + key_string : u"Keys " + key_string;
+}
+
 void EditLabels::InitForActionTapKeyboard() {
   SetUseDefaultFillLayout(true);
   labels_.emplace_back(

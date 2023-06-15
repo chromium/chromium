@@ -45,6 +45,10 @@ void EditLabel::OnActionUpdated() {
   }
 }
 
+bool EditLabel::IsInputUnbound() {
+  return GetText().compare(kUnknownBind) == 0;
+}
+
 void EditLabel::Init() {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetPreferredSize(gfx::Size(32, 32));
@@ -78,10 +82,6 @@ std::u16string EditLabel::CalculateAccessibleName() {
   return l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEYMAPPING_KEY)
       .append(u" ")
       .append(GetDisplayTextAccessibleName(label()->GetText()));
-}
-
-bool EditLabel::IsInputUnbound() {
-  return GetText().compare(kUnknownBind) == 0;
 }
 
 void EditLabel::SetToDefault() {

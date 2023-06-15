@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -302,10 +303,11 @@ void ButtonOptionsMenu::AddActionEdit() {
   container->SetBorderInsets(gfx::Insets::VH(14, 16));
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0));
 
+  auto labels_view = EditLabels::CreateEditLabels(controller_, action_);
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  container->AddChildView(CreateNameTag(u"Selected key", u"Key"));
-  labels_view_ = container->AddChildView(
-      EditLabels::CreateEditLabels(controller_, action_));
+  labels_name_tag_ = container->AddChildView(NameTag::CreateNameTag(
+      u"Selected key", labels_view->GetTextForNameTag()));
+  labels_view_ = container->AddChildView(std::move(labels_view));
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {
@@ -423,6 +425,7 @@ void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,
 void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
   if (action_ == &action) {
     labels_view_->OnActionUpdated();
+    labels_name_tag_->SetSubtitle(labels_view_->GetTextForNameTag());
   }
 }
 
