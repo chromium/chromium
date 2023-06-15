@@ -276,6 +276,11 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
   }
 
   void OnDeskRemovalFinalized(const base::Uuid& uuid) override {
+    // TODO(b/287382267): Add E2E browser test.
+    if (auto* desk_events_router = GetDeskEventsRouter()) {
+      desk_events_router->OnDeskRemoved(uuid);
+    }
+
     if (!crosapi::CrosapiManager::IsInitialized()) {
       return;
     }
