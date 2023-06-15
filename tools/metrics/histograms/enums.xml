@@ -23468,6 +23468,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="70" label="allow-images-inline"/>
   <int value="71" label="theme"/>
   <int value="72" label="theme-variations"/>
+  <int value="73" label="find-result-color"/>
+  <int value="74" label="find-result-selected-color"/>
+  <int value="75" label="line-height-padding-size"/>
+  <int value="76" label="keybindings-os-defaults"/>
+  <int value="77" label="screen-padding-size"/>
+  <int value="78" label="screen-border-size"/>
+  <int value="79" label="screen-border-color"/>
+  <int value="80" label="line-height"/>
 </enum>
 
 <enum name="CrostiniUISurface">
