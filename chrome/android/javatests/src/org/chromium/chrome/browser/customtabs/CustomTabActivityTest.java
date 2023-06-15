@@ -87,6 +87,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -456,10 +457,13 @@ public class CustomTabActivityTest {
                                    .getToolbarManager()
                                    .getLocationBarModelForTesting()
                                    .shouldEmphasizeHttpsScheme());
+        // Status bar color is constantly black on automotive. See b/285208454.
+        int expectedStatusBarColor =
+                BuildInfo.getInstance().isAutomotive ? Color.BLACK : expectedColor;
+        assertEquals(expectedStatusBarColor,
+                mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
         // TODO(https://crbug.com/871805): Use helper class to determine whether dark status icons
         // are supported.
-        assertEquals(expectedColor,
-                mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
 
         MenuButton menuButtonView = toolbarView.findViewById(R.id.menu_button_wrapper);
         assertEquals(ColorUtils.shouldUseLightForegroundOnBackground(expectedColor)
