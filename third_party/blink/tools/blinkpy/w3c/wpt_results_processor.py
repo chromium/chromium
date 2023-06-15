@@ -819,7 +819,6 @@ class WPTResultsProcessor:
             report['results'] = self._compact_wpt_results(report['results'])
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:
             json.dump(report, report_file, separators=(',', ':'))
-        self.fs.remove(report_path)
         self.sink.report_invocation_level_artifacts({
             report_filename: {
                 'filePath': artifact_path,
