@@ -35,6 +35,13 @@
        {}
       ]
      ],
+     "append-image-using-illegal-map.html": [
+      "c78e74eeed7b6dfee3b267c4b81bd2f511923de9",
+      [
+       null,
+       {}
+      ]
+     ],
      "aria-hidden-with-select.html": [
       "2aedbcfb82d4f94925a89294d11d1e4c2a6564a6",
       [
@@ -4896,6 +4903,13 @@
      ],
      "remove-right-block-during-joining-with-parent-left-block.html": [
       "29ee228fea44fdaedb85188610f5088619ff8c4f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "removeformat-in-number-input-immediately-after-type-change-and-stepUp.html": [
+      "d83c2e00790f1a9d825ffa4742bd7504f5cc7f63",
       [
        null,
        {}
@@ -14534,6 +14548,36 @@
       }
      },
      "offscreen": {
+      "shadows": {
+       "2d.shadow.blur.high-manual.html": [
+        "46c50324488d37f63049a7211c8af2c147af9f79",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.shadow.blur.high-manual.worker.js": [
+        "8bd06da381ba1427a6532d1e711acb58c1cf3f81",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.shadow.blur.low-manual.html": [
+        "19a42a683ccf12990ef2d0183529e2666276d2b1",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.shadow.blur.low-manual.worker.js": [
+        "67bc8c424e9ddb00909a28c831f774c963ecce69",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "text": {
        "2d.text.draw.fill.basic-manual.html": [
         "af1cb9d94a3db8619d297a4bb14f7828bc2baa3d",
@@ -105407,6 +105451,19 @@
         [
          [
           "/css/css-contain/container-queries/container-units-rule-cache-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "container-units-sharing-via-rule-node.html": [
+       "e1a5c714516bfea5e482acc4f5b9811bbc975a21",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/container-units-sharing-via-rule-node-ref.html",
           "=="
          ]
         ],
@@ -273418,11 +273475,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "d09a54401c982dd7fcbc0ecd8331304010baada4",
+     "28f27c9e0ac73c4667c52d6911905644c555a388",
      []
     ],
     "mtime.json": [
-     "5fe3070afb2d72d3c9146bce0e027365a9b61fcb",
+     "4ece97b3d7bcdcd6a7e4314ed24e3dcb8bc5ea3a",
      []
     ]
    },
@@ -294353,6 +294410,10 @@
       ],
       "container-units-rule-cache-ref.html": [
        "6c8261959f674aa8a80f1f1f8fda343e64450114",
+       []
+      ],
+      "container-units-sharing-via-rule-node-ref.html": [
+       "c664ce4ccf38f781834dfbdc4d38f8d7af57484b",
        []
       ],
       "counters-ref.html": [
@@ -357710,36 +357771,28 @@
        ]
       },
       "fill-and-stroke-styles": {
-       "2d.pattern.paint.repeat.basic-expected.txt": [
-        "41cd629afb2333cbfb555451a48b89512eb2ee37",
+       "2d.gradient.interpolate.alpha.png": [
+        "af5ac0f07d64e7598e0ea6a8e37cff2a5c4ea2a0",
         []
        ],
-       "2d.pattern.paint.repeat.basic.html.ini": [
-        "5cc91906d39dcb6380b0d68709e3c23eb489a293",
+       "2d.gradient.interpolate.color.png": [
+        "af5ac0f07d64e7598e0ea6a8e37cff2a5c4ea2a0",
         []
        ],
-       "2d.pattern.paint.repeat.basic.worker-expected.txt": [
-        "f3c6b87a9f82bf133d5de1afe9a463726af18f3a",
+       "2d.gradient.interpolate.coloralpha.png": [
+        "552e6ee44b1a3bed7d474e198e7cf1ed3a1be5cb",
         []
        ],
-       "2d.pattern.paint.repeat.basic.worker.js.ini": [
-        "8775b671e164f6452ccc38b7c310ae83a8524d4d",
+       "2d.gradient.interpolate.multiple.png": [
+        "86122450d3a35ef2db3c2917dfdb919fdfb9c4ec",
         []
        ],
-       "2d.pattern.paint.repeat.outside-expected.txt": [
-        "8a76ced4b2549d8e20f49818c0ad11cde58bbd88",
+       "2d.gradient.interpolate.overlap.png": [
+        "5c2bb964e0fd379309797343aa869c195f2f742a",
         []
        ],
-       "2d.pattern.paint.repeat.outside.html.ini": [
-        "b4b3d5da56389afd3daa71a81f6fdfed23df9810",
-        []
-       ],
-       "2d.pattern.paint.repeat.outside.worker-expected.txt": [
-        "c5992775caa361749648d7625e2fd3fc896762aa",
-        []
-       ],
-       "2d.pattern.paint.repeat.outside.worker.js.ini": [
-        "acc76684624a44f775d66728e38e8345140a40db",
+       "2d.gradient.interpolate.vertical.png": [
+        "37d6a00c6279daf43fa436d201799b8c2e527cb7",
         []
        ]
       },
@@ -358013,6 +358066,48 @@
         []
        ]
       },
+      "shadows": {
+       "2d.shadow.alpha.2.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.alpha.3.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.alpha.4.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.alpha.5.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.blur.high.png": [
+        "743640b79f8810c193ae9ad86fdfaa76ee5f4943",
+        []
+       ],
+       "2d.shadow.blur.low.png": [
+        "99fb651c21bca0fe563843d987bdf0f0ff9a6db6",
+        []
+       ],
+       "2d.shadow.canvas.alpha.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.gradient.alpha.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.image.alpha.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ],
+       "2d.shadow.pattern.alpha.png": [
+        "8764e89b371d41428f0ba45d9c0391e41b0dd8a2",
+        []
+       ]
+      },
       "text": {
        "2d.text.draw.baseline.ideographic-expected.txt": [
         "88ea146f86d5e262d660fa57305c5c2eea1729cc",
@@ -358208,7 +358303,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "0542e32571a0524090ab5800dbb258cb9acc2450",
+       "cf141f2f07475edb4912b6846aa67468648a6a74",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -358263,16 +358358,8 @@
          "3443ad35b3cdccffb0dcb383b946dcd81a0521d5",
          []
         ],
-        "fill-and-stroke-styles.yaml": [
-         "9d35dde661c724d6f166d7bd5db7a423295b546d",
-         []
-        ],
         "meta.yaml": [
          "e8c425042668653f6908e6cf25ad6bf658aeb2f5",
-         []
-        ],
-        "shadows.yaml": [
-         "7a7c115a7c44d450fc60d2e5bbb544cc5c75d225",
          []
         ],
         "text-styles.yaml": [
@@ -358289,16 +358376,8 @@
         ]
        },
        "offscreen": {
-        "fill-and-stroke-styles.yaml": [
-         "5f794d61e6f31080804238818c58d14925de9ebc",
-         []
-        ],
         "meta.yaml": [
          "bd761937f40e8796f6192e09741c1c2bccf3df2d",
-         []
-        ],
-        "shadows.yaml": [
-         "ec1bdd101e7067d3a3fdf101b84f55a2c4d47813",
          []
         ],
         "text.yaml": [
@@ -358336,6 +358415,10 @@
         "408e932abe86b31ce3e8d88672e04abed12b74b2",
         []
        ],
+       "fill-and-stroke-styles.yaml": [
+        "e30eb010088699f6b15347c1722f3490035ae369",
+        []
+       ],
        "filters.yaml": [
         "a5c2b9864b6becd54f06d0639ddc96d46bfca263",
         []
@@ -358362,6 +358445,10 @@
        ],
        "scroll.yaml": [
         "dd088aa396f47e70a6e66b0b9c7d8ffca0fa0e1e",
+        []
+       ],
+       "shadows.yaml": [
+        "366ac0b6072dfaa9de58abbda84525d9fe1806d1",
         []
        ],
        "transformations.yaml": [
@@ -381978,7 +382065,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "a5b0d65885ef9a62c5f3810ce02c8ff0161ef483",
+     "b4f5ca59027efc9142435a242e67a3173a697753",
      []
     ],
     "modulepreload-expected.txt": [
@@ -396922,7 +397009,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "df406290b02bae450b3ab8ac175c9e96d5a868a5",
+     "6cd41705385640fc3352ed038bdceaedd4d3d3bc",
      []
     ],
     "h264.annexb": [
@@ -396958,7 +397045,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "5d1d6684d4dea3f1307bf5e582f9396570780af5",
+     "1b1a6ef8a3a645c66990044909a864579e180169",
      []
     ],
     "sfx-aac.mp4": [
@@ -440441,84 +440528,84 @@
     ],
     "fedcm-multi-idp": {
      "abort-multiple-gets-through-first-idp.https.html": [
-      "eb9f7da7b26200a936b4d6ce304466bb4c1128e4",
+      "48644f67a2310c8d8c31602cf791523209106e62",
       [
        null,
        {}
       ]
      ],
      "abort-multiple-gets-through-second-idp.https.html": [
-      "7e7ec2ce3d18b193183c2444b708c9d0927f1d2d",
+      "e95c13271a21758faa93551bc6e7ef97d7d8c989",
       [
        null,
        {}
       ]
      ],
      "get-before-and-after-onload.https.html": [
-      "fa9ec7b52fca1faf6cdd29ce6deef31669417f7b",
+      "3c6aeb1a6f1ba6f68b102e119b5757f51eb9f0ba",
       [
        null,
        {}
       ]
      ],
      "get-before-and-during-onload.https.html": [
-      "93ee2075fe54128d55c8d69262134bad36840505",
+      "34b4ed108fff4d1ba52ca9bb3b5557aa71423165",
       [
        null,
        {}
       ]
      ],
      "get-before-onload-and-during-dom-content-loaded.https.html": [
-      "edc293daff8806efea54d86425d29828fdbdfd87",
+      "926e7955753b291a89b2b04f8efae01c3faa5dcd",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-after-abort.https.html": [
-      "b7b03e4a147d30e5d55ae8d757c0f666374bb7e7",
+      "f9db4a1f390da64698cc5a28069d5e2af1d1f4d8",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-after-onload.https.html": [
-      "1a806a2049d39990039b10e690a8505ad1e5856b",
+      "16d59e5307a1bf0931e497bf09df5652a2f5beed",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-before-onload.https.html": [
-      "69a70ce47de9dbe946d0451cda0f0a68aa45cbd8",
+      "0fee4d4b972c802e03cc08eb219f5834a764c9ca",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-during-onload.https.html": [
-      "e98b63ff339f5948188d7422a80e2ba70cd886b1",
+      "bc74cab9f216f67800c22519a5e01f5b26743fb4",
       [
        null,
        {}
       ]
      ],
      "single-get-after-onload.https.html": [
-      "a34ff84aabdf3e4297af4a126f670d6587fc9b5f",
+      "a023e3c57fd9fd3319b5bf4681b8f80d880e30e1",
       [
        null,
        {}
       ]
      ],
      "single-get-before-onload.https.html": [
-      "91195fc5a75f626796b73dbaf1d5dea386519c26",
+      "be94d17d8f2b69a33e8f68ae455764f947a044c8",
       [
        null,
        {}
       ]
      ],
      "single-get-during-onload.https.html": [
-      "17939d2d9353fa255c746729f14a37c7383d1814",
+      "8383c3b9ff848a7395983ae8a45fc4bc9d7c42ff",
       [
        null,
        {}
@@ -530251,7 +530338,7 @@
         ]
        ],
        "2d.shadow.canvas.alpha.html": [
-        "222199e6463982df871004f74b710fb6e67abb1b",
+        "18818fa726593489977d56fecd62edd2ab19290b",
         [
          null,
          {}
@@ -530384,42 +530471,42 @@
         ]
        ],
        "2d.shadow.image.alpha.html": [
-        "8d9022d61da7980dac5201f248af355bc2e63797",
+        "f00e1752dfce41d340507da48ab0272dde9aea85",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.basic.html": [
-        "351e75152214af6b352529b616cbf9f68b9f6093",
+        "d106e223db791cbac2ff0e9c994e88956a6a08c8",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.scale.html": [
-        "cbec7ccce16518c940732ee5b4f551ee203e6552",
+        "7e07fff3783c3e32cd23729643d3c3b24edf8806",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.section.html": [
-        "472559b736dc09effd4d9580a13e43b0e9ae0a45",
+        "a1b3e7032fb72bb25d07d1871d163f4645345e33",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.transparent.1.html": [
-        "768e961df0e69c5a34a0274cf5892d1788ea819e",
+        "74d8b22951024420ae6b5945fd2a88375c09166e",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.transparent.2.html": [
-        "a445b7aebe83ccd9ac283cac5e94a503740527b5",
+        "1a52a52c3fe16f4cb3825a18cad7f1018fcf4200",
         [
          null,
          {}
@@ -530461,28 +530548,28 @@
         ]
        ],
        "2d.shadow.pattern.alpha.html": [
-        "8e602d6c2b273823ca51bad47fbfbd3afd7bff61",
+        "10b5414b1234d0eca2b2b20f8cf9cefb4cfd983a",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.basic.html": [
-        "c776d6bc3bcbc4ac2b6c761bb1314456d088b62f",
+        "47d2149a57e57b7c7203b00d855e0c68d2567d3a",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.transparent.1.html": [
-        "c3dca30138b7378941a314072b4b6890f5117a1a",
+        "c41dd8377871ff01ee988a74b871f932f9afcd9b",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.transparent.2.html": [
-        "ecb82412be2ec42879012ec1a05b5423c4732528",
+        "ddaf21fe9088b4a4565520f420a23146fc5e0deb",
         [
          null,
          {}
@@ -533418,6 +533505,13 @@
          {}
         ]
        ],
+       "2d.fillStyle.CSSRGB.html": [
+        "1670d642951f9d6da3aaa5b4c5f1fd76f478e61b",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.fillStyle.default.html": [
         "58075168e8aab857a262858ecf2a778ee11aeffa",
         [
@@ -535351,14 +535445,14 @@
         ]
        ],
        "2d.gradient.interpolate.outside.html": [
-        "0dda6c0c23573c886a7b37574662c2bfa36cfdec",
+        "02ca008518f9ed64e1d4cc048d9652b7b0d89d57",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.interpolate.outside.worker.js": [
-        "66fc180e7e90de2e521e110c480ee23eeba667cd",
+        "d6c89616613bac3dd21b0f391e203af3846825e4",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.outside.worker.html",
          {}
@@ -535421,70 +535515,98 @@
         ]
        ],
        "2d.gradient.interpolate.zerosize.fill.html": [
-        "71d5cb85dd6182d9c2b004aa96d499a32c28b09d",
+        "27579fc829bd7092b7b7178e0895fc982c7ba7ec",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.interpolate.zerosize.fill.worker.js": [
-        "3b86cec3afc9c209fe7b8036410e8da576eab0e4",
+        "916b1cb9779367a0685f27dac28189a0c4caa0ff",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fill.worker.html",
          {}
         ]
        ],
        "2d.gradient.interpolate.zerosize.fillRect.html": [
-        "1b3851cd99ae02365c445a7eb1fef96be94b7e61",
+        "9cf2c7350fe9e4af33a634d5f9be05ed6c615cbb",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.interpolate.zerosize.fillRect.worker.js": [
-        "f6ab1d9348761352ca2e4f91563bda7f611974fa",
+        "607ad85ae746597b714ef6771e6456478a1af554",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillRect.worker.html",
          {}
         ]
        ],
+       "2d.gradient.interpolate.zerosize.fillText.html": [
+        "59f0964461983f00e1719a215b10711f569ca888",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.gradient.interpolate.zerosize.fillText.worker.js": [
+        "417b564e6d9e8879c8f3bd242ba1813ff7cade89",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.worker.html",
+         {}
+        ]
+       ],
        "2d.gradient.interpolate.zerosize.stroke.html": [
-        "3b66f6c12ad22df8253adf6cf416ca4ca8a889bb",
+        "562f46796c42f777a76b8d42201c30235dc8378e",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.interpolate.zerosize.stroke.worker.js": [
-        "7e215017485a128f9fdeb4a2090653b17e42e2fb",
+        "b969be6f850110f27eb2d34c4b19dc5fb23c9a10",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.stroke.worker.html",
          {}
         ]
        ],
        "2d.gradient.interpolate.zerosize.strokeRect.html": [
-        "e7fd7e7858bf1093fe0fa257de17e25a88224723",
+        "de1e57bbcca0c083e6333fe99136b0e019c4a9ce",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.interpolate.zerosize.strokeRect.worker.js": [
-        "d7344fb4e61254b16607165514e90138063b6027",
+        "b9884d4adf634c8db1e92bfe9da151a1325244e4",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.strokeRect.worker.html",
          {}
         ]
        ],
+       "2d.gradient.interpolate.zerosize.strokeText.html": [
+        "153ec102ac617416e0047202a275890bf7a6575d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.gradient.interpolate.zerosize.strokeText.worker.js": [
+        "f0d719262768203334d327287510e8e3c8361ca4",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.strokeText.worker.html",
+         {}
+        ]
+       ],
        "2d.gradient.linear.nonfinite.html": [
-        "bc10ecee537d17ab96ebfb3b68385916d5954619",
+        "6c8f8ec38a88bcd04b234e0059c6b15c14c9f31d",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.linear.nonfinite.worker.js": [
-        "87f689186bba5ca3cc5e017027d57260537e5b6e",
+        "9fd4949d7db53ebcf6cc080393a1278bdb1fb22e",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.linear.nonfinite.worker.html",
          {}
@@ -535547,28 +535669,28 @@
         ]
        ],
        "2d.gradient.object.crosscanvas.html": [
-        "7ea9d84a4c06cce2278559bdb49093f0273f59ec",
+        "6d229ea3d5a64a764653a3534df12008e0816602",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.object.crosscanvas.worker.js": [
-        "f877d596ddffdc2a27acb897a5cf54dafad10d38",
+        "1afebdea1b0ef2a30fd3fb7ff62fc4ae2eed2515",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.object.crosscanvas.worker.html",
          {}
         ]
        ],
        "2d.gradient.object.invalidcolor.html": [
-        "51160c586f2d846ee69762be787950ea29e12a9d",
+        "3db5afeeb544477a32d936e49923a01312e37d58",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.object.invalidcolor.worker.js": [
-        "40e84ba42be39161a6fb8e0a4939e4e677fb175d",
+        "33b524fbed2a25e766119dc88c3db218a1f064d2",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.object.invalidcolor.worker.html",
          {}
@@ -535588,6 +535710,34 @@
          {}
         ]
        ],
+       "2d.gradient.object.return.html": [
+        "779b941d20bdd2ed9ff6580f51724830f9c21365",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.gradient.object.return.worker.js": [
+        "a279eed4f3e5be54218becaa9bb69527e1659179",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.object.return.worker.html",
+         {}
+        ]
+       ],
+       "2d.gradient.object.type.html": [
+        "aa72183ca5d1226c539f128915038e1954f1fed5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.gradient.object.type.worker.js": [
+        "e0101dfca41eb8b74373ab3789ed2bb51aa45b0e",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.object.type.worker.html",
+         {}
+        ]
+       ],
        "2d.gradient.object.update.html": [
         "00c60041e733a78da95d297f4ceae4aef7e6b671",
         [
@@ -535603,168 +535753,168 @@
         ]
        ],
        "2d.gradient.radial.cone.behind.html": [
-        "9a07ec4dc2f418a94979e1b0fd0a40350b471332",
+        "4a639778ccdce406816f5133d7f017f9a0b3f282",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.behind.worker.js": [
-        "806a83f7a533e00ec3b52d4f6e6858a0aa58f95d",
+        "114dab0a2197cf53de47ef124d5bbe1940a4efc3",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.behind.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.beside.html": [
-        "1ab27b46c41865d08610b6218e2167b7d33fa80a",
+        "94fe289b1a4795a02692b79589ac0a21d81fb50e",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.beside.worker.js": [
-        "2bb0860a6d25a3cfd1c724ac3f7c3403727acec3",
+        "e6f53fb999276ab7766769ccd963f1a79164e45d",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.beside.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.bottom.html": [
-        "87cac451d6427cf155ef1331c94bb1800a26f2ee",
+        "7cf9867dba8835ef95730d8c860faf35c6254603",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.bottom.worker.js": [
-        "a9c859e7ceaaa0e804b53709e5e6cf1bd26c4482",
+        "132d131bcaef0a84dd25a35c79b97b81458d32fd",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.bottom.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.cylinder.html": [
-        "649b83cc8f8c7227dfde27eb94e380b4afba03e6",
+        "27f75a8a743ae373c125c47f08b368bd6be01a9a",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.cylinder.worker.js": [
-        "8223f5265548b5a060ec20eb42b93f4f08647b74",
+        "9534174757b9fc6825ef11af957cde09f47b258a",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.cylinder.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.front.html": [
-        "6ad51c17955e4a89580d84e70fb32e6398e71905",
+        "b46155701c9ce8a3ab16f385731741da9445acba",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.front.worker.js": [
-        "a1eb55f2ecc309e1389100e622d37dc47ff6d85b",
+        "fffce0f9f2f572523df964e78c7d77230f0c4649",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.front.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.shape1.html": [
-        "7de944a5209e2cf06ee98fd5a95ca63467ec6088",
+        "5c4d8125265df8f994bcc4d8d240f95421104fe3",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.shape1.worker.js": [
-        "0d211a0c67a017023aa02c0e587faf6b63de8636",
+        "5bd3f5eafa94ef2b6c7c9b746b60b60a3c639975",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.shape1.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.shape2.html": [
-        "a748546c1a8f4b047440b4c00076a88546c361e4",
+        "1dec145e58ae062037cbe6a113a45044bd246abb",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.shape2.worker.js": [
-        "2f561598b9ff70a523177dfda08fdef11ce0a54b",
+        "31638cff3d5624a0b49196c88f825bc8030741df",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.shape2.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.cone.top.html": [
-        "802006beecd47633957f598b07bcdab7682e97fe",
+        "6cffa28175ae44d0a6ae04b1dbe9b1c48aab9d46",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.cone.top.worker.js": [
-        "731ee8f807c769f265ffdde131aa72eab5917e12",
+        "85a9eae40542a79ce2dab05041dc0cf17f14acfa",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.cone.top.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.equal.html": [
-        "3786e180f3bdcbc7b7f58c5d16e3c2e710400346",
+        "52319ef6126b61ce125b819900d1184370becb09",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.equal.worker.js": [
-        "d046809a314f66b2a09034cd8f0116691c020e96",
+        "7f5ad50ff390b760cea8a477a7df4c7a7db98f38",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.equal.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.inside1.html": [
-        "db269a9b926aca3d3db7855f629e730dd96127ad",
+        "f0da2c2742ad96e131d9925435baf52e775df590",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.inside1.worker.js": [
-        "bc48654ece556af6fb00937353a2668307bd43bb",
+        "37ed851ab31dd33d47d13884cac09bd83c0c4e62",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.inside1.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.inside2.html": [
-        "23de3b00f863a99886da9f87a1fa21ac0ad18ee9",
+        "3f255027a160e76fae41f049a04a012e9da99662",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.inside2.worker.js": [
-        "ffc1040d0b0ab3c84b97d10cf7a45db8ba896afa",
+        "0f36051e6a190e1d12b0e452858752704e65f92f",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.inside2.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.inside3.html": [
-        "bbb2ecbcdcaa8d41a7eed5434f06d69281674daa",
+        "1ef80a568ee6aa85eb3761aceed9c3ae89d52d61",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.inside3.worker.js": [
-        "792d9e7852b9a4ee5236efe4fde14ab1d1b017e6",
+        "3c9131dbb3f3df0c35eed9a06e58fc1f56426a2c",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.inside3.worker.html",
          {}
@@ -535785,98 +535935,98 @@
         ]
        ],
        "2d.gradient.radial.nonfinite.html": [
-        "8ba0476938d7e7ec664170a03b17720a16229bea",
+        "4f068bbda576b63dc549434b3c07fe6592a19143",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.nonfinite.worker.js": [
-        "dd25e607b2c8dabcda4d27bf2ac936aeb0ab21af",
+        "641a341ecc0dfc89787b2c3e4109ef67dd7c5e8e",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.outside1.html": [
-        "6c65f23960a9b7e365ed92cd8ea4ccdd9bb4b64a",
+        "61fed27df87677c2aa82e16e56644f3043231856",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.outside1.worker.js": [
-        "d7beb71d2f2ffdfc060f42de8501b15349237c2a",
+        "b23eb81d148e96a4d38b68539952dd3f057115d0",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.outside1.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.outside2.html": [
-        "8f4c48ebc1284ca1b6a79e852733a78b4f72abe6",
+        "814beccf510b580733ab8c4a09937fbad0a65d9c",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.outside2.worker.js": [
-        "6c753e38b10e063493f8662d40b674863e8d4b42",
+        "44eb4f4b2ce46a46591d930ebc8a6bfaac102e24",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.outside2.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.outside3.html": [
-        "5cfd30876d668206ba8bc0096548921f800e6ce6",
+        "632ada6b9ceed5d2885b75dfb5291f36c6fa52c4",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.outside3.worker.js": [
-        "70593ceb292d8c6e46647282f8f8807e464ed450",
+        "16d0c1a8ee0dbaee34d0bd9524e688710e2756cd",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.outside3.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.touch1.html": [
-        "983071ec6530edbd47d20712f5396c7dfe997acc",
+        "38235188133209b1123dff491fc46c242c2b3e7f",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.touch1.worker.js": [
-        "21bbce1e74125e4933508c76c2f714ef0539179e",
+        "853ad165a3f10f575511171cce3cedb7e4f0221c",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.touch1.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.touch2.html": [
-        "bd23924988288de3e319e2bfbfaf1487706732d4",
+        "af5bbd78971fa2b3bf0fa0e7f265a2e3cb0f1d96",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.touch2.worker.js": [
-        "75abd38d5d765ade99b381ca717a25f81bd38b8b",
+        "434c27b0b1f2a9eee41f21d88d7082bbb4994d62",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.touch2.worker.html",
          {}
         ]
        ],
        "2d.gradient.radial.touch3.html": [
-        "bdaed6f7daa822318fbb073e162bbe89be37c8f4",
+        "1cf578bc80db5735de11929bbcc031619e5211b0",
         [
          null,
          {}
         ]
        ],
        "2d.gradient.radial.touch3.worker.js": [
-        "b2f3b0b4102e1b4cfefe49e340b1460fff4d8516",
+        "34fb0caa4489107c123049cfed706c38634962e5",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.radial.touch3.worker.html",
          {}
@@ -535925,392 +536075,406 @@
         ]
        ],
        "2d.pattern.basic.canvas.html": [
-        "6f66f500e3792654bde4648623a26321fd971302",
+        "f82a259e439ed18c9a167b2ecdb75b2690c37a85",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.basic.canvas.worker.js": [
-        "6f6b882416aa13e733e7ab54bd6560f6d548180f",
+        "510723f009d3792830b61699d14a18835b9fe5c5",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.basic.canvas.worker.html",
          {}
         ]
        ],
        "2d.pattern.basic.image.html": [
-        "9efa9d6363cc48da1e038b5009b10228d970e53d",
+        "ab7b7bbeb56de43d55dbbc1d77d2e6434e7fd5f4",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.basic.image.worker.js": [
-        "776f1dbabd80bdcc3e3269dd18d132ce97e5dd9a",
+        "14cfcbc9939e7a365131e549489cfae828f4b3b5",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.basic.image.worker.html",
          {}
         ]
        ],
        "2d.pattern.basic.nocontext.html": [
-        "9fa124277ea3fd7facb2d7fbe2662c36d6a4f931",
+        "66e301a002f052a8ff78fe701807331558dd245a",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.basic.nocontext.worker.js": [
-        "11c307653d5385ab2813b55594af7f08b748feda",
+        "f6c24c82ca2b24a6d0651f2f568ca1a2bbdeca51",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.basic.nocontext.worker.html",
          {}
         ]
        ],
+       "2d.pattern.basic.type.html": [
+        "1edb4fd22789b25cb6e5f8e1a49d427e5d5515c7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.pattern.basic.type.worker.js": [
+        "56a8a7d23cd4713810dfaebe3bce94d1071cc9f0",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.basic.type.worker.html",
+         {}
+        ]
+       ],
        "2d.pattern.basic.zerocanvas.html": [
-        "c7f61889ad5c969639427ebe3b38e5ace9c00ac0",
+        "7100c8313fc20dcce3e2fb3e18cdc0549eb1c998",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.basic.zerocanvas.worker.js": [
-        "caeff7cdfab3e1b56ba271b49820e94fae991f91",
+        "9bf487cf7475312c048e734b18eb711796d5d9ed",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.basic.zerocanvas.worker.html",
          {}
         ]
        ],
        "2d.pattern.crosscanvas.html": [
-        "fbb7e5266e8b7842a9868e3fe388999ac3273623",
+        "bdf89021bb1c943b4a3bdebe71ae5bc9195f6ae7",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.crosscanvas.worker.js": [
-        "bd24b44b0c9e68592db03123922afc27b2b79ee2",
+        "d9004fc028bca07f8e38e7de68d5e548cf0c50fd",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.crosscanvas.worker.html",
          {}
         ]
        ],
        "2d.pattern.image.null.html": [
-        "4297814be97f245427652d37e61aa4ef0b509257",
+        "fbec25862d1d68bd4285a8c047718d747f351b11",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.image.null.worker.js": [
-        "c7d9969619b27a10a5b9ef9794d73a129595eb6b",
+        "a68ddfdbd72b9d4a9937dd279b8cffca53f89307",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.image.null.worker.html",
          {}
         ]
        ],
        "2d.pattern.image.string.html": [
-        "469f2236fed3d1b69c55c0dd88b259581b75f6b8",
+        "ff7355d2a46bb3b14581fcc46d88bf3a36284c65",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.image.string.worker.js": [
-        "f8525e4a49487ed59d762e6772c53ece4a162c79",
+        "dc53d82292c269baa3ab0fd132cf3aa1d8b48424",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.image.string.worker.html",
          {}
         ]
        ],
        "2d.pattern.image.undefined.html": [
-        "475d8ddafaca795302cedba56ae06135c001e561",
+        "845f823e7fb01b6cdd32b8ed30e4be07db218a41",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.image.undefined.worker.js": [
-        "dbfdbe9a1e1bbfb11c2c77437e892d46d2268945",
+        "32f57494930cbfea928c5c31f0dcffacbf447022",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.image.undefined.worker.html",
          {}
         ]
        ],
        "2d.pattern.modify.canvas1.html": [
-        "11586f5aa7230da02bbe9d461325b4b748a98ab0",
+        "ebeb92c7f5a7797aa4e086802f107db8971d0f83",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.modify.canvas1.worker.js": [
-        "3dde0ef9a07ef73492b81fcaee8b829636cb4c60",
+        "8e4f9ed4473af4bb1d43f6f41b737313dcfbfa30",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.modify.canvas1.worker.html",
          {}
         ]
        ],
        "2d.pattern.modify.canvas2.html": [
-        "568140a8db34a657a26080cd3cae4f961e13b0fb",
+        "042ebba3b76e64bc7d9a77f55886f5a5917ff558",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.modify.canvas2.worker.js": [
-        "fd70a2fcbb9633abfdbc0bc82f9d5d8bbcae05cd",
+        "ed17db8127b02f34801204a84e1415d8b008997c",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.modify.canvas2.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.basic.html": [
-        "a60a61efc26e4ce591d6a569701d8ad8b7bc422f",
+        "8ab1c8eb402bd0465437e5f12d1b28f17969e31c",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.basic.worker.js": [
-        "13c5dd2815610c52ac1feb21bf0235ae692854c9",
+        "9ac4e1605c7c03388fe29fc23530b6c9c854d54a",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.norepeat.basic.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.coord1.html": [
-        "4a254b3afcf0959d7ed239dab5896d2dc20bb39b",
+        "4bdd356df7a780533ed839462f4f5c4998080785",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.coord1.worker.js": [
-        "948da3a132acfe01d8b1073293cb0bc0316dd309",
+        "6c4a1409b7d4fc3360f62919ef5e9d47937a2668",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.norepeat.coord1.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.coord2.html": [
-        "306428a61628860c343f3aa6ef193aac66b25d6e",
+        "b9164ec6a94063d69a31557f2c57282cec7a64ce",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.coord2.worker.js": [
-        "fa90ff652a23a0c9ec904aec545c82a3742d901e",
+        "d2fdd86022a318bed3776f49e80b61fd301afb5a",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.norepeat.coord2.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.coord3.html": [
-        "556fca6beffc1bd12fca097ade8f20cc70337b5f",
+        "e2983948c2ddf5a2bcb4cc6713de5ed9544abb55",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.coord3.worker.js": [
-        "834516e96a49526f97597abb4b2591121e62f4e6",
+        "584a5d6cfdd48a7675e514bcc9f2309578e85fbd",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.norepeat.coord3.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.outside.html": [
-        "c049b79aeb9342b981719f543e9cad270685a932",
+        "43a718d44aa70251a2613994884ce779f5b8db7a",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.norepeat.outside.worker.js": [
-        "93e7a312fb50856b8a949c98d9f10284232a2a57",
+        "0b5fef95ce0e7d2ae12897d4ea2b697df4bc3ce6",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.norepeat.outside.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.orientation.canvas.html": [
-        "f7305573c4668f65f9bb18a8a03cd4594e418fd3",
+        "b63535c70653f0348c796984b92f6aec96b560f2",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.orientation.canvas.worker.js": [
-        "7896c70def22cb760f6cbc47dcf5d971eb424591",
+        "2fbe52af73647d81d1f3000158cdec688c28b748",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.orientation.canvas.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.orientation.image.html": [
-        "c5dc174416a5d4c04a53223a11cda328c8d97600",
+        "0b3645981e3cb6f40df906e9b8be27e185d5ade1",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.orientation.image.worker.js": [
-        "56b072be4dd678958717d8925ee19ff11bacae22",
+        "b303b2d813b7b540ab6e9f7ad72aa0d0a1234ba9",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.orientation.image.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeat.basic.html": [
-        "9327111eb7a46a95ade0c99b083cdb35ef9d5fde",
+        "b6647f776ed886855c1aaf34a837044d9bef8935",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeat.basic.worker.js": [
-        "6e77679552a819365e7a4cc69fad2f480ba419ae",
+        "37f4c04228c2214698446c88a9676cbb834ea1b0",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeat.basic.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeat.coord1.html": [
-        "098abc71651d2ca23e906b14c2b072f4fde62a87",
+        "54b24ac705b60be780e4a48382c1daa528769193",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeat.coord1.worker.js": [
-        "28c8d07b6a4b45c28b3a3b4cfe04baa6330c8386",
+        "efbd1c58469bd780dbe89aa495852712892d36a8",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeat.coord1.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeat.coord2.html": [
-        "4ee7aac5fa861436445facd5b5c7787892dac649",
+        "a77ce2c6964c38d89bcaaefacbe379eaedce135a",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeat.coord2.worker.js": [
-        "6b2228e558c67551909dcfe9b1f4882357cbbbdd",
+        "db707ecb0a656fd783d43aca1227075415f46541",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeat.coord2.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeat.coord3.html": [
-        "ed1bb4243d463b08dde2cea67146151c5aada6ad",
+        "10f380fed3552551545c9fe0d78008dbbc2c1a83",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeat.coord3.worker.js": [
-        "fc3911fbb136da63179284ef491ca5f9d482cbb1",
+        "e58cddccfeb2f0873cf64a0cffa25495fcdf59cc",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeat.coord3.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeat.outside.html": [
-        "420562c5efdd0a874f002724705145e4515af1ba",
+        "6558e07c5b627ac980581e589f52c44df2bd3f4d",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeat.outside.worker.js": [
-        "b4d6774ec732a6388466b6a26ccd3b24e9861889",
+        "4a173af0b40a5eab5531d8037855441cb7bb1e06",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeat.outside.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeatx.basic.html": [
-        "ee2c477c936d3c63d05a17d53f23bc02e4b0652d",
+        "494b72cfb94ab88351aa0d47608bd9c95f5dce0b",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeatx.basic.worker.js": [
-        "157207a7c54733b1ddfdbedb6c2fbd08975520c0",
+        "e776f7a008a959b895ea3a4342095ba16adddebf",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeatx.basic.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeatx.coord1.html": [
-        "0e9a92e51cbb55bd88b27c9cb5a6ed0a748a7194",
+        "6caef0cb1fa8fbfa7f5cb4dfe26993d61d0882c5",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeatx.coord1.worker.js": [
-        "684d2b7b4cbfca33fe968be111756d501067feb9",
+        "57c2102cc834952d05feed42d985fcc26b2376e6",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeatx.coord1.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeatx.outside.html": [
-        "83e8ef37dc86e05ff75fa08ee35084e8c5ce2821",
+        "b3229c8d875fc15972d14da52fbb936cf8139b37",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeatx.outside.worker.js": [
-        "bbb7b9055dd4d856db7e248eddef6c5e660a0baa",
+        "e40f6aa20751a95d7ca5304a4aea3a3740e98a44",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeatx.outside.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeaty.basic.html": [
-        "48948452af0fac0c4f469650d3e0fd727c4daa25",
+        "d88f3a0ab659ef47945be75b26b0176bd538ad5a",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeaty.basic.worker.js": [
-        "0eec87ca75f771c6a6533e7df9ced2c1161d7a4d",
+        "6a53b5dc4d2027e3933c12c7d341578deda13937",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeaty.basic.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeaty.coord1.html": [
-        "79ca84193e86b65d918ccbcd7ec1fc00186429fa",
+        "59bfeb2abf1c97528c27092c6e78788246947388",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeaty.coord1.worker.js": [
-        "c5f0f4bcc24f23902f789b8bca4710961189f966",
+        "d59abb6e0751a37ef9a9e0b464055455b1012859",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeaty.coord1.worker.html",
          {}
         ]
        ],
        "2d.pattern.paint.repeaty.outside.html": [
-        "f7fcc3e45a6e52ddad976f1fdfb6cc3e565aea59",
+        "ad2bd3383f3a3fd6223543dd524308d4f69df37e",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.paint.repeaty.outside.worker.js": [
-        "7201c3f133c26713812bf20d7fd9005de5bd51a8",
+        "c4feba10ca228136279d0220033531575af72ae3",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.paint.repeaty.outside.worker.html",
          {}
@@ -536331,14 +536495,14 @@
         ]
        ],
        "2d.pattern.repeat.empty.html": [
-        "550edecf1e14a46f1bf4a5fe2de66d2e3c63b724",
+        "c2197893d7849589e90abf8b902963824661e009",
         [
          null,
          {}
         ]
        ],
        "2d.pattern.repeat.empty.worker.js": [
-        "9777e188fad5b4f2bc06aa5396a7174e679d2290",
+        "5aefc0dab3e74814754653b941ce9cab660b51c2",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.repeat.empty.worker.html",
          {}
@@ -536411,6 +536575,48 @@
         "c8d18511f406cc7274a1fdf615f691adfd4f535a",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.repeat.unrecognisednull.worker.html",
+         {}
+        ]
+       ],
+       "2d.pattern.transform.identity.html": [
+        "2d73296395d4d63c366f64d1993e766fbca4d0db",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.pattern.transform.identity.worker.js": [
+        "a33c771346e5e5ee2edb53fd9f866f2e5762eda8",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.transform.identity.worker.html",
+         {}
+        ]
+       ],
+       "2d.pattern.transform.infinity.html": [
+        "aa58ad119f48123d00fc443ab958cfe3a96364f2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.pattern.transform.infinity.worker.js": [
+        "999739b8488605cfd5b28b4cfbbf494d760e659a",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.transform.infinity.worker.html",
+         {}
+        ]
+       ],
+       "2d.pattern.transform.invalid.html": [
+        "f2420d4a2baecd81503eefa71cf94e012582b920",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.pattern.transform.invalid.worker.js": [
+        "163951807fa4dab8c21bf23c0596625278ecf0f5",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.transform.invalid.worker.html",
          {}
         ]
        ],
@@ -540746,70 +540952,70 @@
       },
       "shadows": {
        "2d.shadow.alpha.1.html": [
-        "603d5e5da4274a3f47dd390adb25f40403eae2d0",
+        "765cf41b213e7acd5764ea56f8880fb38846775c",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.alpha.1.worker.js": [
-        "0bc92ac4141752c173d1e520ee9c2acd8aea1ab7",
+        "869aa017e7e3a159467c233784a4d90142c14adc",
         [
          "html/canvas/offscreen/shadows/2d.shadow.alpha.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.alpha.2.html": [
-        "254d214c4cd1f5bd036fe6fa40e1308b429944f1",
+        "be2209608fc521f15886a291c282435784efb8ff",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.alpha.2.worker.js": [
-        "ff543b3c8000b9a83f567ccdf1fa5dcb47f79327",
+        "dce91f2e4d3dca7d59576621c0cceac7629074d4",
         [
          "html/canvas/offscreen/shadows/2d.shadow.alpha.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.alpha.3.html": [
-        "2c50c0d748a59694e8b6f24bd0ca3815af1439d0",
+        "7239b3cea7b759510039b035aa9621e4af66be0c",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.alpha.3.worker.js": [
-        "d8bc071c85d9ca97ce50d620eb1e1c407171fd4b",
+        "93fc665cedcb1698335c199ec570d7a83e968c18",
         [
          "html/canvas/offscreen/shadows/2d.shadow.alpha.3.worker.html",
          {}
         ]
        ],
        "2d.shadow.alpha.4.html": [
-        "d86ee4c4bff063ae5c8a3f07e65ce72a607559c7",
+        "468db2a7166c0db205743ac934b31045a1cd7d39",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.alpha.4.worker.js": [
-        "4fdb8ca7dc58026a7f61940e25aa4b2e66a6b5c9",
+        "2be63d3effaa20dc336c2555cb8a397d835f735e",
         [
          "html/canvas/offscreen/shadows/2d.shadow.alpha.4.worker.html",
          {}
         ]
        ],
        "2d.shadow.alpha.5.html": [
-        "4c1a9b08cb051094667aef27d441100312dc0a64",
+        "92ac9717f2a2e11eee1ec7bb581674d5f5a86c64",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.alpha.5.worker.js": [
-        "be4b78d87c55ecd3eba17836b6507e413d411640",
+        "016616ac8c3d652f3cc4edaa0d5cd935b0656b81",
         [
          "html/canvas/offscreen/shadows/2d.shadow.alpha.5.worker.html",
          {}
@@ -540830,28 +541036,28 @@
         ]
        ],
        "2d.shadow.attributes.shadowBlur.invalid.html": [
-        "8f199766fe22f77582e0b44c646be4db7fb94dcb",
+        "51d1a4a804d038b5e969d53aa27072be8ad940ee",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.attributes.shadowBlur.invalid.worker.js": [
-        "303b43e8193e87c15d21d5159223cf5f4f6e3c9f",
+        "2e3a28b789eb37ddeee5f7dcec5f5618f3ca7a69",
         [
          "html/canvas/offscreen/shadows/2d.shadow.attributes.shadowBlur.invalid.worker.html",
          {}
         ]
        ],
        "2d.shadow.attributes.shadowBlur.valid.html": [
-        "299826a5a2e96de50e1693cd16935def63c6ee3c",
+        "06495f6c3172e144b3536a07769d8a519ed85067",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.attributes.shadowBlur.valid.worker.js": [
-        "c41588b50edffd1affd01a722b56c3ce38baea83",
+        "d0292edaecd10c7a56d68495a46d2841675fed42",
         [
          "html/canvas/offscreen/shadows/2d.shadow.attributes.shadowBlur.valid.worker.html",
          {}
@@ -540872,28 +541078,28 @@
         ]
        ],
        "2d.shadow.attributes.shadowColor.invalid.html": [
-        "93a480b307b30c3f13c7043028a0a2aa9efde235",
+        "ac1d9e733304c308933dd81bc85a94d6022adfcd",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.attributes.shadowColor.invalid.worker.js": [
-        "67e0fa80bc072e7901d00948dd5cd9457e9ddb9d",
+        "c962f2508dd5c1f4a879b0bfb5b7e281a19df696",
         [
          "html/canvas/offscreen/shadows/2d.shadow.attributes.shadowColor.invalid.worker.html",
          {}
         ]
        ],
        "2d.shadow.attributes.shadowColor.valid.html": [
-        "acd36360a8f67ab06c9159fc375f8eefb4aae046",
+        "340f11f54f3c7896d4bc40645628638604377451",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.attributes.shadowColor.valid.worker.js": [
-        "02444723b4ed0c6089bcef887bafc03eaf8a394e",
+        "6d7eb0504d412f632314033cd368cf89787fce7f",
         [
          "html/canvas/offscreen/shadows/2d.shadow.attributes.shadowColor.valid.worker.html",
          {}
@@ -540914,168 +541120,168 @@
         ]
        ],
        "2d.shadow.attributes.shadowOffset.invalid.html": [
-        "be055aa37ce3bcdb18f66d58a092b378df69e89f",
+        "d789284b0a5db5d176301bb0441c771a4f36d0d0",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.attributes.shadowOffset.invalid.worker.js": [
-        "37ae2e6b7852ae3d1f71530fd91ae84b67da9b7e",
+        "9eb89cd58144a9b0c47a7256f16e7c6f0471d044",
         [
          "html/canvas/offscreen/shadows/2d.shadow.attributes.shadowOffset.invalid.worker.html",
          {}
         ]
        ],
        "2d.shadow.attributes.shadowOffset.valid.html": [
-        "785966cb38e68b849fb559d12e677e52ba70bf19",
+        "82f5f0118d0ef1c9d4d98e74a5aecf7ef776ee26",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.attributes.shadowOffset.valid.worker.js": [
-        "a6e047ee2b701d0d4b4938c36cf7d9b21a10e94e",
+        "5881c5bca5148ed0b1057c9a56128abf8a7495ac",
         [
          "html/canvas/offscreen/shadows/2d.shadow.attributes.shadowOffset.valid.worker.html",
          {}
         ]
        ],
        "2d.shadow.canvas.alpha.html": [
-        "ae046cfe19dfb658adf80706bd68213d4ca52285",
+        "cae4235e8cf364eea70b5de85af44c2620386de2",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.canvas.alpha.worker.js": [
-        "21d6309c18321bc949f3526623e48d67545dc3a8",
+        "0fa74a20706f215f90646d86eabaa177e45cdba5",
         [
          "html/canvas/offscreen/shadows/2d.shadow.canvas.alpha.worker.html",
          {}
         ]
        ],
        "2d.shadow.canvas.basic.html": [
-        "3ba1cf1fb06b5ea4876c9f12be9981fb423aaa1a",
+        "f5784e914f567103f8a90c5fb93002776b57b231",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.canvas.basic.worker.js": [
-        "8ec3f4acb3c1dc505e14ca1b8b987b59ba44b5b4",
+        "6a2d916a75431756d584090775e3feafeba546c0",
         [
          "html/canvas/offscreen/shadows/2d.shadow.canvas.basic.worker.html",
          {}
         ]
        ],
        "2d.shadow.canvas.transparent.1.html": [
-        "960d870923d4e063b7d0fc61cea90a6d2d8dc9fa",
+        "62b3f83272a2b36239cb1f6d58db7bedccdd91c1",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.canvas.transparent.1.worker.js": [
-        "7fd807bda4e65dd7908e560994b7417a7ab36e39",
+        "1b02897d62ed8cab7c46b5be34d076f7386dd533",
         [
          "html/canvas/offscreen/shadows/2d.shadow.canvas.transparent.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.canvas.transparent.2.html": [
-        "2f1d31d7066555906647fecfe237c675eaed9158",
+        "0f8045352356fbc33efa12f36c0aa28277a89805",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.canvas.transparent.2.worker.js": [
-        "1347eb095feecff4cb0d0318b8552b599678c280",
+        "6e468e28e000b5277a3083e76cae299d63c6638c",
         [
          "html/canvas/offscreen/shadows/2d.shadow.canvas.transparent.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.clip.1.html": [
-        "a762ab5f9f1af56996f282b38f71a126fa6a707c",
+        "4df101d513c8e523ddb30ffb9c2f2878fab36210",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.clip.1.worker.js": [
-        "2a6423a8b290c933dcf480697e28e74be65381ab",
+        "6b05ceb226f1d53d2cbc8030d7b3d76da1369ebb",
         [
          "html/canvas/offscreen/shadows/2d.shadow.clip.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.clip.2.html": [
-        "31055d7200d1e5beeaa59f4ec62c8e1f918a8f94",
+        "6a09ea53f3654f0489cd2d31881240b301ff1782",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.clip.2.worker.js": [
-        "2c6b8deacd450bee021dd9c548a345684d9526e0",
+        "4cdfcfdcfcd6d32a12253396e604b2edd72cb0f6",
         [
          "html/canvas/offscreen/shadows/2d.shadow.clip.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.clip.3.html": [
-        "3b62b233d1415f8ab1116dda3e534ad1cb53c5a4",
+        "d1732e9f5b7481df0bf025558980c739a383a84c",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.clip.3.worker.js": [
-        "c97f9e5c63a33f9a34841fcd370b91f0efbe80c6",
+        "6f8b79d1fea35fac2e9ac96eef2dc85ff0b120a4",
         [
          "html/canvas/offscreen/shadows/2d.shadow.clip.3.worker.html",
          {}
         ]
        ],
        "2d.shadow.composite.1.html": [
-        "e9a400f1e10b870480b01cd79036e088e26f5e60",
+        "d6014fbd45734b480cf43f25fedc5de2ba9da6c7",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.composite.1.worker.js": [
-        "10baafad47e4664ac6e5f134d7724b034ed79c50",
+        "28637706e15e671017c496d8dad7d383c8620a57",
         [
          "html/canvas/offscreen/shadows/2d.shadow.composite.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.composite.2.html": [
-        "0a4c515bac2b433475c72e9ceb6cfcb41c9d0187",
+        "87f2e3ba0f71b8f36d48132e0077f9c204f35868",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.composite.2.worker.js": [
-        "20c89c1390cf17cf940a8ec003fdbc0dccbd6f30",
+        "a144446ec55611a068903a9e36724f1562c19f20",
         [
          "html/canvas/offscreen/shadows/2d.shadow.composite.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.composite.3.html": [
-        "56218430ef42c715c7e36848db3897a38b7cd754",
+        "f3cafa983abf0f9e6348c86c9c2f50fc7f215c73",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.composite.3.worker.js": [
-        "1257b3f5749222248588b0df4ed2288d65f8d45a",
+        "ba29487eea0ad721041ef3a8b573ec6309e6bac1",
         [
          "html/canvas/offscreen/shadows/2d.shadow.composite.3.worker.html",
          {}
@@ -541152,140 +541358,140 @@
         ]
        ],
        "2d.shadow.gradient.alpha.html": [
-        "384838584e0b6620ec7e8ffe1825da767c8b5962",
+        "199dd6c3fab619b18467284497153d98c5c599cd",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.gradient.alpha.worker.js": [
-        "65d582dd790f9eb137774b32b46f4bdf63c99c5c",
+        "0f9a6449c4bcc776f2c094973cd770e6c899ded5",
         [
          "html/canvas/offscreen/shadows/2d.shadow.gradient.alpha.worker.html",
          {}
         ]
        ],
        "2d.shadow.gradient.basic.html": [
-        "c411b64e84359f733b15fc65c8d5346891c6cfe8",
+        "6746f03f3d86f8d16c6afee114ec13d9226cb401",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.gradient.basic.worker.js": [
-        "2630acc1a4cbe69400202008d0cda48d7969f5ea",
+        "068b48bb6f8488625c8ba5da94f92db34b853ead",
         [
          "html/canvas/offscreen/shadows/2d.shadow.gradient.basic.worker.html",
          {}
         ]
        ],
        "2d.shadow.gradient.transparent.1.html": [
-        "852d4268fd5d18f63d14cbafafce646914198acb",
+        "7e7309e976ee6c805eff7810e923b5090d44f528",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.gradient.transparent.1.worker.js": [
-        "b08401426af70523d41a370e09d803694ba82b50",
+        "1102848ecbdfed0eab4e44b6505b40642c3ff26b",
         [
          "html/canvas/offscreen/shadows/2d.shadow.gradient.transparent.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.gradient.transparent.2.html": [
-        "b2c7967d1a717aecf97e69c1529f3aacd62c23e9",
+        "8259eb9ae5d76f93afd0618b64aa74f05b26a06c",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.gradient.transparent.2.worker.js": [
-        "bc651c594ea6e39c9f99f5c8553e63c772baa4d7",
+        "5fcf4ee93d0a8c689aa6e1fdaf6f70f6671f434a",
         [
          "html/canvas/offscreen/shadows/2d.shadow.gradient.transparent.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.image.alpha.html": [
-        "9d14a7233aae0640241dc79ff6689dcc2c6183dd",
+        "f7f797fd0b5b3d57a51452998d10b277deb170f3",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.alpha.worker.js": [
-        "5c290b06cb28443802c4d97b613f41b5a695d3e0",
+        "827bd2ce65285f5075473a4a8f9b826f0e4c0ffc",
         [
          "html/canvas/offscreen/shadows/2d.shadow.image.alpha.worker.html",
          {}
         ]
        ],
        "2d.shadow.image.basic.html": [
-        "b1066aa084f2951ea7ae0d7f6644e43a63be87e1",
+        "5b959fdd92da3ba65811347bc7397d2f9a640c0e",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.basic.worker.js": [
-        "750326c8944aa6165fedafce5ff1537d5f886e00",
+        "2d02232c6836d550785a87499a808eea355fe6e3",
         [
          "html/canvas/offscreen/shadows/2d.shadow.image.basic.worker.html",
          {}
         ]
        ],
        "2d.shadow.image.scale.html": [
-        "a6710d727b053f89f1e587143ddf6fc5d0c057b1",
+        "7e2536c0522127beb4b1feca82da3c91f0e61659",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.scale.worker.js": [
-        "14e4334f0e07e3f208759bd9cd2a7c7b0a5d04ca",
+        "2c10381f98aa43636a50f973d05238a008695bb8",
         [
          "html/canvas/offscreen/shadows/2d.shadow.image.scale.worker.html",
          {}
         ]
        ],
        "2d.shadow.image.section.html": [
-        "be2e6ed5e69aff4db956f143d39f0df455fc8849",
+        "7744ee153bcb80aa89c0730ee3a8b20dd795136f",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.section.worker.js": [
-        "c63121c802290056f2f693bcdd2dacbdeb4637a1",
+        "94affdfb6abdd5fb1ee75a676b879b4d7c4f4671",
         [
          "html/canvas/offscreen/shadows/2d.shadow.image.section.worker.html",
          {}
         ]
        ],
        "2d.shadow.image.transparent.1.html": [
-        "23cafc60750d59cd55551e4a24de12ed07dc0aa6",
+        "30db23ce76c9d5e422b64260db1ff1a75b90201d",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.transparent.1.worker.js": [
-        "dbae8a5061e3be62f09f075c243cf67753cfe55a",
+        "c5421d70426241e0275536bf6071cd9d7392e71f",
         [
          "html/canvas/offscreen/shadows/2d.shadow.image.transparent.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.image.transparent.2.html": [
-        "6567dacf523b4d99bfcf2ef26fff936c7058d090",
+        "9b3b206a264547a0abadb8a83a06774fca1b004d",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.image.transparent.2.worker.js": [
-        "c424274bb51828504bf7de4f874d90a1d9ef25d0",
+        "071c584fa84bb1800f59b1a7c3118a628016398e",
         [
          "html/canvas/offscreen/shadows/2d.shadow.image.transparent.2.worker.html",
          {}
@@ -541362,168 +541568,168 @@
         ]
        ],
        "2d.shadow.pattern.alpha.html": [
-        "04f6ee2e81a5c1b77be684deb9b77b63a0e70e94",
+        "c45654f9991b5439174e55c64aa4bb319a61d07c",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.alpha.worker.js": [
-        "8b29bfb064a32c509dd9afe96aaf0445c27cbf53",
+        "41a826a158f4a4ccb9ac4005f2209d3a59ccabb1",
         [
          "html/canvas/offscreen/shadows/2d.shadow.pattern.alpha.worker.html",
          {}
         ]
        ],
        "2d.shadow.pattern.basic.html": [
-        "64d6b59308b32f5e7fd55ab9a238d3d46bb21899",
+        "4e372c0932d85d8db0545b185e3ccdac663b31e9",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.basic.worker.js": [
-        "db9aefeaf4d53621a594b3ab049f5eb577ffbfdd",
+        "7a8f7e84796a9d72fa463ec337efd8834da418b6",
         [
          "html/canvas/offscreen/shadows/2d.shadow.pattern.basic.worker.html",
          {}
         ]
        ],
        "2d.shadow.pattern.transparent.1.html": [
-        "fe06c3afde10f255a1c5c1b2d5e49b419098fb7b",
+        "72fa7b29f8ebc6d73f9647609e356478b1f1a731",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.transparent.1.worker.js": [
-        "b2ebc0ae2cfe2bf059bec8586134bc712b033efd",
+        "8414db6d08ca1126edfc02d780bbf8e325b1f103",
         [
          "html/canvas/offscreen/shadows/2d.shadow.pattern.transparent.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.pattern.transparent.2.html": [
-        "358113f07cddaa9f6873f809bd48331d7aa2b73f",
+        "6ad8ece009a391daa5615e607edbe097fe999786",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.pattern.transparent.2.worker.js": [
-        "cb963008f9446d67375cae6de3e2a5a75857807e",
+        "726a42d6cd4e845c8266b3c6ebea5defc40a0cf4",
         [
          "html/canvas/offscreen/shadows/2d.shadow.pattern.transparent.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.stroke.basic.html": [
-        "27edc8750ba65ba441272a125d65e98f306fed82",
+        "c569865a60c78e9ce93cca90c48bf02eadba49d0",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.stroke.basic.worker.js": [
-        "b62e6c75e56f265a119e72201263f2eb82fda5b6",
+        "9d7d0ec3210adfe18860b0327725b2c3df3accba",
         [
          "html/canvas/offscreen/shadows/2d.shadow.stroke.basic.worker.html",
          {}
         ]
        ],
        "2d.shadow.stroke.cap.1.html": [
-        "46f915b73e761d6ed7f23a282955df3280de1ff1",
+        "b170f88cf65bf2fc54e974679fd581ba8af8f2c1",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.stroke.cap.1.worker.js": [
-        "21c588ac299c68792332c06e15f642117c38cc0f",
+        "582915d28bf1b195b1192fc8a51cdf0b803f82c1",
         [
          "html/canvas/offscreen/shadows/2d.shadow.stroke.cap.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.stroke.cap.2.html": [
-        "91bfd80d2b18aff8a754ce4603256000e9d8f08b",
+        "8bbb016bd5e0830dfcfd3e9b6df7f73fd322f7f6",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.stroke.cap.2.worker.js": [
-        "aa607cd6efc0b8f7539cc4802f9f5478f8c7eac6",
+        "13108bec9e418edd61f18bc5a258e026b0e4f66e",
         [
          "html/canvas/offscreen/shadows/2d.shadow.stroke.cap.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.stroke.join.1.html": [
-        "1a57acb5f37b839bedf30620be759d495d8a7e4f",
+        "f0ef2d250eafbc411cb3148dbecc0b49a8cfe78a",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.stroke.join.1.worker.js": [
-        "8628fd993bd831f665d055a63b69ac815b3a9906",
+        "0cc1b5f1963b9ff48217890176542fc8a938471c",
         [
          "html/canvas/offscreen/shadows/2d.shadow.stroke.join.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.stroke.join.2.html": [
-        "394226c0ed56e8b51f9a8356dfd673fcb7f86020",
+        "f2800aa19a961be7bc86ec890d902ad69d3f404e",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.stroke.join.2.worker.js": [
-        "06bcbd2c48adacdfcd7cf4117fa407571664df51",
+        "925f65a28ee67a50090662f4909f783d13ba6fa3",
         [
          "html/canvas/offscreen/shadows/2d.shadow.stroke.join.2.worker.html",
          {}
         ]
        ],
        "2d.shadow.stroke.join.3.html": [
-        "2bf7d3dbc1bbd32e746a4b12635f148b97d557da",
+        "390e6a80486a4e546699cb204ff33462fdd9ac6a",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.stroke.join.3.worker.js": [
-        "5c52537a31eb5218ad1e243990df15643ab9a3b3",
+        "827a6d666234834c0d0ed95949809aa93b217c48",
         [
          "html/canvas/offscreen/shadows/2d.shadow.stroke.join.3.worker.html",
          {}
         ]
        ],
        "2d.shadow.transform.1.html": [
-        "3fefcfc087a9263a69d0e07305a3eca5aaceebb9",
+        "23946b20a56bd2f96d4d3ab9c4cdcd4d5bb99d26",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.transform.1.worker.js": [
-        "6227d8487f681b0fab9ff5e8bd7e0676a8223ef5",
+        "6ac8da4c97d6162eed2000ee2cf2e5760575adc3",
         [
          "html/canvas/offscreen/shadows/2d.shadow.transform.1.worker.html",
          {}
         ]
        ],
        "2d.shadow.transform.2.html": [
-        "a4ba056c75927dc20ee2daf09a71bebbad7a4c3f",
+        "edcd20bdcabe57608d986f5d9a8950269ab6e67a",
         [
          null,
          {}
         ]
        ],
        "2d.shadow.transform.2.worker.js": [
-        "32c322af916955781512b864a56d51779781f4a0",
+        "e9e745a2ab87e9c04180cef4230c6a2f227dcd41",
         [
          "html/canvas/offscreen/shadows/2d.shadow.transform.2.worker.html",
          {}
@@ -624404,6 +624610,13 @@
      ]
     },
     "scripted": {
+     "script-invalid-script-type.html": [
+      "9602dd525bd4d2b77b8d4ffadebef9e568a98c77",
+      [
+       null,
+       {}
+      ]
+     ],
      "script-runs-in-shadow-tree.html": [
       "9693db333ff18c1e6f39515be29c77d551e4e2fe",
       [
@@ -636989,7 +637202,7 @@
        ]
       ],
       "audiocontext-suspend-resume-close.html": [
-       "192317dda26968269f35f000adfec9c0450236b1",
+       "ea93cab96a63e114d8b6399d22278a8f2b945039",
        [
         null,
         {}
