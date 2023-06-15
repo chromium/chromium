@@ -75,6 +75,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         }
     }
 
+    @CalledByNative
     public synchronized void release() {
         try {
             mSurfaceTexture.release();

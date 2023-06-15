@@ -81,7 +81,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   void StartWebXRPresentation(
       device::mojom::XRRuntimeSessionOptionsPtr options,
-      base::OnceCallback<void(device::mojom::XRSessionPtr)> callback);
+      base::OnceCallback<void(device::mojom::XRSessionPtr)> callback,
+      base::OnceClosure exit_callback);
   void ExitWebXRPresentation(base::OnceClosure callback);
 
  private:
@@ -118,6 +119,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   // samplerExternalOES texture data for WebVR content image.
   GLuint texture_id_ = 0;
+  int32_t texture_handle_id_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
 
@@ -147,6 +149,10 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   std::unique_ptr<device::MailboxToSurfaceBridge> mailbox_bridge_;
 
   base::CancelableOnceClosure webxr_frame_timeout_closure_;
+
+  base::OnceClosure exit_vr_callback_;
+
+  uint32_t presenting_generation_;
 
   base::WeakPtrFactory<WvrManager> weak_ptr_factory_{this};
 };
