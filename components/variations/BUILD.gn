@@ -112,7 +112,7 @@ component("variations") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
       "variations_crash_keys_chromeos.cc",
       "variations_crash_keys_chromeos.h",
