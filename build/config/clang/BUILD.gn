@@ -204,9 +204,10 @@ clang_lib("compiler_builtins") {
       libname = "ios"
     }
   } else if (is_win && current_cpu == "arm64") {
-    # Do nothing
-    # Except we get the wrong builtins then!
-    # TODO(https://crbug.com/1453618)
+    # TODO(https://crbug.com/1453618): The Clang toolchain package is missing
+    # the arm64 libraries. Don't define libname which makes this target do
+    # nothing. Things will build but C++ will end up using the Rust
+    # compiler-builtins intrinsics on Win ARM64 until this is fixed.
   } else {
     libname = "builtins"
   }
@@ -229,6 +230,12 @@ clang_lib("compiler_profile") {
       #
       # Don't define libname which makes this target do nothing.
     }
+  } else if (is_win && current_cpu == "arm64") {
+    # TODO(https://crbug.com/1453618): The Clang toolchain package is missing
+    # the arm64 libraries. Don't define libname which makes this target do
+    # nothing. This will cause Rust-only targets to fail to link if Rust and
+    # clang coverage are both enabled on Win ARM64 (as lld-link depends on a C++
+    # compiled object file being present to point it to the profile symbols).
   } else {
     libname = "profile"
   }
