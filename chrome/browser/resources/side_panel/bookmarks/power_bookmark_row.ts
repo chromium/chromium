@@ -153,9 +153,9 @@ export class PowerBookmarkRowElement extends PolymerElement {
   }
 
   private onInputDisplayChange_() {
-    const input = this.shadowRoot!.querySelector('#input');
+    const input = this.shadowRoot!.querySelector<CrInputElement>('#input');
     if (input) {
-      (input as CrInputElement).focus();
+      input.select();
     }
   }
 
