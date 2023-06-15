@@ -939,6 +939,74 @@ suite('PrintManagementTest', () => {
     // Clean up test element.
     document.head.removeChild(linkEl);
   });
+
+  // Verify 'manage printers' button in header does not show when setup
+  // assistance flag is off.
+  test('HeaderManagePrinterButton_HiddenWhenFlagOff', async () => {
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+
+    const jobsArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: false,
+    });
+
+    await initializePrintManagementApp(jobsArr);
+
+    assertFalse(
+        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
+  });
+
+  // Verify 'manage printers' button in header does not show when setup
+  // assistance flag is on and there are no active or historical print jobs.
+  test('HeaderManagePrinterButton_HiddenWhenFlagOnAndHasNoJobs', async () => {
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+
+    await initializePrintManagementApp([]);
+
+    assertFalse(
+        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
+  });
+
+  // Verify 'manage printers' button in header shows when setup
+  // assistance flag is on and there any print jobs.
+  test('HeaderManagePrinterButton_VisibleWhenFlagOn', async () => {
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+
+    const jobsArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+
+    await initializePrintManagementApp(jobsArr);
+
+    assertTrue(
+        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
+  });
 });
 
 suite('PrintJobEntryTest', () => {

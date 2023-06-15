@@ -360,6 +360,12 @@ export class PrintManagementElement extends PrintManagementElementBase
     return !this.shouldShowSetupAssistance() &&
         this.ongoingPrintJobs.length === 0;
   }
+
+  /** Determine if manage printer button in header should be shown. */
+  private shouldShowManagePrinterButton(): boolean {
+    return this.showSetupAssistance &&
+        (this.ongoingPrintJobs.length > 0 || this.printJobs.length > 0);
+  }
 }
 
 customElements.define(PrintManagementElement.is, PrintManagementElement);
