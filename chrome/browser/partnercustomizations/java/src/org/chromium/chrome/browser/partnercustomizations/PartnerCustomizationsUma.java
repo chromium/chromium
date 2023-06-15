@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.partnercustomizations;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,7 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Centralizes UMA data collection for partner customizations and loading.
  */
-public class PartnerCustomizationsUma {
+class PartnerCustomizationsUma {
+    private static final String TAG = "PartnerCustUma";
+
     /**
      * Tracks which delegate is first used for any purpose.
      * Trying to switch to another is logged.
@@ -29,49 +29,49 @@ public class PartnerCustomizationsUma {
     private static @CustomizationProviderDelegateType int sWhichDelegate =
             CustomizationProviderDelegateType.NONE_VALID;
 
+    private long mAsyncStartTime;
+
     /**
-     * Determines whether UMA logging of Partner Customization - the functionality of this class -
-     * is enabled or not.
+     * Records whether the async task ran to completion before the initial Tab was created.
+     * A value of {@code null} indicates that we have not yet created the initial Tab.
      */
-    @VisibleForTesting
-    static boolean isEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA);
+    @Nullable
+    private Boolean mWasInitializedBeforeCreateInitialTab;
+    private long mCreateInitialTabTime;
+
+    /**
+     * Called when Chrome is about to create an initial tab.
+     * Logs that by the time {@link PartnerBrowserCustomizations#initializeAsync} is called, whether
+     * {@link PartnerBrowserCustomizations#isInitialized}. For cases that's not initialized - due to
+     * timeout - we are at risk of creating the initial tab with homepage different than the partner
+     * provided homepage.
+     * @param isInitialized Whether initialization completed vs timed out.
+     */
+    void onCreateInitialTab(boolean isInitialized) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.PartnerCustomizationInitializedBeforeInitialTab", isInitialized);
+
+        // Handle the rare case where more than one ChromeTabbedActivity is creating an initial
+        // tab before the Partner Customizations initialization has completed. In this case we
+        // ignore everything associated with Tab creation by the second activity altogether by
+        // exiting here.
+        if (mWasInitializedBeforeCreateInitialTab != null) return;
+
+        mWasInitializedBeforeCreateInitialTab = isInitialized;
+        mCreateInitialTabTime = SystemClock.elapsedRealtime();
+
+        // TODO(donnd): log similar data when no Homepage has ever been determined - Chrome first
+        // launch.
     }
 
     /**
-     * @return whether the system was ready to execute or skip the given {@link Runnable}. Returns
-     *         {@code false} when Features are not yet initialized or this UMA Feature is disabled.
+     * Logs whether we failed to create an initial tab due to the app finishing or being destroyed.
+     * @param isActivityFinishingOrDestroyed Whether the Activity is going away.
      */
-    private static boolean didExecute(Runnable closure) {
-        if (!FeatureList.isInitialized()) return false;
-
-        if (isEnabled()) {
-            closure.run();
-        }
-        return true;
-    }
-
-    /**
-     * Delays the execution of the given {@link Runnable} until enabled or native is initialized.
-     * Care should be taken when crafting the chore to be executed such that any timely information
-     * is captured outside of the chore in a final local member, and implicitly passed into the
-     * method for subsequent processing. An example is grabbing an end time for some process from
-     * the clock (see usages in this file).
-     * If this Feature is not enabled then calling this is a noop, and the chore will not be
-     * executed.
-     */
-    public void onFinishNativeInitializationOrEnabled(
-            ActivityLifecycleDispatcher activityLifecycleDispatcher, Runnable choreWhenEnabled) {
-        if (!didExecute(choreWhenEnabled)) {
-            NativeInitObserver nativeInitObserver = new NativeInitObserver() {
-                @Override
-                public void onFinishNativeInitialization() {
-                    activityLifecycleDispatcher.unregister(this);
-                    didExecute(choreWhenEnabled);
-                }
-            };
-            activityLifecycleDispatcher.register(nativeInitObserver);
-        }
+    static void logActivityFinishingOrDestroyed(boolean isActivityFinishingOrDestroyed) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.PartnerCustomization.ActivityFinishingOrDestroyed",
+                isActivityFinishingOrDestroyed);
     }
 
     /**
@@ -105,13 +105,8 @@ public class PartnerCustomizationsUma {
         RecordHistogram.recordEnumeratedHistogram("Android.PartnerHomepageCustomization.Delegate2",
                 whichDelegate, CustomizationProviderDelegateType.NUM_ENTRIES);
 
-        // Log whether we're getting conflicts with our static member tracking which delegate is
-        // actually used - e.g. when running multiple activities.
-        boolean tryingToSwitchDelegate = whichDelegate != sWhichDelegate
-                && sWhichDelegate != CustomizationProviderDelegateType.NONE_VALID;
-        RecordHistogram.recordBooleanHistogram(
-                "Android.PartnerCustomization.DelegateConflict", tryingToSwitchDelegate);
-        if (tryingToSwitchDelegate) sWhichDelegate = whichDelegate;
+        Log.i(TAG, "Partner Customization delegate: %s.", whichDelegate);
+        sWhichDelegate = whichDelegate;
     }
 
     /**
@@ -139,6 +134,30 @@ public class PartnerCustomizationsUma {
     public static void logPartnerCustomizationUsage(@CustomizationUsage int usage) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PartnerCustomization.Usage", usage, CustomizationUsage.NUM_ENTRIES);
+    }
+
+    static void logPartnerBrowserCustomizationInitDuration(long startTime, long endTime) {
+        // Legacy Histogram, do not modify name or whether written or not.
+        assert startTime > 0;
+        assert endTime > 0;
+        long duration = endTime - startTime;
+        assert duration >= 0;
+        RecordHistogram.recordTimesHistogram(
+                "Android.PartnerBrowserCustomizationInitDuration", duration);
+    }
+
+    /**
+     * Logs the duration of initialization of the async task, including notifying callbacks.
+     */
+    static void logPartnerBrowserCustomizationInitDurationWithCallbacks(
+            long startTime, long endTime) {
+        // Legacy Histogram, do not modify name or whether written or not.
+        assert startTime > 0;
+        assert endTime > 0;
+        long duration = endTime - startTime;
+        assert duration >= 0;
+        RecordHistogram.recordTimesHistogram(
+                "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks", duration);
     }
 
     /**
@@ -207,6 +226,95 @@ public class PartnerCustomizationsUma {
         }
         RecordHistogram.recordTimesHistogram(
                 durationHistogramName + delegateName(delegate), duration);
+    }
+
+    /**
+     * Called when the partner customization Async Init background task is started.
+     */
+    void logAsyncInitStarted() {
+        assert mAsyncStartTime == 0;
+        mAsyncStartTime = SystemClock.elapsedRealtime();
+        sWhichDelegate = CustomizationProviderDelegateType.NONE_VALID;
+    }
+
+    /**
+     * Called when the partner customization Async Init background task completes.
+     */
+    void logAsyncInitCompleted() {
+        @TaskCompletion
+        int taskCompletion = TaskCompletion.NONE_VALID;
+        if (mAsyncStartTime != 0) {
+            final long completedTime = SystemClock.elapsedRealtime();
+            logLoadDuration(mAsyncStartTime, completedTime, sWhichDelegate);
+            // Check if we've already tried to create an initial tab and record timing for the miss.
+            if (mWasInitializedBeforeCreateInitialTab == null) {
+                taskCompletion = TaskCompletion.COMPLETED_IN_TIME;
+            } else if (!mWasInitializedBeforeCreateInitialTab) {
+                taskCompletion = TaskCompletion.COMPLETED_TOO_LATE;
+                RecordHistogram.recordTimesHistogram(
+                        "Android.PartnerCustomization.DurationNeededForAsyncCompletion",
+                        completedTime - mCreateInitialTabTime);
+            }
+        }
+        recordTaskCompletion(taskCompletion);
+        sWhichDelegate = CustomizationProviderDelegateType.NONE_VALID;
+    }
+
+    /**
+     * Called whenever the partner customization Async Init background task is cancelled.
+     */
+    void logAsyncInitCancelled() {
+        recordTaskCompletion(TaskCompletion.CANCELLED);
+    }
+
+    /**
+     * Called if the partner customization Async Init background task throws an exception.
+     */
+    void logAsyncInitException() {
+        recordTaskCompletion(TaskCompletion.EXCEPTION);
+    }
+
+    /** The different outcomes for the Async Task completion. */
+    @IntDef({
+            TaskCompletion.NONE_VALID,
+            TaskCompletion.COMPLETED_IN_TIME,
+            TaskCompletion.COMPLETED_TOO_LATE,
+            TaskCompletion.CANCELLED,
+            TaskCompletion.EXCEPTION,
+            TaskCompletion.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TaskCompletion {
+        int NONE_VALID = 0;
+        int COMPLETED_IN_TIME = 1;
+        int COMPLETED_TOO_LATE = 2;
+        int CANCELLED = 3;
+        int EXCEPTION = 4;
+
+        int NUM_ENTRIES = 5;
+    }
+
+    /**
+     * Logs how the async task completed.
+     */
+    private static void recordTaskCompletion(@TaskCompletion int taskCompletionEnum) {
+        RecordHistogram.recordEnumeratedHistogram("Android.PartnerCustomization.TaskCompletion",
+                taskCompletionEnum, TaskCompletion.NUM_ENTRIES);
+    }
+
+    /**
+     * Logs a duration for loading data from the {@link CustomizationProviderDelegateType} when
+     * successful.
+     */
+    private static void logLoadDuration(long startTime, long completedTime,
+            @CustomizationProviderDelegateType int whichDelegate) {
+        assert startTime > 0;
+        assert completedTime > 0;
+        long duration = completedTime - startTime;
+        assert duration >= 0;
+        RecordHistogram.recordTimesHistogram(
+                "Android.PartnerCustomization.LoadDuration." + delegateName(whichDelegate),
+                duration);
     }
 
     /** @return the variant name for the given delegate for use in variant histograms. */

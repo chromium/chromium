@@ -1424,13 +1424,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // If homepage URI is not determined, due to PartnerBrowserCustomizations provider
                 // async reading, then create a tab at the async reading finished. If it takes
                 // too long, just create NTP.
-
                 mPendingInitialTabCreation = true;
                 PartnerBrowserCustomizations.getInstance().setOnInitializeAsyncFinished(() -> {
-                    if (!isActivityFinishingOrDestroyed()) {
-                        RecordHistogram.recordBooleanHistogram(
-                                "Android.PartnerCustomizationInitializedBeforeInitialTab",
-                                PartnerBrowserCustomizations.getInstance().isInitialized());
+                    boolean isActivityFinishingOrDestroyed = isActivityFinishingOrDestroyed();
+                    PartnerBrowserCustomizations.logActivityFinishingOrDestroyed(
+                            isActivityFinishingOrDestroyed);
+                    if (!isActivityFinishingOrDestroyed) {
+                        PartnerBrowserCustomizations.getInstance().onCreateInitialTab();
                         createInitialTab();
                     }
                 }, INITIAL_TAB_CREATION_TIMEOUT_MS);
@@ -1487,7 +1487,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     url = UrlConstants.NTP_URL;
                 }
             }
-
             getTabCreator(false).launchUrl(url, TabLaunchType.FROM_STARTUP);
         }
 

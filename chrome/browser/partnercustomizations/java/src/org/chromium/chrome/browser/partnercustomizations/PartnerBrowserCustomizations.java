@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -59,6 +58,13 @@ public class PartnerBrowserCustomizations {
     private volatile boolean mIncognitoModeDisabled;
     private volatile boolean mBookmarksEditingDisabled;
     private @Nullable Boolean mIsInitialized;
+
+    /**
+     * The {@link PartnerCustomizationsUma} created in {@link #initializeAsync}.
+     * Will be {@code null} if {@link PartnerBrowserCustomizations#initializeAsync} hasn't been
+     * called at all.
+     */
+    private @Nullable PartnerCustomizationsUma mPartnerCustomizationsUma;
 
     private final List<Runnable> mInitializeAsyncCallbacks;
     private PartnerHomepageListener mListener;
@@ -190,6 +196,7 @@ public class PartnerBrowserCustomizations {
             return;
         }
 
+        final PartnerCustomizationsUma partnerCustomizationsUma = new PartnerCustomizationsUma();
         mIsInitialized = false;
         // Setup an initializing async task.
         final AsyncTask<Void> initializeAsyncTask = new AsyncTask<Void>() {
@@ -199,6 +206,7 @@ public class PartnerBrowserCustomizations {
             @Override
             protected Void doInBackground() {
                 try {
+                    partnerCustomizationsUma.logAsyncInitStarted();
                     mStartTime = SystemClock.elapsedRealtime();
                     boolean systemOrPreStable =
                             (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
@@ -225,6 +233,7 @@ public class PartnerBrowserCustomizations {
                     refreshBookmarksEditingDisabled(delegate);
                 } catch (Exception e) {
                     Log.w(TAG, "Fetching partner customizations failed", e);
+                    partnerCustomizationsUma.logAsyncInitException();
                 }
                 return null;
             }
@@ -232,10 +241,12 @@ public class PartnerBrowserCustomizations {
             @Override
             protected void onPostExecute(Void result) {
                 onFinalized();
+                partnerCustomizationsUma.logAsyncInitCompleted();
             }
 
             @Override
             protected void onCancelled(Void result) {
+                partnerCustomizationsUma.logAsyncInitCancelled();
                 onFinalized();
             }
 
@@ -244,9 +255,8 @@ public class PartnerBrowserCustomizations {
                 assert !mIsInitialized;
 
                 mIsInitialized = true;
-                RecordHistogram.recordTimesHistogram(
-                        "Android.PartnerBrowserCustomizationInitDuration",
-                        SystemClock.elapsedRealtime() - mStartTime);
+                PartnerCustomizationsUma.logPartnerBrowserCustomizationInitDuration(
+                        mStartTime, SystemClock.elapsedRealtime());
 
                 for (Runnable callback : mInitializeAsyncCallbacks) {
                     callback.run();
@@ -256,9 +266,8 @@ public class PartnerBrowserCustomizations {
                 if (mHomepageUriChanged && mListener != null) {
                     mListener.onHomepageUpdate();
                 }
-                RecordHistogram.recordTimesHistogram(
-                        "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks",
-                        SystemClock.elapsedRealtime() - mStartTime);
+                PartnerCustomizationsUma.logPartnerBrowserCustomizationInitDurationWithCallbacks(
+                        mStartTime, SystemClock.elapsedRealtime());
             }
         };
 
@@ -267,6 +276,26 @@ public class PartnerBrowserCustomizations {
         // Cancel the initialization if it reaches timeout.
         PostTask.postDelayedTask(
                 TaskTraits.UI_DEFAULT, () -> initializeAsyncTask.cancel(true), timeoutMs);
+        mPartnerCustomizationsUma = partnerCustomizationsUma;
+    }
+
+    /**
+     * Logs whether we failed to create an initial tab due to the app finishing or being destroyed.
+     * @param isActivityFinishingOrDestroyed Whether the Activity is going away.
+     */
+    public static void logActivityFinishingOrDestroyed(boolean isActivityFinishingOrDestroyed) {
+        PartnerCustomizationsUma.logActivityFinishingOrDestroyed(isActivityFinishingOrDestroyed);
+    }
+
+    /**
+     * Called when Chrome is about to create an initial tab.
+     * This notifies the UMA instance so it tracks how much initialization has been done before new
+     * Tab creation.
+     */
+    public void onCreateInitialTab() {
+        if (mPartnerCustomizationsUma != null) {
+            mPartnerCustomizationsUma.onCreateInitialTab(isInitialized());
+        }
     }
 
     @VisibleForTesting

@@ -80241,6 +80241,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="11" label="Right: coldplugged on boot"/>
 </enum>
 
+<enum name="PartnerTaskCompletion">
+  <int value="0" label="None valid"/>
+  <int value="1" label="Completed in time"/>
+  <int value="2" label="Completed too late"/>
+  <int value="3" label="Cancelled - timeout"/>
+  <int value="4" label="Exception thrown"/>
+</enum>
+
 <enum name="PartnerTypeMetric">
   <int value="0" label="Other"/>
   <int value="1" label="Thunderbolt + DisplayPort Alt Mode Hub"/>

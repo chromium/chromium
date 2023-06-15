@@ -4,30 +4,18 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
 import android.os.SystemClock;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.CustomizationProviderDelegateType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 
@@ -37,12 +25,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUm
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PartnerCustomizationsUmaUnitTest {
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
-
-    @Captor
-    private ArgumentCaptor<LifecycleObserver> mLifeCycleObserverCaptor;
-
     private TestValues mEnabledTestValues;
     private TestValues mDisabledTestValues;
 
@@ -61,62 +43,6 @@ public class PartnerCustomizationsUmaUnitTest {
                 ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA, false);
         mPartnerCustomizationsUma = new PartnerCustomizationsUma();
         mDidCall = false;
-    }
-
-    @Test
-    public void testIsEnabled() {
-        FeatureList.setTestValues(mEnabledTestValues);
-        Assert.assertTrue(PartnerCustomizationsUma.isEnabled());
-    }
-
-    @Test
-    public void testIsEnabled_false() {
-        FeatureList.setTestValues(mDisabledTestValues);
-        Assert.assertFalse(PartnerCustomizationsUma.isEnabled());
-    }
-
-    @Test
-    public void testOnFinishNativeInitializationEnabled_alreadyEnabled() {
-        FeatureList.setTestValues(mEnabledTestValues);
-        mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
-                mActivityLifecycleDispatcherMock, () -> mDidCall = true);
-        verifyNoInteractions(mActivityLifecycleDispatcherMock);
-        Assert.assertTrue(mDidCall);
-    }
-
-    @Test
-    public void testOnFinishNativeInitializationEnabled_alreadyDisabled() {
-        FeatureList.setTestValues(mDisabledTestValues);
-        mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
-                mActivityLifecycleDispatcherMock, () -> mDidCall = true);
-        verifyNoInteractions(mActivityLifecycleDispatcherMock);
-        Assert.assertFalse(mDidCall);
-    }
-
-    @Test
-    public void testOnFinishNativeInitializationEnabled_beforeNativeInit() {
-        mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
-                mActivityLifecycleDispatcherMock, () -> mDidCall = true);
-        verify(mActivityLifecycleDispatcherMock, times(1))
-                .register(mLifeCycleObserverCaptor.capture());
-        NativeInitObserver observer = (NativeInitObserver) mLifeCycleObserverCaptor.getValue();
-        FeatureList.setTestValues(mEnabledTestValues);
-        Assert.assertFalse(mDidCall);
-        observer.onFinishNativeInitialization();
-        Assert.assertTrue(mDidCall);
-    }
-
-    @Test
-    public void testOnFinishNativeInitializationEnabled_beforeNativeInitDisabled() {
-        mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
-                mActivityLifecycleDispatcherMock, () -> mDidCall = true);
-        verify(mActivityLifecycleDispatcherMock, times(1))
-                .register(mLifeCycleObserverCaptor.capture());
-        NativeInitObserver observer = (NativeInitObserver) mLifeCycleObserverCaptor.getValue();
-        FeatureList.setTestValues(mDisabledTestValues);
-        Assert.assertFalse(mDidCall);
-        observer.onFinishNativeInitialization();
-        Assert.assertFalse(mDidCall);
     }
 
     @Test
