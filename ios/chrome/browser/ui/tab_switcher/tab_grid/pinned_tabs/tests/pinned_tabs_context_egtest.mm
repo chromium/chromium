@@ -179,8 +179,8 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
   [ChromeEarlGreyUI openTabGrid];
 
   // The pinned view should be visible when there are pinned tabs created.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForPinnedView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GetMatcherForPinnedView()];
 
   // Long tap on the first regular tab.
   [[EarlGrey selectElementWithMatcher:GetMatcherForRegularCellWithTitle(
@@ -211,8 +211,8 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
   [ChromeEarlGreyUI openTabGrid];
 
   // The pinned view should be visible when there are pinned tabs created.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForPinnedView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GetMatcherForPinnedView()];
 
   // Long tap on the first pinned tab.
   [[EarlGrey
@@ -243,8 +243,8 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
   [ChromeEarlGreyUI openTabGrid];
 
   // The pinned view should be visible when there are pinned tabs created.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForPinnedView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GetMatcherForPinnedView()];
 
   // Long tap on the first pinned tab.
   [[EarlGrey

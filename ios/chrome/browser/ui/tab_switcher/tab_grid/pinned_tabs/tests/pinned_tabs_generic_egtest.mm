@@ -329,6 +329,10 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
 
+  // The pinned view should be visible when there are pinned tabs created.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GetMatcherForPinnedView()];
+
   // Verify the pinned tab has a correct title.
   [[EarlGrey
       selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
