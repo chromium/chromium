@@ -96,6 +96,7 @@ polymorphic.launcher(
             builder = "ci/Android x64 Builder (dbg)",
             dimensions = dimensions.dimensions(
                 builderless = "",
+                os = "Ubuntu-22.04",
                 ssd = "",
                 free_space = "",
                 builder = "Android x64 Builder (dbg)",
