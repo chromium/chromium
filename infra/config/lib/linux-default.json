@@ -272,6 +272,7 @@
     "linux-fuzz-coverage": "Ubuntu-22.04",
     "linux-headless-shell-rel": "Ubuntu-22.04",
     "linux-js-code-coverage": "Ubuntu-22.04",
+    "linux-lacros-archive-rel": "Ubuntu-22.04",
     "linux-lacros-asan-lsan-rel": "Ubuntu-22.04",
     "linux-lacros-builder-fyi-rel": "Ubuntu-22.04",
     "linux-lacros-builder-rel": "Ubuntu-22.04",
