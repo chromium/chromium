@@ -684,6 +684,18 @@ const FeatureEntry::FeatureVariation
          std::size(kPostRestoreDefaultBrowserPromoFullscreen), nullptr},
 };
 
+const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
+    {"Default", "", ""},
+    {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
+    {"Everything (bookmarks, reading list, etc)", "enable-features",
+     "ReplaceSyncPromosWithSignInPromos,"
+     "SyncEnableContactInfoDataTypeInTransportMode,"
+     "EnablePasswordsAccountStorage,"
+     "EnableBookmarksAccountStorage,"
+     "ReadingListEnableDualReadingListModel,"
+     "ReadingListEnableSyncTransportModeUponSignIn"},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1527,11 +1539,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardArtImageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
-    {"replace-sync-promos-with-sign-in-promos",
-     flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
-     flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(syncer::kReplaceSyncPromosWithSignInPromos)},
     {"hide-content-suggestions-tiles",
      flag_descriptions::kHideContentSuggestionTilesName,
      flag_descriptions::kHideContentSuggestionTilesDescription,
@@ -1595,7 +1602,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSpotlightOpenTabsSourceName,
      flag_descriptions::kSpotlightOpenTabsSourceDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSpotlightOpenTabsSource)},
-};
+    {"replace-sync-promos-with-sign-in-promos",
+     flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
+     flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
+     flags_ui::kOsIos,
+     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;
