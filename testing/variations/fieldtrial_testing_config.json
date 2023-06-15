@@ -11463,6 +11463,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_ReadingModeSidePanel",
                         "ReadAnything",
                         "ReadAnythingWithScreen2x"
                     ]
