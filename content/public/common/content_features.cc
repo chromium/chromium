@@ -741,11 +741,6 @@ BASE_FEATURE(kNavigationNetworkResponseQueue,
              "NavigationNetworkResponseQueue",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Preconnects socket at the construction of NavigationRequest.
-BASE_FEATURE(kNavigationRequestPreconnect,
-             "NavigationRequestPreconnect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If the network service is enabled, runs it in process.
 BASE_FEATURE(kNetworkServiceInProcess,
              "NetworkServiceInProcess2",

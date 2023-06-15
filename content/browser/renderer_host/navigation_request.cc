@@ -1838,8 +1838,7 @@ NavigationRequest::NavigationRequest(
   navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kNavigationRequestPreconnect) &&
-      NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
+  if (NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
     BrowserContext* browser_context =
         frame_tree_node_->navigator().controller().GetBrowserContext();
     if (GetContentClient()->browser()->ShouldPreconnectNavigation(
