@@ -159,7 +159,10 @@ CreatorResult Create(const base::FilePath& output_path,
                      const base::FilePath& zip_path,
                      crypto::RSAPrivateKey* signing_key) {
   CrxFileHeader header;
-  base::File file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                base::File::FLAG_WIN_SHARE_DELETE);
+  PLOG_IF(ERROR, !file.IsValid())
+      << "Failed to open " << zip_path << ": " << file.error_details();
   const CreatorResult signing_result =
       SignArchiveAndCreateHeader(output_path, &file, signing_key, &header);
   if (signing_result != CreatorResult::OK)
