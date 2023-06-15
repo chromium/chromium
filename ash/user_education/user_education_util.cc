@@ -14,6 +14,7 @@
 #include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_education/common/help_bubble.h"
 #include "ui/aura/window.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -74,6 +75,10 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
 
 const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
+}
+
+ui::CustomElementEventType GetHelpBubbleAnchorBoundsChangedEventType() {
+  return user_education::kHelpBubbleAnchorBoundsChangedEvent;
 }
 
 HelpBubbleId GetHelpBubbleId(

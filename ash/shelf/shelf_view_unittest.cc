@@ -45,6 +45,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
@@ -59,6 +60,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -71,6 +73,7 @@
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -89,6 +92,7 @@
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_model.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -445,6 +449,45 @@ class ShelfViewTest : public AshTestBase {
     ASSERT_EQ(map_index, id_map.size());
   }
 
+  void ExpectHelpBubbleAnchorBoundsChangedEvent(
+      base::FunctionRef<void()> function_ref) {
+    base::RunLoop run_loop;
+
+    auto subscription =
+        ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+            user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(),
+            views::ElementTrackerViews::GetContextForView(shelf_view_),
+            base::BindLambdaForTesting(
+                [&](ui::TrackedElement* tracked_element) {
+                  if (tracked_element->IsA<views::TrackedElementViews>() &&
+                      tracked_element->AsA<views::TrackedElementViews>()
+                              ->view() == shelf_view_) {
+                    run_loop.Quit();
+                  }
+                }));
+
+    function_ref();
+    run_loop.Run();
+  }
+
+  void VerifyAnchorBoundsInScreenAreValid() {
+    gfx::Rect anchor_bounds_in_screen;
+    for (int i : shelf_view_->visible_views_indices()) {
+      if (test_api_->GetButton(i)) {
+        anchor_bounds_in_screen.Union(
+            test_api_->GetViewAt(i)->GetBoundsInScreen());
+      }
+    }
+    if (shelf_view_->parent()) {
+      anchor_bounds_in_screen.Intersect(
+          shelf_view_->parent()->GetBoundsInScreen());
+    }
+    EXPECT_THAT(shelf_view_->GetAnchorBoundsInScreen(),
+                ::testing::Conditional(anchor_bounds_in_screen.IsEmpty(),
+                                       shelf_view_->GetBoundsInScreen(),
+                                       anchor_bounds_in_screen));
+  }
+
   void VerifyShelfItemBoundsAreValid() {
     for (int i : shelf_view_->visible_views_indices()) {
       if (test_api_->GetButton(i)) {
@@ -653,6 +696,44 @@ const char*
     ShelfViewTest::kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName =
         ShelfButtonPressedMetricTracker::
             kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
+
+TEST_P(LtrRtlShelfViewTest, GetAnchorBoundsInScreen) {
+  // Help bubble anchor bounds changed events are only propagated when user
+  // education features are enabled.
+  base::test::ScopedFeatureList scoped_feature_list(features::kWelcomeTour);
+
+  {
+    SCOPED_TRACE("Initial anchor bounds.");
+    VerifyAnchorBoundsInScreenAreValid();
+  }
+
+  ShelfID app_shortcut_id;
+
+  {
+    SCOPED_TRACE("Update anchor bounds due to addition.");
+    ExpectHelpBubbleAnchorBoundsChangedEvent(
+        [&]() { app_shortcut_id = AddAppShortcut(); });
+    VerifyAnchorBoundsInScreenAreValid();
+  }
+
+  {
+    SCOPED_TRACE("Update anchor bounds due to removal.");
+    ExpectHelpBubbleAnchorBoundsChangedEvent(
+        [&]() { RemoveByID(app_shortcut_id); });
+    VerifyAnchorBoundsInScreenAreValid();
+  }
+
+  {
+    SCOPED_TRACE("Shelf overflow anchor bounds.");
+    ExpectHelpBubbleAnchorBoundsChangedEvent([&]() {
+      while (shelf_view_->parent()->bounds().width() >=
+             shelf_view_->bounds().width()) {
+        AddAppShortcut();
+      }
+    });
+    VerifyAnchorBoundsInScreenAreValid();
+  }
+}
 
 TEST_P(LtrRtlShelfViewTest, VisibleShelfItemsBounds) {
   // Add 3 pinned apps, and a normal app.

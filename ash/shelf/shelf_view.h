@@ -161,6 +161,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Rect GetAnchorBoundsInScreen() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   FocusTraversable* GetPaneFocusTraversable() override;

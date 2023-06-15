@@ -43,6 +43,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_constants.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -96,6 +97,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
@@ -572,6 +574,25 @@ gfx::Size ShelfView::CalculatePreferredSize() const {
     return gfx::Size(last_button_bounds.right(), hotseat_size);
 
   return gfx::Size(hotseat_size, last_button_bounds.bottom());
+}
+
+gfx::Rect ShelfView::GetAnchorBoundsInScreen() const {
+  // Anchor bounds is the smallest rect containing all visible items.
+  gfx::Rect anchor_bounds_in_screen;
+  for (const size_t i : visible_views_indices_) {
+    const views::View* const child = view_model_->view_at(i);
+    anchor_bounds_in_screen.Union(child->GetBoundsInScreen());
+  }
+  // When the shelf is in overflow, visible items may exist outside `parent()`
+  // bounds but they are clipped. Since they are not visible to the user, do
+  // not consider them as part of anchor bounds.
+  if (parent()) {
+    anchor_bounds_in_screen.Intersect(parent()->GetBoundsInScreen());
+  }
+  // Fall back to default anchor bounds if there are no visible items.
+  return anchor_bounds_in_screen.IsEmpty()
+             ? views::AccessiblePaneView::GetAnchorBoundsInScreen()
+             : anchor_bounds_in_screen;
 }
 
 void ShelfView::OnThemeChanged() {
@@ -1450,6 +1471,12 @@ void ShelfView::LayoutToIdealBounds() {
   views::ViewModelUtils::SetViewBoundsToIdealBounds(*view_model_);
   UpdateSeparatorBounds(/*animate=*/false);
   UpdateVisibleShelfItemBoundsUnion();
+
+  // Notify user education features that anchor bounds have changed.
+  if (features::IsUserEducationEnabled()) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(), this);
+  }
 }
 
 bool ShelfView::IsItemPinned(const ShelfItem& item) const {
@@ -2587,6 +2614,12 @@ void ShelfView::OnMenuClosed(views::View* source) {
 
 void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
   shelf_->NotifyShelfIconPositionsChanged();
+
+  // Notify user education features that anchor bounds have changed.
+  if (features::IsUserEducationEnabled()) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(), this);
+  }
 
   // Do not call PreferredSizeChanged() so that container does not re-layout
   // during the bounds animation.

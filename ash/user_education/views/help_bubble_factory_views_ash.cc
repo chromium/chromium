@@ -44,7 +44,7 @@ HelpBubbleViewsAsh::HelpBubbleViewsAsh(HelpBubbleViewAsh* help_bubble_view,
                               base::Unretained(this)));
   anchor_bounds_changed_subscription_ =
       ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-          user_education::kHelpBubbleAnchorBoundsChangedEvent,
+          user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(),
           anchor_element->context(),
           base::BindRepeating(&HelpBubbleViewsAsh::OnElementBoundsChanged,
                               base::Unretained(this)));
