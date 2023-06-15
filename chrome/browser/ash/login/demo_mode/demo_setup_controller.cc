@@ -50,7 +50,6 @@ namespace {
 using ErrorCode = DemoSetupController::DemoSetupError::ErrorCode;
 using RecoveryMethod = DemoSetupController::DemoSetupError::RecoveryMethod;
 
-constexpr char kDemoRequisition[] = "cros-demo-mode";
 constexpr char kDemoSetupDownloadDurationHistogram[] =
     "DemoMode.Setup.DownloadDuration";
 constexpr char kDemoSetupEnrollDurationHistogram[] =
@@ -405,7 +404,7 @@ void DemoSetupController::RegisterLocalStatePrefs(
 // static
 void DemoSetupController::ClearDemoRequisition() {
   if (policy::EnrollmentRequisitionManager::GetDeviceRequisition() ==
-      kDemoRequisition) {
+      policy::EnrollmentRequisitionManager::kDemoRequisition) {
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(std::string());
     // If device requisition is `kDemoRequisition`, it means the sub
     // organization was also set by the demo setup controller, so remove it as
@@ -600,7 +599,8 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   enroll_start_time_ = base::TimeTicks::Now();
 
   DCHECK(policy::EnrollmentRequisitionManager::GetDeviceRequisition().empty());
-  policy::EnrollmentRequisitionManager::SetDeviceRequisition(kDemoRequisition);
+  policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+      policy::EnrollmentRequisitionManager::kDemoRequisition);
   policy::EnrollmentRequisitionManager::SetSubOrganization(
       GetSubOrganizationEmail());
   policy::EnrollmentConfig config;

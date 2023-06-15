@@ -24,6 +24,7 @@ const char EnrollmentRequisitionManager::kNoRequisition[] = "none";
 const char EnrollmentRequisitionManager::kRemoraRequisition[] = "remora";
 const char EnrollmentRequisitionManager::kSharkRequisition[] = "shark";
 const char EnrollmentRequisitionManager::kRialtoRequisition[] = "rialto";
+const char EnrollmentRequisitionManager::kDemoRequisition[] = "cros-demo-mode";
 
 // static
 void EnrollmentRequisitionManager::Initialize() {

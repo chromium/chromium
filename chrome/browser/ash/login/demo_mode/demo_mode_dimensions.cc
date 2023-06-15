@@ -45,5 +45,21 @@ bool IsFeatureAwareDevice() {
   return ash::features::IsFeatureAwareDeviceDemoModeEnabled();
 }
 
+enterprise_management::DemoModeDimensions GetDemoModeDimensions() {
+  enterprise_management::DemoModeDimensions dimensions;
+  dimensions.set_country(Country());
+  dimensions.set_retailer_name(RetailerName());
+  dimensions.set_store_number(StoreNumber());
+  if (IsCloudGamingDevice()) {
+    dimensions.add_customization_facets(
+        enterprise_management::DemoModeDimensions::CLOUD_GAMING_DEVICE);
+  }
+  if (IsFeatureAwareDevice()) {
+    dimensions.add_customization_facets(
+        enterprise_management::DemoModeDimensions::FEATURE_AWARE_DEVICE);
+  }
+  return dimensions;
+}
+
 }  // namespace demo_mode
 }  // namespace ash

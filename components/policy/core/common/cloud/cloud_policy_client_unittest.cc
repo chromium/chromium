@@ -302,7 +302,8 @@ em::DeviceManagementRequest GetReregistrationRequest() {
 em::DeviceManagementRequest GetCertBasedRegistrationRequest(
     FakeSigningService* fake_signing_service,
     absl::optional<PsmExecutionResult> psm_execution_result,
-    absl::optional<int64_t> psm_determination_timestamp) {
+    absl::optional<int64_t> psm_determination_timestamp,
+    const absl::optional<em::DemoModeDimensions>& demo_mode_dimensions) {
   em::CertificateBasedDeviceRegistrationData data;
   data.set_certificate_type(em::CertificateBasedDeviceRegistrationData::
                                 ENTERPRISE_ENROLLMENT_CERTIFICATE);
@@ -329,6 +330,10 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
   }
   if (psm_execution_result.has_value())
     register_request->set_psm_execution_result(psm_execution_result.value());
+  if (demo_mode_dimensions.has_value()) {
+    *register_request->mutable_demo_mode_dimensions() =
+        demo_mode_dimensions.value();
+  }
 
   em::DeviceManagementRequest request;
 
@@ -434,6 +439,16 @@ em::DeviceManagementResponse GetRobotAuthCodeFetchResponse() {
 
 em::DeviceManagementResponse GetEmptyResponse() {
   return em::DeviceManagementResponse();
+}
+
+em::DemoModeDimensions GetDemoModeDimensions() {
+  em::DemoModeDimensions demo_mode_dimensions;
+  demo_mode_dimensions.set_country("GB");
+  demo_mode_dimensions.set_retailer_name("retailer");
+  demo_mode_dimensions.set_store_number("1234");
+  demo_mode_dimensions.add_customization_facets(
+      em::DemoModeDimensions::FEATURE_AWARE_DEVICE);
+  return demo_mode_dimensions;
 }
 
 }  // namespace
@@ -793,7 +808,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
       GetCertBasedRegistrationRequest(
           fake_signing_service.get(),
           /*psm_execution_result=*/absl::nullopt,
-          /*psm_determination_timestamp=*/absl::nullopt)
+          /*psm_determination_timestamp=*/absl::nullopt,
+          /*demo_mode_dimensions=*/absl::nullopt)
           .SerializePartialAsString();
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   CloudPolicyClient::RegistrationParameters device_attestation(
@@ -823,6 +839,41 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
             GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
+}
+
+TEST_F(CloudPolicyClientTest, DemoModeRegistration) {
+  EXPECT_CALL(device_dmtoken_callback_observer_,
+              OnDeviceDMTokenRequested(
+                  /*user_affiliation_ids=*/std::vector<std::string>()))
+      .WillOnce(Return(kDeviceDMToken));
+  ExpectAndCaptureJob(GetRegistrationResponse());
+  auto fake_signing_service = std::make_unique<FakeSigningService>();
+  fake_signing_service->set_success(true);
+  const std::string expected_job_request_string =
+      GetCertBasedRegistrationRequest(
+          fake_signing_service.get(),
+          /*psm_execution_result=*/absl::nullopt,
+          /*psm_determination_timestamp=*/absl::nullopt,
+          GetDemoModeDimensions())
+          .SerializePartialAsString();
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  CloudPolicyClient::RegistrationParameters demo_enrollment_parameters(
+      em::DeviceRegisterRequest::DEVICE,
+      em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
+  demo_enrollment_parameters.demo_mode_dimensions = GetDemoModeDimensions();
+  client_->RegisterWithCertificate(
+      demo_enrollment_parameters, std::string() /* client_id */,
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      std::move(fake_signing_service));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
+      job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            expected_job_request_string);
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RegistrationWithCertificateFailToSignRequest) {
@@ -1746,7 +1797,8 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
   const std::string expected_job_request_string =
       GetCertBasedRegistrationRequest(fake_signing_service.get(),
                                       psm_execution_result,
-                                      kExpectedPsmDeterminationTimestamp)
+                                      kExpectedPsmDeterminationTimestamp,
+                                      /*demo_mode_dimensions=*/absl::nullopt)
           .SerializePartialAsString();
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   CloudPolicyClient::RegistrationParameters device_attestation(

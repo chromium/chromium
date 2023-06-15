@@ -1483,6 +1483,10 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
     request->mutable_license_type()->set_license_type(
         params.license_type.value());
   }
+  if (params.demo_mode_dimensions.has_value()) {
+    *request->mutable_demo_mode_dimensions() =
+        params.demo_mode_dimensions.value();
+  }
 }
 
 void CloudPolicyClient::CreateUniqueRequestJob(
