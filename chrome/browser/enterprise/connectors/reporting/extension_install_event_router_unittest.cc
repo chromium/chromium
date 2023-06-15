@@ -132,10 +132,7 @@ TEST_F(ExtensionInstallEventRouterTest, CheckEventReported) {
   expectedEvent.Set("id", kFakeExtensionId);
   expectedEvent.Set("name", kFakeExtensionName);
   expectedEvent.Set("description", kFakeExtensionDescription);
-  expectedEvent.Set("profileUserName", kFakeProfileUsername);
 
-  EXPECT_CALL(*mockRealtimeReportingClient_, GetProfileUserName())
-      .WillOnce(Return(kFakeProfileUsername));
   EXPECT_CALL(
       *mockRealtimeReportingClient_,
       ReportRealtimeEvent(ReportingServiceSettings::kExtensionInstallEvent, _,

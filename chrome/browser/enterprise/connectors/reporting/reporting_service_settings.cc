@@ -10,10 +10,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 
 namespace enterprise_connectors {
-
-BASE_FEATURE(kExtensionEventsEnabled,
-             "ExtensionEventsEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
 constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
