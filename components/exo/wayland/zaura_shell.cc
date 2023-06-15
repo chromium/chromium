@@ -16,7 +16,6 @@
 
 #include "ash/display/display_util.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/focus_cycler.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -767,47 +766,18 @@ uint32_t HandleAuraSurfaceConfigureCallback(
   return serial;
 }
 
-using AuraSurfaceRotateFocusCallback = base::RepeatingCallback<
-    void(uint32_t serial, ash::FocusCycler::Direction direction, bool restart)>;
-
-uint32_t HandleAuraSurfaceRotateFocusCallback(
-    SerialTracker* serial_tracker,
-    AuraSurfaceRotateFocusCallback callback,
-    ash::FocusCycler::Direction direction,
-    bool restart) {
-  auto serial =
-      serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
-  callback.Run(serial, direction, restart);
-  return serial;
-}
-
 AuraToplevel::AuraToplevel(ShellSurface* shell_surface,
                            SerialTracker* const serial_tracker,
-                           SerialTracker* const rotation_serial_tracker,
                            wl_resource* xdg_toplevel_resource,
                            wl_resource* aura_toplevel_resource)
     : shell_surface_(shell_surface),
       serial_tracker_(serial_tracker),
-      rotation_serial_tracker_(rotation_serial_tracker),
       xdg_toplevel_resource_(xdg_toplevel_resource),
       aura_toplevel_resource_(aura_toplevel_resource) {
   DCHECK(shell_surface);
 }
 
 AuraToplevel::~AuraToplevel() = default;
-
-void AuraToplevel::OnRotatePaneFocus(uint32_t serial,
-                                     ash::FocusCycler::Direction direction,
-                                     bool restart) {
-  auto zaura_direction = direction == ash::FocusCycler::Direction::FORWARD
-                             ? ZAURA_TOPLEVEL_ROTATE_DIRECTION_FORWARD
-                             : ZAURA_TOPLEVEL_ROTATE_DIRECTION_BACKWARD;
-  zaura_toplevel_send_rotate_focus(
-      aura_toplevel_resource_, serial, zaura_direction,
-      restart ? ZAURA_TOPLEVEL_ROTATE_RESTART_STATE_RESTART
-              : ZAURA_TOPLEVEL_ROTATE_RESTART_STATE_NO_RESTART);
-  wl_client_flush(wl_resource_get_client(aura_toplevel_resource_));
-}
 
 void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
   shell_surface_->SetOrientationLock(OrientationLock(lock_type));
@@ -889,13 +859,6 @@ void AuraToplevel::SetClientUsesScreenCoordinates() {
                                               weak_ptr_factory_.GetWeakPtr())));
   shell_surface_->set_origin_change_callback(base::BindRepeating(
       &AuraToplevel::OnOriginChange, weak_ptr_factory_.GetWeakPtr()));
-  if (wl_resource_get_version(aura_toplevel_resource_) >=
-      ZAURA_TOPLEVEL_ROTATE_FOCUS_SINCE_VERSION) {
-    shell_surface_->set_rotate_focus_callback(base::BindRepeating(
-        HandleAuraSurfaceRotateFocusCallback, rotation_serial_tracker_,
-        base::BindRepeating(&AuraToplevel::OnRotatePaneFocus,
-                            weak_ptr_factory_.GetWeakPtr())));
-  }
 }
 
 void AuraToplevel::SetSystemModal(bool modal) {
@@ -924,11 +887,6 @@ void AuraToplevel::SetPersistable(bool persistable) {
 
 void AuraToplevel::SetShape(absl::optional<cc::Region> shape) {
   shell_surface_->SetShape(std::move(shape));
-}
-
-void AuraToplevel::AckRotateFocus(uint32_t serial, uint32_t h) {
-  auto handled = h == ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_HANDLED;
-  shell_surface_->AckRotateFocus(serial, handled);
 }
 
 void AuraToplevel::IntentToSnap(uint32_t snap_direction) {
@@ -1502,13 +1460,6 @@ void aura_toplevel_set_top_inset(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetTopInset(top_inset);
 }
 
-void aura_toplevel_ack_rotate_focus(wl_client* client,
-                                    wl_resource* resource,
-                                    uint32_t serial,
-                                    uint32_t handled) {
-  GetUserDataAs<AuraToplevel>(resource)->AckRotateFocus(serial, handled);
-}
-
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1535,7 +1486,6 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_persistable,
     aura_toplevel_set_shape,
     aura_toplevel_set_top_inset,
-    aura_toplevel_ack_rotate_focus,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
@@ -1601,7 +1551,6 @@ void aura_shell_get_aura_toplevel(wl_client* client,
       aura_toplevel_resource, &aura_toplevel_implementation,
       std::make_unique<AuraToplevel>(
           shell_surface_data.shell_surface, shell_surface_data.serial_tracker,
-          shell_surface_data.rotation_serial_tracker,
           shell_surface_data.surface_resource, aura_toplevel_resource));
 }
 
