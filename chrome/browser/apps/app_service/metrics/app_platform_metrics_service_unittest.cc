@@ -220,13 +220,17 @@ class AppPlatformMetricsServiceTest
     if (IsLacrosPrimary()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary},
+                                ash::features::kLacrosPrimary,
+                                ash::features::kLacrosOnly,
+                                ash::features::kLacrosProfileMigrationForceOff},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary});
+          /*disabled_features=*/{
+              ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+              ash::features::kLacrosOnly,
+              ash::features::kLacrosProfileMigrationForceOff});
     }
 
     InstallApps();
