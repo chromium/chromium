@@ -18,6 +18,7 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -27,6 +28,12 @@ import {getTemplate} from './live_translate_section.html.js';
 
 const SettingsLiveTranslateElementBase =
     WebUiListenerMixin(PrefsMixin(PolymerElement));
+
+export interface SettingsLiveTranslateElement {
+  $: {
+    liveTranslateToggleButton: SettingsToggleButtonElement,
+  };
+}
 
 export class SettingsLiveTranslateElement extends
     SettingsLiveTranslateElementBase {
@@ -91,6 +98,12 @@ export class SettingsLiveTranslateElement extends
                 return {value: language.code, name: language.displayName};
               }) as DropdownMenuOptionList;
     });
+  }
+
+  private onLiveTranslateEnabledChange_() {
+    chrome.metricsPrivate.recordBoolean(
+        'Accessibility.LiveTranslate.EnableFromSettings',
+        this.$.liveTranslateToggleButton.checked);
   }
 }
 

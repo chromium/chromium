@@ -461,6 +461,8 @@ void MediaDialogView::OnLiveTranslateButtonPressed() {
   bool enabled =
       !profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled);
   profile_->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled, enabled);
+  base::UmaHistogramBoolean(
+      "Accessibility.LiveTranslate.EnableFromGlobalMediaControls", enabled);
 }
 
 void MediaDialogView::OnSettingsButtonPressed() {
