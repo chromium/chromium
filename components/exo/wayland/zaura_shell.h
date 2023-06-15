@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "ash/focus_cycler.h"
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -33,7 +32,7 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 56;
+constexpr uint32_t kZAuraShellVersion = 55;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -129,7 +128,6 @@ class AuraToplevel {
  public:
   AuraToplevel(ShellSurface* shell_surface,
                SerialTracker* const serial_tracker,
-               SerialTracker* const rotation_serial_tracker,
                wl_resource* aura_toplevel_resource,
                wl_resource* xdg_toplevel_resource);
 
@@ -169,14 +167,9 @@ class AuraToplevel {
   void SetScaleFactor(float scale_factor);
   void SetPersistable(bool persistable);
   void SetShape(absl::optional<cc::Region> shape);
-  void AckRotateFocus(uint32_t serial, uint32_t handled);
-  void OnRotatePaneFocus(uint32_t serial,
-                         ash::FocusCycler::Direction direction,
-                         bool restart);
 
   raw_ptr<ShellSurface, ExperimentalAsh> shell_surface_;
   const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
-  const raw_ptr<SerialTracker, ExperimentalAsh> rotation_serial_tracker_;
   raw_ptr<wl_resource, ExperimentalAsh> xdg_toplevel_resource_;
   raw_ptr<wl_resource, ExperimentalAsh> aura_toplevel_resource_;
   bool supports_window_bounds_ = false;
