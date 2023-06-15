@@ -35836,69 +35836,6 @@
       }
     ]
   },
-  "lacros-arm64-generic-rel-skylab-fyi-tests": {
-    "skylab_tests": [
-      {
-        "args": [],
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R115-15465.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_PUBLIC_LKGM"
-      },
-      {
-        "args": [],
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R115-15465.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
-        "public_builder": "cros_test_platform_public",
-        "public_builder_bucket": "testplatform-public",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
-      },
-      {
-        "args": [],
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "kevin",
-        "cros_img": "kevin64-public/R115-15465.0.0",
-        "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "KEVIN64_PUBLIC_LKGM"
-      }
-    ]
-  },
   "linux-annotator-rel": {
     "scripts": [
       {

@@ -244,38 +244,6 @@ ci.builder(
     ),
 )
 
-ci.thin_tester(
-    name = "lacros-arm64-generic-rel-skylab-fyi-tests",
-    triggered_by = ["lacros-arm64-generic-rel-skylab-fyi"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
-            target_bits = 64,
-            target_platform = "chromeos",
-            target_cros_boards = "kevin:jacuzzi",
-            cros_boards_with_qemu_images = "arm64-generic",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-ci-skylab",
-        ),
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros",
-        short_name = "fyi-tst",
-    ),
-)
-
 ci.builder(
     name = "linux-annotator-rel",
     builder_spec = builder_config.builder_spec(

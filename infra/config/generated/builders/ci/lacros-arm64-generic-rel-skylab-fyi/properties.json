@@ -39,48 +39,6 @@
                 "gs_bucket": "chromium-ci-skylab"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "lacros-arm64-generic-rel-skylab-fyi-tests",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb",
-                  "mb_no_luci_auth"
-                ],
-                "config": "chromium",
-                "cros_boards_with_qemu_images": [
-                  "arm64-generic"
-                ],
-                "target_bits": 64,
-                "target_cros_boards": [
-                  "kevin:jacuzzi"
-                ],
-                "target_platform": "chromeos"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "chromeos",
-                  "checkout_lacros_sdk"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "lacros-arm64-generic-rel-skylab-fyi",
-                "project": "chromium"
-              },
-              "skylab_upload_location": {
-                "gs_bucket": "chromium-ci-skylab"
-              }
-            }
           }
         ]
       },
@@ -88,13 +46,6 @@
         {
           "bucket": "ci",
           "builder": "lacros-arm64-generic-rel-skylab-fyi",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
-          "builder": "lacros-arm64-generic-rel-skylab-fyi-tests",
           "project": "chromium"
         }
       ]
