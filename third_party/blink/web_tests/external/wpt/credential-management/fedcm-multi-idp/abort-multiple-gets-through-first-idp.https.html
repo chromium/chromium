@@ -9,7 +9,7 @@
     set_fedcm_cookie,
     set_alt_fedcm_cookie,
     request_options_with_mediation_required,
-    default_alt_request_options
+    alt_request_options_with_mediation_required
   } from '../support/fedcm-helper.sub.js';
 
   let cookies_promise = Promise.all([set_fedcm_cookie(), set_alt_fedcm_cookie()]);
@@ -21,7 +21,7 @@
     const first_cred = navigator.credentials.get(first_test_options);
 
     let second_controller = new AbortController();
-    let second_test_options = default_alt_request_options();
+    let second_test_options = alt_request_options_with_mediation_required();
     second_test_options.signal = second_controller.signal;
     const second_cred = navigator.credentials.get(second_test_options);
 

@@ -9,7 +9,7 @@
     set_fedcm_cookie,
     set_alt_fedcm_cookie,
     request_options_with_mediation_required,
-    default_alt_request_options
+    alt_request_options_with_mediation_required
   } from '../support/fedcm-helper.sub.js';
 
   let cookies_promise = Promise.all([set_fedcm_cookie(), set_alt_fedcm_cookie()]);
@@ -21,7 +21,7 @@
     const first_cred = navigator.credentials.get(first_test_options);
 
     let second_controller = new AbortController();
-    let second_test_options = default_alt_request_options();
+    let second_test_options = alt_request_options_with_mediation_required();
     second_test_options.signal = second_controller.signal;
     const second_cred = navigator.credentials.get(second_test_options);
 
@@ -33,7 +33,7 @@
     ]);
 
     const third_cred = navigator.credentials.get(request_options_with_mediation_required());
-    const fourth_cred = navigator.credentials.get(default_alt_request_options());
+    const fourth_cred = navigator.credentials.get(alt_request_options_with_mediation_required());
 
     // NetworkError is returned when another IDP is selected.
     await promise_rejects_dom(t, 'NetworkError', fourth_cred);

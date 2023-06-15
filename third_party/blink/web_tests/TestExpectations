@@ -6323,6 +6323,10 @@ crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
 crbug.com/1453691 external/wpt/credential-management/fedcm-context.https.html [ Failure ]
 
+# We skip these tests in the base test suite in NeverFixTests, but we do want
+# to run them in the virtual test suite.
+crbug.com/1373766 virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/* [ Pass ]
+
 # WebAssembly ESM integration is not yet implemented.
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Crash Failure Pass Timeout ]
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Crash Failure Pass Timeout ]
