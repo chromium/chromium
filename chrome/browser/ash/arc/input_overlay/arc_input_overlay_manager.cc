@@ -308,14 +308,6 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
   it->second->UpdatePositionsForRegister();
 }
 
-void ArcInputOverlayManager::ResetForPendingTouchInjector(
-    std::unique_ptr<TouchInjector> touch_injector) {
-  auto* window = touch_injector->window();
-  loading_data_windows_.erase(window);
-  touch_injector.reset();
-  RemoveWindowObservation(window);
-}
-
 void ArcInputOverlayManager::RemoveWindowObservation(aura::Window* window) {
   if (window_observations_.IsObservingSource(window)) {
     window_observations_.RemoveObservation(window);
@@ -423,15 +415,7 @@ void ArcInputOverlayManager::OnDidCheckGioApplicable(
     return;
   }
 
-  auto* window = touch_injector->window();
-  DCHECK(window);
-  if (!loading_data_windows_.contains(window) || window->is_destroying()) {
-    return;
-  }
-
-  input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
-  loading_data_windows_.erase(window);
-  RegisterFocusedWindow();
+  OnLoadingFinished(std::move(touch_injector));
 }
 
 void ArcInputOverlayManager::OnProtoDataAvailable(
@@ -444,20 +428,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
     touch_injector->NotifyFirstTimeLaunch();
   }
 
-  auto* window = touch_injector->window();
-  DCHECK(window);
-  // Check if |window| is destroyed or destroying when calling this function.
-  if (!loading_data_windows_.contains(window) || window->is_destroying()) {
-    ResetForPendingTouchInjector(std::move(touch_injector));
-    return;
-  }
-
-  touch_injector->RecordMenuStateOnLaunch();
-  // Now we can safely add <*window, touch_injector> in
-  // |input_overlay_enabled_windows_|.
-  input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
-  loading_data_windows_.erase(window);
-  RegisterFocusedWindow();
+  OnLoadingFinished(std::move(touch_injector));
 }
 
 void ArcInputOverlayManager::OnSaveProtoFile(
@@ -578,6 +549,34 @@ void ArcInputOverlayManager::RemoveDisplayOverlayController() {
   }
   DCHECK(display_overlay_controller_);
   display_overlay_controller_.reset();
+}
+
+void ArcInputOverlayManager::ResetForPendingTouchInjector(
+    std::unique_ptr<TouchInjector> touch_injector) {
+  auto* window = touch_injector->window();
+  loading_data_windows_.erase(window);
+  touch_injector.reset();
+  RemoveWindowObservation(window);
+}
+
+void ArcInputOverlayManager::OnLoadingFinished(
+    std::unique_ptr<TouchInjector> touch_injector) {
+  auto* window = touch_injector->window();
+  DCHECK(window);
+  // Check if |window| is destroyed or destroying when calling this function.
+  if (!loading_data_windows_.contains(window) || window->is_destroying()) {
+    ResetForPendingTouchInjector(std::move(touch_injector));
+    return;
+  }
+
+  // Record the menu state when there is at least one action.
+  if (!touch_injector->actions().empty()) {
+    touch_injector->RecordMenuStateOnLaunch();
+  }
+
+  input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
+  loading_data_windows_.erase(window);
+  RegisterFocusedWindow();
 }
 
 }  // namespace arc::input_overlay

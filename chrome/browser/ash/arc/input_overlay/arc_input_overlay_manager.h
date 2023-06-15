@@ -132,6 +132,9 @@ class ArcInputOverlayManager : public KeyedService,
   // window destroying.
   void ResetForPendingTouchInjector(
       std::unique_ptr<TouchInjector> touch_injector);
+  // Called when data loading finished from files or mojom calls for
+  // |touch_injector|.
+  void OnLoadingFinished(std::unique_ptr<TouchInjector> touch_injector);
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
