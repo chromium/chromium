@@ -13,7 +13,6 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
@@ -21,6 +20,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
 
@@ -109,7 +109,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
   return surfaces;
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
@@ -154,7 +154,7 @@ void ExternalVkImageSkiaImageRepresentation::EndWriteAccess() {
   access_mode_ = AccessMode::kNone;
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 ExternalVkImageSkiaImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
@@ -187,7 +187,7 @@ void ExternalVkImageSkiaImageRepresentation::EndReadAccess() {
   access_mode_ = AccessMode::kNone;
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 ExternalVkImageSkiaImageRepresentation::BeginAccess(
     bool readonly,
     std::vector<GrBackendSemaphore>* begin_semaphores,

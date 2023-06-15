@@ -20,9 +20,9 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_egl_image.h"
@@ -75,7 +75,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
   ~SkiaAngleVulkanImageRepresentation() override = default;
 
   // SkiaImageRepresentation implementation.
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -88,7 +88,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
 
   void EndReadAccess() override { backing_impl()->EndAccessSkia(); }
 
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -462,9 +462,9 @@ void AngleVulkanImageBacking::GLTextureImageRepresentationEndAccess(
   ReleaseTextureANGLE();
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 AngleVulkanImageBacking::GetPromiseTextures() {
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
   promise_textures.reserve(vk_textures_.size());
   for (auto& vk_texture : vk_textures_) {
     DCHECK(vk_texture.promise_texture);

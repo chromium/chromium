@@ -119,7 +119,7 @@ class SkiaIOSurfaceRepresentation : public SkiaGaneshImageRepresentation {
       SharedImageBacking* backing,
       scoped_refptr<IOSurfaceBackingEGLState> egl_state,
       scoped_refptr<SharedContextState> context_state,
-      std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
+      std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
       MemoryTypeTracker* tracker);
   ~SkiaIOSurfaceRepresentation() override;
 
@@ -135,12 +135,12 @@ class SkiaIOSurfaceRepresentation : public SkiaGaneshImageRepresentation {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphore,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
   void EndWriteAccess() override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
@@ -151,7 +151,7 @@ class SkiaIOSurfaceRepresentation : public SkiaGaneshImageRepresentation {
 
   scoped_refptr<IOSurfaceBackingEGLState> egl_state_;
   scoped_refptr<SharedContextState> context_state_;
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures_;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
   std::vector<sk_sp<SkSurface>> write_surfaces_;
 #if DCHECK_IS_ON()
   raw_ptr<gl::GLContext> context_ = nullptr;

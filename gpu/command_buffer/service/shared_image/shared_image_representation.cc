@@ -14,13 +14,13 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_fence.h"
 
 namespace gpu {
@@ -175,7 +175,7 @@ SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
 
 SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures)
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures)
     : ScopedAccessBase(representation, AccessMode::kWrite),
       promise_image_textures_(std::move(promise_image_textures)) {
   CHECK(!promise_image_textures_.empty());
@@ -200,7 +200,7 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
 
 SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures)
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures)
     : ScopedAccessBase(representation, AccessMode::kRead),
       promise_image_textures_(std::move(promise_image_textures)) {
   CHECK(!promise_image_textures_.empty());
@@ -244,7 +244,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
 SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
     : ScopedWriteAccess(representation, std::move(promise_image_textures)),
       end_state_(std::move(end_state)) {
@@ -316,10 +316,10 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
         base::PassKey<SkiaGaneshImageRepresentation>(), this,
         std::move(surfaces), std::move(end_state));
   }
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures =
       BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
   if (promise_image_textures.empty()) {
-    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
+    LOG(ERROR) << "Unable to initialize GrPromiseImageTexture";
     return nullptr;
   }
 
@@ -358,7 +358,7 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
 SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::ScopedGaneshReadAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
     : ScopedReadAccess(representation, std::move(promise_image_textures)),
       end_state_(std::move(end_state)) {
@@ -472,10 +472,10 @@ SkiaGaneshImageRepresentation::BeginScopedReadAccess(
   }
 
   std::unique_ptr<GrBackendSurfaceMutableState> end_state;
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures =
       BeginReadAccess(begin_semaphores, end_semaphores, &end_state);
   if (promise_image_textures.empty()) {
-    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
+    LOG(ERROR) << "Unable to initialize GrPromiseImageTexture";
     return nullptr;
   }
 

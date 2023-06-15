@@ -9,6 +9,8 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "ui/gl/progress_reporter.h"
 
+class GrPromiseImageTexture;
+
 namespace gpu {
 
 class SharedContextState;
@@ -61,7 +63,7 @@ class GLTextureHolder {
   bool ReadbackToMemory(const SkPixmap& pixmap);
 
   // Returns a promise image for the GL texture.
-  sk_sp<SkPromiseImageTexture> GetPromiseImage(
+  sk_sp<GrPromiseImageTexture> GetPromiseImage(
       SharedContextState* context_state);
 
   // Gets/sets cleared rect from gles2::Texture. Only valid to call with

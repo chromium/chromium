@@ -10,6 +10,8 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 
+class GrPromiseImageTexture;
+
 namespace gpu {
 
 // See DXGISwapChainImageBacking::ProduceOverlay for more information.
@@ -79,7 +81,7 @@ class SkiaGLImageRepresentationDXGISwapChain
  private:
   SkiaGLImageRepresentationDXGISwapChain(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-      std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
+      std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
       scoped_refptr<SharedContextState> context_state,
       SharedImageManager* manager,
       SharedImageBacking* backing,

@@ -15,9 +15,9 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
 
@@ -80,7 +80,7 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
     return {};
   }
 
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -90,7 +90,7 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
 
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -201,7 +201,7 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
                 << sk_color;
     return false;
   }
-  promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
+  promise_texture_ = GrPromiseImageTexture::Make(backend_texture_);
 
   auto surface = SkSurfaces::WrapBackendTexture(
       direct_context, backend_texture_, surface_origin(), final_msaa_count_,
@@ -352,7 +352,7 @@ cc::PaintOpBuffer* RawDrawImageBacking::BeginRasterReadAccess(
   return base::OptionalToPtr(paint_op_buffer_);
 }
 
-sk_sp<SkPromiseImageTexture> RawDrawImageBacking::BeginSkiaReadAccess() {
+sk_sp<GrPromiseImageTexture> RawDrawImageBacking::BeginSkiaReadAccess() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
   if (!backend_texture_.isValid() &&

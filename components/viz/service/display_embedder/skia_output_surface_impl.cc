@@ -49,12 +49,13 @@
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "third_party/skia/include/private/chromium/SkImageChromium.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -75,7 +76,7 @@ namespace viz {
 namespace {
 
 // FulfillForPlane is a struct that contains the ImageContext `context` used for
-// fulfilling an SkPromiseImageTexture identified by `plane_index`. The
+// fulfilling an GrPromiseImageTexture identified by `plane_index`. The
 // plane_index is 0 for single planar formats and can be between [0, 3] for
 // multiplanar formats.
 struct FulfillForPlane {
@@ -86,7 +87,7 @@ struct FulfillForPlane {
   const int plane_index_ = 0;
 };
 
-sk_sp<SkPromiseImageTexture> FulfillGanesh(void* fulfill) {
+sk_sp<GrPromiseImageTexture> FulfillGanesh(void* fulfill) {
   CHECK(fulfill);
   auto* fulfill_for_plane = static_cast<FulfillForPlane*>(fulfill);
   const auto& promise_textures =

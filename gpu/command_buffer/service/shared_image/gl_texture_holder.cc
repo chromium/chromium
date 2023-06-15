@@ -9,8 +9,8 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
@@ -423,14 +423,14 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
   return true;
 }
 
-sk_sp<SkPromiseImageTexture> GLTextureHolder::GetPromiseImage(
+sk_sp<GrPromiseImageTexture> GLTextureHolder::GetPromiseImage(
     SharedContextState* context_state) {
   GrBackendTexture backend_texture;
   GetGrBackendTexture(context_state->feature_info(), format_desc_.target, size_,
                       GetServiceId(), format_desc_.storage_internal_format,
                       context_state->gr_context()->threadSafeProxy(),
                       &backend_texture);
-  return SkPromiseImageTexture::Make(backend_texture);
+  return GrPromiseImageTexture::Make(backend_texture);
 }
 
 gfx::Rect GLTextureHolder::GetClearedRect() const {

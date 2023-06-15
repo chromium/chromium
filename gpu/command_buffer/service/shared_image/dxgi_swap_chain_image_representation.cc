@@ -13,9 +13,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
@@ -96,10 +96,10 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
           context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
     return nullptr;
   }
-  auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
+  auto promise_texture = GrPromiseImageTexture::Make(backend_texture);
   if (!promise_texture)
     return nullptr;
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures = {
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures = {
       promise_texture};
   return base::WrapUnique(new SkiaGLImageRepresentationDXGISwapChain(
       std::move(gl_representation), std::move(promise_textures),
@@ -108,7 +108,7 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
 
 SkiaGLImageRepresentationDXGISwapChain::SkiaGLImageRepresentationDXGISwapChain(
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
     scoped_refptr<SharedContextState> context_state,
     SharedImageManager* manager,
     SharedImageBacking* backing,

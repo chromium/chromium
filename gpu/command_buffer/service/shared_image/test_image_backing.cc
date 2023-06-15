@@ -8,9 +8,9 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/mock/GrMockTypes.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
 namespace {
@@ -87,7 +87,7 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
       return {};
     return {surface};
   }
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -95,13 +95,13 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
       return {};
     }
 
-    auto promise_texture = SkPromiseImageTexture::Make(backend_tex());
+    auto promise_texture = GrPromiseImageTexture::Make(backend_tex());
     if (!promise_texture)
       return {};
     return {promise_texture};
   }
   void EndWriteAccess() override {}
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -109,7 +109,7 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
       return {};
     }
 
-    auto promise_texture = SkPromiseImageTexture::Make(backend_tex());
+    auto promise_texture = GrPromiseImageTexture::Make(backend_tex());
     if (!promise_texture)
       return {};
     return {promise_texture};

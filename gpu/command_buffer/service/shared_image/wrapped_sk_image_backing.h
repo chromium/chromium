@@ -15,10 +15,10 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 class SkSurface;
 class SkPixmap;
@@ -27,7 +27,7 @@ namespace gpu {
 
 class WrappedSkImageBackingFactory;
 
-// Holds a Skia Ganesh allocated GrBackendTextures and SkPromiseImageTextures.
+// Holds a Skia Ganesh allocated GrBackendTextures and GrPromiseImageTextures.
 // Can only be accessed by Skia Ganesh backend.
 class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
  public:
@@ -77,7 +77,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
     ~TextureHolder();
 
     GrBackendTexture backend_texture;
-    sk_sp<SkPromiseImageTexture> promise_texture;
+    sk_sp<GrPromiseImageTexture> promise_texture;
   };
 
   SkColorType GetSkColorType(int plane_index);
@@ -85,7 +85,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       scoped_refptr<SharedContextState> context_state);
-  std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
+  std::vector<sk_sp<GrPromiseImageTexture>> GetPromiseTextures();
 
   scoped_refptr<SharedContextState> context_state_;
 

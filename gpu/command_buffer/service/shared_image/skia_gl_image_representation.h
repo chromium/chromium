@@ -35,12 +35,12 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
   void EndWriteAccess() override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
@@ -51,7 +51,7 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
  protected:
   SkiaGLImageRepresentation(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-      std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
+      std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
       scoped_refptr<SharedContextState> context_state,
       SharedImageManager* manager,
       SharedImageBacking* backing,
@@ -63,7 +63,7 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
   void CheckContext();
 
   std::unique_ptr<GLTextureImageRepresentationBase> gl_representation_;
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures_;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
   scoped_refptr<SharedContextState> context_state_;
   std::vector<sk_sp<SkSurface>> surfaces_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;

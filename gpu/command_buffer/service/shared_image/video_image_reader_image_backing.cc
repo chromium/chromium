@@ -30,9 +30,9 @@
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_utils.h"
 
@@ -339,7 +339,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
 
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -386,7 +386,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
 
       // TODO(bsalomon): Determine whether it makes sense to attempt to reuse
       // this if the vk_info stays the same on subsequent calls.
-      promise_texture_ = SkPromiseImageTexture::Make(
+      promise_texture_ = GrPromiseImageTexture::Make(
           GrBackendTexture(size().width(), size().height(),
                            CreateGrVkImageInfo(vulkan_image_.get())));
       DCHECK(promise_texture_);

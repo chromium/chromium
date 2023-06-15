@@ -8,6 +8,8 @@
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 
+class GrPromiseImageTexture;
+
 namespace gpu {
 
 // Implementation of SharedImageBacking that creates a GL Texture that is not
@@ -66,7 +68,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   const bool is_passthrough_;
 
   std::vector<GLTextureHolder> textures_;
-  std::vector<sk_sp<SkPromiseImageTexture>> cached_promise_textures_;
+  std::vector<sk_sp<GrPromiseImageTexture>> cached_promise_textures_;
 };
 
 }  // namespace gpu

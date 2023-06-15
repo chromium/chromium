@@ -37,12 +37,12 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
   void EndWriteAccess() override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
@@ -56,7 +56,7 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
   SharedContextState* context_state() const { return context_state_.get(); }
 
   std::unique_ptr<VulkanImage> vulkan_image_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
+  sk_sp<GrPromiseImageTexture> promise_texture_;
 
  private:
   bool BeginAccess(bool readonly,

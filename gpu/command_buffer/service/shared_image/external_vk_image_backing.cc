@@ -33,12 +33,12 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
@@ -364,9 +364,9 @@ std::vector<GLenum> ExternalVkImageBacking::GetVkImageLayoutsForGL() {
   return layouts;
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 ExternalVkImageBacking::GetPromiseTextures() {
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
   promise_textures.reserve(vk_textures_.size());
   for (auto& vk_texture : vk_textures_) {
     promise_textures.push_back(vk_texture.promise_texture);

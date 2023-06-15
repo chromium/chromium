@@ -21,12 +21,12 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
 
@@ -71,7 +71,7 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
     return write_surfaces_;
   }
 
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -91,7 +91,7 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
 #endif
   }
 
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -241,7 +241,7 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
     }
 
     texture.promise_texture =
-        SkPromiseImageTexture::Make(texture.backend_texture);
+        GrPromiseImageTexture::Make(texture.backend_texture);
   }
 
   return true;
@@ -287,7 +287,7 @@ bool WrappedSkImageBacking::InitializeWithData(
   SetCleared();
 
   textures_[0].promise_texture =
-      SkPromiseImageTexture::Make(textures_[0].backend_texture);
+      GrPromiseImageTexture::Make(textures_[0].backend_texture);
 
   // Note that if the backing is meant to be thread safe (when DrDc and Vulkan
   // is enabled), we need to do additional submit here in order to send the
@@ -335,9 +335,9 @@ bool WrappedSkImageBacking::UploadFromMemory(
   return updated;
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 WrappedSkImageBacking::GetPromiseTextures() {
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
   promise_textures.reserve(textures_.size());
   for (auto& texture : textures_) {
     DCHECK(texture.promise_texture);

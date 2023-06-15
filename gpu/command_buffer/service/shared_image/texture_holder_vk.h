@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
 
@@ -26,7 +26,7 @@ struct TextureHolderVk {
 
   std::unique_ptr<VulkanImage> vulkan_image;
   GrBackendTexture backend_texture;
-  sk_sp<SkPromiseImageTexture> promise_texture;
+  sk_sp<GrPromiseImageTexture> promise_texture;
 };
 
 }  // namespace gpu

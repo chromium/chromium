@@ -8,8 +8,8 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -109,7 +109,7 @@ SkiaGLCommonRepresentation::SkiaGLCommonRepresentation(
     SharedImageBacking* backing,
     GLTextureImageRepresentationClient* client,
     scoped_refptr<SharedContextState> context_state,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
     MemoryTypeTracker* tracker)
     : SkiaGaneshImageRepresentation(context_state->gr_context(),
                                     manager,
@@ -173,7 +173,7 @@ std::vector<sk_sp<SkSurface>> SkiaGLCommonRepresentation::BeginWriteAccess(
   return write_surfaces_;
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaGLCommonRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
@@ -206,7 +206,7 @@ void SkiaGLCommonRepresentation::EndWriteAccess() {
   }
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaGLCommonRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,

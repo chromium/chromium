@@ -81,7 +81,7 @@ void DCompSurfaceSkiaImageRepresentation::EndWriteAccess() {
   DCHECK(success);
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
@@ -90,7 +90,7 @@ DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
   return {};
 }
 
-std::vector<sk_sp<SkPromiseImageTexture>>
+std::vector<sk_sp<GrPromiseImageTexture>>
 DCompSurfaceSkiaImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,

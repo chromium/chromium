@@ -12,6 +12,8 @@
 #include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "ui/gl/scoped_egl_image.h"
 
+class GrPromiseImageTexture;
+
 namespace gpu {
 namespace gles2 {
 class TexturePassthrough;
@@ -66,7 +68,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
   // The maximum number of GL or Vulkan textures this backing can hold.
   static constexpr size_t kMaxTextures = 3;
 
-  std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
+  std::vector<sk_sp<GrPromiseImageTexture>> GetPromiseTextures();
   void AcquireTextureANGLE();
   void ReleaseTextureANGLE();
   void PrepareBackendTexture();

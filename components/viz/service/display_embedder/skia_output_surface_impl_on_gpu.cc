@@ -67,7 +67,6 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -76,6 +75,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -1732,7 +1732,7 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     // Texture parameters can be modified by concurrent reads so reset them
     // before compositing from the texture. See https://crbug.com/1092080.
     if (is_gl && context->maybe_concurrent_reads()) {
-      for (SkPromiseImageTexture* promise_texture :
+      for (GrPromiseImageTexture* promise_texture :
            context->promise_image_textures()) {
         GrBackendTexture backend_texture = promise_texture->backendTexture();
         backend_texture.glTextureParametersModified();

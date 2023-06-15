@@ -16,7 +16,7 @@ TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image)
   GrVkImageInfo vk_image_info = CreateGrVkImageInfo(vulkan_image.get());
   backend_texture =
       GrBackendTexture(size.width(), size.height(), vk_image_info);
-  promise_texture = SkPromiseImageTexture::Make(backend_texture);
+  promise_texture = GrPromiseImageTexture::Make(backend_texture);
 }
 
 TextureHolderVk::TextureHolderVk(TextureHolderVk&& other) = default;
