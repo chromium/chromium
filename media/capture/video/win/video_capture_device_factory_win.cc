@@ -52,6 +52,10 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
+BASE_FEATURE(kMediaFoundationD3D11VideoCaptureBlocklist,
+             "MediaFoundationD3D11VideoCaptureBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // In Windows device identifiers, the USB VID and PID are preceded by the string
@@ -191,7 +195,9 @@ bool IsDeviceBlockedForMediaFoundationByModelId(const std::string& model_id) {
 
 bool IsDeviceBlockedForMediaFoundationD3D11ByModelId(
     const std::string& model_id) {
-  return base::Contains(kModelIdsBlockedForMediaFoundationD3D11VideoCapture,
+  return base::FeatureList::IsEnabled(
+             kMediaFoundationD3D11VideoCaptureBlocklist) &&
+         base::Contains(kModelIdsBlockedForMediaFoundationD3D11VideoCapture,
                         model_id);
 }
 
