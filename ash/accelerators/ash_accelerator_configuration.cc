@@ -334,6 +334,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
   const auto& defaults = default_id_to_accelerators_cache_.find(action_id);
   DCHECK(defaults != default_id_to_accelerators_cache_.end());
 
+  AcceleratorConfigResult result = AcceleratorConfigResult::kSuccess;
   // Iterate through the default and only add back the default if they're not
   // in use.
   for (const auto& default_accelerator : defaults->second) {
@@ -341,6 +342,10 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
       accelerators_for_id.push_back(default_accelerator);
       accelerator_to_id_.InsertNew(
           {default_accelerator, static_cast<AcceleratorAction>(action_id)});
+    } else {
+      // The default accelerator cannot be re-added since it conflicts with
+      // another accelerator.
+      result = AcceleratorConfigResult::kRestoreSuccessWithConflicts;
     }
   }
 
@@ -353,9 +358,9 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 
   UpdateAndNotifyAccelerators();
 
-  VLOG(1) << "ResetAction called for ActionID: " << action_id
-          << " returned successfully.";
-  return AcceleratorConfigResult::kSuccess;
+  VLOG(1) << "ResetAction called for ActionID: " << action_id << " returned "
+          << static_cast<uint32_t>(result);
+  return result;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
