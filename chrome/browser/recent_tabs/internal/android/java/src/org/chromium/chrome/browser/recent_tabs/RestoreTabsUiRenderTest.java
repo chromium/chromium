@@ -96,8 +96,6 @@ public class RestoreTabsUiRenderTest {
     @Mock
     private Profile mProfile;
     @Mock
-    private RestoreTabsControllerFactory.ControllerListener mListener;
-    @Mock
     private TabCreatorManager mTabCreatorManager;
     @Mock
     private BottomSheetController mBottomSheetController;
@@ -125,7 +123,7 @@ public class RestoreTabsUiRenderTest {
             Activity activity = mActivityTestRule.getActivity();
 
             mCoordinator = new RestoreTabsCoordinator(mActivityTestRule.getActivity(), mProfile,
-                    mListener, mTabCreatorManager, mBottomSheetController);
+                    mTabCreatorManager, mBottomSheetController);
             mView = mCoordinator.getContentViewForTesting();
             mView.setBackground(
                     AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));

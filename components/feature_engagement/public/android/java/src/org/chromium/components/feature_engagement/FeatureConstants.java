@@ -84,7 +84,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.VIDEO_TUTORIAL_NTP_SEARCH_FEATURE,
         FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
         FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
-        FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE, FeatureConstants.PRICE_DROP_NTP_FEATURE})
+        FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE, FeatureConstants.PRICE_DROP_NTP_FEATURE,
+        FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
@@ -367,4 +368,9 @@ public @interface FeatureConstants {
      * An IPH feature to inform users that a price drop has occurred in any of their open tabs
      */
     String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
+
+    /**
+     * An IPH feature to inform users that tabs from another synced device can be restored on FRE.
+     */
+    String RESTORE_TABS_ON_FRE_FEATURE = "IPH_RestoreTabsOnFRE";
 }

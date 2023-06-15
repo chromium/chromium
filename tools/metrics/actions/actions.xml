@@ -38123,6 +38123,7 @@ should be able to be added at any place in this file.
       label="For the RequestDesktopSiteExceptionsSpecific feature."/>
   <suffix name="RequestDesktopSiteOptIn"
       label="For the RequestDesktopSiteOptIn feature."/>
+  <suffix name="RestoreTabsOnFRE" label="For the RestoreTabsOnFRE feature."/>
   <suffix name="SharedHighlightingBuilder"
       label="For SharedHighlightingBuilder feature."/>
   <suffix name="SharedHighlightingReceiver"

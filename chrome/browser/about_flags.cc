@@ -3167,6 +3167,15 @@ const FeatureEntry::FeatureVariation kFoldableJankFixDelayVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kRestoreTabsOnFRE_skipFeatureEngagement[] = {
+    {"skip_feature_engagement", "true"}};
+const FeatureEntry::FeatureVariation kRestoreTabsOnFREVariations[] = {
+    {"- skip feature engagement", kRestoreTabsOnFRE_skipFeatureEngagement,
+     std::size(kRestoreTabsOnFRE_skipFeatureEngagement), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabStripRedesignFolio[] = {
     {"enable_folio", "true"}};
 const FeatureEntry::FeatureParam kTabStripRedesignDetached[] = {
@@ -9992,6 +10001,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"restore-tabs-on-fre", flag_descriptions::kRestoreTabsOnFREName,
+     flag_descriptions::kRestoreTabsOnFREDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRestoreTabsOnFRE,
+                                    kRestoreTabsOnFREVariations,
+                                    "RestoreTabsOnFRE")},
+
     {"context-menu-popup-for-all-screen-sizes",
      flag_descriptions::kContextMenuPopupForAllScreenSizesName,
      flag_descriptions::kContextMenuPopupForAllScreenSizesDescription,

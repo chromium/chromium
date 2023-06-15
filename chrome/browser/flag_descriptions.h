@@ -1026,6 +1026,9 @@ extern const char kTabAudioMutingDescription[];
 extern const char kCrasSplitAlsaUsbInternalName[];
 extern const char kCrasSplitAlsaUsbInternalDescription[];
 
+extern const char kRestoreTabsOnFREName[];
+extern const char kRestoreTabsOnFREDescription[];
+
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 

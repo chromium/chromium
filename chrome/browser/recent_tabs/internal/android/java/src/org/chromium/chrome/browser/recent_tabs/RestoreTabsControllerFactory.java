@@ -15,22 +15,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  */
 public class RestoreTabsControllerFactory {
     /**
-     * A listener to indicate the lifecycle status of the RestoreTabs feature.
+     * @return An instance of RestoreTabsController.
      */
-    public interface ControllerListener {
-        /**
-         * Action to perform when the restore tabs promo is done showing.
-         */
-        public void onDismissed();
-    }
-
-    /**
-     * @return An instance of RestoreTabsControllerImpl.
-     */
-    public static RestoreTabsControllerImpl createInstance(Context context, Profile profile,
-            RestoreTabsControllerFactory.ControllerListener listener,
+    public static RestoreTabsController createInstance(Context context, Profile profile,
             TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
         return new RestoreTabsControllerImpl(
-                context, profile, listener, tabCreatorManager, bottomSheetController);
+                context, profile, tabCreatorManager, bottomSheetController);
     }
 }

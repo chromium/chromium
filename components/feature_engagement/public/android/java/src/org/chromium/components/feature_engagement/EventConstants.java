@@ -329,9 +329,10 @@ public final class EventConstants {
     public static final String APP_MENU_DESKTOP_SITE_EXCEPTION_ADDED =
             "app_menu_desktop_site_exception_added";
 
-    /** Restore tabs on first run experience promo event */
+    /** Restore tabs related events. */
     public static final String RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO =
             "restore_tabs_on_first_run_show_promo";
+    public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
 
     /**
      * Do not instantiate.

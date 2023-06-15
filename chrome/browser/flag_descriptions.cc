@@ -1853,6 +1853,10 @@ const char kCrasSplitAlsaUsbInternalDescription[] =
     "When enable, CRAS will create different iodev with USB and internal "
     "device.";
 
+const char kRestoreTabsOnFREName[] = "Restore tabs on FRE";
+const char kRestoreTabsOnFREDescription[] =
+    "Enable promo sheet to indicate tabs from synced devices can be restored";
+
 const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";

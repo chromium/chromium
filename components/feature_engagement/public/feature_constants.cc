@@ -417,6 +417,9 @@ BASE_FEATURE(kIPHSharedHighlightingReceiverFeature,
 BASE_FEATURE(kIPHSharingHubWebnotesStylizeFeature,
              "IPH_SharingHubWebnotesStylize",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHRestoreTabsOnFREFeature,
+             "IPH_RestoreTabsOnFRE",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)

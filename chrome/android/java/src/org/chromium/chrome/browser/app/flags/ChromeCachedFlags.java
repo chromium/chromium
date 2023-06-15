@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
@@ -90,6 +91,7 @@ public class ChromeCachedFlags {
                 CustomTabIntentDataProvider.DENYLIST_ENTRIES,
                 CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                 WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
+                RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,

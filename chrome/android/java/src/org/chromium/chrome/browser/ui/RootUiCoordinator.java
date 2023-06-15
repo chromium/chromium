@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -319,6 +320,7 @@ public class RootUiCoordinator
     private OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
     private FoldTransitionController mFoldTransitionController;
+    private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -663,6 +665,11 @@ public class RootUiCoordinator
 
         if (mFoldTransitionController != null) {
             mFoldTransitionController = null;
+        }
+
+        if (mRestoreTabsFeatureHelper != null) {
+            mRestoreTabsFeatureHelper.destroy();
+            mRestoreTabsFeatureHelper = null;
         }
 
         mActivity = null;
@@ -1298,6 +1305,10 @@ public class RootUiCoordinator
                     // Hide find toolbar and app menu.
                     if (mFindToolbarManager != null) mFindToolbarManager.hideToolbar();
                     hideAppMenu();
+                    // Attempt to show the promo sheet for the restore tabs feature.
+                    if (RestoreTabsFeatureHelper.RESTORE_TABS_PROMO.isEnabled()) {
+                        attemptToShowRestoreTabsPromo();
+                    }
                 }
             }
 
@@ -1645,6 +1656,15 @@ public class RootUiCoordinator
      */
     public void restoreUiState(Bundle savedInstanceState) {
         mFoldTransitionController.restoreUiState(savedInstanceState);
+    }
+
+    private void attemptToShowRestoreTabsPromo() {
+        if (mRestoreTabsFeatureHelper == null) {
+            mRestoreTabsFeatureHelper =
+                    new RestoreTabsFeatureHelper(mActivity, mProfileSupplier.get(),
+                            mTabCreatorManagerSupplier.get(), getBottomSheetController());
+        }
+        mRestoreTabsFeatureHelper.maybeShowPromo();
     }
 
     // Testing methods

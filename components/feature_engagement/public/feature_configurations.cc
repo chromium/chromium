@@ -1205,6 +1205,24 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHRestoreTabsOnFREFeature.name == feature->name) {
+    // A config that allows the restore tabs on FRE promo to be shown:
+    // * If the user has gone through the FRE workflow.
+    // * If the promo has never been accepted.
+    // * Once per week if continually dismissed for a max of 2 weeks.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(LESS_THAN_OR_EQUAL, 14);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("restore_tabs_promo_trigger", Comparator(EQUAL, 0), 7, 7);
+    config->used =
+        EventConfig("restore_tabs_promo_used", Comparator(EQUAL, 0), 14, 14);
+    config->event_configs.insert(EventConfig(
+        "restore_tabs_on_first_run_show_promo", Comparator(EQUAL, 1), 14, 14));
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

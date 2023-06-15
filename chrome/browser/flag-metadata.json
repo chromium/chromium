@@ -6753,6 +6753,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "restore-tabs-on-fre",
+    "owners": [ "bjfong", "ckitagawa", "fredmello" ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 96

@@ -207,6 +207,7 @@ DEFINE_VARIATION_PARAM(kIPHSharedHighlightingReceiverFeature,
                        "IPH_SharedHighlightingReceiver");
 DEFINE_VARIATION_PARAM(kIPHSharingHubWebnotesStylizeFeature,
                        "IPH_SharingHubWebnotesStylize");
+DEFINE_VARIATION_PARAM(kIPHRestoreTabsOnFREFeature, "IPH_RestoreTabsOnFRE");
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
 DEFINE_VARIATION_PARAM(kIPHBottomToolbarTipFeature, "IPH_BottomToolbarTip");
@@ -428,6 +429,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSharedHighlightingBuilder),
         VARIATION_ENTRY(kIPHSharedHighlightingReceiverFeature),
         VARIATION_ENTRY(kIPHSharingHubWebnotesStylizeFeature),
+        VARIATION_ENTRY(kIPHRestoreTabsOnFREFeature),
 #elif BUILDFLAG(IS_IOS)
         VARIATION_ENTRY(kIPHBottomToolbarTipFeature),
         VARIATION_ENTRY(kIPHLongPressToolbarTipFeature),

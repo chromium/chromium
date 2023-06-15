@@ -12,12 +12,15 @@ import android.widget.ViewFlipper;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /**
  * Coordinator to manage the Restore Tabs on FRE feature.
@@ -26,27 +29,22 @@ public class RestoreTabsCoordinator {
     private RestoreTabsMediator mMediator;
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
     private RestoreTabsPromoSheetContent mContent;
-    private BottomSheetController mBottomSheetController;
     private ViewFlipper mViewFlipperView;
     private RestoreTabsDetailScreenCoordinator mRestoreTabsDetailScreenCoordinator;
 
     public RestoreTabsCoordinator(Context context, Profile profile,
-            RestoreTabsControllerFactory.ControllerListener listener,
             TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
-        this(context, profile, new RestoreTabsMediator(), listener, tabCreatorManager,
-                bottomSheetController);
+        this(context, profile, new RestoreTabsMediator(), tabCreatorManager, bottomSheetController);
     }
 
     protected RestoreTabsCoordinator(Context context, Profile profile, RestoreTabsMediator mediator,
-            RestoreTabsControllerFactory.ControllerListener listener,
             TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
-        mBottomSheetController = bottomSheetController;
         mMediator = mediator;
-        mMediator.initialize(mModel, listener, profile, tabCreatorManager);
+        mMediator.initialize(mModel, profile, tabCreatorManager, bottomSheetController);
 
         View rootView = LayoutInflater.from(context).inflate(
                 R.layout.restore_tabs_bottom_sheet, /*root=*/null);
-        mContent = new RestoreTabsPromoSheetContent(rootView, mModel, mBottomSheetController);
+        mContent = new RestoreTabsPromoSheetContent(rootView, mModel, bottomSheetController);
 
         View restoreTabsPromoScreenView =
                 rootView.findViewById(R.id.restore_tabs_promo_screen_sheet);
@@ -63,6 +61,12 @@ public class RestoreTabsCoordinator {
             if (RestoreTabsProperties.CURRENT_SCREEN == propertyKey) {
                 mViewFlipperView.setDisplayedChild(getScreenIndexForScreenType(
                         mModel.get(RestoreTabsProperties.CURRENT_SCREEN)));
+            } else if (RestoreTabsProperties.VISIBLE == propertyKey) {
+                boolean visibilityChangeSuccessful =
+                        mMediator.setVisible(mModel.get(RestoreTabsProperties.VISIBLE), mContent);
+                if (!visibilityChangeSuccessful && mModel.get(RestoreTabsProperties.VISIBLE)) {
+                    mMediator.dismiss();
+                }
             }
         });
     }
@@ -88,8 +92,9 @@ public class RestoreTabsCoordinator {
         mRestoreTabsDetailScreenCoordinator = null;
     }
 
-    public void showHomeScreen() {
-        mMediator.showHomeScreen();
+    public void showHomeScreen(ForeignSessionHelper foreignSessionHelper,
+            List<ForeignSession> sessions, RestoreTabsControllerDelegate delegate) {
+        mMediator.showHomeScreen(foreignSessionHelper, sessions, delegate);
     }
 
     @VisibleForTesting

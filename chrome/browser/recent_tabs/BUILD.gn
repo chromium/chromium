@@ -5,16 +5,36 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
+android_library("helper_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsFeatureHelper.java" ]
+
+  deps = [
+    ":factory_java",
+    ":java",
+    "//base:base_java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ForeignSessionHelper.java",
-    "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsFeatureHelper.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsController.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerDelegate.java",
   ]
 
   deps = [
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -31,9 +51,39 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/recent_tabs/internal:java",
     "//chrome/browser/tabmodel:java",
     "//components/browser_ui/bottomsheet/android:java",
+  ]
+}
+
+robolectric_library("junit") {
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsFeatureHelperUnitTest.java" ]
+
+  deps = [
+    ":helper_java",
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/recent_tabs:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//components/sync_device_info:sync_device_info_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 

@@ -171,6 +171,7 @@ BASE_DECLARE_FEATURE(kIPHWebFeedPostFollowDialogFeature);
 BASE_DECLARE_FEATURE(kIPHSharedHighlightingBuilder);
 BASE_DECLARE_FEATURE(kIPHSharedHighlightingReceiverFeature);
 BASE_DECLARE_FEATURE(kIPHSharingHubWebnotesStylizeFeature);
+BASE_DECLARE_FEATURE(kIPHRestoreTabsOnFREFeature);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)

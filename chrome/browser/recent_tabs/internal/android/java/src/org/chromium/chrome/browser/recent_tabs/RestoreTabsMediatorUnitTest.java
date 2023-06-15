@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.recent_tabs;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +38,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
@@ -44,6 +49,11 @@ import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordin
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.TabItemProperties;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -57,12 +67,24 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RestoreTabsMediatorUnitTest {
+    private static final String RESTORE_TABS_USED = EventConstants.RESTORE_TABS_PROMO_USED;
+
     @Mock
-    private RestoreTabsControllerFactory.ControllerListener mListener;
+    private RestoreTabsControllerDelegate mDelegate;
     @Mock
     private ForeignSessionHelper mForeignSessionHelper;
     @Mock
     private TabCreatorManager mTabCreatorManager;
+    @Mock
+    private BottomSheetController mBottomSheetController;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private Tracker mTracker;
+    @Mock
+    private BottomSheetContent mBottomSheetContent;
+    @Mock
+    private BooleanCachedFieldTrialParameter mParam;
 
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
     private RestoreTabsMediator mMediator = new RestoreTabsMediator();
@@ -70,12 +92,14 @@ public class RestoreTabsMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMediator.initialize(mModel, mListener, mForeignSessionHelper, mTabCreatorManager);
+        TrackerFactory.setTrackerForTests(mTracker);
+        mMediator.initialize(mModel, mProfile, mTabCreatorManager, mBottomSheetController);
     }
 
     @After
     public void tearDown() {
         mMediator.destroy();
+        TrackerFactory.setTrackerForTests(null);
         mModel = null;
     }
 
@@ -97,11 +121,32 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 
-        when(mForeignSessionHelper.getMobileAndTabletForeignSessions()).thenReturn(testSessions);
-        mMediator.showHomeScreen();
+        mMediator.showHomeScreen(mForeignSessionHelper, testSessions, mDelegate);
         Assert.assertEquals(mModel.get(VISIBLE), true);
         mMediator.dismiss();
+        verify(mDelegate).onDismissed(true);
         Assert.assertEquals(mModel.get(VISIBLE), false);
+    }
+
+    @Test
+    public void testRestoreTabsMediator_isVisible() {
+        when(mBottomSheetController.requestShowContent(mBottomSheetContent, true)).thenReturn(true);
+        Assert.assertTrue(mMediator.setVisible(true, mBottomSheetContent));
+        verify(mBottomSheetController).addObserver(any(BottomSheetObserver.class));
+    }
+
+    @Test
+    public void testRestoreTabsMediator_isVisibleButDidNotShow() {
+        when(mBottomSheetController.requestShowContent(mBottomSheetContent, true))
+                .thenReturn(false);
+        Assert.assertFalse(mMediator.setVisible(true, mBottomSheetContent));
+        verify(mBottomSheetController).removeObserver(any(BottomSheetObserver.class));
+    }
+
+    @Test
+    public void testRestoreTabsMediator_isNotVisible() {
+        Assert.assertTrue(mMediator.setVisible(false, mBottomSheetContent));
+        verify(mBottomSheetController).hideContent(mBottomSheetContent, true);
     }
 
     @Test
@@ -111,8 +156,7 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 
-        when(mForeignSessionHelper.getMobileAndTabletForeignSessions()).thenReturn(testSessions);
-        mMediator.showHomeScreen();
+        mMediator.showHomeScreen(mForeignSessionHelper, testSessions, mDelegate);
         Assert.assertEquals(mModel.get(VISIBLE), true);
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), testSessions.get(0));
@@ -151,14 +195,24 @@ public class RestoreTabsMediatorUnitTest {
         tabs.add(tab1);
         tabs.add(tab2);
 
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
-        mModel.set(SELECTED_DEVICE, session);
+        ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
+        List<ForeignSessionWindow> windows = new ArrayList<>();
+        windows.add(window);
 
+        ForeignSession session =
+                new ForeignSession("tag", "John's iPhone 6", 32L, windows, FormFactor.PHONE);
+        mModel.set(SELECTED_DEVICE, session);
+        List<ForeignSession> sessions = new ArrayList<>();
+        sessions.add(session);
+
+        when(mDelegate.getSkipFeatureEngagementParam()).thenReturn(mParam);
+        when(mParam.getValue()).thenReturn(false);
+        mMediator.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
         delegate.onAllTabsChosen();
         verify(mForeignSessionHelper)
                 .openForeignSessionTabsAsBackgroundTabs(
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
+        verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
         Assert.assertEquals(mModel.get(VISIBLE), false);
     }
 
@@ -360,10 +414,23 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab1);
 
+        ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
+        List<ForeignSessionWindow> windows = new ArrayList<>();
+        windows.add(window);
+
+        ForeignSession session =
+                new ForeignSession("tag", "John's iPhone 6", 32L, windows, FormFactor.PHONE);
+        List<ForeignSession> sessions = new ArrayList<>();
+        sessions.add(session);
+
+        when(mDelegate.getSkipFeatureEngagementParam()).thenReturn(mParam);
+        when(mParam.getValue()).thenReturn(false);
+        mMediator.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
         delegate.onSelectedTabsChosen();
         verify(mForeignSessionHelper)
                 .openForeignSessionTabsAsBackgroundTabs(
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
+        verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
         Assert.assertEquals(mModel.get(VISIBLE), false);
     }
 
