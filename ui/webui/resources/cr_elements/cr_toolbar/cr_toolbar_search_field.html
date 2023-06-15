@@ -213,7 +213,6 @@
         background: var(--cr-toolbar-search-field-background,
             var(--color-toolbar-search-field-background,
             var(--cr-fallback-color-base-container)));
-        border: 2px solid transparent;
         border-radius: inherit;
         display: block;
         inset: 0;
@@ -228,11 +227,6 @@
         outline-offset: 2px;
       }
 
-      :host-context([chrome-refresh-2023]):host(
-          [search-focused_]:not([narrow])) #background {
-        background-clip: padding-box;
-      }
-
       :host-context([chrome-refresh-2023]) #stateBackground {
         display: block;
         inset: 0;
@@ -240,7 +234,8 @@
         position: absolute;
       }
 
-      :host-context([chrome-refresh-2023]):host(:hover) #stateBackground {
+      :host-context([chrome-refresh-2023]):host(:hover:not([search-focused_]))
+          #stateBackground {
         background: var(--color-toolbar-search-field-background-hover,
             var(--cr-hover-background-color));
         z-index: 1;
