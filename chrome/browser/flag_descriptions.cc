@@ -4593,7 +4593,7 @@ extern const char kHighEfficiencyMultistateModeAvailableName[] =
     "Enable the multi-state option for Memory Saver Mode.";
 extern const char kHighEfficiencyMultistateModeAvailableDescription[] =
     "When enabled, Memory Saver can take one of three options: enabled with a "
-    "hueristic mode, enabled with a fixed timer, and discabled. Configure this "
+    "heuristic mode, enabled with a fixed timer, and discarded. Configure this "
     "through the settings page.";
 
 extern const char kHighEfficiencyDiscardedTabTreatmentName[] =
