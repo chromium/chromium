@@ -96293,6 +96293,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Price"/>
 </enum>
 
+<enum name="ShoppingFeatureIneligibilityReason">
+  <summary>
+    The different reasons a user might be ineligible for a shopping feature.
+  </summary>
+  <int value="0" label="Other"/>
+  <int value="1" label="Unsupported country or locale"/>
+  <int value="2" label="Blocked by enterprise policy"/>
+  <int value="3" label="Not signed in"/>
+  <int value="4" label="Not syncing"/>
+  <int value="5" label="MSBB not enabled"/>
+  <int value="6" label="WAA not enabled"/>
+  <int value="7" label="Blocked by parental controls"/>
+</enum>
+
 <enum name="ShoppingPDPDetectionMethod">
   <summary>
     The different ways a product details page can be detected which includes

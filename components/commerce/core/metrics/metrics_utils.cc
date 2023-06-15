@@ -5,6 +5,8 @@
 #include "components/commerce/core/metrics/metrics_utils.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/commerce/core/account_checker.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
@@ -15,6 +17,8 @@ const char kPDPNavShoppingListEligibleHistogramName[] =
     "Commerce.PDPNavigation.ShoppingList.Eligible";
 const char kPDPStateHistogramName[] = "Commerce.PDPStateOnNavigation";
 const char kPDPStateWithLocalMetaName[] = "Commerce.PDPStateWithLocalMeta";
+const char kShoppingListIneligibleHistogramName[] =
+    "Commerce.PDPNavigation.ShoppingList.IneligibilityReason";
 
 void RecordPDPStateToUma(ShoppingPDPState state) {
   base::UmaHistogramEnumeration(kPDPStateHistogramName, state);
@@ -88,6 +92,50 @@ void RecordPDPStateWithLocalMeta(bool detected_by_server,
   }
 
   base::UmaHistogramEnumeration(kPDPStateWithLocalMetaName, detection_method);
+}
+
+void RecordShoppingListIneligibilityReasons(
+    PrefService* pref_service,
+    commerce::AccountChecker* account_checker,
+    bool is_off_the_record,
+    bool supported_country) {
+  if (!supported_country) {
+    base::UmaHistogramEnumeration(
+        kShoppingListIneligibleHistogramName,
+        ShoppingFeatureIneligibilityReason::kUnsupportedCountryOrLocale);
+  }
+
+  if (!IsShoppingListAllowedForEnterprise(pref_service)) {
+    base::UmaHistogramEnumeration(
+        kShoppingListIneligibleHistogramName,
+        ShoppingFeatureIneligibilityReason::kEnterprisePolicy);
+  }
+
+  if (!account_checker->IsSignedIn()) {
+    base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
+                                  ShoppingFeatureIneligibilityReason::kSignin);
+  }
+
+  if (!account_checker->IsSyncingBookmarks()) {
+    base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
+                                  ShoppingFeatureIneligibilityReason::kSync);
+  }
+
+  if (!account_checker->IsAnonymizedUrlDataCollectionEnabled()) {
+    base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
+                                  ShoppingFeatureIneligibilityReason::kMSBB);
+  }
+
+  if (!account_checker->IsWebAndAppActivityEnabled()) {
+    base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
+                                  ShoppingFeatureIneligibilityReason::kWAA);
+  }
+
+  if (account_checker->IsSubjectToParentalControls()) {
+    base::UmaHistogramEnumeration(
+        kShoppingListIneligibleHistogramName,
+        ShoppingFeatureIneligibilityReason::kParentalControls);
+  }
 }
 
 }  // namespace commerce::metrics

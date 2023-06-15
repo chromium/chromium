@@ -464,6 +464,13 @@ void ShoppingService::PDPMetricsCallback(
 
   metrics::RecordPDPMetrics(decision, metadata, pref_service_,
                             is_off_the_record, IsShoppingListEligible());
+
+  bool supported_country =
+      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
+                                   country_on_startup_, locale_on_startup_);
+  metrics::RecordShoppingListIneligibilityReasons(
+      pref_service_, account_checker_.get(), is_off_the_record,
+      supported_country);
 }
 
 void ShoppingService::GetProductInfoForUrl(const GURL& url,

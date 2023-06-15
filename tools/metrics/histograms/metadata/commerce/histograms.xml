@@ -239,6 +239,23 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </token>
 </histogram>
 
+<histogram name="Commerce.PDPNavigation.{FeatureName}.IneligibilityReason"
+    enum="ShoppingFeatureIneligibilityReason" expires_after="2023-11-15">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the reasons that a user is not eligible for the
+    &quot;{FeatureName}&quot; feature. This is recorded each time a user
+    navigates to what is detected to be a PDP (product details page) and records
+    each reason that the user is not eligible for the feature rather than just
+    one.
+  </summary>
+  <token key="FeatureName">
+    <variant name="ShoppingList"/>
+  </token>
+</histogram>
+
 <histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
     expires_after="2023-12-10">
   <owner>ayman@chromium.org</owner>

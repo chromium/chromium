@@ -20,9 +20,11 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -315,6 +317,8 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   RegisterPrefs(pref_service_->registry());
+  pref_service_->registry()->RegisterBooleanPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
