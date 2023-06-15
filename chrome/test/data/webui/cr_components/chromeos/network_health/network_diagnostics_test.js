@@ -24,7 +24,7 @@ suite('NetworkDiagnosticsTest', () => {
   let fakeNetworkDiagnostics_ = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     networkDiagnostics = /** @type {!NetworkDiagnosticsElement} */ (
         document.createElement('network-diagnostics'));
     document.body.appendChild(networkDiagnostics);

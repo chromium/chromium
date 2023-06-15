@@ -403,6 +403,7 @@ static constexpr const char* const kChromeUrls[] = {
     // for confirm password change UI.
     // "chrome://confirm-password-change",
     "chrome://cloud-upload",
+    "chrome://connectivity-diagnostics",
     "chrome://cryptohome",
     "chrome://drive-internals",
     "chrome://emoji-picker",
