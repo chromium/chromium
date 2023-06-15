@@ -39,6 +39,10 @@ class PrefService;
 // Returns `YES` if all items are complete.
 - (BOOL)allItemsComplete;
 
+// Returns the complete list of tasks, inclusive of the ones the user has
+// already completed.
+- (NSArray<SetUpListItem*>*)allItems;
+
 // Contains the items or tasks that the user may want to complete as part of
 // setting up the app.
 @property(nonatomic, strong, readonly) NSArray<SetUpListItem*>* items;

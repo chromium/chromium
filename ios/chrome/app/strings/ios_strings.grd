@@ -2777,8 +2777,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION" desc="Description for the Set Up List item in the Magic Stack that encourages the user to set up Chrome's autofill settings.">
         Access your Chrome passwords and more across other apps.
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_SEE_MORE_DESCRIPTION" desc="Description for the Set Up List item in the See More modal that encourages the user to set up Chrome's autofill settings.">
-        Access your passwords and more across other apps.
+      <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_SEE_MORE_DESCRIPTION" desc="Description for the Set Up List item in the See More modal that encourages the user to set up Chrome's autofill settings.">
+        Access your passwords and more across apps.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set up Chrome's autofill settings.">
         Access your passwords across other apps.

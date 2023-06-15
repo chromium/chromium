@@ -238,8 +238,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 #pragma mark - Helpers
 
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
-  // TODO(crbug.com/1432252): Implement presenting views for different module
-  // types.
+  [_delegate seeMoreWasTappedForModuleType:_type];
 }
 
 - (BOOL)shouldShowSeeMore {

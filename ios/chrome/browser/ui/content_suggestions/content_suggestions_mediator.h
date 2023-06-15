@@ -134,6 +134,9 @@ class WebStateList;
 // Disable and hide the Set Up List;
 - (void)disableSetUpList;
 
+// Returns all possible items in the Set Up List.
+- (NSArray<SetUpListItemViewData*>*)allSetUpListItems;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_H_

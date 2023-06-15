@@ -855,6 +855,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   return YES;
 }
 
+// Returns an array of all possible items in the Set Up List.
+- (NSArray<SetUpListItemViewData*>*)allSetUpListItems {
+  NSArray<SetUpListItem*>* items = [self.setUpList allItems];
+
+  NSMutableArray<SetUpListItemViewData*>* allItems =
+      [[NSMutableArray alloc] init];
+  for (SetUpListItem* model in items) {
+    SetUpListItemViewData* item =
+        [[SetUpListItemViewData alloc] initWithType:model.type
+                                           complete:model.complete];
+    [allItems addObject:item];
+  }
+  return allItems;
+}
+
 // Returns an array of items to display in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)setUpListItems {
   // Map the model objects to view objects.

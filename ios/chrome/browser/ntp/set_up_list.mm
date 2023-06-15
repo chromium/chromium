@@ -158,6 +158,25 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   return YES;
 }
 
+- (NSArray<SetUpListItem*>*)allItems {
+  NSMutableArray* itemTypes = [[NSMutableArray alloc]
+      initWithObjects:@(int(SetUpListItemType::kSignInSync)),
+                      @(int(SetUpListItemType::kDefaultBrowser)),
+                      @(int(SetUpListItemType::kAutofill)), nil];
+  for (SetUpListItem* item in _items) {
+    [itemTypes removeObject:@(int(item.type))];
+  }
+
+  NSMutableArray* completeItems = [_items mutableCopy];
+  for (NSNumber* typeNum in itemTypes) {
+    [completeItems
+        addObject:[[SetUpListItem alloc]
+                      initWithType:(SetUpListItemType)[typeNum intValue]
+                          complete:YES]];
+  }
+  return completeItems;
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

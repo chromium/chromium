@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -123,6 +124,9 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
   // The coordinator used to present an action sheet for the Set Up List menu.
   ActionSheetCoordinator* _actionSheetCoordinator;
+
+  // The Show More Menu presented from the Set Up List in the Magic Stack.
+  SetUpListShowMoreViewController* _setUpListShowMoreViewController;
 }
 
 - (void)start {
@@ -373,20 +377,32 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   PrefService* localState = GetApplicationContext()->GetLocalState();
   set_up_list_prefs::RecordInteraction(localState);
 
-  switch (type) {
-    case SetUpListItemType::kSignInSync:
-      [self showSignIn];
-      break;
-    case SetUpListItemType::kDefaultBrowser:
-      [self showDefaultBrowserPromo];
-      break;
-    case SetUpListItemType::kAutofill:
-      [self showCredentialProviderPromo];
-      break;
-    case SetUpListItemType::kFollow:
-    case SetUpListItemType::kAllSet:
-      // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
-      NOTREACHED();
+  __weak ContentSuggestionsCoordinator* weakSelf = self;
+  ProceduralBlock completionBlock = ^{
+    switch (type) {
+      case SetUpListItemType::kSignInSync:
+        [weakSelf showSignIn];
+        break;
+      case SetUpListItemType::kDefaultBrowser:
+        [weakSelf showDefaultBrowserPromo];
+        break;
+      case SetUpListItemType::kAutofill:
+        [weakSelf showCredentialProviderPromo];
+        break;
+      case SetUpListItemType::kFollow:
+      case SetUpListItemType::kAllSet:
+        // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
+        NOTREACHED();
+    }
+  };
+
+  if (_setUpListShowMoreViewController) {
+    [_setUpListShowMoreViewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:completionBlock];
+    _setUpListShowMoreViewController = nil;
+  } else {
+    completionBlock();
   }
 }
 
@@ -418,6 +434,14 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 - (void)setUpListViewHeightDidChange {
   [self.feedDelegate contentSuggestionsWasUpdated];
+}
+
+- (void)dismissSeeMoreViewController {
+  DCHECK(_setUpListShowMoreViewController);
+  [_setUpListShowMoreViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _setUpListShowMoreViewController = nil;
 }
 
 #pragma mark - SetUpList Helpers
@@ -462,6 +486,28 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                       CredentialProviderPromoCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  SetUpList];
+}
+
+- (void)showSetUpListShowMoreMenu {
+  NSArray<SetUpListItemViewData*>* items =
+      [self.contentSuggestionsMediator allSetUpListItems];
+  _setUpListShowMoreViewController =
+      [[SetUpListShowMoreViewController alloc] initWithItems:items
+                                                 tapDelegate:self];
+  _setUpListShowMoreViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _setUpListShowMoreViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = 16;
+  [self.viewController presentViewController:_setUpListShowMoreViewController
+                                    animated:YES
+                                  completion:nil];
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate

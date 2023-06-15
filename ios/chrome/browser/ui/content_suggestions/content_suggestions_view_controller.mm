@@ -739,7 +739,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       titleStringForModule:[self currentlyShownModule]];
 }
 
-#pragma mark - MagicStackModuleContainer
+#pragma mark - MagicStackModuleContainerDelegate
 
 - (BOOL)doesMagicStackShowOnlyOneModule:(ContentSuggestionsModuleType)type {
   // Return NO if Most Visited Module is asking while it is not in the Magic
@@ -751,6 +751,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   ContentSuggestionsModuleType firstModuleType = (ContentSuggestionsModuleType)[
       [_magicStackModuleOrder objectAtIndex:0] intValue];
   return [_magicStackModuleOrder count] == 1 && firstModuleType == type;
+}
+
+- (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
+  [self.audience showSetUpListShowMoreMenu];
 }
 
 #pragma mark - Private

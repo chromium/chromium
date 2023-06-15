@@ -11,6 +11,10 @@ source_set("set_up_list") {
     "set_up_list_item_view.mm",
     "set_up_list_item_view_data.h",
     "set_up_list_item_view_data.mm",
+    "set_up_list_show_more_item_view.h",
+    "set_up_list_show_more_item_view.mm",
+    "set_up_list_show_more_view_controller.h",
+    "set_up_list_show_more_view_controller.mm",
     "set_up_list_view.h",
     "set_up_list_view.mm",
   ]
