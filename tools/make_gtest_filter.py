@@ -171,7 +171,7 @@ def GetFiltersForTests(tests, class_only):
   if class_only:
     fixtures = set([t.split('.')[0] for t in tests])
     return [c + '.*' for c in fixtures] + \
-          ['*/' + c + '.*/*' for c in fixtures] + \
+          ['*/' + c + '/*.*' for c in fixtures] + \
           [c + '.*/*' for c in fixtures] + \
           [c + '/*.*' for c in fixtures]
   else:
