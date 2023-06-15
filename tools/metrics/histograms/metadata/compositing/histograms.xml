@@ -142,16 +142,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.CopyFromSurfaceTime" units="ms"
-    expires_after="2018-08-30">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The turn around time taken for the async readback of pixels is measured
-    here. This should be marked as obsolete once some tests no longer rely on
-    this histogram. See crbug/1110961 for more details.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.DecodeLCPCandidateImage.{DecodeMethod}"
     enum="Boolean" expires_after="2023-01-31">
   <owner>mmocny@chromium.org</owner>

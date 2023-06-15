@@ -105,7 +105,6 @@ namespace content {
 
 namespace {
 
-static const char kAsyncReadBackString[] = "Compositing.CopyFromSurfaceTime";
 static const base::TimeDelta kClickCountInterval = base::Seconds(0.5);
 static const float kClickCountRadiusSquaredDIP = 25;
 static const base::TimeDelta kThrottleTimeout = base::Milliseconds(200);
@@ -1580,8 +1579,6 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
     return;
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   if (!using_browser_compositor_) {
     SynchronousCopyContents(src_subrect, output_size, std::move(callback));
     return;
@@ -1592,16 +1589,12 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
       src_subrect, output_size,
       base::BindOnce(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
-             base::TimeTicks start_time, const SkBitmap& bitmap) {
+             const SkBitmap& bitmap) {
             TRACE_EVENT0(
                 "cc", "RenderWidgetHostViewAndroid::CopyFromSurface finished");
-            // TODO(crbug/1110301): Make the Compositing.CopyFromSurfaceTime
-            // histogram obsolete.
-            UMA_HISTOGRAM_TIMES(kAsyncReadBackString,
-                                base::TimeTicks::Now() - start_time);
             std::move(callback).Run(bitmap);
           },
-          std::move(callback), start_time));
+          std::move(callback)));
 }
 
 void RenderWidgetHostViewAndroid::EnsureSurfaceSynchronizedForWebTest() {
