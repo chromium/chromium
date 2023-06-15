@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -333,11 +334,27 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
-  // Only the NTP should show. There are no other relevant tabs since
-  // welcome and What's New have both already been shown.
-  EXPECT_EQ(tab_strip->count(), 1);
-  if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL)
-    EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+
+  if (!features::IsChromeRefresh2023() || GetParam() == BooleanPolicy::kFalse) {
+    // Only the NTP should show. There are no other relevant tabs since
+    // welcome and What's New have both already been shown or promotional tabs
+    // are disabled.
+    EXPECT_EQ(tab_strip->count(), 1);
+    if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+      EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+    }
+  } else {
+    // Always show What's New for CR2023 because the launch is not based on
+    // milestones.
+    EXPECT_EQ(tab_strip->count(), 2);
+    // Whats's New should show and be the active tab.
+    EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
+    EXPECT_EQ(0, tab_strip->active_index());
+    // The second tab should be the NTP.
+    const auto& url_tab1 =
+        tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
+    EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
