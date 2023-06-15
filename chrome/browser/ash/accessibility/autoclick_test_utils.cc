@@ -25,6 +25,10 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "ui/events/test/event_generator.h"
 
+namespace {
+const int kDefaultDelay = 5;
+}  // namespace
+
 namespace ash {
 
 AutoclickTestUtils::AutoclickTestUtils(Profile* profile) {
@@ -33,7 +37,7 @@ AutoclickTestUtils::AutoclickTestUtils(Profile* profile) {
   console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
       profile_, extension_misc::kAccessibilityCommonExtensionId);
 
-  SetAutoclickDelayMs(5);
+  SetAutoclickDelayMs(kDefaultDelay);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
@@ -61,6 +65,7 @@ void AutoclickTestUtils::LoadAutoclick() {
 
 void AutoclickTestUtils::SetAutoclickDelayMs(int ms) {
   profile_->GetPrefs()->SetInteger(prefs::kAccessibilityAutoclickDelayMs, ms);
+  profile_->GetPrefs()->CommitPendingWrite();
 }
 
 void AutoclickTestUtils::SetAutoclickEventTypeWithHover(
@@ -71,6 +76,12 @@ void AutoclickTestUtils::SetAutoclickEventTypeWithHover(
           prefs::kAccessibilityAutoclickEventType) == static_cast<int>(type)) {
     return;
   }
+
+  // Change the Autoclick delay to a value we know will work for this method
+  // (in case it was set to a very large value before this method was called).
+  int old_delay =
+      profile_->GetPrefs()->GetInteger(prefs::kAccessibilityAutoclickDelayMs);
+  SetAutoclickDelayMs(kDefaultDelay);
 
   // Find the menu button.
   AutoclickMenuView::ButtonId button_id;
@@ -110,6 +121,9 @@ void AutoclickTestUtils::SetAutoclickEventTypeWithHover(
   base::RunLoop runner;
   pref_change_waiter_ = runner.QuitClosure();
   runner.Run();
+
+  // Restore the delay to its previous value.
+  SetAutoclickDelayMs(old_delay);
 }
 
 void AutoclickTestUtils::HoverOverHtmlElement(
