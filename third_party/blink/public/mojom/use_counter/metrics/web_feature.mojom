@@ -3922,6 +3922,7 @@ enum WebFeature {
   kAbortSignalAny = 4582,
   kFedCmIdpSigninStatusApi = 4583,
   kFedCmIdpSigninStatusJsApi = 4584,
+  kExecCommand = 4585,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

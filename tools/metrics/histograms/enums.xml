@@ -42758,6 +42758,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4582" label="AbortSignalAny"/>
   <int value="4583" label="FedCmIdpSigninStatusApi"/>
   <int value="4584" label="FedCmIdpSigninStatusJsApi"/>
+  <int value="4585" label="ExecCommand"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
