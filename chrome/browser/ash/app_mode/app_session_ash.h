@@ -18,7 +18,7 @@ namespace ash {
 class NetworkConnectivityMetricsService;
 
 // AppSessionAsh maintains a kiosk session and handles its lifetime.
-class AppSessionAsh : public chromeos::AppSession {
+class AppSessionAsh {
  public:
   explicit AppSessionAsh(
       Profile* profile,
@@ -26,10 +26,19 @@ class AppSessionAsh : public chromeos::AppSession {
       const absl::optional<std::string>& app_name = absl::nullopt);
   AppSessionAsh(const AppSessionAsh&) = delete;
   AppSessionAsh& operator=(const AppSessionAsh&) = delete;
-  ~AppSessionAsh() override;
+  ~AppSessionAsh();
 
   // Destroys ash observers.
   void ShuttingDown();
+
+  void OnGuestAdded(content::WebContents* guest_web_contents);
+
+  bool is_shutting_down() const;
+
+  Browser* GetSettingsBrowserForTesting();
+
+  void SetOnHandleBrowserCallbackForTesting(
+      base::RepeatingCallback<void(bool)> callback);
 
  private:
   class LacrosWatcher;
@@ -45,6 +54,13 @@ class AppSessionAsh : public chromeos::AppSession {
   // and create a user security message which shows the user the application
   // name and author after some idle timeout.
   void SetRebootAfterUpdateIfNecessary();
+
+  Profile* profile() const;
+
+  // Owned by `ProfileManager`.
+  raw_ptr<Profile> profile_ = nullptr;
+
+  chromeos::AppSession app_session_;
 
   const KioskAppId kiosk_app_id_;
 

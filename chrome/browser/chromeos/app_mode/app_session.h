@@ -76,7 +76,15 @@ class AppSession {
 
   bool is_shutting_down() const { return is_shutting_down_; }
 
- protected:
+ private:
+  // AppWindowHandler watches for app window and exits the session when the
+  // last window of a given app is closed. This class is only used for Chrome
+  // App Kiosk.
+  class AppWindowHandler;
+
+  // PluginHandlerDelegateImpl handles callbacks from `plugin_handler_`.
+  class PluginHandlerDelegateImpl;
+
   AppSession(Profile* profile,
              base::OnceClosure attempt_user_exit,
              std::unique_ptr<AppSessionMetricsService> metrics_service);
@@ -86,15 +94,6 @@ class AppSession {
       const absl::optional<std::string>& web_app_name);
 
   Profile* profile() const { return profile_; }
-
- private:
-  // AppWindowHandler watches for app window and exits the session when the
-  // last window of a given app is closed. This class is only used for Chrome
-  // App Kiosk.
-  class AppWindowHandler;
-
-  // PluginHandlerDelegateImpl handles callbacks from `plugin_handler_`.
-  class PluginHandlerDelegateImpl;
 
   void OnHandledNewBrowserWindow(bool is_closing);
   void OnAppWindowAdded(extensions::AppWindow* app_window);

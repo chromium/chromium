@@ -104,7 +104,8 @@ class AppSessionAsh::LacrosWatcher : public crosapi::BrowserManagerObserver {
 AppSessionAsh::AppSessionAsh(Profile* profile,
                              const KioskAppId& kiosk_app_id,
                              const absl::optional<std::string>& app_name)
-    : AppSession(profile),
+    : profile_(profile),
+      app_session_(profile),
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>()),
@@ -129,7 +130,7 @@ AppSessionAsh::~AppSessionAsh() = default;
 
 void AppSessionAsh::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
-  chromeos::AppSession::InitForChromeAppKiosk(app_id);
+  app_session_.InitForChromeAppKiosk(app_id);
   StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
@@ -141,7 +142,7 @@ void AppSessionAsh::InitForChromeAppKiosk() {
 
 void AppSessionAsh::InitForWebKiosk(
     const absl::optional<std::string>& app_name) {
-  chromeos::AppSession::InitForWebKiosk(app_name);
+  app_session_.InitForWebKiosk(app_name);
   StartFloatingAccessibilityMenu();
 
   periodic_metrics_service_->RecordPreviousSessionMetrics();
@@ -174,6 +175,28 @@ void AppSessionAsh::SetRebootAfterUpdateIfNecessary() {
     local_state->SetBoolean(prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();
   }
+}
+
+void AppSessionAsh::OnGuestAdded(content::WebContents* guest_web_contents) {
+  app_session_.OnGuestAdded(guest_web_contents);
+}
+
+Profile* AppSessionAsh::profile() const {
+  CHECK(profile_);
+  return profile_;
+}
+
+bool AppSessionAsh::is_shutting_down() const {
+  return app_session_.is_shutting_down();
+}
+
+Browser* AppSessionAsh::GetSettingsBrowserForTesting() {
+  return app_session_.GetSettingsBrowserForTesting();
+}
+
+void AppSessionAsh::SetOnHandleBrowserCallbackForTesting(
+    base::RepeatingCallback<void(bool)> callback) {
+  app_session_.SetOnHandleBrowserCallbackForTesting(callback);
 }
 
 }  // namespace ash
