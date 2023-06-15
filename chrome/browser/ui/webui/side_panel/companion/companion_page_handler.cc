@@ -135,6 +135,11 @@ void CompanionPageHandler::ShowUI() {
     // Calls to the browser need to happen after the ShowUI() call above since
     // it is only added to browser hierarchy after the side panel has loaded the
     // page.
+    auto* browser = GetBrowser();
+    if (!browser) {
+      return;
+    }
+
     auto* active_web_contents =
         GetBrowser()->tab_strip_model()->GetActiveWebContents();
     Observe(active_web_contents);
