@@ -1232,7 +1232,7 @@
               "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html"],
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing"],
-    "expires": "Jul 1, 2023"
+    "expires": "May 1, 2024"
   },
   {
     "prefix": "view-transition-on-navigation",
@@ -1241,7 +1241,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ViewTransitionOnNavigation",
              "--enable-threaded-compositing"],
-    "expires": "Jul 1, 2023"
+    "expires": "May 1, 2024"
   },
   {
     "prefix": "view-transition-wide-gamut",
@@ -1253,7 +1253,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
              "--force-color-profile=display-p3-d65"],
-    "expires": "Jul 1, 2023"
+    "expires": "May 1, 2024"
   },
   {
     "prefix": "view-transition-mpa-serialization",
@@ -1266,7 +1266,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=SerializeViewTransitionStateInSPA"],
-    "expires": "Feb 1, 2024"
+    "expires": "May 1, 2024"
   },
   {
     "prefix": "mutation-events-disabled",
