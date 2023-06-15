@@ -76,13 +76,12 @@ const char kIncognito[] = "incognito";
 const char kNoSystemProxyConfigService[] = "no-system-proxy-config-service";
 
 // Specifies which encryption storage backend to use. Possible values are
-// kwallet, kwallet5, gnome, gnome-keyring, gnome-libsecret, basic. Any other
-// value will lead to Chrome detecting the best backend automatically.
-// TODO(crbug.com/571003): Once PasswordStore no longer uses the Keyring or
-// KWallet for storing passwords, rename this flag to stop referencing
-// passwords. Do not rename it sooner, though; developers and testers might
-// rely on it keeping large amounts of testing passwords out of their Keyrings
-// or KWallets.
+// kwallet, kwallet5, gnome-libsecret, basic. Any other value will lead to
+// Chrome detecting the best backend automatically.
+// TODO(crbug.com/571003): Once PasswordStore no longer uses KWallet for
+// storing passwords, rename this flag to stop referencing passwords. Do not
+// rename it sooner, though; developers and testers might rely on it keeping
+// large amounts of testing passwords out of their KWallets.
 const char kPasswordStore[] = "password-store";
 
 // Specifies a list of hosts for whom we bypass proxy settings and use direct

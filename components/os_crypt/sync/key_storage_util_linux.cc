@@ -36,10 +36,6 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     return SelectedLinuxBackend::KWALLET;
   if (type == "kwallet5")
     return SelectedLinuxBackend::KWALLET5;
-  if (type == "gnome")
-    return SelectedLinuxBackend::GNOME_ANY;
-  if (type == "gnome-keyring")
-    return SelectedLinuxBackend::GNOME_KEYRING;
   if (type == "gnome-libsecret")
     return SelectedLinuxBackend::GNOME_LIBSECRET;
   if (type == "basic")
@@ -67,7 +63,7 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
-      return SelectedLinuxBackend::GNOME_ANY;
+      return SelectedLinuxBackend::GNOME_LIBSECRET;
     // KDE3 didn't use DBus, which our KWallet store uses.
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
     case base::nix::DESKTOP_ENVIRONMENT_LXQT:

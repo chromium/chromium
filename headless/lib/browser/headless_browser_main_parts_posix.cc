@@ -147,8 +147,6 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
       switches::kPasswordStore);
   // Use a default product name
   config->product_name = kProductName;
-  // OSCrypt may target keyring, which requires calls from the main thread.
-  config->main_thread_runner = content::GetUIThreadTaskRunner({});
   // OSCrypt can be disabled in a special settings file, but headless doesn't
   // need to support that.
   config->should_use_preference = false;

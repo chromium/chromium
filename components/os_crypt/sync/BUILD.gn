@@ -5,31 +5,8 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
-
-if (use_gnome_keyring) {
-  # Gnome-keyring is normally dynamically loaded. The gnome_keyring config
-  # will set this up.
-  pkg_config("gnome_keyring") {
-    packages = [ "gnome-keyring-1" ]
-    defines = [ "USE_GNOME_KEYRING" ]
-    ignore_libs = true
-  }
-
-  # If you want to link gnome-keyring directly (use only for unit tests)
-  # ADDITIONALLY add this config on top of ":gnome_keyring". pkg-config is a
-  # bit slow, so prefer not to run it again. In practice, gnome-keyring's libs
-  # are just itself and common gnome ones we link already, so we can get away
-  # with additionally just coding the library name here.
-  # TODO(cfroussios): This is only used by
-  # chrome/browser/password_manager/native_backend_gnome_x_unittest.cc
-  # We should deprecate both.
-  config("gnome_keyring_direct") {
-    libs = [ "gnome-keyring" ]
-  }
-}
 
 # Wrapper component to allow dependencies to depend on //components/os_crypt/sync directly.
 group("sync") {
@@ -90,16 +67,6 @@ component("os_crypt") {
       "os_crypt_linux.cc",
     ]
 
-    if (use_gnome_keyring) {
-      sources += [
-        "key_storage_keyring.cc",
-        "key_storage_keyring.h",
-        "keyring_util_linux.cc",
-        "keyring_util_linux.h",
-      ]
-      configs += [ ":gnome_keyring" ]
-      defines += [ "USE_KEYRING" ]
-    }
     if (use_glib) {
       sources += [
         "key_storage_libsecret.cc",
@@ -141,9 +108,6 @@ static_library("test_support") {
       "os_crypt_mocker_linux.h",
     ]
     defines = []
-    if (use_gnome_keyring) {
-      defines += [ "USE_KEYRING" ]
-    }
     if (use_glib) {
       defines += [ "USE_LIBSECRET" ]
     }
@@ -182,12 +146,6 @@ source_set("unit_tests") {
     ]
     defines = []
 
-    if (use_gnome_keyring) {
-      sources += [ "key_storage_keyring_unittest.cc" ]
-      configs += [ ":gnome_keyring" ]
-      deps += [ "//base/test:test_support" ]
-      defines += [ "USE_KEYRING" ]
-    }
     if (use_glib) {
       sources += [ "key_storage_libsecret_unittest.cc" ]
       deps += [ "//third_party/libsecret" ]

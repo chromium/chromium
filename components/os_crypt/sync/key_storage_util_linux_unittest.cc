@@ -93,10 +93,6 @@ TEST_F(KeyStorageUtilLinuxTest, IgnoreBackends) {
   os_crypt::SelectedLinuxBackend selected;
 
   selected = os_crypt::SelectBackend(
-      "", true, base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_GNOME);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::GNOME_ANY);
-
-  selected = os_crypt::SelectBackend(
       "", false, base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_GNOME);
   EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::BASIC_TEXT);
 
