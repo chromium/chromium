@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -44,31 +45,36 @@ class TestFutureTest : public ::testing::Test {
 
   template <typename Lambda>
   void RunLater(Lambda lambda) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting(lambda));
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, BindLambdaForTesting(lambda));
   }
 
-  void RunLater(base::OnceClosure callable) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callable));
+  void RunLater(OnceClosure callable) {
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                          std::move(callable));
   }
 
-  void PostDelayedTask(base::OnceClosure callable, base::TimeDelta delay) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  void RunLater(RepeatingClosure callable) {
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                          std::move(callable));
+  }
+
+  void PostDelayedTask(OnceClosure callable, base::TimeDelta delay) {
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(callable), delay);
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  SingleThreadTaskEnvironment environment_{
+      TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
   const int expected_value = 42;
   TestFuture<int> future;
 
-  PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
-                  base::Milliseconds(1));
+  PostDelayedTask(BindOnce(future.GetCallback(), expected_value),
+                  Milliseconds(1));
 
   std::ignore = future.Wait();
 
@@ -78,15 +84,14 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
 TEST_F(TestFutureTest, WaitShouldReturnTrueWhenValueArrives) {
   TestFuture<int> future;
 
-  PostDelayedTask(base::BindOnce(future.GetCallback(), kAnyValue),
-                  base::Milliseconds(1));
+  PostDelayedTask(BindOnce(future.GetCallback(), kAnyValue), Milliseconds(1));
 
   bool success = future.Wait();
   EXPECT_TRUE(success);
 }
 
 TEST_F(TestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
+  ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   // `ScopedRunLoopTimeout` will automatically fail the test when a timeout
   // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
@@ -103,8 +108,8 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrives) {
   const int expected_value = 42;
   TestFuture<int> future;
 
-  PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
-                  base::Milliseconds(1));
+  PostDelayedTask(BindOnce(future.GetCallback(), expected_value),
+                  Milliseconds(1));
 
   int actual_value = future.Get();
 
@@ -112,7 +117,7 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrives) {
 }
 
 TEST_F(TestFutureTest, GetShouldDcheckIfTimeoutHappens) {
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
+  ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   TestFuture<AnyType> future;
 
@@ -123,7 +128,7 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
   const int expected_data = 99;
   TestFuture<MoveOnlyValue> future;
 
-  RunLater(base::BindOnce(future.GetCallback(), MoveOnlyValue(expected_data)));
+  RunLater(BindOnce(future.GetCallback(), MoveOnlyValue(expected_data)));
 
   MoveOnlyValue actual_value = future.Take();
 
@@ -131,7 +136,7 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
 }
 
 TEST_F(TestFutureTest, TakeShouldDcheckIfTimeoutHappens) {
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
+  ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   TestFuture<AnyType> future;
 
@@ -148,13 +153,59 @@ TEST_F(TestFutureTest, IsReadyShouldBeTrueWhenValueIsSet) {
   EXPECT_TRUE(future.IsReady());
 }
 
-TEST_F(TestFutureTest, ShouldOnlyAllowSetValueToBeCalledOnce) {
+TEST_F(TestFutureTest, ResetShouldRemoveStoredValue) {
+  TestFuture<AnyType> future;
+
+  future.SetValue(kAnyValue);
+
+  future.Reset();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(TestFutureTest, ShouldNotAllowOverwritingStoredValue) {
   TestFuture<AnyType> future;
 
   future.SetValue(kAnyValue);
 
   EXPECT_DCHECK_DEATH_WITH(future.SetValue(kOtherValue),
-                           "The value of a TestFuture can only be set once.");
+                           "Overwriting previously stored value");
+}
+
+TEST_F(TestFutureTest, ShouldAllowReuseIfPreviousValueIsFirstConsumed) {
+  TestFuture<std::string> future;
+
+  RunLater([&]() { future.SetValue("first value"); });
+  EXPECT_EQ(future.Take(), "first value");
+
+  ASSERT_FALSE(future.IsReady());
+
+  RunLater([&]() { future.SetValue("second value"); });
+  EXPECT_EQ(future.Take(), "second value");
+}
+
+TEST_F(TestFutureTest, ShouldAllowReusingCallback) {
+  TestFuture<std::string> future;
+
+  RepeatingCallback<void(std::string)> callback = future.GetRepeatingCallback();
+
+  RunLater(BindOnce(callback, "first value"));
+  EXPECT_EQ(future.Take(), "first value");
+
+  RunLater(BindOnce(callback, "second value"));
+  EXPECT_EQ(future.Take(), "second value");
+}
+
+TEST_F(TestFutureTest, WaitShouldWorkAfterTake) {
+  TestFuture<std::string> future;
+
+  future.SetValue("first value");
+  std::ignore = future.Take();
+
+  RunLater([&]() { future.SetValue("second value"); });
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), "second value");
 }
 
 TEST_F(TestFutureTest, ShouldSignalWhenSetValueIsInvoked) {
@@ -172,9 +223,8 @@ TEST_F(TestFutureTest, ShouldAllowReferenceArgumentsForCallback) {
   const int expected_value = 222;
   TestFuture<int> future;
 
-  base::OnceCallback<void(const int&)> callback =
-      future.GetCallback<const int&>();
-  RunLater(base::BindOnce(std::move(callback), expected_value));
+  OnceCallback<void(const int&)> callback = future.GetCallback<const int&>();
+  RunLater(BindOnce(std::move(callback), expected_value));
 
   int actual_value = future.Get();
 
@@ -182,7 +232,7 @@ TEST_F(TestFutureTest, ShouldAllowReferenceArgumentsForCallback) {
 }
 
 TEST_F(TestFutureTest, ShouldAllowInvokingCallbackAfterFutureIsDestroyed) {
-  base::OnceCallback<void(int)> callback;
+  OnceCallback<void(int)> callback;
 
   {
     TestFuture<int> future;
@@ -198,8 +248,8 @@ TEST_F(TestFutureTest, ShouldReturnTupleValue) {
 
   TestFuture<int, std::string> future;
 
-  RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
-                          expected_string_value));
+  RunLater(BindOnce(future.GetCallback(), expected_int_value,
+                    expected_string_value));
 
   const std::tuple<int, std::string>& actual = future.Get();
 
@@ -213,8 +263,8 @@ TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueUsingGetWithIndex) {
 
   TestFuture<int, std::string> future;
 
-  RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
-                          expected_string_value));
+  RunLater(BindOnce(future.GetCallback(), expected_int_value,
+                    expected_string_value));
 
   std::ignore = future.Get();
 
@@ -228,8 +278,8 @@ TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueUsingGetWithType) {
 
   TestFuture<int, std::string> future;
 
-  RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
-                          expected_string_value));
+  RunLater(BindOnce(future.GetCallback(), expected_int_value,
+                    expected_string_value));
 
   std::ignore = future.Get();
 
@@ -243,10 +293,10 @@ TEST_F(TestFutureTest, ShouldAllowReferenceArgumentsForMultiArgumentCallback) {
 
   TestFuture<int, std::string> future;
 
-  base::OnceCallback<void(int, const std::string&)> callback =
+  OnceCallback<void(int, const std::string&)> callback =
       future.GetCallback<int, const std::string&>();
-  RunLater(base::BindOnce(std::move(callback), expected_int_value,
-                          expected_string_value));
+  RunLater(
+      BindOnce(std::move(callback), expected_int_value, expected_string_value));
 
   std::tuple<int, std::string> actual = future.Get();
 
@@ -274,7 +324,7 @@ TEST_F(TestFutureTest, ShouldSupportCvRefType) {
   std::string expected_value = "value";
   TestFuture<const std::string&> future;
 
-  base::OnceCallback<void(const std::string&)> callback = future.GetCallback();
+  OnceCallback<void(const std::string&)> callback = future.GetCallback();
   std::move(callback).Run(expected_value);
 
   // both get and take should compile, and take should return the decayed value.
@@ -291,7 +341,7 @@ TEST_F(TestFutureTest, ShouldSupportMultipleCvRefTypes) {
   const long expected_third_value = 10;
   TestFuture<const int, std::string&, const long&> future;
 
-  base::OnceCallback<void(const int, std::string&, const long&)> callback =
+  OnceCallback<void(const int, std::string&, const long&)> callback =
       future.GetCallback();
   std::move(callback).Run(expected_first_value, expected_second_value,
                           expected_third_value);
@@ -311,6 +361,18 @@ TEST_F(TestFutureTest, ShouldSupportMultipleCvRefTypes) {
   EXPECT_EQ(expected_first_value, std::get<0>(take_result));
   EXPECT_EQ(expected_second_value, std::get<1>(take_result));
   EXPECT_EQ(expected_third_value, std::get<2>(take_result));
+}
+
+TEST_F(TestFutureTest, ShouldAllowReuseIfPreviousTupleValueIsFirstConsumed) {
+  TestFuture<std::string, int> future;
+
+  future.SetValue("first value", 1);
+  std::ignore = future.Take();
+
+  ASSERT_FALSE(future.IsReady());
+
+  future.SetValue("second value", 2);
+  EXPECT_EQ(future.Take(), std::make_tuple("second value", 2));
 }
 
 using TestFutureWithoutValuesTest = TestFutureTest;

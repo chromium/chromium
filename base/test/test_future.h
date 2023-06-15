@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -23,79 +24,145 @@ namespace base::test {
 // Helper class to test code that returns its result(s) asynchronously through a
 // callback:
 //
-//    - Pass the callback provided by TestFuture::GetCallback() to the code
-//      under test.
-//    - Wait for the callback to be invoked by calling TestFuture::Wait(), or
-//      TestFuture::Get() to access the value(s) passed to the callback.
+//    - Pass the callback provided by `GetCallback()` to the code under test.
+//    - Wait for the callback to be invoked by calling `Wait(),` or `Get()` to
+//      access the value(s) passed to the callback.
 //
-// If the callback takes multiple arguments, use TestFuture::Get<0>() to access
-// the value of the first argument, TestFuture::Get<1>() to access the value of
-// the second argument, and so on.
-// Alternatively you can use the argument type like TestFuture::Get<T>().
+//   Example usage:
 //
-// If for any reason you can't use TestFuture::GetCallback(), you can use
-// TestFuture::SetValue() to directly set the value. This method must be called
-// from the main sequence.
+//     TEST_F(MyTestFixture, MyTest) {
+//       TestFuture<ResultType> future;
 //
-// Finally, TestFuture::Take() is similar to TestFuture::Get() but it will
-// move the result out, which can be helpful when testing a move-only class.
+//       object_under_test.DoSomethingAsync(future.GetCallback());
 //
-// Example usage:
+//       const ResultType& actual_result = future.Get();
 //
-//   TEST_F(MyTestFixture, MyTest) {
-//     TestFuture<ResultType> future;
+//       // When you come here, DoSomethingAsync has finished and
+//       // `actual_result` contains the result passed to the callback.
+//     }
 //
-//     object_under_test.DoSomethingAsync(future.GetCallback());
+//   Example using `Wait()`:
 //
-//     const ResultType& actual_result = future.Get();
+//     TEST_F(MyTestFixture, MyWaitTest) {
+//       TestFuture<ResultType> future;
 //
-//     // When you come here, DoSomethingAsync has finished and `actual_result`
-//     // contains the result passed to the callback.
-//   }
+//       object_under_test.DoSomethingAsync(future.GetCallback());
 //
-// Example if the callback has 2 arguments:
+//       // Optional. The Get() call below will also wait until the value
+//       // arrives, but this explicit call to Wait() can be useful if you want
+//       // to add extra information.
+//       ASSERT_TRUE(future.Wait()) << "Detailed error message";
 //
-//   TEST_F(MyTestFixture, MyTest) {
-//     TestFuture<int, std::string> future;
+//       const ResultType& actual_result = future.Get();
+//     }
 //
-//     object_under_test.DoSomethingAsync(future.GetCallback());
+// `TestFuture` supports both single- and multiple-argument callbacks.
+// `TestFuture` provides both index and type based accessors for multi-argument
+// callbacks. `Get()` and `Take()` return tuples for multi-argument callbacks.
 //
-//     // Either select the argument by type...
-//     int first_argument = future.Get<int>();
-//     const std::string& second_argument = future.Get<std::string>();
+//   TestFuture<int, std::string> future;
+//   future.Get<0>();   // Reads the first argument
+//   future.Get<int>(); // Also reads the first argument
+//   future.Get();      // Returns a `const std::tuple<int, std::string>&`
 //
-//     // ... or by index.
-//     int first_argument = future.Get<0>();
-//     const std::string& second_argument = future.Get<1>();
-//   }
+//   Example for a multi-argument callback:
 //
-// Example if the callback has zero arguments:
+//     TEST_F(MyTestFixture, MyTest) {
+//       TestFuture<int, std::string> future;
 //
-//   TEST_F(MyTestFixture, MyTest) {
-//     TestFuture<void> signal;
+//       object_under_test.DoSomethingAsync(future.GetCallback());
 //
-//     object_under_test.DoSomethingAsync(signal.GetCallback());
+//       // You can use type based accessors:
+//       int first_argument = future.Get<int>();
+//       const std::string& second_argument = future.Get<std::string>();
 //
-//     EXPECT_TRUE(signal.Wait());
-//     // When you come here you know the async code is ready.
-//   }
+//       // or index based accessors:
+//       int first_argument = future.Get<0>();
+//       const std::string& second_argument = future.Get<1>();
+//     }
 //
-// Or an example using TestFuture::Wait():
+// You can also satisfy a `TestFuture` by calling `SetValue()` from the sequence
+// on which the `TestFuture` was created. This is mostly useful when
+// implementing an observer:
 //
-//   TEST_F(MyTestFixture, MyWaitTest) {
-//     TestFuture<ResultType> future;
+//     class MyTestObserver: public MyObserver {
+//       public:
+//         // `MyObserver` implementation:
+//         void ObserveAnInt(int value) override {
+//           future_.SetValue(value);
+//         }
 //
-//     object_under_test.DoSomethingAsync(future.GetCallback());
+//         int Wait() { return future_.Take(); }
 //
-//     // Optional. The Get() call below will also wait until the value
-//     // arrives, but this explicit call to Wait() can be useful if you want to
-//     // add extra information.
-//     ASSERT_TRUE(future.Wait()) << "Detailed error message";
+//      private:
+//        TestFuture<int> future_;
+//     };
 //
-//     const ResultType& actual_result = future.Get();
-//   }
+//     TEST_F(MyTestFixture, MyTest) {
+//       MyTestObserver observer;
 //
-// All access to this class must be made from the same sequence.
+//       object_under_test.DoSomethingAsync(observer);
+//
+//       int value_passed_to_observer = observer.Wait();
+//     };
+//
+// `GetRepeatingCallback()` allows you to use a single `TestFuture` in code
+// that invokes the callback multiple times.
+// Your test must take care to consume each value before the next value
+// arrives. You can consume the value by calling either `Take()` or `Reset()`.
+//
+//   Example for reusing a `TestFuture`:
+//
+//     TEST_F(MyTestFixture, MyReuseTest) {
+//       TestFuture<std::string> future;
+//
+//       object_under_test.InstallCallback(future.GetRepeatingCallback());
+//
+//       object_under_test.DoSomething();
+//       EXPECT_EQ(future.Take(), "expected-first-value");
+//       // Because we used `Take()` the test future is ready for reuse.
+//
+//       object_under_test.DoSomethingElse();
+//       EXPECT_EQ(future.Take(), "expected-second-value");
+//     }
+//
+//   Example for reusing  a `TestFuture` using `Get()` + `Reset()`:
+//
+//     TEST_F(MyTestFixture, MyReuseTest) {
+//       TestFuture<std::string, int> future;
+//
+//       object_under_test.InstallCallback(future.GetRepeatingCallback());
+//
+//       object_under_test.DoSomething();
+//
+//       EXPECT_EQ(future.Get<std::string>(), "expected-first-value");
+//       EXPECT_EQ(future.Get<int>(), 5);
+//       // Because we used `Get()`, the test future is not ready for reuse,
+//       //so we need an explicit `Reset()` call.
+//       future.Reset();
+//
+//       object_under_test.DoSomethingElse();
+//       EXPECT_EQ(future.Get<std::string>(), "expected-second-value");
+//       EXPECT_EQ(future.Get<int>(), 2);
+//     }
+//
+// Finally, `TestFuture` also supports no-args callbacks:
+//
+//   Example for no-args callbacks:
+//
+//     TEST_F(MyTestFixture, MyTest) {
+//       TestFuture<void> signal;
+//
+//       object_under_test.DoSomethingAsync(signal.GetCallback());
+//
+//       EXPECT_TRUE(signal.Wait());
+//       // When you come here you know the callback was invoked and the async
+//       // code is ready.
+//     }
+//
+// All access to this class and its callbacks must be made from the sequence on
+// which the `TestFuture` was constructed.
+//
 template <typename... Types>
 class TestFuture {
  public:
@@ -122,10 +189,11 @@ class TestFuture {
   [[nodiscard]] bool Wait() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (values_)
+    if (values_) {
       return true;
+    }
 
-    run_loop_.Run();
+    run_loop_->Run();
 
     return IsReady();
   }
@@ -184,19 +252,52 @@ class TestFuture {
   //   future.GetCallback<int, const std::string&>();
   //
   template <typename... CallbackArgumentsTypes>
-  base::OnceCallback<void(CallbackArgumentsTypes...)> GetCallback() {
+  OnceCallback<void(CallbackArgumentsTypes...)> GetCallback() {
+    return GetRepeatingCallback<CallbackArgumentsTypes...>();
+  }
+
+  OnceCallback<void(Types...)> GetCallback() { return GetCallback<Types...>(); }
+
+  // Returns a repeating callback that when invoked will store all the argument
+  // values, and unblock any waiters.
+  //
+  // You must take care that the stored value is consumed before the callback
+  // is invoked a second time.
+  // You can consume the value by calling either `Take()` or `Reset()`.
+  //
+  // Example usage:
+  //
+  //   TestFuture<std::string> future;
+  //
+  //   object_under_test.InstallCallback(future.GetRepeatingCallback());
+  //
+  //   object_under_test.DoSomething();
+  //   EXPECT_EQ(future.Take(), "expected-first-value");
+  //   // Because we used `Take()` the test future is ready for reuse.
+  //
+  //   object_under_test.DoSomethingElse();
+  //   // We can also use `Get()` + `Reset()` to reuse the callback.
+  //   EXPECT_EQ(future.Get(), "expected-second-value");
+  //   future.Reset();
+  //
+  //   object_under_test.DoSomethingElse();
+  //   EXPECT_EQ(future.Take(), "expected-third-value");
+  //
+  template <typename... CallbackArgumentsTypes>
+  RepeatingCallback<void(CallbackArgumentsTypes...)> GetRepeatingCallback() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return base::BindOnce(
+    return BindRepeating(
         [](WeakPtr<TestFuture<Types...>> future,
            CallbackArgumentsTypes... values) {
-          if (future)
+          if (future) {
             future->SetValue(std::forward<CallbackArgumentsTypes>(values)...);
+          }
         },
         weak_ptr_factory_.GetWeakPtr());
   }
 
-  base::OnceCallback<void(Types...)> GetCallback() {
-    return GetCallback<Types...>();
+  RepeatingCallback<void(Types...)> GetRepeatingCallback() {
+    return GetRepeatingCallback<Types...>();
   }
 
   // Sets the value of the future.
@@ -206,19 +307,28 @@ class TestFuture {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DCHECK(!values_.has_value())
-        << "The value of a TestFuture can only be set once. If you need to "
-           "handle an ordered stream of result values, use "
-           "`base::test::RepeatingTestFuture`.";
+        << "Overwriting previously stored value of the TestFuture."
+           "If you expect this new value, be sure to first "
+           "consume the stored value by calling `Take()` or `Reset()`";
 
     values_ = std::make_tuple(std::forward<Types>(values)...);
-    run_loop_.Quit();
+    run_loop_->Quit();
+  }
+
+  // Resets the future, allowing it to be reused and accept a new value.
+  //
+  // All outstanding callbacks issued through `GetCallback()` remain valid.
+  void Reset() {
+    if (IsReady()) {
+      std::ignore = Take();
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
   //  Accessor methods only available if the future holds a single value.
   //////////////////////////////////////////////////////////////////////////////
 
-  // Waits for the value to arrive, and returns its value.
+  // Waits for the value to arrive, and returns a reference to it.
   //
   // Will DCHECK if a timeout happens.
   template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
@@ -226,7 +336,7 @@ class TestFuture {
     return std::get<0>(GetTuple());
   }
 
-  // Waits for the value to arrive, and move it out.
+  // Waits for the value to arrive, and returns it.
   //
   // Will DCHECK if a timeout happens.
   template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
@@ -246,7 +356,7 @@ class TestFuture {
     return GetTuple();
   }
 
-  // Waits for the values to arrive, and move a tuple with the values out.
+  // Waits for the values to arrive, and moves a tuple with the values out.
   //
   // Will DCHECK if a timeout happens.
   template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
@@ -266,16 +376,19 @@ class TestFuture {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
-    return std::move(values_.value());
+
+    run_loop_ = std::make_unique<RunLoop>();
+    return std::exchange(values_, {}).value();
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::RunLoop run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<RunLoop> run_loop_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      std::make_unique<RunLoop>();
 
   absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
+  WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };
 
 // Specialization so you can use `TestFuture` to wait for a no-args callback.
@@ -300,8 +413,13 @@ class TestFuture<void> {
   bool IsReady() const { return implementation_.IsReady(); }
 
   // Returns a callback that when invoked will unblock any waiters.
-  base::OnceCallback<void()> GetCallback() {
-    return base::BindOnce(implementation_.GetCallback(), true);
+  OnceCallback<void()> GetCallback() {
+    return BindOnce(implementation_.GetCallback(), true);
+  }
+
+  // Returns a callback that when invoked will unblock any waiters.
+  RepeatingCallback<void()> GetRepeatingCallback() {
+    return BindRepeating(implementation_.GetRepeatingCallback(), true);
   }
 
   // Indicates this `TestFuture` is ready, and unblocks any waiters.
