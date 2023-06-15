@@ -50,72 +50,6 @@ async function isDarkModeEnabled() {
 }
 
 /**
- * Returns the $i18n{} label for the Quick View item |text| if devtools code
- * coverage is enabled. Otherwise, returns |text|.
- *
- * @param {string} text Quick View item text.
- * @return {!Promise<string>}
- */
-async function i18nQuickViewLabelText(text) {
-  const isDevtoolsCoverageActive =
-      await sendTestMessage({name: 'isDevtoolsCoverageActive'});
-
-  if (isDevtoolsCoverageActive !== 'true') {
-    return text;
-  }
-
-  /** @const {!Object<string, string>} */
-  const i18nQuickViewItemTextLabels = {
-    // Quick View toolbar button items.
-    'Back': 'QUICK_VIEW_CLOSE_BUTTON_LABEL',
-    'Delete': 'QUICK_VIEW_DELETE_BUTTON_LABEL',
-    'File info': 'QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL',
-    'Open': 'QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL',
-
-    // Quick View content panel items.
-    'No preview available': 'QUICK_VIEW_NO_PREVIEW_AVAILABLE',
-
-    // Quick View metadata box items.
-    'Album': 'METADATA_BOX_ALBUM_TITLE',
-    'Artist': 'METADATA_BOX_MEDIA_ARTIST',
-    'Audio info': 'METADATA_BOX_AUDIO_INFO',
-    'Codec': 'METADATA_BOX_CODEC',
-    'Created by': 'METADATA_BOX_CREATED_BY',
-    'Created time': 'METADATA_BOX_CREATION_TIME',
-    'Date modified': 'METADATA_BOX_MODIFICATION_TIME',
-    'Device model': 'METADATA_BOX_EXIF_DEVICE_MODEL',
-    'Device settings': 'METADATA_BOX_EXIF_DEVICE_SETTINGS',
-    'Dimensions': 'METADATA_BOX_DIMENSION',
-    'Duration': 'METADATA_BOX_DURATION',
-    'Encrypted': 'METADATA_BOX_ENCRYPTED',
-    'File location': 'METADATA_BOX_FILE_LOCATION',
-    'Frame rate': 'METADATA_BOX_FRAME_RATE',
-    'General info': 'METADATA_BOX_GENERAL_INFO',
-    'Genre': 'METADATA_BOX_GENRE',
-    'Geography': 'METADATA_BOX_EXIF_GEOGRAPHY',
-    'Original location': 'METADATA_BOX_ORIGINAL_LOCATION',
-    'Image info': 'METADATA_BOX_IMAGE_INFO',
-    'Modified by': 'METADATA_BOX_MODIFIED_BY',
-    'Page count': 'METADATA_BOX_PAGE_COUNT',
-    'Path': 'METADATA_BOX_FILE_PATH',
-    'Size': 'METADATA_BOX_FILE_SIZE',
-    'Source': 'METADATA_BOX_SOURCE',
-    'Title': 'METADATA_BOX_MEDIA_TITLE',
-    'Track': 'METADATA_BOX_TRACK',
-    'Type': 'METADATA_BOX_MEDIA_MIME_TYPE',
-    'Video info': 'METADATA_BOX_VIDEO_INFO',
-    'Year recorded': 'METADATA_BOX_YEAR_RECORDED',
-  };
-
-  // Verify |text| has an $i18n{} label in |i18nQuickViewItemTextLabels|.
-  const label = i18nQuickViewItemTextLabels[text];
-  chrome.test.assertEq('string', typeof label, `Missing: ${text}`);
-
-  // Return the $i18n{} label of |text|.
-  return `$i18n{${label}}`;
-}
-
-/**
  * Waits for Quick View dialog to be open.
  *
  * @param {string} appId Files app windowId.
@@ -326,8 +260,7 @@ async function getQuickViewMetadataBoxField(appId, name, hidden = '') {
    * The <files-metadata-entry key="name"> element resides in the shadow DOM
    * of the <files-metadata-box>.
    */
-  const nameText = await i18nQuickViewLabelText(name);
-  quickViewQuery.push(`files-metadata-entry[key="${nameText}"]`);
+  quickViewQuery.push(`files-metadata-entry[key="${name}"]`);
 
   /**
    * It has a #value div child in its shadow DOM containing the field value,
@@ -1163,10 +1096,6 @@ testcase.openQuickViewPdfPreviewsDisabled = async () => {
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.tallPdf.nameText);
 
-  // Get the content panel 'No preview available' item text.
-  const noPreviewAvailableText =
-      await i18nQuickViewLabelText('No preview available');
-
   // Wait for the innerContentPanel to load and display its content.
   function checkInnerContentPanel(elements) {
     const haveElements = Array.isArray(elements) && elements.length === 1;
@@ -1174,7 +1103,7 @@ testcase.openQuickViewPdfPreviewsDisabled = async () => {
       return pending(caller, 'Waiting for inner content panel to load.');
     }
     // Check: the PDF preview should not be shown.
-    chrome.test.assertEq(noPreviewAvailableText, elements[0].text);
+    chrome.test.assertEq('No preview available', elements[0].text);
     return;
   }
   await repeatUntil(async () => {
@@ -2786,18 +2715,12 @@ testcase.openQuickViewFromDirectoryTree = async () => {
  * shown in Quick View.
  */
 testcase.openQuickViewTabIndexImage = async () => {
-  // Get tab-index focus query item texts.
-  const backText = await i18nQuickViewLabelText('Back');
-  const openText = await i18nQuickViewLabelText('Open');
-  const deleteText = await i18nQuickViewLabelText('Delete');
-  const fileInfoText = await i18nQuickViewLabelText('File info');
-
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="${backText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${openText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${deleteText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${fileInfoText}"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
   ];
 
   // Open Files app on Downloads containing ENTRIES.smallJpeg.
@@ -2828,20 +2751,14 @@ testcase.openQuickViewTabIndexImage = async () => {
  * shown in Quick View.
  */
 testcase.openQuickViewTabIndexText = async () => {
-  // Get tab-index focus query item texts.
-  const backText = await i18nQuickViewLabelText('Back');
-  const openText = await i18nQuickViewLabelText('Open');
-  const deleteText = await i18nQuickViewLabelText('Delete');
-  const fileInfoText = await i18nQuickViewLabelText('File info');
-
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="${backText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${openText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${deleteText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${fileInfoText}"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
     {'query': ['#quick-view']},  // Tab past the content panel.
-    {'query': ['#quick-view', `[aria-label="${backText}"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
   ];
 
   // Open Files app on Downloads containing ENTRIES.tallText.
@@ -2872,18 +2789,12 @@ testcase.openQuickViewTabIndexText = async () => {
  * shown in Quick View.
  */
 testcase.openQuickViewTabIndexHtml = async () => {
-  // Get tab-index focus query item texts.
-  const backText = await i18nQuickViewLabelText('Back');
-  const openText = await i18nQuickViewLabelText('Open');
-  const deleteText = await i18nQuickViewLabelText('Delete');
-  const fileInfoText = await i18nQuickViewLabelText('File info');
-
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="${backText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${openText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${deleteText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${fileInfoText}"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
   ];
 
   // Open Files app on Downloads containing ENTRIES.tallHtml.
@@ -2921,18 +2832,12 @@ testcase.openQuickViewTabIndexAudio = async () => {
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.beautiful.nameText);
 
-  // Get tab-index focus query item texts.
-  const backText = await i18nQuickViewLabelText('Back');
-  const openText = await i18nQuickViewLabelText('Open');
-  const deleteText = await i18nQuickViewLabelText('Delete');
-  const fileInfoText = await i18nQuickViewLabelText('File info');
-
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="${backText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${openText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${deleteText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${fileInfoText}"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
   ];
 
   for (const query of tabQueries) {
@@ -2965,7 +2870,7 @@ testcase.openQuickViewTabIndexAudio = async () => {
     // Check: back should eventually get the focus again.
     const activeElement =
         await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
-    if (activeElement.attributes['aria-label'] === backText) {
+    if (activeElement.attributes['aria-label'] === 'Back') {
       break;
     }
   }
@@ -2983,18 +2888,12 @@ testcase.openQuickViewTabIndexVideo = async () => {
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.webm.nameText);
 
-  // Get tab-index focus query item texts.
-  const backText = await i18nQuickViewLabelText('Back');
-  const openText = await i18nQuickViewLabelText('Open');
-  const deleteText = await i18nQuickViewLabelText('Delete');
-  const fileInfoText = await i18nQuickViewLabelText('File info');
-
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="${backText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${openText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${deleteText}"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="${fileInfoText}"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
+    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
   ];
 
   for (const query of tabQueries) {
@@ -3027,7 +2926,7 @@ testcase.openQuickViewTabIndexVideo = async () => {
     // Check: back should eventually get the focus again.
     const activeElement =
         await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
-    if (activeElement.attributes['aria-label'] === backText) {
+    if (activeElement.attributes['aria-label'] === 'Back') {
       break;
     }
   }
@@ -3608,10 +3507,6 @@ testcase.openQuickViewEncryptedFile = async () => {
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.testCSEFile.nameText);
 
-  // Get the content panel 'No preview available' item text.
-  const noPreviewAvailableText =
-      await i18nQuickViewLabelText('No preview available');
-
   // Wait for the innerContentPanel to load and display its content.
   function checkInnerContentPanel(elements) {
     const haveElements = Array.isArray(elements) && elements.length === 1;
@@ -3619,7 +3514,7 @@ testcase.openQuickViewEncryptedFile = async () => {
       return pending(caller, 'Waiting for inner content panel to load.');
     }
     // Check: the preview should not be shown.
-    chrome.test.assertEq(noPreviewAvailableText, elements[0].innerText);
+    chrome.test.assertEq('No preview available', elements[0].innerText);
     return;
   }
   await repeatUntil(async () => {
@@ -3629,6 +3524,5 @@ testcase.openQuickViewEncryptedFile = async () => {
 
   // Check: the correct file mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
-  chrome.test.assertEq(
-      await i18nQuickViewLabelText('Encrypted') + ' text/plain', mimeType);
+  chrome.test.assertEq('Encrypted text/plain', mimeType);
 };

@@ -195,19 +195,11 @@ testcase.searchHidingViaTab = async () => {
   // Wait for the search box to expand.
   await remoteCall.waitForElementLost(appId, '#search-wrapper[collapsed]');
 
-  // Returns $i18n{} label if code coverage is enabled.
-  let expectedLabelText = 'Search';
-  const isDevtoolsCoverageActive =
-      await sendTestMessage({name: 'isDevtoolsCoverageActive'});
-  if (isDevtoolsCoverageActive === 'true') {
-    expectedLabelText = '$i18n{SEARCH_TEXT_LABEL}';
-  }
-
   // Verify the search input has focus.
   const input =
       await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
   chrome.test.assertEq(input.attributes['id'], 'input');
-  chrome.test.assertEq(input.attributes['aria-label'], expectedLabelText);
+  chrome.test.assertEq(input.attributes['aria-label'], 'Search');
 
   // Send Tab key to focus the next element.
   const result = await sendTestMessage({name: 'dispatchTabKey'});

@@ -169,16 +169,10 @@ async function requestMountNotInMenuInternal(manifest) {
     return;
   }
 
-  const isDevtoolsCoverageActive =
-      await sendTestMessage({name: 'isDevtoolsCoverageActive'});
-  const expectedServicesText = isDevtoolsCoverageActive === 'true' ?
-      '$i18n{SHOW_PROVIDERS_BUTTON_LABEL}' :
-      'Services';
-
   // Since a provider is installed (here isSmbEnabled), we need to test that
   // 'providers-menu' sub-menu does not contain the |manifest| provider.
   chrome.test.assertTrue(isSmbEnabled);
-  chrome.test.assertEq(expectedServicesText, element.text);
+  chrome.test.assertEq(element.text, 'Services');
   chrome.test.assertEq(
       '#show-providers-submenu', element.attributes['command']);
   chrome.test.assertEq('#providers-menu', element.attributes['sub-menu']);
