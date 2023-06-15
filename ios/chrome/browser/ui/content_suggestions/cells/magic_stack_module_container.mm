@@ -84,6 +84,10 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     titleStackView.alignment = UIStackViewAlignmentCenter;
     titleStackView.axis = UILayoutConstraintAxisHorizontal;
     titleStackView.distribution = UIStackViewDistributionFill;
+    // Resist Vertical expansion so all titles are the same height, allowing
+    // content view to fill the rest of the module space.
+    [titleStackView setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisVertical];
 
     UILabel* title = [[UILabel alloc] init];
     title.text = [MagicStackModuleContainer titleStringForModule:type];
@@ -130,6 +134,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     }
     if ([self shouldShowSeparator]) {
       UIView* separator = [[UIView alloc] init];
+      [separator setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                   forAxis:UILayoutConstraintAxisVertical];
       separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
       [stackView addArrangedSubview:separator];
       [NSLayoutConstraint activateConstraints:@[

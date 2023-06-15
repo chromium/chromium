@@ -28,6 +28,8 @@ const CGFloat kSeparatorHeight = 0.5;
     rowsStackView.axis = UILayoutConstraintAxisVertical;
     rowsStackView.translatesAutoresizingMaskIntoConstraints = NO;
     rowsStackView.alignment = UIStackViewAlignmentLeading;
+    [rowsStackView setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                     forAxis:UILayoutConstraintAxisVertical];
     // Ensures that rows have similar height.
     rowsStackView.distribution = UIStackViewDistributionFillProportionally;
     NSUInteger index = 0;
@@ -49,7 +51,16 @@ const CGFloat kSeparatorHeight = 0.5;
       index++;
     }
     [self addSubview:rowsStackView];
-    AddSameConstraints(rowsStackView, self);
+    [NSLayoutConstraint activateConstraints:@[
+      [rowsStackView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [rowsStackView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [rowsStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
+      // This is necessary to allow for the container to expand to fill the
+      // module instead of the title.
+      [rowsStackView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.bottomAnchor]
+    ]];
   }
   return self;
 }
