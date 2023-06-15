@@ -220,6 +220,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously disabled at https://crbug.com/1075895
+    @DisabledTest(message = "See crbug.com/1455161") // Disabled because it is flaky
     public void testTapGesturesNearbyKeepSelecting() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
