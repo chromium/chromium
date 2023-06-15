@@ -114,6 +114,10 @@ template("single_msvc_toolchain") {
       # lld-link includes a replacement for lib.exe that can produce thin
       # archives and understands bitcode (for lto builds).
       link = "${_clang_bin_path}/lld-link${_exe}"
+      cc_linkflags = ""
+      if (toolchain_has_rust) {
+        rust_linkflags = ""
+      }
       if (host_os == "win") {
         # Flip the slashes so that copy/paste of the commands works.
         link = string_replace(link, "/", "\\")
@@ -121,7 +125,10 @@ template("single_msvc_toolchain") {
       lib = "$link /lib"
       if (host_os != "win") {
         # See comment adding --rsp-quoting to $cl above for more information.
-        link = "$link --rsp-quoting=posix"
+        cc_linkflags += " --rsp-quoting=posix"
+        if (toolchain_has_rust) {
+          rust_linkflags += " -Clink-arg=--rsp-quoting=posix"
+        }
       }
     } else {
       lib = "lib.exe"
@@ -325,7 +332,7 @@ template("single_msvc_toolchain") {
       rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
       rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
       rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
-      rustc_windows_args = " -Clinker=$link $rustc_common_args"
+      rustc_windows_args = " -Clinker=$link$rust_linkflags $rustc_common_args"
 
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
@@ -485,7 +492,7 @@ template("single_msvc_toolchain") {
       rspfile = "${dllname}.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_wrapper$link \"/OUT:$dllname\" /nologo ${sys_lib_flags} \"/IMPLIB:$libname\" /DLL \"/PDB:$pdbname\" \"@$rspfile\""
+      command = "$linker_wrapper$link$cc_linkflags \"/OUT:$dllname\" /nologo ${sys_lib_flags} \"/IMPLIB:$libname\" /DLL \"/PDB:$pdbname\" \"@$rspfile\""
 
       default_output_extension = ".dll"
       default_output_dir = "{{root_out_dir}}"
@@ -520,7 +527,7 @@ template("single_msvc_toolchain") {
       rspfile = "${dllname}.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_wrapper$link \"/OUT:$dllname\" /nologo ${sys_lib_flags} /DLL \"/PDB:$pdbname\" \"@$rspfile\""
+      command = "$linker_wrapper$link$cc_linkflags \"/OUT:$dllname\" /nologo ${sys_lib_flags} /DLL \"/PDB:$pdbname\" \"@$rspfile\""
 
       default_output_extension = ".dll"
       default_output_dir = "{{root_out_dir}}"
@@ -543,7 +550,7 @@ template("single_msvc_toolchain") {
       rspfile = "$exename.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_wrapper$link \"/OUT:$exename\" /nologo ${sys_lib_flags} \"/PDB:$pdbname\" \"@$rspfile\""
+      command = "$linker_wrapper$link$cc_linkflags \"/OUT:$exename\" /nologo ${sys_lib_flags} \"/PDB:$pdbname\" \"@$rspfile\""
 
       default_output_extension = ".exe"
       default_output_dir = "{{root_out_dir}}"
