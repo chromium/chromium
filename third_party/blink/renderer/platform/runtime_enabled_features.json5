@@ -1281,7 +1281,6 @@
     {
       name: "DelegatedInkTrails",
       status: "stable",
-      base_feature: "none",
     },
     // https://github.com/w3c/resource-timing/pull/343
     {
