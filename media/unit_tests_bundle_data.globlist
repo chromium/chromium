@@ -6,6 +6,8 @@
 # files are used to update their .filelist counterparts.
 
 //media/test/data/**
+//media/formats/mp4/h264_annex_b_fuzz_corpus/**
+//media/formats/mp4/h265_annex_b_fuzz_corpus/**
 -//media/test/data/OWNERS
 -//media/test/data/COPYING
 -//media/test/data/README.md

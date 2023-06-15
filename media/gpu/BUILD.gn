@@ -64,7 +64,7 @@ component("gpu") {
     "//remoting/host:common",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     # On Mac, content/common reaches into here to do some pre-sandbox
     # initialization.
     visibility += [ "//content/common" ]
@@ -619,7 +619,7 @@ source_set("unit_tests") {
     libs = [ "dxguid.lib" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [ "//media/gpu/mac:unit_tests" ]
   }
 
