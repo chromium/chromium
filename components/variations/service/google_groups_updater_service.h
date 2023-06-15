@@ -15,8 +15,14 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace variations {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kOsDogfoodGroupsSyncPrefName[];
+#else
 extern const char kDogfoodGroupsSyncPrefName[];
+#endif
 extern const char kDogfoodGroupsSyncPrefGaiaIdKey[];
+}  // namespace variations
 
 BASE_DECLARE_FEATURE(kVariationsGoogleGroupFiltering);
 

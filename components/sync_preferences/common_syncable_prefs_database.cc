@@ -104,7 +104,7 @@ enum {
   kPrefAlwaysTranslateList = 59,
   kPrefNeverPromptSitesWithTime = 60,
   kPrefTranslateRecentTarget = 61,
-  kPrefDogfoodGroups = 62,
+  kDogfoodGroupsSyncPrefName = 62,
   kSyncableMergeableDictPrefForTesting = 63,  // For tests.
   kAutofillPaymentCvcStorageAndFilling = 64,
   // See components/sync_preferences/README.md about adding new entries here.
@@ -295,9 +295,13 @@ const auto& SyncablePreferences() {
         {translate::prefs::kPrefTranslateRecentTarget,
          {syncable_prefs_ids::kPrefTranslateRecentTarget, syncer::PREFERENCES,
           false}},
-        {kDogfoodGroupsSyncPrefName,
-         {syncable_prefs_ids::kPrefDogfoodGroups, syncer::PRIORITY_PREFERENCES,
-          false}},
+// For Ash, the OS_PRIORITY_PREFERENCES equivalent is defined in
+// chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc instead.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+        {variations::kDogfoodGroupsSyncPrefName,
+         {syncable_prefs_ids::kDogfoodGroupsSyncPrefName,
+          syncer::PRIORITY_PREFERENCES, false}},
+#endif
         {kSyncablePrefForTesting,
          {syncable_prefs_ids::kSyncablePrefForTesting, syncer::PREFERENCES,
           false}},

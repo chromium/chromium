@@ -27,11 +27,16 @@ class GoogleGroupsUpdaterServiceTest : public ::testing::Test {
     base::Value::List pref_groups_list;
     for (const std::string& group : groups) {
       base::Value::Dict group_dict;
-      group_dict.Set(kDogfoodGroupsSyncPrefGaiaIdKey, group);
+      group_dict.Set(variations::kDogfoodGroupsSyncPrefGaiaIdKey, group);
       pref_groups_list.Append(std::move(group_dict));
     }
-    source_prefs_.SetList(kDogfoodGroupsSyncPrefName,
-                          std::move(pref_groups_list));
+    source_prefs_.SetList(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        variations::kOsDogfoodGroupsSyncPrefName,
+#else
+        variations::kDogfoodGroupsSyncPrefName,
+#endif
+        std::move(pref_groups_list));
   }
 
   void SetTargetPref(std::vector<std::string> groups) {

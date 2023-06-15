@@ -51,6 +51,10 @@ void FieldTrialServiceAsh::AddFieldTrialObserver(
 
   // Send active field trial groups when the observer is added
   // before subscribing field trial group updates.
+  //
+  // We do not send low anonymity field trial groups, since the only reason we
+  // send field trial groups to Lacros is for UMA reporting (and low anonymity
+  // groups are not reported to UMA).
   base::FieldTrial::ActiveGroups active_groups;
   base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   std::vector<mojom::FieldTrialGroupInfoPtr> infos;

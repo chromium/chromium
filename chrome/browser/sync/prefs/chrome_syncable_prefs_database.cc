@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "components/metrics/demographics/user_demographics.h"
+#include "components/variations/service/google_groups_updater_service.h"
 #include "ui/events/ash/pref_names.h"
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -253,6 +254,7 @@ enum {
   kAccessibilityColorVisionCorrectionAmount = 100201,
   kAccessibilityColorVisionDeficiencyType = 100202,
   kShowDeskButtonInShelf = 100203,
+  kOsDogfoodGroupsSyncPrefName = 100204,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -616,6 +618,9 @@ const auto& SyncablePreferences() {
         {guest_os::prefs::kGuestOsTerminalSettings,
          {syncable_prefs_ids::kGuestOsTerminalSettings, syncer::OS_PREFERENCES,
           false}},
+        {variations::kOsDogfoodGroupsSyncPrefName,
+         {syncable_prefs_ids::kOsDogfoodGroupsSyncPrefName,
+          syncer::OS_PRIORITY_PREFERENCES, false}},
         {language::prefs::kPreferredLanguagesSyncable,
          {syncable_prefs_ids::kPreferredLanguagesSyncable,
           syncer::OS_PREFERENCES, false}},
