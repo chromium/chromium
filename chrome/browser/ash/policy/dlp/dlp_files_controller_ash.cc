@@ -906,12 +906,6 @@ void DlpFilesControllerAsh::SetFileSystemContextForTesting(
   g_file_system_context_for_testing = file_system_context;
 }
 
-void DlpFilesControllerAsh::SetNewFilesPolicyUXEnabledForTesting(
-    bool is_enabled) {
-  kNewFilesPolicyUXEnabled = is_enabled;
-}
-
-// Maps |file_path| to data_controls::Component if possible.
 absl::optional<data_controls::Component>
 DlpFilesControllerAsh::MapFilePathtoPolicyComponent(
     Profile* profile,

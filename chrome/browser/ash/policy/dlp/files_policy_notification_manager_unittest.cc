@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
+#include <string>
+
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -18,6 +21,8 @@
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,6 +39,9 @@ namespace policy {
 namespace {
 
 using testing::Field;
+
+// The id of the first notification FPNM shows.
+constexpr char kNotificationId[] = "dlp_files_0";
 
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
@@ -621,31 +629,133 @@ INSTANTIATE_TEST_SUITE_P(
             file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
             u"Blocked move")));
 
-class FPNMShowBlockTest
+class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
+                          public ::testing::WithParamInterface<
+                              std::tuple<dlp::FileAction, std::u16string>> {
+  void SetUp() override {
+    FilesPolicyNotificationManagerTest::SetUp();
+    DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
+        /*is_enabled=*/true);
+  }
+};
+
+class FPNMShowWarningTest
     : public FilesPolicyNotificationManagerTest,
-      public ::testing::WithParamInterface<std::tuple<dlp::FileAction>> {};
+      public ::testing::WithParamInterface<
+          std::tuple<dlp::FileAction, std::u16string, std::u16string>> {
+  void SetUp() override {
+    FilesPolicyNotificationManagerTest::SetUp();
+    DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
+        /*is_enabled=*/true);
+  }
+};
 
 INSTANTIATE_TEST_SUITE_P(
     PolicyFilesNotify,
     FPNMShowBlockTest,
-    ::testing::Values(std::make_tuple(dlp::FileAction::kDownload),
-                      std::make_tuple(dlp::FileAction::kUpload),
-                      std::make_tuple(dlp::FileAction::kOpen),
-                      std::make_tuple(dlp::FileAction::kShare)));
+    ::testing::Values(
+        std::make_tuple(dlp::FileAction::kDownload, u"Blocked download"),
+        std::make_tuple(dlp::FileAction::kUpload, u"Blocked upload"),
+        std::make_tuple(dlp::FileAction::kOpen, u"Blocked open"),
+        std::make_tuple(dlp::FileAction::kShare, u"Blocked open"),
+        std::make_tuple(dlp::FileAction::kCopy, u"Blocked copy"),
+        std::make_tuple(dlp::FileAction::kMove, u"Blocked move"),
+        std::make_tuple(dlp::FileAction::kTransfer, u"Blocked transfer")));
 
-TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification) {
-  auto [action] = GetParam();
-  const std::string notification_id = "dlp_files_0";
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMShowWarningTest,
+    ::testing::Values(std::make_tuple(dlp::FileAction::kDownload,
+                                      u"Review is required before downloading",
+                                      u"Download anyway"),
+                      std::make_tuple(dlp::FileAction::kUpload,
+                                      u"Review is required before uploading",
+                                      u"Upload anyway"),
+                      std::make_tuple(dlp::FileAction::kOpen,
+                                      u"Review is required before opening",
+                                      u"Open anyway"),
+                      std::make_tuple(dlp::FileAction::kShare,
+                                      u"Review is required before opening",
+                                      u"Open anyway"),
+                      std::make_tuple(dlp::FileAction::kCopy,
+                                      u"Review is required before copying",
+                                      u"Copy anyway"),
+                      std::make_tuple(dlp::FileAction::kMove,
+                                      u"Review is required before moving",
+                                      u"Move anyway"),
+                      std::make_tuple(dlp::FileAction::kTransfer,
+                                      u"Review is required before transferring",
+                                      u"Transfer anyway")));
 
+TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
+  auto [action, title] = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  fpnm_->ShowDlpBlockedFiles(/*task_id=*/absl::nullopt,
+                             {base::FilePath("file1.txt")}, action);
+  absl::optional<message_center::Notification> notification =
+      display_service_tester.GetNotification(kNotificationId);
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"File was blocked");
+  EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
+  EXPECT_EQ(notification->buttons()[1].title, u"Learn more");
+}
+
+TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Multi) {
+  auto [action, title] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   fpnm_->ShowDlpBlockedFiles(
       /*task_id=*/absl::nullopt,
       {base::FilePath("file1.txt"), base::FilePath("file2.txt"),
        base::FilePath("file3.txt")},
       action);
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id));
+  absl::optional<message_center::Notification> notification =
+      display_service_tester.GetNotification(kNotificationId);
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"Review for further details");
+  EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
+  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+}
+
+TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
+  auto [action, title, ok_button] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  fpnm_->ShowDlpWarning(base::DoNothing(), /*task_id=*/absl::nullopt,
+                        {base::FilePath("file1.txt")},
+                        DlpFileDestination("https://example.com"), action);
+  absl::optional<message_center::Notification> notification =
+      display_service_tester.GetNotification(kNotificationId);
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"File may contain sensitive content");
+  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
+  EXPECT_EQ(notification->buttons()[1].title, ok_button);
+}
+
+TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
+  auto [action, title, ok_button] = GetParam();
+
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  fpnm_->ShowDlpWarning(
+      base::DoNothing(), /*task_id=*/absl::nullopt,
+      {base::FilePath("file1.txt"), base::FilePath("file2.txt")},
+      DlpFileDestination("https://example.com"), action);
+  absl::optional<message_center::Notification> notification =
+      display_service_tester.GetNotification(kNotificationId);
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), u"Files may contain sensitive content");
+  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
+  EXPECT_EQ(notification->buttons()[1].title, u"Review");
 }
 
 }  // namespace policy

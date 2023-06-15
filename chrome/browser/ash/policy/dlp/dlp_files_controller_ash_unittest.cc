@@ -374,7 +374,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
       blink::StorageKey(), "archive",
       base::FilePath("file.rar/path/in/archive"));
 
-  files_controller_->SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
+  DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
   EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
                           /*task_id=*/{1},
                           std::vector<base::FilePath>{files_urls[0].path(),
@@ -574,7 +574,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  files_controller_->SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
+  DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
   EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
                           /*task_id=*/{1},
                           std::vector<base::FilePath>{files_urls[1].path(),

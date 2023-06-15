@@ -189,9 +189,8 @@ class DlpFilesControllerAsh : public DlpFilesController {
   void SetFileSystemContextForTesting(
       storage::FileSystemContext* file_system_context);
 
-  void SetNewFilesPolicyUXEnabledForTesting(bool is_enabled);
-
  protected:
+  // Maps |file_path| to data_controls::Component if possible.
   absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) override;
