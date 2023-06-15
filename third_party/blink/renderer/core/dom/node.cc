@@ -2720,47 +2720,6 @@ void Node::RemoveAllEventListenersRecursively() {
   }
 }
 
-namespace {
-
-// Helper object to allocate EventTargetData which is otherwise only used
-// through EventTargetWithInlineData.
-class EventTargetDataObject final
-    : public GarbageCollected<EventTargetDataObject> {
- public:
-  void Trace(Visitor* visitor) const { visitor->Trace(data_); }
-
-  EventTargetData& GetEventTargetData() { return data_; }
-
- private:
-  EventTargetData data_;
-};
-
-}  // namespace
-
-using EventTargetDataMap =
-    HeapHashMap<WeakMember<Node>, Member<EventTargetDataObject>>;
-static EventTargetDataMap& GetEventTargetDataMap() {
-  DEFINE_STATIC_LOCAL(Persistent<EventTargetDataMap>, map,
-                      (MakeGarbageCollected<EventTargetDataMap>()));
-  return *map;
-}
-
-EventTargetData* Node::GetEventTargetData() {
-  return HasEventTargetData()
-             ? &GetEventTargetDataMap().at(this)->GetEventTargetData()
-             : nullptr;
-}
-
-EventTargetData& Node::EnsureEventTargetData() {
-  if (HasEventTargetData())
-    return GetEventTargetDataMap().at(this)->GetEventTargetData();
-  DCHECK(!GetEventTargetDataMap().Contains(this));
-  auto* data = MakeGarbageCollected<EventTargetDataObject>();
-  GetEventTargetDataMap().Set(this, data);
-  SetHasEventTargetData(true);
-  return data->GetEventTargetData();
-}
-
 const HeapVector<Member<MutationObserverRegistration>>*
 Node::MutationObserverRegistry() {
   if (!HasRareData())
@@ -2905,8 +2864,9 @@ void Node::NotifyMutationObserversNodeWillDetach() {
 }
 
 void Node::HandleLocalEvents(Event& event) {
-  if (!HasEventTargetData())
+  if (!GetEventTargetData()) {
     return;
+  }
 
   if (IsDisabledFormControl(this) && IsA<MouseEvent>(event) &&
       !RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {

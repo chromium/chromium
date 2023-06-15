@@ -109,9 +109,8 @@ struct FiringEventIterator {
 };
 using FiringEventIteratorVector = Vector<FiringEventIterator, 1>;
 
-class CORE_EXPORT EventTargetData final {
-  DISALLOW_NEW();
-
+class CORE_EXPORT EventTargetData final
+    : public GarbageCollected<EventTargetData> {
  public:
   EventTargetData();
   EventTargetData(const EventTargetData&) = delete;
@@ -230,6 +229,8 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   // window.document.body.
   bool IsTopLevelNode();
 
+  EventTargetData* GetEventTargetData();
+
   // GlobalEventHandlers:
   // These event listener helpers are defined internally for all EventTargets,
   // but they will only actually be web-exposed for interfaces that include
@@ -339,6 +340,8 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(webkittransitionend, kWebkitTransitionEnd)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(wheel, kWheel)
 
+  void Trace(Visitor*) const override;
+
  protected:
   EventTarget();
 
@@ -360,10 +363,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
 
   virtual DispatchEventResult DispatchEventInternal(Event&);
 
-  // Subclasses should likely not override these themselves; instead, they
-  // should subclass EventTargetWithInlineData.
-  virtual EventTargetData* GetEventTargetData() = 0;
-  virtual EventTargetData& EnsureEventTargetData() = 0;
+  EventTargetData& EnsureEventTargetData();
 
  private:
   LocalDOMWindow* ExecutingWindow();
@@ -381,6 +381,8 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
 
   void DispatchEnqueuedEvent(Event*, ExecutionContext*);
 
+  Member<EventTargetData> data_;
+
   friend class EventListenerIterator;
 };
 
@@ -388,15 +390,6 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
 class CORE_EXPORT EventTargetWithInlineData : public EventTarget {
  public:
   ~EventTargetWithInlineData() override = default;
-
-  void Trace(Visitor* visitor) const override;
-
- protected:
-  EventTargetData* GetEventTargetData() final { return &data_; }
-  EventTargetData& EnsureEventTargetData() final { return data_; }
-
- private:
-  EventTargetData data_;
 };
 
 DISABLE_CFI_PERF

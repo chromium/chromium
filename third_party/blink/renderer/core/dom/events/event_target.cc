@@ -753,6 +753,17 @@ DispatchEventResult EventTarget::DispatchEventInternal(Event& event) {
   return dispatch_result;
 }
 
+EventTargetData* EventTarget::GetEventTargetData() {
+  return data_.Get();
+}
+
+EventTargetData& EventTarget::EnsureEventTargetData() {
+  if (!data_) {
+    data_ = MakeGarbageCollected<EventTargetData>();
+  }
+  return *data_;
+}
+
 static const AtomicString& LegacyType(const Event& event) {
   if (event.type() == event_type_names::kTransitionend)
     return event_type_names::kWebkitTransitionEnd;
@@ -1014,9 +1025,9 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
   DispatchEvent(*event);
 }
 
-void EventTargetWithInlineData::Trace(Visitor* visitor) const {
+void EventTarget::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
   visitor->Trace(data_);
-  EventTarget::Trace(visitor);
 }
 
 STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kFalse,
