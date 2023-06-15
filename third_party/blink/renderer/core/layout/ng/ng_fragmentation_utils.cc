@@ -113,12 +113,29 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
                                          const NGBoxFragmentBuilder& builder) {
   if (child.IsInline())
     return EBreakBetween::kAuto;
+
+  // Since it's not an inline node, if we have a fragment at all, it has to be a
+  // box fragment.
+  const NGPhysicalBoxFragment* box_fragment = nullptr;
+  if (layout_result.Status() == NGLayoutResult::kSuccess) {
+    box_fragment = &To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
+    if (!box_fragment->IsFirstForNode()) {
+      // If the node is resumed after a break, we are not *before* it anymore,
+      // so ignore values. We normally don't even consider breaking before a
+      // resumed node, since there normally is no container separation. The
+      // normal place to resume is at the very start of the fragmentainer -
+      // cannot break there!  However, there are cases where a node is resumed
+      // at a location past the start of the fragmentainer, e.g. when printing
+      // monolithic overflowing content.
+      return EBreakBetween::kAuto;
+    }
+  }
+
   EBreakBetween break_before = JoinFragmentainerBreakValues(
       child.Style().BreakBefore(), layout_result.InitialBreakBefore());
   break_before = builder.JoinedBreakBetweenValue(break_before);
   const NGConstraintSpace& space = builder.ConstraintSpace();
-  if (space.IsPaginated() &&
-      layout_result.Status() == NGLayoutResult::kSuccess &&
+  if (space.IsPaginated() && box_fragment &&
       !IsForcedBreakValue(builder.ConstraintSpace(), break_before)) {
     AtomicString current_name = builder.PageName();
     if (current_name == g_null_atom) {
@@ -126,9 +143,7 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
     }
     // If the page name propagated from the child differs from what we already
     // have, we need to break before the child.
-    const auto& fragment =
-        To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
-    if (fragment.PageName() != current_name) {
+    if (box_fragment->PageName() != current_name) {
       return EBreakBetween::kPage;
     }
   }
