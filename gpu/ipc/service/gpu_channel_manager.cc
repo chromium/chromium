@@ -482,6 +482,11 @@ GpuChannel* GpuChannelManager::EstablishChannel(
     bool is_gpu_host) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // Remove existing GPU channel with same client id before creating
+  // new GPU channel. if not, new SyncPointClientState in SyncPointManager
+  // will be destroyed when existing GPU channel is destroyed.
+  RemoveChannel(client_id);
+
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
       task_runner_, io_task_runner_, client_id, client_tracing_id, is_gpu_host,
