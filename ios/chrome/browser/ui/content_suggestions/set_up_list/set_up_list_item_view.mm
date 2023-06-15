@@ -287,9 +287,8 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label = [[CrossfadeLabel alloc] init];
   label.text = [self descriptionText];
-  label.numberOfLines = 0;
-  label.lineBreakMode = NSLineBreakByWordWrapping;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.numberOfLines = 4;
+  label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:_config.description_font];
   if (_complete) {
     label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
