@@ -32,6 +32,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "ash/wallpaper/online_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
@@ -95,9 +96,6 @@ std::unique_ptr<WallpaperImageDownloader> g_test_image_downloader;
 
 // The file name of the policy wallpaper.
 constexpr char kPolicyWallpaperFile[] = "policy-controlled.jpeg";
-
-// File path suffix of resized small wallpapers.
-constexpr char kSmallWallpaperSuffix[] = "_small";
 
 // How long to wait reloading the wallpaper after the display size has changed.
 constexpr base::TimeDelta kWallpaperReloadDelay = base::Milliseconds(100);
@@ -165,20 +163,6 @@ base::FilePath GetUserGooglePhotosWallpaperDir(const AccountId& account_id) {
   DCHECK(account_id.HasAccountIdKey());
   return GlobalChromeOSGooglePhotosWallpapersDir().Append(
       account_id.GetAccountIdKey());
-}
-
-// Returns the path of the online wallpaper corresponding to |url| and
-// |resolution|.
-base::FilePath GetOnlineWallpaperPath(const std::string& url,
-                                      WallpaperResolution resolution) {
-  std::string file_name = GURL(url).ExtractFileName();
-  if (resolution == WallpaperResolution::kSmall) {
-    file_name = base::FilePath(file_name)
-                    .InsertBeforeExtension(kSmallWallpaperSuffix)
-                    .value();
-  }
-  DCHECK(!GlobalChromeOSWallpapersDir().empty());
-  return GlobalChromeOSWallpapersDir().Append(file_name);
 }
 
 // Returns wallpaper subdirectory name for current resolution.
@@ -297,67 +281,6 @@ bool IsActiveUser(const AccountId& account_id) {
   return session && session->user_info.account_id == account_id;
 }
 
-// Returns the file path of the wallpaper corresponding to |url| if it exists in
-// local file system, otherwise returns an empty file path.
-base::FilePath GetExistingOnlineWallpaperPath(const std::string& url) {
-  WallpaperResolution resolution = GetAppropriateResolution();
-  base::FilePath wallpaper_path = GetOnlineWallpaperPath(url, resolution);
-  if (base::PathExists(wallpaper_path))
-    return wallpaper_path;
-
-  // Falls back to the large wallpaper if the small one doesn't exist.
-  if (resolution == WallpaperResolution::kSmall) {
-    wallpaper_path = GetOnlineWallpaperPath(url, WallpaperResolution::kLarge);
-    if (base::PathExists(wallpaper_path))
-      return wallpaper_path;
-  }
-  return base::FilePath();
-}
-
-// Checks the file paths for the given online wallpaper variants. Return empty
-// map if not all paths are available.
-base::flat_map<std::string, base::FilePath> GetOnlineWallpaperVariantPaths(
-    const std::vector<OnlineWallpaperVariant>& variants) {
-  base::flat_map<std::string, base::FilePath> url_to_file_path_map;
-  WallpaperResolution resolution = GetAppropriateResolution();
-
-  for (const auto& variant : variants) {
-    const std::string& url = variant.raw_url.spec();
-    base::FilePath variant_path = GetOnlineWallpaperPath(url, resolution);
-    base::FilePath large_variant_path =
-        GetOnlineWallpaperPath(url, WallpaperResolution::kLarge);
-    if (base::PathExists(variant_path)) {
-      url_to_file_path_map[url] = variant_path;
-    } else if (resolution == WallpaperResolution::kSmall &&
-               base::PathExists(large_variant_path)) {
-      // Falls back to the large wallpaper if the small one doesn't exist.
-      url_to_file_path_map[url] = large_variant_path;
-    } else {
-      return base::flat_map<std::string, base::FilePath>();
-    }
-  }
-  return url_to_file_path_map;
-}
-
-// Saves the online wallpaper with both large and small sizes to local file
-// system.
-void SaveOnlineWallpaper(const std::string& url,
-                         WallpaperLayout layout,
-                         gfx::ImageSkia image) {
-  DCHECK(!GlobalChromeOSWallpapersDir().empty());
-  if (!base::DirectoryExists(GlobalChromeOSWallpapersDir()) &&
-      !base::CreateDirectory(GlobalChromeOSWallpapersDir())) {
-    return;
-  }
-  ResizeAndSaveWallpaper(
-      image, GetOnlineWallpaperPath(url, WallpaperResolution::kLarge), layout,
-      image.width(), image.height());
-  ResizeAndSaveWallpaper(
-      image, GetOnlineWallpaperPath(url, WallpaperResolution::kSmall),
-      WALLPAPER_LAYOUT_CENTER_CROPPED, kSmallWallpaperMaxWidth,
-      kSmallWallpaperMaxHeight);
-}
-
 // Creates the google_photos directory in the local file system for caching
 // Google Photos wallpapers if it does not already exist.
 void EnsureGooglePhotosDirectoryExists(const AccountId& account_id) {
@@ -381,19 +304,6 @@ user_manager::UserType GetUserType(const AccountId& id) {
   }
 
   return user_session->user_info.type;
-}
-
-scoped_refptr<base::RefCountedMemory> ReadFile(
-    const base::FilePath& file_path) {
-  if (file_path.empty()) {
-    return nullptr;
-  }
-
-  std::string data;
-  if (!base::ReadFileToString(file_path, &data)) {
-    return nullptr;
-  }
-  return base::MakeRefCounted<base::RefCountedString>(std::move(data));
 }
 
 // Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the
@@ -500,6 +410,8 @@ WallpaperControllerImpl::WallpaperControllerImpl(
       blur_manager_(std::make_unique<WallpaperBlurManager>()),
       wallpaper_reload_delay_(kWallpaperReloadDelay),
       wallpaper_image_downloader_(std::move(image_downloader)),
+      online_wallpaper_manager_(
+          OnlineWallpaperManager(wallpaper_image_downloader_.get())),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
@@ -959,28 +871,11 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
   for (auto& observer : observers_)
     observer.OnOnlineWallpaperSet(params);
 
-  auto on_load_from_disc_complete = base::BindOnce(
-      &WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
-      set_wallpaper_weak_factory_.GetWeakPtr(), params, std::move(callback));
-
-  if (params.variants.empty()) {
-    // |params.variants| can be empty for users who use the old wallpaper
-    // picker. If that's the case, just follow the old flow.
-    sequenced_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetExistingOnlineWallpaperPath, params.url.spec()),
-        base::BindOnce(&WallpaperControllerImpl::SetOnlineWallpaperFromPath,
-                       set_wallpaper_weak_factory_.GetWeakPtr(),
-                       std::move(on_load_from_disc_complete), params));
-  } else {
-    sequenced_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetOnlineWallpaperVariantPaths, params.variants),
-        base::BindOnce(
-            &WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths,
-            set_wallpaper_weak_factory_.GetWeakPtr(),
-            std::move(on_load_from_disc_complete), params));
-  }
+  online_wallpaper_manager_.DownloadAndSaveOnlineWallpaper(
+      GlobalChromeOSWallpapersDir(), params,
+      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
+                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
+                     std::move(callback)));
 }
 
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
@@ -1539,11 +1434,8 @@ void WallpaperControllerImpl::LoadPreviewImage(
   }
 
   const auto& preview_variant = *it;
-  sequenced_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetExistingOnlineWallpaperPath,
-                     preview_variant.raw_url.spec())
-          .Then(base::BindOnce(&ReadFile)),
+  online_wallpaper_manager_.LoadOnlineWallpaperPreview(
+      GlobalChromeOSWallpapersDir(), preview_variant.raw_url,
       std::move(callback));
 }
 
@@ -1736,28 +1628,19 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     return;
   }
   AccountId account_id = GetActiveAccountId();
-  WallpaperInfo local_info;
-  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &local_info))
+  WallpaperInfo info;
+  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &info)) {
     return;
-
-  switch (local_info.type) {
-    case WallpaperType::kDaily:
-    case WallpaperType::kOnline: {
-      HandleSettingOnlineWallpaperFromWallpaperInfo(account_id, local_info);
-      break;
-    }
-    case WallpaperType::kCustomized:
-    case WallpaperType::kDefault:
-    case WallpaperType::kPolicy:
-    case WallpaperType::kThirdParty:
-    case WallpaperType::kDevice:
-    case WallpaperType::kOneShot:
-    case WallpaperType::kOnceGooglePhotos:
-    case WallpaperType::kDailyGooglePhotos:
-    case WallpaperType::kOobe:
-    case WallpaperType::kCount:
-      return;
   }
+  if (!IsOnlineWallpaper(info.type)) {
+    return;
+  }
+
+  variant_info_fetcher_->FetchOnlineWallpaper(
+      account_id, info,
+      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
+      base::BindOnce(&WallpaperControllerImpl::RepaintOnlineWallpaper,
+                     set_wallpaper_weak_factory_.GetWeakPtr()));
 }
 
 void WallpaperControllerImpl::OnNativeThemeUpdated(
@@ -2057,39 +1940,6 @@ bool WallpaperControllerImpl::SetDefaultWallpaperInfo(
   return SetUserWallpaperInfo(account_id, info);
 }
 
-void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
-    SetWallpaperCallback callback,
-    const OnlineWallpaperParams& params,
-    const base::FilePath& file_path) {
-  bool file_exists = !file_path.empty();
-  if (!file_exists) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  ReadAndDecodeWallpaper(
-      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
-                     /*save_file=*/false, std::move(callback)),
-      file_path);
-}
-
-void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
-    SetWallpaperCallback callback,
-    const OnlineWallpaperParams& params,
-    const base::flat_map<std::string, base::FilePath>& url_to_file_path_map) {
-  if (url_to_file_path_map.empty()) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  ReadAndDecodeWallpaper(
-      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
-                     /*save_file=*/false, std::move(callback)),
-      url_to_file_path_map.at(params.url.spec()));
-}
-
 void WallpaperControllerImpl::OnWallpaperVariantsFetched(
     WallpaperType type,
     bool start_daily_refresh_timer,
@@ -2117,9 +1967,31 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
     OnFetchDailyWallpaperFailed();
 }
 
+void WallpaperControllerImpl::RepaintOnlineWallpaper(
+    absl::optional<OnlineWallpaperParams> params) {
+  if (!params) {
+    LOG(ERROR) << "Fetching online variant failed";
+    return;
+  }
+
+  WallpaperInfo new_info(*params);
+  if (current_wallpaper_ &&
+      current_wallpaper_->wallpaper_info().MatchesAsset(new_info)) {
+    DVLOG(1) << "Detected no change in online wallpaper asset";
+    return;
+  }
+
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
+  online_wallpaper_manager_.DownloadAndSaveOnlineWallpaper(
+      GlobalChromeOSWallpapersDir(), *params,
+      base::BindOnce(&WallpaperControllerImpl::SetOnlineWallpaperImpl,
+                     set_wallpaper_weak_factory_.GetWeakPtr(), *params,
+                     /*show_wallpaper=*/true));
+}
+
 void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     const OnlineWallpaperParams& params,
-    bool save_file,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
@@ -2136,20 +2008,12 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
         WallpaperType::kOnline, SetWallpaperResult::kSuccess);
   }
 
-  if (save_file) {
-    image.EnsureRepsForSupportedScales();
-    gfx::ImageSkia deep_copy(image.DeepCopy());
-    sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SaveOnlineWallpaper, params.url.spec(),
-                                  params.layout, deep_copy));
-  }
-
   const bool is_active_user = IsActiveUser(params.account_id);
   if (params.preview_mode) {
     DCHECK(is_active_user);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
         &WallpaperControllerImpl::SetOnlineWallpaperImpl,
-        weak_factory_.GetWeakPtr(), params, image, /*show_wallpaper=*/false);
+        weak_factory_.GetWeakPtr(), params, /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
         &WallpaperControllerImpl::ShowWallpaperImage,
         weak_factory_.GetWeakPtr(), image, WallpaperInfo(params),
@@ -2157,14 +2021,14 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
   } else {
-    SetOnlineWallpaperImpl(params, image, /*show_wallpaper=*/is_active_user);
+    SetOnlineWallpaperImpl(params, /*show_wallpaper=*/is_active_user, image);
   }
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperImpl(
     const OnlineWallpaperParams& params,
-    const gfx::ImageSkia& image,
-    bool show_wallpaper) {
+    bool show_wallpaper,
+    const gfx::ImageSkia& image) {
   WallpaperInfo wallpaper_info = WallpaperInfo(params);
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
@@ -2494,20 +2358,21 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
   DCHECK(!info.location.empty()) << " location should not be empty";
   if (IsOnlineWallpaper(info.type)) {
     auto wallpaper_path =
-        GetOnlineWallpaperPath(info.location, GetAppropriateResolution());
+        GetOnlineWallpaperPath(GlobalChromeOSWallpapersDir(),
+                               GURL(info.location), GetAppropriateResolution());
 
     // If the wallpaper exists and it already contains the correct image we
     // can return immediately.
-    CustomWallpaperMap::iterator it = wallpaper_cache_map_.find(account_id);
-    if (it != wallpaper_cache_map_.end() &&
-        it->second.first == wallpaper_path && !it->second.second.isNull())
+    if (current_wallpaper_ &&
+        current_wallpaper_->wallpaper_info().MatchesAsset(info)) {
       return;
+    }
 
-    ReadAndDecodeWallpaper(
+    online_wallpaper_manager_.LoadOnlineWallpaper(
+        GlobalChromeOSWallpapersDir(), GURL(info.location),
         base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
-                       info, /*show_wallpaper=*/true),
-        wallpaper_path);
+                       info, /*show_wallpaper=*/true));
   } else if (info.type == WallpaperType::kOnceGooglePhotos ||
              info.type == WallpaperType::kDailyGooglePhotos) {
     auto path =
@@ -2900,97 +2765,6 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       DCHECK(false) << "Synced in an unsyncable wallpaper type";
       break;
   }
-}
-
-void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
-    const OnlineWallpaperParams& params,
-    SetWallpaperCallback callback,
-    bool success) {
-  if (success) {
-    std::move(callback).Run(/*success=*/true);
-    return;
-  }
-
-  const std::vector<OnlineWallpaperVariant>& variants = params.variants;
-  if (variants.empty()) {
-    // |variants| can be empty for users who have just migrated from the old
-    // wallpaper picker to the new one.
-    wallpaper_image_downloader_->DownloadBackdropImage(
-        params.url, params.account_id,
-        base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                       set_wallpaper_weak_factory_.GetWeakPtr(), params,
-                       /*save_file=*/true, std::move(callback)));
-    return;
-  }
-
-    // Start fetching the wallpaper variants.
-    num_variants_downloaded_ = 0;
-    online_wallpaper_variant_to_use_ = gfx::ImageSkia();
-    auto on_done = base::BarrierClosure(
-        variants.size(),
-        base::BindOnce(
-            &WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded,
-            set_wallpaper_weak_factory_.GetWeakPtr(), params,
-            std::move(callback)));
-
-    for (size_t i = 0; i < variants.size(); i++) {
-    wallpaper_image_downloader_->DownloadBackdropImage(
-        variants.at(i).raw_url, params.account_id,
-        base::BindOnce(
-            &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
-            set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,
-            /*current_index=*/i));
-    }
-}
-
-void WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded(
-    const OnlineWallpaperParams& params,
-    base::RepeatingClosure on_done,
-    size_t current_index,
-    const gfx::ImageSkia& image) {
-  if (image.isNull()) {
-    LOG(WARNING) << "Image download failed " << current_index;
-    std::move(on_done).Run();
-    return;
-  }
-
-  const std::vector<OnlineWallpaperVariant>& variants = params.variants;
-  const OnlineWallpaperVariant& current_variant = variants.at(current_index);
-
-  ++num_variants_downloaded_;
-  if (params.url == current_variant.raw_url)
-    online_wallpaper_variant_to_use_ = image;
-
-  // Save the image to disk.
-  image.EnsureRepsForSupportedScales();
-  gfx::ImageSkia deep_copy(image.DeepCopy());
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SaveOnlineWallpaper, current_variant.raw_url.spec(),
-                     params.layout, deep_copy));
-  std::move(on_done).Run();
-}
-
-void WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded(
-    const OnlineWallpaperParams& params,
-    SetWallpaperCallback callback) {
-  bool success = num_variants_downloaded_ == params.variants.size() &&
-                 !online_wallpaper_variant_to_use_.isNull();
-  // Now that all variants are downloaded, there's no point in maintaining
-  // |online_wallpaper_variant_to_use_|. Keeping it around just leaves an unused
-  // reference count to the underlying image memory until the next wallpaper is
-  // "set", preventing that memory from being freed until then.
-  gfx::ImageSkia variant_to_use = online_wallpaper_variant_to_use_;
-  online_wallpaper_variant_to_use_ = gfx::ImageSkia();
-  if (!success) {
-    wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kOnline, SetWallpaperResult::kNetworkError);
-    std::move(callback).Run(success);
-    return;
-  }
-
-  OnOnlineWallpaperDecoded(params, /*save_file=*/false, std::move(callback),
-                           variant_to_use);
 }
 
 void WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe(bool success) {

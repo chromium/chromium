@@ -2200,6 +2200,8 @@ component("ash") {
     "utility/rounded_window_targeter.h",
     "utility/transformer_util.cc",
     "utility/transformer_util.h",
+    "wallpaper/online_wallpaper_manager.cc",
+    "wallpaper/online_wallpaper_manager.h",
     "wallpaper/online_wallpaper_variant_info_fetcher.cc",
     "wallpaper/online_wallpaper_variant_info_fetcher.h",
     "wallpaper/wallpaper_base_view.cc",

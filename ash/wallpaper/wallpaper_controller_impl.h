@@ -26,6 +26,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell_observer.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "ash/wallpaper/online_wallpaper_manager.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
@@ -58,6 +59,7 @@ struct ColorProfile;
 
 namespace ash {
 
+class OnlineWallpaperManager;
 class WallpaperColorCalculator;
 class WallpaperDriveFsDelegate;
 class WallpaperImageDownloader;
@@ -480,32 +482,20 @@ class ASH_EXPORT WallpaperControllerImpl
   bool SetDefaultWallpaperInfo(const AccountId& account_id,
                                const base::Time& date);
 
-  // Used as the callback of checking `WallpaperType::kOnline` wallpaper
-  // existence in `SetOnlineWallpaper`. Initiates reading and decoding
-  // the wallpaper if `file_path` is not empty.
-  void SetOnlineWallpaperFromPath(SetWallpaperCallback callback,
-                                  const OnlineWallpaperParams& params,
-                                  const base::FilePath& file_path);
-
-  // Used as the callback of checking that all the wallpaper variants' paths
-  // exist. If they do, set the online wallpaper from the given |params.url|.
-  void SetOnlineWallpaperFromVariantPaths(
-      SetWallpaperCallback callback,
-      const OnlineWallpaperParams& params,
-      const base::flat_map<std::string, base::FilePath>& url_to_file_path_map);
-
   // Handler to receive Fetch*Wallpaper variants callbacks.
   void OnWallpaperVariantsFetched(WallpaperType type,
                                   bool start_daily_refresh_timer,
                                   SetWallpaperCallback callback,
                                   absl::optional<OnlineWallpaperParams> params);
 
+  // Repaints the online wallpaper with the information from `params`.
+  // No-op if params does not exist.
+  void RepaintOnlineWallpaper(absl::optional<OnlineWallpaperParams> params);
+
   // Used as the callback of decoding wallpapers of type
-  // `WallpaperType::kOnline`. Saves the image to local file if `save_file` is
-  // true, and shows the wallpaper immediately if `params.account_id` is the
-  // active user.
+  // `WallpaperType::kOnline`. Shows the wallpaper immediately if
+  // `params.account_id` is the active user.
   void OnOnlineWallpaperDecoded(const OnlineWallpaperParams& params,
-                                bool save_file,
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
@@ -575,8 +565,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
   // |show_wallpaper| is true.
   void SetOnlineWallpaperImpl(const OnlineWallpaperParams& params,
-                              const gfx::ImageSkia& image,
-                              bool show_wallpaper);
+                              bool show_wallpaper,
+                              const gfx::ImageSkia& image);
 
   // Loads the `account_id`'s wallpaper by using `info.location`.
   // Guaranteed to work offline.
@@ -705,21 +695,6 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    const WallpaperInfo& info);
-  void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
-                                   SetWallpaperCallback callback,
-                                   bool success);
-
-  // Save the downloaded |params.variants| at |current_index|.
-  void OnOnlineWallpaperVariantDownloaded(const OnlineWallpaperParams& params,
-                                          base::RepeatingClosure on_done,
-                                          size_t current_index,
-                                          const gfx::ImageSkia& image);
-
-  // Check that all variants are downloaded successfully and set the wallpaper
-  // from |params.url|.
-  void OnAllOnlineWallpaperVariantsDownloaded(
-      const OnlineWallpaperParams& params,
-      SetWallpaperCallback callback);
 
   // Called as a callback for `SetTimeOfDayWallpaper`.
   void OnTimeOfDayWallpaperSetAfterOobe(bool success);
@@ -881,6 +856,11 @@ class ASH_EXPORT WallpaperControllerImpl
 
   const std::unique_ptr<WallpaperImageDownloader> wallpaper_image_downloader_;
 
+  // A utility class that handles file operations for online wallpapers, which
+  // include downloading and saving wallpapers to disk, or loading the
+  // wallpapers from disk.
+  OnlineWallpaperManager online_wallpaper_manager_;
+
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   ScopedSessionObserver scoped_session_observer_{this};
@@ -906,15 +886,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Called when the override wallpaper needs to be reloaded (e.g. display size
   // change). Non-empty if and only if |is_override_wallpaper_| is true.
   base::RepeatingClosure reload_override_wallpaper_callback_;
-
-  // Transient storage for the wallpaper variant (out of the N total variants
-  // that may exist for a given "unit") that was requested by the client. The
-  // other N - 1 variants are saved to disc for potential future usage. After
-  // all variants have been downloaded and saved, the
-  // |online_wallpaper_variant_to_use_| is released and passed on for further
-  // processing in the pipeline.
-  gfx::ImageSkia online_wallpaper_variant_to_use_;
-  size_t num_variants_downloaded_ = 0;
 
   // If true, use a solid color wallpaper as if it is the decoded image.
   bool bypass_decode_for_testing_ = false;

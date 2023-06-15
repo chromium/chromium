@@ -661,7 +661,6 @@ class WallpaperControllerTest : public AshTestBase {
       const std::string& url,
       const std::string& collection_id,
       WallpaperLayout layout,
-      bool save_file,
       bool preview_mode,
       bool from_user,
       uint64_t unit_id,
@@ -671,8 +670,7 @@ class WallpaperControllerTest : public AshTestBase {
         account_id, asset_id,     GURL(url), collection_id,
         layout,     preview_mode, from_user, /*daily_refresh_enabled=*/false,
         unit_id,    variants};
-    controller_->OnOnlineWallpaperDecoded(params, save_file,
-                                          std::move(callback), image);
+    controller_->OnOnlineWallpaperDecoded(params, std::move(callback), image);
   }
 
   // Returns color of the current wallpaper. Note: this function assumes the
@@ -3115,7 +3113,7 @@ TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   SetOnlineWallpaperFromImage(
       kAccountId1, kAssetId, gfx::ImageSkia(), kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
-      /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true, kUnitId,
+      /*preview_mode=*/true, /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_FALSE(success);
@@ -3134,7 +3132,7 @@ TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   SetOnlineWallpaperFromImage(
       kAccountId1, kAssetId, online_wallpaper, kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
-      /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true, kUnitId,
+      /*preview_mode=*/true, /*from_user=*/true, kUnitId,
       /*variants=*/
       std::vector<OnlineWallpaperVariant>(),
       base::BindLambdaForTesting([&run_loop](bool success) {
@@ -3230,7 +3228,7 @@ TEST_F(WallpaperControllerTest, CancelPreviewWallpaper) {
   SetOnlineWallpaperFromImage(
       kAccountId1, kAssetId, online_wallpaper, kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
-      /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true, kUnitId,
+      /*preview_mode=*/true, /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
       WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -3338,7 +3336,7 @@ TEST_F(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   SetOnlineWallpaperFromImage(
       kAccountId1, kAssetId, online_wallpaper, kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
-      /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true, kUnitId,
+      /*preview_mode=*/true, /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
       WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -3359,7 +3357,7 @@ TEST_F(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   SetOnlineWallpaperFromImage(
       kAccountId1, kAssetId, synced_online_wallpaper, kDummyUrl2,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
-      /*save_file=*/false, /*preview_mode=*/false,
+      /*preview_mode=*/false,
       /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
       WallpaperController::SetWallpaperCallback());
@@ -4382,6 +4380,69 @@ TEST_F(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
   WallpaperInfo actual;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual));
   EXPECT_TRUE(actual.MatchesAsset(expected));
+}
+
+TEST_F(WallpaperControllerTest,
+       UpdateWallpaperOnScheduleCheckpointChanged_WithReplacedAsset) {
+  SimulateUserLogin(kAccountId1);
+
+  // Enable dark mode by default.
+  Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  ClearWallpaperCount();
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
+  // Use dark mode wallpaper initially.
+  controller_->SetOnlineWallpaper(
+      params, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop->Quit();
+      }));
+  run_loop->Run();
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+
+  // Simulate a wallpaper changes from the server by changing one of the
+  // variant's url.
+  WallpaperInfo local_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &local_info));
+  std::vector<OnlineWallpaperVariant> updated_variants;
+  const std::string updated_light_url = "https://new_light_url.jpg";
+  updated_variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                                backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  updated_variants.emplace_back(kAssetId2, GURL(updated_light_url),
+                                backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  local_info.variants = updated_variants;
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(kAccountId1, local_info));
+
+  // Switch to light mode and simulate schedule checkpoint change to reflect
+  // light mode.
+  EXPECT_TRUE(Shell::Get()->dark_light_mode_controller()->IsDarkModeEnabled());
+  Shell::Get()->dark_light_mode_controller()->ToggleColorMode();
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(2, GetWallpaperCount());
+  WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
+      kAccountId1, kAssetId2, GURL(updated_light_url),
+      TestWallpaperControllerClient::kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, kUnitId, updated_variants));
+  WallpaperInfo actual;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual));
+  EXPECT_TRUE(actual.MatchesAsset(expected));
+  // Verifies the new asset is downloaded and saved to disk.
+  EXPECT_TRUE(base::PathExists(online_wallpaper_dir_.GetPath().Append(
+      GURL(updated_light_url).ExtractFileName())));
 }
 
 TEST_F(WallpaperControllerTest,
