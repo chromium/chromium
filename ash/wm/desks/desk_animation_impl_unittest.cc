@@ -164,8 +164,14 @@ TEST_F(DeskActivationAnimationTest, AnimatingAfterFastSwipe) {
   base::RunLoop run_loop;
   auto* desk_switch_animator =
       animation.GetDeskSwitchAnimatorAtIndexForTesting(0);
-  RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
-      .SetOnStartingScreenshotTakenCallback(run_loop.QuitClosure());
+  // Verify the continuous animation is triggered.
+  auto animator_test_api =
+      RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator);
+  EXPECT_EQ(animator_test_api.GetAnimatorType(),
+            DeskSwitchAnimationType::kContinuousAnimation);
+
+  animator_test_api.SetOnStartingScreenshotTakenCallback(
+      run_loop.QuitClosure());
   run_loop.Run();
 
   // Update a bit and then end swipe. Modify `last_start_or_replace_time_` to
@@ -242,6 +248,13 @@ TEST_F(OverviewDeskNavigationTest, SwitchDesksWithoutExitingOverview) {
   auto* desks_controller = DesksController::Get();
   desks_controller->ActivateAdjacentDesk(
       /*going_left=*/false, DesksSwitchSource::kDeskSwitchShortcut);
+  // Verify the continuous animation is triggered.
+  auto* desk_switch_animator =
+      desks_controller->animation()->GetDeskSwitchAnimatorAtIndexForTesting(0);
+  auto animator_test_api =
+      RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator);
+  EXPECT_EQ(animator_test_api.GetAnimatorType(),
+            DeskSwitchAnimationType::kContinuousAnimation);
   waiter.Wait();
 
   // Verify that we have switched desks and are still in overview.
@@ -272,6 +285,13 @@ TEST_F(OverviewDeskNavigationTest, ClickingMiniViewExitsOverview) {
   EXPECT_EQ(desk_2, mini_view->desk());
   DeskSwitchAnimationWaiter waiter;
   LeftClickOn(mini_view);
+  // Verify the quick animation is triggered.
+  auto* desk_switch_animator =
+      desks_controller->animation()->GetDeskSwitchAnimatorAtIndexForTesting(0);
+  auto animator_test_api =
+      RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator);
+  EXPECT_EQ(animator_test_api.GetAnimatorType(),
+            DeskSwitchAnimationType::kQuickAnimation);
   waiter.Wait();
 
   // Expect that the second desk is now active, and overview mode exited.

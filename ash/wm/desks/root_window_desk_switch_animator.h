@@ -34,21 +34,30 @@ namespace ash {
 //
 // Screenshots of the starting and ending desks are taken, and we animate
 // between them such that the starting desk can appear sliding out of the
-// screen, while the ending desk is sliding in. We take screenshots to make the
-// visible state of the desks seem constant to the user (e.g. if the starting
-// desk is in overview, it appears to remain in overview while sliding out).
-// This approach makes it possible to show an empty black space separating both
-// desks while we animate them (See |kDesksSpacing|). The ending desk may change
-// after the animation has started. In this case, a new animation will replace
-// the current one and animate to the new ending desk, requesting a new
-// screenshot if necessary.
+// screen, while the ending desk is sliding in.
 // - `starting` desk: is the currently activated desk which will be deactivated
 //    shortly.
 // - `ending` desk: is the desk desired to be activated with this animation.
-// These can be changed if the enhanced desk animations feature is enabled using
-// ReplaceAnimation() or UpdateSwipeAnimation().
+// Note: These can be changed when doing a continuous animation from the
+// keyboard or touchpad.
 //
-// The animation goes through the following phases:
+// Currently there are 2 animations with similar style:
+// 1. Quick Animation: This is triggered when user changes desk from clicking
+// chevrons and thumbnails in desk bar and any non keyboard/touchpad input
+// source. Similar to shuffling cards, starting desk is sliding out while ending
+// desk sliding in, both have sliding distances equal to 25% of root window
+// width. When sliding starts, the ending desk screenshot also fades in from 0
+// opacity to 1 opacity.
+// 2. Continuous Animation: We take screenshots to make the
+// visible state of the desks seem constant to the user when using touchpad or
+// keyboard shortcut (e.g. if the starting desk is in overview, it appears to
+// remain in overview while sliding out). This approach makes it possible to
+// show an empty black space separating both desks while we animate them (See
+// `kDesksSpacing`). The ending desk may change after the animation has started.
+// In this case, a new animation will replace the current one and animate to the
+// new ending desk, requesting a new screenshot if necessary.
+//
+// Both of the animations goes through the following phases with some twists:
 //
 // - Phase (1) begins by calling TakeStartingDeskScreenshot(), which should be
 //   called before the ending desk is activated.
@@ -64,19 +73,45 @@ namespace ash {
 //
 // - Phase (2) should begin after the ending desk had been activated,
 //   by calling TakeEndingDeskScreenshot().
+//
+// The way screenshots are placed is different based on the animation types:
+//
 //   * Once the screenshot is taken, it is placed in a sibling layer to the
-//     starting desk screenshot layer, with an offset of |kDesksSpacing| between
-//     the two layers.
+//     starting desk screenshot layer:
+//     1. Quick animation:
+//     Ending desk screenshot is set to 0 opacity and placed on top of starting
+//     desk, with a 25% root window width offset.
+//
+//                         Animation Layers
+//                       +-----+-------------+
+//                       |start|   end desk  |
+//                       | desk| screenshot  |
+//                       |layer|     layer   |
+//                       +-----+-------------+
+//                       25% width
+//
+//     2. Continuous animation:
+//     Ending desk screenshot is placed side by side next to starting desk, with
+//     an offset of |kDesksSpacing| between the two layers.
+//                         Animation Layers
+//                       +--------------+-+--------------+
+//                       |  start desk  | |   end desk   |
+//                       |  screenshot  | |  screenshot  |
+//                       |    layer     | |    layer     |
+//                       +--------------+-+--------------+
+//
 //   * Delegate::OnEndingDeskScreenshotTaken() will be called, upon which the
 //     owner of this object can check if all ending desks screenshots on all
 //     roots are taken by all animators (through checking
 //     ending_desk_screenshot_taken()), so that it can start phase (3) on all of
 //     them at the same time.
-//   * Phase (2) can be rentered after starting phase (3) by calling
+//   * In Continuous Animation, phase (2) can be rentered after starting phase
+//   (3) by calling
 //     ReplaceAnimation() or UpdateSwipeAnimation(). The new ending desk will
 //     change, and if it does not have an associated screenshot layer, the
 //     caller will be responsible for requesting one using
-//     TakeEndingDeskScreenshot(). The screenshots are taken as needed since
+//     TakeEndingDeskScreenshot().
+//     The screenshots are taken as needed since
 //     their layers are fullscreen and require activating a desk which may be a
 //     large operation for something that the user may not see. Once the
 //     screenshot is taken, it is kept until |this| is destroyed. If an
@@ -103,6 +138,11 @@ namespace ash {
 //                start here
 //
 //       Animation layer transforms:
+//       Continuous Animation:
+//       `x_translation_offset_` is root_window_size_.width() + kDesksSpacing
+//       Quick animation:
+//       `x_translation_offset_` is root_window_size_.width() * 0.25
+//
 //       * Begin transform: The transform that will make the starting desk
 //         screenshot visible. In this case it is a transform with translation
 //         (edge_padding_width_dp_, 0).
@@ -137,15 +177,17 @@ namespace ash {
 //         screenshot visible. In this case it is a transform with translation
 //         (edge_padding_width_dp_, 0).
 //
+//   * In case of quick animation, end desk screenshot will fade in from 0
+//   opacity to 1 opacity.
 //   * The animation always begins such that the starting desk screenshot layer
 //     is the one visible on the screen, and the parent (animation layer) always
-//     moves in the direction such that the ending desk screenshot becomes
-//     visible on the screen.
+//     moves(fade in) in the direction such that the ending desk screenshot
+//     becomes visible on the screen.
 //   * The children (screenshot layers) are always placed left to right to match
-//     desk order. For example, if there are three desks and this class has been
-//     instructed to create a screenshot for all three desks, desk 1's
-//     screenshot will be on the left, desk 2's screenshot will be in the middle
-//     and desk 3's screenshot will be on the right.
+//     desk order. For example, in continuous animation if there are three desks
+//     and this class has been instructed to create a screenshot for all three
+//     desks, desk 1's screenshot will be on the left, desk 2's screenshot will
+//     be in the middle and desk 3's screenshot will be on the right.
 //   * Once the animation finishes, Delegate::OnDeskSwitchAnimationFinished() is
 //     triggered. The owner of this object can then check that all animators on
 //     all roots have finished their animations (by checking
@@ -178,6 +220,14 @@ namespace ash {
 //   the desks screenshots are animating horizontally.
 // This gives the effect that the removed desk windows are jumping from their
 // desk to the target desk.
+
+// The types of animations, see detailed comments above for `Quick Animation`
+// and `Continuous Animation` animation types.
+enum class DeskSwitchAnimationType {
+  kQuickAnimation,
+  kContinuousAnimation,
+};
+
 class ASH_EXPORT RootWindowDeskSwitchAnimator
     : public ui::ImplicitAnimationObserver {
  public:
@@ -203,6 +253,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   };
 
   RootWindowDeskSwitchAnimator(aura::Window* root,
+                               DeskSwitchAnimationType type,
                                int starting_desk_index,
                                int ending_desk_index,
                                Delegate* delegate,
@@ -305,6 +356,10 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
 
   // The root window that this animator is associated with.
   const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+
+  // The type of animator, this will determine what type of animation is
+  // created.
+  const DeskSwitchAnimationType type_;
 
   // The index of the active desk at the start of the animation.
   int starting_desk_index_;

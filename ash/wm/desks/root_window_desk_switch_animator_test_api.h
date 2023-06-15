@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_ROOT_WINDOW_DESK_SWITCH_ANIMATOR_TEST_API_H_
 #define ASH_WM_DESKS_ROOT_WINDOW_DESK_SWITCH_ANIMATOR_TEST_API_H_
 
+#include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
@@ -13,8 +14,6 @@ class Layer;
 }
 
 namespace ash {
-
-class RootWindowDeskSwitchAnimator;
 
 // Use the api in this class to test the internals of
 // RootWindowDeskSwitchAnimator.
@@ -31,6 +30,8 @@ class RootWindowDeskSwitchAnimatorTestApi {
   // Getters for the layers associated with the animation.
   ui::Layer* GetAnimationLayer();
   ui::Layer* GetScreenshotLayerOfDeskWithIndex(int desk_index);
+
+  DeskSwitchAnimationType GetAnimatorType() const;
 
   int GetEndingDeskIndex() const;
 
