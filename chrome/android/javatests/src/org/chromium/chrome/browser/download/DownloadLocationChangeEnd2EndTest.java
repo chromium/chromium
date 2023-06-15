@@ -41,6 +41,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 
 import java.util.ArrayList;
 
@@ -60,8 +61,8 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
 
         // Show the location dialog for the first time.
         promptDownloadLocationDialog(DownloadPromptStatus.SHOW_INITIAL);
