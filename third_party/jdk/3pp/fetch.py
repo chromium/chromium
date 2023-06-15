@@ -10,10 +10,6 @@ import os
 import pathlib
 import urllib.request
 
-# TODO(crbug.com/1405257): update to JDK20.
-# JDK20 releases can be found from the following url:
-# https://github.com/adoptium/temurin20-binaries/releases/
-
 _LATEST_URL = 'https://api.github.com/repos/adoptium/temurin20-binaries/releases/latest'
 
 
