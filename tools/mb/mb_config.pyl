@@ -3122,7 +3122,7 @@
 
     'linux_fuzz_coverage':[
       'use_clang_coverage', 'shared', 'mojo_fuzzer', 'libfuzzer', 'dcheck_off', 'disable_nacl',
-      'no_reclient', 'chromeos_codecs', 'pdf_xfa', 'goma'
+      'reclient', 'chromeos_codecs', 'pdf_xfa'
     ],
 
     'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient': [

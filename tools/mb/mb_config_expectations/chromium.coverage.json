@@ -130,9 +130,8 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_clang_coverage": true,
-      "use_goma": true,
       "use_libfuzzer": true,
-      "use_remoteexec": false
+      "use_remoteexec": true
     }
   },
   "linux-js-code-coverage": {
