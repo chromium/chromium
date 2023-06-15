@@ -579,7 +579,7 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       parent_(nullptr),
       role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
-      cached_values_need_update_(true),
+      last_modification_count_(-1),
       cached_is_ignored_(false),
       cached_is_ignored_but_included_in_tree_(false),
       cached_is_inert_(false),
@@ -602,33 +602,21 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
     return;
   }
-
-  const AXObject* ancestor = this;
-  bool can_repair_parents = AXObjectCache().IsProcessingDeferredEvents();
-
-  while (true) {
-    if (can_repair_parents && ancestor->IsMissingParent()) {
-      ancestor->RepairMissingParent();
-    }
-    ancestor = ancestor->CachedParentObject();
-    if (!ancestor) {
-      break;
-    }
-    DCHECK(!ancestor->IsDetached());
-
+  for (auto* obj = CachedParentObject(); obj; obj = obj->CachedParentObject()) {
+    DCHECK(!obj->IsDetached());
     // We need to to continue setting bits through AX objects for which
     // LastKnownIsIncludedInTreeValue is false, since those objects are omitted
     // from the generated tree. However, don't set the bit on unincluded
     // objects, during the clearing phase in
     // AXObjectCacheImpl::UpdateTreeIfNeededOnce(), only included nodes are
     // visited.
-    if (!ancestor->LastKnownIsIncludedInTreeValue()) {
+    if (!obj->LastKnownIsIncludedInTreeValue()) {
       continue;
     }
-    if (ancestor->has_dirty_descendants_) {
+    if (obj->has_dirty_descendants_) {
       break;
     }
-    ancestor->has_dirty_descendants_ = true;
+    obj->has_dirty_descendants_ = true;
   }
 #if DCHECK_IS_ON()
   // Walk up the tree looking for dirty bits that failed to be set. If any
@@ -823,7 +811,6 @@ void AXObject::SetParent(AXObject* new_parent) const {
 
 #endif
   parent_ = new_parent;
-  // TODO(accessibility) Is it necessary to do this while updating the tree?
   SetAncestorsHaveDirtyDescendants();
 }
 
@@ -1020,10 +1007,6 @@ bool AXObject::CanHaveChildren(Element& element) {
     return false;
   }
 
-  if (IsA<HTMLImageElement>(element)) {
-    return GetMapForImage(&element);
-  }
-
   // Placeholder gets exposed as an attribute on the input accessibility node,
   // so there's no need to add its text children. Placeholder text is a separate
   // node that gets removed when it disappears, so this will only be present if
@@ -1183,12 +1166,10 @@ void AXObject::EnsureCorrectParentComputation() {
       << parent_->GetLayoutObject() << "\n**** Child was " << this;
 }
 
-std::string AXObject::GetAXTreeForThis() const {
-  return TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(), this);
-}
-
 void AXObject::ShowAXTreeForThis() const {
-  DLOG(INFO) << "\n" << GetAXTreeForThis();
+  DLOG(INFO) << "\n"
+             << TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(),
+                                                   this);
 }
 
 #endif
@@ -2983,17 +2964,6 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
   return !AccessibilityIsIgnored() || AccessibilityIsIgnoredButIncludedInTree();
 }
 
-void AXObject::InvalidateCachedValues() {
-  // TODO(accessibility) Try to add DCHECK that layout is not clean, that the
-  // cache is not frozen, and the the cache is not processing deferred events.
-#if DCHECK_IS_ON()
-  DCHECK(!is_updating_cached_values_)
-      << "Should not invalidate cached values while updating them.";
-#endif
-
-  cached_values_need_update_ = true;
-}
-
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
     bool notify_parent_of_ignored_changes) const {
   if (IsDetached()) {
@@ -3002,11 +2972,12 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
-  if (!cached_values_need_update_) {
-    return;
-  }
+  AXObjectCacheImpl& cache = AXObjectCache();
 
-  cached_values_need_update_ = false;
+  if (cache.ModificationCount() == last_modification_count_)
+    return;
+
+  last_modification_count_ = cache.ModificationCount();
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
   DCHECK(!is_computing_role_)
@@ -3045,11 +3016,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_is_inert_ = is_inert;
     cached_is_aria_hidden_ = is_aria_hidden;
   }
-
-  // Must be after inert computation, because focusability depends on that, but
-  // before the included in tree computation, which depends on focusability.
-  cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
-
   cached_is_descendant_of_disabled_node_ = ComputeIsDescendantOfDisabledNode();
 
   bool is_ignored = ComputeAccessibilityIsIgnored();
@@ -3104,13 +3070,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // may misfire.
   if (notify_included_in_tree_changed) {
     if (AXObject* parent = CachedParentObject()) {
-      SANITIZER_CHECK(!AXObjectCache().IsFrozen())
-          << "Objects cannot change their inclusion state during "
-             "serialization:\n"
-          << "* Object: " << ToString(true, true) << "\n* Ignored will become "
-          << is_ignored << "\n* Included in tree will become "
-          << (!is_ignored || is_ignored_but_included_in_tree)
-          << "\n* Parent: " << parent->ToString(true, true);
       // Defers a ChildrenChanged() on the first included ancestor.
       // Must defer it, otherwise it can cause reentry into
       // UpdateCachedAttributeValuesIfNeeded() on |this|.
@@ -3121,7 +3080,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   cached_is_ignored_ = is_ignored;
   cached_is_ignored_but_included_in_tree_ = is_ignored_but_included_in_tree;
-
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
   // TODO(dmazzoni): remove this const_cast.
@@ -3144,9 +3102,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_local_bounding_box_rect_for_accessibility_ =
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
   }
-
-  DCHECK(!cached_values_need_update_)
-      << "While recomputing cached values, they were invalidated again.";
 }
 
 bool AXObject::ComputeAccessibilityIsIgnored(
@@ -3156,7 +3111,8 @@ bool AXObject::ComputeAccessibilityIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  DCHECK(!cached_values_need_update_);
+  DCHECK(AXObjectCache().ModificationCount() == last_modification_count_)
+      << "Hidden values must be computed before ignored.";
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
@@ -3923,7 +3879,26 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 }
 
 bool AXObject::CanSetFocusAttribute() const {
-  UpdateCachedAttributeValuesIfNeeded();
+  // If we are detached or have no document, then we can't set focus on the
+  // object. Note that this early out is necessary since we access the cache and
+  // the document below.
+  if (IsDetached() || !GetDocument())
+    return false;
+
+  AXObjectCacheImpl& cache = AXObjectCache();
+  auto* document = GetDocument();
+
+  if (document->StyleVersion() != focus_attribute_style_version_ ||
+      document->DomTreeVersion() != focus_attribute_dom_tree_version_ ||
+      cache.ModificationCount() != focus_attribute_cache_modification_count_) {
+    focus_attribute_style_version_ = document->StyleVersion();
+    focus_attribute_dom_tree_version_ = document->DomTreeVersion();
+    focus_attribute_cache_modification_count_ = cache.ModificationCount();
+
+    cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
+  } else {
+    DCHECK_EQ(cached_can_set_focus_attribute_, ComputeCanSetFocusAttribute());
+  }
   return cached_can_set_focus_attribute_;
 }
 
@@ -3967,9 +3942,14 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (!elem)
     return false;
 
-  if (cached_is_inert_) {
+  // NOT focusable: inert elements. Note we can't just call IsInert() here
+  // because UpdateCachedAttributeValuesIfNeeded() can end up calling
+  // CanSetFocusAttribute() again, which will then try to return
+  // cached_can_set_focus_attribute_, but we haven't set it yet.
+  bool are_cached_attributes_up_to_date =
+      AXObjectCache().ModificationCount() == last_modification_count_;
+  if (are_cached_attributes_up_to_date ? cached_is_inert_ : ComputeIsInert())
     return false;
-  }
 
   // NOT focusable: child tree owners (it's the content area that will be marked
   // focusable in the a11y tree).
@@ -5611,35 +5591,14 @@ bool AXObject::CanSafelyUseFlatTreeTraversalNow(Document& document) {
          !document.GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc();
 }
 
-bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
-  // Do not interfere with the destruction loop in AXObjectCacheImpl::Dispose().
-  if (IsDetached() || AXObjectCache().HasBeenDisposed()) {
-    return false;
-  }
-  // Nodeless objects's children do not have a node, and a node is required for
-  // parent repair. Return true so that the nodeless child is not
-  // orphaned/leaked. Menulist popups are an exception as they are a single
-  // child managed by the parent AXMenuList.
-  if (!GetNode() && !IsMenuListPopup()) {
-    return true;
-  }
-  // Inline textbox children are dependent on their parent's ignored state.
-  if (IsAXInlineTextBox()) {
-    return true;
-  }
-
-  return false;
-}
-
-void AXObject::DetachFromParent() {
-  if (ShouldDestroyWhenDetachingFromParent()) {
-    AXObjectCache().RemoveIncludedSubtree(this, /* remove_root */ true);
-  }
-  parent_ = nullptr;
-}
-
 void AXObject::ClearChildren() const {
   DCHECK(!IsDetached());
+
+  // No need for additional work here when clearing the entire cache at once.
+  if (AXObjectCache().HasBeenDisposed()) {
+    children_.clear();
+    return;
+  }
 
   // Detach all weak pointers from immediate children to their parents.
   // First check to make sure the child's parent wasn't already reassigned.
@@ -5668,6 +5627,18 @@ void AXObject::ClearChildren() const {
 
   // Detach included children from their parent (this).
   for (const auto& child : children_) {
+    // AXInlineTextBoxes depend on their parent's static text as well is the
+    // parent's ignored state. Therefore, if something changed in a parent
+    // static text causing its children to be cleared, remove any
+    // AXInlineTextBox children from the cache rather than just detaching from
+    // the parent, so they are not leaked. If the static text needs
+    // AXInlineTextBoxes again in the future, it will create them based on the
+    // AbstractInlineTextBoxes present at that time. Other types of objects do
+    // not need this treatment --they are removed based on signals from Blink.
+    if (child->IsAXInlineTextBox() && !AXObjectCache().HasBeenDisposed()) {
+      AXObjectCache().Remove(child, /* notify_parent */ false);
+      continue;
+    }
     // Check parent first, as the child might be several levels down if there
     // are unincluded nodes in between, in which case the cached parent will
     // also be a descendant (unlike children_, parent_ does not skip levels).
@@ -5710,6 +5681,11 @@ void AXObject::ClearChildren() const {
   if (slot)
     return;
 
+  Node* map = GetMapForImage(node);
+  if (map) {
+    node = map;
+  }
+
   // Detach unincluded children from their parent (this).
   // These are children that were not cleared from first loop, as well as
   // children that will be included once the parent next updates its children.
@@ -5724,7 +5700,20 @@ void AXObject::ClearChildren() const {
     AXObject* ax_child_from_node = AXObjectCache().SafeGet(child_node, true);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
-      ax_child_from_node->DetachFromParent();
+      if (map) {
+        // Children (and other descendants, recursively) of a <map> need to be
+        // fully removed, because they may no longer have a valid AX parent if
+        // the image is removed. See HTMLMapElement and HTMLImageElement-related
+        // code in AXObject::GetParentNodeForComputeParent.
+        // Since this code only runs when |map| is set, and therefore
+        // |node| is an image outside the map, this only needs to happen for
+        // the map descendants, not the image descendants.
+        AXObjectCache().RemoveSubtreeWithFlatTraversal(
+            child_node,
+            /* remove_root */ true, /* notify_parent */ false);
+      } else {
+        ax_child_from_node->DetachFromParent();
+      }
     }
   }
 }
@@ -7413,10 +7402,6 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     if (!GetDocument())
       string_builder = string_builder + " missingDocument";
 
-    if (cached_values_need_update_) {
-      string_builder = string_builder + " needsToUpdateCachedValues";
-    }
-
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
       string_builder =
@@ -7451,13 +7436,15 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
                              : !AccessibilityIsIncludedInTree())
         string_builder = string_builder + " isRemovedFromTree";
     }
-    if (GetNode()) {
+    if (GetNode() && GetDocument()->Lifecycle().GetState() >=
+                         DocumentLifecycle::kLayoutClean) {
       if (GetNode()->OwnerShadowHost()) {
         string_builder = string_builder + (GetNode()->IsInUserAgentShadowRoot()
                                                ? " inUserAgentShadowRoot:"
                                                : " inShadowRoot:");
-        string_builder =
-            string_builder + GetNodeString(GetNode()->OwnerShadowHost());
+        string_builder = string_builder + "<" +
+                         GetNode()->OwnerShadowHost()->tagName().LowerASCII() +
+                         ">";
       }
       if (GetNode()->GetShadowRoot()) {
         string_builder = string_builder + " hasShadowRoot";
@@ -7496,9 +7483,6 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     } else if (!children_.empty()) {
       string_builder = string_builder + " #children=";
       string_builder = string_builder + String::Number(children_.size());
-    }
-    if (!CanHaveChildren()) {
-      string_builder = string_builder + " cannotHaveChildren";
     }
     if (!GetLayoutObject())
       string_builder = string_builder + " missingLayout";

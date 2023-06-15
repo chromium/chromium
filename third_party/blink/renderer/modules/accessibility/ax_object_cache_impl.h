@@ -144,8 +144,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* ChildrenChanged(AXObject*);
   void ChildrenChangedWithCleanLayout(AXObject*);
   void ChildrenChanged(Node*) override;
-  void ChildrenChanged(AccessibleNode*) override;
   void ChildrenChanged(const LayoutObject*) override;
+  void ChildrenChanged(AccessibleNode*) override;
   void SlotAssignmentWillChange(Node*) override;
   void CheckedStateChanged(Node*) override;
   void ListboxOptionStateChanged(HTMLOptionElement*) override;
@@ -169,11 +169,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AXObject*, bool notify_parent);
   void Remove(Node*, bool notify_parent);
 
-  // This will remove all AXObjects in the subtree, whether they or not they are
-  // marked as included for serialization. This can only be called while flat
-  // tree traversal is safe and there are no slot assignments pending.
-  // To remove only included nodes, use RemoveIncludedSubtree(), which can be
-  // called at any time.
   // If |remove_root|, remove the root of the subtree, otherwise only
   // descendants are removed. If |notify_parent|, call ChildrenChanged() on the
   // parent.
@@ -181,19 +176,6 @@ class MODULES_EXPORT AXObjectCacheImpl
                                       bool remove_root = true,
                                       bool notify_parent = true);
   void RemoveSubtreeWhenSafe(Node*) override;
-
-  // Remove the cached subtree of included AXObjects. If |remove_root| is false,
-  // then only descendants will be removed. To remove unincluded AXObjects as
-  // well, call RemoveSubtreeWithFlatTraversal() or RemoveSubtreeWhenSafe().
-  // If |remove_root|, remove the root of the subtree, otherwise only
-  // descendants are removed.
-  void RemoveIncludedSubtree(AXObject* object, bool remove_root);
-
-  // This will invalidate cached values on all AXObjects in the subtree, whether
-  // they or not they are marked as included for serialization. This can only be
-  // called while flat tree traversal is safe and there are no slot assignments
-  // pending.
-  void InvalidateCachedValuesOnSubtreeWithCleanLayout(Node* node);
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
@@ -204,15 +186,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   const Element* RootAXEditableElement(const Node*) override;
 
   // Called when aspects of the style (e.g. color, alignment) change.
-  void StyleChanged(const LayoutObject*,
-                    bool visibility_or_inertness_changed) override;
+  void StyleChanged(const LayoutObject*) override;
 
   // Called by a node when text or a text equivalent (e.g. alt) attribute is
   // changed.
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
-
-  void FocusableChangedWithCleanLayout(Node* node);
+  void FocusableChangedWithCleanLayout(Element* element);
   void DocumentTitleChanged() override;
   // Called when a layout tree for a node has just been attached, so we can make
   // sure we have the right subclass of AXObject.
@@ -362,11 +342,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MaybeNewRelationTarget(Node& node, AXObject* obj);
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
-  void SectionOrRegionRoleMaybeChangedWithCleanLayout(Node*);
+  void SectionOrRegionRoleMaybeChanged(Element* element);
   void HandleRoleChangeWithCleanLayout(Node*);
+  void HandleAriaHiddenChangedWithCleanLayout(Node*);
   void HandleAriaExpandedChangeWithCleanLayout(Node*);
   void HandleAriaSelectedChangedWithCleanLayout(Node*);
-  void HandleAriaPressedChangedWithCleanLayout(Node*);
+  void HandleAriaPressedChangedWithCleanLayout(Element*);
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
   void UpdateCacheAfterNodeIsAttachedWithCleanLayout(Node*);
@@ -385,6 +366,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   void AddAriaNotification(Node*,
                            const String,
                            const AriaNotificationOptions*) override;
+
+  // Counts the number of times the document has been modified. Some attribute
+  // values are cached as long as the modification count hasn't changed.
+  int ModificationCount() const { return modification_count_; }
+  void IncrementModificationCount() { ++modification_count_; }
 
   void PostNotification(const LayoutObject*, ax::mojom::blink::Event);
   // Creates object if necessary.
@@ -459,6 +445,8 @@ class MODULES_EXPORT AXObjectCacheImpl
       const LayoutObject& layout_object);
   static bool IsRelevantSlotElement(const HTMLSlotElement& slot);
 
+  bool HasBeenDisposed() { return has_been_disposed_; }
+
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
   // since the last query. Sends the resulting vector over mojo to the browser
   // process. Clears the vector so that the next time it's
@@ -529,15 +517,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ResetSerializer() override;
   void MarkElementDirty(const Node*) override;
 
-  // TODO(accessibility) Create an a11y lifecyvcle that encompasses these.
-  // Layout is clean and the cache is processing callbacks.
-  bool IsProcessingDeferredEvents() const {
-    return processing_deferred_events_;
-  }
-  // Returns true if UpdateTreeIfNeeded has been called and has not finished.
+  // Returns true if UpdateTreeIfNeeded has been called and has not yet
+  /// finished.
   bool UpdatingTree() { return updating_tree_; }
-  // The document/cache are in the tear-down phase.
-  bool HasBeenDisposed() const { return has_been_disposed_; }
 
  protected:
   void PostPlatformNotification(
@@ -548,9 +530,7 @@ class MODULES_EXPORT AXObjectCacheImpl
       ax::mojom::blink::Action event_from_action =
           ax::mojom::blink::Action::kNone,
       const BlinkAXEventIntentsSet& event_intents = BlinkAXEventIntentsSet());
-  void LabelChangedWithCleanLayout(Node*);
-  void IdChangedWithCleanLayout(Node*);
-  void AriaOwnsChangedWithCleanLayout(Node*);
+  void LabelChangedWithCleanLayout(Element*);
 
   // Returns a reference to the set of currently active event intents.
   BlinkAXEventIntentsSet& ActiveEventIntents() override {
@@ -623,7 +603,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(LayoutObject*, bool notify_parent);
   void Remove(NGAbstractInlineTextBox*, bool notify_parent);
 
-  void InvalidateCachedValuesOnSubtreeWithCleanLayoutRecursive(AXObject*);
+  // Remove the cached subtree of included AXObjects. If |remove_root| is false,
+  // then only descendants will be removed. To remove unincluded AXObjects as
+  // well, call RemoveSubtreeWithFlatTraversal() or RemoveSubtreeWhenSafe().
+  void RemoveIncludedSubtree(AXObject* object, bool remove_root);
 
   // Helper to remove the object from the cache.
   // Most callers should be using Remove(AXObject) instead.
@@ -724,6 +707,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HeapHashMap<Member<NGAbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
+  int modification_count_;
 
   // Used for a mock AXObject representing the message displayed in the
   // validation message bubble.
@@ -828,11 +812,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If the presence of document markers changed for the given text node, then
   // call children changed.
   void HandleTextMarkerDataAddedWithCleanLayout(Node*);
-  void HandleUseMapAttributeChangedWithCleanLayout(Node*);
-  void HandleNameAttributeChangedWithCleanLayout(Node*);
+  void HandleAttributeChangedWithCleanLayout(const QualifiedName& attr_name,
+                                             Element* element);
+  void HandleUseMapAttributeChangedWithCleanLayout(Element*);
+  void HandleNameAttributeChangedWithCleanLayout(Element*);
 
-  bool DoesEventListenerImpactIgnoredState(const AtomicString& event_type,
-                                           const Node& node) const;
+  bool DoesEventListenerImpactIgnoredState(
+      const AtomicString& event_type) const;
   void HandleEventSubscriptionChanged(const Node& node,
                                       const AtomicString& event_type);
 

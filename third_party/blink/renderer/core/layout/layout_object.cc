@@ -2790,7 +2790,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
 
     if (visibility_changed || style_->IsInert() != new_style.IsInert()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
+        cache->ChildrenChanged(Parent());
+        cache->ChildrenChanged(this);
       }
     }
 
