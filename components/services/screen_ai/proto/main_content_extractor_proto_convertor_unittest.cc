@@ -10,8 +10,8 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_proto_loader.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
-#include "content/public/test/test_proto_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -243,7 +243,7 @@ bool LoadTextProto(const base::FilePath& proto_file_path,
   descriptor_full_path =
       descriptor_full_path.AppendASCII(proto_descriptor_relative_file_path);
 
-  content::TestProtoLoader loader;
+  base::TestProtoLoader loader;
   std::string serialized_message;
   loader.ParseFromText(descriptor_full_path, proto.GetTypeName(), file_content,
                        serialized_message);

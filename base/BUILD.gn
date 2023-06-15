@@ -2987,6 +2987,15 @@ if (is_apple) {
   }
 }
 
+if (is_ios) {
+  bundle_data("base_test_proto_bundle_data") {
+    testonly = true
+    public_deps = [ "//base/test:test_proto_descriptor" ]
+    sources = [ "$root_gen_dir/base/test/test_proto.descriptor" ]
+    outputs = [ "{{bundle_resources_dir}}/gen/base/test/{{source_file_part}}" ]
+  }
+}
+
 if (is_apple) {
   source_set("base_unittests_noarc") {
     testonly = true
@@ -3401,6 +3410,7 @@ test("base_unittests") {
     "test/test_future_unittest.cc",
     "test/test_mock_time_task_runner_unittest.cc",
     "test/test_pending_task_unittest.cc",
+    "test/test_proto_loader_unittest.cc",
     "test/test_waitable_event_unittest.cc",
     "third_party/dynamic_annotations/dynamic_annotations_compiletest.cc",
     "thread_annotations_unittest.cc",
@@ -3482,7 +3492,9 @@ test("base_unittests") {
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
     "//base/test:native_library_test_utils",
+    "//base/test:proto_test_support",
     "//base/test:run_all_unittests",
+    "//base/test:test_proto",
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
@@ -3516,14 +3528,17 @@ test("base_unittests") {
     ]
   }
 
-  if (!is_ios) {
-    sources += [ "allocator/partition_allocator/tagging_unittest.cc" ]
-  }
-
   data = [
     "test/data/",
     "//tools/metrics/histograms/enums.xml",
   ]
+
+  if (!is_ios) {
+    sources += [ "allocator/partition_allocator/tagging_unittest.cc" ]
+
+    data_deps += [ "//base/test:test_proto_descriptor" ]
+    data += [ "$root_gen_dir/base/test/test_proto.descriptor" ]
+  }
 
   if (is_win) {
     deps += [ "//base/win:base_win_buildflags" ]
@@ -3759,6 +3774,8 @@ test("base_unittests") {
     ]
 
     deps += [ "//base/ios" ]
+
+    bundle_deps = [ ":base_test_proto_bundle_data" ]
 
     if (is_cronet_build) {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/test_proto_loader.h"
+#include "base/test/test_proto_loader.h"
 
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -12,7 +12,7 @@
 #include "third_party/protobuf/src/google/protobuf/message.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
-namespace content {
+namespace base {
 
 TestProtoLoader::TestProtoLoader() = default;
 
@@ -82,4 +82,4 @@ void TestProtoLoader::ParseFromText(const base::FilePath& descriptor_path,
   serialized_message = message->SerializeAsString();
 }
 
-}  // namespace content
+}  // namespace base

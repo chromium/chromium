@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_TEST_TEST_PROTO_LOADER_H_
-#define CONTENT_PUBLIC_TEST_TEST_PROTO_LOADER_H_
+#ifndef BASE_TEST_TEST_PROTO_LOADER_H_
+#define BASE_TEST_TEST_PROTO_LOADER_H_
 
 #include "base/files/file_path.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.pb.h"
 #include "third_party/protobuf/src/google/protobuf/dynamic_message.h"
 
-namespace content {
+namespace base {
 
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
@@ -63,6 +63,6 @@ class PROTO_TEST_EXPORT TestProtoLoader {
   google::protobuf::DynamicMessageFactory dynamic_message_factory_;
 };
 
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_PUBLIC_TEST_TEST_PROTO_LOADER_H_
+#endif  // BASE_TEST_TEST_PROTO_LOADER_H_

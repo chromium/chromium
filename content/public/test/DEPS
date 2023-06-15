@@ -38,7 +38,6 @@ include_rules = [
   "+services/service_manager",
   "+services/tracing/public/cpp",
   "+testing/android/native_test/native_browser_test_support.h",
-  "+third_party/protobuf/src/google/protobuf",
   "+tools/v8_context_snapshot/buildflags.h",
   "+ui/base/resource/resource_bundle.h",
   "+ui/base/resource/resource_bundle_android.h",

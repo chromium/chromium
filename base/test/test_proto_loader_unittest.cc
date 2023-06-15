@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/test_proto_loader.h"
+#include "base/test/test_proto_loader.h"
 
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "content/test/test.pb.h"
+#include "base/test/test.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace base {
 namespace {
 
 base::FilePath GetTestDataRoot() {
@@ -19,14 +19,15 @@ base::FilePath GetTestDataRoot() {
 
 void LoadTestProto(const std::string& proto_text,
                    google::protobuf::MessageLite& proto) {
-  content::TestProtoLoader loader;
+  base::TestProtoLoader loader;
   std::string serialized_message;
-  loader.ParseFromText(
-      GetTestDataRoot().Append(
-          FILE_PATH_LITERAL("content/test/test_proto.descriptor")),
-      "content.test.TestMessage", proto_text, serialized_message);
+  loader.ParseFromText(GetTestDataRoot().Append(FILE_PATH_LITERAL(
+                           "base/test/test_proto.descriptor")),
+                       "base.test.TestMessage", proto_text, serialized_message);
   ASSERT_TRUE(proto.ParseFromString(serialized_message));
 }
+
+}  // namespace
 
 TEST(TestProtoLoaderTest, LoadProto) {
   test::TestMessage proto;
@@ -38,5 +39,4 @@ TEST(TestProtoLoaderTest, LoadProto) {
   EXPECT_EQ("Message", proto.test());
 }
 
-}  // namespace
-}  // namespace content
+}  // namespace base

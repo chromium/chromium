@@ -86,7 +86,7 @@ source_set("unit_tests") {
   ]
 
   if (!is_win) {
-    deps += [ "//content/test:proto_test_support" ]
+    deps += [ "//base/test:proto_test_support" ]
     data_deps = [ ":test_support_data" ]
   }
 }

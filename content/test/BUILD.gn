@@ -803,34 +803,6 @@ static_library("test_support") {
   }
 }
 
-component("proto_test_support") {
-  testonly = true
-
-  sources = [
-    "../public/test/test_proto_loader.cc",
-    "../public/test/test_proto_loader.h",
-  ]
-
-  defines = [ "PROTO_TEST_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//third_party/protobuf:protobuf_full",
-  ]
-}
-
-proto_library("test_proto") {
-  sources = [ "test.proto" ]
-  cc_generator_options = "lite"
-}
-
-proto_library("test_proto_descriptor") {
-  sources = [ "test.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "test_proto.descriptor"
-}
-
 # Fuchsia performance tests on smart displays use web_engine and a browser
 # like shell instead of an actual browser, so Fuchsia needs a separate target.
 if (is_fuchsia) {
@@ -2750,7 +2722,6 @@ test("content_unittests") {
     "navigation_simulator_unittest.cc",
     "test_aggregation_service_impl_unittest.cc",
     "test_page_unittest.cc",
-    "test_proto_loader_unittest.cc",
     "test_render_frame_host_unittest.cc",
   ]
 
@@ -2839,7 +2810,6 @@ test("content_unittests") {
       ":content_shell_pak_bundle_data",
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
-      ":content_test_proto_bundle_data",
       "//media/test:media_bundle_data",
     ]
   }
@@ -2850,15 +2820,14 @@ test("content_unittests") {
 
   deps = [
     ":content_test_mojo_bindings",
-    ":proto_test_support",
     ":run_all_unittests",
     ":test_interfaces",
-    ":test_proto",
     ":test_support",
     "web_ui:test_webui_js_bridge2_webui_js_bridge_impl",
     "web_ui:test_webui_js_bridge_webui_js_bridge_impl",
     "//base",
     "//base/allocator:buildflags",
+    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
@@ -3008,14 +2977,8 @@ test("content_unittests") {
   ]
 
   if (!is_ios) {
-    data_deps += [
-      ":test_proto_descriptor",
-      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
-    ]
-    data += [
-      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
-      "$root_gen_dir/content/test/test_proto.descriptor",
-    ]
+    data_deps += [ "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor" ]
+    data += [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
   }
 
   # Platforms where sqlite_dev_shell is defined.
@@ -3311,14 +3274,6 @@ if (is_ios) {
     public_deps = [ "//content/shell:pak" ]
     sources = [ "$root_out_dir/content_shell.pak" ]
     outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
-  }
-
-  bundle_data("content_test_proto_bundle_data") {
-    testonly = true
-    public_deps = [ ":test_proto_descriptor" ]
-    sources = [ "$root_gen_dir/content/test/test_proto.descriptor" ]
-    outputs =
-        [ "{{bundle_resources_dir}}/gen/content/test/{{source_file_part}}" ]
   }
 
   bundle_data("content_test_perfetto_bundle_data") {

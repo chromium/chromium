@@ -150,7 +150,7 @@ static_library("protobuf_full") {
     ":*",
 
     # Used for testing protobuf generation.
-    "//content/test:proto_test_support",
+    "//base/test:proto_test_support",
 
     # requires descriptors & reflection; testonly.
     "//third_party/libprotobuf-mutator:*",

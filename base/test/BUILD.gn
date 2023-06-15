@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -319,6 +320,34 @@ static_library("test_support") {
       "trace_to_file.h",
     ]
   }
+}
+
+component("proto_test_support") {
+  testonly = true
+
+  sources = [
+    "test_proto_loader.cc",
+    "test_proto_loader.h",
+  ]
+
+  defines = [ "PROTO_TEST_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_full",
+  ]
+}
+
+proto_library("test_proto") {
+  sources = [ "test.proto" ]
+  cc_generator_options = "lite"
+}
+
+proto_library("test_proto_descriptor") {
+  sources = [ "test.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "test_proto.descriptor"
 }
 
 config("base_test_implementation") {

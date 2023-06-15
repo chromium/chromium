@@ -11,13 +11,13 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/test_proto_loader.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_proto_loader.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,7 +42,7 @@ base::FilePath GetTestDataRoot() {
 
 void CreateRuleConfig(const std::string& proto_text,
                       perfetto::protos::gen::TriggerRule& destination) {
-  content::TestProtoLoader loader;
+  base::TestProtoLoader loader;
   std::string serialized_message;
   loader.ParseFromText(GetTestDataRoot().Append(FILE_PATH_LITERAL(
                            "third_party/perfetto/protos/perfetto/"
