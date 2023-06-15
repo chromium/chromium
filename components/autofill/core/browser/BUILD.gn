@@ -288,6 +288,8 @@ static_library("browser") {
     "metrics/payments/local_card_migration_metrics.h",
     "metrics/payments/manage_cards_prompt_metrics.cc",
     "metrics/payments/manage_cards_prompt_metrics.h",
+    "metrics/payments/mandatory_reauth_metrics.cc",
+    "metrics/payments/mandatory_reauth_metrics.h",
     "metrics/payments/offers_metrics.cc",
     "metrics/payments/offers_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",

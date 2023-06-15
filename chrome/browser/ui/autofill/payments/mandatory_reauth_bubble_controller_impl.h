@@ -79,6 +79,9 @@ class MandatoryReauthBubbleControllerImpl
   base::android::ScopedJavaLocalRef<jobject> GetJavaControllerBridge() override;
 #endif
 
+  // Whether the bubble is shown after user interacted with omnibox icon.
+  bool is_reshow_ = false;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

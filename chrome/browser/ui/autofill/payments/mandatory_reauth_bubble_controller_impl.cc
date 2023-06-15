@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -48,12 +49,16 @@ void MandatoryReauthBubbleControllerImpl::ShowBubble(
     return;
   }
 
+  is_reshow_ = false;
   accept_mandatory_reauth_callback_ =
       std::move(accept_mandatory_reauth_callback);
   cancel_mandatory_reauth_callback_ =
       std::move(cancel_mandatory_reauth_callback);
   close_mandatory_reauth_callback_ = std::move(close_mandatory_reauth_callback);
   current_bubble_type_ = MandatoryReauthBubbleType::kOptIn;
+  autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
+      autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
+      /*is_reshow=*/false);
 
   Show();
 }
@@ -64,6 +69,7 @@ void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
     return;
   }
 
+  is_reshow_ = true;
   // We don't run any callbacks in the confirmation view, so there's no need to
   // ensure they exist.
   if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
@@ -71,6 +77,9 @@ void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
           cancel_mandatory_reauth_callback_ &&
           close_mandatory_reauth_callback_);
   }
+  autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
+      autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
+      /*is_reshow=*/true);
 
   Show();
 }
@@ -123,15 +132,37 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
 #endif
 
   if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
-    if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-      std::move(accept_mandatory_reauth_callback_).Run();
-      current_bubble_type_ = MandatoryReauthBubbleType::kConfirmation;
-    } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
-      std::move(cancel_mandatory_reauth_callback_).Run();
-      current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
-    } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
-      close_mandatory_reauth_callback_.Run();
+    autofill_metrics::MandatoryReauthOptInBubbleResult metric =
+        autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown;
+    switch (closed_reason) {
+      case PaymentsBubbleClosedReason::kAccepted:
+        metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kAccepted;
+        std::move(accept_mandatory_reauth_callback_).Run();
+        current_bubble_type_ = MandatoryReauthBubbleType::kConfirmation;
+        break;
+      case PaymentsBubbleClosedReason::kCancelled:
+        metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kCancelled;
+        std::move(cancel_mandatory_reauth_callback_).Run();
+        current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
+        break;
+      case PaymentsBubbleClosedReason::kClosed:
+        metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kClosed;
+        close_mandatory_reauth_callback_.Run();
+        break;
+      case PaymentsBubbleClosedReason::kNotInteracted:
+        metric =
+            autofill_metrics::MandatoryReauthOptInBubbleResult::kNotInteracted;
+        break;
+      case PaymentsBubbleClosedReason::kLostFocus:
+        metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kLostFocus;
+        break;
+      case PaymentsBubbleClosedReason::kUnknown:
+        metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown;
+        break;
     }
+    DCHECK(metric !=
+           autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown);
+    autofill_metrics::LogMandatoryReauthOptInBubbleResult(metric, is_reshow_);
   } else {
     current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
   }

@@ -67981,6 +67981,19 @@ from previous Chrome versions.
   <int value="16" label="Chrome menu item"/>
 </enum>
 
+<enum name="MandatoryReauthOptInBubbleOffer">
+  <int value="0" label="Shown"/>
+</enum>
+
+<enum name="MandatoryReauthOptInBubbleResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Closed"/>
+  <int value="4" label="Not interacted"/>
+  <int value="5" label="Lost focus"/>
+</enum>
+
 <enum name="ManifestFetchResultType">
   <int value="0" label="Fetch succeeded"/>
   <int value="1" label="Fetch failed because of empty URL"/>

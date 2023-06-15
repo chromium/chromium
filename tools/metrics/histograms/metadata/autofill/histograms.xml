@@ -3314,6 +3314,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer.{ShowType}"
+    enum="MandatoryReauthOptInBubbleOffer" expires_after="2024-04-01">
+  <owner>justinleewells@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks events related to offering the mandatory reauth opt-in feature, for
+    instance when it is shown or why it is not shown. This metric is recorded
+    when the mandatory reauth opt-in prompt is or is not displayed. Mandatory
+    reauth requires the user to unlock their device or pass a biometric auth
+    when autofilling payment method information.
+  </summary>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
+<histogram
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.{ShowType}"
+    enum="MandatoryReauthOptInBubbleResult" expires_after="2024-04-01">
+  <owner>justinleewells@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the reason the mandatory reauth opt-in prompt was closed. This metric
+    is recorded when the user closes the mandatory reauth opt-in prompt.
+    Mandatory reauth requires the user to unlock their device or pass a
+    biometric auth when autofilling payment method information.
+  </summary>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
 <histogram name="Autofill.PerfectFilling.{FormType}" enum="Boolean"
     expires_after="M120">
   <owner>koerber@google.com</owner>

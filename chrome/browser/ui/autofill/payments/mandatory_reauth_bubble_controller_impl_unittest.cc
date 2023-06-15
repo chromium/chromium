@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +53,8 @@ class MandatoryReauthBubbleControllerImplTest
                              close_callback.Get());
   }
 
+  void ReshowBubble() { controller()->ReshowBubble(); }
+
   void ClickAcceptButton() {
     controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
   }
@@ -61,6 +65,14 @@ class MandatoryReauthBubbleControllerImplTest
 
   void CloseBubble() {
     controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  }
+
+  void LoseFocus() {
+    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kLostFocus);
+  }
+
+  void FailToInteract() {
+    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kNotInteracted);
   }
 
   base::MockOnceClosure accept_callback;
@@ -98,6 +110,107 @@ TEST_F(MandatoryReauthBubbleControllerImplTest,
   ShowBubble();
   EXPECT_CALL(close_callback, Run).Times(1);
   CloseBubble();
+}
+
+class MandatoryReauthBubbleControllerImplMetricsTest
+    : public MandatoryReauthBubbleControllerImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsReshow() { return GetParam(); }
+
+  void SetUpMetricsTest() {
+    ShowBubble();
+    if (IsReshow()) {
+      CloseBubble();
+      ReshowBubble();
+    }
+  }
+};
+
+std::string GetOfferMetricsPath(bool is_reshow) {
+  return base::StrCat(
+      {"Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer.",
+       is_reshow ? "Reshow" : "FirstShow"});
+}
+
+std::string GetResultMetricsPath(bool is_reshow) {
+  return base::StrCat(
+      {"Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.",
+       is_reshow ? "Reshow" : "FirstShow"});
+}
+
+INSTANTIATE_TEST_SUITE_P(FirstShowAndReshow,
+                         MandatoryReauthBubbleControllerImplMetricsTest,
+                         testing::Bool());
+
+TEST_P(MandatoryReauthBubbleControllerImplMetricsTest,
+       Metrics_MandatoryReauthOptInBubbleMetric_Shown) {
+  base::HistogramTester histogram_tester;
+  SetUpMetricsTest();
+
+  histogram_tester.ExpectUniqueSample(
+      GetOfferMetricsPath(/*is_reshow=*/false),
+      autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown, 1);
+  if (IsReshow()) {
+    histogram_tester.ExpectUniqueSample(
+        GetOfferMetricsPath(/*is_reshow=*/true),
+        autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown, 1);
+  }
+}
+
+TEST_P(MandatoryReauthBubbleControllerImplMetricsTest,
+       Metrics_MandatoryReauthOptInBubbleMetric_Accepted) {
+  base::HistogramTester histogram_tester;
+  SetUpMetricsTest();
+  ClickAcceptButton();
+
+  histogram_tester.ExpectBucketCount(
+      GetResultMetricsPath(IsReshow()),
+      autofill_metrics::MandatoryReauthOptInBubbleResult::kAccepted, 1);
+}
+
+TEST_P(MandatoryReauthBubbleControllerImplMetricsTest,
+       Metrics_MandatoryReauthOptInBubbleMetric_Cancelled) {
+  base::HistogramTester histogram_tester;
+  SetUpMetricsTest();
+  ClickCancelButton();
+
+  histogram_tester.ExpectBucketCount(
+      GetResultMetricsPath(IsReshow()),
+      autofill_metrics::MandatoryReauthOptInBubbleResult::kCancelled, 1);
+}
+
+TEST_P(MandatoryReauthBubbleControllerImplMetricsTest,
+       Metrics_MandatoryReauthOptInBubbleMetric_Closed) {
+  base::HistogramTester histogram_tester;
+  SetUpMetricsTest();
+  CloseBubble();
+
+  histogram_tester.ExpectBucketCount(
+      GetResultMetricsPath(IsReshow()),
+      autofill_metrics::MandatoryReauthOptInBubbleResult::kClosed, 1);
+}
+
+TEST_P(MandatoryReauthBubbleControllerImplMetricsTest,
+       Metrics_MandatoryReauthOptInBubbleMetric_LostFocus) {
+  base::HistogramTester histogram_tester;
+  SetUpMetricsTest();
+  LoseFocus();
+
+  histogram_tester.ExpectBucketCount(
+      GetResultMetricsPath(IsReshow()),
+      autofill_metrics::MandatoryReauthOptInBubbleResult::kLostFocus, 1);
+}
+
+TEST_P(MandatoryReauthBubbleControllerImplMetricsTest,
+       MetricsMandatoryReauthOptInBubbleMetric_NotInteracted) {
+  base::HistogramTester histogram_tester;
+  SetUpMetricsTest();
+  FailToInteract();
+
+  histogram_tester.ExpectBucketCount(
+      GetResultMetricsPath(IsReshow()),
+      autofill_metrics::MandatoryReauthOptInBubbleResult::kNotInteracted, 1);
 }
 
 }  // namespace autofill
