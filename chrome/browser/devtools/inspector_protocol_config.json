@@ -49,7 +49,7 @@
             },
             {
                 "domain": "Autofill",
-                "async": [ "trigger" ]
+                "async": [ "trigger", "setAddresses" ]
             }
         ]
     },

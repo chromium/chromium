@@ -337,6 +337,15 @@ class BrowserAutofillManager : public AutofillManager,
     fast_checkout_delegate_ = std::move(fast_checkout_delegate);
   }
 
+  void set_test_addresses(
+      std::vector<autofill::AutofillProfile> test_addresses) {
+    test_addresses_ = test_addresses;
+  }
+
+  const std::vector<autofill::AutofillProfile>& test_addresses_for_test() {
+    return test_addresses_;
+  }
+
   void SetExternalDelegateForTest(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     external_delegate_ = std::move(external_delegate);
@@ -802,6 +811,9 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Helper class to generate Autofill suggestions.
   std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;
+
+  // Test addresses used to allow developers to test their forms.
+  std::vector<autofill::AutofillProfile> test_addresses_;
 
   // Collected information about the autofill form where a credit card will be
   // filled.

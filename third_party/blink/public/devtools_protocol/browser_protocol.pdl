@@ -992,6 +992,18 @@ experimental domain Autofill
       # 3-digit card verification code.
       string cvc
 
+  type AddressField extends object
+    properties
+      # address field name, for example GIVEN_NAME.
+      string name
+      # address field name, for example Jon Doe.
+      string value
+
+  type Address extends object
+    properties
+      # fields and values defining a test address.
+      array of AddressField fields
+
   # Trigger autofill on a form identified by the fieldId.
   # If the field and related form cannot be autofilled, returns an error.
   command trigger
@@ -1002,6 +1014,13 @@ experimental domain Autofill
       optional Page.FrameId frameId
       # Credit card information to fill out the form. Credit card data is not saved.
       CreditCard card
+
+  # Set addresses so that developers can verify their forms implementation.
+  command setAddresses
+    # Test addresses for the available countries.
+    parameters
+      array of Address addresses
+
 
 # Defines events for background web platform features.
 experimental domain BackgroundService
