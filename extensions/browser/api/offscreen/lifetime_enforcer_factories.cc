@@ -92,7 +92,8 @@ constexpr ReasonAndFactoryMethodPair kReasonAndFactoryMethodPairs[] = {
     {api::offscreen::Reason::kWebRtc, &CreateEmptyEnforcer},
     {api::offscreen::Reason::kClipboard, &CreateEmptyEnforcer},
     {api::offscreen::Reason::kLocalStorage, &CreateEmptyEnforcer},
-    {api::offscreen::Reason::kWorkers, &CreateEmptyEnforcer}};
+    {api::offscreen::Reason::kWorkers, &CreateEmptyEnforcer},
+    {api::offscreen::Reason::kGeolocation, &CreateEmptyEnforcer}};
 
 static_assert(std::size(kReasonAndFactoryMethodPairs) ==
                   base::to_underlying(api::offscreen::Reason::kMaxValue),

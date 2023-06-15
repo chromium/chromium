@@ -35,7 +35,9 @@ namespace offscreen {
     // The offscreen document needs access to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>.
     LOCAL_STORAGE,
     // The offscreen document needs to spawn workers.
-    WORKERS
+    WORKERS,
+    // The offscreen document needs to use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/geolocation">navigator.geolocation</a>
+    GEOLOCATION
   };
 
   dictionary CreateParameters {
