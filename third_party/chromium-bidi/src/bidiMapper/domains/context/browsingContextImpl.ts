@@ -22,6 +22,7 @@ import {
   BrowsingContext,
   type CommonDataTypes,
   Message,
+  Script,
 } from '../../../protocol/protocol.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -416,6 +417,14 @@ export class BrowsingContextImpl {
         if (params.context.auxData.isDefault) {
           this.#maybeDefaultRealm = realm;
         }
+
+        this.#eventManager.registerEvent(
+          {
+            method: Script.EventNames.RealmCreated,
+            params: realm.toBiDi(),
+          },
+          this.id
+        );
       }
     );
 

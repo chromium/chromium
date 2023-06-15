@@ -523,7 +523,7 @@ export namespace Script {
     | GetRealmsResult
     | DisownResult
     | AddPreloadScriptResult;
-  export type Event = MessageEvent;
+  export type Event = MessageEvent | RealmCreatedEvent;
 
   export type Realm = string;
 
@@ -787,8 +787,21 @@ export namespace Script {
     Script.MessageParameters
   >;
 
+  export type RealmCreatedEvent = EventResponse<
+    EventNames.RealmCreated,
+    RealmInfo
+  >;
+
+  export type RealmCreated = {
+    method: 'script.realmCreated';
+    params: RealmInfo;
+  };
+
   export enum EventNames {
+    // keep-sorted start;
     MessageEvent = 'script.message',
+    RealmCreated = 'script.realmCreated',
+    // keep-sorted end;
   }
 
   export const AllEvents = 'script';
