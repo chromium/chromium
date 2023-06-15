@@ -18,6 +18,8 @@ import sys
 # build libmonochrome.so: __chrome_android_libmonochrome___rule | ...
 _REGEX = re.compile(r'build ([^:]+): \w+ (.*?)(?: *\||\n|$)')
 
+_RLIBS_REGEX = re.compile(r'  rlibs = (.*?)(?:\n|$)')
+
 
 class _SourceMapper:
   def __init__(self, dep_map, parsed_file_count):
@@ -85,6 +87,7 @@ def _OutputsAreObject(outputs):
 def _ParseOneFile(lines, dep_map, elf_path):
   sub_ninjas = []
   elf_inputs = None
+  last_elf_paths = []
   for line in lines:
     if line.startswith('subninja '):
       sub_ninjas.append(line[9:-1])
@@ -100,11 +103,21 @@ def _ParseOneFile(lines, dep_map, elf_path):
         else:
           obj_paths = _ParseNinjaPathList(srcs)
           dep_map[output] = {os.path.basename(p): p for p in obj_paths}
-      elif elf_path and elf_path in outputs:
-        properly_parsed = [
-            os.path.normpath(p) for p in _ParseNinjaPathList(outputs)]
-        if elf_path in properly_parsed:
+      elif elf_path:
+        last_elf_paths = [
+            os.path.normpath(p) for p in _ParseNinjaPathList(outputs)
+        ]
+        if elf_path in last_elf_paths:
           elf_inputs = _ParseNinjaPathList(srcs)
+    # Rust .rlibs are listed as implicit dependencies of the main
+    # target linking rule, then are given as an extra
+    #   rlibs =
+    # variable on a subsequent line. Watch out for that line.
+    m = _RLIBS_REGEX.match(line)
+    if m:
+      if elf_path in last_elf_paths:
+        elf_inputs.extend(_ParseNinjaPathList(m.group(1)))
+
   return sub_ninjas, elf_inputs
 
 
