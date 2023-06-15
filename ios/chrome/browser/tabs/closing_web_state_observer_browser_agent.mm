@@ -88,8 +88,8 @@ void ClosingWebStateObserverBrowserAgent::WebStateListChanged(
     const WebStateListChange& change,
     const WebStateSelection& selection) {
   switch (change.type()) {
-    case WebStateListChange::Type::kDestroy:
-      // Do nothing when a WebStateList is destroyed.
+    case WebStateListChange::Type::kSelectionOnly:
+      // Do nothing when a WebState is selected and its status is updated.
       break;
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.

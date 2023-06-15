@@ -76,9 +76,8 @@ void WebUsageEnablerBrowserAgent::WebStateListChanged(
     const WebStateListChange& change,
     const WebStateSelection& selection) {
   switch (change.type()) {
-    case WebStateListChange::Type::kDestroy:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateDestroyed() to here.
+    case WebStateListChange::Type::kSelectionOnly:
+      // Do nothing when a WebState is selected and its status is updated.
       break;
     case WebStateListChange::Type::kDetach:
       // TODO(crbug.com/1442546): Move the implementation from

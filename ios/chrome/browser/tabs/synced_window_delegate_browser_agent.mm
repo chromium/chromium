@@ -93,8 +93,8 @@ void SyncedWindowDelegateBrowserAgent::WebStateListChanged(
     const WebStateSelection& selection) {
   DCHECK_EQ(web_state_list_, web_state_list);
   switch (change.type()) {
-    case WebStateListChange::Type::kDestroy:
-      // Do nothing when a WebStateList is destroyed.
+    case WebStateListChange::Type::kSelectionOnly:
+      // Do nothing when a WebState is selected and its status is updated.
       break;
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
@@ -117,12 +117,16 @@ void SyncedWindowDelegateBrowserAgent::WebStateListChanged(
   }
 }
 
-void SyncedWindowDelegateBrowserAgent::SetWindowIdForWebState(
-    web::WebState* web_state) {
-  IOSChromeSessionTabHelper::FromWebState(web_state)->SetWindowID(session_id_);
-}
+#pragma mark - BrowserObserver
 
 void SyncedWindowDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
   web_state_list_->RemoveObserver(this);
   browser->RemoveObserver(this);
+}
+
+#pragma mark - Private
+
+void SyncedWindowDelegateBrowserAgent::SetWindowIdForWebState(
+    web::WebState* web_state) {
+  IOSChromeSessionTabHelper::FromWebState(web_state)->SetWindowID(session_id_);
 }

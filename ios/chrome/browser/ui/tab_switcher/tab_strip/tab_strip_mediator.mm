@@ -117,8 +117,11 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kDestroy:
-      // Do nothing when a WebStateList is destroyed.
+    case WebStateListChange::Type::kSelectionOnly:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
+      // here. Note that here is reachable only when `reason` ==
+      // ActiveWebStateChangeReason::Activated.
       break;
     case WebStateListChange::Type::kDetach:
       // TODO(crbug.com/1442546): Move the implementation from

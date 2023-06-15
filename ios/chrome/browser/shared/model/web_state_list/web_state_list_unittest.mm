@@ -82,9 +82,10 @@ class WebStateListTestObserver : public WebStateListObserver {
                            const WebStateListChange& change,
                            const WebStateSelection& selection) override {
     switch (change.type()) {
-      case WebStateListChange::Type::kDestroy:
+      case WebStateListChange::Type::kSelectionOnly:
         // TODO(crbug.com/1442546): Move the implementation from
-        // WebStateListDestroyed() to here.
+        // WebStateActivatedAt() to here. Note that here is reachable only when
+        // `reason` == ActiveWebStateChangeReason::Activated.
         break;
       case WebStateListChange::Type::kDetach:
         // TODO(crbug.com/1442546): Move the implementation from

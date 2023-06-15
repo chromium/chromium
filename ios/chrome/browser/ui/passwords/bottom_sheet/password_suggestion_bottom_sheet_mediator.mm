@@ -302,9 +302,11 @@ using ReauthenticationEvent::kSuccess;
                     selection:(const WebStateSelection&)selection {
   DCHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
-    case WebStateListChange::Type::kDestroy:
+    case WebStateListChange::Type::kSelectionOnly:
       // TODO(crbug.com/1442546): Move the implementation from
-      // webStateListDestroyed: to here.
+      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
+      // here. Note that here is reachable only when `reason` ==
+      // ActiveWebStateChangeReason::Activated.
       break;
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.

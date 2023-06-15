@@ -18,8 +18,9 @@ class WebState;
 class WebStateListChange {
  public:
   enum class Type {
-    // Used when a WebStateList is destroyed.
-    kDestroy,
+    // Used when the status of a WebState is updated by the activation or the
+    // pinned state update. It does not update the layout of WebStateList.
+    kSelectionOnly,
     // Used when a WebState at the specified index is detached.
     kDetach,
     // Used when a WebState at the specified index is moved to a new index.
