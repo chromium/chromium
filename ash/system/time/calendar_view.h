@@ -172,6 +172,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   enum LabelType { PREVIOUS, CURRENT, NEXT, NEXTNEXT };
 
   friend class CalendarViewTest;
+  friend class CalendarViewPixelTest;
   friend class CalendarViewAnimationTest;
 
   // Assigns month views and labels based on the current date on screen.

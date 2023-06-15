@@ -141,6 +141,7 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarUpNextViewAnimationTest;
   friend class CalendarUpNextViewPixelTest;
   friend class CalendarUpNextViewTest;
+  friend class CalendarViewPixelTest;
   friend class CalendarViewAnimationTest;
   friend class CalendarViewAnimationWithJellyEnabledTest;
   friend class CalendarViewEventListViewTest;
