@@ -38,7 +38,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
@@ -47,9 +46,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 
 import android.content.Context;
-import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -78,7 +75,6 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,8 +88,6 @@ import java.util.UUID;
  * reacts to events like address country selection.
  */
 class AddressEditorMediator {
-    private final Handler mHandler = new Handler();
-    private final Set<String> mPhoneNumbers = new HashSet<>();
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter =
             new PhoneNumberUtil.CountryAwareFormatTextWatcher();
     private final CountryAwarePhoneNumberValidator mPhoneValidator =
@@ -231,7 +225,6 @@ class AddressEditorMediator {
                         .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_phone_number))
-                        .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
                         .with(TEXT_FORMATTER, mPhoneFormatter)
                         .with(VALIDATOR, mPhoneValidator)
                         .with(IS_REQUIRED, false)
@@ -339,28 +332,17 @@ class AddressEditorMediator {
                         .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mAddressToEdit))
                         .build();
 
-        // Changing the country will update which fields are in the model. The actual fields are not
-        // discarded, so their contents are preserved.
-        mCountryField.set(DROPDOWN_CALLBACK, new Callback<Pair<String, Runnable>>() {
+        mCountryField.set(DROPDOWN_CALLBACK, new Callback<String>() {
             /**
-             * If the selected country on the country dropdown list is changed,
-             * the first element of eventData is the recently selected dropdown key,
-             * the second element is the callback to invoke for when the dropdown
-             * change has been processed.
+             * Update the list of fields according to the selected country.
              */
             @Override
-            public void onResult(Pair<String, Runnable> eventData) {
-                ListModel<ListItem> fields = editorModel.get(EDITOR_FIELDS);
-                fields.clear();
-                fields.addAll(
-                        buildEditorFieldList(eventData.first, Locale.getDefault().getLanguage()));
+            public void onResult(String countryCode) {
+                editorModel.set(EDITOR_FIELDS,
+                        buildEditorFieldList(countryCode, Locale.getDefault().getLanguage()));
 
-                mPhoneFormatter.setCountryCode(eventData.first);
-                mPhoneValidator.setCountryCode(eventData.first);
-
-                // Notify EditorDialog that the fields in the model have changed. EditorDialog
-                // should re-read the model and update the UI accordingly.
-                mHandler.post(eventData.second);
+                mPhoneFormatter.setCountryCode(countryCode);
+                mPhoneValidator.setCountryCode(countryCode);
             }
         });
 

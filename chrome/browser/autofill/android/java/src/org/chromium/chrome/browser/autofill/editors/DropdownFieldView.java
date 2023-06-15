@@ -67,12 +67,10 @@ class DropdownFieldView implements FieldView {
      * @param root                 The object that provides a set of LayoutParams values for
      *                             the view.
      * @param fieldModel           The data model of the dropdown.
-     * @param changedCallback      The callback to invoke after user's dropdwn item selection has
-     *                             been processed.
      * @param hasRequiredIndicator Whether the required (*) indicator is visible.
      */
     public DropdownFieldView(Context context, ViewGroup root, final PropertyModel fieldModel,
-            final Runnable changedCallback, boolean hasRequiredIndicator) {
+            boolean hasRequiredIndicator) {
         mContext = context;
         mFieldModel = fieldModel;
 
@@ -133,7 +131,7 @@ class DropdownFieldView implements FieldView {
                         key = null;
                     }
                     mSelectedIndex = position;
-                    setDropdownKey(mFieldModel, key, changedCallback);
+                    setDropdownKey(mFieldModel, key);
                     mFieldModel.set(CUSTOM_ERROR_MESSAGE, null);
                     updateDisplayedError(false);
                 }

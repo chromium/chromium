@@ -201,7 +201,7 @@ public class EditorProperties {
                 .ReadableObjectPropertyKey<List<DropdownKeyValue>> DROPDOWN_KEY_VALUE_LIST =
                 new PropertyModel.ReadableObjectPropertyKey<>("key_value_list");
         public static final PropertyModel
-                .WritableObjectPropertyKey<Callback<Pair<String, Runnable>>> DROPDOWN_CALLBACK =
+                .WritableObjectPropertyKey<Callback<String>> DROPDOWN_CALLBACK =
                 new PropertyModel.WritableObjectPropertyKey<>("callback");
         public static final PropertyModel.ReadableObjectPropertyKey<String> DROPDOWN_HINT =
                 new PropertyModel.ReadableObjectPropertyKey<>("hint");
@@ -267,17 +267,16 @@ public class EditorProperties {
                 .orElse(null);
     }
 
-    public static void setDropdownKey(
-            PropertyModel dropdownField, @Nullable String key, Runnable callback) {
+    public static void setDropdownKey(PropertyModel dropdownField, @Nullable String key) {
         // The mValue can only be set to null if there is a hint.
         if (key == null && dropdownField.get(DropdownFieldProperties.DROPDOWN_HINT) == null) {
             return;
         }
         dropdownField.set(FieldProperties.VALUE, key);
-        Callback<Pair<String, Runnable>> fieldCallback =
+        Callback<String> fieldCallback =
                 dropdownField.get(DropdownFieldProperties.DROPDOWN_CALLBACK);
         if (fieldCallback != null) {
-            fieldCallback.onResult(new Pair<>(key, callback));
+            fieldCallback.onResult(key);
         }
     }
 

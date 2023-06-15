@@ -42,11 +42,15 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,6 +84,8 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     @Nullable private PayerErrors mPayerErrors;
     @Nullable private EditorFieldValidator mPhoneValidator;
     @Nullable private EditorFieldValidator mEmailValidator;
+    @Nullable
+    private PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey> mEditorMCP;
 
     /**
      * Builds a contact information editor.
@@ -337,6 +343,11 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                             .with(CANCEL_RUNNABLE, onCancel)
                                             .build();
 
+        if (mEditorMCP != null) {
+            mEditorMCP.destroy();
+        }
+        mEditorMCP = PropertyModelChangeProcessor.create(
+                editorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
         mEditorDialog.show(editorModel);
         if (mPayerErrors != null) mEditorDialog.validateForm();
     }

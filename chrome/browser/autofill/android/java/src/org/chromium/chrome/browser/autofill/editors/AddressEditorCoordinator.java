@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -147,7 +149,10 @@ public class AddressEditorCoordinator {
      * Shows editor dialog to the user.
      */
     public void showEditorDialog() {
-        mEditorDialog.show(mMediator.buildEditorModel());
+        PropertyModel model = mMediator.buildEditorModel();
+        PropertyModelChangeProcessor.create(
+                model, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
+        mEditorDialog.show(model);
     }
 
     /**
