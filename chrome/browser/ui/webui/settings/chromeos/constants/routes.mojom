@@ -181,11 +181,12 @@ enum Subpage {
 // Network section.
 const string kNetworkSectionPath = "internet";
 const string kEthernetDetailsSubpagePath = "networkDetail";
+const string kNetworksSubpageBasePath = "networks";
 const string kWifiNetworksSubpagePath = "networks?type=WiFi";
-const string kWifiDetailsSubpagePath = "networkDetail";
-const string kKnownNetworksSubpagePath = "knownNetworks";
 const string kCellularNetworksSubpagePath = "networks?type=Cellular";
 const string kMobileDataNetworksSubpagePath = "networks?type=Tether";
+const string kKnownNetworksSubpagePath = "knownNetworks";
+const string kWifiDetailsSubpagePath = "networkDetail";
 const string kCellularDetailsSubpagePath = "networkDetail";
 const string kTetherDetailsSubpagePath = "networkDetail";
 const string kVpnDetailsSubpagePath = "networkDetail";

@@ -246,8 +246,9 @@ export function createRoutes(): OsSettingsRoutes {
   // Note: INTERNET_NETWORKS and NETWORK_DETAIL are special cases because they
   // includes several subpages, one per network type. Default to kWifiNetworks
   // and kWifiDetails subpages.
-  r.INTERNET_NETWORKS =
-      createSubpage(r.INTERNET, 'networks', Subpage.kWifiNetworks);
+  r.INTERNET_NETWORKS = createSubpage(
+      r.INTERNET, routesMojom.NETWORKS_SUBPAGE_BASE_PATH,
+      Subpage.kWifiNetworks);
   r.NETWORK_DETAIL = createSubpage(
       r.INTERNET, routesMojom.WIFI_DETAILS_SUBPAGE_PATH, Subpage.kWifiDetails);
   r.KNOWN_NETWORKS = createSubpage(
