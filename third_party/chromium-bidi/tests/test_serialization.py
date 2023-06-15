@@ -186,7 +186,7 @@ async def test_serialization_deserialization(websocket, context_id,
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "jsString, excepted_serialized",
+    "js_string, expected_serialized",
     [("function(){}", {
         "type": "function",
         "handle": ANY_STR
@@ -310,42 +310,32 @@ async def test_serialization_deserialization(websocket, context_id,
           "type": "object",
           "handle": ANY_STR,
           "internalId": "3",
-          "value": [[{
-              "type": "number",
-              "value": 1
-          }, {
+          "value": [[
+              '1', {
+                  "type": "object",
+                  "value": [["a", {
+                      "type": "array",
+                      "value": []
+                  }]],
+                  "internalId": "1"
+              }
+          ], ['2', {
               "type": "object",
-              "value": [["a", {
-                  "type": "array",
-                  "value": []
-              }]],
               "internalId": "1"
           }],
-                    [{
-                        "type": "number",
-                        "value": 2
-                    }, {
-                        "type": "object",
-                        "internalId": "1"
-                    }],
-                    [{
-                        "type": "number",
-                        "value": 3
-                    }, {
-                        "type": "array",
-                        "value": [{
-                            "type": "number",
-                            "value": 1
-                        }, {
-                            "type": "number",
-                            "value": 2
-                        }],
-                        "internalId": "2"
-                    }],
-                    [{
-                        "type": "number",
-                        "value": 4
-                    }, {
+                    [
+                        '3', {
+                            "type": "array",
+                            "value": [{
+                                "type": "number",
+                                "value": 1
+                            }, {
+                                "type": "number",
+                                "value": 2
+                            }],
+                            "internalId": "2"
+                        }
+                    ], ['4', {
                         "type": "array",
                         "internalId": "2"
                     }], ["self", {
@@ -353,10 +343,10 @@ async def test_serialization_deserialization(websocket, context_id,
                         "internalId": "3"
                     }]],
       })])
-async def test_serialization_function(websocket, context_id, jsString,
-                                      excepted_serialized):
-    await assert_serialization(websocket, context_id, jsString,
-                               excepted_serialized)
+async def test_serialization_function(websocket, context_id, js_string,
+                                      expected_serialized):
+    await assert_serialization(websocket, context_id, js_string,
+                               expected_serialized)
 
 
 @pytest.mark.asyncio
