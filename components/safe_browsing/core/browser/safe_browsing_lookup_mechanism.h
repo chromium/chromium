@@ -35,7 +35,7 @@ class SafeBrowsingLookupMechanism {
         const GURL& url,
         SBThreatType threat_type,
         const ThreatMetadata& metadata,
-        bool is_from_url_real_time_check,
+        absl::optional<ThreatSource> threat_source,
         std::unique_ptr<RTLookupResponse> url_real_time_lookup_response,
         absl::optional<bool> matched_high_confidence_allowlist,
         absl::optional<SBThreatType> locally_cached_results_threat_type,
@@ -44,7 +44,13 @@ class SafeBrowsingLookupMechanism {
     GURL url;
     SBThreatType threat_type;
     ThreatMetadata metadata;
-    bool is_from_url_real_time_check;
+    // Specifies the threat source associated with the mechanism that provided
+    // the threat type. In cases where a real-time mechanism falls back to the
+    // hash database mechanism, the threat source will correspond to the hash
+    // database mechanism. This value only guaranteed to be non-null in cases
+    // where the threat type is not SB_THREAT_TYPE_SAFE; in cases where the hash
+    // database mechanism fallback completes synchronously, this is unset.
+    absl::optional<ThreatSource> threat_source;
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response;
 
     // TODO(crbug.com/1410253): Deprecate these once the experiment is complete.

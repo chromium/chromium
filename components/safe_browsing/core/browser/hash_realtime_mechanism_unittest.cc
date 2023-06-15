@@ -231,12 +231,13 @@ class HashRealTimeMechanismTest : public PlatformTest {
   std::unique_ptr<MockHashRealTimeService> hash_rt_service_;
 };
 
-MATCHER_P5(Matches,
+MATCHER_P6(Matches,
            url,
            threat_type,
            matched_high_confidence_allowlist,
            locally_cached_results_threat_type,
            real_time_request_failed,
+           threat_source,
            "") {
   return arg->url.spec() == url.spec() && arg->threat_type == threat_type &&
          arg->matched_high_confidence_allowlist ==
@@ -244,7 +245,7 @@ MATCHER_P5(Matches,
          arg->locally_cached_results_threat_type ==
              locally_cached_results_threat_type &&
          arg->real_time_request_failed == real_time_request_failed &&
-         !arg->is_from_url_real_time_check &&
+         arg->threat_source == threat_source &&
          arg->url_real_time_lookup_response == nullptr;
 }
 
@@ -264,7 +265,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
               Run(Matches(url, SB_THREAT_TYPE_SAFE,
                           /*matched_high_confidence_allowlist*/ true,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/false)))
+                          /*real_time_request_failed=*/false,
+                          /*threat_source=*/absl::nullopt)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -285,7 +287,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
                           /*matched_high_confidence_allowlist*/ true,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/false)))
+                          /*real_time_request_failed=*/false,
+                          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -308,7 +311,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
       Run(Matches(url, SB_THREAT_TYPE_SAFE,
                   /*matched_high_confidence_allowlist*/ false,
                   /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
-                  /*real_time_request_failed=*/false)))
+                  /*real_time_request_failed=*/false,
+                  /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -332,7 +336,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
           url, SB_THREAT_TYPE_URL_PHISHING,
           /*matched_high_confidence_allowlist*/ false,
           /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
-          /*real_time_request_failed=*/false)))
+          /*real_time_request_failed=*/false,
+          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -354,7 +359,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
                           /*matched_high_confidence_allowlist*/ false,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/true)))
+                          /*real_time_request_failed=*/true,
+                          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -378,7 +384,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
                           /*matched_high_confidence_allowlist*/ false,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/true)))
+                          /*real_time_request_failed=*/true,
+                          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }

@@ -189,7 +189,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       const GURL& url,
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      bool is_from_url_real_time_check,
+      absl::optional<ThreatSource> threat_source,
       std::unique_ptr<RTLookupResponse> rt_lookup_response,
       bool timed_out);
 
@@ -228,7 +228,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       const GURL& url,
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      bool is_from_url_real_time_check,
+      ThreatSource threat_source,
       std::unique_ptr<RTLookupResponse> rt_lookup_response);
 
   enum State {

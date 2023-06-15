@@ -122,9 +122,11 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   void OnHashDatabaseCompleteCheckResult(
       bool real_time_request_failed,
       std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
-  void OnHashDatabaseCompleteCheckResultInternal(SBThreatType threat_type,
-                                                 const ThreatMetadata& metadata,
-                                                 bool real_time_request_failed);
+  void OnHashDatabaseCompleteCheckResultInternal(
+      SBThreatType threat_type,
+      const ThreatMetadata& metadata,
+      absl::optional<ThreatSource> threat_source,
+      bool real_time_request_failed);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

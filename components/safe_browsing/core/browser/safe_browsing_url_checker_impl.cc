@@ -233,7 +233,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    bool is_from_url_real_time_check,
+    ThreatSource threat_source,
     std::unique_ptr<RTLookupResponse> rt_lookup_response) {
   UnsafeResource resource;
   resource.url = url;
@@ -259,9 +259,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   resource.render_frame_id = render_frame_id_;
   resource.frame_tree_node_id = frame_tree_node_id_;
   resource.weak_web_state = weak_web_state_;
-  resource.threat_source = is_from_url_real_time_check
-                               ? ThreatSource::URL_REAL_TIME_CHECK
-                               : database_manager_->GetThreatSource();
+  resource.threat_source = threat_source;
   if (rt_lookup_response) {
     resource.rt_lookup_response = *rt_lookup_response;
   }
@@ -279,13 +277,13 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf(
     OnUrlResultInternalAndMaybeDeleteSelf(urls_[next_index_].url,
                                           safe_browsing::SB_THREAT_TYPE_SAFE,
                                           ThreatMetadata(),
-                                          /*is_from_url_real_time_check=*/false,
+                                          /*threat_source=*/absl::nullopt,
                                           /*rt_lookup_response=*/nullptr,
                                           /*timed_out=*/true);
   } else {
     OnUrlResultInternalAndMaybeDeleteSelf(
         result.value()->url, result.value()->threat_type,
-        result.value()->metadata, result.value()->is_from_url_real_time_check,
+        result.value()->metadata, result.value()->threat_source,
         std::move(result.value()->url_real_time_lookup_response),
         /*timed_out=*/false);
   }
@@ -295,12 +293,13 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    bool is_from_url_real_time_check,
+    absl::optional<ThreatSource> threat_source,
     std::unique_ptr<RTLookupResponse> rt_lookup_response,
     bool timed_out) {
   DCHECK_EQ(STATE_CHECKING_URL, state_);
   DCHECK_LT(next_index_, urls_.size());
   DCHECK_EQ(urls_[next_index_].url, url);
+  DCHECK(threat_source.has_value() || threat_type == SB_THREAT_TYPE_SAFE);
 
   RecordCheckUrlTimeout(timed_out);
   TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
@@ -325,7 +324,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
         // anything. The call also uses web_contents-related fields that are
         // populated within the |MakeUnsafeResource| function.
         MakeUnsafeResource(url, SBThreatType::SB_THREAT_TYPE_SAFE, metadata,
-                           /*is_from_url_real_time_check=*/false,
+                           database_manager_->GetThreatSource(),
                            /*rt_lookup_response=*/nullptr),
         base::BindOnce(&SafeBrowsingLookupMechanismExperimenter::
                            SetCheckExperimentEligibility,
@@ -343,9 +342,9 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
       // Delayed warnings experiment delays the warning until a user interaction
       // happens. Create an interaction observer and continue like there wasn't
       // a warning. The observer will create the interstitial when necessary.
-      UnsafeResource unsafe_resource = MakeUnsafeResource(
-          url, threat_type, metadata, is_from_url_real_time_check,
-          std::move(rt_lookup_response));
+      UnsafeResource unsafe_resource =
+          MakeUnsafeResource(url, threat_type, metadata, threat_source.value(),
+                             std::move(rt_lookup_response));
       unsafe_resource.is_delayed_warning = true;
       url_checker_delegate_
           ->StartObservingInteractionsForDelayedBlockingPageHelper(
@@ -395,9 +394,9 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Unsafe",
                             request_destination_);
 
-  UnsafeResource resource = MakeUnsafeResource(url, threat_type, metadata,
-                                               is_from_url_real_time_check,
-                                               std::move(rt_lookup_response));
+  UnsafeResource resource =
+      MakeUnsafeResource(url, threat_type, metadata, threat_source.value(),
+                         std::move(rt_lookup_response));
 
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;
 
@@ -491,8 +490,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
           base::BindOnce(&SafeBrowsingUrlCheckerImpl::
                              OnUrlResultInternalAndMaybeDeleteSelf,
                          weak_factory_.GetWeakPtr(), url, threat_type,
-                         ThreatMetadata(),
-                         /*is_from_url_real_time_check=*/false,
+                         ThreatMetadata(), database_manager_->GetThreatSource(),
                          /*rt_lookup_response=*/nullptr, /*timed_out=*/false));
       break;
     }

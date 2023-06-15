@@ -49,7 +49,7 @@ void HashDatabaseMechanism::OnCheckBrowseUrlResult(
   is_async_database_manager_check_in_progress_ = false;
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url, threat_type, metadata,
-      /*is_from_url_real_time_check=*/false,
+      /*threat_source=*/database_manager_->GetThreatSource(),
       /*url_real_time_lookup_response=*/nullptr,
       /*matched_high_confidence_allowlist=*/absl::nullopt,
       /*locally_cached_results_threat_type=*/absl::nullopt,

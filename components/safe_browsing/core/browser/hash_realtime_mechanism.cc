@@ -110,7 +110,8 @@ void HashRealTimeMechanism::OnLookupResponse(
   DCHECK(threat_type.has_value());
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url_, threat_type.value(), ThreatMetadata(),
-      /*is_from_url_real_time_check=*/false,
+      // TODO(crbug.com/1441654) [Also TODO(thefrog)]: Set true threat source.
+      /*threat_source=*/database_manager_->GetThreatSource(),
       /*url_real_time_lookup_response=*/nullptr,
       /*matched_high_confidence_allowlist=*/false,
       /*locally_cached_results_threat_type=*/locally_cached_results_threat_type,
@@ -130,7 +131,8 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
   if (result.is_safe_synchronously) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
-        SB_THREAT_TYPE_SAFE, ThreatMetadata(), real_time_request_failed);
+        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt,
+        real_time_request_failed);
   }
 }
 
@@ -139,16 +141,17 @@ void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
     std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
   DCHECK(!result->real_time_request_failed);
   OnHashDatabaseCompleteCheckResultInternal(
-      result->threat_type, result->metadata, real_time_request_failed);
+      result->threat_type, result->metadata, result->threat_source,
+      real_time_request_failed);
 }
 
 void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
+    absl::optional<ThreatSource> threat_source,
     bool real_time_request_failed) {
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url_, threat_type, metadata,
-      /*is_from_url_real_time_check=*/false,
+      url_, threat_type, metadata, threat_source,
       /*url_real_time_lookup_response=*/nullptr,
       /*matched_high_confidence_allowlist=*/!real_time_request_failed,
       /*locally_cached_results_threat_type=*/absl::nullopt,

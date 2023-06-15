@@ -232,7 +232,7 @@ void UrlRealTimeMechanism::OnRTLookupResponse(
   } else {
     CompleteCheck(std::make_unique<CompleteCheckResult>(
         url_, sb_threat_type, ThreatMetadata(),
-        /*is_from_url_real_time_check=*/true, std::move(response),
+        ThreatSource::URL_REAL_TIME_CHECK, std::move(response),
         /*matched_high_confidence_allowlist=*/did_match_allowlist_,
         /*locally_cached_results_threat_type=*/
         is_cached_response ? sb_threat_type : SBThreatType::SB_THREAT_TYPE_SAFE,
@@ -298,7 +298,8 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
   if (is_safe_synchronously || !can_check_db_) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
-        SB_THREAT_TYPE_SAFE, ThreatMetadata(), real_time_request_failed);
+        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt,
+        real_time_request_failed);
   }
 }
 
@@ -307,20 +308,21 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
     std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
   DCHECK(!result->real_time_request_failed);
   OnHashDatabaseCompleteCheckResultInternal(
-      result->threat_type, result->metadata, real_time_request_failed);
+      result->threat_type, result->metadata, result->threat_source,
+      real_time_request_failed);
 }
 
 void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
+    absl::optional<ThreatSource> threat_source,
     bool real_time_request_failed) {
   if (is_cached_safe_url_) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.GetCache.FallbackThreatType",
                               threat_type, SB_THREAT_TYPE_MAX + 1);
   }
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url_, threat_type, metadata,
-      /*is_from_url_real_time_check=*/false,
+      url_, threat_type, metadata, threat_source,
       /*url_real_time_lookup_response=*/nullptr,
       /*matched_high_confidence_allowlist=*/did_match_allowlist_,
       /*locally_cached_results_threat_type=*/
