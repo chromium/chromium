@@ -87,9 +87,13 @@ void VideoSourceImpl::OnClientDisconnected() {
     return;
   }
 
-  if (device_status_ != DeviceStatus::kStoppingAsynchronously) {
+  if (device_status_ != DeviceStatus::kStoppingAsynchronously &&
+      device_status_ != DeviceStatus::kNotStarted) {
     // We need to stop devices when VideoSource remote discarded with active
     // subscription.
+    // DeviceStatus::kNotStarted means no device has been created yet or
+    // no device has been successfully created. Therefore, StopDevice() does
+    // not need to be called in these two cases.
     device_factory_->StopDevice(device_id_);
   }
 

@@ -798,6 +798,9 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kWinDirectShowDeviceInitializationFailed:
       return media::mojom::VideoCaptureError::
           kWinDirectShowDeviceInitializationFailed;
+    case media::VideoCaptureError::kVideoCaptureDeviceFactorySecondCreateDenied:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureDeviceFactorySecondCreateDenied;
   }
   NOTREACHED_NORETURN();
 }
@@ -1444,6 +1447,11 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kWinDirectShowDeviceInitializationFailed:
       *output =
           media::VideoCaptureError::kWinDirectShowDeviceInitializationFailed;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kVideoCaptureDeviceFactorySecondCreateDenied:
+      *output = media::VideoCaptureError::
+          kVideoCaptureDeviceFactorySecondCreateDenied;
       return true;
   }
   NOTREACHED_NORETURN();
