@@ -1549,6 +1549,47 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
 }
 
+TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
+  const auto histogram_tester = base::HistogramTester();
+
+  auto fileDaemonInfo1 = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode1, base::FilePath(), kExampleUrl1);
+  auto fileDaemonInfo2 = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode2, base::FilePath(), kExampleUrl2);
+  auto fileDaemonInfo3 = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode3, base::FilePath(), kExampleUrl3);
+
+  std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files(
+      {fileDaemonInfo1, fileDaemonInfo2, fileDaemonInfo3});
+  std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels =
+      {{fileDaemonInfo1, ::dlp::RestrictionLevel::LEVEL_ALLOW},
+       {fileDaemonInfo2, ::dlp::RestrictionLevel::LEVEL_ALLOW},
+       {fileDaemonInfo3, ::dlp::RestrictionLevel::LEVEL_ALLOW}};
+
+  MockIsFilesTransferRestrictedCallback cb;
+  EXPECT_CALL(cb, Run(files_levels)).Times(1);
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedComponent).Times(0);
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination).Times(0);
+
+  EXPECT_CALL(*rules_manager_, GetReportingManager()).Times(0);
+
+  files_controller_->IsFilesTransferRestricted(
+      /*task_id=*/1234, transferred_files,
+      DlpFileDestination(my_files_dir_url_.path().value()),
+      dlp::FileAction::kTransfer, cb.Get());
+
+  ASSERT_EQ(events.size(), 0u);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 0),
+                       base::Bucket(dlp::FileAction::kDownload, 0),
+                       base::Bucket(dlp::FileAction::kTransfer, 0)));
+}
+
 class DlpFilesTestWithMounts : public DlpFilesControllerAshTest {
  public:
   DlpFilesTestWithMounts(const DlpFilesTestWithMounts&) = delete;
@@ -1667,29 +1708,19 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
 
   const auto histogram_tester = base::HistogramTester();
 
-  std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files(
-      {DlpFilesControllerAsh::FileDaemonInfo(kInode1, base::FilePath(),
-                                             kExampleUrl1),
-       DlpFilesControllerAsh::FileDaemonInfo(kInode2, base::FilePath(),
-                                             kExampleUrl2),
-       DlpFilesControllerAsh::FileDaemonInfo(kInode3, base::FilePath(),
-                                             kExampleUrl3)});
-  std::vector<DlpFilesControllerAsh::FileDaemonInfo> disallowed_files(
-      {DlpFilesControllerAsh::FileDaemonInfo(kInode1, base::FilePath(),
-                                             kExampleUrl1),
-       DlpFilesControllerAsh::FileDaemonInfo(kInode3, base::FilePath(),
-                                             kExampleUrl3)});
+  auto fileDaemonInfo1 = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode1, base::FilePath(), kExampleUrl1);
+  auto fileDaemonInfo2 = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode2, base::FilePath(), kExampleUrl2);
+  auto fileDaemonInfo3 = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode3, base::FilePath(), kExampleUrl3);
 
+  std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files(
+      {fileDaemonInfo1, fileDaemonInfo2, fileDaemonInfo3});
   std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels =
-      {{DlpFilesControllerAsh::FileDaemonInfo(kInode1, base::FilePath(),
-                                              kExampleUrl1),
-        ::dlp::RestrictionLevel::LEVEL_BLOCK},
-       {DlpFilesControllerAsh::FileDaemonInfo(kInode2, base::FilePath(),
-                                              kExampleUrl2),
-        ::dlp::RestrictionLevel::LEVEL_ALLOW},
-       {DlpFilesControllerAsh::FileDaemonInfo(kInode3, base::FilePath(),
-                                              kExampleUrl3),
-        ::dlp::RestrictionLevel::LEVEL_BLOCK}};
+      {{fileDaemonInfo1, ::dlp::RestrictionLevel::LEVEL_BLOCK},
+       {fileDaemonInfo2, ::dlp::RestrictionLevel::LEVEL_ALLOW},
+       {fileDaemonInfo3, ::dlp::RestrictionLevel::LEVEL_BLOCK}};
 
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(files_levels)).Times(1);

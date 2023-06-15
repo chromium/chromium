@@ -695,9 +695,14 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
       actual_dst = DlpFileDestination(dst_component.value());
       MaybeReportEvent(file.inode, file.path, source_pattern, actual_dst,
                        absl::nullopt, rule_metadata, level);
+      // TODO(http://b/287003462) find better way to figure out if this is a url
+      // or path than parsing the string
+    } else if (destination.url_or_path() &&
+               !GURL(*destination.url_or_path()).is_valid() &&
+               IsInLocalFileSystem(
+                   base::FilePath(*destination.url_or_path()))) {
+      level = DlpRulesManager::Level::kAllow;
     } else {
-      // TODO(crbug.com/1286366): Revisit whether passing files paths here
-      // make sense.
       DCHECK(destination.url_or_path().has_value());
       destination_pattern = std::string();
       level = rules_manager_->IsRestrictedDestination(
