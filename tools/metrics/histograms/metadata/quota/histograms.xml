@@ -77,6 +77,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Quota.DatabaseSpecificError.{Statement}"
+    enum="SqliteLoggedResultCode" expires_after="2024-01-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records error codes returned by SQLite for operations on the quota database.
+    These are logged separately for each database operation to help isolate
+    issues the quota db might be facing.
+  </summary>
+  <token key="Statement">
+    <variant name="BootstrapDefaultBucket"/>
+    <variant name="Commit"/>
+    <variant name="CountBuckets"/>
+    <variant name="CreateBucket"/>
+    <variant name="CreateTable"/>
+    <variant name="DeleteBucket"/>
+    <variant name="GetBucket"/>
+    <variant name="GetBucketById"/>
+    <variant name="GetBucketsForEviction"/>
+    <variant name="GetBucketsForHost"/>
+    <variant name="GetBucketsForStorageKey"/>
+    <variant name="GetBucketsForType"/>
+    <variant name="GetBucketsModifiedBetween"/>
+    <variant name="GetExpired"/>
+    <variant name="GetStorageKeys"/>
+    <variant name="Open"/>
+    <variant name="SetBucketLastAccessTime"/>
+    <variant name="SetBucketLastModifiedTime"/>
+    <variant name="SetStorageKeyLastAccessTime"/>
+    <variant name="UpdateBucketExpiration"/>
+    <variant name="UpdateBucketPersistence"/>
+  </token>
+</histogram>
+
 <histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2023-11-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>

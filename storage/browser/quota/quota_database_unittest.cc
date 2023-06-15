@@ -1016,6 +1016,8 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
     expecter.ExpectError(SQLITE_CORRUPT);
     auto db = CreateDatabase(/*is_incognito=*/false);
     ASSERT_TRUE(EnsureOpened(db.get()));
+    histograms.ExpectBucketCount("Quota.DatabaseSpecificError.Open",
+                                 sql::SqliteLoggedResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
 
     // Ensure data is deleted.
@@ -1123,6 +1125,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
 #endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
+  base::HistogramTester histograms;
   QuotaDatabase db(ProfilePath());
   BucketInitParams params(
       StorageKey::CreateFromStringForTesting("http://google/"),
@@ -1153,6 +1156,7 @@ TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
     EXPECT_EQ(sqlite_error_code,
               static_cast<int>(sql::SqliteResultCode::kCorrupt));
   }
+  histograms.ExpectTotalCount("Quota.DatabaseSpecificError.GetBucket", 1);
 }
 
 TEST_P(QuotaDatabaseTest, Expiration) {

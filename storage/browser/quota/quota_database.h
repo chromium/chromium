@@ -39,6 +39,7 @@ class Clock;
 namespace sql {
 class Database;
 class MetaTable;
+class Statement;
 }  // namespace sql
 
 namespace storage {
@@ -267,6 +268,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void ScheduleCommit();
 
   QuotaError EnsureOpened();
+  void OnSqliteError(int sqlite_error_code, sql::Statement* statement);
   bool MoveLegacyDatabase();
   bool OpenDatabase();
   bool EnsureDatabaseVersion();
@@ -313,6 +315,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
+
+  // A descriptor of the last SQL statement that was executed, used for metrics.
+  absl::optional<std::string> last_operation_;
 
   base::RepeatingCallback<void(int)> db_error_callback_;
 };
