@@ -9,12 +9,10 @@
 #include <vector>
 
 #include "base/json/json_string_value_serializer.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -213,7 +211,10 @@ TEST(WebAuthenticationJSONConversionTest,
   "response": {
     "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVikJr1yeL5GN2Hx-qGxCrTE-CZwJpxBDHJqH9bgWFXhm0ZdAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQnqQEo7oPQjy-pupOzL3-bqCFjsQklxGpULfOrnG6WpQECAyYgASFYIJZF8F3hN5jYY05Slr0X96-zXsT0Za1-ZXjoRO69uRL1Ilgg8ZOMJTagPCfl8zZ1n36qxA8lIOOGvZrn1CahB9G-DAI",
     "clientDataJSON": "dGVzdCBjbGllbnQgZGF0YSBqc29u",
-    "transports": [ "usb", "unknowntransport" ]
+    "transports": [ "usb", "unknowntransport" ],
+    "authenticatorData": "Jr1yeL5GN2Hx-qGxCrTE-CZwJpxBDHJqH9bgWFXhm0ZdAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQnqQEo7oPQjy-pupOzL3-bqCFjsQklxGpULfOrnG6WpQECAyYgASFYIJZF8F3hN5jYY05Slr0X96-zXsT0Za1-ZXjoRO69uRL1Ilgg8ZOMJTagPCfl8zZ1n36qxA8lIOOGvZrn1CahB9G-DAI",
+    "publicKeyAlgorithm": -7,
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElkXwXeE3mNhjTlKWvRf3r7NexPRlrX5leOhE7r25EvXxk4wlNqA8J-XzNnWffqrEDyUg44a9mufUJqEH0b4MAg"
   },
   "type": "public-key"
 })";
@@ -224,7 +225,8 @@ TEST(WebAuthenticationJSONConversionTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  auto [response, error] = MakeCredentialResponseFromValue(*value);
+  auto [response, error] =
+      MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
   ASSERT_TRUE(response) << error;
 
   auto expected = MakeCredentialAuthenticatorResponse::New(
@@ -268,8 +270,8 @@ TEST(WebAuthenticationJSONConversionTest,
 
 TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAttestationResponseOptionalFields) {
-  // Test that both `null` and omitting the field works for the sole optional
-  // field, `authenticatorAttachment`.
+  // Test both that `null` is an error, and that omitting the field works, for
+  // the sole optional field, `authenticatorAttachment`.
   constexpr char kJsonWithNull[] = R"({
   "authenticatorAttachment": null,
   "clientExtensionResults": {
@@ -283,7 +285,10 @@ TEST(WebAuthenticationJSONConversionTest,
   "response": {
     "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVikJr1yeL5GN2Hx-qGxCrTE-CZwJpxBDHJqH9bgWFXhm0ZdAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQnqQEo7oPQjy-pupOzL3-bqCFjsQklxGpULfOrnG6WpQECAyYgASFYIJZF8F3hN5jYY05Slr0X96-zXsT0Za1-ZXjoRO69uRL1Ilgg8ZOMJTagPCfl8zZ1n36qxA8lIOOGvZrn1CahB9G-DAI",
     "clientDataJSON": "dGVzdCBjbGllbnQgZGF0YSBqc29u",
-    "transports": [ "usb", "unknowntransport" ]
+    "transports": [ "usb", "unknowntransport" ],
+    "authenticatorData": "Jr1yeL5GN2Hx-qGxCrTE-CZwJpxBDHJqH9bgWFXhm0ZdAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQnqQEo7oPQjy-pupOzL3-bqCFjsQklxGpULfOrnG6WpQECAyYgASFYIJZF8F3hN5jYY05Slr0X96-zXsT0Za1-ZXjoRO69uRL1Ilgg8ZOMJTagPCfl8zZ1n36qxA8lIOOGvZrn1CahB9G-DAI",
+    "publicKeyAlgorithm": -7,
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElkXwXeE3mNhjTlKWvRf3r7NexPRlrX5leOhE7r25EvXxk4wlNqA8J-XzNnWffqrEDyUg44a9mufUJqEH0b4MAg"
   },
   "type": "public-key"
 })";
@@ -295,23 +300,24 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(value) << deserialize_error;
 
   {
-    auto [response, error] = MakeCredentialResponseFromValue(*value);
-    ASSERT_TRUE(response) << error;
-    EXPECT_EQ(response->authenticator_attachment,
-              device::AuthenticatorAttachment::kAny);
+    // Should fail because of null.
+    auto [response, error] =
+        MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
+    ASSERT_FALSE(response);
   }
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({device::kWebAuthnNoNullInJSON}, {});
-    auto [response, error] = MakeCredentialResponseFromValue(*value);
-    EXPECT_FALSE(response);
+    // But null is acceptable in the remote-desktop case.
+    auto [response, error] =
+        MakeCredentialResponseFromValue(*value, JSONUser::kRemoteDesktop);
+    ASSERT_TRUE(response) << error;
   }
 
   {
     base::Value json = value->Clone();
     EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
-    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    auto [response, error] =
+        MakeCredentialResponseFromValue(json, JSONUser::kAndroid);
     ASSERT_TRUE(response) << error;
     EXPECT_EQ(response->authenticator_attachment,
               device::AuthenticatorAttachment::kAny);
@@ -341,75 +347,85 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(value) << deserialize_error;
 
   {
-    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    auto [response, error] =
+        MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
     EXPECT_TRUE(response) << error;
   }
 
-  {
-    // Still valid even when these fields are required.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {device::kWebAuthnRequireEasyAccessorFieldsInJSON}, {});
-    auto [response, error] = MakeCredentialResponseFromValue(*value);
-    EXPECT_TRUE(response) << error;
-  }
-
-  // The fields are all optional.
+  // All three easy-accessor fields are required for P-256 (algorithm -7).
   for (const std::string key :
        {"publicKeyAlgorithm", "publicKey", "authenticatorData"}) {
     base::Value corrupted = value->Clone();
     EXPECT_TRUE(corrupted.GetIfDict()->FindDict("response")->Remove(key));
-    auto [response, error] = MakeCredentialResponseFromValue(corrupted);
-    EXPECT_TRUE(response) << error;
+    auto [response, error] =
+        MakeCredentialResponseFromValue(corrupted, JSONUser::kAndroid);
+    EXPECT_FALSE(response);
   }
 
-  // But it's an error if they are present with the wrong value.
-  for (const bool flag_set : {true, false}) {
-    SCOPED_TRACE(flag_set);
-
-    base::test::ScopedFeatureList feature_list;
-    if (flag_set) {
-      feature_list.InitWithFeatures(
-          {device::kWebAuthnRequireEasyAccessorFieldsInJSON}, {});
-    }
-
-    {
-      base::Value corrupted = value->Clone();
-      corrupted.GetIfDict()
-          ->FindDict("response")
-          ->Set("publicKeyAlgorithm", -8);
-      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
-      EXPECT_FALSE(response);
-    }
-
-    {
-      base::Value corrupted = value->Clone();
-      corrupted.GetIfDict()->FindDict("response")->Set("publicKey", "MTIzNA");
-      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
-      EXPECT_FALSE(response);
-    }
-
-    {
-      base::Value corrupted = value->Clone();
-      corrupted.GetIfDict()
-          ->FindDict("response")
-          ->Set("authenticatorData", "MTIzNA");
-      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
-      EXPECT_FALSE(response);
-    }
-  }
-
-  // In the future, two of the fields are required.
+  // It's an error if they are present with the wrong value.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {device::kWebAuthnRequireEasyAccessorFieldsInJSON}, {});
-    for (const std::string key : {"publicKeyAlgorithm", "authenticatorData"}) {
-      base::Value corrupted = value->Clone();
-      EXPECT_TRUE(corrupted.GetIfDict()->FindDict("response")->Remove(key));
-      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
-      EXPECT_FALSE(response);
-    }
+    base::Value corrupted = value->Clone();
+    corrupted.GetIfDict()->FindDict("response")->Set("publicKeyAlgorithm", -8);
+    auto [response, error] =
+        MakeCredentialResponseFromValue(corrupted, JSONUser::kAndroid);
+    EXPECT_FALSE(response);
+  }
+
+  {
+    base::Value corrupted = value->Clone();
+    corrupted.GetIfDict()->FindDict("response")->Set("publicKey", "MTIzNA");
+    auto [response, error] =
+        MakeCredentialResponseFromValue(corrupted, JSONUser::kAndroid);
+    EXPECT_FALSE(response);
+  }
+
+  {
+    base::Value corrupted = value->Clone();
+    corrupted.GetIfDict()
+        ->FindDict("response")
+        ->Set("authenticatorData", "MTIzNA");
+    auto [response, error] =
+        MakeCredentialResponseFromValue(corrupted, JSONUser::kAndroid);
+    EXPECT_FALSE(response);
+  }
+
+  // The field are optional in the remote-desktop case until we can fix that.
+  for (const std::string key :
+       {"publicKeyAlgorithm", "authenticatorData", "publicKey"}) {
+    base::Value corrupted = value->Clone();
+    EXPECT_TRUE(corrupted.GetIfDict()->FindDict("response")->Remove(key));
+    auto [response, error] =
+        MakeCredentialResponseFromValue(corrupted, JSONUser::kRemoteDesktop);
+    EXPECT_TRUE(response);
+  }
+}
+
+TEST(WebAuthenticationJSONConversionTest,
+     AuthenticatorAttestationResponseOmittedPublicKey) {
+  // COSE algorithm -1 is not typical and so the publicKey field can be omitted.
+  constexpr char kJson[] = R"({
+    "rawId":"Lnc6JGTv2WBS05AsZB6xdg",
+    "authenticatorAttachment":"platform",
+    "type":"public-key",
+    "id":"Lnc6JGTv2WBS05AsZB6xdg",
+    "response":{
+      "clientDataJSON":"PGludmFsaWQ-",
+      "attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUdKbqkhPJnC90siSSsyDPQCYqlMGpUKA5fyklC2CEHvBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAEC53OiRk79lgUtOQLGQesXalAQIDICABIVggGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsYiWCA8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg",
+      "transports":["internal", "hybrid"],
+      "authenticatorData":"dKbqkhPJnC90siSSsyDPQCYqlMGpUKA5fyklC2CEHvBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAEC53OiRk79lgUtOQLGQesXalAQIDICABIVggGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsYiWCA8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg",
+      "publicKeyAlgorithm":-1},
+      "clientExtensionResults":{"credProps":{"rk":true}}})";
+
+  JSONStringValueDeserializer deserializer(kJson);
+  std::string deserialize_error;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
+  ASSERT_TRUE(value) << deserialize_error;
+
+  {
+    auto [response, error] =
+        MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
+    EXPECT_TRUE(response) << error;
   }
 }
 
@@ -457,7 +473,8 @@ TEST(WebAuthenticationJSONConversionTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  auto [response, error] = GetAssertionResponseFromValue(*value);
+  auto [response, error] =
+      GetAssertionResponseFromValue(*value, JSONUser::kAndroid);
   ASSERT_TRUE(response) << error;
 
   auto expected = GetAssertionAuthenticatorResponse::New(
@@ -528,25 +545,38 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(value) << deserialize_error;
 
   {
-    auto [response, error] = GetAssertionResponseFromValue(*value);
-    ASSERT_TRUE(response) << error;
+    // Should fail because of null authenticatorAttachment.
+    auto [response, error] =
+        GetAssertionResponseFromValue(*value, JSONUser::kAndroid);
+    EXPECT_FALSE(response);
+  }
+
+  {
+    // ... but not for remote-desktop
+    auto [response, error] =
+        GetAssertionResponseFromValue(*value, JSONUser::kRemoteDesktop);
+    EXPECT_TRUE(response) << error;
     EXPECT_EQ(response->authenticator_attachment,
               device::AuthenticatorAttachment::kAny);
     EXPECT_FALSE(response->user_handle);
   }
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({device::kWebAuthnNoNullInJSON}, {});
-    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    // Should still fail because `userHandle` is null.
+    base::Value json = value->Clone();
+    EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
+    auto [response, error] =
+        GetAssertionResponseFromValue(json, JSONUser::kAndroid);
     EXPECT_FALSE(response);
   }
 
   {
+    // But omitting both is valid.
     base::Value json = value->Clone();
     EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
     EXPECT_TRUE(json.GetIfDict()->FindDict("response")->Remove("userHandle"));
-    auto [response, error] = GetAssertionResponseFromValue(json);
+    auto [response, error] =
+        GetAssertionResponseFromValue(json, JSONUser::kAndroid);
     ASSERT_TRUE(response) << error;
     EXPECT_EQ(response->authenticator_attachment,
               device::AuthenticatorAttachment::kAny);

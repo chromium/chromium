@@ -73,14 +73,19 @@ BASE_FEATURE(kWebAuthnHybridLinkWithoutNotifications,
              "WebAuthenticationHybridLinkWithoutNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled in M116. Remove in or after M119.
 BASE_FEATURE(kWebAuthnNoNullInJSON,
              "WebAuthenticationNoNullInJSON",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled in M116. Remove in or after M119.
 BASE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON,
              "WebAuthenticationRequireEasyAccessorFieldsInJSON",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop,
+             "WebAuthnenticationRequireUpToDateJSONForRemoteDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
