@@ -37,6 +37,7 @@ static const struct TestOsWithFamily {
     {{"BIGSUR", GPUTestConfig::kOsMacBigSur}, kOsFamilyMac},
     {{"MONTEREY", GPUTestConfig::kOsMacMonterey}, kOsFamilyMac},
     {{"VENTURA", GPUTestConfig::kOsMacVentura}, kOsFamilyMac},
+    {{"SONOMA", GPUTestConfig::kOsMacSonoma}, kOsFamilyMac},
     {{"LINUX", GPUTestConfig::kOsLinux}, {"LINUX", GPUTestConfig::kOsLinux}},
     {{"CHROMEOS", GPUTestConfig::kOsChromeOS},
      {"CHROMEOS", GPUTestConfig::kOsChromeOS}},
