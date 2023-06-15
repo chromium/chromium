@@ -24,15 +24,21 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
  public:
   ~PartRoot() override = default;
 
-  // PartRoot API
+  void Trace(Visitor* visitor) const override;
 
-  // TODO(crbug.com/1453291) Implement this method.
-  HeapVector<Member<Part>> getParts() { return HeapVector<Member<Part>>(); }
+  // Adds a new part to this PartRoot's collection of maintained parts.
+  void addPart(Part& new_part);
+
+  // PartRoot API
+  HeapVector<Member<Part>> getParts();
   // TODO(crbug.com/1453291) Implement this method.
   PartRoot* clone() const { return nullptr; }
 
  protected:
   PartRoot() = default;
+
+ private:
+  HeapVector<Member<Part>> parts_;
 };
 
 }  // namespace blink

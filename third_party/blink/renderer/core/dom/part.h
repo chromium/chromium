@@ -32,7 +32,7 @@ class CORE_EXPORT Part : public PartRoot {
   Vector<String>& metadata() { return metadata_; }
 
  protected:
-  explicit Part(PartRoot& root) : root_(root) {}
+  explicit Part(PartRoot& root);
 
  private:
   Member<PartRoot> root_;

@@ -6,9 +6,9 @@
 
 <div id=target style="display:none">
   Imperative test element
-  <span></span> A
-  <span></span> B
-  <span></span> C
+  <span>A</span>
+  <span>B</span>
+  <span>C</span>
 </div>
 
 <div style="display:none">
@@ -23,19 +23,33 @@ assert_true(target.children.length >= 3);
 
 test(() => {
   const root = document.getPartRoot();
-  assert_true(root instanceof DocumentPartRoot,'document.getPartRoot() should return the DocumentPartRoot');
+  assert_true(root instanceof DocumentPartRoot);
+  assert_true(root instanceof PartRoot);
   const parts = root.getParts();
-  assert_true(!!parts,'getParts() should return something');
+  assert_equals(parts.length,0,'getParts() should start out empty');
 
   const nodePart = new NodePart(root,target);
-  assert_true(!!nodePart);
+  assert_true(nodePart instanceof NodePart);
   assert_equals(nodePart.node,target);
   assert_equals(nodePart.root,root);
-  const childNodePart = new ChildNodePart(root,target.children[0], target.children[1]);
-  assert_true(!!childNodePart);
+  assert_equals(root.getParts().length,1,'getParts() for the root should now have this nodePart');
+  assert_equals(root.getParts()[0],nodePart);
+  assert_equals(parts.length,0,'Return value of getParts() is not live');
+
+  const childNodePart = new ChildNodePart(root,target.children[0], target.children[2]);
+  assert_true(childNodePart instanceof ChildNodePart);
+  assert_true(childNodePart instanceof Part);
   assert_equals(childNodePart.root,root);
   assert_equals(childNodePart.previousSibling,target.children[0]);
-  assert_equals(childNodePart.nextSibling,target.children[1]);
-  assert_equals(childNodePart.getParts().length,0,'childNodePart.getParts() should return an empty array');
+  assert_equals(childNodePart.nextSibling,target.children[2]);
+  assert_equals(childNodePart.getParts().length,0,'childNodePart.getParts() should start out empty');
+  assert_equals(root.getParts().length,2);
+  assert_equals(root.getParts()[1],childNodePart);
+
+  const nodePart2 = new NodePart(childNodePart,target.children[2]);
+  assert_equals(nodePart2.root,childNodePart);
+  assert_equals(root.getParts().length,2,'getParts() for the root DocumentPartRoot shouldn\'t change');
+  assert_equals(childNodePart.getParts().length,1);
+  assert_equals(childNodePart.getParts()[0],nodePart2);
 }, 'Basic imperative DOM Parts object construction');
 </script>

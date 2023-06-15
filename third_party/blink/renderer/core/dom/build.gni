@@ -225,6 +225,7 @@ blink_core_sources_dom = [
   "parser_content_policy.h",
   "part.cc",
   "part.h",
+  "part_root.cc",
   "part_root.h",
   "popover_data.h",
   "presentation_attribute_style.cc",

@@ -8,6 +8,10 @@
 
 namespace blink {
 
+Part::Part(PartRoot& root) : root_(root) {
+  root.addPart(*this);
+}
+
 void Part::Trace(Visitor* visitor) const {
   visitor->Trace(root_);
   PartRoot::Trace(visitor);
