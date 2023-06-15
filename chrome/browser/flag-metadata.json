@@ -6313,6 +6313,13 @@
     "expiry_milestone": 118
   },
   {
+    "name": "permissive-usb-passthrough",
+    "owners": [
+      "drmasquatch"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "phone-hub-nudge",
     "owners": [
       "jennserrano@google.com",

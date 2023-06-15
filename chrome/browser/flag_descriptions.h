@@ -3170,6 +3170,9 @@ extern const char kEnableServiceWorkersForChromeUntrustedDescription[];
 extern const char kEnterpriseReportingUIName[];
 extern const char kEnterpriseReportingUIDescription[];
 
+extern const char kPermissiveUsbPassthroughName[];
+extern const char kPermissiveUsbPassthroughDescription[];
+
 extern const char kCrostiniContainerInstallName[];
 extern const char kCrostiniContainerInstallDescription[];
 

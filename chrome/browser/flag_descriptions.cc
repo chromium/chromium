@@ -5526,6 +5526,11 @@ const char kEnterpriseReportingUIName[] =
 const char kEnterpriseReportingUIDescription[] =
     "When enabled, allows for chrome://enterprise-reporting to be visited";
 
+const char kPermissiveUsbPassthroughName[] =
+    "Enable more permissive passthrough for USB Devices";
+const char kPermissiveUsbPassthroughDescription[] =
+    "When enabled, applies more permissive rules passthrough of USB devices.";
+
 const char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 const char kCrostiniContainerInstallDescription[] =
