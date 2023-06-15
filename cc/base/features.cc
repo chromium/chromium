@@ -116,4 +116,9 @@ BASE_FEATURE(kMoreAggressiveSolidColorDetection,
 BASE_FEATURE(kReducedFrameRateEstimation,
              "kReducedFrameRateEstimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDetectHiDpiForMsaa,
+             "DetectHiDpiForMsaa",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
