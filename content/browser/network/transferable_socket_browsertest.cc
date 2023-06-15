@@ -50,9 +50,9 @@ class TransferableSocketBrowserTest : public ContentBrowserTest {
       sandbox::policy::features::kNetworkServiceSandbox,
 #endif
     };
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features,
-        /*disabled_features=*/{features::kNetworkServiceInProcess});
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
+    ForceOutOfProcessNetworkService();
   }
 
   void SetUp() override {

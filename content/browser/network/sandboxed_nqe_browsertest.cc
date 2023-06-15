@@ -91,7 +91,7 @@ class SandboxedNQEBrowserTest : public ContentBrowserTest {
 #endif
     };
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
-    ForceOutOfProcessNetworkServiceImpl();
+    ForceOutOfProcessNetworkService();
   }
 
   void SetUpOnMainThread() override {

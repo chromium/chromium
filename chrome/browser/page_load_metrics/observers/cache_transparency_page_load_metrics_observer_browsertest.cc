@@ -13,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -51,12 +52,12 @@ class CacheTransparencyPageLoadMetricsObserverBrowserTest
          ",2478392C652868C0AAF0316A28284610DBDACF02D66A00B39F3BA75D887F4829"});
 
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kNetworkServiceInProcess, {}},
-         {network::features::kPervasivePayloadsList,
+        {{network::features::kPervasivePayloadsList,
           {{"pervasive-payloads", pervasive_payloads_params}}},
          {network::features::kCacheTransparency, {}},
          {net::features::kSplitCacheByNetworkIsolationKey, {}}},
         {/* disabled_features */});
+    content::ForceInProcessNetworkService();
 
     InProcessBrowserTest::SetUp();
   }
