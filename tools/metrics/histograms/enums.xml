@@ -61978,6 +61978,7 @@ from previous Chrome versions.
   <int value="-565115614" label="CloudApAuth:enabled"/>
   <int value="-563980787" label="disable-webrtc"/>
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
+  <int value="-562875191" label="WebAppDedupeInstallUrls:disabled"/>
   <int value="-562771426" label="InstantStart:disabled"/>
   <int value="-562274241" label="enable-extension-action-redesign"/>
   <int value="-561563844"
@@ -66455,6 +66456,7 @@ from previous Chrome versions.
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
   <int value="1797002314" label="HatsUseNewHistograms:enabled"/>
   <int value="1797226735" label="ImageServiceSuggestPoweredImages:enabled"/>
+  <int value="1798055501" label="WebAppDedupeInstallUrls:enabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>

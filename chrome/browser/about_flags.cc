@@ -4839,6 +4839,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},
 #if !BUILDFLAG(IS_ANDROID)
+    {"web-app-dedupe-install-urls",
+     flag_descriptions::kWebAppDedupeInstallUrlsName,
+     flag_descriptions::kWebAppDedupeInstallUrlsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebAppDedupeInstallUrls)},
     {"web-app-manifest-immediate-updating",
      flag_descriptions::kWebAppManifestImmediateUpdatingName,
      flag_descriptions::kWebAppManifestImmediateUpdatingDescription, kOsDesktop,

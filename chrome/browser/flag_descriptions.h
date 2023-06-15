@@ -2780,6 +2780,9 @@ extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
 #endif
 
+extern const char kWebAppDedupeInstallUrlsName[];
+extern const char kWebAppDedupeInstallUrlsDescription[];
+
 extern const char kWebAppManifestImmediateUpdatingName[];
 extern const char kWebAppManifestImmediateUpdatingDescription[];
 

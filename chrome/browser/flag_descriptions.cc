@@ -4836,6 +4836,12 @@ const char kSettingsEnableGetTheMostOutOfChromeDescription[] =
     "will be available.";
 #endif
 
+const char kWebAppDedupeInstallUrlsName[] = "Web App Dedupe Install URLs";
+const char kWebAppDedupeInstallUrlsDescription[] =
+    "Enables a clean up fix for web apps that were installed by external "
+    "(non-user) sources that install the same URL but result in different web "
+    "apps being installed.";
+
 const char kWebAppManifestImmediateUpdatingName[] =
     "Web App Manifest Immediate Updating";
 const char kWebAppManifestImmediateUpdatingDescription[] =
