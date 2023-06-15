@@ -3293,7 +3293,7 @@
   {
     "name": "enable-run-on-os-login",
     "owners": [ "sfiss" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-seamless-refresh-rate-switching",
