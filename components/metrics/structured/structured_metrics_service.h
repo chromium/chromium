@@ -108,6 +108,10 @@ class StructuredMetricsService final {
   // Marks that initialization has completed.
   bool initialize_complete_ = false;
 
+  // Represents if structured metrics and the service is enabled. This isn't
+  // to indicate if the service is recording.
+  bool structured_metrics_enabled_ = false;
+
   // The metrics client |this| is service is associated.
   base::raw_ptr<MetricsServiceClient> client_;
 

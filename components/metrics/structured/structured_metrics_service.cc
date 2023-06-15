@@ -23,7 +23,7 @@ StructuredMetricsService::~StructuredMetricsService() = default;
 
 void StructuredMetricsService::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+  if (!structured_metrics_enabled_) {
     return;
   }
   if (!initialize_complete_) {
@@ -34,7 +34,7 @@ void StructuredMetricsService::EnableRecording() {
 
 void StructuredMetricsService::DisableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+  if (!structured_metrics_enabled_) {
     return;
   }
   recorder_->DisableRecording();
@@ -42,7 +42,7 @@ void StructuredMetricsService::DisableRecording() {
 
 void StructuredMetricsService::EnableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+  if (!structured_metrics_enabled_) {
     return;
   }
   if (!reporting_active()) {
@@ -53,7 +53,7 @@ void StructuredMetricsService::EnableReporting() {
 
 void StructuredMetricsService::DisableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+  if (!structured_metrics_enabled_) {
     return;
   }
   reporting_service_->DisableReporting();
@@ -74,7 +74,7 @@ void StructuredMetricsService::Flush(
 
 void StructuredMetricsService::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+  if (!structured_metrics_enabled_) {
     return;
   }
   recorder_->Purge();
@@ -85,14 +85,20 @@ StructuredMetricsService::StructuredMetricsService(
     MetricsServiceClient* client,
     PrefService* local_state,
     std::unique_ptr<StructuredMetricsRecorder> recorder)
-    : recorder_(std::move(recorder)), client_(client) {
+    : recorder_(std::move(recorder)),
+      // This service is only enabled if both structured metrics and the service
+      // flags are enabled.
+      structured_metrics_enabled_(
+          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
+          base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
+      client_(client) {
   DCHECK(client);
   DCHECK(local_state);
 
   // If the StructuredMetricsService is not enabled then return early. The
   // recorder needs to be initialized, but not the reporting service or
   // scheduler.
-  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+  if (!structured_metrics_enabled_) {
     return;
   }
 
