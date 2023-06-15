@@ -44,6 +44,7 @@ source_set("lib") {
     "//services/device/geolocation",
     "//services/device/power_monitor",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/mojom:geolocation_internals",
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
     "//services/device/screen_orientation",

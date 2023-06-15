@@ -19,6 +19,7 @@
 #include "services/device/geolocation/network_location_provider.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "url/gurl.h"
 
@@ -61,6 +62,7 @@ class LocationArbitrator : public LocationProvider {
   bool HasPermissionBeenGrantedForTest() const;
 
   // LocationProvider implementation.
+  void FillDiagnostics(mojom::GeolocationDiagnostics& diagnostics) override;
   void SetUpdateCallback(
       const LocationProviderUpdateCallback& callback) override;
   void StartProvider(bool enable_high_accuracy) override;

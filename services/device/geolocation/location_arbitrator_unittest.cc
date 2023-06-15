@@ -113,6 +113,12 @@ class TestingLocationArbitrator : public LocationArbitrator {
     return base::WrapUnique(system_location_provider_.get());
   }
 
+  mojom::GeolocationDiagnostics::ProviderState state() {
+    mojom::GeolocationDiagnostics diagnostics;
+    FillDiagnostics(diagnostics);
+    return diagnostics.provider_state;
+  }
+
   raw_ptr<FakeLocationProvider, DanglingUntriaged> network_location_provider_ =
       nullptr;
   raw_ptr<FakeLocationProvider> system_location_provider_ = nullptr;
@@ -180,6 +186,8 @@ TEST_F(GeolocationLocationArbitratorTest, CreateDestroy) {
   InitializeArbitrator(
       base::BindRepeating(&GetCustomLocationProviderForTest, nullptr), nullptr);
   EXPECT_TRUE(arbitrator_);
+  EXPECT_EQ(arbitrator_->state(),
+            mojom::GeolocationDiagnostics::ProviderState::kStopped);
   arbitrator_.reset();
   SUCCEED();
 }
@@ -210,8 +218,8 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageNetwork) {
 
   ASSERT_TRUE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
-            network_location_provider()->state_);
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            network_location_provider()->state());
   EXPECT_FALSE(observer_->last_result());
 
   SetReferencePosition(network_location_provider());
@@ -244,8 +252,8 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageSystem) {
 
   EXPECT_FALSE(network_location_provider());
   ASSERT_TRUE(system_location_provider());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
-            system_location_provider()->state_);
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            system_location_provider()->state());
   EXPECT_FALSE(observer_->last_result());
 
   SetReferencePosition(system_location_provider());
@@ -281,7 +289,8 @@ TEST_F(GeolocationLocationArbitratorTest, CustomSystemProviderOnly) {
 
   EXPECT_FALSE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, fake_location_provider->state_);
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            fake_location_provider->state());
   EXPECT_FALSE(observer_->last_result());
 
   SetReferencePosition(fake_location_provider);
@@ -309,14 +318,14 @@ TEST_F(GeolocationLocationArbitratorTest, SetObserverOptions) {
   arbitrator_->StartProvider(false);
   ASSERT_TRUE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
-            network_location_provider()->state_);
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            network_location_provider()->state());
   SetReferencePosition(network_location_provider());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
-            network_location_provider()->state_);
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            network_location_provider()->state());
   arbitrator_->StartProvider(true);
-  EXPECT_EQ(FakeLocationProvider::HIGH_ACCURACY,
-            network_location_provider()->state_);
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy,
+            network_location_provider()->state());
 }
 
 // Verifies that the arbitrator doesn't retain pointers to old providers after

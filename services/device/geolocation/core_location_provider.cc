@@ -33,6 +33,11 @@ CoreLocationProvider::~CoreLocationProvider() {
   StopProvider();
 }
 
+void CoreLocationProvider::FillDiagnostics(
+    mojom::GeolocationDiagnostics& diagnostics) {
+  diagnostics.provider_state = state_;
+}
+
 void CoreLocationProvider::SetUpdateCallback(
     const LocationProviderUpdateCallback& callback) {
   callback_ = callback;
@@ -47,16 +52,22 @@ void CoreLocationProvider::StartProvider(bool high_accuracy) {
   if (has_permission_) {
     StartWatching();
   } else {
+    state_ = mojom::GeolocationDiagnostics::ProviderState::
+        kBlockedBySystemPermission;
     provider_start_attemped_ = true;
   }
 }
 
 void CoreLocationProvider::StartWatching() {
+  state_ = high_accuracy_
+               ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
+               : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
   position_observers_->AddObserver(this);
   geolocation_manager_->StartWatchingPosition(high_accuracy_);
 }
 
 void CoreLocationProvider::StopProvider() {
+  state_ = mojom::GeolocationDiagnostics::ProviderState::kStopped;
   position_observers_->RemoveObserver(this);
   geolocation_manager_->StopWatchingPosition();
 }

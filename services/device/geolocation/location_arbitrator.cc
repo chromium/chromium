@@ -139,6 +139,18 @@ const mojom::GeopositionResult* LocationArbitrator::GetPosition() {
   return result_.get();
 }
 
+void LocationArbitrator::FillDiagnostics(
+    mojom::GeolocationDiagnostics& diagnostics) {
+  if (!is_running_ || providers_.empty()) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kStopped;
+    return;
+  }
+  for (auto& provider : providers_) {
+    provider->FillDiagnostics(diagnostics);
+  }
+}
+
 void LocationArbitrator::SetUpdateCallback(
     const LocationProviderUpdateCallback& callback) {
   DCHECK(!callback.is_null());

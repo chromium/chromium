@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
@@ -26,6 +27,7 @@ class CoreLocationProvider : public LocationProvider,
   ~CoreLocationProvider() override;
 
   // LocationProvider implementation.
+  void FillDiagnostics(mojom::GeolocationDiagnostics& diagnostics) override;
   void SetUpdateCallback(
       const LocationProviderUpdateCallback& callback) override;
   void StartProvider(bool high_accuracy) override;
@@ -44,6 +46,8 @@ class CoreLocationProvider : public LocationProvider,
   void OnSystemPermissionUpdated(
       LocationSystemPermissionStatus new_status) override;
 
+  mojom::GeolocationDiagnostics::ProviderState state_ =
+      mojom::GeolocationDiagnostics::ProviderState::kStopped;
   raw_ptr<GeolocationManager> geolocation_manager_;
   // References to the observer lists are kept to ensure their lifetime as the
   // BrowserProcess may destroy its reference on the UI Thread before we

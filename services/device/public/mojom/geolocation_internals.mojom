@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+// Types and interfaces defined in this file are intended for use by the
+// geolocation internals WebUI. (chrome://location-internals)
+
+// A snapshot of the internal state of the Geolocation API implementation.
+struct GeolocationDiagnostics {
+  // The current state of a LocationProvider.
+  [Extensible]
+  enum ProviderState {
+    // The provider is not started.
+    [Default] kStopped,
+    // The provider is started and configured for high accuracy.
+    kHighAccuracy,
+    // The provider is started and configured for low accuracy.
+    kLowAccuracy,
+    // The provider is started but blocked by a system-level permission.
+    kBlockedBySystemPermission,
+  };
+
+  // The state of the active provider, or kStopped if there is no provider.
+  ProviderState provider_state;
+};

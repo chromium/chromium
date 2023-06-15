@@ -111,6 +111,12 @@ class LocationProviderWinrtTest : public testing::Test {
     provider_->SetUpdateCallback(callback_);
   }
 
+  mojom::GeolocationDiagnostics::ProviderState GetProviderState() {
+    mojom::GeolocationDiagnostics diagnostics;
+    provider_->FillDiagnostics(diagnostics);
+    return diagnostics.provider_state;
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   absl::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
@@ -122,6 +128,8 @@ class LocationProviderWinrtTest : public testing::Test {
 TEST_F(LocationProviderWinrtTest, CreateDestroy) {
   InitializeProvider();
   EXPECT_TRUE(provider_);
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kStopped);
   provider_.reset();
 }
 
@@ -155,6 +163,8 @@ TEST_F(LocationProviderWinrtTest, HasPermissions) {
   EXPECT_FALSE(observer_->on_location_update_called());
   EXPECT_FALSE(observer_->GetLastResult());
 
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy);
   EXPECT_TRUE(provider_->GetStatusChangedToken().has_value());
   EXPECT_TRUE(provider_->GetPositionChangedToken().has_value());
 
@@ -193,6 +203,8 @@ TEST_F(LocationProviderWinrtTest, HasPermissionsAllValues) {
   EXPECT_FALSE(observer_->on_location_update_called());
   EXPECT_FALSE(observer_->GetLastResult());
 
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy);
   EXPECT_TRUE(provider_->GetStatusChangedToken().has_value());
   EXPECT_TRUE(provider_->GetPositionChangedToken().has_value());
 
@@ -218,7 +230,11 @@ TEST_F(LocationProviderWinrtTest, StartStopProviderRunTasks) {
   InitializeProvider();
   provider_->OnPermissionGranted();
   provider_->StartProvider(/*enable_high_accuracy=*/false);
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy);
   provider_->StopProvider();
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kStopped);
 
   EXPECT_FALSE(observer_->on_location_update_called());
   EXPECT_FALSE(observer_->GetLastResult());
@@ -236,6 +252,9 @@ TEST_F(LocationProviderWinrtTest, NoPermissions) {
   InitializeProvider();
   provider_->StartProvider(/*enable_high_accuracy=*/false);
 
+  EXPECT_EQ(
+      GetProviderState(),
+      mojom::GeolocationDiagnostics::ProviderState::kBlockedBySystemPermission);
   EXPECT_FALSE(observer_->on_location_update_called());
   EXPECT_FALSE(observer_->GetLastResult());
 
@@ -253,6 +272,8 @@ TEST_F(LocationProviderWinrtTest, PositionStatusDisabledOsPermissions) {
   provider_->OnPermissionGranted();
   provider_->StartProvider(/*enable_high_accuracy=*/false);
 
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy);
   EXPECT_FALSE(observer_->on_location_update_called());
   EXPECT_FALSE(observer_->GetLastResult());
 

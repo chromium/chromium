@@ -24,6 +24,7 @@
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
@@ -49,6 +50,7 @@ class NetworkLocationProvider : public LocationProvider
   ~NetworkLocationProvider() override;
 
   // LocationProvider implementation
+  void FillDiagnostics(mojom::GeolocationDiagnostics& diagnostics) override;
   void SetUpdateCallback(const LocationProviderUpdateCallback& cb) override;
   void StartProvider(bool high_accuracy) override;
   void StopProvider() override;
@@ -74,6 +76,9 @@ class NetworkLocationProvider : public LocationProvider
   void OnLocationResponse(mojom::GeopositionResultPtr result,
                           bool server_error,
                           const WifiData& wifi_data);
+
+  mojom::GeolocationDiagnostics::ProviderState state_ =
+      mojom::GeolocationDiagnostics::ProviderState::kStopped;
 
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().

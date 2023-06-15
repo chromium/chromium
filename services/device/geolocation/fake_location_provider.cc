@@ -39,17 +39,24 @@ void FakeLocationProvider::HandlePositionChanged(
   }
 }
 
+void FakeLocationProvider::FillDiagnostics(
+    mojom::GeolocationDiagnostics& diagnostics) {
+  diagnostics.provider_state = state_;
+}
+
 void FakeLocationProvider::SetUpdateCallback(
     const LocationProviderUpdateCallback& callback) {
   callback_ = callback;
 }
 
 void FakeLocationProvider::StartProvider(bool high_accuracy) {
-  state_ = high_accuracy ? HIGH_ACCURACY : LOW_ACCURACY;
+  state_ = high_accuracy
+               ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
+               : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
 }
 
 void FakeLocationProvider::StopProvider() {
-  state_ = STOPPED;
+  state_ = mojom::GeolocationDiagnostics::ProviderState::kStopped;
 }
 
 const mojom::GeopositionResult* FakeLocationProvider::GetPosition() {

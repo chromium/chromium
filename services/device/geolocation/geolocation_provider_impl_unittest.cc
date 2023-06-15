@@ -152,7 +152,8 @@ bool GeolocationProviderTest::ProvidersStarted() {
 
 void GeolocationProviderTest::GetProvidersStarted() {
   DCHECK(provider()->task_runner()->BelongsToCurrentThread());
-  is_started_ = arbitrator()->state() != FakeLocationProvider::STOPPED;
+  is_started_ = arbitrator()->state() !=
+                mojom::GeolocationDiagnostics::ProviderState::kStopped;
 }
 
 void GeolocationProviderTest::SendMockLocation(
