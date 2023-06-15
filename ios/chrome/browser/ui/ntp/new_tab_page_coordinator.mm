@@ -509,11 +509,13 @@
   CHECK(self.started);
   self.webState = webState;
   [self updateNTPIsVisible:YES];
+  [self updateStartForVisibilityChange:YES];
 }
 
 - (void)didNavigateAwayFromNTP {
   [self cancelOmniboxEdit];
   [self updateNTPIsVisible:NO];
+  [self updateStartForVisibilityChange:NO];
   self.webState = nullptr;
 }
 
@@ -1660,7 +1662,6 @@
         self.didAppearTime = base::TimeTicks();
       }
     }
-    [self updateStartForVisibilityChange:visible];
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
     // TODO(crbug.com/1373650) Move isFeedVisible check to the metrics recorder
