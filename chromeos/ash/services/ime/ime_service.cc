@@ -136,40 +136,26 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce(task, task_id));
 }
 
-// NOTE: Use consistent feature flag names as in CrOS base::Feature::name
-// (instead of slightly-different bespoke names), and always wire 1:1 to CrOS
-// feature flags (instead of having any extra logic).
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
-  if (strcmp(feature_name, features::kAssistEmojiEnhanced.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
-  }
-  if (strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAssistMultiWord);
-  }
-  if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning);
-  }
-  if (strcmp(feature_name, features::kFirstPartyVietnameseInput.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput);
-  }
-  if (strcmp(feature_name, features::kLacrosSupport.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kLacrosSupport);
-  }
-  if (strcmp(feature_name, features::kSystemJapanesePhysicalTyping.name) == 0) {
-    return base::FeatureList::IsEnabled(
-        features::kSystemJapanesePhysicalTyping);
-  }
-  if (strcmp(feature_name, features::kImeDownloaderUpdate.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kImeDownloaderUpdate);
-  }
-  if (strcmp(feature_name, features::kImeUsEnglishModelUpdate.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate);
-  }
-  if (strcmp(feature_name, features::kImeFstDecoderParamsUpdate.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kImeFstDecoderParamsUpdate);
-  }
-  if (strcmp(feature_name, features::kAutocorrectByDefault.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAutocorrectByDefault);
+  static const base::Feature* kConsideredFeatures[] = {
+      &features::kAssistEmojiEnhanced,
+      &features::kAssistMultiWord,
+      &features::kAutocorrectParamsTuning,
+      &features::kFirstPartyVietnameseInput,
+      &features::kLacrosSupport,
+      &features::kSystemJapanesePhysicalTyping,
+      &features::kImeDownloaderUpdate,
+      &features::kImeUsEnglishModelUpdate,
+      &features::kImeFstDecoderParamsUpdate,
+      &features::kAutocorrectByDefault,
+  };
+
+  // Use consistent feature flag names as in CrOS base::Feature::name and always
+  // wire 1:1 to CrOS feature flags without extra logic.
+  for (const base::Feature* feature : kConsideredFeatures) {
+    if (strcmp(feature_name, feature->name) == 0) {
+      return base::FeatureList::IsEnabled(*feature);
+    }
   }
   return false;
 }
