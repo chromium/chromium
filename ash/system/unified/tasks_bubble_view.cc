@@ -7,8 +7,10 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/tasks_combobox_model.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
@@ -69,7 +71,7 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   tasks_header_view_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kPreferred));
   tasks_header_view_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(kGlanceablesVerticalMargin, 0)));
@@ -77,15 +79,11 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   task_items_container_view_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
   task_items_container_view_->SetCrossAxisAlignment(
-      views::LayoutAlignment::kCenter);
+      views::LayoutAlignment::kStart);
   task_items_container_view_->SetMainAxisAlignment(
       views::LayoutAlignment::kStart);
   task_items_container_view_->SetOrientation(
       views::LayoutOrientation::kVertical);
-  task_items_container_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kPreferred));
 
   task_icon_view_ =
       tasks_header_view_->AddChildView(std::make_unique<views::ImageView>());
@@ -93,7 +91,6 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_list);
   task_list_combo_box_view_ = tasks_header_view_->AddChildView(
       std::make_unique<views::Combobox>(tasks_combobox_model_.get()));
-  // Update combobox size to match active task list label size.
   task_list_combo_box_view_->SetSizeToLargestLabel(false);
 
   // TODO(b:277268122): Implement accessibility behavior.
@@ -103,11 +100,25 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
   task_list_combo_box_view_->SetSelectedIndex(0);
 
+  // Create a transparent separator to push `action_button_` to the right-most
+  // corner of the tasks_header_view_.
+  separator_ =
+      tasks_header_view_->AddChildView(std::make_unique<views::View>());
+  separator_->SetPreferredSize((gfx::Size(kRevampedTrayMenuWidth, 1)));
+  separator_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(2));
+
   action_button_ =
-      tasks_header_view_->AddChildView(views::ImageButton::CreateIconButton(
+      tasks_header_view_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
                               base::Unretained(this)),
-          views::kLaunchIcon, u"Open tasks app"));
+          IconButton::Type::kMediumFloating, &vector_icons::kLaunchIcon,
+          u"Open tasks app", /*is_togglable=*/false,
+          /*has_border=*/false));
+
   ScheduleUpdateTasksList();
 }
 

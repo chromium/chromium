@@ -37,17 +37,16 @@ class TasksComboboxModel;
 // | +-----------------------------------------------------------+ |
 // +---------------------------------------------------------------+
 //
-// TODO(b:277268122): Override action_button_ class.
-// +----------------------------------------------------------------+
-// |tasks_header_view_                                              |
-// |+---------------+ +-------------------------+ +--------------+  |
-// ||task_icon_view_| |task_list_combo_box_view_| |action_button_|  |
-// |+---------------+ +-------------------------+ +--------------+  |
-// +----------------------------------------------------------------+
+// +---------------------------------------------------------------------------+
+// |`tasks_header_view_`                                                       |
+// |+---------------+ +-------------------------+ +----------+ +-------------+||
+// ||task_icon_view_| |task_list_combo_box_view_| |separator_| |action_button_||
+// |+---------------+ +-------------------------+ +----------+ +-------------+||
+// +---------------------------------------------------------------------------+
 //
 // +----------------------------------------------------------------+
 // |'task_items_container_view_'                                    |
-// | +----------------------------------------------------------- + |
+// | +------------------------------------------------------------+ |
 // | |GlanceablesTaskView                                         | |
 // | +----------------------------------------------------------- + |
 // | +----------------------------------------------------------- + |
@@ -94,17 +93,15 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
 
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ =
-      nullptr;  // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> task_icon_view_ =
-      nullptr;  // Owned by views hierarchy.
-  raw_ptr<views::Combobox, ExperimentalAsh> task_list_combo_box_view_ =
-      nullptr;  // Owned by views hierarchy.
-  // TODO(b:277268122): replace stand-in button.
-  raw_ptr<views::ImageButton, ExperimentalAsh> action_button_ =
-      nullptr;  // Owned by views hierarchy.
+  // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> task_icon_view_ = nullptr;
+  raw_ptr<views::Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> action_button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_container_view_ =
-      nullptr;  // Owned by views hierarchy.
+      nullptr;
 
   base::WeakPtrFactory<TasksBubbleView> weak_ptr_factory_{this};
 };
