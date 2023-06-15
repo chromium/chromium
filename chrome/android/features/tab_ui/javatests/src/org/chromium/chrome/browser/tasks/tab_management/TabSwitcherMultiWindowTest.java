@@ -24,6 +24,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -39,7 +41,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,7 +84,8 @@ public class TabSwitcherMultiWindowTest {
 
     @After
     public void tearDown() throws Exception {
-        if (mCta2 != null) {
+        // On Android N this throws an exception because of legacy multi window.
+        if (mCta2 != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ApplicationTestUtils.finishActivity(mCta2);
         }
         if (mCta1 != null) {
@@ -96,7 +98,6 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1454902")
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         // Initially, we have 4 normal tabs (including the one created at activity start) and 3
         // incognito tabs in mCta1.
@@ -180,7 +181,6 @@ public class TabSwitcherMultiWindowTest {
     @Test
     @LargeTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @DisabledTest(message = "https://crbug.com/1454902")
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
         // Initially, we have 5 normal tabs (including the one created at activity start) and 5
         // incognito tabs in mCta1.
