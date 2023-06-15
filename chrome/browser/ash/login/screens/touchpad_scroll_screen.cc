@@ -6,7 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -105,12 +107,27 @@ void TouchpadScrollScreen::OnScrollUpdate(bool is_reverse_scroll) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   // The pref is true if touchpad reverse scroll is enabled.
   profile->GetPrefs()->SetBoolean(prefs::kNaturalScroll, is_reverse_scroll);
+
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    const auto touchpads =
+        InputDeviceSettingsController::Get()->GetConnectedTouchpads();
+    for (const auto& touchpad : touchpads) {
+      const auto old_settings = std::move(touchpad->settings);
+      old_settings->reverse_scrolling = is_reverse_scroll;
+      InputDeviceSettingsController::Get()->SetTouchpadSettings(
+          touchpad->id, old_settings->Clone());
+    }
+  }
 }
 
 bool TouchpadScrollScreen::GetNaturalScrollPrefValue() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   bool is_reverse_scrolling =
       profile->GetPrefs()->GetBoolean(prefs::kNaturalScroll);
+
+  // set the synced value with the new InputDeviceSettingSplit
+  // TODO(b/287376458) remove it when input team fix the sync value issue
+  OnScrollUpdate(is_reverse_scrolling);
   return is_reverse_scrolling;
 }
 
