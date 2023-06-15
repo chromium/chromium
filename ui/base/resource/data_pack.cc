@@ -26,8 +26,6 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/scoped_file_writer.h"
 
-#include "base/record_replay.h"
-
 // For details of the file layout, see
 // http://dev.chromium.org/developers/design-documents/linuxresourcesandlocalizedstrings
 
@@ -302,8 +300,6 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
   // entry after the last item which gives us the length of the last item.
   for (size_t i = 0; i < resource_count_ + 1; ++i) {
     if (resource_table_[i].file_offset > data_length) {
-      recordreplay::Diagnostic("[RUN-2142] Data pack file corruption %zu %zu %zu %zu",
-                               i,resource_table_[i].file_offset, margin_to_skip, data_length);
       LOG(ERROR) << "Data pack file corruption: "
                  << "Entry #" << i << " past end.";
       LogDataPackError(ENTRY_NOT_FOUND);
