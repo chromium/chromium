@@ -22,6 +22,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+class Profile;
+
 namespace content {
 struct NativeWebKeyboardEvent;
 class WebContents;
@@ -105,11 +107,14 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   FRIEND_TEST_ALL_PREFIXES(AutofillPopupControllerUnitTest,
                            ProperlyResetController);
 
-  AutofillPopupControllerImpl(base::WeakPtr<AutofillPopupDelegate> delegate,
-                              content::WebContents* web_contents,
-                              gfx::NativeView container_view,
-                              const gfx::RectF& element_bounds,
-                              base::i18n::TextDirection text_direction);
+  AutofillPopupControllerImpl(
+      base::WeakPtr<AutofillPopupDelegate> delegate,
+      content::WebContents* web_contents,
+      gfx::NativeView container_view,
+      const gfx::RectF& element_bounds,
+      base::i18n::TextDirection text_direction,
+      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+          show_pwd_migration_warning_callback);
   ~AutofillPopupControllerImpl() override;
 
   gfx::NativeView container_view() const override;
@@ -240,6 +245,12 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
+
+  // Callback invoked to try to show the password migration warning on Android.
+  // Used to facilitate testing.
+  // TODO(crbug.com/1454469): Remove when the warning isn't needed anymore.
+  base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+      show_pwd_migration_warning_callback_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

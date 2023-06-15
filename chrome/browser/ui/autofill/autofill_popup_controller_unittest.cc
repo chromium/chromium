@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
@@ -61,6 +62,8 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 #include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
@@ -159,12 +162,16 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   TestAutofillPopupController(
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
-      const gfx::RectF& element_bounds)
-      : AutofillPopupControllerImpl(external_delegate,
-                                    web_contents,
-                                    nullptr,
-                                    element_bounds,
-                                    base::i18n::UNKNOWN_DIRECTION) {}
+      const gfx::RectF& element_bounds,
+      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+          show_pwd_migration_warning_callback)
+      : AutofillPopupControllerImpl(
+            external_delegate,
+            web_contents,
+            nullptr,
+            element_bounds,
+            base::i18n::UNKNOWN_DIRECTION,
+            std::move(show_pwd_migration_warning_callback)) {}
   ~TestAutofillPopupController() override = default;
 
   // Making protected functions public for testing
@@ -209,17 +216,22 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
     external_delegate_ = CreateExternalDelegate();
     autofill_popup_view_ = std::make_unique<NiceMock<MockAutofillPopupView>>();
-    autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
-        external_delegate_->GetWeakPtr(), web_contents(), gfx::RectF());
-    autofill_popup_controller_->SetViewForTesting(
-        autofill_popup_view()->GetWeakPtr());
 
 #if BUILDFLAG(IS_ANDROID)
+    autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
+        external_delegate_->GetWeakPtr(), web_contents(), gfx::RectF(),
+        show_pwd_migration_warning_callback_.Get());
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
+#else
+    autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
+        external_delegate_->GetWeakPtr(), web_contents(), gfx::RectF(),
+        base::DoNothing());
 #endif
+    autofill_popup_controller_->SetViewForTesting(
+        autofill_popup_view()->GetWeakPtr());
   }
 
   void TearDown() override {
@@ -308,6 +320,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
+  base::MockCallback<base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>>
+      show_pwd_migration_warning_callback_;
 #endif
   raw_ptr<NiceMock<TestAutofillPopupController>, DanglingUntriaged>
       autofill_popup_controller_ = nullptr;
@@ -433,7 +447,7 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   popup_controller().UpdateDataListValues(data_list_values, data_list_values);
 }
 
-TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
+TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
   NiceMock<MockAutofillExternalDelegate> delegate(autofill_manager(),
                                                   autofill_driver());
 
@@ -456,10 +470,10 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
           gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
   EXPECT_EQ(controller.get(), controller2.get());
   controller->Hide(PopupHidingReason::kViewDestroyed);
-
   NiceMock<TestAutofillPopupController>* test_controller =
       new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
-                                                web_contents(), gfx::RectF());
+                                                web_contents(), gfx::RectF(),
+                                                base::DoNothing());
   EXPECT_CALL(*test_controller, Hide(PopupHidingReason::kViewDestroyed));
 
   gfx::RectF bounds(0.f, 0.f, 1.f, 2.f);
@@ -475,7 +489,7 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
   test_controller->DoHide();
 
   test_controller = new NiceMock<TestAutofillPopupController>(
-      delegate.GetWeakPtr(), web_contents(), gfx::RectF());
+      delegate.GetWeakPtr(), web_contents(), gfx::RectF(), base::DoNothing());
   EXPECT_CALL(*test_controller, Hide).Times(0);
 
   const base::WeakPtr<AutofillPopupControllerImpl> controller4 =
@@ -507,8 +521,8 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
                                                     autofill_driver());
   StrictMock<TestAutofillPopupController>* test_controller =
       new StrictMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
-                                                  web_contents(), gfx::RectF());
-
+                                                  web_contents(), gfx::RectF(),
+                                                  base::DoNothing());
   EXPECT_CALL(delegate, ClearPreviewedForm());
   // Hide() also deletes the object itself.
   test_controller->DoHide();
@@ -534,7 +548,8 @@ TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
                                                   autofill_driver());
   NiceMock<TestAutofillPopupController>* test_controller =
       new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
-                                                web_contents(), gfx::RectF());
+                                                web_contents(), gfx::RectF(),
+                                                base::DoNothing());
   base::HistogramTester histogram_tester;
   // DoHide() invokes Hide() that also deletes the object itself.
   test_controller->DoHide(PopupHidingReason::kTabGone);
@@ -600,6 +615,60 @@ TEST_F(AutofillPopupControllerUnitTest,
   task_environment()->FastForwardBy(base::Milliseconds(500));
   popup_controller().AcceptSuggestion(0);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillPopupControllerUnitTest,
+       AcceptPwdSuggestionInvokesWarningAndroid) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  ShowSuggestions({PopupItemId::kPasswordEntry});
+
+  // Calls are accepted immediately.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
+  EXPECT_CALL(show_pwd_migration_warning_callback_, Run);
+  popup_controller().AcceptSuggestionWithoutThreshold(0);
+}
+
+TEST_F(AutofillPopupControllerUnitTest,
+       AcceptUsernameSuggestionInvokesWarningAndroid) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  ShowSuggestions({PopupItemId::kUsernameEntry});
+
+  // Calls are accepted immediately.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
+  EXPECT_CALL(show_pwd_migration_warning_callback_, Run);
+  popup_controller().AcceptSuggestionWithoutThreshold(0);
+}
+
+TEST_F(AutofillPopupControllerUnitTest,
+       AcceptPwdSuggestionNoWarningIfDisabledAndroid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  ShowSuggestions({PopupItemId::kPasswordEntry});
+
+  // Calls are accepted immediately.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
+  EXPECT_CALL(show_pwd_migration_warning_callback_, Run).Times(0);
+  popup_controller().AcceptSuggestionWithoutThreshold(0);
+}
+
+TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  ShowSuggestions({PopupItemId::kAddressEntry});
+
+  // Calls are accepted immediately.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
+  EXPECT_CALL(show_pwd_migration_warning_callback_, Run).Times(0);
+  popup_controller().AcceptSuggestionWithoutThreshold(0);
+}
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 class MockAxTreeManager : public ui::AXTreeManager {

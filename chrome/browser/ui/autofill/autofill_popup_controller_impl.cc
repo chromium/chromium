@@ -45,6 +45,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 using FillingSource = ManualFillingController::FillingSource;
 #endif
@@ -90,9 +92,15 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
 
   if (previous)
     previous->Hide(PopupHidingReason::kViewDestroyed);
-
+#if BUILDFLAG(IS_ANDROID)
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
-      delegate, web_contents, container_view, element_bounds, text_direction);
+      delegate, web_contents, container_view, element_bounds, text_direction,
+      base::BindRepeating(&password_manager::ShowWarning));
+#else
+  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
+      delegate, web_contents, container_view, element_bounds, text_direction,
+      base::DoNothing());
+#endif
   return controller->GetWeakPtr();
 }
 #endif
@@ -102,10 +110,14 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     content::WebContents* web_contents,
     gfx::NativeView container_view,
     const gfx::RectF& element_bounds,
-    base::i18n::TextDirection text_direction)
+    base::i18n::TextDirection text_direction,
+    base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+        show_pwd_migration_warning_callback)
     : controller_common_(element_bounds, text_direction, container_view),
       web_contents_(web_contents),
-      delegate_(delegate) {
+      delegate_(delegate),
+      show_pwd_migration_warning_callback_(
+          std::move(show_pwd_migration_warning_callback)) {
   ClearState();
   delegate->RegisterDeletionCallback(base::BindOnce(
       &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
@@ -340,6 +352,17 @@ void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
   }
 
   delegate_->DidAcceptSuggestion(suggestion, index);
+#if BUILDFLAG(IS_ANDROID)
+  if ((suggestion.popup_item_id == PopupItemId::kPasswordEntry ||
+       suggestion.popup_item_id == PopupItemId::kUsernameEntry) &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    show_pwd_migration_warning_callback_.Run(
+        web_contents_->GetTopLevelNativeWindow(),
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  }
+#endif
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {
