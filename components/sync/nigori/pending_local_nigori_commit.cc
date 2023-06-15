@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/features.h"
@@ -34,6 +35,11 @@ void InitKeyPair(NigoriState* state) {
   state->public_key = PublicKey::CreateByImport(key_pair.GetRawPublicKey());
   state->key_pair_version = 0;
   state->cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
+}
+
+void LogCrossUserSharingPublicPrivateKeyInit(bool is_succesful) {
+  base::UmaHistogramBoolean("Sync.CrossUserSharingPublicPrivateKeyInitSuccess",
+                            is_succesful);
 }
 
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
@@ -146,9 +152,16 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
                                       /*passphrase_time=*/base::Time());
     observer->OnCryptographerStateChanged(state.cryptographer.get(),
                                           /*has_pending_keys=*/false);
+    if (base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap)) {
+      LogCrossUserSharingPublicPrivateKeyInit(true);
+    }
   }
 
-  void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
+  void OnFailure(SyncEncryptionHandler::Observer* observer) override {
+    if (base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap)) {
+      LogCrossUserSharingPublicPrivateKeyInit(false);
+    }
+  }
 };
 
 class KeystoreReencryptor : public PendingLocalNigoriCommit {
@@ -180,6 +193,8 @@ class KeystoreReencryptor : public PendingLocalNigoriCommit {
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
 };
 
+// TODO(crbug.com/1445056): rename to
+// CrossUserSharingPublicPrivateKeyInitializer.
 class PublicPrivateKeyInitializer : public PendingLocalNigoriCommit {
  public:
   PublicPrivateKeyInitializer() = default;
@@ -204,11 +219,11 @@ class PublicPrivateKeyInitializer : public PendingLocalNigoriCommit {
                  SyncEncryptionHandler::Observer* observer) override {
     observer->OnCryptographerStateChanged(state.cryptographer.get(),
                                           /*has_pending_keys=*/false);
+    LogCrossUserSharingPublicPrivateKeyInit(true);
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {
-    // TODO(crbug.com/1445056): handle rejection of Public-private key, can be
-    // due to already existing key.
+    LogCrossUserSharingPublicPrivateKeyInit(false);
   }
 };
 
