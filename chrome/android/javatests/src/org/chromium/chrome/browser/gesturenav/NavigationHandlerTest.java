@@ -193,7 +193,6 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1426201")
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink_withBackForwardTransition() {
         FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
         testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
