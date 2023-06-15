@@ -2484,12 +2484,19 @@ const FeatureEntry::FeatureParam
         {"polish_omnibox_size", "true"},
         {"polish_omnibox_color", "true"}};
 
+const FeatureEntry::FeatureParam kSurfacePolish_use_magic_space[] = {
+    {"polish_omnibox_size", "true"},
+    {"polish_omnibox_color", "true"},
+    {"use_magic_space", "true"}};
+
 const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
     {"Polish omnibox size", kSurfacePolish_polish_omnibox_size,
      std::size(kSurfacePolish_polish_omnibox_size), nullptr},
     {"Polish omnibox size and color",
      kSurfacePolish_polish_omnibox_size_and_color,
      std::size(kSurfacePolish_polish_omnibox_size_and_color), nullptr},
+    {"Use magic space", kSurfacePolish_use_magic_space,
+     std::size(kSurfacePolish_use_magic_space), nullptr},
 };
 
 const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_small[] = {

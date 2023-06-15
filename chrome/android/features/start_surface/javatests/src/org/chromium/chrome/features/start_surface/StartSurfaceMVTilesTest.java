@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeFalse;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
@@ -152,6 +153,20 @@ public class StartSurfaceMVTilesTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testTapMVTilesInSingleSurface() {
+        testTapMVTilesInSingleSurfaceImpl();
+    }
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/use_magic_space/true"})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.SURFACE_POLISH})
+    public void testTapMVTilesInSingleSurfaceWithSurfacePolish() {
+        testTapMVTilesInSingleSurfaceImpl();
+    }
+
+    private void testTapMVTilesInSingleSurfaceImpl() {
+        assumeFalse(isInstantReturn());
+
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -159,11 +174,7 @@ public class StartSurfaceMVTilesTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
+
         // Press back button should close the tab opened from the Start surface.
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);

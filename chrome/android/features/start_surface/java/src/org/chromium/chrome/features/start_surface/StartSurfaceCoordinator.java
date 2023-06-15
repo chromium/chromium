@@ -127,6 +127,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     private static final String TAG = "StartSurface";
     private static final int MAX_TILE_ROWS_FOR_GRID_MVT = 2;
 
+    private final boolean mUseMagicSpace;
+
     // Non-null in SurfaceMode.SINGLE_PANE mode.
     @Nullable
     private TasksSurface mTasksSurface;
@@ -219,8 +221,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         @Override
         public int getVerticalScrollOffset() {
-            // Always return a zero dummy value because the offset is directly provided
-            // by the observer.
+            // Always return 0 because the offset is directly provided by the observer.
             return 0;
         }
 
@@ -315,6 +316,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
         mProfileSupplier = profileSupplier;
 
+        mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
@@ -426,7 +428,9 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void show(boolean animate) {
-        getCarouselOrSingleTabListDelegate().prepareTabSwitcherView();
+        if (!mUseMagicSpace) {
+            getCarouselOrSingleTabListDelegate().prepareTabSwitcherView();
+        }
         mStartSurfaceMediator.show(animate);
     }
 
@@ -474,7 +478,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             mTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
         } else if (mGridTabSwitcher != null) {
             mGridTabSwitcher.setOnTabSelectingListener(mStartSurfaceMediator);
-        } else {
+        } else if (mTabSwitcherModule != null) {
             mTabSwitcherModule.setOnTabSelectingListener(mStartSurfaceMediator);
         }
 
@@ -659,7 +663,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     public TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate() {
         if (mIsStartSurfaceEnabled) {
             if (mIsStartSurfaceRefactorEnabled) {
-                assert mTabSwitcherModule != null;
                 return mTabSwitcherModule.getTabListDelegate();
             } else {
                 assert mTasksSurface != null;
@@ -862,10 +865,13 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         assert mIsStartSurfaceEnabled;
 
-        int tabSwitcherType =
-                StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
-                ? TabSwitcherType.SINGLE
-                : TabSwitcherType.CAROUSEL;
+        int tabSwitcherType = TabSwitcherType.NONE;
+        if (!mUseMagicSpace) {
+            tabSwitcherType =
+                    StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
+                    ? TabSwitcherType.SINGLE
+                    : TabSwitcherType.CAROUSEL;
+        }
 
         mView = (TasksView) LayoutInflater.from(mActivity).inflate(
                 R.layout.tasks_view_layout, null);
@@ -882,7 +888,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mView.getCarouselTabSwitcherContainer(),
                             mMultiWindowModeStateDispatcher, mScrimCoordinator, mView,
                             mDynamicResourceLoaderSupplier, mSnackbarManager, mModalDialogManager);
-        } else {
+        } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
             // is only created on phones.
             mTabSwitcherModule = new SingleTabSwitcherCoordinator(mActivity,
