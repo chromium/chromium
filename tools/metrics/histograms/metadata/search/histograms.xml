@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AuxiliarySearchDataType">
+  <variant name="" summary="all requests"/>
+  <variant name=".Bookmark" summary="BOOKMARK"/>
+  <variant name=".Tab" summary="TAB"/>
+</variants>
+
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
     expires_after="2023-12-10">
   <owner>juanmojica@google.com</owner>
@@ -33,6 +39,78 @@ chromium-metrics-reviews@google.com.
     the query. This is recorded every time the user makes a query regardless of
     whether the query succeeds.
   </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.DeleteTime" units="ms"
+    expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>Time taken for deleting contents from the auxiliary search.</summary>
+</histogram>
+
+<histogram
+    name="Search.AuxiliarySearch.DeletionFailure{AuxiliarySearchDataType}"
+    units="count" expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the count of failed deletions from the auxiliary search.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.DeletionRequestStatus"
+    enum="AuxiliarySearchRequestStatus" expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the status of the request of the Auxiliary Search content deletion.
+    Recorded twice for every deletion request: once to capture the request sent,
+    and once to capture the consumer's response.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.DonateTime" units="ms"
+    expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>Time taken for donating contents to the auxiliary search.</summary>
+</histogram>
+
+<histogram
+    name="Search.AuxiliarySearch.DonationFailure{AuxiliarySearchDataType}"
+    units="count" expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the count of failed donations from the auxiliary search.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.DonationRequestStatus"
+    enum="AuxiliarySearchRequestStatus" expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the status of the request of the Auxiliary Search content donation.
+    Recorded twice for every donation request: once to capture the request sent,
+    and once to capture the consumer's response.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.DonationSent{AuxiliarySearchDataType}"
+    units="count" expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the count of contents which are sent to the auxiliary search.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.QueryTime{AuxiliarySearchDataType}"
+    units="ms" expires_after="M130">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>Time taken for query contents for the auxiliary search.</summary>
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.ResultsSeen" enum="Boolean"

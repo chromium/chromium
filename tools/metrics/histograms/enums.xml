@@ -10231,6 +10231,12 @@ others/histograms.xml -->
   <int value="2" label="Ok, got it"/>
 </enum>
 
+<enum name="AuxiliarySearchRequestStatus">
+  <int value="0" label="Sent"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="AVDAFrameInformation">
   <int value="0" label="Non Overlay Insecure"/>
   <int value="1" label="Non Overlay L3"/>
