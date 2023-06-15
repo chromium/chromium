@@ -263,6 +263,30 @@
       },
       {
         "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "isolate_profile_data": true,
@@ -839,6 +863,30 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -1444,6 +1492,30 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2493,6 +2565,29 @@
       },
       {
         "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "isolate_profile_data": true,
@@ -3040,6 +3135,29 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -3612,6 +3730,29 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4578,6 +4719,30 @@
       },
       {
         "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-13"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "isolate_profile_data": true,
@@ -5139,6 +5304,30 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-13"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -5727,6 +5916,30 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-13"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6425,6 +6638,30 @@
       },
       {
         "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19045"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "isolate_profile_data": true,
@@ -7116,6 +7353,30 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19045"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -7833,6 +8094,30 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19045"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter"
+        ],
+        "experiment_percentage": 1,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [

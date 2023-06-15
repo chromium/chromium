@@ -2303,6 +2303,39 @@
       'Android FYI Release (Pixel 2)',
     ],
   },
+  'cr23_browser_tests': {
+    'cr23-linux-rel': {
+      'experiment_percentage': None,
+    },
+    'cr23-mac-rel': {
+      'experiment_percentage': None,
+    },
+    'cr23-win-rel': {
+      'experiment_percentage': None,
+    },
+  },
+  'cr23_interactive_ui_tests': {
+    'cr23-linux-rel': {
+      'experiment_percentage': None,
+    },
+    'cr23-mac-rel': {
+      'experiment_percentage': None,
+    },
+    'cr23-win-rel': {
+      'experiment_percentage': None,
+    },
+  },
+  'cr23_views_unittests': {
+    'cr23-linux-rel': {
+      'experiment_percentage': None,
+    },
+    'cr23-mac-rel': {
+      'experiment_percentage': None,
+    },
+    'cr23-win-rel': {
+      'experiment_percentage': None,
+    },
+  },
   'crashpad_tests': {
     'remove_from': [
       'linux-win_cross-rel', # https://crbug.com/762167

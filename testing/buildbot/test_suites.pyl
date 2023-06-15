@@ -1757,24 +1757,11 @@
     # try bots and fyi bots. When tests start to fail in the _full variety
     # (and aren't also failing in the non-cr23 variety), we can add them
     # to the subsets.
-    'cr23_linux_gtests': {
+    'cr23_fyi_linux_gtests': {
       'browser_tests': {
         'swarming': {
           'shards': 20,
         },
-      },
-      'cr23_browser_tests': {
-        'args': [
-          '--enable-features=ChromeRefresh2023',
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
-           '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'test': 'browser_tests',
       },
       'cr23_browser_tests_full': {
         'args': [
@@ -1788,16 +1775,6 @@
         },
         'test': 'browser_tests',
       },
-      'cr23_interactive_ui_tests': {
-        'args': [
-          '--enable-features=ChromeRefresh2023',
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
-           '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
-          ),
-        ],
-        'test': 'interactive_ui_tests',
-      },
       'cr23_interactive_ui_tests_full': {
         'args': [
           '--enable-features=ChromeRefresh2023',
@@ -1808,6 +1785,109 @@
         'swarming': {
           'shards': 10,
         },
+        'test': 'interactive_ui_tests',
+      },
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
+      'views_unittests': {},
+    },
+    'cr23_fyi_mac_gtests': {
+      'browser_tests': {
+        'swarming': {
+          'shards': 20,
+        },
+        'ci_only': True,
+      },
+      'cr23_browser_tests_full': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
+          ),
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+        'test': 'browser_tests',
+        'ci_only': True,
+      },
+      'cr23_interactive_ui_tests_full': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
+          ),
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+        'test': 'interactive_ui_tests',
+      },
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
+      'views_unittests': {},
+    },
+    'cr23_fyi_win_gtests': {
+      'browser_tests': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
+      'cr23_browser_tests_full': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
+          ),
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+        'test': 'browser_tests',
+      },
+      'cr23_interactive_ui_tests_full': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
+          ),
+        ],
+        'test': 'interactive_ui_tests',
+      },
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
+      'views_unittests': {},
+    },
+    'cr23_main_linux_gtests': {
+      'cr23_browser_tests': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
+           '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
+          ),
+        ],
+        'experiment_percentage': 1,
+        'test': 'browser_tests',
+      },
+      'cr23_interactive_ui_tests': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
+           '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
+          ),
+        ],
+        'experiment_percentage': 1,
         'test': 'interactive_ui_tests',
       },
       'cr23_views_unittests': {
@@ -1817,22 +1897,11 @@
            '../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter'
           ),
         ],
+        'experiment_percentage': 1,
         'test': 'views_unittests',
       },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'views_unittests': {},
     },
-    'cr23_mac_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 20,
-        },
-        'ci_only': True,
-      },
+    'cr23_main_mac_gtests': {
       'cr23_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
@@ -1841,24 +1910,8 @@
            '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
           ),
         ],
-        'swarming': {
-          'shards': 2,
-        },
+        'experiment_percentage': 1,
         'test': 'browser_tests',
-        'ci_only': True,
-      },
-      'cr23_browser_tests_full': {
-        'args': [
-          '--enable-features=ChromeRefresh2023',
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-        'test': 'browser_tests',
-        'ci_only': True,
       },
       'cr23_interactive_ui_tests': {
         'args': [
@@ -1868,18 +1921,7 @@
            '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
           ),
         ],
-        'test': 'interactive_ui_tests',
-      },
-      'cr23_interactive_ui_tests_full': {
-        'args': [
-          '--enable-features=ChromeRefresh2023',
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 10,
-        },
+        'experiment_percentage': 1,
         'test': 'interactive_ui_tests',
       },
       'cr23_views_unittests': {
@@ -1889,21 +1931,11 @@
            '../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter'
           ),
         ],
+        'experiment_percentage': 1,
         'test': 'views_unittests',
       },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'views_unittests': {},
     },
-    'cr23_win_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
+    'cr23_main_win_gtests': {
       'cr23_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
@@ -1912,21 +1944,7 @@
            '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
           ),
         ],
-        'swarming': {
-          'shards': 2,
-        },
-        'test': 'browser_tests',
-      },
-      'cr23_browser_tests_full': {
-        'args': [
-          '--enable-features=ChromeRefresh2023',
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 20,
-        },
+        'experiment_percentage': 1,
         'test': 'browser_tests',
       },
       'cr23_interactive_ui_tests': {
@@ -1937,15 +1955,7 @@
            '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
           ),
         ],
-        'test': 'interactive_ui_tests',
-      },
-      'cr23_interactive_ui_tests_full': {
-        'args': [
-          '--enable-features=ChromeRefresh2023',
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
-          ),
-        ],
+        'experiment_percentage': 1,
         'test': 'interactive_ui_tests',
       },
       'cr23_views_unittests': {
@@ -1955,16 +1965,10 @@
            '../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter'
           ),
         ],
+        'experiment_percentage': 1,
         'test': 'views_unittests',
       },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'views_unittests': {},
     },
-
     'cronet_gtests': {
       'cronet_sample_test_apk': {},
       'cronet_smoketests_missing_native_library_instrumentation_apk': {},
@@ -6022,6 +6026,7 @@
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
+      'cr23_main_linux_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
       'gl_gtests_passthrough',
@@ -6041,6 +6046,7 @@
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
+      'cr23_main_linux_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
       'gl_gtests_passthrough',
@@ -6076,8 +6082,7 @@
     ],
 
     # When changing something here, change chromium_linux_and_gl_gtests,
-    # chromium_linux_and_gl_and_vulkan_gtests, linux_ozone_x11_ci_tests and
-    # linux_ozone_wayland_ci_tests in the same way.
+    # and chromium_linux_and_gl_and_vulkan_gtests in the same way.
     'chromium_linux_gtests': [
       'aura_gtests',
       'chromium_gtests',
@@ -6086,6 +6091,7 @@
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
+      'cr23_main_linux_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
@@ -6136,6 +6142,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_mac_only',
+      'cr23_main_mac_gtests',
       'mac_specific_chromium_gtests',
       'nocompile_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
@@ -6146,6 +6153,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_mac_only',
+      'cr23_main_mac_gtests',
       'mac_specific_chromium_gtests',
       'nocompile_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
@@ -6155,6 +6163,7 @@
     'chromium_mac_gtests_no_nacl_no_nocompile': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'cr23_main_mac_gtests',
       'mac_specific_chromium_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests_no_nacl',
@@ -6205,6 +6214,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
+      'cr23_main_win_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'non_android_chromium_gtests_skia_gold',
@@ -6226,6 +6236,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
+      'cr23_main_win_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
@@ -6259,6 +6270,21 @@
       'telemetry_desktop_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
       'win_specific_isolated_scripts',
+    ],
+
+    'cr23_linux_gtests': [
+      'cr23_fyi_linux_gtests',
+      'cr23_main_linux_gtests',
+    ],
+
+    'cr23_mac_gtests': [
+      'cr23_fyi_mac_gtests',
+      'cr23_main_mac_gtests',
+    ],
+
+    'cr23_win_gtests': [
+      'cr23_fyi_win_gtests',
+      'cr23_main_win_gtests',
     ],
 
     'cronet_dbg_isolated_scripts': [
