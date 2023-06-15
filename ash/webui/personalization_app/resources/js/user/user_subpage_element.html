@@ -5,7 +5,8 @@
       '. leftspacertop    userpreview rightspacertop    .'
       '. leftspacerbottom avatars     rightspacerbottom .';
     grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto 1fr;
+    min-height: var(--personalization-app-subpage-container-min-height);
   }
   user-preview {
     grid-area: userpreview;

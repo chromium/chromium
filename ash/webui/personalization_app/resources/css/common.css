@@ -17,6 +17,8 @@
 }
 
 :host {
+  --personalization-app-breadcrumb-height: 56px;
+  --personalization-app-subpage-container-min-height: calc(100vh - var(--personalization-app-breadcrumb-height));
   --personalization-app-grid-item-background-color: var(--google-grey-100);
   --personalization-app-grid-item-border-radius: 12px;
   --personalization-app-grid-item-height: 120px;
