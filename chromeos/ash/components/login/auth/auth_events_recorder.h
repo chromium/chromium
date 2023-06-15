@@ -138,6 +138,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
   // Report that `LockContentsView` layout was updated.
   void OnLockContentsViewUpdate();
 
+  // Report that the user was directed to password change flow.
+  void OnPasswordChange();
+
+  // Report that the user was directed to online Gaia flow.
+  void OnGaiaScreen();
+
   int knowledge_factor_auth_failure_count() {
     return knowledge_factor_auth_failure_count_;
   }

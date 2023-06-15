@@ -91,6 +91,7 @@ void LoginPerformer::OnOffTheRecordAuthSuccess() {
 void LoginPerformer::OnPasswordChangeDetectedLegacy(
     const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auth_events_recorder_->OnPasswordChange();
   password_changed_ = true;
   password_changed_callback_count_++;
 
@@ -103,6 +104,7 @@ void LoginPerformer::OnPasswordChangeDetectedLegacy(
 void LoginPerformer::OnPasswordChangeDetected(
     std::unique_ptr<UserContext> user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auth_events_recorder_->OnPasswordChange();
   password_changed_ = true;
   DCHECK(user_context);
 

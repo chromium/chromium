@@ -383,6 +383,14 @@ void AuthEventsRecorder::OnLockContentsViewUpdate() {
   AddAuthEvent("update_lock_screen_view");
 }
 
+void AuthEventsRecorder::OnPasswordChange() {
+  AddAuthEvent("password_change");
+}
+
+void AuthEventsRecorder::OnGaiaScreen() {
+  AddAuthEvent("gaia");
+}
+
 void AuthEventsRecorder::OnSessionStateChanged() {
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
