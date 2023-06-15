@@ -16,7 +16,7 @@
   std::unique_ptr<WebStateListObserver> _webStateListObserver;
 }
 
-@synthesize didMoveWebStateWasCalled = _didMoveWebStateWasCalled;
+@synthesize didWebStateWasMoved = _didWebStateWasMoved;
 
 - (instancetype)init {
   if ((self = [super init])) {
@@ -34,10 +34,27 @@
 }
 
 #pragma mark - WebStateListObserving protocol
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex {
-  _didMoveWebStateWasCalled = YES;
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kSelectionOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+      _didWebStateWasMoved = YES;
+      break;
+    case WebStateListChange::Type::kReplace:
+      // Do nothing when a new WebState is replaced.
+      break;
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
+      break;
+  }
 }
+
 @end

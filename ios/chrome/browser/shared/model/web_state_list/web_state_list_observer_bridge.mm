@@ -28,24 +28,10 @@ void WebStateListObserverBridge::WebStateListChanged(
       // TODO(crbug.com/1442546): Move the implementation from
       // webStateList:didDetachWebState:atIndex: to here.
       break;
-    case WebStateListChange::Type::kMove: {
-      const SEL selector = @selector(webStateList:
-                                  didMoveWebState:fromIndex:toIndex:);
-      if (![observer_ respondsToSelector:selector]) {
-        return;
-      }
-
-      // TODO(crbug.com/1442546): Replace this with
-      // -didChangeWebStateList:change:selection:.
-      const WebStateListChangeMove& move_change =
-          change.As<WebStateListChangeMove>();
-      [observer_ webStateList:web_state_list
-              didMoveWebState:move_change.moved_web_state()
-                    fromIndex:move_change.moved_from_index()
-                      toIndex:selection.index];
-      break;
-    }
+    case WebStateListChange::Type::kMove:
+      [[fallthrough]];
     case WebStateListChange::Type::kReplace:
+      [[fallthrough]];
     case WebStateListChange::Type::kInsert: {
       const SEL selector = @selector(didChangeWebStateList:change:selection:);
       if (![observer_ respondsToSelector:selector]) {

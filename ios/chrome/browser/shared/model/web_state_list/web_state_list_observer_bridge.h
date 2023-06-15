@@ -20,12 +20,6 @@
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection;
 
-// Invoked after the WebState at the specified index is moved to another index.
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex;
-
 // Invoked before the specified WebState is detached from the WebStateList.
 // The WebState is still valid and still in the WebStateList.
 - (void)webStateList:(WebStateList*)webStateList

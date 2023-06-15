@@ -121,20 +121,10 @@ using ScopedWebStateListObservation =
       // webStateList:didDetachWebState:atIndex: to here.
       break;
     case WebStateListChange::Type::kMove:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didMoveWebState:fromIndex:toIndex: to here.
-      break;
     case WebStateListChange::Type::kReplace:
     case WebStateListChange::Type::kInsert:
       NOTREACHED_NORETURN();
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex {
-  NOTREACHED();
 }
 
 - (void)webStateList:(WebStateList*)webStateList

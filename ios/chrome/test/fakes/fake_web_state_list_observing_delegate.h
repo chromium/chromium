@@ -14,7 +14,7 @@ class WebStateList;
 // Defines a WebStateListObserving for use in unittests. Used to test if an
 // observer method was called or not.
 @interface FakeWebStateListObservingDelegate : NSObject <WebStateListObserving>
-@property(nonatomic, assign) BOOL didMoveWebStateWasCalled;
+@property(nonatomic, assign) BOOL didWebStateWasMoved;
 - (void)observeWebStateList:(WebStateList*)webStateList;
 - (void)stopObservingWebStateList:(WebStateList*)webStateList;
 

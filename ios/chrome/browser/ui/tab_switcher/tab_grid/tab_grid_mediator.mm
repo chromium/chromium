@@ -269,10 +269,21 @@ void RecordTabGridCloseTabsCount(int count) {
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
       break;
-    case WebStateListChange::Type::kMove:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didMoveWebState:fromIndex:toIndex: to here.
+    case WebStateListChange::Type::kMove: {
+      if (IsPinnedTabsEnabled() &&
+          webStateList->IsWebStatePinnedAt(selection.index)) {
+        return;
+      }
+
+      const WebStateListChangeMove& moveChange =
+          change.As<WebStateListChangeMove>();
+      NSUInteger itemIndex =
+          [self itemIndexFromWebStateListIndex:selection.index];
+      [self.consumer
+          moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
+                 toIndex:itemIndex];
       break;
+    }
     case WebStateListChange::Type::kReplace: {
       if (IsPinnedTabsEnabled() &&
           webStateList->IsWebStatePinnedAt(selection.index)) {
@@ -323,24 +334,6 @@ void RecordTabGridCloseTabsCount(int count) {
       break;
     }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(toIndex)) {
-    return;
-  }
-
-  NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:toIndex];
-  [self.consumer moveItemWithID:webState->GetStableIdentifier()
-                        toIndex:itemIndex];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
