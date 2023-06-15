@@ -8,8 +8,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -53,6 +55,19 @@ enum class PageFlagParam {
 
 class WebAppOfflineTest : public InProcessBrowserTest {
  public:
+  void SetUpOnMainThread() override {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ =
+        OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+  void TearDownOnMainThread() override {
+    test::UninstallAllWebApps(browser()->profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      override_registration_.reset();
+    }
+  }
+
   // Start a web app without a service worker and disconnect.
   web_app::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
                                           base::StringPiece relative_url) {
@@ -100,6 +115,10 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     app_browser->window()->Close();
     ui_test_utils::WaitForBrowserToClose(app_browser);
   }
+
+ private:
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 class WebAppOfflinePageTest
@@ -513,6 +532,7 @@ class WebAppOfflineDarkModeTest
   }
 
   void SetUpOnMainThread() override {
+    WebAppOfflineTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Explicitly set dark mode in ChromeOS or we can't get light mode after
     // sunset (due to dark mode auto-scheduling).
