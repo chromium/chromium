@@ -30,7 +30,7 @@
     objc_storage_->obj = other.objc_storage_->obj;                     \
     return *this;                                                      \
   }                                                                    \
-  bool Owned##name::IsValid() const {                                  \
+  Owned##name::operator bool() const {                                 \
     return objc_storage_->obj != nil;                                  \
   }                                                                    \
   bool Owned##name::operator==(const Owned##name& other) const {       \

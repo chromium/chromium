@@ -371,7 +371,7 @@ void WebDialogView::SetContentsBounds(WebContents* source,
 // they're all browser-specific. (This may change in the future.)
 bool WebDialogView::HandleKeyboardEvent(content::WebContents* source,
                                         const NativeWebKeyboardEvent& event) {
-  if (!gfx::IsNativeEventValid(event.os_event)) {
+  if (!event.os_event) {
     return false;
   }
 

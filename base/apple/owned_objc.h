@@ -48,7 +48,7 @@
     Owned##name(const Owned##name&);                          \
     Owned##name& operator=(const Owned##name&);               \
     /* Returns whether the object contains a valid object. */ \
-    bool IsValid() const;                                     \
+    explicit operator bool() const;                           \
     /* Comparisons. */                                        \
     bool operator==(const Owned##name& other) const;          \
     bool operator!=(const Owned##name& other) const;          \

@@ -66,7 +66,7 @@ bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
     return false;
 
   // If the event was not synthesized it should have an os_event.
-  DCHECK(event.os_event.IsValid());
+  DCHECK(event.os_event);
 
   // Do not fire shortcuts on key up.
   return event.os_event.Get().type == NSEventTypeKeyDown;

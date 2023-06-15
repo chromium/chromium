@@ -243,9 +243,6 @@ using UnimplementedNativeViewAccessible =
 using NativeViewAccessible = UnimplementedNativeViewAccessible*;
 #endif
 
-// Returns if the event is valid.
-GFX_EXPORT bool IsNativeEventValid(const NativeEvent& event);
-
 // Note: for test_shell we're packing a pointer into the NativeViewId. So, if
 // you make it a type which is smaller than a pointer, you have to fix
 // test_shell.

@@ -513,7 +513,6 @@ source_set("native_widget_types_sources") {
   visibility = [ ":*" ]  # Depend on through ":native_widget_types".
 
   public = [ "native_widget_types.h" ]
-  sources = [ "native_widget_types.cc" ]
 
   public_deps = [
     ":gfx_export",
@@ -525,7 +524,7 @@ source_set("native_widget_types_sources") {
   defines = [ "GFX_IMPLEMENTATION" ]
 
   if (is_mac) {
-    sources += [ "native_widget_types_mac.mm" ]
+    sources = [ "native_widget_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
   }
 }

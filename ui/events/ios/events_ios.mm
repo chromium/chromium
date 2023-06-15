@@ -86,7 +86,7 @@ PlatformEvent CreateInvalidPlatformEvent() {
 }
 
 bool IsPlatformEventValid(const PlatformEvent& event) {
-  return event.IsValid();
+  return !!event;
 }
 
 PointerDetails GetTouchPointerDetailsFromNative(

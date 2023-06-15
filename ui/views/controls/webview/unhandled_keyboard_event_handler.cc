@@ -50,7 +50,7 @@ bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
     ignore_next_char_event_ = false;
   }
 
-  if (gfx::IsNativeEventValid(event.os_event)) {
+  if (event.os_event) {
     return HandleNativeKeyboardEvent(event, focus_manager);
   }
 

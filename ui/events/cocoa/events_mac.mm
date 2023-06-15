@@ -191,7 +191,7 @@ PlatformEvent CreateInvalidPlatformEvent() {
 }
 
 bool IsPlatformEventValid(const PlatformEvent& event) {
-  return event.IsValid();
+  return !!event;
 }
 
 void ClearTouchIdIfReleased(const PlatformEvent& platform_event) {
