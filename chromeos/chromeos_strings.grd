@@ -702,13 +702,20 @@
         <message name="IDS_PRINT_MANAGEMENT_COLLAPSE_PRINTING_STATUS" desc="A text that indicates to the user that the print job is currently printing. This text only appears if the width of the app's window is small and cannot display the entire ongoing printing status.">
           Printing
         </message>
+        <!-- TODO(b/287470757): Remove translateable false once empty state strings finalized. -->
         <message translateable="false" name="IDS_PRINT_MANAGEMENT_EMPTY_STATE_NO_JOBS_MESSAGE" desc="The message shown to users if they do not have any print jobs in progress i.e. being printed.">
           No printer jobs
         </message>
+        <!-- TODO(b/287470757): Remove translateable false once empty state strings finalized. -->
         <message translateable="false" name="IDS_PRINT_MANAGEMENT_EMPTY_STATE_PRINTER_SETTINGS_MESSAGE" desc="The message shown to users to suggest navigating to Printer settings when they do not have any print jobs.">
           Go to Printer settings to manage your printers
         </message>
+        <!-- TODO(b/287470757): Remove translateable false once empty state strings finalized. -->
         <message translateable="false" name="IDS_PRINT_MANAGEMENT_EMPTY_STATE_MANAGE_PRINTERS_LABEL" desc="The label for the button that opens Printer settings when they do not have any print jobs.">
+          Manage printers
+        </message>
+        <!-- TODO(b/287470757): Remove translateable false once finalized strings are available .-->
+        <message translateable="false" name="IDS_PRINT_MANAGEMENT_HEADER_MANAGE_PRINTERS_LABEL" desc="The label for the button that opens Printer settings when UI displays at least one print job.">
           Manage printers
         </message>
 

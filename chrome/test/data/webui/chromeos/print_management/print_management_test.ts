@@ -1004,8 +1004,13 @@ suite('PrintManagementTest', () => {
 
     await initializePrintManagementApp(jobsArr);
 
-    assertTrue(
-        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
+    const managePrintersButton: CrButtonElement =
+        querySelector<CrButtonElement>(page!, '#managePrinters')!;
+    assertTrue(isVisible(managePrintersButton));
+    assertTrue(page!.i18nExists('headerManagePrintersButtonLabel'));
+    assertEquals(
+        page!.i18n('headerManagePrintersButtonLabel'),
+        managePrintersButton.textContent!.trim());
   });
 });
 
