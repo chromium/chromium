@@ -242,9 +242,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2023-07-24">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesBadgeState" expires_after="2024-06-24">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the state of a badge when it was tapped. {MobileInfobarType}
   </summary>
@@ -252,9 +252,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
-    enum="MobileMessagesBannerDismissType" expires_after="2023-07-24">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesBannerDismissType" expires_after="2024-06-24">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the reason why an infobar banner was dismissed. {MobileInfobarType}
   </summary>
@@ -262,9 +262,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
-    enum="MobileMessagesBannerEvent" expires_after="2023-07-31">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesBannerEvent" expires_after="2024-06-30">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
   <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
@@ -303,11 +303,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Confirm.Event"
-    enum="MobileMessagesConfirmInfobarEvents" expires_after="2023-07-16">
+    enum="MobileMessagesConfirmInfobarEvents" expires_after="2024-06-16">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
 
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the events related to Confirm Infobars (e.g. Presented, Accepted,
     Dismissed,etc.)
@@ -315,26 +315,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Modal.Event.{MobileInfobarType}"
-    enum="MobileMessagesModalEvent" expires_after="2023-07-24">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesModalEvent" expires_after="2024-06-24">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>Records generic infobar modal events. {MobileInfobarType}</summary>
   <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"
-    enum="MobileMessagesInfobarType" expires_after="2023-07-20">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesInfobarType" expires_after="2024-06-20">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>Records a tap on an Infobar overflow menu row.</summary>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Dismiss"
-    enum="MobileMessagesPasswordsModalDismiss" expires_after="2023-10-16">
+    enum="MobileMessagesPasswordsModalDismiss" expires_after="2024-06-16">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>Records the reason why a Password Modal was dismissed.</summary>
 </histogram>
 
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Present"
-    enum="MobileMessagesPasswordsModalPresent" expires_after="2023-07-20">
+    enum="MobileMessagesPasswordsModalPresent" expires_after="2024-06-20">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -358,15 +358,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mobile.Messages.Save.Card.Modal.Event"
     enum="MobileMessagesSaveCardModalEvent" expires_after="2023-10-16">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>Records Save Card specific Infobar Modal events.</summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Banner.Event"
-    enum="MobileMessagesTranslateBannerEvent" expires_after="2023-07-20">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesTranslateBannerEvent" expires_after="2024-06-20">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the context when an iOS user taps on a Translate Banner Action
     Button.
@@ -384,9 +384,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Present"
-    enum="MobileMessagesTranslateModalPresent" expires_after="2023-07-20">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesTranslateModalPresent" expires_after="2024-06-20">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the context when an iOS user initiates a Translate Modal
     presentation.
