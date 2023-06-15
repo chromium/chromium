@@ -337,7 +337,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // Voids all outstanding service pointers.
   void ResetBindings();
 
-  // Resets all fetched data for the current page.
+  // Resets all fetched data for the current page. Should only be called once
+  // per navigation, at the beginning of the navigation.
   virtual void ResetCurrentPageData();
 
   // Stops the banner pipeline early.
@@ -390,7 +391,9 @@ class AppBannerManager : public content::WebContentsObserver,
   bool IsRunning() const;
 
   void SetInstallableWebAppCheckResult(InstallableWebAppCheckResult result);
-  void RecheckInstallabilityForLoadedPage(const GURL& url, bool uninstalled);
+  // Virtual so the TestAppBannerManagerDesktop can reset its installability
+  // state when called.
+  virtual void RecheckInstallabilityForLoadedPage();
 
   // The URL for which the banner check is being conducted.
   GURL validated_url_;
@@ -415,9 +418,6 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // The screenshots to show in the install UI.
   std::vector<Screenshot> screenshots_;
-
-  // True if the service worker check has passed or no required.
-  bool passed_worker_check_ = false;
 
  private:
   friend class AppBannerManagerTest;

@@ -194,6 +194,17 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
   DCHECK_EQ(State::INACTIVE, state_);
 
   UpdateState(State::ACTIVE);
+
+  // If we already have enough engagement, or require no engagement to trigger
+  // the banner, the rest of the banner pipeline should operate as if the
+  // engagement threshold has been met.
+  if (!has_sufficient_engagement_ &&
+      (AppBannerSettingsHelper::HasSufficientEngagement(0) ||
+       AppBannerSettingsHelper::HasSufficientEngagement(
+           GetSiteEngagementService()->GetScore(validated_url)))) {
+    has_sufficient_engagement_ = true;
+  }
+
   if (ShouldBypassEngagementChecks())
     status_reporter_ = std::make_unique<ConsoleStatusReporter>(web_contents());
   else
@@ -497,7 +508,6 @@ void AppBannerManager::ResetCurrentPageData() {
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
-  passed_worker_check_ = false;
   install_path_tracker_.Reset();
   screenshots_.clear();
 }
@@ -583,16 +593,16 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
     observer.OnInstallableWebAppStatusUpdated();
 }
 
-void AppBannerManager::RecheckInstallabilityForLoadedPage(const GURL& url,
-                                                          bool uninstalled) {
+void AppBannerManager::RecheckInstallabilityForLoadedPage() {
   if (state_ == State::INACTIVE)
     return;
 
-  if (uninstalled)
+  if (state_ != State::COMPLETE) {
     Stop(InstallableStatusCode::PIPELINE_RESTARTED);
+  }
 
-  ResetCurrentPageData();
-  DidFinishLoad(nullptr, url);
+  UpdateState(State::INACTIVE);
+  RequestAppBanner(validated_url_);
 }
 
 void AppBannerManager::TrackInstallPath(bool bottom_sheet,
@@ -614,8 +624,7 @@ void AppBannerManager::Stop(InstallableStatusCode code) {
   InvalidateWeakPtrs();
   ResetBindings();
   UpdateState(State::COMPLETE);
-  status_reporter_ = std::make_unique<NullStatusReporter>(),
-  has_sufficient_engagement_ = false;
+  status_reporter_ = std::make_unique<NullStatusReporter>();
 }
 
 void AppBannerManager::SendBannerPromptRequest() {
@@ -675,15 +684,6 @@ void AppBannerManager::DidFinishLoad(
   load_finished_ = true;
   validated_url_ = validated_url;
 
-  // If we already have enough engagement, or require no engagement to trigger
-  // the banner, the rest of the banner pipeline should operate as if the
-  // engagement threshold has been met.
-  if (AppBannerSettingsHelper::HasSufficientEngagement(0) ||
-      AppBannerSettingsHelper::HasSufficientEngagement(
-          GetSiteEngagementService()->GetScore(validated_url))) {
-    has_sufficient_engagement_ = true;
-  }
-
   // Start the pipeline immediately if we haven't already started it.
   if (state_ == State::INACTIVE)
     RequestAppBanner(validated_url);
@@ -724,12 +724,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
       [[fallthrough]];
     case State::COMPLETE:
       if (!manifest_url.is_empty()) {
-        // This call resets has_sufficient_engagement_data_. In order to
-        // re-compute that, instead of calling RequestAppBanner, DidFinishLoad
-        // is called. That method will re-fetch the engagement data and re-set
-        // that field.
-        ResetCurrentPageData();
-        DidFinishLoad(nullptr, url);
+        RecheckInstallabilityForLoadedPage();
       }
       return;
   }

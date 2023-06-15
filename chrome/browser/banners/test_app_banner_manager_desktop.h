@@ -69,6 +69,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void UpdateState(AppBannerManager::State state) override;
+  void RecheckInstallabilityForLoadedPage() override;
 
  private:
   void SetInstallable(bool installable);
@@ -77,7 +78,6 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
 
   absl::optional<bool> installable_;
   base::Value::List debug_log_;
-  bool waiting_for_worker_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
   base::OnceClosure promotable_quit_closure_;

@@ -63,12 +63,6 @@ bool TestAppBannerManagerDesktop::WaitForInstallableCheck() {
     installable_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
-  // Only wait for worker check if it has started after the installable check.
-  if (waiting_for_worker_) {
-    base::RunLoop run_loop;
-    promotable_quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
   return *installable_ && IsPromotableWebApp();
 }
 
@@ -114,9 +108,14 @@ void TestAppBannerManagerDesktop::ResetCurrentPageData() {
   debug_log_.Append("ResetCurrentPageData");
   AppBannerManagerDesktop::ResetCurrentPageData();
   installable_.reset();
-  waiting_for_worker_ = false;
   if (tear_down_quit_closure_)
     std::move(tear_down_quit_closure_).Run();
+}
+
+void TestAppBannerManagerDesktop::RecheckInstallabilityForLoadedPage() {
+  debug_log_.Append("RecheckInstallabilityForLoadedPage");
+  installable_.reset();
+  AppBannerManagerDesktop::RecheckInstallabilityForLoadedPage();
 }
 
 TestAppBannerManagerDesktop*
