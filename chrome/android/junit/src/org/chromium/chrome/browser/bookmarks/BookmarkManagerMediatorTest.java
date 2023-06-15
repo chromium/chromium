@@ -110,7 +110,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -360,11 +359,15 @@ public class BookmarkManagerMediatorTest {
         assertEquals(item.model.get(ListMenuItemProperties.ENABLED), enabled);
     }
 
-    private void verifyOrderedViewTypes(List<Integer> orderedViewTypes) {
-        assertEquals(orderedViewTypes.size(), mModelList.size());
-        for (int i = 0; i < orderedViewTypes.size(); ++i) {
-            assertEquals("ViewType did not match at index " + i, orderedViewTypes.get(i).intValue(),
-                    mModelList.get(i).type);
+    private void verifyCurrentViewTypes(int... expectedViewTypes) {
+        verifyModelListHaViewTypes(mModelList, expectedViewTypes);
+    }
+
+    private static void verifyModelListHaViewTypes(ModelList modelList, int... expectedViewTypes) {
+        assertEquals(expectedViewTypes.length, modelList.size());
+        for (int i = 0; i < expectedViewTypes.length; ++i) {
+            assertEquals("ViewType did not match at index " + i, expectedViewTypes[i],
+                    modelList.get(i).type);
         }
     }
 
@@ -973,14 +976,14 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
         mMediator.openFolder(mFolderId1);
 
-        verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX, ViewType.PERSONALIZED_SYNC_PROMO,
-                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
+        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.PERSONALIZED_SYNC_PROMO,
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT);
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         mMediator.getPromoHeaderManager().syncStateChanged();
 
-        verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX,
-                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
+        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
     }
 
     @Test
@@ -990,13 +993,12 @@ public class BookmarkManagerMediatorTest {
                 .thenReturn(Collections.singletonList(mFolderId3));
         finishLoading();
         mMediator.openFolder(mFolderId1);
-        verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX,
-                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
+        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
 
         mModelList.addObserver(mListObserver);
         mModelList.get(0).model.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK).onResult("3");
-        verifyOrderedViewTypes(
-                Arrays.asList(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT));
+        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT);
         verify(mListObserver, never()).onItemRangeChanged(any(), eq(0), anyInt(), any());
         verify(mListObserver, never()).onItemRangeRemoved(any(), eq(0), anyInt());
         verify(mListObserver, never()).onItemRangeInserted(any(), eq(0), anyInt());
