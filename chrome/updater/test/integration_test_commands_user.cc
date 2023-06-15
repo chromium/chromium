@@ -213,6 +213,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
 
+  void GetAppStates(
+      const base::Value::Dict& expected_app_states) const override {
+    updater::test::GetAppStates(updater_scope_, expected_app_states);
+  }
+
   void DeleteUpdaterDirectory() const override {
     updater::test::DeleteUpdaterDirectory(updater_scope_);
   }

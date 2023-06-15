@@ -239,6 +239,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
 
+  void GetAppStates(
+      const base::Value::Dict& expected_app_states) const override {
+    RunCommand(
+        "get_app_states",
+        {Param("expected_app_states",
+               StringFromValue(base::Value(expected_app_states.Clone())))});
+  }
+
   void DeleteUpdaterDirectory() const override {
     RunCommand("delete_updater_directory", {});
   }

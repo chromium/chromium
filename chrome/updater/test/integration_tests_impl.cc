@@ -30,6 +30,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -479,6 +480,46 @@ void UpdateAll(UpdaterScope scope) {
       base::DoNothing(),
       base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
+  loop.Run();
+}
+
+void GetAppStates(UpdaterScope updater_scope,
+                  const base::Value::Dict& expected_app_states) {
+  scoped_refptr<UpdateService> update_service =
+      CreateUpdateServiceProxy(updater_scope);
+
+  base::RunLoop loop;
+  update_service->GetAppStates(base::BindLambdaForTesting(
+      [&expected_app_states,
+       &loop](const std::vector<updater::UpdateService::AppState>& states) {
+        for (const auto [expected_app_id, expected_state] :
+             expected_app_states) {
+          const auto& it = base::ranges::find_if(
+              states, [&expected_app_id](const auto& state) {
+                return base::EqualsCaseInsensitiveASCII(state.app_id,
+                                                        expected_app_id);
+              });
+          ASSERT_TRUE(it != std::end(states));
+          const base::Value::Dict* expected = expected_state.GetIfDict();
+          ASSERT_TRUE(expected);
+          EXPECT_EQ(it->app_id, *expected->FindString("app_id"));
+          EXPECT_EQ(it->version.GetString(), *expected->FindString("version"));
+          EXPECT_EQ(it->ap, *expected->FindString("ap"));
+          EXPECT_EQ(it->brand_code, *expected->FindString("brand_code"));
+#if BUILDFLAG(IS_WIN)
+          EXPECT_EQ(base::WideToASCII(it->brand_path.value()),
+                    *expected->FindString("brand_path"));
+          EXPECT_EQ(base::WideToASCII(it->ecp.value()),
+                    *expected->FindString("ecp"));
+#else
+          EXPECT_EQ(it->brand_path.value(),
+                    *expected->FindString("brand_path"));
+          EXPECT_EQ(it->ecp.value(), *expected->FindString("ecp"));
+#endif  // BUILDFLAG(IS_WIN)
+        }
+        loop.Quit();
+      }));
+
   loop.Run();
 }
 

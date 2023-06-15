@@ -133,6 +133,9 @@ void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
 
+void GetAppStates(UpdaterScope updater_scope,
+                  const base::Value::Dict& expected_app_states);
+
 // Deletes the file.
 void DeleteFile(UpdaterScope scope, const base::FilePath& path);
 

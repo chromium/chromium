@@ -326,6 +326,10 @@ class IntegrationTest : public ::testing::Test {
 
   void UpdateAll() { test_commands_->UpdateAll(); }
 
+  void GetAppStates(const base::Value::Dict& expected_app_states) {
+    test_commands_->GetAppStates(expected_app_states);
+  }
+
   void DeleteUpdaterDirectory() { test_commands_->DeleteUpdaterDirectory(); }
 
   void DeleteFile(const base::FilePath& path) {
@@ -782,6 +786,33 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+// TODO(https://crbug.com/1454979): enable test for Windows.
+#if !BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, GetAppStates) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  const std::string kAppId("test");
+  const base::Version v1("0.1");
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+
+  base::Value::Dict expected_app_state;
+  expected_app_state.Set("app_id", kAppId);
+  expected_app_state.Set("version", v1.GetString());
+  expected_app_state.Set("ap", "");
+  expected_app_state.Set("brand_code", "");
+  expected_app_state.Set("brand_path", "");
+  expected_app_state.Set("ecp", "");
+  base::Value::Dict expected_app_states;
+  expected_app_states.Set(kAppId, std::move(expected_app_state));
+
+  ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // !BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, MarshalInterface) {

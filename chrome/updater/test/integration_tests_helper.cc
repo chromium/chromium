@@ -344,6 +344,8 @@ void AppTestHelper::FirstTaskRun() {
     {"check_for_update",
      (WithSwitch("app_id", WithSystemScope(Wrap(&CheckForUpdate))))},
     {"update_all", WithSystemScope(Wrap(&UpdateAll))},
+    {"get_app_states",
+     WithSwitch("expected_app_states", WithSystemScope(Wrap(&GetAppStates)))},
     {"delete_updater_directory",
      WithSystemScope(Wrap(&DeleteUpdaterDirectory))},
     {"delete_file", (WithSwitch("path", WithSystemScope(Wrap(&DeleteFile))))},
