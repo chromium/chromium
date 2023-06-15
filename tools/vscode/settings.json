@@ -72,11 +72,6 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
 
-  // Format Java code according to Android style. Requires the "Language Support
-  // for Java(TM) by Red Hat" extension. Read the "Java/Android Support" section
-  // in //docs/vscode.md *before* installing the extension.
-  "java.format.settings.url": "https://raw.githubusercontent.com/android/platform_development/master/ide/eclipse/android-formatting.xml",
-
   // Disable automatic task detection to speed up opening the task menu.
   "task.autoDetect": "off",
 
