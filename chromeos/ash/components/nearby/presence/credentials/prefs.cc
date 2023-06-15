@@ -11,6 +11,8 @@ namespace ash::nearby::presence {
 
 namespace prefs {
 
+const char kNearbyPresenceFirstTimeRegistrationComplete[] =
+    "nearby_presence.registration_complete";
 const char kNearbyPresenceDeviceIdPrefName[] =
     "nearby_presence.local_device_id";
 const char kNearbyPresenceUserNamePrefName[] = "nearby_presence.user_name";
@@ -28,6 +30,9 @@ const char kNearbyPresenceSchedulingFirstTimeDownloadPrefName[] =
 
 void RegisterNearbyPresenceCredentialPrefs(PrefRegistrySimple* registry) {
   // These prefs are not synced across devices on purpose.
+  registry->RegisterBooleanPref(
+      prefs::kNearbyPresenceFirstTimeRegistrationComplete,
+      /*default_value=*/false);
   registry->RegisterStringPref(prefs::kNearbyPresenceDeviceIdPrefName,
                                /*default_value=*/std::string());
   registry->RegisterStringPref(prefs::kNearbyPresenceUserNamePrefName,

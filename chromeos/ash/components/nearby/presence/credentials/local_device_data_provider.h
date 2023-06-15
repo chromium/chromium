@@ -49,8 +49,13 @@ class LocalDeviceDataProvider {
                                         const std::string& image_url) = 0;
 
   // Checks if the first time registration information returned from the
-  // server is persisted to prefs.
-  virtual bool IsUserRegistrationInfoSaved() = 0;
+  // server is persisted to prefs, and the full registration flow has been
+  // completed successfully.
+  virtual bool IsRegistrationCompleteAndUserInfoSaved() = 0;
+
+  // Persists a boolean indicating that the full registration flow has been
+  // completed.
+  virtual void SetRegistrationComplete(bool complete) = 0;
 };
 
 }  // namespace ash::nearby::presence

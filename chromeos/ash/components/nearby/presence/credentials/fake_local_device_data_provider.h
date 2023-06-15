@@ -36,13 +36,13 @@ class FakeLocalDeviceDataProvider : public LocalDeviceDataProvider {
   std::string GetAccountName() override;
   void SaveUserRegistrationInfo(const std::string& display_name,
                                 const std::string& image_url) override;
-  bool IsUserRegistrationInfoSaved() override;
+  bool IsRegistrationCompleteAndUserInfoSaved() override;
+  void SetRegistrationComplete(bool complete) override;
 
   void SetHaveSharedCredentialsChanged(bool have_credentials_changed);
   void SetDeviceId(std::string device_id);
   void SetDeviceMetadata(::nearby::internal::Metadata metadata);
   void SetAccountName(std::string account_name);
-  void SetIsUserRegistrationInfoSaved(bool is_user_registration_info_saved);
   void SetUpdatePersistedSharedCredentialsCallback(base::OnceClosure callback);
 
  private:
@@ -52,7 +52,8 @@ class FakeLocalDeviceDataProvider : public LocalDeviceDataProvider {
           shared_credentials) override;
 
   bool have_credentials_changed_ = false;
-  bool is_user_registration_info_saved_ = false;
+  bool is_registration_complete_ = false;
+  bool user_info_saved_ = false;
   std::string device_id_;
   ::nearby::internal::Metadata metadata_;
   std::string account_name_;

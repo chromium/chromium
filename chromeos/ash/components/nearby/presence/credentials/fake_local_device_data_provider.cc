@@ -30,14 +30,18 @@ std::string FakeLocalDeviceDataProvider::GetAccountName() {
   return account_name_;
 }
 
-bool FakeLocalDeviceDataProvider::IsUserRegistrationInfoSaved() {
-  return is_user_registration_info_saved_;
+bool FakeLocalDeviceDataProvider::IsRegistrationCompleteAndUserInfoSaved() {
+  return is_registration_complete_ && user_info_saved_;
 }
 
 void FakeLocalDeviceDataProvider::SaveUserRegistrationInfo(
     const std::string& display_name,
     const std::string& image_url) {
-  is_user_registration_info_saved_ = true;
+  user_info_saved_ = true;
+}
+
+void FakeLocalDeviceDataProvider::SetRegistrationComplete(bool complete) {
+  is_registration_complete_ = complete;
 }
 
 void FakeLocalDeviceDataProvider::SetHaveSharedCredentialsChanged(
@@ -56,11 +60,6 @@ void FakeLocalDeviceDataProvider::SetDeviceMetadata(
 
 void FakeLocalDeviceDataProvider::SetAccountName(std::string account_name) {
   account_name_ = account_name;
-}
-
-void FakeLocalDeviceDataProvider::SetIsUserRegistrationInfoSaved(
-    bool is_user_registration_info_saved) {
-  is_user_registration_info_saved_ = is_user_registration_info_saved;
 }
 
 void FakeLocalDeviceDataProvider::SetUpdatePersistedSharedCredentialsCallback(

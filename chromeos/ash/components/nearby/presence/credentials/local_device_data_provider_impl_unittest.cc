@@ -91,8 +91,10 @@ TEST_F(LocalDeviceDataProviderImplTest, SaveUserRegistrationInfo) {
 
   // Simulate first time registration has occurred.
   local_device_data_provider_->SaveUserRegistrationInfo(kUserName, kProfileUrl);
+  local_device_data_provider_->SetRegistrationComplete(/*complete=*/true);
 
-  EXPECT_TRUE(local_device_data_provider_->IsUserRegistrationInfoSaved());
+  EXPECT_TRUE(
+      local_device_data_provider_->IsRegistrationCompleteAndUserInfoSaved());
 }
 
 TEST_F(LocalDeviceDataProviderImplTest, Metadata) {

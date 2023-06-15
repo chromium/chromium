@@ -73,7 +73,7 @@ NearbyPresenceCredentialManagerImpl::~NearbyPresenceCredentialManagerImpl() =
     default;
 
 bool NearbyPresenceCredentialManagerImpl::IsLocalDeviceRegistered() {
-  return local_device_data_provider_->IsUserRegistrationInfoSaved();
+  return local_device_data_provider_->IsRegistrationCompleteAndUserInfoSaved();
 }
 
 void NearbyPresenceCredentialManagerImpl::RegisterPresence(
@@ -337,6 +337,7 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
   //      3. Upload this device's credentials.
   //   -> 4. Download other devices' credentials.
   //      5. Save other devices' credentials.
+  local_device_data_provider_->SetRegistrationComplete(/*complete=*/true);
   CHECK(on_registered_callback_);
   std::move(on_registered_callback_).Run(/*success=*/true);
 }

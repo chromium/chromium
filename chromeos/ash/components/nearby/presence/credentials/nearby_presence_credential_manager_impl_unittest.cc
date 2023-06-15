@@ -117,7 +117,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
             std::move(local_device_data_provider));
 
     // Simulate first time registration flow.
-    fake_local_device_data_provider_->SetIsUserRegistrationInfoSaved(false);
+    fake_local_device_data_provider_->SetRegistrationComplete(false);
     EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 
     // Simulate the device id which will be generated in a call to
@@ -288,9 +288,9 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
   // Required for credentials to be generated and passed over the mojo pipe.
   run_loop.Run();
 
-  // Since the user registration with the server was successful, this will be
-  // true.
-  EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
+  // Since the user registration with the server was not successful, this will
+  // be false.
+  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
@@ -325,9 +325,9 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
       kServerCommunicationMaxAttempts);
   task_environment_.FastForwardBy(kServerResponseTimeout);
 
-  // Since the user registration with the server was successful, this will be
-  // true.
-  EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
+  // Since the user registration with the server was not successful, this will
+  // be false.
+  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
@@ -362,9 +362,9 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
   server_client_factory_.fake_server_client()->InvokeUpdateDeviceErrorCallback(
       ash::nearby::NearbyHttpError::kInternalServerError);
 
-  // Since the user registration with the server was successful, this will be
-  // true.
-  EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
+  // Since the user registration with the server was not successful, this will
+  // be false.
+  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
@@ -380,7 +380,6 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
   credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
 
   TriggerFirstTimeRegistrationSuccess();
-
   // Required for credentials to be generated and passed over the mojo pipe.
   run_loop.Run();
 
@@ -403,7 +402,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
       ->InvokeListPublicCertificatesErrorCallback(
           ash::nearby::NearbyHttpError::kInternalServerError);
 
-  EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
+  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsTimeout) {
@@ -439,7 +438,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsTimeout) {
       kServerCommunicationMaxAttempts);
   task_environment_.FastForwardBy(kServerResponseTimeout);
 
-  EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
+  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 }  // namespace ash::nearby::presence
