@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
@@ -507,11 +508,9 @@ void LogUserInteractionWithFullscreenPromo() {
 }
 
 void LogUserInteractionWithTailoredFullscreenPromo() {
-  const NSInteger displayed_promo_count = DisplayedPromoCount();
   UpdateStorageWithDictionary(@{
     kUserHasInteractedWithTailoredFullscreenPromo : @YES,
     kLastTimeUserInteractedWithPromo : [NSDate date],
-    kDisplayedPromoCount : @(displayed_promo_count + 1),
   });
 }
 
@@ -732,6 +731,31 @@ DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type) {
       return DefaultPromoTypeForUMA::kStaySafe;
     case DefaultPromoTypeAllTabs:
       return DefaultPromoTypeForUMA::kAllTabs;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+void LogDefaultBrowserPromoHistogramForAction(
+    DefaultPromoType type,
+    IOSDefaultBrowserPromoAction action) {
+  switch (type) {
+    case DefaultPromoTypeGeneral:
+      base::UmaHistogramEnumeration("IOS.DefaultBrowserFullscreenPromo",
+                                    action);
+      break;
+    case DefaultPromoTypeAllTabs:
+      base::UmaHistogramEnumeration(
+          "IOS.DefaultBrowserFullscreenTailoredPromoAllTabs", action);
+      break;
+    case DefaultPromoTypeMadeForIOS:
+      base::UmaHistogramEnumeration(
+          "IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS", action);
+      break;
+    case DefaultPromoTypeStaySafe:
+      base::UmaHistogramEnumeration(
+          "IOS.DefaultBrowserFullscreenTailoredPromoStaySafe", action);
+      break;
     default:
       NOTREACHED_NORETURN();
   }

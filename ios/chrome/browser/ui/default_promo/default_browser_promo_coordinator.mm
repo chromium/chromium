@@ -71,10 +71,10 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  LogDefaultBrowserPromoHistogramForAction(
+      DefaultPromoTypeGeneral, IOSDefaultBrowserPromoAction::kDismiss);
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-  [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kDismiss];
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithFullscreenPromo();
 
@@ -84,9 +84,8 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kActionButton];
-
+  LogDefaultBrowserPromoHistogramForAction(
+      DefaultPromoTypeGeneral, IOSDefaultBrowserPromoAction::kActionButton);
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped"));
   LogUserInteractionWithFullscreenPromo();
@@ -99,11 +98,12 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
-  LogUserInteractionWithFullscreenPromo();
-  [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+  LogDefaultBrowserPromoHistogramForAction(
+      DefaultPromoTypeGeneral, IOSDefaultBrowserPromoAction::kCancel);
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Cancel"));
+  LogUserInteractionWithFullscreenPromo();
+
   [self.handler hidePromo];
 }
 
@@ -123,11 +123,6 @@
       presentViewController:self.learnMoreViewController
                    animated:YES
                  completion:nil];
-}
-
-- (void)logDefaultBrowserFullscreenPromoHistogramForAction:
-    (IOSDefaultBrowserFullscreenPromoAction)action {
-  base::UmaHistogramEnumeration("IOS.DefaultBrowserFullscreenPromo", action);
 }
 
 #pragma mark - Private

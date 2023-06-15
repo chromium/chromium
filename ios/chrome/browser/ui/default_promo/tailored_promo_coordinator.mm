@@ -63,10 +63,6 @@ using l10n_util::GetNSString;
 
 - (void)start {
   [super start];
-  RecordAction(
-      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
-  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear",
-                          DefaultPromoTypeForUMA(_promoType));
   [self recordDefaultBrowserPromoShown];
 
   self.tailoredPromoViewController = [[TailoredPromoViewController alloc] init];
@@ -101,10 +97,8 @@ using l10n_util::GetNSString;
     (UIPresentationController*)presentationController {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
-  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
-                          GetDefaultPromoTypeForUMA(_promoType));
-  [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+  LogDefaultBrowserPromoHistogramForAction(
+      self.promoType, IOSDefaultBrowserPromoAction::kDismiss);
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithTailoredFullscreenPromo();
 
@@ -116,10 +110,8 @@ using l10n_util::GetNSString;
 - (void)confirmationAlertPrimaryAction {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
-  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted",
-                          GetDefaultPromoTypeForUMA(_promoType));
-  [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kActionButton];
+  LogDefaultBrowserPromoHistogramForAction(
+      self.promoType, IOSDefaultBrowserPromoAction::kActionButton);
   LogUserInteractionWithTailoredFullscreenPromo();
 
   [[UIApplication sharedApplication]
@@ -132,17 +124,18 @@ using l10n_util::GetNSString;
 
 - (void)confirmationAlertSecondaryAction {
   RecordAction(
-      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
-  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
-                          GetDefaultPromoTypeForUMA(_promoType));
-  [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Cancel"));
+  LogDefaultBrowserPromoHistogramForAction(
+      self.promoType, IOSDefaultBrowserPromoAction::kCancel);
   LogUserInteractionWithTailoredFullscreenPromo();
 
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertLearnMoreAction {
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped"));
+  LogUserInteractionWithTailoredFullscreenPromo();
   NSString* message =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE);
   self.learnMoreViewController =
@@ -159,33 +152,16 @@ using l10n_util::GetNSString;
                  completion:nil];
 }
 
-#pragma mark - Metrics Helpers
-
-- (void)logDefaultBrowserFullscreenPromoHistogramForAction:
-    (IOSDefaultBrowserFullscreenPromoAction)action {
-  switch (self.promoType) {
-    case DefaultPromoTypeAllTabs:
-      UmaHistogramEnumeration(
-          "IOS.DefaultBrowserFullscreenTailoredPromoAllTabs", action);
-      break;
-    case DefaultPromoTypeMadeForIOS:
-      UmaHistogramEnumeration(
-          "IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS", action);
-      break;
-    case DefaultPromoTypeStaySafe:
-      UmaHistogramEnumeration(
-          "IOS.DefaultBrowserFullscreenTailoredPromoStaySafe", action);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-}
-
 #pragma mark - private
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
+  base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
+                                DefaultPromoTypeForUMA(_promoType));
+  LogDefaultBrowserPromoDisplayed();
+
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   LogToFETDefaultBrowserPromoShown(
       feature_engagement::TrackerFactory::GetForBrowserState(browserState));

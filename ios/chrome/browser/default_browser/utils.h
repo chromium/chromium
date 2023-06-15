@@ -26,9 +26,9 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeVideo = 4,
 };
 
-// Enum actions for the IOS.DefaultBrowserFullscreenPromo* UMA metrics. Entries
-// should not be renumbered and numeric values should never be reused.
-enum class IOSDefaultBrowserFullscreenPromoAction {
+// Enum actions for default browser promo UMA metrics. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class IOSDefaultBrowserPromoAction {
   kActionButton = 0,
   kCancel = 1,
   kRemindMeLater = 2,
@@ -36,8 +36,8 @@ enum class IOSDefaultBrowserFullscreenPromoAction {
   kMaxValue = kDismiss,
 };
 
-// Enum for the tailored promo UMA histograms. These values are persisted to
-// logs. Entries should not be renumbered and numeric values should never be
+// Enum for the default browser promo UMA histograms. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
 // reused.
 enum class DefaultPromoTypeForUMA {
   kGeneral = 0,
@@ -226,5 +226,11 @@ void CleanupUnusedStorage();
 // Converts Default browser promo type NSEnum to an enum that can be used by
 // UMA.
 DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type);
+
+// Log given default browser promo action to the UMA histogram coorespnding to
+// the given promo type.
+void LogDefaultBrowserPromoHistogramForAction(
+    DefaultPromoType type,
+    IOSDefaultBrowserPromoAction action);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

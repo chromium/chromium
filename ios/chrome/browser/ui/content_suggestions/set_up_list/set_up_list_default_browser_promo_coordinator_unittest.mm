@@ -75,7 +75,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
 
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
-      IOSDefaultBrowserFullscreenPromoAction::kActionButton, 1);
+      IOSDefaultBrowserPromoAction::kActionButton, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.SetUpList.Appear"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -96,7 +96,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SecondaryButton) {
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
-      IOSDefaultBrowserFullscreenPromoAction::kCancel, 1);
+      IOSDefaultBrowserPromoAction::kCancel, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.SetUpList.Appear"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -119,7 +119,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SwipeToDismiss) {
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
-      IOSDefaultBrowserFullscreenPromoAction::kCancel, 1);
+      IOSDefaultBrowserPromoAction::kCancel, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.SetUpList.Appear"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(

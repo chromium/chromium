@@ -588,21 +588,6 @@ chromium-metrics-reviews@google.com.
   <summary>The default browser promo type shown to the user.</summary>
 </histogram>
 
-<histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
-    enum="IOSDefaultBrowserPromoType" expires_after="2023-12-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Logged when the {Action} action happens in a tailored default browser promo.
-    Records the type of promo.
-  </summary>
-  <token key="Action">
-    <variant name="Accepted"/>
-    <variant name="Appear"/>
-    <variant name="Dismiss"/>
-  </token>
-</histogram>
-
 <histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
     enum="IOSDefaultBrowserVideoPromoAction" expires_after="2023-12-01">
   <owner>cheickcisse@google.com</owner>

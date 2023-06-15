@@ -82,7 +82,7 @@ using base::UserMetricsAction;
 - (void)didTapPrimaryActionButton {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Accepted"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kActionButton];
+            IOSDefaultBrowserPromoAction::kActionButton];
   [_application openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
@@ -93,7 +93,7 @@ using base::UserMetricsAction;
 - (void)didTapSecondaryActionButton {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+            IOSDefaultBrowserPromoAction::kCancel];
   _markItemComplete = YES;
   [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
@@ -104,14 +104,14 @@ using base::UserMetricsAction;
     (UIPresentationController*)presentationController {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+            IOSDefaultBrowserPromoAction::kCancel];
   [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
 
 #pragma mark - Metrics Helpers
 
 - (void)logDefaultBrowserFullscreenPromoHistogramForAction:
-    (IOSDefaultBrowserFullscreenPromoAction)action {
+    (IOSDefaultBrowserPromoAction)action {
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.SetUpList.Action", action);
 }
 

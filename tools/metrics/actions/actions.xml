@@ -11763,11 +11763,30 @@ should be able to be added at any place in this file.
   <description>A tailored fullscren promo appeared. iOS only.</description>
 </action>
 
+<action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Cancel">
+  <owner>gayane@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user dismissed a tailored browser fullscreen promo modal using secondary
+    action button. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss">
   <owner>rkgibson@google.com</owner>
   <owner>djean@chromium.org</owner>
   <description>
-    The user dismissed a tailored browser fullscreen promo modal. iOS only.
+    The user dismissed a tailored browser fullscreen promo modal by swiping
+    down. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped">
+  <owner>gayane@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user tapped on the more information icon on the tailored browser
+    fullscreen promo modal. iOS only.
   </description>
 </action>
 
