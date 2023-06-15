@@ -527,6 +527,20 @@ chromium-metrics-reviews@google.com.
   <token key="RendererHostedContentType" variants="RendererHostedContentType"/>
 </histogram>
 
+<histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
+    enum="Boolean" expires_after="2023-09-15">
+  <owner>amanvr@chromium.org</owner>
+  <owner>carlscab@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    The histogram is being used to track the number of messages
+    (content::mojom::FrameHost::SubresourceResponseStarted IPCs) being sent by
+    the RenderFrameImpl to notify RenderFrameHostImpl of starting subresource
+    responses, versus the number of times it was deemed unnecessary due to the
+    kReduceSubresourceResponseStartedIPC feature.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
     expires_after="2023-10-22">
   <owner>jam@chromium.org</owner>

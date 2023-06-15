@@ -2408,11 +2408,15 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     const url::SchemeHostPort& final_response_url,
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination) {
-  if (!blink::IsRequestDestinationFrame(request_destination) &&
-      ShouldNotifySubresourceResponseStarted(
-          GetWebView()->GetRendererPreferences())) {
-    GetFrameHost()->SubresourceResponseStarted(final_response_url,
-                                               response_head->cert_status);
+  if (!blink::IsRequestDestinationFrame(request_destination)) {
+    bool notify = ShouldNotifySubresourceResponseStarted(
+        GetWebView()->GetRendererPreferences());
+    UMA_HISTOGRAM_BOOLEAN(
+        "Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser", notify);
+    if (notify) {
+      GetFrameHost()->SubresourceResponseStarted(final_response_url,
+                                                 response_head->cert_status);
+    }
   }
   DidStartResponse(final_response_url, request_id, std::move(response_head),
                    request_destination);
