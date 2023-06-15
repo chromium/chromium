@@ -190,6 +190,9 @@ void AwContentsLifecycleNotifier::UpdateAppState() {
     if (previous_in_foreground && on_lose_foreground_callback_) {
       on_lose_foreground_callback_.Run();
     }
+
+    Java_AwContentsLifecycleNotifier_onAppStateChanged(
+        AttachCurrentThread(), static_cast<jint>(app_state_));
   }
 }
 

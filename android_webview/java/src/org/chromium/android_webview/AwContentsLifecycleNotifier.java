@@ -30,6 +30,7 @@ public class AwContentsLifecycleNotifier {
     private static final ObserverList<Observer> sLifecycleObservers =
             new ObserverList<Observer>();
     private static boolean sHasWebViewInstances;
+    private static @AppState int sAppState = AppState.DESTROYED;
 
     private AwContentsLifecycleNotifier() {}
 
@@ -43,6 +44,10 @@ public class AwContentsLifecycleNotifier {
 
     public static boolean hasWebViewInstances() {
         return sHasWebViewInstances;
+    }
+
+    public static @AppState int getAppState() {
+        return sAppState;
     }
 
     // Called on UI thread.
@@ -65,5 +70,12 @@ public class AwContentsLifecycleNotifier {
         for (Observer observer : sLifecycleObservers) {
             observer.onLastWebViewDestroyed();
         }
+    }
+
+    // Called on UI thread.
+    @CalledByNative
+    private static void onAppStateChanged(@AppState int appState) {
+        ThreadUtils.assertOnUiThread();
+        sAppState = appState;
     }
 }

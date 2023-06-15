@@ -4399,6 +4399,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Memory.FunctorReclaim.OtherPrivateDirty"
+    units="MB" expires_after="2023-12-01">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    Reports the app's &quot;other private dirty&quot; memory usage after some
+    time in background. Collects the same data as
+    Memory.Experimental.Gpu2.OtherPss, with the same caveats. Due to these, this
+    should not be relied on to get accurate estimates of memory usage or deltas,
+    but mostly used as a signal in Finch experiments. This is intended to
+    evaluate the impact of draw functor reclaim.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Memory.FunctorReclaim.OtherPss" units="MB"
+    expires_after="2023-12-01">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    Reports the app's &quot;other PSS&quot; memory usage after some time in
+    background. Collects the same data as Memory.Experimental.Gpu2.OtherPss,
+    with the same caveats. Due to these, this should not be relied on to get
+    accurate estimates of memory usage or deltas, but mostly used as a signal in
+    Finch experiments. This is intended to evaluate the impact of draw functor
+    reclaim.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Metrics.BadRequest"
     enum="WebViewMetricBadRequest" expires_after="2023-07-01">
   <owner>bewise@chromium.org</owner>
