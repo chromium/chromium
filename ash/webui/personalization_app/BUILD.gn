@@ -30,6 +30,7 @@ static_library("personalization_app") {
     "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/personalization_app/resources:resources",

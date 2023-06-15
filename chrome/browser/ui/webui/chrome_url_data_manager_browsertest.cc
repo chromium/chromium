@@ -419,6 +419,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://office-fallback/",
     "chrome://parent-access",
     "chrome://password-change",
+    "chrome://personalization",
     "chrome://power",
     "chrome://print-management",
     "chrome://projector",
