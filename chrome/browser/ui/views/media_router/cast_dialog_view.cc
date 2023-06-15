@@ -267,8 +267,12 @@ void CastDialogView::RestoreSinkListState() {
 void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
   sink_views_.clear();
   auto sink_list_view = std::make_unique<views::View>();
-  sink_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  auto layout_manager = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  // Give a little extra space below all sink views, so that focus rings may be
+  // properly drawn.
+  layout_manager->set_inside_border_insets(gfx::Insets::TLBR(0, 0, 4, 0));
+  sink_list_view->SetLayoutManager(std::move(layout_manager));
   for (size_t i = 0; i < sinks.size(); i++) {
     auto* sink_view =
         sink_list_view->AddChildView(std::make_unique<CastDialogSinkView>(

@@ -8,6 +8,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
@@ -32,7 +33,7 @@ std::unique_ptr<views::ImageView> CreateConnectedIconView(
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       *media_router::CastDialogSinkButton::GetVectorIcon(sink),
-      ui::kColorAccent, media_router::kPrimaryIconSize));
+      kColorMediaRouterIconActive, media_router::kPrimaryIconSize));
   icon_view->SetBorder(
       views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
   return icon_view;
