@@ -71,10 +71,8 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
   RemoveObserver(this);
 #if BUILDFLAG(IS_ANDROID)
-  TabModelList::RemoveObserver(this);
-  if (observed_tab_model_) {
-    observed_tab_model_->RemoveObserver(this);
-  }
+  RemoveTabModelObserver();
+  RemoveTabModelListObserver();
 #endif
 }
 
@@ -85,7 +83,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
   if (!web_contents) {
     if (base::FeatureList::IsEnabled(
             safe_browsing::kTailoredSecurityObserverRetries)) {
-      AddTabModelListObserver();
+      RegisterObserver();
       base::UmaHistogramBoolean(
           "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
           kRetryMechanismTriggered);
@@ -143,22 +141,19 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
 #if BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::DidAddTab(TabAndroid* tab,
                                               TabModel::TabLaunchType type) {
-  if (observed_tab_model_) {
-    observed_tab_model_->RemoveObserver(this);
-    observed_tab_model_ = nullptr;
-  }
-
+  // Stop observing because we can rely on the callback to start observing later
+  // if it is needed.
+  RemoveTabModelObserver();
+  RemoveTabModelListObserver();
   TailoredSecurityTimestampUpdateCallback();
 }
 
-void ChromeTailoredSecurityService::AddTabModelListObserver() {
-  TabModelList::AddObserver(this);
-}
-
 void ChromeTailoredSecurityService::OnTabModelAdded() {
-  if (AddTabModelObserver()) {
-    TabModelList::RemoveObserver(this);
+  if (observed_tab_model_) {
+    return;
   }
+
+  AddTabModelObserver();
 }
 
 void ChromeTailoredSecurityService::OnTabModelRemoved() {
@@ -169,15 +164,31 @@ void ChromeTailoredSecurityService::OnTabModelRemoved() {
   for (const TabModel* remaining_model : TabModelList::models()) {
     // We want to make sure our tab model is still not in the
     // tab model list, because we don't want to delete it
-    // prematurely
+    // prematurely.
     if (observed_tab_model_ == remaining_model) {
       return;
     }
   }
-  observed_tab_model_ = nullptr;
+  RemoveTabModelObserver();
 }
 
-bool ChromeTailoredSecurityService::AddTabModelObserver() {
+void ChromeTailoredSecurityService::RegisterObserver() {
+  AddTabModelObserver();
+  AddTabModelListObserver();
+}
+
+void ChromeTailoredSecurityService::AddTabModelListObserver() {
+  if (observing_tab_model_list_) {
+    return;
+  }
+  TabModelList::AddObserver(this);
+  observing_tab_model_list_ = true;
+}
+
+void ChromeTailoredSecurityService::AddTabModelObserver() {
+  if (observed_tab_model_) {
+    return;
+  }
   for (TabModel* tab_model : TabModelList::models()) {
     if (tab_model->GetProfile() != profile_) {
       continue;
@@ -186,9 +197,21 @@ bool ChromeTailoredSecurityService::AddTabModelObserver() {
     // Saving the tab_model so we can stop observing the tab
     // model after we start a new tailored security logic sequence.
     observed_tab_model_ = tab_model;
-    return true;
+    return;
   }
-  return false;
+}
+
+void ChromeTailoredSecurityService::RemoveTabModelListObserver() {
+  observing_tab_model_list_ = false;
+  TabModelList::RemoveObserver(this);
+}
+
+void ChromeTailoredSecurityService::RemoveTabModelObserver() {
+  if (!observed_tab_model_) {
+    return;
+  }
+  observed_tab_model_->RemoveObserver(this);
+  observed_tab_model_ = nullptr;
 }
 
 void ChromeTailoredSecurityService::MessageDismissed() {

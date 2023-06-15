@@ -121,13 +121,17 @@ class TestTabModel : public TabModel {
   void AddObserver(TabModelObserver* observer) override {
     observer_ = observer;
   }
-  void RemoveObserver(TabModelObserver* observer) override {}
+  void RemoveObserver(TabModelObserver* observer) override {
+    if (observer == observer_) {
+      observer_ = nullptr;
+    }
+  }
 
-  raw_ptr<TabModelObserver> observer_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TabModelObserver> observer_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   // A fake value for the current number of tabs.
   int tab_count_{0};
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 TEST_F(ChromeTailoredSecurityServiceTest,
@@ -244,6 +248,51 @@ TEST_F(ChromeTailoredSecurityServiceTest,
       kTailoredSecurityEnabled);
   histograms_.ExpectUniqueSample(
       "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered", false, 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       RetryEnabledWithTabModelAddsTabModelObserver) {
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kTailoredSecurityObserverRetries);
+
+  // Create a tab model without any tabs.
+  TestTabModel tab_model(getProfile());
+  EXPECT_EQ(tab_model.GetWebContentsAt(0), nullptr);
+
+  EXPECT_EQ(TabModelList::models().size(), 0U);
+  TabModelList::AddTabModel(&tab_model);
+
+  // There should be no observers at this point.
+  EXPECT_FALSE(tab_model.observer_);
+  chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
+      kTailoredSecurityEnabled);
+
+  EXPECT_TRUE(tab_model.observer_);
+  TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       RetryEnabledCanRunTwoTimesWithoutCrashing) {
+  // The TabModelList observers can only be added one time or it will crash.
+  // This test checks that ChromeTailoredSecurityService does not add itself
+  // more than once to the observer lists.
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kTailoredSecurityObserverRetries);
+
+  // Create a tab model without any tabs.
+  TestTabModel tab_model(getProfile());
+  EXPECT_EQ(tab_model.GetWebContentsAt(0), nullptr);
+
+  EXPECT_EQ(TabModelList::models().size(), 0U);
+  TabModelList::AddTabModel(&tab_model);
+
+  chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
+      kTailoredSecurityEnabled);
+
+  chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
+      kTailoredSecurityEnabled);
+  ASSERT_TRUE(true);
+  TabModelList::RemoveTabModel(&tab_model);
 }
 
 }  // namespace

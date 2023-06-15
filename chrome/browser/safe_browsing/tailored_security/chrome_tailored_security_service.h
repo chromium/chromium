@@ -60,12 +60,18 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
 #if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
 
+  // Registers this as an observer on the TabModelList and, if possible, on a
+  // TabModel.
+  void RegisterObserver();
   void AddTabModelListObserver();
-  bool AddTabModelObserver();
+  void AddTabModelObserver();
+  void RemoveTabModelListObserver();
+  void RemoveTabModelObserver();
   // This tab model is used for the observer based retry mechanism.
   // We can't depend on this being set as a tab can be deleted at
   // any time.
   raw_ptr<TabModel> observed_tab_model_ = nullptr;
+  bool observing_tab_model_list_ = false;
   std::unique_ptr<TailoredSecurityConsentedModalAndroid> message_;
 #else
   TailoredSecurityDesktopDialogManager dialog_manager_;
