@@ -223,7 +223,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void setupTabSelectionEditorV2() {
+    public void setupTabSelectionEditor() {
         assertThat(mMediator.getKeyboardVisibilityListenerForTesting(), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER), equalTo(null));

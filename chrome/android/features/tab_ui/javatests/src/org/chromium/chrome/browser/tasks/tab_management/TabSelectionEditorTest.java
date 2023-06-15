@@ -309,7 +309,7 @@ public class TabSelectionEditorTest {
         ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
-    public void testToolbarNavigationButtonHideTabSelectionEditorV2() {
+    public void testToolbarNavigationButtonHideTabSelectionEditor() {
         // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();

@@ -231,7 +231,7 @@ public class BookmarkUtils {
     }
 
     /**
-     * Add all selected tabs from TabSelectionEditorV2 as bookmarks. This logic depends on the
+     * Add all selected tabs from TabSelectionEditor as bookmarks. This logic depends on the
      * snackbar workflow above. Currently there is no support for adding the selected tabs or newly
      * created folder directly to the reading list.
      * @param activity The current activity.

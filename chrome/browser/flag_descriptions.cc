@@ -1847,10 +1847,6 @@ const char kCrasSplitAlsaUsbInternalDescription[] =
     "When enable, CRAS will create different iodev with USB and internal "
     "device.";
 
-const char kTabSelectionEditorV2Name[] = "Tab selection editor V2";
-const char kTabSelectionEditorV2Description[] =
-    "Enable improved bulk tab editing capabilities.";
-
 const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";
