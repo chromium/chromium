@@ -1983,6 +1983,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Cellular.ConnectResult"
+    enum="PlatformCellularConnectResult" expires_after="2023-12-31">
+  <owner>danielwinkler@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Reports the result of Cellular connection attempts through the platform
+    layers. This captures any success or failure as a result of a Connect call
+    through ModemManager, or any causes of early failure in shill that prevents
+    a connect attempt altogether. Refer to go/cros-cellular-apn-metrics for
+    details. This metric was replaced by
+    Network.Shill.Cellular.ConnectResult.{ApnType} in R116.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.ConnectResult.{ApnType}"
     enum="PlatformCellularConnectResult" expires_after="2023-12-31">
   <owner>danielwinkler@google.com</owner>
