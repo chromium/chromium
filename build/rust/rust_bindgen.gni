@@ -12,14 +12,14 @@ if (is_win) {
 }
 
 _bindgen_path = "${rust_bindgen_root}/bin/bindgen"
-if (is_win) {
+if (host_os == "win") {
   _bindgen_path = "${_bindgen_path}.exe"
 }
 
 # On Windows, the libclang.dll is beside the bindgen.exe, otherwise it is in
 # ../lib.
 _libclang_path = rust_bindgen_root
-if (is_win) {
+if (host_os == "win") {
   _libclang_path += "/bin"
 } else {
   _libclang_path += "/lib"
