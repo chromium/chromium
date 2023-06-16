@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/mac/foundation_util.h"
 #include "base/sequence_checker.h"
 #include "content/browser/font_access/font_enumeration_data_source.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
@@ -14,7 +15,8 @@
 namespace content {
 
 // Mac implementation of FontEnumerationDataSource.
-class FontEnumerationDataSourceMac : public FontEnumerationDataSource {
+class CONTENT_EXPORT FontEnumerationDataSourceMac
+    : public FontEnumerationDataSource {
  public:
   FontEnumerationDataSourceMac();
 
@@ -27,8 +29,21 @@ class FontEnumerationDataSourceMac : public FontEnumerationDataSource {
   // FontEnumerationDataSource:
   blink::FontEnumerationTable GetFonts(const std::string& locale) override;
 
+  bool IsValidFontMacForTesting(const CTFontDescriptorRef& fd) {
+    return IsValidFontMac(fd);
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  bool IsValidFontMac(const CTFontDescriptorRef& fd);
+
+  // Font attributes for a font. Set post-validation. Used only during
+  // enumeration.
+  base::ScopedCFTypeRef<CFStringRef> cf_postscript_name_;
+  base::ScopedCFTypeRef<CFStringRef> cf_full_name_;
+  base::ScopedCFTypeRef<CFStringRef> cf_family_;
+  base::ScopedCFTypeRef<CFStringRef> cf_style_;
 };
 
 }  // namespace content
