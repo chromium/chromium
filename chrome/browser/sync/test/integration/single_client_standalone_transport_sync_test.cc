@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -24,6 +25,9 @@
 #include "ash/constants/ash_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #endif
+
+// TODO(crbug.com/1455032): Enable all of these tests on Android once
+// SignInPrimaryAccount() doesn't enable Sync anymore.
 
 namespace {
 
@@ -267,6 +271,80 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   ASSERT_FALSE(old_cache_guid.empty());
 
   EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
+}
+
+class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
+    : public SingleClientStandaloneTransportSyncTest {
+ public:
+  SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() {
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSyncEnableHistoryDataType,
+                              syncer::kReplaceSyncPromosWithSignInPromos},
+        /*disabled_features=*/{});
+  }
+  ~SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
+    DataTypesEnabledInTransportMode) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  // Opt in to history.
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // With `kReplaceSyncPromosWithSignInPromos`, both HISTORY and
+  // HISTORY_DELETE_DIRECTIVES should be enabled in transport mode.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::HISTORY_DELETE_DIRECTIVES));
+}
+
+class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
+    : public SingleClientStandaloneTransportSyncTest {
+ public:
+  SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest() {
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSyncEnableHistoryDataType},
+        /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+  }
+  ~SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest()
+      override = default;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest,
+    DataTypesNotEnabledInTransportMode) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  // Opt in to history.
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // Without `kReplaceSyncPromosWithSignInPromos`, neither HISTORY nor
+  // HISTORY_DELETE_DIRECTIVES should be enabled in transport mode (even if the
+  // user has opted in).
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::HISTORY_DELETE_DIRECTIVES));
 }
 
 }  // namespace
