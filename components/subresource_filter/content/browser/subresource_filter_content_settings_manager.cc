@@ -9,12 +9,14 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +30,7 @@ namespace {
 const char kInfobarLastShownTimeKey[] = "InfobarLastShownTime";
 const char kActivatedKey[] = "Activated";
 const char kNonRenewingExpiryTime[] = "NonRenewingExpiryTime";
+const char kNonRenewingLifetimeKey[] = "NonRenewingLifetime";
 
 bool ShouldUseSmartUI() {
 #if BUILDFLAG(IS_ANDROID)
@@ -135,6 +138,8 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
     double expiry_time =
         (clock_->Now() + kMaxPersistMetadataDuration).ToDoubleT();
     dict->Set(kNonRenewingExpiryTime, expiry_time);
+    dict->Set(kNonRenewingLifetimeKey,
+              base::TimeDeltaToValue(kMaxPersistMetadataDuration));
   }
 
   SetSiteMetadata(url, std::move(dict));
@@ -163,21 +168,34 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   if (url.is_empty())
     return;
 
-  content_settings::ContentSettingConstraints constraints;
   // Metadata expires after kMaxPersistMetadataDuration by default. If
   // kNonRenewingExpiryTime was previously set, then we are storing ads
   // intervention metadata and should not override the expiry time that
   // was previously set.
   base::TimeDelta setting_lifetime = kMaxPersistMetadataDuration;
+  base::Time expiry_time = base::Time::Now() + setting_lifetime;
   if (dict && dict->Find(kNonRenewingExpiryTime)) {
-    // TODO(https://crbug.com/1450356): we should store the lifetime of the
-    // permission, rather than just its expiration.
     absl::optional<double> metadata_expiry_time =
         dict->FindDouble(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
-    base::Time expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
-    setting_lifetime = constraints.DeltaFromCreationTime(expiry_time);
+    expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+
+    // If the lifetime was stored explicitly, we should use that instead of
+    // assuming what it was.
+    base::Value* stored_lifetime = dict->Find(kNonRenewingLifetimeKey);
+    // The use of `ComputeLifetime` here is temporary, while there are on-disk
+    // dictionaries that have expirations but no lifetimes. All such
+    // dictionaries expire after a week, so this code can be removed after 1
+    // milestone (in M117). In M117+, we can just CHECK that the lifetime is
+    // present in the dictionary, and use that directly.
+    setting_lifetime = content_settings::RuleMetaData::ComputeLifetime(
+        stored_lifetime ? base::ValueToTimeDelta(*stored_lifetime)
+                              .value_or(base::TimeDelta())
+                        : base::TimeDelta(),
+        /*expiration=*/expiry_time);
   }
+  content_settings::ContentSettingConstraints constraints(expiry_time -
+                                                          setting_lifetime);
   constraints.set_lifetime(setting_lifetime);
 
   settings_map_->SetWebsiteSettingDefaultScope(

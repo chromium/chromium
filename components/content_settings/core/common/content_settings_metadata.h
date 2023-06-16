@@ -44,6 +44,12 @@ class RuleMetaData {
   // Sets member variables based on `constraints`.
   void SetFromConstraints(const ContentSettingConstraints& constraints);
 
+  // Computes the setting's lifetime, based on the lifetime and expiration that
+  // were read from persistent storage. This is a helper to deal with missing
+  // lifetime data during migration/rollout.
+  static base::TimeDelta ComputeLifetime(base::TimeDelta lifetime,
+                                         base::Time expiration);
+
  private:
   // mojo (de)serialization needs access to private details.
   friend struct mojo::
