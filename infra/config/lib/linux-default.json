@@ -230,6 +230,7 @@
     "chromeos-js-code-coverage": "Ubuntu-22.04",
     "chromeos-octopus-rel": "Ubuntu-22.04",
     "fuchsia-angle-builder": "Ubuntu-22.04",
+    "fuchsia-arm64-cast-receiver-rel": "Ubuntu-22.04",
     "fuchsia-arm64-rel": "Ubuntu-22.04",
     "fuchsia-code-coverage": "Ubuntu-22.04",
     "fuchsia-fyi-x64-dbg": "Ubuntu-22.04",
