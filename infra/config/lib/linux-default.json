@@ -404,6 +404,7 @@
     "win-launcher": "Ubuntu-22.04"
   },
   "try": {
+    "3pp-linux-amd64-packager": "Ubuntu-22.04",
     "android-11-x86-rel": "Ubuntu-22.04",
     "android-12-x64-dbg": "Ubuntu-22.04",
     "android-12-x64-rel": "Ubuntu-22.04",
@@ -436,6 +437,7 @@
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-oreo-arm64-dbg": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
+    "android-pie-arm64-dbg": "Ubuntu-22.04",
     "android-pie-arm64-wpt-rel-non-cq": "Ubuntu-22.04",
     "android-pie-x86-rel": "Ubuntu-22.04",
     "android-webview-12-x64-dbg": "Ubuntu-22.04",
@@ -489,6 +491,7 @@
     "lacros-arm-generic-rel": "Ubuntu-22.04",
     "layout_test_leak_detection": "Ubuntu-22.04",
     "leak_detection_linux": "Ubuntu-22.04",
+    "linux-1mbu-compile-fyi-rel": "Ubuntu-22.04",
     "linux-afl-asan-rel": "Ubuntu-22.04",
     "linux-angle-chromium-try": "Ubuntu-22.04",
     "linux-annotator-rel": "Ubuntu-22.04",
