@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -165,7 +166,7 @@ class LacrosTtsApiTest : public ExtensionApiTest,
     }
 
    private:
-    extensions::LacrosTtsApiTest* owner_;
+    raw_ptr<extensions::LacrosTtsApiTest> owner_;
     mojo::Receiver<crosapi::mojom::TtsUtteranceClient> receiver_{this};
   };
 

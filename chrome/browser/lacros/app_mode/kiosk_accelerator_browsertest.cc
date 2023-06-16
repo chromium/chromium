@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/app_mode/test/accelerator_helpers.h"
@@ -45,7 +46,7 @@ class BrowserClosedWaiter : public BrowserListObserver {
     }
   }
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   base::test::TestFuture<void> future_;
 };
 

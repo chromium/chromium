@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 
 #include <limits>
@@ -117,7 +118,7 @@ class AccountManagerFacadeFactoryLacros {
   std::unique_ptr<crosapi::AccountManagerMojoService>
       account_manager_mojo_service_;
   // Owned by `account_manager_mojo_service_`:
-  account_manager::AccountManagerUI* account_manager_ui_ = nullptr;
+  raw_ptr<account_manager::AccountManagerUI> account_manager_ui_ = nullptr;
 };
 
 AccountManagerFacadeFactoryLacros* GetAccountManagerFacadeFactoryLacros() {

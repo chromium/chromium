@@ -1614,8 +1614,8 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
     return;
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
-  base::AutoReset<Desk*> activate_desk(&desk_to_activate_,
-                                       const_cast<Desk*>(desk));
+  base::AutoReset<raw_ptr<Desk>> activate_desk(&desk_to_activate_,
+                                               const_cast<Desk*>(desk));
 
   // Mark the new desk as active first, so that deactivating windows on the
   // `old_active` desk do not activate other windows on the same desk. See

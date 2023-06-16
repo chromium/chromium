@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -88,7 +89,7 @@ class DlpFilesUtilsTest
 #else
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 #endif
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_ = nullptr;
 };

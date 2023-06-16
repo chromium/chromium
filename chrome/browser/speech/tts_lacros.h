@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SPEECH_TTS_LACROS_H_
 #define CHROME_BROWSER_SPEECH_TTS_LACROS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -67,7 +68,8 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  content::ExternalPlatformDelegate* external_platform_delegate_ = nullptr;
+  raw_ptr<content::ExternalPlatformDelegate> external_platform_delegate_ =
+      nullptr;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

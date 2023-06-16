@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -137,7 +138,7 @@ class DlpFilesControllerTest : public testing::Test {
 #else
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 #endif
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_ = nullptr;
   std::unique_ptr<MockDlpFilesController> files_controller_;

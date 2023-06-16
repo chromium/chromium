@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -135,7 +136,7 @@ class FullscreenControllerClientLacrosTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   testing::StrictMock<MockRemote> mock_;
 };
 
@@ -212,7 +213,7 @@ class FullscreenControllerClientLacrosWebContentsTest
   }
 
  protected:
-  extensions::AppWindow* app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow> app_window_ = nullptr;
 };
 
 // Test that ShouldExitFullscreenBeforeLock() returns true if the allow list

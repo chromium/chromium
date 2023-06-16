@@ -309,7 +309,7 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   raw_ptr<AppPlatformMetricsService, ExperimentalAsh>
       app_platform_metrics_service_ = nullptr;
 #else
-  WebsiteMetricsServiceLacros* website_metrics_service_ = nullptr;
+  raw_ptr<WebsiteMetricsServiceLacros> website_metrics_service_ = nullptr;
 #endif
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };

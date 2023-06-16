@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lacros/browser_test_util.h"
@@ -124,7 +125,7 @@ class ExtensionAppsAppServiceBlocklistTest
   }
 
   std::string gnubbyd_app_id_;
-  const extensions::Extension* gcse_extension_ = nullptr;
+  raw_ptr<const extensions::Extension> gcse_extension_ = nullptr;
 };
 
 // This tests publishing and launching gnubbyd app (running in both ash and

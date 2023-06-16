@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -176,7 +177,7 @@ class TtsClientLacros::TtsUtteraneClient
   content::TtsUtterance* GetUttenrance() { return utterance_.get(); }
 
  private:
-  TtsClientLacros* owner_;  // now owned
+  raw_ptr<TtsClientLacros> owner_;  // now owned
   // This is the original utterance in Lacros, owned.
   std::unique_ptr<content::TtsUtterance> utterance_;
   mojo::Receiver<crosapi::mojom::TtsUtteranceClient> receiver_{this};

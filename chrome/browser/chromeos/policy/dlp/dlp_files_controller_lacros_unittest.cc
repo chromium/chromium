@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -86,7 +87,7 @@ class DlpFilesControllerLacrosTest
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_ = nullptr;
   std::unique_ptr<DlpFilesControllerLacros> files_controller_;

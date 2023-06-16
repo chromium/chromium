@@ -492,7 +492,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   raw_ptr<Desk, ExperimentalAsh> active_desk_ = nullptr;
 
   // Target desk if in middle of desk activation, `nullptr` otherwise.
-  Desk* desk_to_activate_ = nullptr;
+  raw_ptr<Desk> desk_to_activate_ = nullptr;
 
   // The account ID of the current active user.
   AccountId current_account_id_;
