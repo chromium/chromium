@@ -96,9 +96,9 @@ struct NigoriState {
   sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 
   // Current Public-key.
-  absl::optional<PublicKey> public_key;
+  absl::optional<PublicKey> cross_user_sharing_public_key;
   // Current Public-key version.
-  absl::optional<uint32_t> key_pair_version;
+  absl::optional<uint32_t> cross_user_sharing_key_pair_version;
 };
 
 }  // namespace syncer

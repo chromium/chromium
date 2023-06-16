@@ -172,8 +172,9 @@ NigoriState NigoriState::CreateFromLocalProto(
   state.trusted_vault_debug_info = proto.trusted_vault_debug_info();
 
   if (proto.has_public_key()) {
-    state.public_key = PublicKeyFromProto(proto.public_key());
-    state.key_pair_version = proto.public_key().version();
+    state.cross_user_sharing_public_key =
+        PublicKeyFromProto(proto.public_key());
+    state.cross_user_sharing_key_pair_version = proto.public_key().version();
   }
   return state;
 }
@@ -238,9 +239,11 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
         *last_default_trusted_vault_key_name);
   }
   *proto.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
-  if (public_key.has_value() && key_pair_version.has_value()) {
+  if (cross_user_sharing_public_key.has_value() &&
+      cross_user_sharing_key_pair_version.has_value()) {
     *proto.mutable_public_key() =
-        PublicKeyToProto(public_key.value(), key_pair_version.value());
+        PublicKeyToProto(cross_user_sharing_public_key.value(),
+                         cross_user_sharing_key_pair_version.value());
   }
   return proto;
 }
@@ -292,9 +295,11 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
   }
   *specifics.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
 
-  if (public_key.has_value() && key_pair_version.has_value()) {
+  if (cross_user_sharing_public_key.has_value() &&
+      cross_user_sharing_key_pair_version.has_value()) {
     *specifics.mutable_public_key() =
-        PublicKeyToProto(public_key.value(), key_pair_version.value());
+        PublicKeyToProto(cross_user_sharing_public_key.value(),
+                         cross_user_sharing_key_pair_version.value());
   }
 
   return specifics;
@@ -315,10 +320,12 @@ NigoriState NigoriState::Clone() const {
   result.last_default_trusted_vault_key_name =
       last_default_trusted_vault_key_name;
   result.trusted_vault_debug_info = trusted_vault_debug_info;
-  if (public_key.has_value()) {
-    result.public_key = public_key->Clone();
+  if (cross_user_sharing_public_key.has_value()) {
+    result.cross_user_sharing_public_key =
+        cross_user_sharing_public_key->Clone();
   }
-  result.key_pair_version = key_pair_version;
+  result.cross_user_sharing_key_pair_version =
+      cross_user_sharing_key_pair_version;
   return result;
 }
 

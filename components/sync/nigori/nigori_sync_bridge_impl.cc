@@ -344,9 +344,10 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   }
 
   if (base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap) &&
-      !state_.public_key.has_value()) {
+      !state_.cross_user_sharing_public_key.has_value()) {
     QueuePendingLocalCommit(
-        PendingLocalNigoriCommit::ForPublicPrivateKeyInitialization());
+        PendingLocalNigoriCommit::
+            ForCrossUserSharingPublicPrivateKeyInitializer());
   }
 
   // Keystore key rotation might be not performed, but required.
@@ -718,8 +719,10 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   if (specifics.has_public_key()) {
     // Remote update wins over local update.
-    state_.public_key = PublicKeyFromProto(specifics.public_key());
-    state_.key_pair_version = specifics.public_key().version();
+    state_.cross_user_sharing_public_key =
+        PublicKeyFromProto(specifics.public_key());
+    state_.cross_user_sharing_key_pair_version =
+        specifics.public_key().version();
   }
 
   absl::optional<ModelError> error =
