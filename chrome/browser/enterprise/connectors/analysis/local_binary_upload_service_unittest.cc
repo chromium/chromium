@@ -343,11 +343,11 @@ TEST_F(LocalBinaryUploadServiceTest, TimeoutWhileActive) {
   EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 
-  const std::map<LocalBinaryUploadService::RequestKey,
+  const std::map<LocalBinaryUploadService::Request::Id,
                  LocalBinaryUploadService::RequestInfo>& actives =
       lbus.GetActiveRequestsForTesting();
-  LocalBinaryUploadService::RequestKey key = actives.begin()->first;
-  lbus.OnTimeoutForTesting(key);
+  LocalBinaryUploadService::Request::Id id = actives.begin()->first;
+  lbus.OnTimeoutForTesting(id);
 
   EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
@@ -374,8 +374,8 @@ TEST_F(LocalBinaryUploadServiceTest, TimeoutWhilePending) {
 
   const std::vector<LocalBinaryUploadService::RequestInfo>& pendings =
       lbus.GetPendingRequestsForTesting();
-  LocalBinaryUploadService::RequestKey key = pendings[0].request.get();
-  lbus.OnTimeoutForTesting(key);
+  LocalBinaryUploadService::Request::Id id = pendings[0].request->id();
+  lbus.OnTimeoutForTesting(id);
 
   EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());

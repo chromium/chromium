@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -82,6 +83,9 @@ class BinaryUploadService : public KeyedService,
     // uploads.
     using RequestStartCallback = base::OnceCallback<void(const Request&)>;
 
+    // Type alias for safe IDs
+    using Id = base::IdTypeU32<class RequestClass>;
+
     Request(ContentAnalysisCallback,
             enterprise_connectors::CloudOrLocalAnalysisSettings settings);
     // Optional constructor which accepts RequestStartCallback. Will be called
@@ -144,6 +148,9 @@ class BinaryUploadService : public KeyedService,
     cloud_or_local_settings() const {
       return cloud_or_local_settings_;
     }
+
+    void set_id(Id id);
+    Id id() const;
 
     void set_per_profile_request(bool per_profile_request);
     bool per_profile_request() const;
@@ -208,6 +215,7 @@ class BinaryUploadService : public KeyedService,
     void set_access_token(const std::string& access_token);
 
    private:
+    Id id_;
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
     ContentAnalysisCallback content_analysis_callback_;
     RequestStartCallback request_start_callback_;

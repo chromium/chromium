@@ -90,26 +90,31 @@ class CloudBinaryUploadService : public BinaryUploadService {
   virtual void UploadForDeepScanning(std::unique_ptr<Request> request);
 
   // This may destroy `request`.
-  void OnGetInstanceID(Request* request, const std::string& token);
+  void OnGetInstanceID(Request::Id request_id, const std::string& token);
 
-  void OnGetAccessToken(Request* request, const std::string& access_token);
+  void OnGetAccessToken(Request::Id request_id,
+                        const std::string& access_token);
 
   // This may destroy `request`.
-  void OnGetRequestData(Request* request, Result result, Request::Data data);
+  void OnGetRequestData(Request::Id request_id,
+                        Result result,
+                        Request::Data data);
 
-  void OnUploadComplete(Request* request,
+  void OnUploadComplete(Request::Id request_id,
                         bool success,
                         int http_status,
                         const std::string& response_data);
 
-  void OnGetResponse(Request* request,
+  void OnGetResponse(Request::Id request_id,
                      enterprise_connectors::ContentAnalysisResponse response);
 
-  void MaybeFinishRequest(Request* request);
+  void MaybeFinishRequest(Request::Id request_id);
 
-  void OnTimeout(Request* request);
+  void FinishIfActive(Request::Id request_id,
+                      Result result,
+                      enterprise_connectors::ContentAnalysisResponse response);
 
-  bool IsActive(Request* request);
+  Request* GetRequest(Request::Id request_id);
 
   void MaybeUploadForDeepScanningCallback(std::unique_ptr<Request> request,
                                           bool authorized);
@@ -127,9 +132,9 @@ class CloudBinaryUploadService : public BinaryUploadService {
       enterprise_connectors::AnalysisConnector connector,
       bool);
 
-  void RecordRequestMetrics(Request* request, Result result);
+  void RecordRequestMetrics(Request::Id request_id, Result result);
   void RecordRequestMetrics(
-      Request* request,
+      Request::Id request_id,
       Result result,
       const enterprise_connectors::ContentAnalysisResponse& response);
 
@@ -144,33 +149,36 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   // Called if the FCM connection isn't established to retry it. If it is
   // established, `UploadForDeepScanning` is called.
-  void RetryFCMConnection(Request* request,
+  void RetryFCMConnection(Request::Id request_id,
                           int retry_count,
                           base::TimeDelta next_backoff);
 
   // This continues the upload of the scanning request after the
   // `binary_fcm_service_` instance is known to be connected.
-  void OnFCMConnected(Request* request);
+  void OnFCMConnected(Request::Id request_id);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<BinaryFCMService> binary_fcm_service_;
 
   const raw_ptr<Profile> profile_;
 
+  Request::Id::Generator request_id_generator_;
+
   // Request queued for upload.
   std::queue<std::unique_ptr<Request>> request_queue_;
 
   // Resources associated with an in-progress request.
-  base::flat_map<Request*, std::unique_ptr<Request>> active_requests_;
-  base::flat_map<Request*, base::TimeTicks> start_times_;
-  base::flat_map<Request*, std::unique_ptr<base::OneShotTimer>> active_timers_;
-  base::flat_map<Request*, std::unique_ptr<MultipartUploadRequest>>
+  base::flat_map<Request::Id, std::unique_ptr<Request>> active_requests_;
+  base::flat_map<Request::Id, base::TimeTicks> start_times_;
+  base::flat_map<Request::Id, std::unique_ptr<base::OneShotTimer>>
+      active_timers_;
+  base::flat_map<Request::Id, std::unique_ptr<MultipartUploadRequest>>
       active_uploads_;
-  base::flat_map<Request*, std::string> active_tokens_;
+  base::flat_map<Request::Id, std::string> active_tokens_;
 
   // Maps requests to each corresponding tag-result pairs.
   base::flat_map<
-      Request*,
+      Request::Id,
       base::flat_map<std::string,
                      enterprise_connectors::ContentAnalysisResponse::Result>>
       received_connector_results_;

@@ -27,11 +27,6 @@ namespace enterprise_connectors {
 // This class runs on the UI thread.
 class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
  public:
-  // A value that is used as a unique id for a given Request.  Internally this
-  // is just the address of the Request object but the code does not assume
-  // this is the case.
-  using RequestKey = void*;
-
   // the maximum number of concurrently active requests to the local content
   // analysis agent.
   static constexpr size_t kMaxActiveCount = 5;
@@ -84,7 +79,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     return pending_requests_.size();
   }
 
-  const std::map<RequestKey, RequestInfo>& GetActiveRequestsForTesting() const {
+  const std::map<Request::Id, RequestInfo>& GetActiveRequestsForTesting()
+      const {
     return active_requests_;
   }
 
@@ -92,7 +88,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     return pending_requests_;
   }
 
-  void OnTimeoutForTesting(RequestKey key) { OnTimeout(key); }
+  void OnTimeoutForTesting(Request::Id id) { OnTimeout(id); }
 
  protected:
   // Map to keep track of whether the agent's authenticity has been
@@ -136,8 +132,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // If an error occurs with a client, reset its state.
   void ResetClient(const content_analysis::sdk::Client::Config& config);
 
-  // Starts a local content analysis for the analysis request given by `key`.
-  void DoLocalContentAnalysis(RequestKey key,
+  // Starts a local content analysis for the analysis request given by `id`.
+  void DoLocalContentAnalysis(Request::Id id,
                               Result result,
                               Request::Data data);
 
@@ -176,21 +172,21 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   virtual void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) {}
 
   // Find the request that corresponds to the given response.
-  RequestKey FindRequestByToken(
+  Request::Id FindRequestByToken(
       const content_analysis::sdk::ContentAnalysisResponse& sdk_response);
 
   // Move the next request from the pending list, if any, to the active
   // list and process it.
   void ProcessNextPendingRequest();
 
-  // Starts the request given by `key` that is already on the active
+  // Starts the request given by `id` that is already on the active
   // list.  If this function returns true the active request list is still
   // valid.  Otherwise the active request list has been cleared.
-  bool ProcessRequest(RequestKey key);
+  bool ProcessRequest(Request::Id id);
 
-  // Finish the request given by `key` and inform caller of the the resulting
+  // Finish the request given by `id` and inform caller of the the resulting
   // verdict.
-  void FinishRequest(RequestKey key,
+  void FinishRequest(Request::Id id,
                      Result result,
                      ContentAnalysisResponse response);
 
@@ -198,9 +194,9 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // for the given action.
   void SendCancelRequestsIfNeeded();
 
-  // Handles a timeout for the request given by `key`.  The request could
+  // Handles a timeout for the request given by `id`.  The request could
   // be in either the active or pending lists.
-  void OnTimeout(RequestKey key);
+  void OnTimeout(Request::Id id);
 
   // If there haven't been too many retries, moves all requests from the active
   // list to the pending list and queues up a task to reconnect to the agent.
@@ -231,8 +227,10 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   raw_ptr<Profile> profile_;
 
+  Request::Id::Generator request_id_generator_;
+
   // Keeps track of outstanding requests sent to the agent.
-  std::map<RequestKey, RequestInfo> active_requests_;
+  std::map<Request::Id, RequestInfo> active_requests_;
 
   // Keeps track of pending requests not yet sent.
   std::vector<RequestInfo> pending_requests_;
