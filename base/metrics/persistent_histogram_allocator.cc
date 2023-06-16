@@ -334,6 +334,14 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
     memcpy(histogram_data->name, name.c_str(), name.size() + 1);
     histogram_data->histogram_type = histogram_type;
     histogram_data->flags = flags | HistogramBase::kIsPersistent;
+
+    // |counts_ref| relies on being zero'd out initially. Even though this
+    // should always be the case, manually zero it out again here in case there
+    // was memory corruption (e.g. if the memory was mapped from a corrupted
+    // spare file).
+    // TODO(crbug.com/1432981): Remove this if this has no effect, and try to
+    // understand better why there is sometimes garbage written in this field.
+    histogram_data->counts_ref.store(0, std::memory_order_relaxed);
   }
 
   // Create the remaining metadata necessary for regular histograms.
