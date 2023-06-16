@@ -5,14 +5,17 @@
 #include "ash/system/tray/tray_event_filter.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -247,6 +250,23 @@ TEST_P(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
   GetEventGenerator()->GestureScrollSequence(start, end_inside,
                                              base::Milliseconds(100), 4);
   EXPECT_FALSE(IsBubbleShown());
+}
+
+TEST_P(TrayEventFilterTest, ClickOnCalendarBubbleClosesOtherTrays) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  auto* status_area = GetPrimaryShelf()->GetStatusAreaWidget();
+  auto* ime_tray = status_area->ime_menu_tray();
+
+  LeftClickOn(ime_tray);
+  EXPECT_TRUE(ime_tray->GetBubbleWidget());
+
+  auto* date_tray = status_area->date_tray();
+  LeftClickOn(date_tray);
+
+  // When opening the calendar, the unified system tray bubble should be open
+  // with the calendar view, and the IME bubble should be closed.
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_FALSE(ime_tray->GetBubbleWidget());
 }
 
 using TrayEventFilterQsRevampDisabledTest = TrayEventFilterTest;

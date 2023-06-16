@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -128,6 +129,8 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       bounds.Intersect(bubble_widget->GetWorkAreaBoundsInScreen());
     }
 
+    TrayBackgroundView* tray = bubble->GetTray();
+
     if (bubble_container_id == kShellWindowId_SettingBubbleContainer) {
       int64_t display_id = display::Screen::GetScreen()
                                ->GetDisplayNearestPoint(screen_location)
@@ -136,11 +139,12 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
           Shell::GetRootWindowControllerWithDisplayId(display_id)
               ->shelf()
               ->GetStatusAreaWidget();
-      UnifiedSystemTray* tray = status_area->unified_system_tray();
 
       // When Quick Settings bubble is opened and the date tray is clicked, the
       // bubble should not be closed since it will transition to show calendar.
-      if (status_area->date_tray()->GetBoundsInScreen().Contains(
+      if (tray->catalog_name() ==
+              TrayBackgroundViewCatalogName::kUnifiedSystem &&
+          status_area->date_tray()->GetBoundsInScreen().Contains(
               screen_location)) {
         continue;
       }
@@ -148,12 +152,16 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       // The system tray and message center are separate bubbles but they need
       // to stay open together. We need to make sure to check if a click falls
       // with in both their bounds and not close them both in this case.
-      TrayBubbleBase* system_tray_bubble = tray->bubble();
-      if (tray->IsBubbleShown() && system_tray_bubble != bubble) {
+      UnifiedSystemTray* unified_system_tray =
+          status_area->unified_system_tray();
+      TrayBubbleBase* system_tray_bubble = unified_system_tray->bubble();
+      if (unified_system_tray->IsBubbleShown() &&
+          system_tray_bubble != bubble) {
         bounds.Union(
             system_tray_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
-      } else if (tray->IsMessageCenterBubbleShown()) {
-        TrayBubbleBase* message_center_bubble = tray->message_center_bubble();
+      } else if (unified_system_tray->IsMessageCenterBubbleShown()) {
+        TrayBubbleBase* message_center_bubble =
+            unified_system_tray->message_center_bubble();
         bounds.Union(message_center_bubble->GetBubbleWidget()
                          ->GetWindowBoundsInScreen());
       }
@@ -163,8 +171,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       // out the events happening on the popup notification.
       if (features::IsQsRevampEnabled() &&
           bubble->GetBubbleView()->IsAnchoredToShelfCorner() &&
-          tray->GetMessagePopupCollection()->popup_collection_bounds().Contains(
-              screen_location)) {
+          unified_system_tray->GetMessagePopupCollection()
+              ->popup_collection_bounds()
+              .Contains(screen_location)) {
         continue;
       }
     }
@@ -172,18 +181,19 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     if (bounds.Contains(screen_location)) {
       continue;
     }
-    if (bubble->GetTray()) {
+
+    if (tray) {
       // Maybe close the parent tray if the user drags on it. Otherwise, let the
       // tray logic handle the event and determine show/hide behavior if the
       // user clicks on the parent tray.
-      bounds = bubble->GetTray()->GetBoundsInScreen();
-      if (bubble->GetTray()->GetVisible() && bounds.Contains(screen_location) &&
+      bounds = tray->GetBoundsInScreen();
+      if (tray->GetVisible() && bounds.Contains(screen_location) &&
           event.type() != ui::ET_GESTURE_SCROLL_BEGIN) {
         continue;
       }
     }
 
-    trays.insert(bubble->GetTray());
+    trays.insert(tray);
   }
 
   // Close all bubbles other than the one that the user clicked on.
