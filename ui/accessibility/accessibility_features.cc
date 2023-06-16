@@ -183,7 +183,7 @@ bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
 
 BASE_FEATURE(kAccessibilityChromeVoxPageMigration,
              "AccessibilityChromeVoxPageMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityChromeVoxPageMigrationEnabled() {
   return base::FeatureList::IsEnabled(
