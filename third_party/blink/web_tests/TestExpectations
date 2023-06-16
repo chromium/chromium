@@ -6552,9 +6552,6 @@ crbug.com/1441416 [ Linux ] external/wpt/js-self-profiling/max-buffer-size.windo
 # Sheriff 2023-05-04
 crbug.com/1434164 http/tests/streams/chromium/transferable-streams-optimization.html [ Crash Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4577779
-crbug.com/1318590 http/tests/devtools/a11y-axe-core/sources/threads-a11y-test.js [ Failure Pass ]
-
 # TODO(crbug.com/1443872): Re-enable this test
 crbug.com/1443872 [ Fuchsia ] editing/selection/4402375.html [ Failure ]
 crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composited-scrolling-container.html [ Failure ]

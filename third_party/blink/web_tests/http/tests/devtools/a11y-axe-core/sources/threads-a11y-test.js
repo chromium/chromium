@@ -17,6 +17,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   await SourcesTestRunner.waitUntilPausedPromise();
   const sourcesPanel = UI.panels.sources;
   sourcesPanel.showThreadsIfNeeded();
+  await UI.viewManager.showView('sources.threads');
 
   const threadsSidebarPane = await sourcesPanel.threadsSidebarPane.widget();
   const threadsSidebarElement = threadsSidebarPane.contentElement;
