@@ -298,7 +298,7 @@ bool AccessCodeCastDialog::CheckMediaAccessPermission(
 }
 
 gfx::NativeView AccessCodeCastDialog::GetParentView() {
-  gfx::NativeView parent = nullptr;
+  gfx::NativeView parent = gfx::NativeView();
 
   if (web_contents_) {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(

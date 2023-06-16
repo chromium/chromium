@@ -170,7 +170,7 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   bubble_params.background_elevation =
       ui::ColorProviderManager::ElevationMode::kHigh;
 #endif
-  gfx::NativeView parent = nullptr;
+  gfx::NativeView parent = gfx::NativeView();
   if (bubble->has_parent()) {
     if (bubble->parent_window()) {
       parent = bubble->parent_window();

@@ -97,7 +97,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
         }};
     return base::Contains(*supported_features, feature);
   }
-  gfx::NativeView GetHostView() const override { return nullptr; }
+  gfx::NativeView GetHostView() const override { return gfx::NativeView(); }
   bool BrowserIsSystemWebApp() const override { return false; }
   bool BrowserIsWebApp() const override { return false; }
   bool BrowserIsTypeApp() const override { return false; }

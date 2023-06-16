@@ -41,9 +41,9 @@ class DesktopMediaPicker {
     raw_ptr<content::WebContents> web_contents = nullptr;
     // The context whose root window is used for dialog placement, cannot be
     // null for Aura.
-    gfx::NativeWindow context = nullptr;
+    gfx::NativeWindow context = gfx::NativeWindow();
     // Parent window the dialog is relative to, only used on Mac.
-    gfx::NativeWindow parent = nullptr;
+    gfx::NativeWindow parent = gfx::NativeWindow();
     // The modality used for showing the dialog.
     ui::ModalType modality = ui::ModalType::MODAL_TYPE_CHILD;
     // The name used in the dialog for what is requesting the picker to be

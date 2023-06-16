@@ -26,7 +26,7 @@ constexpr base::TimeDelta kShowSuggestionDelayMs = base::Milliseconds(5);
 
 namespace {
 gfx::NativeView GetParentView() {
-  gfx::NativeView parent = nullptr;
+  gfx::NativeView parent = gfx::NativeView();
 
   aura::Window* active_window = ash::window_util::GetActiveWindow();
   // Use MenuContainer so that it works even with a system modal dialog.

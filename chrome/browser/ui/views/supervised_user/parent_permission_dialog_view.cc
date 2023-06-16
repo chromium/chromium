@@ -258,7 +258,7 @@ struct ParentPermissionDialogView::Params {
   raw_ptr<Profile> profile = nullptr;
 
   // The parent window to this window. This member may be nullptr.
-  gfx::NativeWindow window = nullptr;
+  gfx::NativeWindow window = gfx::NativeWindow();
 
   // The callback to call on completion.
   ParentPermissionDialog::DoneCallback done_callback;

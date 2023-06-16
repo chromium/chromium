@@ -293,11 +293,11 @@ void RenderWidgetHostViewChildFrame::SetInsets(const gfx::Insets& insets) {
 
 gfx::NativeView RenderWidgetHostViewChildFrame::GetNativeView() {
   if (!frame_connector_)
-    return nullptr;
+    return gfx::NativeView();
 
   RenderWidgetHostView* parent_view =
       frame_connector_->GetParentRenderWidgetHostView();
-  return parent_view ? parent_view->GetNativeView() : nullptr;
+  return parent_view ? parent_view->GetNativeView() : gfx::NativeView();
 }
 
 gfx::NativeViewAccessible

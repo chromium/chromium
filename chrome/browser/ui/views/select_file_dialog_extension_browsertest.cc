@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, FileInputElement) {
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
                        OpenDialogWithoutOwningWindow) {
-  gfx::NativeWindow owning_window = nullptr;
+  gfx::NativeWindow owning_window = gfx::NativeWindow();
 
   // Open the file dialog with no |owning_window|.
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,

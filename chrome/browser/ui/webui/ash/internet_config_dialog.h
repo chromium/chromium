@@ -29,11 +29,13 @@ class InternetConfigDialog : public SystemWebDialogDelegate {
 
   // Shows a network configuration dialog for |network_id|. Does nothing if
   // there is no NetworkState matching |network_id|.
-  static void ShowDialogForNetworkId(const std::string& network_id,
-                                     gfx::NativeWindow parent = nullptr);
+  static void ShowDialogForNetworkId(
+      const std::string& network_id,
+      gfx::NativeWindow parent = gfx::NativeWindow());
   // Shows a network configuration dialog for a new network of |network_type|.
-  static void ShowDialogForNetworkType(const std::string& network_type,
-                                       gfx::NativeWindow parent = nullptr);
+  static void ShowDialogForNetworkType(
+      const std::string& network_type,
+      gfx::NativeWindow parent = gfx::NativeWindow());
 
   // SystemWebDialogDelegate
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;

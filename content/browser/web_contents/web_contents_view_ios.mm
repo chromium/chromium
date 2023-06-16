@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "ui/base/cocoa/animation_utils.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 
@@ -72,7 +73,7 @@ gfx::NativeView WebContentsViewIOS::GetNativeView() const {
 gfx::NativeView WebContentsViewIOS::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (!rwhv) {
-    return nullptr;
+    return gfx::NativeView();
   }
   return rwhv->GetNativeView();
 }
@@ -80,7 +81,7 @@ gfx::NativeView WebContentsViewIOS::GetContentNativeView() const {
 gfx::NativeWindow WebContentsViewIOS::GetTopLevelNativeWindow() const {
   gfx::NativeView view = GetContentNativeView();
   if (!view) {
-    return nullptr;
+    return gfx::NativeWindow();
   }
   return gfx::NativeWindow([view window]);
 }
@@ -216,7 +217,7 @@ void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
     auto* rwhv = old_host->GetWidget()->GetView();
     if (rwhv && rwhv->GetNativeView()) {
       static_cast<RenderWidgetHostViewIOS*>(rwhv)->UpdateNativeViewTree(
-          nullptr);
+          gfx::NativeView());
     }
   }
 

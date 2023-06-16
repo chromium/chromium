@@ -184,8 +184,8 @@ class WebContents : public PageNavigator,
     raw_ptr<BrowserPluginGuestDelegate> guest_delegate = nullptr;
 
     // Used to specify the location context which display the new view should
-    // belong. This can be nullptr if not needed.
-    gfx::NativeView context = nullptr;
+    // belong. This can be unset if not needed.
+    gfx::NativeView context = gfx::NativeView();
 
     // Used to specify that the new WebContents creation is driven by the
     // renderer process. In this case, the renderer-side objects, such as

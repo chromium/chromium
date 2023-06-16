@@ -47,7 +47,7 @@ gfx::NativeView WakeLockContextHost::GetNativeViewForContext(int context_id) {
   WakeLockContextHost* context_host = ContextHostFromId(context_id);
   if (context_host)
     return context_host->web_contents_->GetNativeView();
-  return nullptr;
+  return gfx::NativeView();
 }
 
 }  // namespace content

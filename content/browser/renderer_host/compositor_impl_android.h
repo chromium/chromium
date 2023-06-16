@@ -224,7 +224,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   raw_ptr<CompositorClient> client_;
 
-  gfx::NativeWindow root_window_ = nullptr;
+  gfx::NativeWindow root_window_ = gfx::NativeWindow();
 
   // Whether we need to update animations on the next composite.
   bool needs_animate_;

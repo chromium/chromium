@@ -121,15 +121,11 @@ using NativeCursor = ui::Cursor;
 using NativeView = aura::Window*;
 using NativeWindow = aura::Window*;
 using NativeEvent = ui::Event*;
-constexpr NativeView kNullNativeView = nullptr;
-constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif BUILDFLAG(IS_IOS)
 using NativeCursor = void*;
 using NativeView = UIView*;
 using NativeWindow = UIWindow*;
 using NativeEvent = base::apple::OwnedUIEvent;
-constexpr NativeView kNullNativeView = nullptr;
-constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif BUILDFLAG(IS_MAC)
 using NativeCursor = base::apple::OwnedNSCursor;
 using NativeEvent = base::apple::OwnedNSEvent;
@@ -204,15 +200,11 @@ class GFX_EXPORT NativeWindow {
   RAW_PTR_EXCLUSION NSWindow* ns_window_ = nullptr;
 #endif
 };
-constexpr NativeView kNullNativeView = NativeView(nullptr);
-constexpr NativeWindow kNullNativeWindow = NativeWindow(nullptr);
 #elif BUILDFLAG(IS_ANDROID)
 using NativeCursor = void*;
 using NativeView = ui::ViewAndroid*;
 using NativeWindow = ui::WindowAndroid*;
 using NativeEvent = base::android::ScopedJavaGlobalRef<jobject>;
-constexpr NativeView kNullNativeView = nullptr;
-constexpr NativeWindow kNullNativeWindow = nullptr;
 #else
 #error Unknown build environment.
 #endif

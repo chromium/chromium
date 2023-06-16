@@ -1298,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   // Find the native window for the app.
-  gfx::NativeWindow native_window = nullptr;
+  gfx::NativeWindow native_window = gfx::NativeWindow();
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->app_controller() &&
         browser->app_controller()->app_id() == app_id) {

@@ -46,7 +46,7 @@ void ShowPrintErrorDialogTask(const std::u16string& title,
     return;
   }
 
-  gfx::NativeWindow window = gfx::kNullNativeWindow;
+  gfx::NativeWindow window = gfx::NativeWindow();
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindLastActive();
   if (browser) {

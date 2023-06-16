@@ -98,7 +98,7 @@ gfx::NativeView TestRenderWidgetHostView::GetNativeView() {
 #if defined(USE_AURA)
   return window_.get();
 #else
-  return nullptr;
+  return gfx::NativeView();
 #endif
 }
 

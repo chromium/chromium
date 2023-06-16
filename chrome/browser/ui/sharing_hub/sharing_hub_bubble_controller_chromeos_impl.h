@@ -94,7 +94,7 @@ class SharingHubBubbleControllerChromeOsImpl
   void DeselectIcon();
 
   views::ViewTracker highlighted_button_tracker_;
-  gfx::NativeWindow parent_window_ = nullptr;
+  gfx::NativeWindow parent_window_ = gfx::NativeWindow();
   std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_ = nullptr;
   bool bubble_showing_ = false;
 

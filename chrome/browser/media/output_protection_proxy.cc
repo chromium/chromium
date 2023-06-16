@@ -26,7 +26,7 @@ namespace {
 gfx::NativeView GetRenderFrameView(int render_process_id, int render_frame_id) {
   auto* host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  return host ? host->GetNativeView() : gfx::kNullNativeView;
+  return host ? host->GetNativeView() : gfx::NativeView();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

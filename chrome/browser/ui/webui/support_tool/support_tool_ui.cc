@@ -339,7 +339,7 @@ void SupportToolMessageHandler::HandleStartDataExport(
   content::WebContents* web_contents = web_ui()->GetWebContents();
   gfx::NativeWindow owning_window =
       web_contents ? web_contents->GetTopLevelNativeWindow()
-                   : gfx::kNullNativeWindow;
+                   : gfx::NativeWindow();
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));

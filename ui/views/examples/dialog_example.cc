@@ -285,7 +285,7 @@ void DialogExample::ShowButtonPressed() {
 
     // constrained_window::CreateBrowserModalDialogViews() allows dialogs to
     // be created as MODAL_TYPE_WINDOW without specifying a parent.
-    gfx::NativeView parent = nullptr;
+    gfx::NativeView parent = gfx::NativeView();
     if (mode_->GetSelectedIndex() != kFakeModeless)
       parent = example_view()->GetWidget()->GetNativeView();
 

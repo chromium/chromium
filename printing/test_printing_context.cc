@@ -42,7 +42,7 @@ TestPrintingContextDelegate::TestPrintingContextDelegate() = default;
 TestPrintingContextDelegate::~TestPrintingContextDelegate() = default;
 
 gfx::NativeView TestPrintingContextDelegate::GetParentView() {
-  return nullptr;
+  return gfx::NativeView();
 }
 
 std::string TestPrintingContextDelegate::GetAppLocale() {

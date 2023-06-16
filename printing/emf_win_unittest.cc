@@ -44,7 +44,7 @@ class EmfPrintingTest : public testing::Test, public PrintingContext::Delegate {
   }
 
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return nullptr; }
+  gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override { return std::string(); }
 };
 

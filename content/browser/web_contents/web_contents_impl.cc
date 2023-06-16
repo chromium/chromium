@@ -2720,7 +2720,7 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   view_ = CreateWebContentsView(
       this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
       &render_view_host_delegate_view_);
-  view_->CreateView(nullptr);
+  view_->CreateView(gfx::NativeView());
   std::unique_ptr<WebContents> web_contents =
       node_.DisconnectFromOuterWebContents();
   DCHECK_EQ(web_contents.get(), this);

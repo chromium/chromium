@@ -524,7 +524,7 @@ bool LoginScreenTestApi::PressAccelerator(const ui::Accelerator& accelerator) {
 // static
 bool LoginScreenTestApi::SendAcceleratorNatively(
     const ui::Accelerator& accelerator) {
-  gfx::NativeWindow login_window = nullptr;
+  gfx::NativeWindow login_window = gfx::NativeWindow();
   if (LockScreen::HasInstance()) {
     login_window = LockScreen::Get()->widget()->GetNativeWindow();
   } else {

@@ -186,7 +186,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  gfx::NativeWindow window = nullptr;
+  gfx::NativeWindow window = gfx::NativeWindow();
   switch (id.type) {
     case content::DesktopMediaID::Type::TYPE_WEB_CONTENTS: {
       window = content::RenderFrameHost::FromID(

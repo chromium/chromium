@@ -302,7 +302,7 @@ class TestBrowserWindow : public BrowserWindow {
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestDownloadShelf download_shelf_{nullptr};
   TestLocationBar location_bar_;
-  gfx::NativeWindow native_window_ = nullptr;
+  gfx::NativeWindow native_window_ = gfx::NativeWindow();
 
   std::string workspace_;
   bool visible_on_all_workspaces_ = false;

@@ -98,11 +98,11 @@ bool TestOmniboxView::OnAfterPossibleChange(bool allow_keyword_ui_change) {
 }
 
 gfx::NativeView TestOmniboxView::GetNativeView() const {
-  return nullptr;
+  return gfx::NativeView();
 }
 
 gfx::NativeView TestOmniboxView::GetRelativeWindowForPopup() const {
-  return nullptr;
+  return gfx::NativeView();
 }
 
 bool TestOmniboxView::IsImeComposing() const {

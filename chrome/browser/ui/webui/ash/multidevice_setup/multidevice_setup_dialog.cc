@@ -43,7 +43,8 @@ namespace ash::multidevice_setup {
 MultiDeviceSetupDialog* MultiDeviceSetupDialog::current_instance_ = nullptr;
 
 // static
-gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ = nullptr;
+gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ =
+    gfx::NativeWindow();
 
 // static
 void MultiDeviceSetupDialog::Show() {

@@ -263,7 +263,7 @@ void PrintJobSubmitter::ShowPrintJobConfirmationDialog(
   // |native_window_| appropriately.
   if (native_window_tracker_ &&
       native_window_tracker_->WasNativeWindowDestroyed())
-    native_window_ = gfx::kNullNativeWindow;
+    native_window_ = gfx::NativeWindow();
 
   extensions::ShowPrintJobConfirmationDialog(
       native_window_, extension_->id(), base::UTF8ToUTF16(extension_->name()),

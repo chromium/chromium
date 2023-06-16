@@ -61,7 +61,7 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
 
 // static
 void DisplayUtil::GetDefaultScreenInfo(ScreenInfo* screen_info) {
-  return GetNativeViewScreenInfo(screen_info, nullptr);
+  return GetNativeViewScreenInfo(screen_info, gfx::NativeView());
 }
 
 // static

@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewAxTest, PopupInAxTree) {
                                        "PasswordGenerationPopupViewViews");
   controller->Show(GenerationUIState::kOfferGeneration);
 
-  gfx::NativeWindow window = gfx::kNullNativeWindow;
+  gfx::NativeWindow window = gfx::NativeWindow();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // On Mac and Linux the whole ax tree grows from the main root windows
   // and the popup node can be found there. This gives more confidence

@@ -108,7 +108,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // `tray_bubble_view`'s destructor can be called well after it's
     // corresponding tray has been cleaned up.
     base::WeakPtr<Delegate> delegate = nullptr;
-    gfx::NativeWindow parent_window = nullptr;
+    gfx::NativeWindow parent_window = gfx::NativeWindow();
     raw_ptr<View, ExperimentalAsh> anchor_view = nullptr;
     AnchorMode anchor_mode = AnchorMode::kView;
     // Only used if anchor_mode == AnchorMode::kRect.

@@ -53,7 +53,7 @@ void ExecuteFileTaskForUrl(Profile* profile,
       GetFileManagerFileSystemContext(profile);
 
   // There is no Files app window for spawned WebUI to be modal to.
-  gfx::NativeWindow modal_parent = nullptr;
+  gfx::NativeWindow modal_parent = gfx::NativeWindow();
   file_tasks::ExecuteFileTask(
       profile, task,
       std::vector<FileSystemURL>(

@@ -72,7 +72,7 @@ constexpr base::FilePath::CharType kPdfExtension[] = FILE_PATH_LITERAL("pdf");
 class PrintingContextDelegate : public PrintingContext::Delegate {
  public:
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return nullptr; }
+  gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override {
     return g_browser_process->GetApplicationLocale();
   }

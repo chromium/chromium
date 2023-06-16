@@ -3879,7 +3879,7 @@ FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
 }
 
 bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
-  gfx::NativeWindow native_window = nullptr;
+  gfx::NativeWindow native_window = gfx::NativeWindow();
 
   content::WebContents* web_contents = GetLastOpenWindowWebContents();
   if (!web_contents && swa_web_contents_.size() > 0) {

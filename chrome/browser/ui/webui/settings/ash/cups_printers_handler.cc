@@ -1051,7 +1051,7 @@ void CupsPrintersHandler::HandleSelectPPDFile(const base::Value::List& args) {
       web_contents ? chrome::FindBrowserWithWebContents(web_contents)
                          ->window()
                          ->GetNativeWindow()
-                   : gfx::kNullNativeWindow;
+                   : gfx::NativeWindow();
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({"ppd"});

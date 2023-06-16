@@ -166,7 +166,8 @@ ChromeMessagingDelegate::CreateReceiverForNativeApp(
     bool allow_user_level,
     std::string* error_out) {
   DCHECK(error_out);
-  gfx::NativeView native_view = source ? source->GetNativeView() : nullptr;
+  gfx::NativeView native_view =
+      source ? source->GetNativeView() : gfx::NativeView();
   std::unique_ptr<NativeMessageHost> native_host =
       NativeMessageHost::Create(browser_context, native_view, extension_id,
                                 native_app_name, allow_user_level, error_out);

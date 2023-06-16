@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   OpenPopupViaAPI(false);
   auto test_util = ExtensionActionTestHelper::Create(browser());
   const gfx::NativeView popup_view = test_util->GetPopupNativeView();
-  EXPECT_NE(static_cast<gfx::NativeView>(nullptr), popup_view);
+  EXPECT_NE(gfx::NativeView(), popup_view);
   const HWND popup_hwnd = views::HWNDForNativeView(popup_view);
   EXPECT_EQ(TRUE, ::IsWindow(popup_hwnd));
   const HWND browser_hwnd =

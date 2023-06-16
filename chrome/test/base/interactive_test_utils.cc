@@ -96,7 +96,7 @@ void BrowserDeactivationWaiter::OnBrowserNoLongerActive(Browser* browser) {
 }
 
 bool BringBrowserWindowToFront(const Browser* browser) {
-  gfx::NativeWindow window = nullptr;
+  gfx::NativeWindow window = gfx::NativeWindow();
   if (!GetNativeWindow(browser, &window))
     return false;
 
@@ -114,7 +114,7 @@ bool SendKeyPressSync(const Browser* browser,
                       bool shift,
                       bool alt,
                       bool command) {
-  gfx::NativeWindow window = nullptr;
+  gfx::NativeWindow window = gfx::NativeWindow();
   if (!GetNativeWindow(browser, &window))
     return false;
   return SendKeyPressToWindowSync(window, key, control, shift, alt, command);

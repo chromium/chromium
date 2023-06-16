@@ -501,13 +501,12 @@ void Widget::ShowEmojiPanel() {
 // Unconverted methods (see header) --------------------------------------------
 
 gfx::NativeView Widget::GetNativeView() const {
-  return native_widget_ ? native_widget_->GetNativeView()
-                        : gfx::kNullNativeView;
+  return native_widget_ ? native_widget_->GetNativeView() : gfx::NativeView();
 }
 
 gfx::NativeWindow Widget::GetNativeWindow() const {
   return native_widget_ ? native_widget_->GetNativeWindow()
-                        : gfx::kNullNativeWindow;
+                        : gfx::NativeWindow();
 }
 
 void Widget::AddObserver(WidgetObserver* observer) {

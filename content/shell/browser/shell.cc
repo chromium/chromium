@@ -359,7 +359,7 @@ void Shell::ResizeWebContentForTests(const gfx::Size& content_size) {
 
 gfx::NativeView Shell::GetContentView() {
   if (!web_contents_)
-    return nullptr;
+    return gfx::NativeView();
   return web_contents_->GetNativeView();
 }
 

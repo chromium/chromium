@@ -25,7 +25,7 @@ bool CastScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
 }
 
 gfx::NativeWindow CastScreen::GetWindowAtScreenPoint(const gfx::Point& point) {
-  return gfx::NativeWindow(nullptr);
+  return gfx::NativeWindow();
 }
 
 display::Display CastScreen::GetDisplayNearestWindow(

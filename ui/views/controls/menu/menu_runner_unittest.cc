@@ -424,9 +424,8 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
 TEST_F(MenuRunnerWidgetTest, WidgetDoesntTakeCapture) {
   AddMenuLauncherEventHandler(owner());
 
-  EXPECT_EQ(gfx::kNullNativeView,
-            internal::NativeWidgetPrivate::GetGlobalCapture(
-                widget()->GetNativeView()));
+  EXPECT_EQ(gfx::NativeView(), internal::NativeWidgetPrivate::GetGlobalCapture(
+                                   widget()->GetNativeView()));
   auto generator(EventGeneratorForWidget(widget()));
   generator->MoveMouseTo(widget()->GetClientAreaBoundsInScreen().CenterPoint());
   // Implicit capture should not be held by |widget|.

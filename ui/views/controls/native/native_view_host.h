@@ -135,7 +135,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   void ClearFocus();
 
   // The attached native view. There is exactly one native_view_ attached.
-  gfx::NativeView native_view_ = nullptr;
+  gfx::NativeView native_view_ = gfx::NativeView();
 
   // A platform-specific wrapper that does the OS-level manipulation of the
   // attached gfx::NativeView.

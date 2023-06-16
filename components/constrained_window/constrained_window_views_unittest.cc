@@ -70,7 +70,7 @@ class TestViewsDelegateWithContext : public views::TestViewsDelegate {
   }
 
  private:
-  gfx::NativeWindow context_ = nullptr;
+  gfx::NativeWindow context_ = gfx::NativeWindow();
 };
 
 class ConstrainedWindowViewsTest : public views::ViewsTestBase {

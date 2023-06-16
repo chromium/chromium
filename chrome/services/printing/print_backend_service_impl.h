@@ -132,7 +132,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
    private:
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-    gfx::NativeView parent_native_view_ = nullptr;
+    gfx::NativeView parent_native_view_ = gfx::NativeView();
 #endif
     std::string locale_;
   };

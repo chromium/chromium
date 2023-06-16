@@ -1379,7 +1379,7 @@ TEST_F(RenderWidgetHostTest, Background) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(derat): Call this on all platforms: http://crbug.com/102450.
-  view->InitAsChild(nullptr);
+  view->InitAsChild(gfx::NativeView());
 #endif
   host_->SetView(view);
 

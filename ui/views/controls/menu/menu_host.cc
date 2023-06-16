@@ -138,9 +138,9 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
                        ? Widget::InitParams::WindowOpacity::kTranslucent
                        : Widget::InitParams::WindowOpacity::kOpaque;
   params.parent = init_params.parent ? init_params.parent->GetNativeView()
-                                     : gfx::kNullNativeView;
+                                     : gfx::NativeView();
   params.context = init_params.context ? init_params.context->GetNativeWindow()
-                                       : gfx::kNullNativeWindow;
+                                       : gfx::NativeWindow();
   params.bounds = init_params.bounds;
 
 #if defined(USE_AURA)

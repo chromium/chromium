@@ -176,14 +176,14 @@ TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
   gfx::NativeView native_view1 = widget1->GetNativeView();
   test::WidgetTest::SimulateNativeActivate(widget1.get());
   ASSERT_EQ(2u, widget_listener.focus_changes().size());
-  EXPECT_EQ(gfx::kNullNativeView, widget_listener.focus_changes()[0]);
+  EXPECT_EQ(gfx::NativeView(), widget_listener.focus_changes()[0]);
   EXPECT_EQ(native_view1, widget_listener.focus_changes()[1]);
 
   widget_listener.ClearFocusChanges();
   gfx::NativeView native_view2 = widget2->GetNativeView();
   test::WidgetTest::SimulateNativeActivate(widget2.get());
   ASSERT_EQ(2u, widget_listener.focus_changes().size());
-  EXPECT_EQ(gfx::kNullNativeView, widget_listener.focus_changes()[0]);
+  EXPECT_EQ(gfx::NativeView(), widget_listener.focus_changes()[0]);
   EXPECT_EQ(native_view2, widget_listener.focus_changes()[1]);
 }
 

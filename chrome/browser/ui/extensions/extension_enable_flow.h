@@ -113,7 +113,7 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
 
   // Parent native window for ExtensionInstallPrompt. Note this is mutually
   // exclusive with |parent_contents_| above.
-  gfx::NativeWindow parent_window_ = nullptr;
+  gfx::NativeWindow parent_window_ = gfx::NativeWindow();
 
   std::unique_ptr<ExtensionInstallPrompt> prompt_;
 

@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
   std::unique_ptr<web_app::WebAppUninstallDialog> dialog(
       web_app::WebAppUninstallDialog::Create(browser()->profile(),
-                                             gfx::kNullNativeWindow));
+                                             gfx::NativeWindow()));
 
   base::RunLoop().RunUntilIdle();
 

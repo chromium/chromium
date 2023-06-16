@@ -108,7 +108,7 @@ class MenuHost : public Widget, public WidgetObserver {
   // Parent of the MenuHost widget.
   raw_ptr<Widget, DanglingUntriaged> owner_ = nullptr;
 
-  gfx::NativeView native_view_for_gestures_ = nullptr;
+  gfx::NativeView native_view_for_gestures_ = gfx::NativeView();
 
   // The view we contain.
   raw_ptr<SubmenuView, DanglingUntriaged> submenu_;

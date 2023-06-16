@@ -160,7 +160,7 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
   content::WebContents* web_contents = web_ui()->GetWebContents();
   gfx::NativeWindow owning_window =
       web_contents ? web_contents->GetTopLevelNativeWindow()
-                   : gfx::kNullNativeWindow;
+                   : gfx::NativeWindow();
 
   // Early return if the select file dialog is already active.
   if (select_file_dialog_)

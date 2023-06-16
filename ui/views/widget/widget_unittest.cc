@@ -3160,9 +3160,8 @@ TEST_F(WidgetTest, MousePressCausesCapture) {
   event_count_view->SetBounds(0, 0, 300, 300);
 
   // No capture has been set.
-  EXPECT_EQ(
-      gfx::kNullNativeView,
-      internal::NativeWidgetPrivate::GetGlobalCapture(widget->GetNativeView()));
+  EXPECT_EQ(gfx::NativeView(), internal::NativeWidgetPrivate::GetGlobalCapture(
+                                   widget->GetNativeView()));
 
   MousePressEventConsumer consumer;
   event_count_view->AddPostTargetHandler(&consumer);
@@ -3225,9 +3224,8 @@ TEST_F(WidgetTest, CaptureDuringMousePressNotOverridden) {
       widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
   event_count_view->SetBounds(0, 0, 300, 300);
 
-  EXPECT_EQ(
-      gfx::kNullNativeView,
-      internal::NativeWidgetPrivate::GetGlobalCapture(widget->GetNativeView()));
+  EXPECT_EQ(gfx::NativeView(), internal::NativeWidgetPrivate::GetGlobalCapture(
+                                   widget->GetNativeView()));
 
   Widget* widget2 = CreateTopLevelNativeWidget();
   // Gives explicit capture to |widget2|
@@ -4906,7 +4904,7 @@ class ChildDesktopWidgetTest : public DesktopWidgetTest {
   }
 
  private:
-  gfx::NativeWindow context_ = nullptr;
+  gfx::NativeWindow context_ = gfx::NativeWindow();
 };
 
 // Verifies Widget::IsActive() invoked from

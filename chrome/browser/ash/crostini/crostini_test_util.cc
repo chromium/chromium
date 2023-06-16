@@ -34,7 +34,7 @@ class TestViewsDelegateWithContext : public ChromeTestViewsDelegate<> {
   }
 
  private:
-  gfx::NativeWindow context_ = nullptr;
+  gfx::NativeWindow context_ = gfx::NativeWindow();
 };
 
 }  // namespace

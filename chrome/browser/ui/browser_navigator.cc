@@ -291,7 +291,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         const BrowserWindow* const browser_window = params.browser->window();
         const gfx::NativeWindow native_window =
             browser_window ? browser_window->GetNativeWindow()
-                           : gfx::kNullNativeWindow;
+                           : gfx::NativeWindow();
         const display::Screen* const screen = display::Screen::GetScreen();
         const display::Display display =
             browser_window ? screen->GetDisplayNearestWindow(native_window)

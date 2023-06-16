@@ -68,7 +68,7 @@ class DialogDelegate : public ui::WebDialogDelegate {
 
   base::OnceClosure close_callback_;
 
-  gfx::NativeWindow native_window_ = nullptr;
+  gfx::NativeWindow native_window_ = gfx::NativeWindow();
 };
 
 }  // namespace login_screen_extension_ui

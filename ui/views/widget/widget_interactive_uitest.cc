@@ -938,7 +938,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 
   gfx::NativeView modal_native_view = modal_dialog_widget->GetNativeView();
   ASSERT_EQ(3u, focus_changes.size());
-  EXPECT_EQ(gfx::kNullNativeView, focus_changes[1]);
+  EXPECT_EQ(gfx::NativeView(), focus_changes[1]);
   EXPECT_EQ(modal_native_view, focus_changes[2]);
 
 #if BUILDFLAG(IS_MAC)
@@ -954,7 +954,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 #endif
 
   ASSERT_EQ(5u, focus_changes.size());
-  EXPECT_EQ(gfx::kNullNativeView, focus_changes[3]);
+  EXPECT_EQ(gfx::NativeView(), focus_changes[3]);
   EXPECT_EQ(top_level_native_view, focus_changes[4]);
 
   top_level_widget->Close();

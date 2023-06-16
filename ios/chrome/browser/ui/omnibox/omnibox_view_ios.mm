@@ -311,11 +311,11 @@ size_t OmniboxViewIOS::GetAllSelectionsLength() const {
 }
 
 gfx::NativeView OmniboxViewIOS::GetNativeView() const {
-  return nullptr;
+  return gfx::NativeView();
 }
 
 gfx::NativeView OmniboxViewIOS::GetRelativeWindowForPopup() const {
-  return nullptr;
+  return gfx::NativeView();
 }
 
 void OmniboxViewIOS::OnDidBeginEditing() {

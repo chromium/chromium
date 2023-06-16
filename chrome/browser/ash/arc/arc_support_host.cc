@@ -246,11 +246,13 @@ void ArcSupportHost::SetErrorDelegate(ErrorDelegate* delegate) {
 gfx::NativeWindow ArcSupportHost::GetNativeWindow() const {
   extensions::AppWindowRegistry* registry =
       extensions::AppWindowRegistry::Get(profile_);
-  if (!registry) return gfx::kNullNativeWindow;
+  if (!registry) {
+    return gfx::NativeWindow();
+  }
 
   extensions::AppWindow* window =
       registry->GetCurrentAppWindowForApp(arc::kPlayStoreAppId);
-  return window ? window->GetNativeWindow() : gfx::kNullNativeWindow;
+  return window ? window->GetNativeWindow() : gfx::NativeWindow();
 }
 
 bool ArcSupportHost::GetShouldShowRunNetworkTests() {

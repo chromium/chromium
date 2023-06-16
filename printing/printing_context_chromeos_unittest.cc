@@ -179,7 +179,7 @@ class PrintingContextTest : public testing::Test,
   gfx::Rect printable_area_;
 
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return nullptr; }
+  gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override { return std::string(); }
 
   std::unique_ptr<PrintingContextChromeos> printing_context_;

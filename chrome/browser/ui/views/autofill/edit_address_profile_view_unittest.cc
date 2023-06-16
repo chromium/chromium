@@ -97,7 +97,7 @@ void EditAddressProfileViewTest::CreateViewAndShow() {
   dialog_ = new EditAddressProfileView(mock_controller());
   dialog_->ShowForWebContents(test_web_contents_.get());
 
-  gfx::NativeView parent = gfx::kNullNativeView;
+  gfx::NativeView parent = gfx::NativeView();
 #if BUILDFLAG(IS_MAC)
   // We need a native view parent for the dialog to avoid a DCHECK
   // on Mac.
