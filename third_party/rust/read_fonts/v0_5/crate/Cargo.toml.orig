@@ -1,0 +1,21 @@
+[package]
+name = "read-fonts"
+version = "0.5.0"
+edition = "2021"
+license = "MIT/Apache-2.0"
+description = "Reading OpenType font files."
+repository = "https://github.com/googlefonts/fontations"
+readme = "README.md"
+categories = ["text-processing", "parsing", "graphics"]
+
+[features]
+std = ["font-types/std"]
+codegen_test = []
+traversal = ["std"]
+default = ["traversal"]
+
+[dependencies]
+font-types = { version = "0.3.0", path = "../font-types" }
+
+[dev-dependencies]
+font-test-data = { path = "../font-test-data" }

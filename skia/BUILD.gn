@@ -51,9 +51,9 @@ if (use_typeface_fontations) {
     cxx_bindings = [ "//third_party/skia/src/ports/fontations/src/ffi.rs" ]
     deps = [
       ":path_bridge_headers",
-      "//third_party/rust/font_types/v0_1:lib",
-      "//third_party/rust/read_fonts/v0_3:lib",
-      "//third_party/rust/skrifa/v0_2:lib",
+      "//third_party/rust/font_types/v0_3:lib",
+      "//third_party/rust/read_fonts/v0_5:lib",
+      "//third_party/rust/skrifa/v0_4:lib",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
@@ -452,8 +452,8 @@ component("skia") {
     ]
     deps += [
       ":bridge_rust_side",
-      "//third_party/rust/read_fonts/v0_3:lib",
-      "//third_party/rust/skrifa/v0_2:lib",
+      "//third_party/rust/read_fonts/v0_5:lib",
+      "//third_party/rust/skrifa/v0_4:lib",
     ]
   }
 

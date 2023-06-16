@@ -55,9 +55,9 @@ quote = "1"
 serde = "1"
 static_assertions = "1"
 syn = {version = "1", features = ["full"]}
-read-fonts = "0.3"
-font-types = "0.1.8"
-skrifa = "0.2"
+read-fonts = "0.5"
+font-types = "0.3"
+skrifa = "0.4"
 
 [dependencies.serde_json_lenient]
 version = "0.1"

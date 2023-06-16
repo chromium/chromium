@@ -179,7 +179,7 @@ dependencies = [
 
 [[package]]
 name = "font-types"
-version = "0.1.8"
+version = "0.3.0"
 
 [[package]]
 name = "getrandom"
@@ -329,7 +329,7 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.3.0"
+version = "0.5.0"
 dependencies = [
  "font-types",
 ]
@@ -451,7 +451,7 @@ dependencies = [
 
 [[package]]
 name = "skrifa"
-version = "0.2.0"
+version = "0.4.0"
 dependencies = [
  "read-fonts",
 ]
