@@ -37,7 +37,7 @@ namespace {
 // directory.
 base::FilePath GetMobileConfigFilePath() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_MODULE, &file_path);
+  base::PathService::Get(base::DIR_ASSETS, &file_path);
   file_path =
       file_path.Append(FILE_PATH_LITERAL(testing::kMobileConfigFilePath));
   return file_path;
@@ -46,7 +46,7 @@ base::FilePath GetMobileConfigFilePath() {
 // Returns the absolute path for the .ics file in the test data directory.
 base::FilePath GetCalendarFilePath() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_MODULE, &file_path);
+  base::PathService::Get(base::DIR_ASSETS, &file_path);
   file_path = file_path.Append(FILE_PATH_LITERAL(testing::kCalendarFilePath));
   return file_path;
 }

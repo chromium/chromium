@@ -22,7 +22,7 @@ const char kVcardFilePath[] = "ios/testing/data/http_server_files/vcard.vcf";
 
 std::string GetTestFileContents(const char* file_path) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_MODULE, &path);
+  base::PathService::Get(base::DIR_ASSETS, &path);
   path = path.Append(FILE_PATH_LITERAL(file_path));
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   size_t size_to_read = file.GetLength();

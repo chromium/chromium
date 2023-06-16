@@ -2909,7 +2909,7 @@ TEST_F(WebStateObserverTest, DisableAndReenableWebUsage) {
 TEST_F(WebStateObserverTest, PdfFileUrlNavigation) {
   // Construct a valid file:// URL.
   base::FilePath path;
-  base::PathService::Get(base::DIR_MODULE, &path);
+  base::PathService::Get(base::DIR_ASSETS, &path);
   path = path.Append(
       FILE_PATH_LITERAL("ios/testing/data/http_server_files/testpage.pdf"));
 

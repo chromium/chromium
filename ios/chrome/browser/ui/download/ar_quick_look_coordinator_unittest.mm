@@ -40,7 +40,7 @@ namespace {
 // Returns the absolute path for the test file in the test data directory.
 base::FilePath GetTestFilePath() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_MODULE, &file_path);
+  base::PathService::Get(base::DIR_ASSETS, &file_path);
   file_path = file_path.Append(FILE_PATH_LITERAL(testing::kUsdzFilePath));
   return file_path;
 }
