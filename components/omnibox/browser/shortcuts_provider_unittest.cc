@@ -258,7 +258,7 @@ class ShortcutsProviderTest : public testing::Test {
   // Passthrough to the private `CreateScoredShortcutMatch` function in
   // provider_.
   int CalculateAggregateScore(
-      const std::string& terms,
+      size_t input_length,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts);
 
   // Passthrough to the private `GetMatches`. Enables populating scoring
@@ -315,12 +315,12 @@ void ShortcutsProviderTest::TearDown() {
 }
 
 int ShortcutsProviderTest::CalculateAggregateScore(
-    const std::string& terms,
+    size_t input_length,
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
   const int max_relevance =
       ShortcutsProvider::kShortcutsProviderDefaultMaxRelevance;
   return provider_
-      ->CreateScoredShortcutMatch(ASCIIToUTF16(terms),
+      ->CreateScoredShortcutMatch(input_length,
                                   /*stripped_destination_url=*/GURL(),
                                   shortcuts, max_relevance)
       .relevance;
@@ -824,38 +824,38 @@ TEST_F(ShortcutsProviderTest, Score) {
   auto shortcut_a_frequent = MakeShortcut(u"size__________16", days_ago(3), 10);
   auto shortcut_a_recent = MakeShortcut(u"size__________16", days_ago(1), 1);
   auto score_a = CalculateAggregateScore(
-      "a", {&shortcut_a_short, &shortcut_a_frequent, &shortcut_a_recent});
+      1, {&shortcut_a_short, &shortcut_a_frequent, &shortcut_a_recent});
   auto shortcut_b = MakeShortcut(u"size______12", days_ago(1), 12);
-  auto score_b = CalculateAggregateScore("a", {&shortcut_b});
+  auto score_b = CalculateAggregateScore(1, {&shortcut_b});
   EXPECT_EQ(score_a, score_b);
   EXPECT_GT(score_a, 0);
 
   // Typing more of the text increases score.
-  auto score_b_long_query = CalculateAggregateScore("ab", {&shortcut_b});
+  auto score_b_long_query = CalculateAggregateScore(2, {&shortcut_b});
   EXPECT_GT(score_b_long_query, score_b);
 
   // When creating or updating shortcuts, their text is set longer than the user
   // input (see `ShortcutBackend::AddOrUpdateShortcut()`). So `CalculateScore()`
   // permits up to 10 missing chars before beginning to decrease scores.
-  EXPECT_EQ(CalculateAggregateScore("test56", {&shortcut_a_frequent}),
-            CalculateAggregateScore("test5678901234", {&shortcut_a_frequent}));
+  EXPECT_EQ(CalculateAggregateScore(6, {&shortcut_a_frequent}),
+            CalculateAggregateScore(14, {&shortcut_a_frequent}));
 
   // Make sure there's no negative or weird scores when the shortcut text is
   // shorter than the 10 char adjustment.
   const auto shortcut = MakeShortcut(u"test");
-  const int kMaxScore = CalculateAggregateScore("test", {&shortcut});
+  const int kMaxScore = CalculateAggregateScore(4, {&shortcut});
   const auto short_shortcut = MakeShortcut(u"ab");
-  EXPECT_EQ(CalculateAggregateScore("ab", {&short_shortcut}), kMaxScore);
-  EXPECT_EQ(CalculateAggregateScore("a", {&short_shortcut}), kMaxScore);
+  EXPECT_EQ(CalculateAggregateScore(2, {&short_shortcut}), kMaxScore);
+  EXPECT_EQ(CalculateAggregateScore(1, {&short_shortcut}), kMaxScore);
 
   // More recent shortcuts should be scored higher.
   auto shortcut_b_old = MakeShortcut(u"size______12", days_ago(2), 12);
-  auto score_b_old = CalculateAggregateScore("a", {&shortcut_b_old});
+  auto score_b_old = CalculateAggregateScore(1, {&shortcut_b_old});
   EXPECT_LT(score_b_old, score_b);
 
   // Shortcuts with higher visit counts should be scored higher.
   auto shortcut_b_frequent = MakeShortcut(u"size______12", days_ago(1), 13);
-  auto score_b_frequent = CalculateAggregateScore("a", {&shortcut_b_frequent});
+  auto score_b_frequent = CalculateAggregateScore(1, {&shortcut_b_frequent});
   EXPECT_GT(score_b_frequent, score_b);
 }
 

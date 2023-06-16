@@ -65,9 +65,7 @@ class ShortcutsBackendTest : public testing::Test,
   bool DeleteShortcutsWithIDs(
       const ShortcutsDatabase::ShortcutIDs& deleted_ids);
   bool ShortcutExists(const std::u16string& terms) const;
-  std::vector<std::u16string> ShortcutsMapKeys() const;
-  const ShortcutsDatabase::Shortcut FindShortcut(
-      const std::u16string& terms) const;
+  std::vector<std::u16string> ShortcutsMapTexts() const;
   void ClearShortcutsMap();
 
   TemplateURLService* GetTemplateURLService();
@@ -199,18 +197,11 @@ bool ShortcutsBackendTest::ShortcutExists(const std::u16string& terms) const {
   return shortcuts_map().find(terms) != shortcuts_map().end();
 }
 
-std::vector<std::u16string> ShortcutsBackendTest::ShortcutsMapKeys() const {
-  std::vector<std::u16string> keys;
-  base::ranges::transform(shortcuts_map(), std::back_inserter(keys),
-                          [](const auto& entry) { return entry.first; });
-  return keys;
-}
-
-const ShortcutsDatabase::Shortcut ShortcutsBackendTest::FindShortcut(
-    const std::u16string& terms) const {
-  const auto iter = shortcuts_map().find(terms);
-  return iter == shortcuts_map().end() ? ShortcutsDatabase::Shortcut{}
-                                       : iter->second;
+std::vector<std::u16string> ShortcutsBackendTest::ShortcutsMapTexts() const {
+  std::vector<std::u16string> texts;
+  base::ranges::transform(shortcuts_map(), std::back_inserter(texts),
+                          [](const auto& entry) { return entry.second.text; });
+  return texts;
 }
 
 void ShortcutsBackendTest::ClearShortcutsMap() {
@@ -474,64 +465,64 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   match.description_class.emplace_back(0, 0);
 
   // Should not have a shortcut initially.
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre());
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre());
 
   // Should expand last word when creating shortcuts.
   backend()->AddOrUpdateShortcut(u"w w", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"w word"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"w word"));
 
   // Should expand last word when updating shortcuts.
   backend()->AddOrUpdateShortcut(u"w w", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"w word"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"w word"));
   ClearShortcutsMap();
 
   // Should not expand other words when the last word is already expanded.
   backend()->AddOrUpdateShortcut(u"w word", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"w word"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"w word"));
   ClearShortcutsMap();
 
   // Should prefer to expand to words at least 3 chars long. Should pick words
   // that come first, if there are multiple matches at least 3 chars long.
   backend()->AddOrUpdateShortcut(u"a", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"app"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"app"));
   ClearShortcutsMap();
 
   // Should prefer to expand to words that come first if all matches are shorter
   // than 3 chars long.
   backend()->AddOrUpdateShortcut(u"i", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"i"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"i"));
   ClearShortcutsMap();
 
   // Should not expand to words in the `description`.
   backend()->AddOrUpdateShortcut(u"d", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"d"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"d"));
   ClearShortcutsMap();
 
   // Should not expand to words in the URL path.
   backend()->AddOrUpdateShortcut(u"p", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"p"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"p"));
   ClearShortcutsMap();
 
   // Should expand to words in the URL host.
   backend()->AddOrUpdateShortcut(u"h", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"host"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"host"));
   ClearShortcutsMap();
 
   // Should prefer expanding to words in the `contents`.
   backend()->AddOrUpdateShortcut(u"shar", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"shared1"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"shared1"));
   ClearShortcutsMap();
 
   // When updating, should expand the last word after appending up to 3 chars.
   backend()->AddOrUpdateShortcut(u"an apple a", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"an apple app"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"an apple app"));
   // 'an appl[e a]' should be expanded to 'an apple app'.
   backend()->AddOrUpdateShortcut(u"an appl", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"an apple app"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"an apple app"));
   // But 'an app[le ]' should be expanded to 'an apple', removing the word 'app'
   // and trailing whitespace.
   backend()->AddOrUpdateShortcut(u"an app", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"an apple"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"an apple"));
   ClearShortcutsMap();
 
   // Should be case-insensitive when matching, but preserve case when creating
@@ -540,48 +531,46 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   // input, while the expanded shortcut text should preserve the case of the
   // match title.
   backend()->AddOrUpdateShortcut(u"zAz", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"zazaazz"));
-  EXPECT_EQ(FindShortcut(u"zazaazz").text, u"zAzaaZZ");
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"zAzaaZZ"));
 
   // When updating, '[Z][Az][aaZZ]': the matched shortcut text should preserve
   // the case of the input, while the expanded shortcut text should preserve the
   // case of the previous shortcut text rather than the match title.
   backend()->AddOrUpdateShortcut(u"Z", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"zazaazz"));
-  EXPECT_EQ(FindShortcut(u"zazaazz").text, u"ZAzaaZZ");
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"ZAzaaZZ"));
   ClearShortcutsMap();
 
   // Should match inconsistent trailing whitespace and expand the last word
   // correctly.
   backend()->AddOrUpdateShortcut(u"appl   ", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"apple"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"apple"));
   // Likewise for updating shortcuts.
   backend()->AddOrUpdateShortcut(u"appl   ", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"apple"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"apple"));
   ClearShortcutsMap();
 
   // Should neither crash nor expand texts containing no words. Should still add
   // the text if it contains symbols, but not if it contains only whitespace.
   backend()->AddOrUpdateShortcut(u"(╯°□°", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"(╯°□°"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"(╯°□°"));
   ClearShortcutsMap();
   backend()->AddOrUpdateShortcut(u"    ", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre());
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre());
   ClearShortcutsMap();
 
   // Should not expand words with trailing word-breaking symbols.
   backend()->AddOrUpdateShortcut(u"symb°□°", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"symb°□°"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"symb°□°"));
   ClearShortcutsMap();
 
   // Should expand words following symbols.
   backend()->AddOrUpdateShortcut(u"(╯°□°）╯symb", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"(╯°□°）╯symbols"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"(╯°□°）╯symbols"));
   ClearShortcutsMap();
 
   // Should neither crash nor add a shortcut when text is empty.
   backend()->AddOrUpdateShortcut(u"", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre());
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre());
 
   // Should not expand when match contents is empty.
   AutocompleteMatch match_without_contents;
@@ -589,7 +578,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   match_without_contents.description = u"google";
   match_without_contents.description_class.emplace_back(0, 0);
   backend()->AddOrUpdateShortcut(u"goo", match_without_contents);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"goo"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"goo"));
   ClearShortcutsMap();
 
   // Should expand with description when `swap_contents_and_description` is
@@ -602,12 +591,12 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   swapped_match.contents_class.emplace_back(0, 0);
   swapped_match.description_class.emplace_back(0, 0);
   backend()->AddOrUpdateShortcut(u"goo", swapped_match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"googledescription"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"googledescription"));
   ClearShortcutsMap();
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
-  // Test `ExpandToFullWord`, specifically focussing on detecting and handling
+  // Test `ExpandToFullWord(), specifically focussing on detecting and handling
   // the cases when `text` is a prefix of `match_text`.
 
   InitBackend();
@@ -622,7 +611,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
     // Should expand last word when creating shortcuts.
     backend()->AddOrUpdateShortcut(base::UTF8ToUTF16(text), match);
     EXPECT_THAT(
-        ShortcutsMapKeys(),
+        ShortcutsMapTexts(),
         testing::ElementsAre(base::UTF8ToUTF16(expected_expanded_text)));
 
     ClearShortcutsMap();
@@ -652,4 +641,46 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
   // Trailing whitespace should not prevent expansion of the last `text` word.
   test("x1 xy ", "x1 xyz", "x1 xyz");
   test("x1 xyz ", "x1 xyz", "x1 xyz");
+}
+
+TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Case) {
+  // Test `ExpandToFullWord(), specifically focussing on correct upper v lower
+  // case.
+
+  InitBackend();
+
+  const auto test = [&](const std::string& text, const std::string& match_text,
+                        const std::string& expected_expanded_text) {
+    SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
+    AutocompleteMatch match;
+    match.contents = base::UTF8ToUTF16(match_text);
+    match.contents_class.emplace_back(0, 0);
+
+    // Should expand last word when creating shortcuts.
+    backend()->AddOrUpdateShortcut(base::UTF8ToUTF16(text), match);
+    EXPECT_THAT(
+        ShortcutsMapTexts(),
+        testing::ElementsAre(base::UTF8ToUTF16(expected_expanded_text)));
+
+    ClearShortcutsMap();
+  };
+
+  // Should preserve input case for the typed portion. Should preserve match
+  // case for the expanded portion.
+  test("lowerUPPER", "LOWERupperlowerUPPER", "lowerUPPERlowerUPPER");
+
+  // Should not crash when the input or shortcut contain characters that change
+  // length when their case changes. E.g. the dotted i 'İ' is 1 character long
+  // in upper case, but 'i̇' is 2 characters (i and ̇) in lower case.
+
+  // Upper case 'İ' in input - should preserve input case.
+  test("xİx", "xİxy", "xİxy");
+  test("xİx", "xi̇xy", "xİxy");
+  // Lower case 'i̇' in input - should preserve input case.
+  test("xi̇x", "xİxy", "xi̇xy");
+  test("xi̇x", "xi̇xy", "xi̇xy");
+  // 'İ' not present in input - should not preserve match case; should force
+  // lowercase.
+  test("x", "xİxy", "xi̇xy");
+  test("x", "xi̇xy", "xi̇xy");
 }

@@ -240,16 +240,16 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
     return;
   }
   // Get the URLs from the shortcuts database with keys that partially or
-  // completely match the search term.
-  std::u16string term_string(base::i18n::ToLower(input.text()));
-  DCHECK(!term_string.empty());
+  // completely match the input string.
+  std::u16string lower_input(base::i18n::ToLower(input.text()));
+  DCHECK(!lower_input.empty());
 
   int max_relevance = kShortcutsProviderDefaultMaxRelevance;
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   const std::u16string fixed_up_input(FixupUserInput(input).second);
 
   // Get the shortcuts from the database with keys that partially or completely
-  // match the search term.
+  // match the input string.
   std::vector<ShortcutMatch> shortcut_matches;
   // Track history cluster shortcuts separately, so they don't consume
   // `provider_max_matches_`.
@@ -259,9 +259,9 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   // together, and create a single `ShortcutMatch`.
   std::map<GURL, std::vector<const ShortcutsDatabase::Shortcut*>>
       shortcuts_by_url;
-  for (auto it = FindFirstMatch(term_string, backend_.get());
+  for (auto it = FindFirstMatch(lower_input, backend_.get());
        it != backend_->shortcuts_map().end() &&
-       base::StartsWith(it->first, term_string, base::CompareCase::SENSITIVE);
+       base::StartsWith(it->first, lower_input, base::CompareCase::SENSITIVE);
        ++it) {
     const ShortcutsDatabase::Shortcut& shortcut = it->second;
 
@@ -274,8 +274,8 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   }
 
   for (const auto& [url, shortcuts] : shortcuts_by_url) {
-    ShortcutMatch shortcut_match =
-        CreateScoredShortcutMatch(term_string, url, shortcuts, max_relevance);
+    ShortcutMatch shortcut_match = CreateScoredShortcutMatch(
+        lower_input.length(), url, shortcuts, max_relevance);
 
     // Don't return shortcuts with zero relevance.
     if (shortcut_match.relevance == 0)
@@ -351,7 +351,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
           --max_relevance;
         auto match = ShortcutToACMatch(
             *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            relevance, input, fixed_up_input, term_string);
+            relevance, input, fixed_up_input, lower_input);
         if (populate_scoring_signals &&
             AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
           PopulateScoringSignals(shortcut_match, &match);
@@ -363,11 +363,11 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
       [&](const auto& shortcut_match) {
         auto match = ShortcutToACMatch(
             *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            shortcut_match.relevance, input, fixed_up_input, term_string);
+            shortcut_match.relevance, input, fixed_up_input, lower_input);
     // Guard this as `HistoryClusterProvider` doesn't exist on iOS.
     // Though this code will never run on iOS regardless.
 #if !BUILDFLAG(IS_IOS)
-        // `term_string` is only what the user typed, e.g. "new y" instead of
+        // `lower_input` is only what the user typed, e.g. "new y" instead of
         // "new york". Use `match.description`, which is the whole string.
         // This is a bit hacky, but accurately reflects how
         // `HistoryClusterProvider` constructed the original match.
@@ -383,18 +383,21 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
 }
 
 ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
-    const std::u16string& terms,
+    size_t input_length,
     const GURL& stripped_destination_url,
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
     int max_relevance) {
   DCHECK_GT(shortcuts.size(), 0u);
+  // International characters can change length depending on case. Use the lower
+  // case shortcut text length, since the `input_length` is also the lower case
+  // length.
   const size_t shortest_text_length =
-      ShortestShortcutText(shortcuts)->text.length();
+      base::i18n::ToLower(ShortestShortcutText(shortcuts)->text).length();
   const base::Time& last_access_time =
       MostRecentShortcut(shortcuts)->last_access_time;
   const int number_of_hits = SumNumberOfHits(shortcuts);
   const int relevance = CalculateScoreFromFactors(
-      terms.length(), shortest_text_length, last_access_time, number_of_hits,
+      input_length, shortest_text_length, last_access_time, number_of_hits,
       max_relevance);
 
   // Pick the shortcut with the shortest content. Picking the shortest
@@ -418,7 +421,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
     int relevance,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text,
-    const std::u16string term_string) {
+    const std::u16string lower_input) {
   DCHECK(!input.text().empty());
   AutocompleteMatch match;
   match.provider = this;
@@ -540,11 +543,11 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
 
   // Try to mark pieces of the contents and description as matches if they
   // appear in |input.text()|.
-  if (!term_string.empty()) {
+  if (!lower_input.empty()) {
     match.contents_class = ClassifyAllMatchesInString(
-        term_string, match.contents, is_search_type, match.contents_class);
+        lower_input, match.contents, is_search_type, match.contents_class);
     match.description_class = ClassifyAllMatchesInString(
-        term_string, match.description,
+        lower_input, match.description,
         /*text_is_search_query=*/false, match.description_class);
   }
   return match;

@@ -74,8 +74,6 @@ std::u16string ExpandToFullWord(const std::u16string& text,
                                 const std::u16string& match_text) {
   DCHECK(!text.empty());
 
-  const auto match_words = String16VectorFromString16(match_text, nullptr);
-
   // Trim the `text` to:
   // 1) Avoid expanding, e.g., the `text` 'Cha Aznav ' to 'Cha Aznav ur'.
   // 2) Avoid truncating the shortcut e.g., 'Cha Aznavour' to 'Cha ' for the
@@ -86,8 +84,22 @@ std::u16string ExpandToFullWord(const std::u16string& text,
       base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING));
 
   // Use the lower cased text for string insensitive comparisons. Use the
-  // original case to construct the returned expanded text.
+  // original case to construct the returned expanded text. E.g., 'cHa' should
+  // expand to 'cHarles', not 'Charles'.
   const auto trimmed_lower_text = base::i18n::ToLower(trimmed_text);
+
+  // Preserving original `match_text` case is ideal; it allows autocompleting
+  // 'char[les Aznavour] instead of 'char[les aznavour]'. But some characters
+  // have different lengths in lower v upper case; e.g., 'İ' v 'i̇' (i + ̇).
+  // That's problematic when trying to find the exact sub-words to autocomplete:
+  //  - Best case, it autocompletes incorrectly; e.g. 'char[es]', 'char[rles]',
+  //    or 'char[arles]'.
+  //  - Worst case, it crashes when trimming string out of bounds.
+  // So fallback to lower casing the match text when lengths don't match.
+  const auto lower_match_text = base::i18n::ToLower(match_text);
+  const auto& match_text_for_expansion =
+      match_text.length() != lower_match_text.length() ? lower_match_text
+                                                       : match_text;
 
   // There may be multiple matching match words `text` can be expanded to. E.g.
   // with `text` 'x' and `match_text` 'x1 x2', 'x' matches both 'x1' and 'x2'.
@@ -110,10 +122,11 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   //      'm' will expand to 'mn'.
 
   // This handles case (1) from the above comment.
-  if (base::StartsWith(base::i18n::ToLower(match_text), trimmed_lower_text,
+  if (base::StartsWith(lower_match_text, trimmed_lower_text,
                        base::CompareCase::SENSITIVE)) {
     // Cut off the common prefix.
-    const auto cut_match_text = match_text.substr(trimmed_lower_text.length());
+    const auto cut_match_text =
+        match_text_for_expansion.substr(trimmed_lower_text.length());
     // Find the 1st word of the cut `match_text`.
     TailoredWordBreakIterator iter(cut_match_text,
                                    base::i18n::BreakIterator::BREAK_WORD);
@@ -142,8 +155,10 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   const auto& text_last_word = text_words.back();
 
   // This handles cases (2) and (3) from the above comment.
+  const auto match_words =
+      String16VectorFromString16(match_text_for_expansion, nullptr);
   std::u16string best_word;
-  // Iterate up to 100 `description_words` for performance.
+  // Iterate up to 100 `match_words` for performance.
   for (size_t i = 0;
        i < match_words.size() && i < 100 && best_word.length() < 3u; ++i) {
     if (match_words[i].length() < 3u && !best_word.empty())

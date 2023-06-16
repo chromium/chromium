@@ -83,7 +83,7 @@ class ShortcutsProvider : public AutocompleteProvider,
   // - Considers the shortest contents when picking a shortcut.
   // Returns the shortcut match with the aggregated score.
   ShortcutMatch CreateScoredShortcutMatch(
-      const std::u16string& terms,
+      size_t input_length,
       const GURL& stripped_destination_url,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
       int max_relevance);
@@ -99,7 +99,7 @@ class ShortcutsProvider : public AutocompleteProvider,
       int relevance,
       const AutocompleteInput& input,
       const std::u16string& fixed_up_input_text,
-      const std::u16string term_string);
+      const std::u16string lower_input);
 
   // Returns iterator to first item in |shortcuts_map_| matching |keyword|.
   // Returns shortcuts_map_.end() if there are no matches.
