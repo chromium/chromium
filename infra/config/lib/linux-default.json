@@ -145,6 +145,7 @@
     "win10-angle-chromium-x64-nvidia": "Ubuntu-22.04"
   },
   "try": {
+    "3pp-linux-amd64-packager": "Ubuntu-22.04",
     "android-12-x64-rel": "Ubuntu-22.04",
     "android-12-x64-rel-compilator": "Ubuntu-22.04",
     "android-angle-chromium-try": "Ubuntu-22.04",
@@ -152,6 +153,7 @@
     "android-arm64-rel-compilator": "Ubuntu-22.04",
     "android-binary-size": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
+    "android-pie-arm64-dbg": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
     "android_cronet": "Ubuntu-22.04",
@@ -190,6 +192,7 @@
     "ios-simulator": "Ubuntu-22.04",
     "lacros-amd64-generic-rel": "Ubuntu-22.04",
     "lacros-arm-generic-rel": "Ubuntu-22.04",
+    "linux-1mbu-compile-fyi-rel": "Ubuntu-22.04",
     "linux-angle-chromium-try": "Ubuntu-22.04",
     "linux-chromeos-compile-dbg": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
