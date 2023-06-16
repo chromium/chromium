@@ -240,8 +240,16 @@ void RequestFeedbackFlow(const GURL& page_url,
                                 page_url, source, std::move(autofill_metadata));
 
     // Wait for all SWAs to be registered before continuing.
-    ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
-        FROM_HERE, base::BindOnce(&LaunchFeedbackSWA, profile, url));
+    // TODO(b/286291927): Figure out how to get the SWA manager for the guest
+    // mode profile and perhaps other exotic ones.
+    ash::SystemWebAppManager* swa_manager =
+        ash::SystemWebAppManager::Get(profile);
+    if (swa_manager) {
+      swa_manager->on_apps_synchronized().Post(
+          FROM_HERE, base::BindOnce(&LaunchFeedbackSWA, profile, url));
+    } else {
+      LaunchFeedbackSWA(profile, url);
+    }
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
