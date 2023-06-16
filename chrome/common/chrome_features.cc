@@ -236,7 +236,7 @@ BASE_FEATURE(kPreinstalledWebAppWindowExperiment,
 // DB.
 BASE_FEATURE(kOsIntegrationSubManagers,
              "OsIntegrationSubManagers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<OsIntegrationSubManagersStage>::Option
     sub_manager_stages[] = {
         {OsIntegrationSubManagersStage::kWriteConfig, "write_config"},
