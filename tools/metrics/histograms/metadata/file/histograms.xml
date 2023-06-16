@@ -66,6 +66,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GetAuthCode"/>
   <variant name="GetDelta"/>
   <variant name="GetDrive"/>
+  <variant name="GetEntry"/>
   <variant name="GetProfile"/>
   <variant name="ListDirectory"/>
   <variant name="MoveEntry"/>
