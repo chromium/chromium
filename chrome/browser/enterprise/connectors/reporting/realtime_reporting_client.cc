@@ -485,9 +485,13 @@ void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
       rejected_dm_token_timers_[client->dm_token()]->Start(
           FROM_HERE, base::Hours(24),
           base::BindOnce(&RealtimeReportingClient::RemoveDmTokenFromRejectedSet,
-                         weak_ptr_factory_.GetWeakPtr(), client->dm_token()));
+                         GetWeakPtr(), client->dm_token()));
     }
   }
+}
+
+base::WeakPtr<RealtimeReportingClient> RealtimeReportingClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace enterprise_connectors

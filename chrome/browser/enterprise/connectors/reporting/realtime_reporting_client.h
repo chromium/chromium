@@ -78,6 +78,8 @@ class RealtimeReportingClient : public KeyedService,
   void OnPolicyFetched(policy::CloudPolicyClient* client) override {}
   void OnRegistrationStateChanged(policy::CloudPolicyClient* client) override {}
 
+  base::WeakPtr<RealtimeReportingClient> GetWeakPtr();
+
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
   // absl::nullopt represents that reporting should not be done.

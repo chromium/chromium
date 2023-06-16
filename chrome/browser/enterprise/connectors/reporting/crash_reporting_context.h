@@ -71,7 +71,7 @@ time_t GetLatestCrashReportTime(PrefService* local_state);
 // update latest crash upload timestamp if one or more such events are uploaded.
 // Included in header for testing.
 void UploadToReportingServer(
-    RealtimeReportingClient* reporting_client,
+    base::WeakPtr<RealtimeReportingClient> reporting_client,
     PrefService* local_state,
     std::vector<crashpad::CrashReportDatabase::Report> reports);
 
