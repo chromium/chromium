@@ -18,8 +18,15 @@
       <input type="hidden" id="image-downscaled-dimensions"
           name="processed_image_dimensions">
     </form>
-    <iframe name="companion" id="content" allow="cross-origin-isolated"
-      frameBorder="0"></iframe>
+    <!--
+      Requires display-capture permission which is limited to the origin
+      defined in the WebUI in order to request screenshot of the side
+      panel tab.
+    -->
+    <iframe name="companion"
+            id="content"
+            allow="cross-origin-isolated; display-capture $i18n{companion_origin}"
+            frameBorder="0"></iframe>
     <script type="module" src="companion.js"></script>
   </body>
 </html>

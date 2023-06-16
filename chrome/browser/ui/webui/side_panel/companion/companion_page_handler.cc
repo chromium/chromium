@@ -36,6 +36,7 @@
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
@@ -185,6 +186,9 @@ void CompanionPageHandler::ShowUI() {
     metrics_logger_->RecordOpenTrigger(
         helper->GetAndResetMostRecentSidePanelOpenTrigger());
 
+    // Register a modal dialog manager to show permissions dialog like those
+    // requested from the feedback UI.
+    RegisterModalDialogManager(browser);
     std::string initial_text_query = helper->GetTextQuery();
     if (!initial_text_query.empty()) {
       OnSearchTextQuery(initial_text_query);
@@ -350,6 +354,15 @@ void CompanionPageHandler::DidFinishFindingCqTexts(
     find_results[i] = text_found.second;
   }
   page_->OnCqFindTextResultsAvailable(text_directives, find_results);
+}
+
+void CompanionPageHandler::RegisterModalDialogManager(Browser* browser) {
+  CHECK(companion_untrusted_ui_);
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      companion_untrusted_ui_->web_ui()->GetWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      companion_untrusted_ui_->web_ui()->GetWebContents())
+      ->SetDelegate(browser);
 }
 
 }  // namespace companion

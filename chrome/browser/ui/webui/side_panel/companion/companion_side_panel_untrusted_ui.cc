@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 
 #include "chrome/browser/companion/core/utils.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_companion_resources.h"
@@ -49,6 +50,8 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FormAction, formActionDirective);
   html_source->AddString("companion_origin", frameSrcString);
+
+  web_ui->GetWebContents()->SetDelegate(this);
 }
 
 CompanionSidePanelUntrustedUI::~CompanionSidePanelUntrustedUI() = default;
@@ -65,6 +68,15 @@ void CompanionSidePanelUntrustedUI::CreateCompanionPageHandler(
     mojo::PendingRemote<side_panel::mojom::CompanionPage> page) {
   companion_page_handler_ = std::make_unique<companion::CompanionPageHandler>(
       std::move(receiver), std::move(page), this);
+}
+
+void CompanionSidePanelUntrustedUI::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  // Note: This is needed for taking screenshots via the feedback form.
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /*extension=*/nullptr);
 }
 
 base::WeakPtr<CompanionSidePanelUntrustedUI>
