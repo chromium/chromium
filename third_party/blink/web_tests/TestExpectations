@@ -6703,3 +6703,6 @@ crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-manage
 crbug.com/1451954 external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.html [ Failure Pass Timeout ]
 
 crbug.com/1455314 external/wpt/longtask-timing/longtask-in-childiframe-crossorigin.html [ Failure Pass ]
+
+# Gardener 2023-06-16
+crbug.com/1455487 fast/layers/no-clipping-overflow-hidden-hardware-acceleration.html [ Failure Pass ]
