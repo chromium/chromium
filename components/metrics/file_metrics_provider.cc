@@ -31,6 +31,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/persistent_histograms.h"
@@ -683,8 +685,11 @@ FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
 /* static */
 bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     SourceInfo* source,
-    SystemProfileProto* system_profile_proto,
+    ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
+  SystemProfileProto* system_profile_proto =
+      uma_proto->mutable_system_profile();
+
   if (PersistentSystemProfile::GetSystemProfile(
           *source->allocator->memory_allocator(), system_profile_proto)) {
     // Pass a custom RangesManager so that we do not register the BucketRanges
@@ -695,6 +700,24 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     RecordHistogramSnapshotsFromSource(
         snapshot_manager, source,
         /*required_flags=*/base::HistogramBase::kUmaTargetedHistogramFlag);
+
+    if (base::FeatureList::IsEnabled(
+            features::kRestoreUmaClientIdIndependentLogs)) {
+      // NOTE: If you are adding anything here, consider also changing
+      // MetricsStateManager::ProvidePreviousSessionData().
+
+      // Use the client UUID stored in the system profile (if there is one) as
+      // the independent log's client ID. Usually, this has no effect, but there
+      // are scenarios where the log may have come from a session that had a
+      // different client ID than the one currently in use (e.g., client ID was
+      // reset due to being detected as a cloned install), so make sure to
+      // associate it with the proper one.
+      const std::string& client_uuid = system_profile_proto->client_uuid();
+      if (!client_uuid.empty()) {
+        uma_proto->set_client_id(MetricsLog::Hash(client_uuid));
+      }
+    }
+
     return true;
   }
 
@@ -829,8 +852,6 @@ void FileMetricsProvider::ProvideIndependentMetrics(
     base::OnceCallback<void(bool)> done_callback,
     ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
-  SystemProfileProto* system_profile_proto =
-      uma_proto->mutable_system_profile();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (sources_with_profile_.empty()) {
@@ -849,7 +870,7 @@ void FileMetricsProvider::ProvideIndependentMetrics(
       FROM_HERE,
       base::BindOnce(
           &FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner,
-          source_ptr, system_profile_proto, snapshot_manager),
+          source_ptr, uma_proto, snapshot_manager),
       base::BindOnce(&FileMetricsProvider::ProvideIndependentMetricsCleanup,
                      weak_factory_.GetWeakPtr(), std::move(done_callback),
                      std::move(source)));

@@ -18,4 +18,8 @@ BASE_FEATURE(kStructuredMetrics,
              "EnableStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRestoreUmaClientIdIndependentLogs,
+             "RestoreUmaClientIdIndependentLogs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::features

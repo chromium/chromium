@@ -25,8 +25,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1179,6 +1182,91 @@ TEST_P(FileMetricsProviderTest, IndependentLogContainsUmaHistograms) {
               testing::ElementsAre("h0", "h2"));
 
   // The metrics file should eventually be deleted.
+  RunTasks();
+  EXPECT_FALSE(base::PathExists(metrics_file()));
+}
+
+// Verifies that if the embedded system profile in the file does not contain
+// a client UUID, the generated independent log's client ID is not overwritten.
+TEST_P(FileMetricsProviderTest, EmbeddedProfileWithoutClientUuid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kRestoreUmaClientIdIndependentLogs);
+
+  ASSERT_FALSE(PathExists(metrics_file()));
+  CreateMetricsFileWithHistograms(
+      metrics_file(), base::Time::Now(), 2,
+      base::BindOnce(&WriteSystemProfileToAllocator));
+
+  // Register the file and allow the "checker" task to run.
+  ASSERT_TRUE(PathExists(metrics_file()));
+  provider()->RegisterSource(FileMetricsProvider::Params(
+      metrics_file(), FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
+      FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE, kMetricsName));
+
+  // Record embedded snapshots via snapshot-manager.
+  OnDidCreateMetricsLog();
+  RunTasks();
+  {
+    HistogramFlattenerDeltaRecorder flattener;
+    base::HistogramSnapshotManager snapshot_manager(&flattener);
+
+    // Since the embedded system profile has no client_uuid set (see
+    // WriteSystemProfileToAllocator()), the client ID written in |uma_proto|
+    // should be kept.
+    ChromeUserMetricsExtension uma_proto;
+    uma_proto.set_client_id(1);
+    EXPECT_TRUE(HasIndependentMetrics());
+    EXPECT_TRUE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
+    EXPECT_EQ(uma_proto.client_id(), 1U);
+  }
+  RunTasks();
+  EXPECT_FALSE(base::PathExists(metrics_file()));
+}
+
+// Verifies that if the embedded system profile in the file contains a client
+// UUID, it is used as the generated independent log's client ID.
+TEST_P(FileMetricsProviderTest, EmbeddedProfileWithClientUuid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kRestoreUmaClientIdIndependentLogs);
+
+  ASSERT_FALSE(PathExists(metrics_file()));
+  static constexpr char kProfileClientUuid[] = "abc";
+  CreateMetricsFileWithHistograms(
+      metrics_file(), base::Time::Now(), 2,
+      base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
+        metrics::SystemProfileProto profile_proto;
+        profile_proto.set_client_uuid(kProfileClientUuid);
+
+        metrics::PersistentSystemProfile persistent_profile;
+        persistent_profile.RegisterPersistentAllocator(
+            allocator->memory_allocator());
+        persistent_profile.SetSystemProfile(profile_proto, /*complete=*/true);
+      }));
+
+  // Register the file and allow the "checker" task to run.
+  ASSERT_TRUE(PathExists(metrics_file()));
+  provider()->RegisterSource(FileMetricsProvider::Params(
+      metrics_file(), FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
+      FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE, kMetricsName));
+
+  // Record embedded snapshots via snapshot-manager.
+  OnDidCreateMetricsLog();
+  RunTasks();
+  {
+    HistogramFlattenerDeltaRecorder flattener;
+    base::HistogramSnapshotManager snapshot_manager(&flattener);
+
+    // Since the embedded system profile contains a client_uuid, the client ID
+    // in |uma_proto| should be overwritten.
+    ChromeUserMetricsExtension uma_proto;
+    uma_proto.set_client_id(1);
+    EXPECT_TRUE(HasIndependentMetrics());
+    EXPECT_TRUE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
+    EXPECT_NE(uma_proto.client_id(), 1U);
+    EXPECT_EQ(uma_proto.client_id(), MetricsLog::Hash(kProfileClientUuid));
+  }
   RunTasks();
   EXPECT_FALSE(base::PathExists(metrics_file()));
 }

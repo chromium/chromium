@@ -297,7 +297,7 @@ class FileMetricsProvider : public MetricsProvider,
   // The part of ProvideIndependentMetrics that runs as a background task.
   static bool ProvideIndependentMetricsOnTaskRunner(
       SourceInfo* source,
-      SystemProfileProto* system_profile_proto,
+      ChromeUserMetricsExtension* uma_proto,
       base::HistogramSnapshotManager* snapshot_manager);
 
   // Collects the metadata of the |source|.
