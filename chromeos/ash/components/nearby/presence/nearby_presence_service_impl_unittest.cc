@@ -47,6 +47,8 @@ class FakeScanDelegate : public NearbyPresenceService::ScanDelegate {
 
   void OnScanSessionInvalidated() override {}
   bool WasOnPresenceDeviceFoundCalled() { return found_called; }
+  bool WasOnPresenceDeviceChangedCalled() { return changed_called; }
+  bool WasOnPresenceDeviceLostCalled() { return lost_called; }
 
  private:
   bool found_called = false;
@@ -135,11 +137,62 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan) {
   EXPECT_TRUE(IsScanSessionActive());
 }
 
+TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
+  NearbyPresenceService::ScanFilter filter(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      /*actions=*/{});
+  FakeScanDelegate scan_delegate;
+  auto run_loop = base::RunLoop();
+  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+  // function.
+  nearby_presence_service->StartScan(
+      filter, &scan_delegate,
+      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+
+  // Allow StartScan() to finish before calling the callback.
+  base::RunLoop().RunUntilIdle();
+  nearby_presence_.RunStartScanCallback();
+  run_loop.Run();
+  nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
+      mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                 mojom::PresenceDeviceType::kPhone,
+                                 kStableDeviceId));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceChangedCalled());
+  EXPECT_TRUE(IsScanSessionActive());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
+  NearbyPresenceService::ScanFilter filter(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      /*actions=*/{});
+  FakeScanDelegate scan_delegate;
+  auto run_loop = base::RunLoop();
+  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+  // function.
+  nearby_presence_service->StartScan(
+      filter, &scan_delegate,
+      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+
+  // Allow StartScan() to finish before calling the callback.
+  base::RunLoop().RunUntilIdle();
+  nearby_presence_.RunStartScanCallback();
+  run_loop.Run();
+  nearby_presence_.ReturnScanObserver()->OnDeviceLost(
+      mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                 mojom::PresenceDeviceType::kPhone,
+                                 kStableDeviceId));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceLostCalled());
+  EXPECT_TRUE(IsScanSessionActive());
+}
+
 TEST_F(NearbyPresenceServiceImplTest, EndScan) {
   NearbyPresenceService::ScanFilter filter(
       ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
       /*actions=*/{});
-
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
 

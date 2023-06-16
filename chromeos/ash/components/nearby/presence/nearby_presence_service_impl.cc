@@ -9,33 +9,47 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash::nearby::presence {
+namespace {
 
 ::nearby::internal::DeviceType ConvertMojomDeviceType(
-    mojom::PresenceDeviceType mojom_type) {
+    ash::nearby::presence::mojom::PresenceDeviceType mojom_type) {
   switch (mojom_type) {
-    case mojom::PresenceDeviceType::kUnspecified:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kUnspecified:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_UNKNOWN;
-    case mojom::PresenceDeviceType::kPhone:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kPhone:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_PHONE;
-    case mojom::PresenceDeviceType::kTablet:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kTablet:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_TABLET;
-    case mojom::PresenceDeviceType::kDisplay:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kDisplay:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_DISPLAY;
-    case mojom::PresenceDeviceType::kLaptop:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kLaptop:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP;
-    case mojom::PresenceDeviceType::kTv:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kTv:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_TV;
-    case mojom::PresenceDeviceType::kWatch:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kWatch:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_WATCH;
-    case mojom::PresenceDeviceType::kChromeos:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kChromeos:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS;
-    case mojom::PresenceDeviceType::kFoldable:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kFoldable:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_FOLDABLE;
   }
 }
+
+ash::nearby::presence::NearbyPresenceService::PresenceDevice
+BuildPresenceDevice(ash::nearby::presence::mojom::PresenceDevicePtr device) {
+  // TODO(b/276642472): Populate actions and rssi fields.
+  return ash::nearby::presence::NearbyPresenceService::PresenceDevice(
+      ConvertMojomDeviceType(device->device_type), device->stable_device_id,
+      device->endpoint_id, device->device_name,
+      /*actions_=*/{}, /*rssi_=*/-65);
+}
+
+}  // namespace
+
+namespace ash::nearby::presence {
 
 NearbyPresenceServiceImpl::NearbyPresenceServiceImpl(
     PrefService* pref_service,
@@ -139,24 +153,25 @@ void NearbyPresenceServiceImpl::Shutdown() {
 }
 
 void NearbyPresenceServiceImpl::OnDeviceFound(mojom::PresenceDevicePtr device) {
-  // TODO(b/276642472): Populate actions rssi fields.
-  auto build_device = NearbyPresenceService::PresenceDevice(
-      ConvertMojomDeviceType(device->device_type), device->stable_device_id,
-      device->endpoint_id, device->device_name,
-      /*actions_=*/{}, /*rssi_=*/-65);
-
+  auto build_device = BuildPresenceDevice(std::move(device));
   for (auto* delegate : scan_delegate_set_) {
     delegate->OnPresenceDeviceFound(build_device);
   }
 }
 
-// TODO(b/277819923): Implement this function to call the scan delegate's
-// OnPresenceDeviceChanged.
 void NearbyPresenceServiceImpl::OnDeviceChanged(
-    mojom::PresenceDevicePtr device) {}
+    mojom::PresenceDevicePtr device) {
+  auto build_device = BuildPresenceDevice(std::move(device));
+  for (auto* delegate : scan_delegate_set_) {
+    delegate->OnPresenceDeviceChanged(build_device);
+  }
+}
 
-// TODO(b/277819923): Implement this function to call the scan delegate's
-// OnPresenceDeviceLost.
-void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {}
+void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
+  auto build_device = BuildPresenceDevice(std::move(device));
+  for (auto* delegate : scan_delegate_set_) {
+    delegate->OnPresenceDeviceLost(build_device);
+  }
+}
 
 }  // namespace ash::nearby::presence
