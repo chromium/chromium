@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/login_accelerators.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
@@ -42,10 +41,12 @@ constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
                                              kPinCodeWrapper};
 }  // namespace
 
-class QuickStartBrowserTestBase : public OobeBaseTest {
+class QuickStartBrowserTest : public OobeBaseTest {
  public:
-  QuickStartBrowserTestBase() = default;
-  ~QuickStartBrowserTestBase() override = default;
+  QuickStartBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
+  }
+  ~QuickStartBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
@@ -85,13 +86,6 @@ class QuickStartBrowserTestBase : public OobeBaseTest {
  protected:
   quick_start::FakeTargetDeviceConnectionBroker::Factory
       connection_broker_factory_;
-};
-
-class QuickStartBrowserTest : public QuickStartBrowserTestBase {
- public:
-  QuickStartBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -105,8 +99,6 @@ class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
             kUndetermined);
   }
 };
-
-class QuickStartAcceleratorBrowserTest : public QuickStartBrowserTestBase {};
 
 IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
                        ButtonVisibleOnWelcomeScreen) {
@@ -169,19 +161,6 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
                       ".textContent === '" + digit + "'")
         ->Wait();
   }
-}
-
-IN_PROC_BROWSER_TEST_F(QuickStartAcceleratorBrowserTest,
-                       ButtonVisibleOnWelcomeScreen) {
-  test::WaitForWelcomeScreen();
-  test::OobeJS().ExpectHiddenPath(kQuickStartButtonPath);
-
-  WizardController::default_controller()->HandleAccelerator(
-      LoginAcceleratorAction::kEnableQuickStart);
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
-      ->Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingOnButtonEntersScreen) {
