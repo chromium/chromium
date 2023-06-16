@@ -110,14 +110,14 @@ export class CdpConnection implements ICdpConnection {
         this.#logger?.('error', error);
         this.#transport.close();
       });
-      this.#logger?.('sent ▸', JSON.stringify(cdpMessage, null, 2));
+      this.#logger?.('sent >', JSON.stringify(cdpMessage, null, 2));
     });
   }
 
   #onMessage = (message: string) => {
     const messageParsed: CdpMessage<any> = JSON.parse(message);
     const messagePretty = JSON.stringify(messageParsed, null, 2);
-    this.#logger?.('received ◂', messagePretty);
+    this.#logger?.('received <', messagePretty);
 
     // Update client map if a session is attached or detached.
     // Listen for these events on every session.

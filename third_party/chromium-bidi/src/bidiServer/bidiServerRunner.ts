@@ -23,8 +23,8 @@ import type {ITransport} from '../utils/transport.js';
 
 const log = debug('bidiServer:log');
 const debugInternal = debug('bidiServer:internal');
-const debugSend = debug('bidiServer:SEND ▸');
-const debugRecv = debug('bidiServer:RECV ◂');
+const debugSend = debug('bidiServer:SEND >');
+const debugRecv = debug('bidiServer:RECV <');
 
 function getHttpRequestPayload(request: http.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
