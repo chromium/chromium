@@ -80,6 +80,17 @@ std::vector<std::unique_ptr<GlanceablesTask>> ConvertTasks(
     }
   }
 
+  // Sort tasks by their position as they appear in the companion app with "My
+  // order" option selected.
+  // NOTE: ideally sorting should be performed on the UI/presentation layer, but
+  // there is a possibility that with further optimizations and plans to keep
+  // only top N visible tasks in memory, the sorting will need to be done at
+  // this layer.
+  std::sort(root_tasks.begin(), root_tasks.end(),
+            [](const Task* a, const Task* b) {
+              return a->position().compare(b->position()) < 0;
+            });
+
   // Convert `root_tasks` to ash-friendly types.
   std::vector<std::unique_ptr<GlanceablesTask>> converted_tasks;
   converted_tasks.reserve(root_tasks.size());

@@ -86,11 +86,13 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "id": "qwe",
             "title": "Completed child task",
             "parent": "asd",
+            "position": "00000000000000000000",
             "status": "completed"
           },
           {
             "id": "asd",
             "title": "Parent task",
+            "position": "00000000000000000001",
             "status": "needsAction",
             "due": "2023-04-19T00:00:00.000Z"
           }
@@ -107,12 +109,14 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[0]->title(), "Completed child task");
   EXPECT_EQ(tasks->items()[0]->status(), Task::Status::kCompleted);
   EXPECT_EQ(tasks->items()[0]->parent_id(), "asd");
+  EXPECT_EQ(tasks->items()[0]->position(), "00000000000000000000");
   EXPECT_FALSE(tasks->items()[0]->due());
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
   EXPECT_EQ(tasks->items()[1]->status(), Task::Status::kNeedsAction);
   EXPECT_TRUE(tasks->items()[1]->parent_id().empty());
+  EXPECT_EQ(tasks->items()[1]->position(), "00000000000000000001");
   EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->due().value()),
             "2023-04-19T00:00:00.000Z");
 }

@@ -31,8 +31,8 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrl) {
                             /*max_results=*/absl::nullopt,
                             /*page_token=*/""),
             "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
-            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cdue%2Clinks("
-            "type))%2CnextPageToken"
+            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition"
+            "%2Cdue%2Clinks(type))%2CnextPageToken"
             "&showCompleted=false");
 }
 
@@ -41,8 +41,8 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {
                             /*max_results=*/100,
                             /*page_token=*/"qwerty"),
             "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
-            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cdue%2Clinks("
-            "type))%2CnextPageToken"
+            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition%"
+            "2Cdue%2Clinks(type))%2CnextPageToken"
             "&showCompleted=true"
             "&maxResults=100"
             "&pageToken=qwerty");

@@ -178,6 +178,9 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   std::unique_ptr<GlanceablesTasksClientImpl> client_;
 };
 
+// ----------------------------------------------------------------------------
+// Get task lists:
+
 TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
@@ -273,6 +276,9 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskListsFetchesAllPages) {
   EXPECT_EQ(task_lists->GetItemAt(1)->id, "task-list-from-page-2");
   EXPECT_EQ(task_lists->GetItemAt(2)->id, "task-list-from-page-3");
 }
+
+// ----------------------------------------------------------------------------
+// Get tasks:
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
@@ -381,6 +387,34 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "parent-task-from-page-3");
   EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
 }
+
+TEST_F(GlanceablesTasksClientImplTest, GetTasksSortsByPosition) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {"title": "2nd", "position": "00000000000000000001"},
+              {"title": "3rd", "position": "00000000000000000002"},
+              {"title": "1st", "position": "00000000000000000000"}
+            ]
+          }
+        )"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const root_tasks = future.Get();
+  ASSERT_EQ(root_tasks->item_count(), 3u);
+
+  EXPECT_EQ(root_tasks->GetItemAt(0)->title, "1st");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->title, "2nd");
+  EXPECT_EQ(root_tasks->GetItemAt(2)->title, "3rd");
+}
+
+// ----------------------------------------------------------------------------
+// Mark as completed:
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_CALL(

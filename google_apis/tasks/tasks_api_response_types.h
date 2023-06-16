@@ -128,6 +128,7 @@ class Task {
   const std::string& title() const { return title_; }
   Status status() const { return status_; }
   const std::string& parent_id() const { return parent_id_; }
+  const std::string& position() const { return position_; }
   const absl::optional<base::Time>& due() const { return due_; }
   const std::vector<std::unique_ptr<TaskLink>>& links() const { return links_; }
 
@@ -143,6 +144,9 @@ class Task {
 
   // Parent task identifier.
   std::string parent_id_;
+
+  // Position of the task among its sibling tasks.
+  std::string position_;
 
   // Due date of the task (comes as a RFC 3339 timestamp and converted to
   // `base::Time`). The due date only records date information. Not all tasks
