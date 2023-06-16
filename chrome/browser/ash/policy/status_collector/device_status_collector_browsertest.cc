@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
 #include <stddef.h>
@@ -3827,6 +3828,30 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   EXPECT_EQ(second_activity.end_timestamp(), reported_end_time.ToJavaTime());
   EXPECT_EQ(session_status_.app_infos(1).app_id(), "id2");
   EXPECT_EQ(session_status_.app_infos(1).active_time_periods_size(), 0);
+}
+
+TEST_F(DeviceStatusCollectorTest, DemoModeDimensions) {
+  enterprise_management::DemoModeDimensions expected;
+  GetStatus();
+  ash::test::AssertDemoDimensionsEqual(device_status_.demo_mode_dimensions(),
+                                       expected);
+
+  scoped_stub_install_attributes_.Get()->SetDemoMode();
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kFeatureManagementFeatureAwareDeviceDemoMode);
+  scoped_local_state_.Get()->SetString(prefs::kDemoModeCountry, "CA");
+  scoped_local_state_.Get()->SetString(prefs::kDemoModeRetailerId, "retailer");
+  scoped_local_state_.Get()->SetString(prefs::kDemoModeStoreId, "1234");
+
+  expected.set_country("CA");
+  expected.set_retailer_name("retailer");
+  expected.set_store_number("1234");
+  expected.add_customization_facets(
+      enterprise_management::DemoModeDimensions::FEATURE_AWARE_DEVICE);
+
+  GetStatus();
+  ash::test::AssertDemoDimensionsEqual(device_status_.demo_mode_dimensions(),
+                                       expected);
 }
 
 struct FakeSimSlotInfo {

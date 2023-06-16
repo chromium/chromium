@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace ash {
 class MockEnrollmentLauncher;
@@ -41,6 +42,10 @@ bool SetupDummyOfflinePolicyDir(const std::string& account_id,
 // Note: Use this for browser tests where g_install_attributes_ is already
 // initialized. For unit tests, prefer |ScopedStubInstallAttributes|.
 void LockDemoDeviceInstallAttributes();
+
+void AssertDemoDimensionsEqual(
+    const enterprise_management::DemoModeDimensions& actual,
+    const enterprise_management::DemoModeDimensions& expected);
 
 }  // namespace test
 }  // namespace ash

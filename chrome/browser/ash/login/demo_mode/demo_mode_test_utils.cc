@@ -121,5 +121,17 @@ void LockDemoDeviceInstallAttributes() {
   run_loop.Run();
 }
 
+void AssertDemoDimensionsEqual(
+    const enterprise_management::DemoModeDimensions& expected,
+    const enterprise_management::DemoModeDimensions& actual) {
+  EXPECT_EQ(actual.country(), expected.country());
+  EXPECT_EQ(actual.retailer_name(), expected.retailer_name());
+  EXPECT_EQ(actual.store_number(), expected.store_number());
+  // Compare customization facets ignoring order
+  EXPECT_THAT(
+      actual.customization_facets(),
+      testing::UnorderedElementsAreArray(expected.customization_facets()));
+}
+
 }  // namespace test
 }  // namespace ash
