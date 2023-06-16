@@ -19,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -338,6 +339,17 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       return State{nullptr, nullptr, AshPrefSource::kCrosSettings,
                    ash::kAttestationForContentProtectionEnabled};
     }
+    case mojom::PrefPath::kAccessToGetAllScreensMediaInSessionAllowedForUrls:
+      if (!profile_prefs_registrar_) {
+        LOG(WARNING) << "Primary profile is not yet initialized";
+        return absl::nullopt;
+      }
+      return State{
+          .pref_service = profile_prefs_registrar_->prefs(),
+          .registrar = profile_prefs_registrar_.get(),
+          .pref_source = AshPrefSource::kNormal,
+          .path =
+              prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls};
   }
 }
 

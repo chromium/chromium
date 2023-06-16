@@ -114,6 +114,7 @@ enum PrefPath {
   [MinVersion=11] kAccessCodeCastDevices= 38,
   // M116: prefs::kAccessCodeCastDeviceAdditionTime (profile)
   [MinVersion=11] kAccessCodeCastDeviceAdditionTime = 39,
+  [MinVersion=12] kAccessToGetAllScreensMediaInSessionAllowedForUrls = 40,
 };
 
 // Information about who or what is controlling a particular pref. This is used

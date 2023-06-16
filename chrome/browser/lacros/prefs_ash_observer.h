@@ -29,12 +29,16 @@ class PrefsAshObserver {
   void OnDnsOverHttpsTemplatesChanged(base::Value value);
   void OnDnsOverHttpsTemplatesWithIdentifiersChanged(base::Value value);
   void OnDnsOverHttpsSaltChanged(base::Value value);
+  void OnAccessToGetAllScreensMediaInSessionAllowedForUrlsChanged(
+      base::Value value);
 
   raw_ptr<PrefService, DanglingUntriaged> local_state_{nullptr};
   std::unique_ptr<CrosapiPrefObserver> doh_mode_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_with_identifiers_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_salt_observer_;
+  std::unique_ptr<CrosapiPrefObserver>
+      access_to_get_all_screens_media_in_session_allowed_for_urls_observer_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_PREFS_ASH_OBSERVER_H_

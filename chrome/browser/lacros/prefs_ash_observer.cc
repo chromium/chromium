@@ -6,8 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "components/content_settings/core/common/pref_names.h"
 
 PrefsAshObserver::PrefsAshObserver(PrefService* local_state)
     : local_state_(local_state) {
@@ -37,6 +40,14 @@ void PrefsAshObserver::Init() {
       crosapi::mojom::PrefPath::kDnsOverHttpsSalt,
       base::BindRepeating(&PrefsAshObserver::OnDnsOverHttpsSaltChanged,
                           base::Unretained(this)));
+  access_to_get_all_screens_media_in_session_allowed_for_urls_observer_ =
+      std::make_unique<CrosapiPrefObserver>(
+          crosapi::mojom::PrefPath::
+              kAccessToGetAllScreensMediaInSessionAllowedForUrls,
+          base::BindRepeating(
+              &PrefsAshObserver::
+                  OnAccessToGetAllScreensMediaInSessionAllowedForUrlsChanged,
+              base::Unretained(this)));
 }
 
 void PrefsAshObserver::OnDnsOverHttpsModeChanged(base::Value value) {
@@ -77,4 +88,30 @@ void PrefsAshObserver::OnDnsOverHttpsSaltChanged(base::Value value) {
   }
 
   local_state_->SetString(prefs::kDnsOverHttpsSalt, value.GetString());
+}
+
+void PrefsAshObserver::
+    OnAccessToGetAllScreensMediaInSessionAllowedForUrlsChanged(
+        base::Value value) {
+  base::Value::List* const allowed_origins = value.GetIfList();
+  if (!allowed_origins) {
+    LOG(ERROR) << "Unexpected value for allowed origins";
+    return;
+  }
+
+  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile) {
+    LOG(ERROR) << "No primary user profile";
+    return;
+  }
+
+  PrefService* const pref_service = profile->GetPrefs();
+  if (!pref_service) {
+    LOG(ERROR) << "Pref service not available";
+    return;
+  }
+
+  pref_service->SetList(
+      prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
+      allowed_origins->Clone());
 }
