@@ -40,25 +40,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                     chromeos::VoidDBusMethodCallback callback) override;
   std::string GetTracingAgentName() override;
   std::string GetTraceEventLabel() override;
-  void SetSwapParameter(
-      const std::string& parameter,
-      int32_t value,
-      chromeos::DBusMethodCallback<std::string> callback) override;
-  void SwapZramEnableWriteback(
-      uint32_t size_mb,
-      chromeos::DBusMethodCallback<std::string> callback) override;
-
-  void SwapZramSetWritebackLimit(
-      uint32_t limit_pages,
-      chromeos::DBusMethodCallback<std::string> callback) override;
-
-  void SwapZramMarkIdle(
-      uint32_t age_seconds,
-      chromeos::DBusMethodCallback<std::string> callback) override;
-
-  void InitiateSwapZramWriteback(
-      debugd::ZramWritebackMode mode,
-      chromeos::DBusMethodCallback<std::string> callback) override;
   void StartAgentTracing(const base::trace_event::TraceConfig& trace_config,
                          StartAgentTracingCallback callback) override;
   void StopAgentTracing(StopAgentTracingCallback callback) override;
