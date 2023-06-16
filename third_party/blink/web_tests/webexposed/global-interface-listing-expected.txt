@@ -6756,6 +6756,7 @@ interface Part : PartRoot
     getter metadata
     getter root
     method constructor
+    method disconnect
 interface PartRoot
     attribute @@toStringTag
     method clone

@@ -23,6 +23,8 @@ class CORE_EXPORT DocumentPartRoot : public PartRoot {
   ~DocumentPartRoot() override = default;
 
   Document* GetDocument() const override { return document_; }
+  bool SupportsContainedParts() const override { return true; }
+
   String ToString() const override { return "DocumentPartRoot"; }
   void Trace(Visitor*) const override;
 

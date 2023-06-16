@@ -19,7 +19,15 @@ void PartRoot::Trace(Visitor* visitor) const {
 }
 
 void PartRoot::AddPart(Part& new_part) {
+  CHECK(!parts_unordered_.Contains(&new_part));
   parts_unordered_.push_back(new_part);
+  cached_parts_list_dirty_ = true;
+}
+
+void PartRoot::RemovePart(Part& part) {
+  auto index = parts_unordered_.Find(&part);
+  CHECK_NE(index, kNotFound);
+  parts_unordered_.EraseAt(index);
   cached_parts_list_dirty_ = true;
 }
 
@@ -128,7 +136,7 @@ DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
   PartRoot* root = this;
   while (!root->IsDocumentPartRoot()) {
     CHECK(root->IsPart());
-    root = &static_cast<Part*>(root)->root();
+    root = static_cast<Part*>(root)->root();
   }
   return static_cast<DocumentPartRoot*>(root);
 }

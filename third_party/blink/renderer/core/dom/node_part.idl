@@ -7,7 +7,7 @@
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface NodePart : Part {
-  constructor(PartRoot root, Node node, optional NodePartInit init = {});
+  [RaisesException] constructor(PartRoot root, Node node, optional NodePartInit init = {});
   readonly attribute Node node;
 };
 

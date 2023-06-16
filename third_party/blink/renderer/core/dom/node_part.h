@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class ExceptionState;
+
 // Implementation of the NodePart class, which is part of the DOM Parts API.
 // A NodePart stores a reference to a single |Node| in the DOM tree.
 class CORE_EXPORT NodePart : public Part {
@@ -22,9 +24,8 @@ class CORE_EXPORT NodePart : public Part {
  public:
   static NodePart* Create(PartRoot* root,
                           Node* node,
-                          const NodePartInit* init) {
-    return MakeGarbageCollected<NodePart>(*root, node, init);
-  }
+                          const NodePartInit* init,
+                          ExceptionState& exception_state);
   // TODO(crbug.com/1453291): Handle the init parameter.
   NodePart(PartRoot& root, Node* node, const NodePartInit* init)
       : Part(root), node_(node) {}

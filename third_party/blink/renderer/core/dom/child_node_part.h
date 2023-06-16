@@ -29,10 +29,8 @@ class CORE_EXPORT ChildNodePart : public Part {
   static ChildNodePart* Create(PartRoot* root,
                                Node* previous_sibling,
                                Node* next_sibling,
-                               const NodePartInit* init) {
-    return MakeGarbageCollected<ChildNodePart>(*root, *previous_sibling,
-                                               *next_sibling, init);
-  }
+                               const NodePartInit* init,
+                               ExceptionState& exception_state);
   // TODO(crbug.com/1453291): Handle the init parameter.
   ChildNodePart(PartRoot& root,
                 Node& previous_sibling,
@@ -47,6 +45,7 @@ class CORE_EXPORT ChildNodePart : public Part {
   void Trace(Visitor* visitor) const override;
   Node* RelevantNode() const override;
   String ToString() const override;
+  bool SupportsContainedParts() const override { return true; }
 
   // ChildNodePart API
   Node* previousSibling() const { return previous_sibling_; }

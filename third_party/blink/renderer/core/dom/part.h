@@ -31,9 +31,10 @@ class CORE_EXPORT Part : public PartRoot {
   virtual Node* RelevantNode() const = 0;
 
   // Part API
-  PartRoot& root() const { return *root_; }
+  PartRoot* root() const { return root_; }
   // TODO(1453291) Populate metadata_.
   Vector<String>& metadata() { return metadata_; }
+  void disconnect();
 
  protected:
   explicit Part(PartRoot& root);

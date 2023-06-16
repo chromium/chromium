@@ -9,12 +9,21 @@
 namespace blink {
 
 Part::Part(PartRoot& root) : root_(root) {
+  CHECK(root.SupportsContainedParts());
   root.AddPart(*this);
 }
 
 void Part::Trace(Visitor* visitor) const {
   visitor->Trace(root_);
   PartRoot::Trace(visitor);
+}
+
+void Part::disconnect() {
+  if (!root_) {
+    return;
+  }
+  root_->RemovePart(*this);
+  root_ = nullptr;
 }
 
 }  // namespace blink

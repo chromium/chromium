@@ -6,6 +6,20 @@
 
 namespace blink {
 
+// static
+NodePart* NodePart::Create(PartRoot* root,
+                           Node* node,
+                           const NodePartInit* init,
+                           ExceptionState& exception_state) {
+  if (!root->SupportsContainedParts()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The provided PartRoot does not support contained parts");
+    return nullptr;
+  }
+  return MakeGarbageCollected<NodePart>(*root, node, init);
+}
+
 void NodePart::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   Part::Trace(visitor);

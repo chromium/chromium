@@ -9,4 +9,5 @@
 interface Part : PartRoot {
   readonly attribute PartRoot root;
   readonly attribute FrozenArray<DOMString> metadata;
+  void disconnect();
 };
