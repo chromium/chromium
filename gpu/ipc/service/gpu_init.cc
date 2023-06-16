@@ -51,6 +51,8 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "gpu/vulkan/drm_modifiers_filter_vulkan.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -772,7 +774,20 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
-#endif
+#if BUILDFLAG(ENABLE_VULKAN)
+  auto* factory = ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
+          kGpuFeatureStatusEnabled &&
+      factory->SupportsDrmModifiersFilter()) {
+    DCHECK(vulkan_implementation_ &&
+           vulkan_implementation_->GetVulkanInstance() &&
+           vulkan_implementation_->GetVulkanInstance()->vk_instance() !=
+               VK_NULL_HANDLE);
+    factory->SetDrmModifiersFilter(std::make_unique<DrmModifiersFilterVulkan>(
+        vulkan_implementation_.get()));
+  }
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+#endif  // BUILDFLAG(IS_OZONE)
 
   if (!watchdog_thread_)
     watchdog_init.SetGpuWatchdogPtr(nullptr);

@@ -14,6 +14,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 
 typedef struct _drmModeModeInfo drmModeModeInfo;
 
@@ -105,6 +106,11 @@ class ScreenManager {
 
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedValue context) const;
+
+  // Sets the DRM modifiers filter that removes modifiers incompatible with use
+  // in raster and composite. This must be called during initialization before
+  // any modeset happens.
+  void SetDrmModifiersFilter(std::unique_ptr<DrmModifiersFilter> filter);
 
  private:
   using HardwareDisplayControllers =
@@ -201,6 +207,9 @@ class ScreenManager {
                                 const DrmOverlayPlaneList& modeset_planes);
 
   DrmWindow* FindWindowAt(const gfx::Rect& bounds) const;
+
+  // This must be destructed before |controllers_|.
+  std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter_;
 
   // List of display controllers (active and disabled).
   HardwareDisplayControllers controllers_;

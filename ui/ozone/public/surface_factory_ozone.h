@@ -21,6 +21,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/gl_ozone.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -200,6 +201,14 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   virtual void SetGetProtectedNativePixmapDelegate(
       const GetProtectedNativePixmapCallback&
           get_protected_native_pixmap_callback);
+
+  // Returns whether the platform supports an external filter on DRM modifiers.
+  virtual bool SupportsDrmModifiersFilter() const;
+
+  // Sets the filter that can remove modifiers incompatible with usage elsewhere
+  // in Chrome.
+  virtual void SetDrmModifiersFilter(
+      std::unique_ptr<DrmModifiersFilter> filter);
 
   // Enumerates the BufferFormats that the platform can allocate (and use for
   // texturing) via CreateNativePixmap(), or returns empty if those could not be
