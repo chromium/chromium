@@ -421,8 +421,8 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
         AudioTimestampHelper::FramesToTime(lost_frames, params_.sample_rate());
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (!lost_audio_duration.is_zero()) {
-      glitch_info_accumulator_.Add(
-          AudioGlitchInfo::SingleBoundedGlitch(lost_audio_duration));
+      glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+          lost_audio_duration, AudioGlitchInfo::Direction::kRender));
     }
   }
 

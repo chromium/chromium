@@ -395,8 +395,8 @@ void CrasUnifiedStream::CalculateAudioGlitches(
   glitch_reporter_.UpdateStats(underrun_glitch_duration);
 
   if (underrun_glitch_duration.is_positive()) {
-    glitch_info_accumulator_.Add(
-        AudioGlitchInfo::SingleBoundedGlitch(underrun_glitch_duration));
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+        underrun_glitch_duration, AudioGlitchInfo::Direction::kRender));
   }
   last_underrun_duration_ = underrun_duration;
 }

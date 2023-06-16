@@ -761,8 +761,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         glitch_reporter_.UpdateStats(is_glitch ? gap_duration
                                                : base::TimeDelta());
         if (is_glitch) {
-          glitch_info_accumulator.Add(
-              AudioGlitchInfo::SingleBoundedGlitch(gap_duration));
+            glitch_info_accumulator.Add(AudioGlitchInfo::SingleBoundedGlitch(
+                gap_duration, AudioGlitchInfo::Direction::kRender));
         }
       }
 

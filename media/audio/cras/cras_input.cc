@@ -579,8 +579,8 @@ void CrasInputStream::CalculateAudioGlitches(
       overrun_glitch_duration + dropped_samples_glitch_duration;
   glitch_reporter_.UpdateStats(glitch_duration);
   if (glitch_duration.is_positive()) {
-    glitch_info_accumulator_.Add(
-        AudioGlitchInfo::SingleBoundedGlitch(glitch_duration));
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+        glitch_duration, AudioGlitchInfo::Direction::kCapture));
   }
 
   last_overrun_frames_ = overrun_frames;

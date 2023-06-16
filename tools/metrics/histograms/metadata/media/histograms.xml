@@ -1238,6 +1238,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.{Type}.SystemGlitchDuration" units="ms"
+    expires_after="2024-06-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The duration of audio glitches occurring in the OS-specific implementation
+    of an audio stream (AudioInputStream for Capture and AudioOutputStream for
+    Render). Reported every time a glitch occurs.
+  </summary>
+  <token key="Type">
+    <variant name="Capture"/>
+    <variant name="Render"/>
+  </token>
+</histogram>
+
 <histogram name="Media.AudioBitsPerChannel" units="units" expires_after="M85">
   <owner>dalecurtis@chromium.org</owner>
   <summary>Bits per channel of HTML5 audio sample data.</summary>

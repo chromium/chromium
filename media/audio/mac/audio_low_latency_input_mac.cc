@@ -1301,8 +1301,8 @@ void AUAudioInputStream::UpdateCaptureTimestamp(
         lost_frames, input_params_.sample_rate());
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (lost_audio_duration.is_positive()) {
-      glitch_accumulator_.Add(
-          AudioGlitchInfo::SingleBoundedGlitch(lost_audio_duration));
+      glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+          lost_audio_duration, AudioGlitchInfo::Direction::kCapture));
     }
   }
 
