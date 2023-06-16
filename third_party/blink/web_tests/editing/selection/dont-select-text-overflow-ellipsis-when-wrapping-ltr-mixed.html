@@ -12,6 +12,11 @@ dd {
     text-overflow: ellipsis;
     text-decoration: inherit;
 }
+::selection,
+::selection:window-inactive {
+    background-color: rgb(176, 176, 176);
+    color: black;
+}
 </style>
 <p>crbug.com/642454: Don't select part of the ellipsis when wrapping selection.</p>
 <dl>
