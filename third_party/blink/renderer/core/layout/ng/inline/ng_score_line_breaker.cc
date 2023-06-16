@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info_list.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_widths.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -17,14 +18,18 @@ void NGScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
   scores_out_for_testing_ = scores_out;
 }
 
-void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
+void NGScoreLineBreaker::OptimalBreakPoints(
+    const NGLeadingFloats& leading_floats,
+    NGScoreLineBreakContext& context) {
   DCHECK(!is_balanced_ || !break_token_);
   DCHECK(context.LineBreakPoints().empty());
   DCHECK(!node_.IsScoreLineBreakDisabled());
   DCHECK(context.IsActive());
   NGLineInfoList& line_info_list = context.LineInfoList();
   DCHECK_LT(line_info_list.Size(), NGLineInfoList::kCapacity);
+  wtf_size_t line_index = 0;
   if (!line_info_list.IsEmpty()) {
+    line_index = line_info_list.Size();
     // To compute the next line after the last cached line, update
     // `break_token_` to the last cached break token.
     const NGLineInfo& last_line = line_info_list.Back();
@@ -36,10 +41,10 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
 
   // Compute line breaks and cache the results (`NGLineInfo`) up to
   // `NGLineInfoList::kCapacity` lines.
-  NGLeadingFloats empty_leading_floats;
+  LayoutUnit line_width = line_widths_[line_index];
   NGLineBreaker line_breaker(
-      node_, NGLineBreakerMode::kContent, ConstraintSpace(), line_opportunity_,
-      empty_leading_floats, break_token_,
+      node_, NGLineBreakerMode::kContent, ConstraintSpace(),
+      NGLineLayoutOpportunity(line_width), leading_floats, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
@@ -61,6 +66,12 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
     DCHECK(!line_breaker.IsFinished());
     if (line_info_list.Size() >= NGLineInfoList::kCapacity) {
       return;
+    }
+
+    const LayoutUnit next_line_width = line_widths_[++line_index];
+    if (next_line_width != line_width) {
+      line_width = next_line_width;
+      line_breaker.SetLineOpportunity(NGLineLayoutOpportunity(line_width));
     }
   }
   DCHECK(!line_info_list.IsEmpty());
@@ -103,9 +114,11 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
   }
 }
 
-void NGScoreLineBreaker::BalanceBreakPoints(NGScoreLineBreakContext& context) {
+void NGScoreLineBreaker::BalanceBreakPoints(
+    const NGLeadingFloats& leading_floats,
+    NGScoreLineBreakContext& context) {
   is_balanced_ = true;
-  OptimalBreakPoints(context);
+  OptimalBreakPoints(leading_floats, context);
 }
 
 bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
@@ -182,7 +195,7 @@ bool NGScoreLineBreaker::ComputeCandidates(const NGLineInfoList& line_info_list,
 }
 
 LayoutUnit NGScoreLineBreaker::AvailableWidth(wtf_size_t line_index) const {
-  LayoutUnit available_width = available_width_;
+  LayoutUnit available_width = line_widths_[line_index];
   if (line_index == 0) {
     available_width -= first_line_indent_;
   }
@@ -203,8 +216,8 @@ void NGScoreLineBreaker::ComputeLineWidths(
 void NGScoreLineBreaker::SetupParameters() {
   // Use the same heuristic parameters as Minikin's `computePenalties()`.
   // https://cs.android.com/android/platform/superproject/+/master:frameworks/minikin/libs/minikin/OptimalLineBreaker.cpp
-  available_width_ =
-      line_opportunity_.AvailableInlineSize().ClampNegativeToZero();
+  const LayoutUnit available_width =
+      line_widths_.Default().ClampNegativeToZero();
   const ComputedStyle& block_style = node_.Style();
   const float font_size = block_style.GetFontDescription().ComputedSize();
   zoom_ = block_style.EffectiveZoom();
@@ -212,7 +225,7 @@ void NGScoreLineBreaker::SetupParameters() {
   // Penalties/scores should be a zoomed value. Because both `font_size` and
   // `available_width` are zoomed, unzoom once.
   const float width_times_font_size =
-      available_width_.ToFloat() * font_size / zoom_;
+      available_width.ToFloat() * font_size / zoom_;
   is_justified_ = block_style.GetTextAlign() == ETextAlign::kJustify;
   if (is_justified_) {
     // For justified text, make hyphenation more aggressive and no line penalty.

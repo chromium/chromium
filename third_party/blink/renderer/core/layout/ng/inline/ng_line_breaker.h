@@ -69,6 +69,7 @@ class CORE_EXPORT NGLineBreaker {
   // withoiut `CollectInlines`. They are determined by this.
   bool ShouldDisableScoreLineBreak() const { return disable_score_line_break_; }
 
+  void SetLineOpportunity(const NGLineLayoutOpportunity& line_opportunity);
   // Override the available width to compute line breaks. This is reset after
   // each `NextLine`.
   void OverrideAvailableWidth(LayoutUnit available_width);

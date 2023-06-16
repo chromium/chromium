@@ -1103,7 +1103,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
-  is_score_line_break_disabled_ = true;
+  // `NGScoreLineBreaker` supports "simple" floats. See`NGLineWidths`.
 }
 
 template <typename OffsetMappingBuilder>

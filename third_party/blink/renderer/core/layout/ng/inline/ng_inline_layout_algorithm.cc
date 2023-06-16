@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_truncator.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_widths.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_score_line_breaker.h"
@@ -49,21 +50,6 @@ namespace blink {
 
 namespace {
 
-inline bool HasExclusions(const LayoutOpportunityVector& opportunities) {
-  // All lines should have the same available widths. No floats etc.
-  if (opportunities.size() != 1) {
-    return true;
-  }
-  const NGLayoutOpportunity& opportunity = opportunities.front();
-  // Bisection needs a positive available width.
-  if (opportunity.rect.InlineSize() <= LayoutUnit() ||
-      // Shape exclusions are not supported.
-      opportunity.HasShapeExclusions()) {
-    return true;
-  }
-  return false;
-}
-
 // This class provides hooks to switch between the default line breaker,
 // `text-wrap: balance`, and `text-wrap: pretty`.
 class NGLineBreakStrategy {
@@ -74,20 +60,21 @@ class NGLineBreakStrategy {
                       const NGInlineNode& node,
                       const ComputedStyle& block_style,
                       const NGInlineBreakToken* break_token,
-                      const LayoutOpportunityVector& opportunities,
                       const NGColumnSpannerPath* column_spanner_path) {
     if (!column_spanner_path) {
       const TextWrap text_wrap = block_style.GetTextWrap();
-      initiate_balancing_ = text_wrap == TextWrap::kBalance && !break_token;
-      if (UNLIKELY(initiate_balancing_ || text_wrap == TextWrap::kPretty)) {
+      if (UNLIKELY(text_wrap == TextWrap::kBalance)) {
+        score_line_break_context_ = context->ScoreLineBreakContext();
+        initiate_balancing_ = !break_token;
+        if (initiate_balancing_) {
+          DCHECK(!score_line_break_context_ ||
+                 score_line_break_context_->IsActive());
+          use_score_line_break_ = score_line_break_context_;
+        }
+      } else if (UNLIKELY(text_wrap == TextWrap::kPretty)) {
         score_line_break_context_ = context->ScoreLineBreakContext();
         use_score_line_break_ =
             score_line_break_context_ && score_line_break_context_->IsActive();
-      }
-      if (UNLIKELY(initiate_balancing_ || use_score_line_break_)) {
-        if (HasExclusions(opportunities)) {
-          initiate_balancing_ = use_score_line_break_ = false;
-        }
       }
     }
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -101,18 +88,24 @@ class NGLineBreakStrategy {
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 
+  bool NeedsToPrepare() const {
+    return initiate_balancing_ || use_score_line_break_;
+  }
+
   void Prepare(NGInlineChildLayoutContext* context,
                const NGInlineNode& node,
                const NGConstraintSpace& space,
-               const NGLayoutOpportunity& opportunity,
+               base::span<const NGLayoutOpportunity> opportunities,
                const NGLineLayoutOpportunity& line_opportunity,
+               const NGLeadingFloats& leading_floats,
                const NGInlineBreakToken* break_token,
                NGExclusionSpace* exclusion_space) {
-    if (UNLIKELY(initiate_balancing_)) {
-      Balance(context, node, space, opportunity, line_opportunity, break_token,
-              exclusion_space);
-    } else if (UNLIKELY(use_score_line_break_)) {
-      Optimize(node, space, line_opportunity, break_token, exclusion_space);
+    if (initiate_balancing_) {
+      Balance(context, node, space, opportunities, line_opportunity,
+              leading_floats, break_token, exclusion_space);
+    } else if (use_score_line_break_) {
+      Optimize(node, space, opportunities, leading_floats, break_token,
+               exclusion_space);
     }
   }
 
@@ -142,30 +135,40 @@ class NGLineBreakStrategy {
   void Balance(NGInlineChildLayoutContext* context,
                const NGInlineNode& node,
                const NGConstraintSpace& space,
-               const NGLayoutOpportunity& opportunity,
+               const base::span<const NGLayoutOpportunity>& opportunities,
                const NGLineLayoutOpportunity& line_opportunity,
+               const NGLeadingFloats& leading_floats,
                const NGInlineBreakToken* break_token,
                NGExclusionSpace* exclusion_space) {
     // `initiate_balancing` should have checked these conditions.
     DCHECK(!context->BalancedAvailableWidth());
-    DCHECK_GT(line_opportunity.AvailableInlineSize(), LayoutUnit());
-    DCHECK_EQ(opportunity.rect.BlockEndOffset(), LayoutUnit::Max());
-    DCHECK(!opportunity.HasShapeExclusions());
+    DCHECK_GT(opportunities.size(), 0u);
+    DCHECK(!opportunities.back().HasShapeExclusions());
+
     // Try `NGScoreLineBreaker` first if it's applicable.
     if (use_score_line_break_) {
       DCHECK(RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled());
       DCHECK(score_line_break_context_->LineBreakPoints().empty());
       DCHECK_EQ(score_line_break_context_->LineBreakPointsIndex(), 0u);
-      NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token,
-                                   exclusion_space);
-      optimizer.BalanceBreakPoints(*score_line_break_context_);
-      if (!score_line_break_context_->LineBreakPoints().empty()) {
-        return;
+      NGLineWidths line_widths;
+      if (line_widths.Set(node, opportunities)) {
+        NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
+                                     exclusion_space);
+        optimizer.BalanceBreakPoints(leading_floats,
+                                     *score_line_break_context_);
+        if (!score_line_break_context_->LineBreakPoints().empty()) {
+          return;
+        }
       }
       // Fallback to the bisection if `NGScoreLineBreaker` failed.
     }
 
     // Then try the bisection algorithm.
+    if (UNLIKELY(opportunities.size() != 1 ||
+                 line_opportunity.AvailableInlineSize() <= LayoutUnit())) {
+      // Exclusions and negative inline sizes are not supported.
+      return;
+    }
     if (const absl::optional<LayoutUnit> balanced_available_width =
             NGParagraphLineBreaker::AttemptParagraphBalancing(
                 node, space, line_opportunity)) {
@@ -178,14 +181,21 @@ class NGLineBreakStrategy {
 
   void Optimize(const NGInlineNode& node,
                 const NGConstraintSpace& space,
-                const NGLineLayoutOpportunity& line_opportunity,
+                const base::span<const NGLayoutOpportunity>& opportunities,
+                const NGLeadingFloats& leading_floats,
                 const NGInlineBreakToken* break_token,
                 NGExclusionSpace* exclusion_space) {
     DCHECK(score_line_break_context_->LineBreakPoints().empty());
     DCHECK_EQ(score_line_break_context_->LineBreakPointsIndex(), 0u);
-    NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token,
+    NGLineWidths line_widths;
+    if (UNLIKELY(!line_widths.Set(node, opportunities, break_token))) {
+      // The next line may have less opportunities that keep running, without
+      // suspending the context.
+      return;
+    }
+    NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                  exclusion_space);
-    optimizer.OptimalBreakPoints(*score_line_break_context_);
+    optimizer.OptimalBreakPoints(leading_floats, *score_line_break_context_);
   }
 
   bool initiate_balancing_ = false;
@@ -1394,8 +1404,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   DCHECK(line_box);
   // Determine which line breaker to use.
   NGLineBreakStrategy line_break_strategy(context_, Node(), Style(),
-                                          break_token, opportunities,
-                                          column_spanner_path_);
+                                          break_token, column_spanner_path_);
   bool is_line_created = false;
   bool is_end_paragraph = false;
   LayoutUnit line_block_size;
@@ -1430,16 +1439,20 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     NGLineLayoutOpportunity line_opportunity =
         opportunity.ComputeLineLayoutOpportunity(ConstraintSpace(),
                                                  line_block_size, block_delta);
-    line_break_strategy.Prepare(context_, Node(), ConstraintSpace(),
-                                opportunity, line_opportunity, break_token,
-                                &ExclusionSpace());
+    if (UNLIKELY(line_break_strategy.NeedsToPrepare())) {
+      line_break_strategy.Prepare(
+          context_, Node(), ConstraintSpace(),
+          base::make_span(opportunities_it, opportunities.end()),
+          line_opportunity, leading_floats, break_token, &ExclusionSpace());
+    }
     bool is_line_info_cached = false;
     NGLineInfo& line_info =
         context_->GetLineInfo(break_token, is_line_info_cached);
     if (UNLIKELY(is_line_info_cached)) {
-      // Update the BFC block offset because it was not known when the
-      // `line_info` was cached.
-      line_info.SetBfcBlockOffset(line_opportunity.bfc_block_offset);
+      // Update the BFC offset because it was not known when the `line_info` was
+      // cached.
+      line_info.SetBfcOffset({line_opportunity.line_left_offset,
+                              line_opportunity.bfc_block_offset});
     } else {
       NGLineBreaker line_breaker(Node(), NGLineBreakerMode::kContent,
                                  ConstraintSpace(), line_opportunity,

@@ -423,6 +423,12 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
 
 NGLineBreaker::~NGLineBreaker() = default;
 
+void NGLineBreaker::SetLineOpportunity(
+    const NGLineLayoutOpportunity& line_opportunity) {
+  line_opportunity_ = line_opportunity;
+  UpdateAvailableWidth();
+}
+
 void NGLineBreaker::OverrideAvailableWidth(LayoutUnit available_width) {
   DCHECK(available_width);
   override_available_width_ = available_width;

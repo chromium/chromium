@@ -151,9 +151,6 @@ class CORE_EXPORT NGLineInfo {
   void SetHasOverflow(bool value = true) { has_overflow_ = value; }
 
   void SetBfcOffset(const NGBfcOffset& bfc_offset) { bfc_offset_ = bfc_offset; }
-  void SetBfcBlockOffset(LayoutUnit block_offset) {
-    bfc_offset_.block_offset = block_offset;
-  }
   void SetWidth(LayoutUnit available_width, LayoutUnit width) {
     available_width_ = available_width;
     width_ = width;

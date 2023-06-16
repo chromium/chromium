@@ -73,6 +73,28 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFirstLine) {
   EXPECT_TRUE(AttemptParagraphBalancing(target));
 }
 
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloatLeading) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-size: 10px;
+      width: 10ch;
+    }
+    .float { float: left; }
+    </style>
+    <div id="target">
+      <div class="float">float</div>
+      1234 6789
+      1234 6789
+    </div>
+  )HTML");
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_TRUE(target.IsBisectLineBreakDisabled());
+  EXPECT_FALSE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(AttemptParagraphBalancing(target));
+}
+
 TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -91,7 +113,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
-  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 

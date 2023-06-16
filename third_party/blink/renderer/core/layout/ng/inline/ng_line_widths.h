@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class NGInlineBreakToken;
 class NGInlineNode;
 
 //
@@ -23,12 +24,20 @@ class CORE_EXPORT NGLineWidths {
   STACK_ALLOCATED();
 
  public:
+  NGLineWidths() = default;
+  // Construct with the given `width`, without any exclusions.
+  explicit NGLineWidths(LayoutUnit width) : default_width_(width) {}
+
+  LayoutUnit Default() const { return default_width_; }
+  bool HasExclusions() const { return num_excluded_lines_; }
+
   // Returns the width of a line. The `index` is 0-based line index.
   LayoutUnit operator[](wtf_size_t index) const;
 
   // Compute the line widths. Returns `false` if the `node` is not _simple_.
   bool Set(const NGInlineNode& node,
-           base::span<const NGLayoutOpportunity> opportunities);
+           base::span<const NGLayoutOpportunity> opportunities,
+           const NGInlineBreakToken* break_token = nullptr);
 
  private:
   LayoutUnit default_width_;

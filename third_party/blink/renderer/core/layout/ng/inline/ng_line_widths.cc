@@ -11,7 +11,8 @@
 namespace blink {
 
 bool NGLineWidths::Set(const NGInlineNode& node,
-                       base::span<const NGLayoutOpportunity> opportunities) {
+                       base::span<const NGLayoutOpportunity> opportunities,
+                       const NGInlineBreakToken* break_token) {
   // Set the default width if no exclusions.
   DCHECK_GE(opportunities.size(), 1u);
   const NGLayoutOpportunity& first_opportunity = opportunities.front();
@@ -41,8 +42,13 @@ bool NGLineWidths::Set(const NGInlineNode& node,
   const NGInlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
   // `::first-line` is not supported.
   DCHECK_EQ(&items_data, &node.ItemsData(true));
-  const HeapVector<NGInlineItem>& items = items_data.items;
+  base::span<const NGInlineItem> items(items_data.items);
   bool is_empty_so_far = true;
+  if (break_token) {
+    DCHECK(break_token->Start());
+    items = items.subspan(break_token->StartItemIndex());
+    is_empty_so_far = false;
+  }
   for (const NGInlineItem& item : items) {
     switch (item.Type()) {
       case NGInlineItem::kText: {
@@ -105,12 +111,24 @@ bool NGLineWidths::Set(const NGInlineNode& node,
     }
   }
 
+  if (opportunities.size() == 1) {
+    // There are two conditions to come here:
+    // * The `node` has floats, but only before `break_token`; i.e., no floats
+    //   after `break_token`.
+    // * The `node` has leading floats, but their size is 0, so they don't
+    //   create exclusions.
+    // Either way, there are no exclusions.
+    default_width_ = first_opportunity.rect.InlineSize();
+    return true;
+  }
+
   // All lines have the same line height.
   // Compute the number of lines that have the exclusion.
   const LayoutUnit line_height = line_box.metrics.LineHeight();
   if (UNLIKELY(line_height <= LayoutUnit())) {
     return false;
   }
+  DCHECK_GE(opportunities.size(), 2u);
   const NGLayoutOpportunity& last_opportunity = opportunities.back();
   DCHECK(!last_opportunity.HasShapeExclusions());
   default_width_ = last_opportunity.rect.InlineSize();

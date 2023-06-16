@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#valdef-text-wrap-pretty">
+<link rel="match" href="text-wrap-pretty-float-001-ref.html">
+<style>
+.container {
+  font-family: monospace;
+  font-size: 20px;
+  width: 20ch;
+  border: 1px solid blue;
+  text-wrap: pretty;
+}
+.float {
+  float: left;
+  width: 10ch;
+  height: 2em;
+}
+</style>
+<div class="container">
+  <div class="float"></div>
+  12 456 890
+  12
+</div>
+<div class="container">
+  <div class="float"></div>
+  12 456 890
+  12 456 890
+  12
+</div>
+<div class="container">
+  <div class="float"></div>
+  12 456 890
+  12 456 890
+  12 456 89 12 456 890
+  12 456 89 12 456 890
+  12
+</div>
+<div class="container">
+  <div class="float"></div>
+  12 456 890
+  12 456 890
+  12 456 89 12 456 890
+  12 456 89 12 456 890
+  12 456 89 12 456 890
+  12 456 89 12 456 890
+  12
+</div>
