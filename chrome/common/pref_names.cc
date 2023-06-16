@@ -2344,7 +2344,7 @@ const char kH2ClientCertCoalescingHosts[] =
 const char kHSTSPolicyBypassList[] = "hsts.policy.upgrade_bypass_list";
 
 // If false, disable post-quantum key agreement in TLS connections.
-const char kPostQuantumEnabled[] = "ssl.post_quantum_enabled";
+const char kPostQuantumKeyAgreementEnabled[] = "ssl.post_quantum_enabled";
 
 // If false, disable Encrypted ClientHello (ECH) in TLS connections.
 const char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";

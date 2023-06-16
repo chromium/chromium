@@ -23515,5 +23515,49 @@
         }
       }
     ]
+  },
+  "PostQuantumKeyAgreementEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ssl.post_quantum_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "PostQuantumKeyAgreementEnabled": false
+        },
+        "prefs": {
+          "ssl.post_quantum_enabled": {
+            "value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "PostQuantumKeyAgreementEnabled": true
+        },
+        "prefs": {
+          "ssl.post_quantum_enabled": {
+            "value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 }

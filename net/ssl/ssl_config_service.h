@@ -28,6 +28,9 @@ struct NET_EXPORT SSLContextConfig {
   // Returns whether insecure hashes are allowed in TLS handshakes.
   bool InsecureHashesInTLSHandshakesEnabled() const;
 
+  // Returns whether post-quantum key agreement is enabled in TLS handshakes.
+  bool PostQuantumKeyAgreementEnabled() const;
+
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
   // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. If version_max <
@@ -45,8 +48,10 @@ struct NET_EXPORT SSLContextConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
 
-  // If false, disables post-quantum key agreement in TLS connections.
-  bool post_quantum_enabled = true;
+  // If specified, controls whether post-quantum key agreement in TLS
+  // connections is allowed. If `absl::nullopt`, this is determined by feature
+  // flags.
+  absl::optional<bool> post_quantum_override;
 
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
   // may be enabled or disabled, depending on feature flags. If querying whether

@@ -20,11 +20,11 @@ namespace {
 bool SSLContextConfigsAreEqual(const net::SSLContextConfig& config1,
                                const net::SSLContextConfig& config2) {
   return std::tie(config1.version_min, config1.version_max,
-                  config1.disabled_cipher_suites, config1.post_quantum_enabled,
+                  config1.disabled_cipher_suites, config1.post_quantum_override,
                   config1.ech_enabled, config1.insecure_hash_override,
                   config1.rsa_key_usage_for_local_anchors_override) ==
          std::tie(config2.version_min, config2.version_max,
-                  config2.disabled_cipher_suites, config2.post_quantum_enabled,
+                  config2.disabled_cipher_suites, config2.post_quantum_override,
                   config2.ech_enabled, config2.insecure_hash_override,
                   config2.rsa_key_usage_for_local_anchors_override);
 }
@@ -47,6 +47,11 @@ bool SSLContextConfig::EncryptedClientHelloEnabled() const {
 bool SSLContextConfig::InsecureHashesInTLSHandshakesEnabled() const {
   return insecure_hash_override.value_or(
       base::FeatureList::IsEnabled(features::kSHA1ServerSignature));
+}
+
+bool SSLContextConfig::PostQuantumKeyAgreementEnabled() const {
+  return post_quantum_override.value_or(
+      base::FeatureList::IsEnabled(features::kPostQuantumKyber));
 }
 
 SSLConfigService::SSLConfigService()

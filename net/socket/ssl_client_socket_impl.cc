@@ -745,8 +745,7 @@ int SSLClientSocketImpl::Init() {
     return ERR_UNEXPECTED;
   }
 
-  if (context_->config().post_quantum_enabled &&
-      base::FeatureList::IsEnabled(features::kPostQuantumKyber)) {
+  if (context_->config().PostQuantumKeyAgreementEnabled()) {
     static const int kCurves[] = {NID_X25519Kyber768Draft00, NID_X25519,
                                   NID_X9_62_prime256v1, NID_secp384r1};
     if (!SSL_set1_curves(ssl_.get(), kCurves, std::size(kCurves))) {

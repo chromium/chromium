@@ -218,8 +218,7 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
         base::BindRepeating(&QuicCryptoClientConfigOwner::OnMemoryPressure,
                             base::Unretained(this)));
     if (quic_stream_factory_->ssl_config_service_->GetSSLContextConfig()
-            .post_quantum_enabled &&
-        base::FeatureList::IsEnabled(features::kPostQuantumKyber)) {
+            .PostQuantumKeyAgreementEnabled()) {
       config_.set_preferred_groups({SSL_GROUP_X25519_KYBER768_DRAFT00,
                                     SSL_GROUP_X25519, SSL_GROUP_SECP256R1,
                                     SSL_GROUP_SECP384R1});
