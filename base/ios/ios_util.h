@@ -32,6 +32,9 @@ BASE_EXPORT bool IsRunningOnIOS15OrLater();
 // Returns whether the operating system is iOS 16 or later.
 BASE_EXPORT bool IsRunningOnIOS16OrLater();
 
+// Returns whether the operating system is iOS 17 or later.
+BASE_EXPORT bool IsRunningOnIOS17OrLater();
+
 // Returns whether the operating system is at the given version or later.
 BASE_EXPORT bool IsRunningOnOrLater(int32_t major,
                                     int32_t minor,
