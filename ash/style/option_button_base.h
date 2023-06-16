@@ -6,6 +6,7 @@
 #define ASH_STYLE_OPTION_BUTTON_BASE_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
@@ -51,6 +52,11 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
 
   // Updates the `select_` state.
   void SetSelected(bool selected);
+
+  // Sets a TypographyToken as the style of the label.
+  void SetLabelStyle(TypographyToken token);
+  // Sets a color_id as the color_id of the label.
+  void SetLabelColorId(ui::ColorId color_id);
 
   // views::LabelButton:
   void Layout() override;

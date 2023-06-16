@@ -50,6 +50,14 @@ void OptionButtonBase::SetSelected(bool selected) {
     delegate_->OnButtonSelected(this);
 }
 
+void OptionButtonBase::SetLabelStyle(TypographyToken token) {
+  TypographyProvider::Get()->StyleLabel(token, *label());
+}
+
+void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
+  label()->SetEnabledColorId(color_id);
+}
+
 void OptionButtonBase::Layout() {
   gfx::Rect local_bounds = GetLocalBounds();
   gfx::Rect local_content_bounds(local_bounds);
