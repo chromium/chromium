@@ -38,6 +38,7 @@ namespace {
 
 constexpr char kPortNameKey[] = "name";
 constexpr char kTokenKey[] = "token";
+constexpr char kBluetoothDevicePathKey[] = "bluetooth_device_path";
 #if BUILDFLAG(IS_WIN)
 constexpr char kDeviceInstanceIdKey[] = "device_instance_id";
 #else
@@ -157,23 +158,27 @@ base::Value::Dict SerialChooserContext::PortInfoToValue(
     return value;
   }
 
+  if (port.bluetooth_service_class_id &&
+      port.bluetooth_service_class_id->IsValid()) {
+    value.Set(kBluetoothDevicePathKey, port.path.LossyDisplayName());
+  } else {
 #if BUILDFLAG(IS_WIN)
-  // Windows provides a handy device identifier which we can rely on to be
-  // sufficiently stable for identifying devices across restarts.
-  value.Set(kDeviceInstanceIdKey, port.device_instance_id);
+    // Windows provides a handy device identifier which we can rely on to be
+    // sufficiently stable for identifying devices across restarts.
+    value.Set(kDeviceInstanceIdKey, port.device_instance_id);
 #else
-  DCHECK(port.has_vendor_id);
-  value.Set(kVendorIdKey, port.vendor_id);
-  DCHECK(port.has_product_id);
-  value.Set(kProductIdKey, port.product_id);
-  DCHECK(port.serial_number);
-  value.Set(kSerialNumberKey, *port.serial_number);
-
+    CHECK(port.has_vendor_id);
+    value.Set(kVendorIdKey, port.vendor_id);
+    CHECK(port.has_product_id);
+    value.Set(kProductIdKey, port.product_id);
+    CHECK(port.serial_number);
+    value.Set(kSerialNumberKey, *port.serial_number);
 #if BUILDFLAG(IS_MAC)
-  DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
-  value.Set(kUsbDriverKey, *port.usb_driver_name);
+    CHECK(port.usb_driver_name && !port.usb_driver_name->empty());
+    value.Set(kUsbDriverKey, *port.usb_driver_name);
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_WIN)
+  }
   return value;
 }
 
@@ -184,6 +189,12 @@ std::string SerialChooserContext::GetKeyForObject(
 
   if (IsPolicyGrantedObject(object)) {
     return *object.FindString(kPortNameKey);
+  }
+
+  const std::string* bluetooth_device_path =
+      object.FindString(kBluetoothDevicePathKey);
+  if (bluetooth_device_path) {
+    return *bluetooth_device_path;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -212,6 +223,9 @@ bool SerialChooserContext::IsValidObject(const base::Value::Dict& object) {
   const std::string* token = object.FindString(kTokenKey);
   if (token)
     return object.size() == 2 && DecodeToken(*token);
+  if (object.FindString(kBluetoothDevicePathKey)) {
+    return object.size() == 2;
+  }
 
 #if BUILDFLAG(IS_WIN)
   return object.size() == 2 && object.FindString(kDeviceInstanceIdKey);
@@ -457,34 +471,58 @@ bool SerialChooserContext::HasPortPermission(
     // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device));
 
-#if BUILDFLAG(IS_WIN)
-    const std::string& device_instance_id =
-        *device.FindString(kDeviceInstanceIdKey);
-    if (port.device_instance_id == device_instance_id)
+    if (port.bluetooth_service_class_id &&
+        port.bluetooth_service_class_id->IsValid()) {
+      const std::string* bluetooth_device_path =
+          device.FindString(kBluetoothDevicePathKey);
+      if (!bluetooth_device_path) {
+        continue;
+      }
+      // LossyDisplayName for Bluetooth devices is always expected to be a MAC
+      // address which fits into UTF8 so converting to UTF16 for this comparison
+      // is safe.
+      if (base::UTF8ToUTF16(*bluetooth_device_path) !=
+          port.path.LossyDisplayName()) {
+        continue;
+      }
       return true;
+    } else {
+#if BUILDFLAG(IS_WIN)
+      const std::string& device_instance_id =
+          *device.FindString(kDeviceInstanceIdKey);
+      if (port.device_instance_id == device_instance_id) {
+        return true;
+      }
 #else
-    const int vendor_id = *device.FindInt(kVendorIdKey);
-    const int product_id = *device.FindInt(kProductIdKey);
-    const std::string& serial_number = *device.FindString(kSerialNumberKey);
+      const absl::optional<int> vendor_id = device.FindInt(kVendorIdKey);
+      const absl::optional<int> product_id = device.FindInt(kProductIdKey);
+      const std::string* serial_number = device.FindString(kSerialNumberKey);
+      if (!vendor_id || !product_id || !serial_number) {
+        continue;
+      }
 
-    // Guaranteed by the CanStorePersistentEntry() check above.
-    DCHECK(port.has_vendor_id);
-    DCHECK(port.has_product_id);
-    DCHECK(port.serial_number && !port.serial_number->empty());
-    if (port.vendor_id != vendor_id || port.product_id != product_id ||
-        port.serial_number != serial_number) {
-      continue;
-    }
+      // Guaranteed by the CanStorePersistentEntry() check above.
+      CHECK(port.has_vendor_id);
+      CHECK(port.has_product_id);
+      CHECK(port.serial_number && !port.serial_number->empty());
+      if (port.vendor_id != *vendor_id || port.product_id != *product_id ||
+          port.serial_number != *serial_number) {
+        continue;
+      }
 
 #if BUILDFLAG(IS_MAC)
-    const std::string& usb_driver_name = *device.FindString(kUsbDriverKey);
-    if (port.usb_driver_name != usb_driver_name) {
-      continue;
-    }
+      const std::string* usb_driver_name = device.FindString(kUsbDriverKey);
+      if (!usb_driver_name) {
+        continue;
+      }
+      if (port.usb_driver_name != *usb_driver_name) {
+        continue;
+      }
 #endif  // BUILDFLAG(IS_MAC)
 
-    return true;
+      return true;
 #endif  // BUILDFLAG(IS_WIN)
+    }
   }
   return false;
 }
@@ -499,11 +537,19 @@ bool SerialChooserContext::CanStorePersistentEntry(
   if (!port.display_name || port.display_name->empty())
     return false;
 
+  const bool has_bluetooth = port.bluetooth_service_class_id &&
+                             port.bluetooth_service_class_id->IsValid() &&
+                             !port.path.LossyDisplayName().empty();
+  if (has_bluetooth) {
+    return true;
+  }
+
 #if BUILDFLAG(IS_WIN)
   return !port.device_instance_id.empty();
 #else
-  if (!port.has_vendor_id || !port.has_product_id || !port.serial_number ||
-      port.serial_number->empty()) {
+  const bool has_usb = port.has_vendor_id && port.has_product_id &&
+                       port.serial_number && !port.serial_number->empty();
+  if (!has_usb) {
     return false;
   }
 
