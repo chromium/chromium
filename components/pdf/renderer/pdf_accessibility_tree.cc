@@ -52,6 +52,15 @@ namespace pdf {
 namespace ranges = base::ranges;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PdfOcrRequestStatus {
+  kRequested = 0,
+  kPerformed = 1,
+  kMaxValue = kPerformed,
+};
+
 // Handles the connection to the Screen AI Service which can perform OCR on
 // images.
 class PdfOcrService final {
@@ -126,6 +135,9 @@ class PdfOcrService final {
         request.image.image_data,
         base::BindOnce(&PdfOcrService::ReceiveOcrResultsForRequest,
                        weak_ptr_factory_.GetWeakPtr(), request));
+    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+    base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
+                                  PdfOcrRequestStatus::kRequested);
   }
 
   void ReceiveOcrResultsForRequest(OcrRequest request,
@@ -1681,8 +1693,24 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-  if (page_index == page_count_ - 1)
+  if (page_index == page_count_ - 1) {
     UnserializeNodes();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
+      // TODO(crbug.com/1443345): Add a browser test to validate these UMA
+      // metrics.
+      base::UmaHistogramBoolean(
+          "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
+          ocr_service_ != nullptr);
+
+      if (ocr_service_) {
+        // Record the number of pages in PDF opened for PDF OCR.
+        base::UmaHistogramCounts1000(
+            "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  }
 }
 
 void PdfAccessibilityTree::AddPageContent(
@@ -1758,14 +1786,6 @@ void PdfAccessibilityTree::UnserializeNodes() {
 
   base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                             did_get_a_text_run_);
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (!did_get_a_text_run_) {
-    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
-    base::UmaHistogramBoolean(
-        "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
-        ocr_service_ != nullptr);
-  }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2037,6 +2057,9 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   // more convenient and less complex if an `ui::AXTree` was never constructed
   // and if the `ui::AXTreeSource` was able to use the collection of `nodes_`
   // directly.
+  // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+  base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
+                                PdfOcrRequestStatus::kPerformed);
 
   // Check if `ocr_service_` is still available. If not, it means PDF OCR has
   // been turned off, so just return here to ignore OCR results.

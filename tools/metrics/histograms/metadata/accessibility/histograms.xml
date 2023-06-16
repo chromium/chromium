@@ -1617,8 +1617,32 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     When an inaccessible PDF is loaded, true if the PDF OCR feature was turned
-    on to extract text from images. Note that, as long as the PDF OCR is on, a
-    PDF containing images will record true even if the images contain no text.
+    on to extract text from images; false if the PDF OCR feature was turned off
+    and the feature notification was added to a PDF accessibility tree.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfOcr.InaccessiblePdfPageCount" units="count"
+    expires_after="2024-06-01">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of pages in an inaccessible PDF opened for PDF OCR when a
+    PDF accessibility tree gets created for the PDF.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfOcr.PDFImages" enum="PdfOcrRequestStatus"
+    expires_after="2024-06-01">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the status of PDF OCR request per PDF image. It checks whether a PDF
+    OCR request is sent to the OCR model or performed by the OCR model.
+
+    This metric helps to measure whether the OCR model manages to respond to all
+    requests successfully or whether the user closes a PDF without waiting for
+    OCR process to be done.
   </summary>
 </histogram>
 
