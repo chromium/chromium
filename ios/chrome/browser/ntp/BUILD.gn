@@ -18,12 +18,12 @@ source_set("ntp") {
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/browser/discover_feed:constants",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/components/webui:url_constants",
     "//ios/web/common:features",
     "//ios/web/public",
@@ -54,7 +54,7 @@ source_set("features") {
     "//base",
     "//components/version_info:channel",
     "//ios/chrome/app:background_mode_buildflags",
-    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common",
   ]
 }

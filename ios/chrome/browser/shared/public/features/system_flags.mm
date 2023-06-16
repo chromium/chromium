@@ -5,7 +5,7 @@
 // This file can be empty. Its purpose is to contain the relatively short lived
 // definitions required for experimental flags.
 
-#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 #import <Foundation/Foundation.h>
 

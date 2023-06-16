@@ -23,10 +23,10 @@ source_set("bring_android_tabs") {
     "//components/sync/service",
     "//components/sync_device_info",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/synced_sessions",
   ]

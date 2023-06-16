@@ -9,7 +9,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -8,7 +8,6 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"

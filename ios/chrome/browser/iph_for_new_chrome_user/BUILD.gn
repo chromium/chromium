@@ -13,6 +13,6 @@ source_set("iph_for_new_chrome_user") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }

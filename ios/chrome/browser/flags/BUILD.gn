@@ -71,6 +71,7 @@ source_set("flags") {
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/text_selection:text_selection_utils",
@@ -105,17 +106,6 @@ source_set("system_flags") {
   sources = [
     "chrome_switches.cc",
     "chrome_switches.h",
-    "system_flags.h",
-    "system_flags.mm",
-  ]
-  deps = [
-    "//base",
-    "//build:branding_buildflags",
-    "//components/autofill/core/common",
-    "//components/password_manager/core/common:features",
-    "//components/variations",
-    "//ios/chrome/browser/browsing_data:feature_flags",
-    "//ios/chrome/browser/shared/public/features",
   ]
 }
 

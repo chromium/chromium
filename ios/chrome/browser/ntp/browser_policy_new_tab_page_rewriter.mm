@@ -6,10 +6,10 @@
 
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/url_fixer.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/browser_state.h"
 

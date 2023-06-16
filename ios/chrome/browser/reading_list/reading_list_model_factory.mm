@@ -18,9 +18,9 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/model_type_store_service.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 

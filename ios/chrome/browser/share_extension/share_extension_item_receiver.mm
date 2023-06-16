@@ -19,7 +19,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
-#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"

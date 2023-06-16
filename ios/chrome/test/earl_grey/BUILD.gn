@@ -33,6 +33,7 @@ source_set("hooks") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",

@@ -8,7 +8,7 @@
 
 #import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_macros.h"
-#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
