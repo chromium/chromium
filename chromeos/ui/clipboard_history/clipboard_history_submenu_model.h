@@ -34,11 +34,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
   using ShowClipboardHistoryMenuCallback =
       base::RepeatingCallback<void(int event_flags)>;
 
-  // `source` indicates where the submenu model is used. It should be a context
-  // menu.
   static std::unique_ptr<ClipboardHistorySubmenuModel>
   CreateClipboardHistorySubmenuModel(
-      crosapi::mojom::ClipboardHistoryControllerShowSource source,
+      crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
       ShowClipboardHistoryMenuCallback show_menu_callback);
 
   ClipboardHistorySubmenuModel(const ClipboardHistorySubmenuModel&) = delete;
@@ -51,14 +49,16 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
   void ExecuteCommand(int command_id, int event_flags) override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
+  void OnMenuWillShow(SimpleMenuModel* model) override;
 
   ClipboardHistorySubmenuModel(
-      crosapi::mojom::ClipboardHistoryControllerShowSource source,
+      crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
       const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
           item_descriptors,
       ShowClipboardHistoryMenuCallback show_menu_callback);
 
-  const crosapi::mojom::ClipboardHistoryControllerShowSource source_;
+  // Indicates the type of submenu where this model is used.
+  const crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type_;
 
   // Mappings from command ids to clipboard history item ids.
   std::map<int, base::UnguessableToken> item_ids_by_command_ids_;

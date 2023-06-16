@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/command_id_constants.h"
@@ -15,14 +16,14 @@ namespace chromeos::clipboard_history {
 // static
 std::unique_ptr<ClipboardHistorySubmenuModel>
 ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
-    crosapi::mojom::ClipboardHistoryControllerShowSource source,
+    crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
     ShowClipboardHistoryMenuCallback show_menu_callback) {
-  CHECK(source == crosapi::mojom::ClipboardHistoryControllerShowSource::
-                      kRenderViewContextMenu ||
-        source == crosapi::mojom::ClipboardHistoryControllerShowSource::
-                      kTextfieldContextMenu);
+  CHECK(submenu_type == crosapi::mojom::ClipboardHistoryControllerShowSource::
+                            kRenderViewContextSubmenu ||
+        submenu_type == crosapi::mojom::ClipboardHistoryControllerShowSource::
+                            kTextfieldContextSubmenu);
   return base::WrapUnique(new ClipboardHistorySubmenuModel(
-      source, QueryItemDescriptors(), show_menu_callback));
+      submenu_type, QueryItemDescriptors(), show_menu_callback));
 }
 
 ClipboardHistorySubmenuModel::~ClipboardHistorySubmenuModel() = default;
@@ -32,7 +33,7 @@ void ClipboardHistorySubmenuModel::ExecuteCommand(int command_id,
   // If `command_id` matches any clipboard data, paste the matched data.
   if (auto iter = item_ids_by_command_ids_.find(command_id);
       iter != item_ids_by_command_ids_.end()) {
-    PasteClipboardItemById(iter->second, event_flags, source_);
+    PasteClipboardItemById(iter->second, event_flags, submenu_type_);
     return;
   }
 
@@ -54,13 +55,19 @@ bool ClipboardHistorySubmenuModel::GetAcceleratorForCommandId(
                                                                    accelerator);
 }
 
+void ClipboardHistorySubmenuModel::OnMenuWillShow(SimpleMenuModel* model) {
+  // Record `submenu_type_` when the clipboard history submenu shows.
+  base::UmaHistogramEnumeration("Ash.ClipboardHistory.ContextMenu.ShowMenu",
+                                submenu_type_);
+}
+
 ClipboardHistorySubmenuModel::ClipboardHistorySubmenuModel(
-    crosapi::mojom::ClipboardHistoryControllerShowSource source,
+    crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
     const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
         item_descriptors,
     ShowClipboardHistoryMenuCallback show_menu_callback)
     : ui::SimpleMenuModel(this),
-      source_(source),
+      submenu_type_(submenu_type),
       show_menu_callback_(show_menu_callback) {
   for (size_t index = 0; index < item_descriptors.size(); ++index) {
     // Use the first unbounded command ID as the start ID so that the command

@@ -67,7 +67,7 @@ ViewsTextServicesContextMenuLacros::ViewsTextServicesContextMenuLacros(
     submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
         CreateClipboardHistorySubmenuModel(
             crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kTextfieldContextMenu,
+                kTextfieldContextSubmenu,
             base::BindRepeating(
                 &ViewsTextServicesContextMenuLacros::ShowClipboardHistoryMenu,
                 base::Unretained(this)));

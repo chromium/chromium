@@ -17853,6 +17853,8 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="4" label="Unknown"/>
   <int value="5" label="Toast (deprecated)"/>
   <int value="6" label="Ctrl+V Longpress"/>
+  <int value="7" label="Render View Context Menu Nested Menu"/>
+  <int value="8" label="Textfield Context Menu Nested Menu"/>
 </enum>
 
 <enum name="ClipboardPastedImageUrls">

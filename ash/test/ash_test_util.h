@@ -56,9 +56,9 @@ void DecorateWindow(aura::Window* window,
                     const std::u16string& title,
                     SkColor color);
 
-// Returns the first visible menu item view found with the specified `label`.
-// Returns `nullptr` if there are no such menu item views.
-views::MenuItemView* FindMenuItemByLabel(const std::u16string& label);
+// Waits until there is any visible menu item view with the specified `label`.
+// Returns the pointer to the first found target menu item view.
+views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label);
 
 }  // namespace ash
 

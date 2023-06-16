@@ -9,12 +9,18 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/auto_reset.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_aura.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -24,6 +30,8 @@
 namespace ash {
 
 namespace {
+
+// Helper functions ------------------------------------------------------------
 
 void SnapshotCallback(base::RunLoop* run_loop,
                       gfx::Image* ret_image,
@@ -73,6 +81,71 @@ views::MenuItemView* FindMenuItemWithLabelFromWindow(
 
   return nullptr;
 }
+
+// MenuItemViewWithLabelWaiter -------------------------------------------------
+
+class MenuItemViewWithLabelWaiter : public aura::WindowObserver {
+ public:
+  explicit MenuItemViewWithLabelWaiter(const std::u16string& label)
+      : label_(label),
+        menu_container_(Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                                            kShellWindowId_MenuContainer)) {
+    CHECK(menu_container_) << "The menu container is expected to exist.";
+  }
+
+  // Waits until the target menu item view is found. Returns the pointer to the
+  // target view.
+  views::MenuItemView* Wait() {
+    // Return early if the target view already exists.
+    if ((cached_target_view_ =
+             FindMenuItemWithLabelFromWindow(menu_container_, label_))) {
+      return cached_target_view_;
+    }
+
+    base::AutoReset<std::unique_ptr<base::RunLoop>> auto_reset(
+        &run_loop_, std::make_unique<base::RunLoop>());
+
+    // Start the observation on `menu_container_`. A new menu should add
+    // itself under `menu_container_`.
+    base::ScopedObservation<aura::Window, aura::WindowObserver> observation{
+        this};
+    observation.Observe(menu_container_);
+
+    run_loop_->Run();
+
+    CHECK(cached_target_view_);
+    return cached_target_view_;
+  }
+
+ private:
+  // aura::WindowObserver:
+  void OnWindowAdded(aura::Window* window) override {
+    // Menu items are built after the window is added. Therefore, check the
+    // target menu item in an asynchronous task.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&MenuItemViewWithLabelWaiter::CacheTargetView,
+                                  weak_factory_.GetWeakPtr()));
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    CHECK(!run_loop_)
+        << "The menu container was destroyed while we were waiting for "
+           "the target menu item.";
+  }
+
+  void CacheTargetView() {
+    if ((cached_target_view_ =
+             FindMenuItemWithLabelFromWindow(menu_container_, label_))) {
+      run_loop_->Quit();
+    }
+  }
+
+  const std::u16string label_;
+  const raw_ptr<aura::Window> menu_container_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  raw_ptr<views::MenuItemView> cached_target_view_ = nullptr;
+  base::WeakPtrFactory<MenuItemViewWithLabelWaiter> weak_factory_{this};
+};
 
 }  // namespace
 
@@ -140,11 +213,8 @@ void DecorateWindow(aura::Window* window,
                       gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
-views::MenuItemView* FindMenuItemByLabel(const std::u16string& label) {
-  aura::Window* const menu_container = Shell::GetContainer(
-      Shell::GetPrimaryRootWindow(), kShellWindowId_MenuContainer);
-  CHECK(menu_container) << "The menu container is expected to exist";
-  return FindMenuItemWithLabelFromWindow(menu_container, label);
+views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label) {
+  return MenuItemViewWithLabelWaiter(label).Wait();
 }
 
 }  // namespace ash

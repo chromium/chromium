@@ -2229,7 +2229,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
       submenu_model_ = chromeos::clipboard_history::
           ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
               crosapi::mojom::ClipboardHistoryControllerShowSource::
-                  kRenderViewContextMenu,
+                  kRenderViewContextSubmenu,
               base::BindRepeating(
                   &RenderViewContextMenu::ShowClipboardHistoryMenu,
                   base::Unretained(this)));

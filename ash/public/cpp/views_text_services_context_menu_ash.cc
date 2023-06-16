@@ -44,7 +44,7 @@ ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
     submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
         CreateClipboardHistorySubmenuModel(
             crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kTextfieldContextMenu,
+                kTextfieldContextSubmenu,
             base::BindRepeating(
                 &ViewsTextServicesContextMenuAsh::ShowClipboardHistoryMenu,
                 base::Unretained(this)));

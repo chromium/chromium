@@ -685,8 +685,9 @@ TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
   WriteTextToClipboardAndConfirm(u"B");
   WriteTextToClipboardAndConfirm(u"C");
   WriteTextToClipboardAndConfirm(u"D");
+  WriteTextToClipboardAndConfirm(u"E");
   const std::vector<ClipboardHistoryItem> items = GetHistoryValues();
-  ASSERT_EQ(items.size(), 4u);
+  ASSERT_EQ(items.size(), 5u);
 
   // Set a zero duration to make test code simpler.
   GetClipboardHistoryController()->set_buffer_restoration_delay_for_test(
@@ -720,7 +721,23 @@ TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
        /*event_flags=*/ui::EF_SHIFT_DOWN | ui::EF_FROM_TOUCH,
        /*paste_type=*/
        ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
-           kPlainTextTouch}};
+           kPlainTextTouch},
+      {/*paste_data_index=*/3,
+       /*paste_source=*/
+       crosapi::mojom::ClipboardHistoryControllerShowSource::
+           kRenderViewContextSubmenu,
+       /*event_flags=*/ui::EF_MOUSE_BUTTON,
+       /*paste_type=*/
+       ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
+           kRichTextMouse},
+      {/*paste_data_index=*/4,
+       /*paste_source=*/
+       crosapi::mojom::ClipboardHistoryControllerShowSource::
+           kTextfieldContextSubmenu,
+       /*event_flags=*/ui::EF_MOUSE_BUTTON,
+       /*paste_type=*/
+       ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
+           kRichTextMouse}};
 
   for (auto& [paste_data_index, paste_source, event_flags, paste_type] :
        test_cases) {
@@ -1082,50 +1099,48 @@ TEST_P(ClipboardHistoryRefreshDisplayFormatTest, TextServicesSubMenu) {
   }
 }
 
-class ClipboardHistorySubmenuTest
-    : public ClipboardHistoryControllerWithTextfieldTest {
- public:
-  ClipboardHistorySubmenuTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kClipboardHistoryRefresh,
-                              chromeos::features::kJelly},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ClipboardHistorySubmenuTest, Basics) {
-  WriteTextToClipboardAndConfirm(u"A");
-  WriteTextToClipboardAndConfirm(u"B");
-
+TEST_P(ClipboardHistoryRefreshDisplayFormatTest,
+       ShowStandaloneMenuFromSubmenu) {
+  WriteClipboardDataBasedOnParam();
   ShowTextfieldContextMenu(*textfield_);
 
-  // Expect the menu item that hosts the clipboard history submenu exists.
-  const views::MenuItemView* const submenu_item = FindMenuItemByLabel(
-      l10n_util::GetStringUTF16(IDS_APP_PASTE_FROM_CLIPBOARD));
-  ASSERT_TRUE(submenu_item);
+  // If the clipboard history refresh feature is enabled, show the submenu.
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    // Expect the menu item that hosts the clipboard history submenu exists.
+    const views::MenuItemView* const submenu_item = WaitForMenuItemWithLabel(
+        l10n_util::GetStringUTF16(IDS_APP_PASTE_FROM_CLIPBOARD));
+    ASSERT_TRUE(submenu_item);
 
-  // Mouse hover on `menu_option`. Wait until the submenu shows.
-  GetEventGenerator()->MoveMouseTo(
-      submenu_item->GetBoundsInScreen().CenterPoint());
-  views::View* const submenu_view = submenu_item->GetSubmenu();
-  ViewDrawnWaiter().Wait(submenu_view);
+    // Mouse hover on `submenu_item`. Wait until the submenu shows.
+    base::HistogramTester submenu_histogram_tester;
+    GetEventGenerator()->MoveMouseTo(
+        submenu_item->GetBoundsInScreen().CenterPoint());
+    views::View* const submenu_view = submenu_item->GetSubmenu();
+    ViewDrawnWaiter().Wait(submenu_view);
+
+    // Verify that the submenu source is recorded as expected when
+    // `submenu_view` shows.
+    submenu_histogram_tester.ExpectUniqueSample(
+        "Ash.ClipboardHistory.ContextMenu.ShowMenu",
+        crosapi::mojom::ClipboardHistoryControllerShowSource::
+            kTextfieldContextSubmenu,
+        1);
+  }
 
   // Expect that the menu option to launch the clipboard history menu exists.
-  const views::View* const menu_item = FindMenuItemByLabel(
+  const views::View* const menu_item = WaitForMenuItemWithLabel(
       l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
   ASSERT_TRUE(menu_item);
 
-  // Left mouse click at `menu_item`. The clipboard history menu should show.
+  // Left mouse click at `menu_item`. The standalone clipboard history menu
+  // should show.
   base::HistogramTester histogram_tester;
   GetEventGenerator()->MoveMouseTo(
       menu_item->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
 
-  // The show source should be recorded.
+  // The source of the standalone clipboard history menu should be recorded.
   histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu",
       crosapi::mojom::ClipboardHistoryControllerShowSource::

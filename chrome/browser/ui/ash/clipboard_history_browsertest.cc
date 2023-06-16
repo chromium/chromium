@@ -15,6 +15,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -57,6 +59,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 
@@ -1640,4 +1643,98 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
                 ui::MenuModel::TYPE_COMMAND);
     }
   }
+}
+
+// Checks that launching the standalone clipboard history menu from a render
+// view's context menu works as expected.
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
+                       LaunchStandaloneMenuFromRenderViewContextMenu) {
+  // Write some clipboard data.
+  SetClipboardText("A");
+  SetClipboardText("B");
+
+  // Create a browser and cache its active web contents.
+  auto* browser = CreateBrowser(
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Navigate to a web page with textfield.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(R"(data:text/html,
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <script type='text/javascript'>
+          function getTextfieldCenterOnPage() {
+            const rect = document.getElementById('text_input').
+                getBoundingClientRect();
+            return [(rect.left + rect.right)/2, (rect.top + rect.bottom)/2];
+          }
+        </script>
+        <input type='text' id='text_input'/>
+      </body>
+    </html>
+  )")));
+
+  // Get the textfield center in the the web contents coordinates.
+  auto result = content::EvalJs(web_contents, "getTextfieldCenterOnPage();");
+  ASSERT_TRUE(result.error.empty());
+  auto value = result.ExtractList();
+  ASSERT_TRUE(value.is_list());
+  const base::Value::List center_as_list = std::move(value).TakeList();
+  ASSERT_EQ(center_as_list.size(), 2u);
+
+  // Calculate the textfield center in the screen coordinates. Then right click
+  // at the textfield center.
+  gfx::Point textfield_center_in_screen =
+      web_contents->GetContainerBounds().origin();
+  textfield_center_in_screen.Offset(center_as_list.begin()->GetDouble(),
+                                    center_as_list.back().GetDouble());
+  GetEventGenerator()->MoveMouseTo(textfield_center_in_screen);
+  GetEventGenerator()->ClickRightButton();
+
+  // If the clipboard history refresh feature is enabled, show the submenu.
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    // Expect the menu item that hosts the clipboard history submenu exists.
+    const views::MenuItemView* const submenu_item =
+        ash::WaitForMenuItemWithLabel(
+            l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD));
+    ASSERT_TRUE(submenu_item);
+
+    // Mouse hover on `submenu_item`. Wait until the submenu shows.
+    base::HistogramTester submenu_histogram_tester;
+    GetEventGenerator()->MoveMouseTo(
+        submenu_item->GetBoundsInScreen().CenterPoint());
+    views::View* const submenu_view = submenu_item->GetSubmenu();
+    ash::ViewDrawnWaiter().Wait(submenu_view);
+
+    // Verify that the submenu source is recorded as expected when
+    // `submenu_view` shows.
+    submenu_histogram_tester.ExpectUniqueSample(
+        "Ash.ClipboardHistory.ContextMenu.ShowMenu",
+        crosapi::mojom::ClipboardHistoryControllerShowSource::
+            kRenderViewContextSubmenu,
+        1);
+  }
+
+  // Expect that the menu option to launch the clipboard history menu exists.
+  const views::View* const menu_item = ash::WaitForMenuItemWithLabel(
+      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU));
+  ASSERT_TRUE(menu_item);
+
+  // Left mouse click at `menu_item`. The standalone clipboard history menu
+  // should show.
+  base::HistogramTester histogram_tester;
+  GetEventGenerator()->MoveMouseTo(
+      menu_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // The source of the standalone clipboard history menu should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Ash.ClipboardHistory.ContextMenu.ShowMenu",
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu,
+      1);
 }
