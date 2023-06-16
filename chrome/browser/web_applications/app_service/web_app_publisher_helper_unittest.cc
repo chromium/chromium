@@ -76,9 +76,8 @@ class WebAppPublisherHelperTest : public testing::Test {
 
     provider_ = WebAppProvider::GetForWebApps(profile());
 
-    publisher_ = std::make_unique<WebAppPublisherHelper>(
-        profile(), provider_, &no_op_delegate_,
-        /*observe_media_requests=*/false);
+    publisher_ = std::make_unique<WebAppPublisherHelper>(profile(), provider_,
+                                                         &no_op_delegate_);
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }

@@ -463,15 +463,14 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              WebAppProvider* provider,
-                                             Delegate* delegate,
-                                             bool observe_media_requests)
+                                             Delegate* delegate)
     : profile_(profile),
       provider_(provider),
       app_type_(GetWebAppType()),
       delegate_(delegate) {
   DCHECK(profile_);
   DCHECK(delegate_);
-  Init(observe_media_requests);
+  Init();
 }
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
@@ -1578,7 +1577,7 @@ void WebAppPublisherHelper::OnWebAppSettingsPolicyChanged() {
   }
 }
 
-void WebAppPublisherHelper::Init(bool observe_media_requests) {
+void WebAppPublisherHelper::Init() {
   // Allow for web app migration tests.
   if (!AreWebAppsEnabled(profile_)) {
     return;
@@ -1606,9 +1605,7 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (observe_media_requests) {
-    media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
-  }
+  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 #endif
 }
 

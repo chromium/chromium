@@ -38,14 +38,6 @@ using apps::IconEffects;
 
 namespace web_app {
 
-namespace {
-
-bool ShouldObserveMediaRequests() {
-  return true;
-}
-
-}  // namespace
-
 WebApps::WebApps(apps::AppServiceProxy* proxy)
     : apps::AppPublisher(proxy),
       profile_(proxy->profile()),
@@ -53,10 +45,7 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
 #endif
-      publisher_helper_(profile_,
-                        provider_,
-                        this,
-                        ShouldObserveMediaRequests()) {
+      publisher_helper_(profile_, provider_, this) {
   Initialize();
 }
 

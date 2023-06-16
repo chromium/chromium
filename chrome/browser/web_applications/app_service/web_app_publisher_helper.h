@@ -134,8 +134,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
   WebAppPublisherHelper(Profile* profile,
                         WebAppProvider* provider,
-                        Delegate* delegate,
-                        bool observe_media_requests);
+                        Delegate* delegate);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
   WebAppPublisherHelper& operator=(const WebAppPublisherHelper&) = delete;
   ~WebAppPublisherHelper() override;
@@ -369,7 +368,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
-  void Init(bool observe_media_requests);
+  void Init();
 
   void ObserveWebAppSubsystems();
 
