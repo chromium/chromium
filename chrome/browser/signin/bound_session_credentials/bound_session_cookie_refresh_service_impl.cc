@@ -298,12 +298,12 @@ void BoundSessionCookieRefreshServiceImpl::StopManagingBoundSessionCookie() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnBoundSessionUpdated() {
-  UpdateAllRenderers();
   if (!IsBoundSession()) {
     StopManagingBoundSessionCookie();
   } else {
     StartManagingBoundSessionCookie();
   }
+  UpdateAllRenderers();
 }
 
 void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {

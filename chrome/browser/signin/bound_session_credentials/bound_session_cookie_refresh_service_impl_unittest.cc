@@ -273,9 +273,11 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
   // Create bound session.
-  EXPECT_CALL(renderer_updater, Run());
+  EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
+    EXPECT_TRUE(service->IsBoundSession());
+    EXPECT_FALSE(service->GetBoundSessionParams().is_null());
+  });
   SetupPreConditionForBoundSession();
-  EXPECT_TRUE(service->IsBoundSession());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 
@@ -289,7 +291,10 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   SetRendererUpdater(renderer_updater.Get());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
-  EXPECT_CALL(renderer_updater, Run());
+  EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
+    EXPECT_TRUE(service->IsBoundSession());
+    EXPECT_FALSE(service->GetBoundSessionParams().is_null());
+  });
   cookie_controller()->SimulateOnCookieExpirationDateChanged(base::Time::Now());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
@@ -304,7 +309,10 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   SetRendererUpdater(renderer_updater.Get());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
-  EXPECT_CALL(renderer_updater, Run());
+  EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
+    EXPECT_FALSE(service->IsBoundSession());
+    EXPECT_TRUE(service->GetBoundSessionParams().is_null());
+  });
   TerminateBoundSession();
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
