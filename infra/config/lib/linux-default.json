@@ -200,6 +200,7 @@
     "android-code-coverage": "Ubuntu-22.04",
     "android-code-coverage-native": "Ubuntu-22.04",
     "android-cronet-arm-rel": "Ubuntu-22.04",
+    "android-cronet-arm64-dbg": "Ubuntu-22.04",
     "android-cronet-arm64-rel": "Ubuntu-22.04",
     "android-cronet-asan-x86-rel": "Ubuntu-22.04",
     "android-cronet-x86-dbg": "Ubuntu-22.04",
