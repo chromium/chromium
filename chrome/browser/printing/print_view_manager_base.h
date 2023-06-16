@@ -149,6 +149,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   void SetPrintingRFH(content::RenderFrameHost* rfh);
 
+  // Helper method to do some common operations and checks when starting to
+  // printing.
+  bool StartPrintCommon(content::RenderFrameHost* rfh);
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Register with the `PrintBackendServiceManager` as a client for queries
   // which will require a UI (the system print dialog).  Some platforms have

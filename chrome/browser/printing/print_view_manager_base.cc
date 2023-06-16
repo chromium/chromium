@@ -200,33 +200,10 @@ void PrintViewManagerBase::DisableThirdPartyBlocking() {
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
-  // Remember the ID for `rfh`, to enable checking that the `RenderFrameHost`
-  // is still valid after a possible inner message loop runs in
-  // `DisconnectFromCurrentPrintJob()`.
-  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
-  auto weak_this = weak_ptr_factory_.GetWeakPtr();
-  DisconnectFromCurrentPrintJob();
-  if (!weak_this)
+  if (!StartPrintCommon(rfh)) {
     return false;
-
-  // Don't print / print preview crashed tabs.
-  if (IsCrashed())
-    return false;
-
-  // Don't print if `rfh` is no longer live.
-  if (!content::RenderFrameHost::FromID(rfh_id) || !rfh->IsRenderFrameLive())
-    return false;
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
-    // Register this worker so that the service persists as long as the user
-    // keeps the system print dialog UI displayed.
-    if (!RegisterSystemPrintClient())
-      return false;
   }
-#endif
 
-  SetPrintingRFH(rfh);
   CompletePrintNow(rfh);
   return true;
 }
@@ -1149,6 +1126,41 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
   // live.
   CHECK(rfh->IsRenderFrameLive());
   printing_rfh_ = rfh;
+}
+
+bool PrintViewManagerBase::StartPrintCommon(content::RenderFrameHost* rfh) {
+  // Remember the ID for `rfh`, to enable checking that the `RenderFrameHost`
+  // is still valid after a possible inner message loop runs in
+  // `DisconnectFromCurrentPrintJob()`.
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  DisconnectFromCurrentPrintJob();
+  if (!weak_this) {
+    return false;
+  }
+
+  // Don't print / print preview crashed tabs.
+  if (IsCrashed()) {
+    return false;
+  }
+
+  // Don't print if `rfh` is no longer live.
+  if (!content::RenderFrameHost::FromID(rfh_id) || !rfh->IsRenderFrameLive()) {
+    return false;
+  }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Register this worker so that the service persists as long as the user
+    // keeps the system print dialog UI displayed.
+    if (!RegisterSystemPrintClient()) {
+      return false;
+    }
+  }
+#endif
+
+  SetPrintingRFH(rfh);
+  return true;
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
