@@ -167,7 +167,7 @@ source_set("signin_util_internal") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
   ]
 }
 

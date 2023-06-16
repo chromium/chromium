@@ -196,7 +196,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/url:constants",

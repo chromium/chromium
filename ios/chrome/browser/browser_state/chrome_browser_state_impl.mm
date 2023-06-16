@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/browser_state/constants.h"
 #import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/paths/paths_internal.h"
+#import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"

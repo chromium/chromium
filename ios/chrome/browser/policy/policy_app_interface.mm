@@ -30,7 +30,7 @@
 #import "components/policy/core/common/policy_namespace.h"
 #import "components/policy/core/common/policy_types.h"
 #import "components/policy/policy_constants.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"

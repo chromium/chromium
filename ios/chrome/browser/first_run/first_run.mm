@@ -11,7 +11,7 @@
 #import "base/path_service.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/startup_metric_utils/browser/startup_metric_utils.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

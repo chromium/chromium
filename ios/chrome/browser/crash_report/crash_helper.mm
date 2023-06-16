@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/crash_report/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/channel_info.h"

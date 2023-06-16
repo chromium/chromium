@@ -11,7 +11,7 @@
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)

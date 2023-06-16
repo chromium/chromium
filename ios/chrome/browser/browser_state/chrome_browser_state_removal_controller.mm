@@ -16,7 +16,7 @@
 #import "components/prefs/pref_service.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/browser_state/constants.h"
-#import "ios/chrome/browser/paths/paths_internal.h"
+#import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"

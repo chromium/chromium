@@ -27,7 +27,7 @@ source_set("startup_basic") {
     "//base",
     "//components/component_updater",
     "//components/crash/core/common",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/web/public/init",
     "//skia",
   ]

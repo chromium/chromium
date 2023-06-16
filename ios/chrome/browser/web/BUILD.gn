@@ -277,7 +277,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/open_from_clipboard",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/promos_manager",

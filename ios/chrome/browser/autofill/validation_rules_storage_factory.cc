@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "components/prefs/json_pref_store.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
 namespace autofill {

@@ -61,7 +61,7 @@ source_set("browsing_data") {
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/reading_list:reading_list_remover",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",

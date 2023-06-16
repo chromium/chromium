@@ -32,7 +32,7 @@ source_set("segmentation_platform") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/optimization_guide",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

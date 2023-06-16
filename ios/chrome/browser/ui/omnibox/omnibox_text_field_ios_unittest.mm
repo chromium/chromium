@@ -10,7 +10,7 @@
 #import "base/path_service.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/uikit_ui_util.h"

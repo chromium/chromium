@@ -72,7 +72,7 @@
 #import "ios/chrome/browser/metrics/ios_feed_enabled_metrics_provider.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"

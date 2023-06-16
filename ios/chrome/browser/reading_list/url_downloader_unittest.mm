@@ -14,7 +14,7 @@
 #import "base/test/task_environment.h"
 #import "components/reading_list/core/offline_url_utils.h"
 #import "ios/chrome/browser/dom_distiller/distiller_viewer.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

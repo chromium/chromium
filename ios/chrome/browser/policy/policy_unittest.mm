@@ -15,7 +15,7 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/policy_constants.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

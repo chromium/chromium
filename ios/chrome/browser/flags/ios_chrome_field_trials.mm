@@ -8,7 +8,7 @@
 #import "base/path_service.h"
 #import "components/metrics/persistent_histograms.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial.h"
 #import "ios/chrome/browser/ui/ntp/synced_segments_field_trial.h"

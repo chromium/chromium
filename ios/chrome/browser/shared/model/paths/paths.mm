@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 
 #import "base/base_paths.h"
 #import "base/files/file_path.h"
@@ -12,7 +12,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "build/branding_buildflags.h"
 #import "components/gcm_driver/gcm_driver_constants.h"
-#import "ios/chrome/browser/paths/paths_internal.h"
+#import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

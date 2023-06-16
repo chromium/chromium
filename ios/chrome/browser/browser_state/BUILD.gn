@@ -105,7 +105,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/power_bookmarks",
