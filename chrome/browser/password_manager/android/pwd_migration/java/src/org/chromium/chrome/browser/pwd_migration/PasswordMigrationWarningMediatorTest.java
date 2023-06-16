@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ACCOUNT_DISPLAY_NAME;
@@ -29,6 +31,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
@@ -36,6 +40,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -44,6 +49,8 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
@@ -75,6 +82,9 @@ public class PasswordMigrationWarningMediatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
     private PasswordMigrationWarningMediator mMediator = new PasswordMigrationWarningMediator();
     private PropertyModel mModel;
 
@@ -82,6 +92,10 @@ public class PasswordMigrationWarningMediatorTest {
     private BottomSheetController mBottomSheetController;
     @Mock
     private Profile mProfile;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJni;
+    @Mock
+    private PrefService mPrefService;
     @Mock
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
@@ -93,6 +107,7 @@ public class PasswordMigrationWarningMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
         mModel = PasswordMigrationWarningProperties.createDefaultModel(
                 mMediator::onDismissed, mMediator);
         mMediator.initialize(mModel);
@@ -133,10 +148,24 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testOnAcknowledgeHidesTheSheet() {
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+
         mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
         assertTrue(mModel.get(VISIBLE));
         mMediator.onAcknowledge(mBottomSheetController);
+
         assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testAcknowledgementIsSavedInPrefs() {
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+
+        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        mMediator.onAcknowledge(mBottomSheetController);
+
+        verify(mPrefService)
+                .setBoolean(eq(Pref.USER_ACKNOWLEDGED_LOCAL_PASSWORDS_MIGRATION_WARNING), eq(true));
     }
 
     @Test

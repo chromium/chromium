@@ -112,6 +112,11 @@ extern const char kTimesReenrolledToGoogleMobileServices[];
 // migration in an attempt to reenroll into the UPM experiment. Reset to zero
 // after a successful reenrollment.
 extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
+
+// Boolean value meant to record in the prefs if the user clicked "Got it" in
+// the UPM local passwords migration warning. When set to true, the warning
+// should not be displayed again.
+extern const char kUserAcknowledgedLocalPasswordsMigrationWarning[];
 #endif
 
 #if BUILDFLAG(IS_WIN)
