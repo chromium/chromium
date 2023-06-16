@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -14,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -67,7 +69,8 @@ void UpdateBookmarksForSubscriptionsResult(
       // If being untracked and the bookmark was created by price tracking
       // rather than by explicitly bookmarking, delete the bookmark.
       bool should_delete_node = false;
-      if (!enabled && specifics->bookmark_created_by_price_tracking()) {
+      if (!enabled && specifics->bookmark_created_by_price_tracking() &&
+          !base::FeatureList::IsEnabled(kShoppingListTrackByDefault)) {
         // If there is more than one bookmark with the specified cluster ID,
         // don't delete the bookmark.
         should_delete_node =
