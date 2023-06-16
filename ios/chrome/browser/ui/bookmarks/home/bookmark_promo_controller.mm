@@ -87,7 +87,7 @@
 }
 
 - (void)dealloc {
-  [self shutdown];
+  CHECK(!_browser);
 }
 
 - (void)shutdown {
