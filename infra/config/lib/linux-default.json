@@ -181,6 +181,7 @@
     "Win10 x64 Release (NVIDIA)": "Ubuntu-22.04",
     "android-10-arm64-rel": "Ubuntu-22.04",
     "android-11-x86-fyi-rel": "Ubuntu-22.04",
+    "android-12-x64-dbg-tests": "Ubuntu-22.04",
     "android-12-x64-fyi-rel": "Ubuntu-22.04",
     "android-12-x64-rel": "Ubuntu-22.04",
     "android-12l-x64-fyi-dbg": "Ubuntu-22.04",
