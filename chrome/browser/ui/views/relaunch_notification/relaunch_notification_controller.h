@@ -161,9 +161,6 @@ class RelaunchNotificationController : public UpgradeObserver {
   // default notification on Chrome OS.
   virtual void Close();
 
-  // Updates the required relaunch deadline in the UX.
-  virtual void SetDeadline(base::Time deadline);
-
   // Run to restart the browser/device once the relaunch deadline is reached
   // when relaunches are required by policy.
   virtual void OnRelaunchDeadlineExpired();

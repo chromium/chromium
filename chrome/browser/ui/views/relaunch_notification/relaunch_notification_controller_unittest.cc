@@ -57,7 +57,6 @@ class ControllerDelegate {
   virtual void NotifyRelaunchRecommended() = 0;
   virtual void NotifyRelaunchRequired() = 0;
   virtual void Close() = 0;
-  virtual void SetDeadline(base::Time deadline) = 0;
   virtual void OnRelaunchDeadlineExpired() = 0;
 
  protected:
@@ -99,10 +98,6 @@ class FakeRelaunchNotificationController
 
   void Close() override { delegate_->Close(); }
 
-  void SetDeadline(base::Time deadline) override {
-    delegate_->SetDeadline(deadline);
-  }
-
   void OnRelaunchDeadlineExpired() override {
     delegate_->OnRelaunchDeadlineExpired();
   }
@@ -116,7 +111,6 @@ class MockControllerDelegate : public ControllerDelegate {
   MOCK_METHOD(void, NotifyRelaunchRecommended, (), (override));
   MOCK_METHOD(void, NotifyRelaunchRequired, (), (override));
   MOCK_METHOD(void, Close, (), (override));
-  MOCK_METHOD(void, SetDeadline, (base::Time), (override));
   MOCK_METHOD(void, OnRelaunchDeadlineExpired, (), (override));
 };
 
