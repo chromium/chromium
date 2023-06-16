@@ -379,6 +379,7 @@
     "Simple Chrome Builder reclient staging": "Ubuntu-22.04"
   },
   "reviver": {
+    "android-coverage-launcher": "Ubuntu-22.04",
     "android-launcher": "Ubuntu-22.04",
     "android-x64-launcher": "Ubuntu-22.04",
     "fuchsia-coordinator": "Ubuntu-22.04",
