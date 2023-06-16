@@ -4,7 +4,13 @@
 
 package org.chromium.components.browser_ui.share;
 
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doAnswer;
+
 import android.app.DownloadManager;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -14,8 +20,10 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
@@ -23,6 +31,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
@@ -35,6 +45,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.io.File;
@@ -75,17 +86,62 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         }
     }
 
+    /** Convenient class to mark timestamp for ClipDescription. */
+    private static class TestClipDescriptionWrapper extends ClipDescription {
+        public static ClipDescription create(ClipDescription origin) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return origin;
+            return new TestClipDescriptionWrapper(origin);
+        }
+
+        private final long mTimeStamp;
+        private TestClipDescriptionWrapper(ClipDescription other) {
+            super(other);
+            mTimeStamp = SystemClock.elapsedRealtime();
+        }
+
+        @Override
+        public long getTimestamp() {
+            return mTimeStamp;
+        }
+    }
+
+    @Mock
+    ClipboardManager mMockClipboardManager;
+
+    @Nullable
+    ClipData mPrimaryClip;
+    @Nullable
+    ClipDescription mPrimaryClipDescription;
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        MockitoAnnotations.openMocks(this);
         Looper.prepare();
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
-        Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
+        ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
+        clipboard.setImageFileProvider(new ClipboardImageFileProvider());
+
+        // Setup mock clipboard manager for test.
+        doAnswer(invocationOnMock -> {
+            mPrimaryClip = invocationOnMock.getArgument(0);
+            mPrimaryClipDescription = new TestClipDescriptionWrapper(mPrimaryClip.getDescription());
+            return null;
+        })
+                .when(mMockClipboardManager)
+                .setPrimaryClip(notNull());
+        doAnswer((invocationOnMock -> { return mPrimaryClip; }))
+                .when(mMockClipboardManager)
+                .getPrimaryClip();
+        doAnswer((invocationOnMock -> { return mPrimaryClipDescription; }))
+                .when(mMockClipboardManager)
+                .getPrimaryClipDescription();
+        clipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
     }
 
     @Override
     public void tearDownTest() throws Exception {
-        Clipboard.getInstance().setText("");
+        Clipboard.resetForTesting();
         clearSharedImages();
         deleteAllTestImages();
         super.tearDownTest();
