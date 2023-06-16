@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -53,6 +54,7 @@
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -85,6 +87,11 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       // overrides.
       {switches::kEnablePrivacySandboxAdsApis,
        std::cref(privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+      // Enable FedCM to test behavior for third-party cookie phaseout.
+      {network::switches::kTestThirdPartyCookiePhaseout,
+       std::cref(features::kFedCmWithoutThirdPartyCookies),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 
