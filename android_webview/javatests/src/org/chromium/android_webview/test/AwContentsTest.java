@@ -55,6 +55,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -84,6 +85,7 @@ import java.util.function.Predicate;
  * AwContents tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
 public class AwContentsTest {
     private static final String TAG = "AwContentsTest";
 
@@ -1760,5 +1762,27 @@ public class AwContentsTest {
             Assert.assertEquals(0, postTask.getPendingTasksCount());
             histograms.assertExpected();
         });
+    }
+
+    // Disables hardware acceleration and ensures that there is no crash in the code that adds and
+    // removes frame metrics listener. This code should do nothing when hardware acceleration is
+    // disabled.
+    @Test
+    @DisableHardwareAccelerationForTest
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents.resetRecordMemoryForTesting();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // Frame metrics listener is detached when AwContents becomes invisible.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { awContents.onWindowVisibilityChanged(View.INVISIBLE); });
+
+        Assert.assertFalse(testView.isBackedByHardwareView());
     }
 }

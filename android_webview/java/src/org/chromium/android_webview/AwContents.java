@@ -3269,7 +3269,7 @@ public class AwContents implements SmartClipProvider {
 
         if (mAwFrameMetricsListener != null) {
             Activity activity = getActivity();
-            if (activity != null) {
+            if (activity != null && mContainerView.isHardwareAccelerated()) {
                 mAwFrameMetricsListener.attachListener(activity.getWindow());
             }
         }
@@ -3293,7 +3293,7 @@ public class AwContents implements SmartClipProvider {
 
         if (mAwFrameMetricsListener != null) {
             Activity activity = getActivity();
-            if (activity != null) {
+            if (activity != null && mContainerView.isHardwareAccelerated()) {
                 mAwFrameMetricsListener.detachListener(activity.getWindow());
             }
         }
