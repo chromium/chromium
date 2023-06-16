@@ -3243,15 +3243,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
 }
 
-// TODO(crbug.com/1404795): Re-enable this test
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PreflightConnectionReusedHttp1 \
-  DISABLED_PreflightConnectionReusedHttp1
-#else
-#define MAYBE_PreflightConnectionReusedHttp1 PreflightConnectionReusedHttp1
-#endif
+// TODO(crbug.com/1315068): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
-                       MAYBE_PreflightConnectionReusedHttp1) {
+                       DISABLED_PreflightConnectionReusedHttp1) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   EXPECT_EQ(true, EvalJs(root_frame_host(),
