@@ -1914,8 +1914,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveTest, MAYBE_Save) {
   base::FilePath save_path = GetDownloadDir().AppendASCII("edited.pdf");
   ASSERT_FALSE(base::PathExists(save_path));
 
-  using FileChooser = extensions::FileSystemChooseEntryFunction;
-  FileChooser::SkipPickerAndAlwaysSelectPathForTest file_picker(save_path);
+  using extensions::FileSystemChooseEntryFunction;
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .path_to_be_picked = &save_path};
+  auto auto_reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
 
   MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
   ClickLeftSideOfEditableComboBox(guest);

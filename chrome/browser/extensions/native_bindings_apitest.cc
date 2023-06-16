@@ -171,8 +171,10 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, FileSystemApiGetDisplayPath) {
   FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
       "test_root", test_dir);
   base::FilePath test_file = test_dir.AppendASCII("text.txt");
-  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
-      test_file);
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .path_to_be_picked = &test_file};
+  auto reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
   ASSERT_TRUE(RunExtensionTest("native_bindings/instance_of",
                                {.launch_as_platform_app = true}))
       << message_;

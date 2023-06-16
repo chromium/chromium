@@ -9,8 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -115,54 +117,24 @@ class FileSystemIsWritableEntryFunction : public ExtensionFunction {
 
 class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
  public:
-  class SkipPickerBaseForTest {
-   protected:
-    SkipPickerBaseForTest();
-    ~SkipPickerBaseForTest();
-
-   private:
-    // Nested pickers are not allowed, so track the singleton
-    // instance.
-    static SkipPickerBaseForTest* g_picker;
+  struct TestOptions {
+    // These first three options are mutually exclusive and are chosen in
+    // this order.
+    bool use_suggested_path = false;
+    const base::raw_ptr<base::FilePath> path_to_be_picked = nullptr;
+    const base::raw_ptr<std::vector<base::FilePath>> paths_to_be_picked =
+        nullptr;
+    bool skip_directory_confirmation = false;
+    // This option is true and is only set to false in tests that do not
+    // expect a dialog box to be displayed and want the test to fail if
+    // it is displayed. See
+    // FileSystemApiTest.FileSystemApiOpenDirectoryOnGraylistTest as an
+    // example.
+    bool allow_directory_access = true;
   };
 
-  // Various classes to to allow the picker UI to be skipped in testing.
-  // Upon destruction, the affected global variables are reset to their
-  // default values;
-  class SkipPickerAndAlwaysSelectPathForTest : public SkipPickerBaseForTest {
-   public:
-    explicit SkipPickerAndAlwaysSelectPathForTest(
-        const base::FilePath& path,
-        bool skip_dir_confirmation = false,
-        bool allow_directory_access = false);
-    ~SkipPickerAndAlwaysSelectPathForTest();
-
-   private:
-    const base::FilePath path_;
-  };
-
-  class SkipPickerAndAlwaysSelectPathsForTest : public SkipPickerBaseForTest {
-   public:
-    explicit SkipPickerAndAlwaysSelectPathsForTest(
-        const std::vector<base::FilePath>& paths);
-    ~SkipPickerAndAlwaysSelectPathsForTest();
-
-   private:
-    const std::vector<base::FilePath> paths_;
-  };
-
-  class SkipPickerAndSelectSuggestedPathForTest : public SkipPickerBaseForTest {
-   public:
-    SkipPickerAndSelectSuggestedPathForTest();
-    ~SkipPickerAndSelectSuggestedPathForTest() = default;
-  };
-
-  class SkipPickerAndAlwaysCancelForTest : public SkipPickerBaseForTest {
-   public:
-    SkipPickerAndAlwaysCancelForTest();
-    ~SkipPickerAndAlwaysCancelForTest();
-  };
-
+  static base::AutoReset<const TestOptions*> SetOptionsForTesting(
+      const TestOptions& options);
   // Call this with the directory for test file paths. On Chrome OS, accessed
   // path needs to be explicitly registered for smooth integration with Google
   // Drive support.
@@ -214,6 +186,8 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
       const std::vector<base::FilePath>& paths);
 
   void OnDirectoryAccessConfirmed(const std::vector<base::FilePath>& paths);
+
+  static const TestOptions* g_test_options;
 };
 
 class FileSystemRetainEntryFunction : public ExtensionFunction {
