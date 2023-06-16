@@ -83,7 +83,7 @@ button:active {
   border-color: var(--focused-details-button-border);
 }
 
-#family-link-kite {
+#family-link-kite-icon {
   height: 24px;
   width: 24px;
   padding: 16px;
@@ -279,6 +279,21 @@ button:focus-visible {
     --custodian-name-color: var(--google-gray-500);
     --header-color: #e9eaed;
     --paragraph-color: var(--google-gray-500);
+  }
+
+  /* To be kept in sync with dark theme style of cr_dialog component in
+   * ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html.  */
+  .banner {
+    --scroll-border-color: var(--google-gray-700);
+    background-color: var(--cr-dialog-background-color, var(--google-grey-900));
+    /* Note: the colors in linear-gradient() are intentionally the same to
+     * add a 4% white layer on top of the fully opaque background-color. */
+    background-image: linear-gradient(rgba(255, 255, 255, .04),
+                                      rgba(255, 255, 255, .04));
+  }
+
+    #family-link-kite-icon {
+    fill: var(--google-gray-500);
   }
 
   .secondary-button {
