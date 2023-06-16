@@ -43,6 +43,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetEnableArrowKeyTraversal(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetCanActivate(parent_widget->IsActive());
   SetUseDefaultFillLayout(true);
 
   uint8_t buttons = MultitaskMenuView::kFullscreen;
