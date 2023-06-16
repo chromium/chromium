@@ -2199,7 +2199,12 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
   ASSERT_EQ(2u, root_node->children().size());
 
-  ui::AXNode* status_node = root_node->children()[0];
+  ui::AXNode* status_node_wrapper = root_node->children()[0];
+  ASSERT_TRUE(status_node_wrapper);
+  EXPECT_EQ(ax::mojom::Role::kBanner, status_node_wrapper->GetRole());
+  ASSERT_EQ(1u, status_node_wrapper->children().size());
+
+  ui::AXNode* status_node = status_node_wrapper->children()[0];
   ASSERT_TRUE(status_node);
   EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
   ASSERT_EQ(0u, status_node->children().size());
@@ -2257,7 +2262,12 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   ASSERT_TRUE(root_node);
   ASSERT_EQ(2u, root_node->children().size());
 
-  status_node = root_node->children()[0];
+  status_node_wrapper = root_node->children()[0];
+  ASSERT_TRUE(status_node_wrapper);
+  EXPECT_EQ(ax::mojom::Role::kBanner, status_node_wrapper->GetRole());
+  ASSERT_EQ(1u, status_node_wrapper->children().size());
+
+  status_node = status_node_wrapper->children()[0];
   ASSERT_TRUE(status_node);
   EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
 

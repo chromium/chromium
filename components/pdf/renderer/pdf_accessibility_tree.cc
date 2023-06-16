@@ -459,23 +459,39 @@ std::unique_ptr<ui::AXNodeData> CreateNode(
 // the embedded PDF case.
 std::unique_ptr<ui::AXNodeData> CreateStatusNode(
     content::RenderAccessibility* render_accessibility,
-    ui::AXNodeData* root_node) {
-  // Create a status node that conveys a notification message and add it under
-  // the PDF root node as the first node.
+    ui::AXNodeData* node_wrapper) {
+  // Create a status node that conveys a notification message and place the
+  // message inside an appropriate ARIA landmark for easy navigation.
   std::unique_ptr<ui::AXNodeData> node =
       CreateNode(ax::mojom::Role::kStatus, ax::mojom::Restriction::kReadOnly,
                  render_accessibility);
-  // Set the origin of this status node to be offscreen with a 1x1 rectangle as
-  // this status node doesn't have a visual element. The origin of the doc is
-  // (0, 0), so setting (-1, -1) will make this node offscreen.
-  node->relative_bounds.bounds = gfx::RectF(-1, -1, 1, 1);
-  node->relative_bounds.offset_container_id = root_node->id;
-  // As we create this status node right after the PDF root node, this node
-  // will be added as the first node to the PDF accessibility tree.
-  CHECK(root_node->child_ids.empty());
-  root_node->child_ids.push_back(node->id);
+  node->relative_bounds = node_wrapper->relative_bounds;
+  // As we add this status node to its node wrapper, this node will be added
+  // as the first node to the node wrapper.
+  CHECK(node_wrapper->child_ids.empty());
+  node_wrapper->child_ids.push_back(node->id);
   VLOG(2) << "Creating an OCR status node.";
   return node;
+}
+
+std::unique_ptr<ui::AXNodeData> CreateStatusNodeWrapper(
+    content::RenderAccessibility* render_accessibility,
+    ui::AXNodeData* root_node) {
+  // Create a status node wrapper with an appropriate ARIA landmark for easy
+  // navigation. This wrapper will contain a status node later.
+  std::unique_ptr<ui::AXNodeData> node_wrapper =
+      CreateNode(ax::mojom::Role::kBanner, ax::mojom::Restriction::kReadOnly,
+                 render_accessibility);
+  // Set the origin of this wrapper to be offscreen with an 1x1 rectangle as
+  // both this wrapper and a status node don't have a visual element. The origin
+  // of the doc is (0, 0), so setting (-1, -1) will make this node offscreen.
+  node_wrapper->relative_bounds.bounds = gfx::RectF(-1, -1, 1, 1);
+  node_wrapper->relative_bounds.offset_container_id = root_node->id;
+  // As we create this status node's wrapper right after the PDF root node,
+  // this node will be added as the first node to the PDF accessibility tree.
+  CHECK(root_node->child_ids.empty());
+  root_node->child_ids.push_back(node_wrapper->id);
+  return node_wrapper;
 }
 
 gfx::Transform MakeTransformForImage(
@@ -1593,7 +1609,10 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   // accessibility tree so that the user will reach out to this node first when
   // navigating the PDF accessibility tree.
   if (features::IsPdfOcrEnabled()) {
-    ocr_status_node_ = CreateStatusNode(render_accessibility, doc_node_.get());
+    ocr_status_node_wrapper_ =
+        CreateStatusNodeWrapper(render_accessibility, doc_node_.get());
+    ocr_status_node_ =
+        CreateStatusNode(render_accessibility, ocr_status_node_wrapper_.get());
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
@@ -1712,15 +1731,18 @@ void PdfAccessibilityTree::UnserializeNodes() {
     if (ocr_status_node_->GetStringAttribute(ax::mojom::StringAttribute::kName)
             .empty()) {
       size_t num_erased =
-          base::Erase(doc_node_->child_ids, ocr_status_node_->id);
+          base::Erase(doc_node_->child_ids, ocr_status_node_wrapper_->id);
       CHECK_EQ(num_erased, 1u);
       ocr_status_node_.reset();
+      ocr_status_node_wrapper_.reset();
     }
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   update.nodes.push_back(*doc_node_);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled() && ocr_status_node_) {
+  if (features::IsPdfOcrEnabled() && ocr_status_node_wrapper_ &&
+      ocr_status_node_) {
+    update.nodes.push_back(*ocr_status_node_wrapper_);
     update.nodes.push_back(*ocr_status_node_);
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1858,6 +1880,7 @@ void PdfAccessibilityTree::ClearAccessibilityNodes() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsPdfOcrEnabled()) {
     ocr_status_node_.reset();
+    ocr_status_node_wrapper_.reset();
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }

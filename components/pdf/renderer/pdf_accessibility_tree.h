@@ -262,6 +262,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // The status node contains a notification message for the user.
+  std::unique_ptr<ui::AXNodeData> ocr_status_node_wrapper_;
   std::unique_ptr<ui::AXNodeData> ocr_status_node_;
   std::unique_ptr<PdfOcrService> ocr_service_;
 
