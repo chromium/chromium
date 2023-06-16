@@ -109169,6 +109169,11 @@ Full version information for the fingerprint enum values:
   <int value="6" label="Failed recording migrated tag in the VK"/>
 </enum>
 
+<enum name="VmmSwapState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+</enum>
+
 <enum name="VoiceIntentTarget">
 <!-- This must be kept in sync with the VoiceIntentTarget variants in
 others/histograms.xml -->

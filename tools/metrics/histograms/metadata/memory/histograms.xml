@@ -69,6 +69,10 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="VmmSwapVmName">
+  <variant name="ArcVm" summary="ARCVM"/>
+</variants>
+
 <histogram name="HeapProfiling.AndroidStackUnwinder"
     enum="AndroidStackUnwinder" expires_after="2023-11-12">
   <owner>joenotcharles@google.com</owner>
@@ -2685,6 +2689,58 @@ chromium-metrics-reviews@google.com.
   <summary>
     The arm that the user has opted into for UX Study 1. Logged once on startup.
   </summary>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.ActiveAfterEnableDuration"
+    units="Hours" expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    The duration how long it was spent with vmm-swap enabled. This is sent with
+    &quot;.InactiveBeforeEnableDuration&quot; metrics when vmm-swap is disabled.
+    Shorter &quot;.InactiveBeforeEnableDuration&quot; and longer
+    &quot;.ActiveAfterEnableDuration&quot; indicates the vmm-swap policies are
+    doing a good job at deciding when to enable vmm-swap.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.InactiveBeforeEnableDuration"
+    units="Hours" expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    The duration how long it was spent waiting to enable vmm-swap since it
+    becomes swappable-idle. This is sent with
+    &quot;.ActiveAfterEnableDuration&quot; metrics when vmm-swap is disabled.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.InactiveNoEnableDuration"
+    units="Hours" expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    The duration how long it was spend without vmm-swap enabled and it exits
+    swappable-idle. This is sent when vmm-swap is disabled. If reported values
+    are mostly long, it indicates that the policies are missing chances to
+    enable vmm-swap.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.State" enum="VmmSwapState"
+    expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    Sends the vmm-swap state (enabled or disabled) every 10 minutes while the vm
+    is swappable-idle. Vmm-swap may not be enabled by policies to protect disk.
+    This metrics indicates what percentage of time in the swappable-idle state
+    is spent with vmm-swap enabled and how well the policies works.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>
 
 <histogram name="Memory.Worker" units="KB" expires_after="M85">
