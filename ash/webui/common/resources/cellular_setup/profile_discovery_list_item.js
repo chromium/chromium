@@ -82,22 +82,4 @@ Polymer({
     }
     return String.fromCharCode(...this.profileProperties_.name.data);
   },
-
-  /** @private */
-  getProfileProvider_() {
-    if (!this.profileProperties_) {
-      return '';
-    }
-    return String.fromCharCode(...this.profileProperties_.serviceProvider.data);
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getProfileImage_() {
-    return this.isDarkModeActive_ ?
-        'chrome://resources/ash/common/cellular_setup/default_esim_profile_dark.svg' :
-        'chrome://resources/ash/common/cellular_setup/default_esim_profile.svg';
-  },
 });

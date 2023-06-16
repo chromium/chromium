@@ -35,14 +35,10 @@
       <iron-media-query query="(prefers-color-scheme: dark)"
           query-matches="{{isDarkModeActive_}}">
       </iron-media-query>
-      <img id="profileImage" src="[[getProfileImage_(isDarkModeActive_)]]">
       <!-- The item's aria properties are set in profile_discovery_list_page. -->
       <div class="flex settings-box-text">
         <div id="profileTitleLabel">
           [[getProfileName_(profileProperties_)]]
-        </div>
-        <div id="profileProviderLabel">
-          [[getProfileProvider_(profileProperties_)]]
         </div>
       </div>
     </div>
