@@ -228,6 +228,18 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
   return handle;
 }
 
+void GpuMemoryBufferTracker::OnHeldByConsumersChanged(
+    bool is_held_by_consumers) {
+  if (!is_held_by_consumers) {
+    imf_buffer_ = nullptr;
+  }
+}
+
+void GpuMemoryBufferTracker::UpdateExternalData(
+    media::CapturedExternalVideoBuffer buffer) {
+  imf_buffer_ = std::move(buffer.imf_buffer);
+}
+
 uint32_t GpuMemoryBufferTracker::GetMemorySizeInBytes() {
   DCHECK(buffer_);
   return (buffer_->GetSize().width() * buffer_->GetSize().height() * 3) / 2;

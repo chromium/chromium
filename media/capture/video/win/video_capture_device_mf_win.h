@@ -163,14 +163,18 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
                const char* message);
   void SendOnStartedIfNotYetSent();
   HRESULT WaitOnCaptureEvent(GUID capture_event_guid);
-  HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
-                                 base::TimeTicks reference_time,
-                                 base::TimeDelta timestamp);
-  HRESULT DeliverExternalBufferToClient(ID3D11Texture2D* texture,
-                                        const gfx::Size& texture_size,
-                                        const VideoPixelFormat& pixel_format,
-                                        base::TimeTicks reference_time,
-                                        base::TimeDelta timestamp);
+  HRESULT DeliverTextureToClient(
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
+      ID3D11Texture2D* texture,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp);
+  HRESULT DeliverExternalBufferToClient(
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
+      ID3D11Texture2D* texture,
+      const gfx::Size& texture_size,
+      const VideoPixelFormat& pixel_format,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp);
   void OnCameraControlChangeInternal(REFGUID control_set, UINT32 id);
   void OnIncomingCapturedDataInternal();
   bool RecreateMFSource();

@@ -64,6 +64,12 @@ static constexpr int kTestBufferPoolSize = 3;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 static constexpr gfx::Size kDefaultTextureSize = gfx::Size(1080, 720);
 static constexpr int kInvalidId = -1;
+static constexpr media::VideoPixelFormat kDefaultPixelFormat =
+    media::VideoPixelFormat::PIXEL_FORMAT_NV12;
+static const media::VideoCaptureFormat kDefaultFormat =
+    media::VideoCaptureFormat(kDefaultTextureSize, 30, kDefaultPixelFormat);
+static const gfx::ColorSpace kDefaultColorSpace = gfx::ColorSpace();
+
 #endif
 
 // Note that this test does not exercise the class VideoCaptureBufferPool
@@ -367,7 +373,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
   int buffer_id_to_drop;
   int buffer_id0 = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                std::move(handle0), media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                media::CapturedExternalVideoBuffer(
+                    std::move(handle0), kDefaultFormat, kDefaultColorSpace),
                 kDefaultTextureSize, &buffer_id_to_drop, &buffer_id0),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id0, kInvalidId);
@@ -377,7 +384,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
   // We should get a new buffer for handle1.
   int buffer_id1 = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                std::move(handle1), media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                media::CapturedExternalVideoBuffer(
+                    std::move(handle1), kDefaultFormat, kDefaultColorSpace),
                 kDefaultTextureSize, &buffer_id_to_drop, &buffer_id1),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id1, kInvalidId);
@@ -387,10 +395,12 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
   pool_->RelinquishConsumerHold(buffer_id1, 1);
   // We should reuse handle1's buffer.
   int buffer_id1_reuse = kInvalidId;
+
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                pool_->GetGpuMemoryBufferHandle(buffer_id1),
-                media::VideoPixelFormat::PIXEL_FORMAT_NV12, kDefaultTextureSize,
-                &buffer_id_to_drop, &buffer_id1_reuse),
+                media::CapturedExternalVideoBuffer(
+                    pool_->GetGpuMemoryBufferHandle(buffer_id1), kDefaultFormat,
+                    kDefaultColorSpace),
+                kDefaultTextureSize, &buffer_id_to_drop, &buffer_id1_reuse),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_EQ(buffer_id1, buffer_id1_reuse);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
@@ -400,9 +410,10 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
   // for it.
   int buffer_id1_new = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                pool_->GetGpuMemoryBufferHandle(buffer_id1),
-                media::VideoPixelFormat::PIXEL_FORMAT_NV12, kDefaultTextureSize,
-                &buffer_id_to_drop, &buffer_id1_new),
+                media::CapturedExternalVideoBuffer(
+                    pool_->GetGpuMemoryBufferHandle(buffer_id1), kDefaultFormat,
+                    kDefaultColorSpace),
+                kDefaultTextureSize, &buffer_id_to_drop, &buffer_id1_new),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id1, buffer_id1_new);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
@@ -414,7 +425,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
   pool_->RelinquishConsumerHold(buffer_id1_reuse, 1);
   int buffer_id2 = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                std::move(handle2), media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                media::CapturedExternalVideoBuffer(
+                    std::move(handle2), kDefaultFormat, kDefaultColorSpace),
                 kDefaultTextureSize, &buffer_id_to_drop, &buffer_id2),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id0, buffer_id2);
@@ -426,9 +438,10 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
   pool_->RelinquishConsumerHold(buffer_id0, 1);
   int buffer_id0_reuse = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                pool_->GetGpuMemoryBufferHandle(buffer_id0),
-                media::VideoPixelFormat::PIXEL_FORMAT_NV12, kDefaultTextureSize,
-                &buffer_id_to_drop, &buffer_id0_reuse),
+                media::CapturedExternalVideoBuffer(
+                    pool_->GetGpuMemoryBufferHandle(buffer_id0), kDefaultFormat,
+                    kDefaultColorSpace),
+                kDefaultTextureSize, &buffer_id_to_drop, &buffer_id0_reuse),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_EQ(buffer_id0, buffer_id0_reuse);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
@@ -458,7 +471,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   int buffer_id_to_drop;
   int buffer_id0 = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                std::move(handle0), media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                media::CapturedExternalVideoBuffer(
+                    std::move(handle0), kDefaultFormat, kDefaultColorSpace),
                 kDefaultTextureSize, &buffer_id_to_drop, &buffer_id0),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id0, kInvalidId);
@@ -472,7 +486,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   // We should get a new buffer for handle1.
   int buffer_id1 = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                std::move(handle1), media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                media::CapturedExternalVideoBuffer(
+                    std::move(handle1), kDefaultFormat, kDefaultColorSpace),
                 kDefaultTextureSize, &buffer_id_to_drop, &buffer_id1),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id1, kInvalidId);
@@ -483,9 +498,10 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   // We should reuse handle1's buffer.
   int buffer_id1_reuse = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                pool_->GetGpuMemoryBufferHandle(buffer_id1),
-                media::VideoPixelFormat::PIXEL_FORMAT_NV12, kDefaultTextureSize,
-                &buffer_id_to_drop, &buffer_id1_reuse),
+                media::CapturedExternalVideoBuffer(
+                    pool_->GetGpuMemoryBufferHandle(buffer_id1), kDefaultFormat,
+                    kDefaultColorSpace),
+                kDefaultTextureSize, &buffer_id_to_drop, &buffer_id1_reuse),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_EQ(buffer_id1, buffer_id1_reuse);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
@@ -495,9 +511,10 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   // for it.
   int buffer_id1_new = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                pool_->GetGpuMemoryBufferHandle(buffer_id1),
-                media::VideoPixelFormat::PIXEL_FORMAT_NV12, kDefaultTextureSize,
-                &buffer_id_to_drop, &buffer_id1_new),
+                media::CapturedExternalVideoBuffer(
+                    pool_->GetGpuMemoryBufferHandle(buffer_id1), kDefaultFormat,
+                    kDefaultColorSpace),
+                kDefaultTextureSize, &buffer_id_to_drop, &buffer_id1_new),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id1, buffer_id1_new);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
@@ -509,7 +526,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   pool_->RelinquishConsumerHold(buffer_id1_reuse, 1);
   int buffer_id2 = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                std::move(handle2), media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                media::CapturedExternalVideoBuffer(
+                    std::move(handle2), kDefaultFormat, kDefaultColorSpace),
                 kDefaultTextureSize, &buffer_id_to_drop, &buffer_id2),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id0, buffer_id2);
@@ -521,9 +539,10 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   pool_->RelinquishConsumerHold(buffer_id0, 1);
   int buffer_id0_reuse = kInvalidId;
   EXPECT_EQ(pool_->ReserveIdForExternalBuffer(
-                pool_->GetGpuMemoryBufferHandle(buffer_id0),
-                media::VideoPixelFormat::PIXEL_FORMAT_NV12, kDefaultTextureSize,
-                &buffer_id_to_drop, &buffer_id0_reuse),
+                media::CapturedExternalVideoBuffer(
+                    pool_->GetGpuMemoryBufferHandle(buffer_id0), kDefaultFormat,
+                    kDefaultColorSpace),
+                kDefaultTextureSize, &buffer_id_to_drop, &buffer_id0_reuse),
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_EQ(buffer_id0, buffer_id0_reuse);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
