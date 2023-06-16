@@ -23154,7 +23154,7 @@
         "prefs": {
           "ash.device.geolocation_allowed": {
             "location": "local_state",
-            "default_value": 0
+            "default_value": 1
           }
         }
       },

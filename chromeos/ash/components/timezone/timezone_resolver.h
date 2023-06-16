@@ -76,6 +76,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   // Cancels current request and stops periodic timezone refresh.
   void Stop();
 
+  // Return true if the periodic timezone scheduler is running (Stop() not
+  // called).
+  bool IsRunning();
+
   // Register prefs to LocalState.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -102,6 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   static int IntervalForNextRequestForTesting(const int requests);
 
  private:
+  bool is_running_ = false;
   const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

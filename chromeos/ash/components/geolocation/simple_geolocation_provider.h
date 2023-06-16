@@ -44,9 +44,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
     virtual ~Delegate() = default;
 
-    // Determines if the precise geolocation resolution is allowed, based on the
-    // existing enterprise policies, device preferences and user preferences.
-    virtual bool IsPreciseGeolocationAllowed() const = 0;
+    // Determines if the geolocation resolution is allowed by the system, based
+    // on the existing enterprise policies, device preferences and user
+    // preferences.
+    virtual bool IsSystemGeolocationAllowed() const = 0;
   };
 
   SimpleGeolocationProvider(

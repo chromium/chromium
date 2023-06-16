@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/night_light/night_light_client.h"
+#include "chrome/browser/ash/night_light/night_light_client_impl.h"
 
 #include "ash/public/cpp/night_light_controller.h"
 #include "base/memory/ptr_util.h"
@@ -58,8 +58,9 @@ class FakeNightLightController : public ash::NightLightController {
   bool GetEnabled() const override { return false; }
 
   void NotifyScheduleTypeChanged(ScheduleType type) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnScheduleTypeChanged(type);
+    }
   }
 
  private:
@@ -71,38 +72,21 @@ class FakeNightLightController : public ash::NightLightController {
 
 class FakeDelegate : public SimpleGeolocationProvider::Delegate {
  public:
-  bool IsPreciseGeolocationAllowed() const override { return true; }
+  bool IsSystemGeolocationAllowed() const override { return true; }
 };
 
 // A fake implementation of NightLightClient that doesn't perform any actual
 // geoposition requests.
-class FakeNightLightClient : public NightLightClient,
-                             public base::Clock,
-                             public base::TickClock {
+class FakeNightLightClient : public NightLightClientImpl {
  public:
   explicit FakeNightLightClient(
       const SimpleGeolocationProvider::Delegate* delegate)
-      : NightLightClient(delegate, nullptr /* url_context_getter */) {
-    SetTimerForTesting(
-        std::make_unique<base::OneShotTimer>(this /* tick_clock */));
-    SetClockForTesting(this);
-  }
+      : NightLightClientImpl(delegate, nullptr /* url_context_getter */) {}
 
   FakeNightLightClient(const FakeNightLightClient&) = delete;
   FakeNightLightClient& operator=(const FakeNightLightClient&) = delete;
 
   ~FakeNightLightClient() override = default;
-
-  // base::Clock:
-  base::Time Now() const override { return fake_now_; }
-
-  // base::TickClock:
-  base::TimeTicks NowTicks() const override { return fake_now_ticks_; }
-
-  void set_fake_now(base::Time now) { fake_now_ = now; }
-  void set_fake_now_ticks(base::TimeTicks now_ticks) {
-    fake_now_ticks_ = now_ticks;
-  }
 
   void set_position_to_send(const ash::Geoposition& position) {
     position_to_send_ = position;
@@ -117,9 +101,6 @@ class FakeNightLightClient : public NightLightClient,
     ++geoposition_requests_num_;
   }
 
-  base::Time fake_now_;
-  base::TimeTicks fake_now_ticks_;
-
   // The position to send to the controller the next time OnGeoposition is
   // invoked.
   ash::Geoposition position_to_send_;
@@ -129,25 +110,42 @@ class FakeNightLightClient : public NightLightClient,
 };
 
 // Base test fixture.
-class NightLightClientTest : public testing::TestWithParam<ScheduleType> {
+class NightLightClientImplTest : public testing::TestWithParam<ScheduleType> {
  public:
-  NightLightClientTest() : client_(&delegate_) {}
+  NightLightClientImplTest() : client_(&delegate_) {}
 
-  NightLightClientTest(const NightLightClientTest&) = delete;
-  NightLightClientTest& operator=(const NightLightClientTest&) = delete;
+  NightLightClientImplTest(const NightLightClientImplTest&) = delete;
+  NightLightClientImplTest& operator=(const NightLightClientImplTest&) = delete;
 
-  ~NightLightClientTest() override = default;
+  ~NightLightClientImplTest() override = default;
 
   void SetUp() override {
     // Deterministic fake time that doesn't change for the sake of testing.
-    client_.set_fake_now(base::Time::Now());
-    client_.set_fake_now_ticks(base::TimeTicks::Now());
+    client_.SetTimerForTesting(std::make_unique<base::OneShotTimer>(
+        task_environment_.GetMockTickClock()));
+    client_.SetClockForTesting(task_environment_.GetMockClock());
 
+    // Notify system geolocation permission = Enabled.
+    client_.OnSystemGeolocationPermissionChanged(/*enabled=*/true);
     client_.Start();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  ash::Geoposition CreateValidGeoposition() {
+    ash::Geoposition position;
+    position.latitude = 32.0;
+    position.longitude = 31.0;
+    position.status = ash::Geoposition::STATUS_OK;
+    position.accuracy = 10;
+    position.timestamp = base::Time::Now();
 
+    return position;
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // NOTE: Don't reorder. Global controller instance has to be created first,
+  // client stores its reference on initialization.
   FakeNightLightController controller_;
   FakeNightLightClient client_;
 
@@ -157,7 +155,7 @@ class NightLightClientTest : public testing::TestWithParam<ScheduleType> {
 
 // Test that the client is retrieving geoposition periodically only when the
 // schedule type is "sunset to sunrise" or "custom".
-TEST_F(NightLightClientTest,
+TEST_F(NightLightClientImplTest,
        TestClientRunningWhenSunsetToSunriseOnCustomSchedule) {
   EXPECT_FALSE(client_.using_geoposition());
   controller_.NotifyScheduleTypeChanged(ScheduleType::kNone);
@@ -175,7 +173,7 @@ TEST_F(NightLightClientTest,
 }
 
 // Test that client only pushes valid positions.
-TEST_F(NightLightClientTest, TestInvalidPositions) {
+TEST_F(NightLightClientImplTest, TestInvalidPositions) {
   EXPECT_EQ(0, controller_.position_pushes_num());
   ash::Geoposition position;
   position.latitude = 32.0;
@@ -184,6 +182,7 @@ TEST_F(NightLightClientTest, TestInvalidPositions) {
   position.accuracy = 10;
   position.timestamp = base::Time::Now();
   client_.set_position_to_send(position);
+
   controller_.NotifyScheduleTypeChanged(ScheduleType::kSunsetToSunrise);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, client_.geoposition_requests_num());
@@ -192,7 +191,7 @@ TEST_F(NightLightClientTest, TestInvalidPositions) {
 
 // Test that successive changes of the schedule type to sunset to sunrise do not
 // trigger repeated geoposition requests.
-TEST_F(NightLightClientTest, TestRepeatedScheduleTypeChanges) {
+TEST_F(NightLightClientImplTest, TestRepeatedScheduleTypeChanges) {
   // Start with a valid position, and expect it to be delivered to the
   // controller.
   EXPECT_EQ(0, controller_.position_pushes_num());
@@ -203,11 +202,13 @@ TEST_F(NightLightClientTest, TestRepeatedScheduleTypeChanges) {
   position1.accuracy = 10;
   position1.timestamp = base::Time::Now();
   client_.set_position_to_send(position1);
+
   controller_.NotifyScheduleTypeChanged(ScheduleType::kSunsetToSunrise);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, client_.geoposition_requests_num());
   EXPECT_EQ(1, controller_.position_pushes_num());
-  EXPECT_EQ(client_.Now(), client_.last_successful_geo_request_time());
+  EXPECT_EQ(task_environment_.GetMockClock()->Now(),
+            client_.last_successful_geo_request_time());
 
   // A new different position just for the sake of comparison with position1 to
   // make sure that no new requests are triggered and the same old position will
@@ -231,17 +232,16 @@ TEST_F(NightLightClientTest, TestRepeatedScheduleTypeChanges) {
 
   // The timer should be running scheduling a next request that is a
   // kNextRequestDelayAfterSuccess from the last successful request time.
-  EXPECT_TRUE(client_.timer().IsRunning());
   base::TimeDelta expected_delay =
       client_.last_successful_geo_request_time() +
-      NightLightClient::GetNextRequestDelayAfterSuccessForTesting() -
-      client_.Now();
+      NightLightClientImpl::GetNextRequestDelayAfterSuccessForTesting() -
+      task_environment_.GetMockClock()->Now();
   EXPECT_EQ(expected_delay, client_.timer().GetCurrentDelay());
 }
 
 // Tests that timezone changes result in new geoposition requests if the
 // schedule type is sunset to sunrise or custom.
-TEST_P(NightLightClientTest, TestTimezoneChanges) {
+TEST_P(NightLightClientImplTest, TestTimezoneChanges) {
   EXPECT_EQ(0, controller_.position_pushes_num());
   client_.SetCurrentTimezoneIdForTesting(u"America/Los_Angeles");
 
@@ -290,8 +290,95 @@ TEST_P(NightLightClientTest, TestTimezoneChanges) {
   EXPECT_EQ(GetTimezoneId(*timezone), client_.current_timezone_id());
 }
 
+TEST_P(NightLightClientImplTest,
+       TestSystemGeolocationPermissionChangesForScheduleType) {
+  EXPECT_EQ(0, controller_.position_pushes_num());
+
+  // Prepare a valid geoposition.
+  ash::Geoposition position = CreateValidGeoposition();
+  client_.set_position_to_send(position);
+
+  // Disable system geolocation permission, expect that no requests will be
+  // sent, regardless of the controller setting.
+  EXPECT_FALSE(client_.timer().IsRunning());
+  client_.OnSystemGeolocationPermissionChanged(/*enabled=*/false);
+  EXPECT_FALSE(client_.timer().IsRunning());
+
+  // Set nightlightclient type to either SunsetToSunrise or Custom.
+  controller_.NotifyScheduleTypeChanged(GetParam());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, controller_.position_pushes_num());
+  EXPECT_EQ(0, client_.geoposition_requests_num());
+
+  // Re-enable system geolocation permission and expect a new geolocation
+  // request.
+  client_.OnSystemGeolocationPermissionChanged(/*enabled=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, controller_.position_pushes_num());
+  EXPECT_EQ(1, client_.geoposition_requests_num());
+
+  // Fast forward to the next request.
+  task_environment_.FastForwardBy(
+      client_.GetNextRequestDelayAfterSuccessForTesting());
+  EXPECT_EQ(2, controller_.position_pushes_num());
+  EXPECT_EQ(2, client_.geoposition_requests_num());
+
+  // Revoking the geolocation permission should stop the scheduler.
+  client_.OnSystemGeolocationPermissionChanged(/*enabled=*/false);
+  EXPECT_EQ(2, controller_.position_pushes_num());
+  EXPECT_EQ(2, client_.geoposition_requests_num());
+  EXPECT_FALSE(client_.timer().IsRunning());
+}
+
+TEST_P(NightLightClientImplTest,
+       TestSystemGeolocationPermissionChangesForTimezone) {
+  EXPECT_EQ(0, controller_.position_pushes_num());
+  client_.SetCurrentTimezoneIdForTesting(u"America/Los_Angeles");
+
+  // Prepare a valid geoposition.
+  ash::Geoposition position = CreateValidGeoposition();
+  client_.set_position_to_send(position);
+
+  // Change the schedule type to sunset to sunrise or custom, and expect the
+  // geoposition will be pushed.
+  controller_.NotifyScheduleTypeChanged(GetParam());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, controller_.position_pushes_num());
+  EXPECT_EQ(1, client_.geoposition_requests_num());
+
+  // Disable geolocation permission and expect scheduler to stop.
+  client_.OnSystemGeolocationPermissionChanged(/*enabled=*/false);
+  EXPECT_FALSE(client_.timer().IsRunning());
+
+  // new timezone shouldn't resume scheduling, while the geo permission is off.
+  // Current timezone should update successfully.
+  auto timezone = CreateTimezone("Asia/Tokyo");
+  client_.TimezoneChanged(*timezone);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, controller_.position_pushes_num());
+  EXPECT_EQ(1, client_.geoposition_requests_num());
+  EXPECT_EQ(GetTimezoneId(*timezone), client_.current_timezone_id());
+  EXPECT_FALSE(client_.timer().IsRunning());
+
+  // Re-enable the system geolocation permission. Should result in a new
+  // immediate request.
+  client_.OnSystemGeolocationPermissionChanged(/*enabled=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2, controller_.position_pushes_num());
+  EXPECT_EQ(2, client_.geoposition_requests_num());
+
+  // Update the timezone again, see that the geolocation request is dispatched
+  // immediately.
+  timezone = CreateTimezone("Africa/Cairo");
+  client_.TimezoneChanged(*timezone);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3, controller_.position_pushes_num());
+  EXPECT_EQ(3, client_.geoposition_requests_num());
+  EXPECT_EQ(GetTimezoneId(*timezone), client_.current_timezone_id());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         NightLightClientTest,
+                         NightLightClientImplTest,
                          ::testing::Values(ScheduleType::kSunsetToSunrise,
                                            ScheduleType::kCustom));
 }  // namespace

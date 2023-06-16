@@ -67,6 +67,29 @@ base::Time ToUTCTime(base::StringPiece utc_time_str) {
   return time;
 }
 
+class FakeGeolocationController : public GeolocationController {
+ public:
+  explicit FakeGeolocationController(
+      scoped_refptr<network::SharedURLLoaderFactory> factory)
+      : GeolocationController(factory) {}
+
+  // Proxy method to call the `OnGeoposition()` callback directly, without
+  // waiting for the server response. Need this to test scheduler behavior.
+  void ImitateGeopositionReceived() {
+    Geoposition fake_pos;
+    fake_pos.latitude = kTestLatitude1;
+    fake_pos.longitude = kTestLongitude1;
+    fake_pos.status = Geoposition::STATUS_OK;
+    fake_pos.accuracy = 10;
+    fake_pos.timestamp = base::Time::Now();
+
+    GeolocationController::OnGeoposition(fake_pos, false, base::Seconds(1));
+  }
+
+  // TODO(b/286233027): Override `RequestGeolocation()` to fake the server
+  // communication.
+};
+
 // Base test fixture.
 class GeolocationControllerTest : public AshTestBase {
  public:
@@ -82,7 +105,7 @@ class GeolocationControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     CreateTestUserSessions();
-    controller_ = std::make_unique<GeolocationController>(
+    controller_ = std::make_unique<FakeGeolocationController>(
         static_cast<scoped_refptr<network::SharedURLLoaderFactory>>(
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
 
@@ -109,7 +132,7 @@ class GeolocationControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  GeolocationController* controller() const { return controller_.get(); }
+  FakeGeolocationController* controller() const { return controller_.get(); }
   base::SimpleTestClock* test_clock() { return &test_clock_; }
   base::OneShotTimer* timer_ptr() const { return timer_ptr_; }
   const Geoposition& position() const { return position_; }
@@ -156,8 +179,14 @@ class GeolocationControllerTest : public AshTestBase {
     factory_->set_position(position_);
   }
 
+  void UpdateUserGeolocationPermission(bool enabled) {
+    PrefService* pref_service =
+        Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+    pref_service->SetBoolean(ash::prefs::kUserGeolocationAllowed, enabled);
+  }
+
  private:
-  std::unique_ptr<GeolocationController> controller_;
+  std::unique_ptr<FakeGeolocationController> controller_;
   base::SimpleTestClock test_clock_;
   raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
   raw_ptr<TestGeolocationUrlLoaderFactory, ExperimentalAsh> factory_;
@@ -273,6 +302,75 @@ TEST_F(GeolocationControllerTest, TimezoneChanges) {
   FireTimerToFetchGeoposition();
   EXPECT_EQ(2, observer.position_received_num());
   EXPECT_EQ(GetTimezoneId(*timezone), controller()->current_timezone_id());
+  EXPECT_TRUE(timer_ptr()->IsRunning());
+}
+
+TEST_F(GeolocationControllerTest, SystemGeolocationPermissionChanges) {
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  GeolocationControllerObserver observer;
+  controller()->AddObserver(&observer);
+  EXPECT_EQ(0, observer.position_received_num());
+
+  FireTimerToFetchGeoposition();
+  EXPECT_EQ(1, observer.position_received_num());
+  EXPECT_TRUE(timer_ptr()->IsRunning());
+
+  // Disable system geo permission. Scheduling should stop.
+  controller()->OnSystemGeolocationPermissionChanged(false);
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // Re-enabling the system geo permission, should resume scheduling.
+  controller()->OnSystemGeolocationPermissionChanged(true);
+  EXPECT_TRUE(timer_ptr()->IsRunning());
+}
+
+TEST_F(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // This will start scheduling.
+  GeolocationControllerObserver observer;
+  controller()->AddObserver(&observer);
+
+  // Fire Geolocation request.
+  timer_ptr()->FireNow();
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // Disable user geolocation permission, this should stop scheduling.
+  UpdateUserGeolocationPermission(false);
+  controller()->OnSystemGeolocationPermissionChanged(false);
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // Simulate server response and check it didn't trigger scheduling to
+  // continue.
+  controller()->ImitateGeopositionReceived();
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // Re-enable user geolocation permission, this should resume scheduling.
+  UpdateUserGeolocationPermission(true);
+  controller()->OnSystemGeolocationPermissionChanged(true);
+  EXPECT_TRUE(timer_ptr()->IsRunning());
+}
+
+TEST_F(GeolocationControllerTest, StopSchedulingWhenObserverListIsEmpty) {
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // Add the first observer. This will kick off scheduling.
+  GeolocationControllerObserver observer;
+  controller()->AddObserver(&observer);
+
+  // Fire Geolocation request.
+  timer_ptr()->FireNow();
+
+  // Unsubscribe the only observer.
+  controller()->RemoveObserver(&observer);
+
+  // Simulate the server response and check it didn't resume the scheduler.
+  controller()->ImitateGeopositionReceived();
+  EXPECT_FALSE(timer_ptr()->IsRunning());
+
+  // Add the observer back, scheduling should resume.
+  controller()->AddObserver(&observer);
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 

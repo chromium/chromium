@@ -16,9 +16,11 @@ PrivacyHubController::~PrivacyHubController() = default;
 // static
 void PrivacyHubController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
+  // TODO(b/286526469): Sync this pref with the device owner's location
+  // permission `kUserGeolocationAllowed`.
   registry->RegisterIntegerPref(
       prefs::kDeviceGeolocationAllowed,
-      static_cast<int>(PrivacyHubController::AccessLevel::kDisallowed));
+      static_cast<int>(PrivacyHubController::AccessLevel::kAllowed));
 }
 
 // static

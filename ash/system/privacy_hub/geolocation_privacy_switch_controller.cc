@@ -45,7 +45,6 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
           &GeolocationPrivacySwitchController::OnPreferenceChanged,
           base::Unretained(this)));
   UpdateNotification();
-  // TODO(zauri): Set 0-state
 }
 
 void GeolocationPrivacySwitchController::TrackGeolocationAttempted(
@@ -84,8 +83,6 @@ std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
 }
 
 void GeolocationPrivacySwitchController::OnPreferenceChanged() {
-  // TODO(zauri): This is a stub code. Sync the state with
-  // SimpleGeolocationProvider.
   const bool geolocation_state = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kUserGeolocationAllowed);
   DLOG(ERROR) << "Privacy Hub: Geolocation switch state = "

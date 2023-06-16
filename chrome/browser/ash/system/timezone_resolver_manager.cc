@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -99,6 +101,15 @@ ServiceConfiguration GetServiceConfigurationFromUserPrefs(
 
 // Returns service configuration for the signin screen.
 ServiceConfiguration GetServiceConfigurationForSigninScreen() {
+  using AccessLevel = PrivacyHubController::AccessLevel;
+
+  const AccessLevel device_geolocation_permission =
+      static_cast<AccessLevel>(g_browser_process->local_state()->GetInteger(
+          prefs::kDeviceGeolocationAllowed));
+  if (device_geolocation_permission == AccessLevel::kDisallowed) {
+    return SHOULD_STOP;
+  }
+
   const PrefService::Preference* device_pref =
       g_browser_process->local_state()->FindPreference(
           ::prefs::kResolveDeviceTimezoneByGeolocationMethod);
@@ -221,7 +232,7 @@ bool TimeZoneResolverManager::ShouldSendCellularGeolocationData() const {
          TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
 }
 
-bool TimeZoneResolverManager::IsPreciseGeolocationAllowed() const {
+bool TimeZoneResolverManager::IsSystemGeolocationAllowed() const {
   // Follow device preference on log-in screen.
   if (!primary_user_prefs_) {
     return g_browser_process->local_state()->GetInteger(
@@ -274,6 +285,11 @@ void TimeZoneResolverManager::UpdateTimezoneResolver() {
     observer.OnTimeZoneResolverUpdated();
 }
 
+void TimeZoneResolverManager::OnSystemGeolocationPermissionChanged(
+    bool enabled) {
+  UpdateTimezoneResolver();
+}
+
 void TimeZoneResolverManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -287,6 +303,12 @@ bool TimeZoneResolverManager::ShouldApplyResolvedTimezone() {
 }
 
 bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
+  // System geolocation permission is required for automatic timezone
+  // resolution.
+  if (!IsSystemGeolocationAllowed()) {
+    return false;
+  }
+
   ServiceConfiguration result = GetServiceConfigurationFromPolicy();
 
   if (result == UNSPECIFIED) {
