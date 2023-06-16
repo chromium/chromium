@@ -39,9 +39,6 @@ namespace {
 using ::chromeos::PpdProvider;
 using ::chromeos::Printer;
 
-// PrinterConfigurer override for testing.
-PrinterConfigurer* g_printer_configurer_for_test = nullptr;
-
 PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
                                                         int result_code) {
   DCHECK_GE(result_code, 0);
@@ -230,20 +227,7 @@ void PrinterConfigurer::RecordUsbPrinterSetupSource(
 // static
 std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(
     scoped_refptr<PpdProvider> ppd_provider) {
-  if (g_printer_configurer_for_test) {
-    auto printer_configurer =
-        base::WrapUnique<PrinterConfigurer>(g_printer_configurer_for_test);
-    g_printer_configurer_for_test = nullptr;
-    return printer_configurer;
-  }
   return std::make_unique<PrinterConfigurerImpl>(ppd_provider);
-}
-
-// static
-void PrinterConfigurer::SetPrinterConfigurerForTesting(
-    std::unique_ptr<PrinterConfigurer> printer_configurer) {
-  DCHECK(!g_printer_configurer_for_test);
-  g_printer_configurer_for_test = printer_configurer.release();
 }
 
 // static
