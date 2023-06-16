@@ -491,6 +491,8 @@ class BASE_EXPORT TaskQueueImpl {
   void RemoveCancelableTask(HeapHandle heap_handle);
 
   void PostImmediateTaskImpl(PostedTask task, CurrentThread current_thread);
+  void PostImmediateTaskImplOrdered(PostedTask task, CurrentThread current_thread);
+  void PostImmediateTaskImplUnordered(PostedTask task, CurrentThread current_thread);
   void PostDelayedTaskImpl(PostedTask task, CurrentThread current_thread);
 
   // Push the task onto the |delayed_incoming_queue|. Lock-free main thread
@@ -569,6 +571,13 @@ class BASE_EXPORT TaskQueueImpl {
 
   mutable base::internal::CheckedLock any_thread_lock_;
 
+
+  // This lock protects access to the handler callbacks, and is used in both ordered and unordered
+  // contexts.  In particular, this lock must only be used around the handler
+  mutable base::internal::CheckedLock unordered_lock_;
+
+  TaskDeque record_replay_unordered_immediate_incoming_queue GUARDED_BY(unordered_lock_);
+  base::flat_map<raw_ptr<OnTaskPostedCallbackHandleImpl>, OnTaskPostedHandler> on_task_posted_handlers GUARDED_BY(unordered_lock_);
   struct AnyThread {
     // Mirrored from MainThreadOnly. These are only used for tracing.
     struct TracingOnly {
@@ -584,7 +593,6 @@ class BASE_EXPORT TaskQueueImpl {
     ~AnyThread();
 
     TaskDeque immediate_incoming_queue;
-    TaskDeque record_replay_unordered_immediate_incoming_queue;
 
     // True if main_thread_only().immediate_work_queue is empty.
     bool immediate_work_queue_empty = true;
@@ -592,9 +600,6 @@ class BASE_EXPORT TaskQueueImpl {
     bool post_immediate_task_should_schedule_work = true;
 
     bool unregistered = false;
-
-    base::flat_map<raw_ptr<OnTaskPostedCallbackHandleImpl>, OnTaskPostedHandler>
-        on_task_posted_handlers;
 
 #if DCHECK_IS_ON()
     // A cache of |immediate_work_queue->work_queue_set_index()| which is used
