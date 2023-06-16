@@ -501,9 +501,6 @@ chrome_telemetry_build/__init__.py
 chrome_telemetry_build/chromium_config.py
 contrib/PRESUBMIT.py
 contrib/__init__.py
-contrib/blink_layoutng_perf/__init__.py
-contrib/blink_layoutng_perf/blink_layoutng_perf.py
-contrib/blink_layoutng_perf/loading_layout_ng.py
 contrib/blink_perf_cmdline/__init__.py
 contrib/blink_perf_cmdline/blink_perf_cmdline.py
 contrib/blink_perf_xml_http_request/__init__.py
@@ -644,7 +641,6 @@ page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
 page_sets/key_mobile_sites_smooth.py
-page_sets/loading_desktop.py
 page_sets/loading_mobile.py
 page_sets/login_helpers/__init__.py
 page_sets/login_helpers/autocad_login.py

@@ -1,10 +1,5 @@
 {
     "0": {
-        "benchmarks": {
-            "jetstream2": {
-                "abridged": false
-            }
-        },
         "executables": {
             "base_perftests": {
                 "arguments": [
@@ -16,18 +11,18 @@
                 ],
                 "path": "bin/run_base_perftests"
             }
-        }
+        },
+        "benchmarks": {}
     },
     "1": {
         "benchmarks": {
+            "jetstream2": {
+                "abridged": false
+            },
             "speedometer": {
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "system_health.common_desktop": {
-                "end": 5,
                 "abridged": false
             }
         },
@@ -47,8 +42,7 @@
     "2": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 5,
-                "end": 54,
+                "end": 41,
                 "abridged": false
             }
         }
@@ -56,20 +50,20 @@
     "3": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 54,
+                "begin": 41,
                 "abridged": false
             }
         }
     },
     "extra_infos": {
         "num_stories": 86,
-        "predicted_min_shard_time": 1198.0,
+        "predicted_min_shard_time": 400,
         "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 1265.0,
-        "predicted_max_shard_index": 0,
-        "shard #0": 1265.0,
-        "shard #1": 1215.0,
-        "shard #2": 1216.0,
-        "shard #3": 1198.0
+        "predicted_max_shard_time": 930.0,
+        "predicted_max_shard_index": 1,
+        "shard #0": 900.0,
+        "shard #1": 930.0,
+        "shard #2": 410,
+        "shard #3": 400
     }
 }
