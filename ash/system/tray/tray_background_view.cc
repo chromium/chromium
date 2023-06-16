@@ -969,8 +969,8 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
   insets += local_contents_insets;
 
   if (Shell::Get()->IsInTabletMode() && ShelfConfig::Get()->is_in_app()) {
-    insets += gfx::Insets::VH(
-        ShelfConfig::Get()->in_app_control_button_height_inset(), 0);
+    insets +=
+        gfx::Insets(ShelfConfig::Get()->in_app_control_button_height_inset());
   }
 
   return insets;
