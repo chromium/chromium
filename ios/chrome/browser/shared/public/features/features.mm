@@ -237,7 +237,7 @@ BASE_FEATURE(kEnableEmailInBookmarksReadingListSnackbar,
 
 BASE_FEATURE(kIndicateSyncErrorInOverflowMenu,
              "IndicateSyncErrorInOverflowMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIndicateSyncErrorInOverflowMenuEnabled() {
   return base::FeatureList::IsEnabled(kIndicateSyncErrorInOverflowMenu);
