@@ -72,6 +72,9 @@ class CompanionPageHandler
   // IdentityManager::Observer overrides.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override;
 
   // UrlKeyedDataCollectionConsentHelper::Observer overrides.
   void OnUrlKeyedDataCollectionConsentStateChanged(

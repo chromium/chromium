@@ -35,6 +35,7 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -80,6 +81,12 @@ void CompanionPageHandler::OnPrimaryAccountChanged(
     return;
   }
 
+  NotifyURLChanged(/*is_full_reload=*/true);
+}
+
+void CompanionPageHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
   NotifyURLChanged(/*is_full_reload=*/true);
 }
 
