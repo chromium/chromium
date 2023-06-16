@@ -4237,6 +4237,17 @@
        {}
       ]
      ],
+     "invalidation": {
+      "crashtests": {
+       "nth-child-of-attribute-crash.html": [
+        "8f30fbb5e77610fc4b113c976a2efb1dacd88041",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "spurious-brace-crash.html": [
       "b1a462a9690ea40836c0d7cb0cdf9779b9702750",
       [
@@ -4544,6 +4555,13 @@
        {}
       ]
      ],
+     "indent-in-inline-editing-host-outside-body.html": [
+      "d56a0fd248b9f98f4d6355e2ac0f4736b5014e09",
+      [
+       null,
+       {}
+      ]
+     ],
      "indent-in-textarea-in-designMode-during-outdent.html": [
       "313c51bb5a0e12c841cb06ab512595b6afee52d8",
       [
@@ -4595,6 +4613,13 @@
      ],
      "inserthorizontalrule-with-2-selection-ranges-and-one-is-outside-body.html": [
       "d248c333d940fff01e2c2f183f5717970a89b61e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inserthorizontalrule-with-range-ending-in-collapsible-spaces-before-comment.html": [
+      "d7224c3095df66cfa792e21f8b7af991c7610baa",
       [
        null,
        {}
@@ -106551,6 +106576,97 @@
         {}
        ]
       ],
+      "content-visibility-with-popover-top-layer-000.html": [
+       "fef4f5e5405e038aa10c1c0e21a71df6a82cd78f",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-001.html": [
+       "fb3c9096da6305883ff42ce59981f34ad1f4b112",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-002.html": [
+       "48b436f4de19ee35f3684794c49b786bcd9cb005",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-003.html": [
+       "df3cf07a0159f9254f0fd78d193716c74aa70068",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-with-popover-top-layer-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-004.html": [
+       "bbf4567e37d4c1df68ce9119ec3952722324f12e",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/spacer-with-popover-top-layer-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-005.html": [
+       "264d7b317e0a3fb2fc655c6cceda29d2fe252f9d",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/spacer-with-popover-top-layer-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-hide-after-addition.html": [
+       "e3934bf46f80d7e22c0209470b8b7ed6f92e47cd",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "content-visibility-with-top-layer-000.html": [
        "61856611f9eb8b170325a12114df78beefaaf2d5",
        [
@@ -108034,7 +108150,7 @@
        ]
       ],
       "css3-counter-styles-202.html": [
-       "909118fb109a0f93070353040dc300e049dea5e7",
+       "6f00ee8b2d8d0bb44ab0a10aae18dfe57e42e589",
        [
         null,
         [
@@ -108075,7 +108191,7 @@
        ]
       ],
       "css3-counter-styles-205.html": [
-       "fdd74e837d39d6cf9805be992d19a8aa7deeed07",
+       "4b62cfeb77ac199978e257a770c1a19bb5cd0774",
        [
         null,
         [
@@ -161153,6 +161269,32 @@
       ]
      },
      "overlay": {
+      "overlay-transition-backdrop-entry.html": [
+       "89299e3a8ea088d93e308f50966bca9372d3eff1",
+       [
+        null,
+        [
+         [
+          "/css/css-position/overlay/green-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "overlay-transition-backdrop.html": [
+       "b730e4334659c8f2d8071a651b7004583b6f96c3",
+       [
+        null,
+        [
+         [
+          "/css/css-position/overlay/green-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "overlay-transition-finished.html": [
        "bf0aefac3f3d26376980bdb48ad8058210d77898",
        [
@@ -248397,6 +248539,32 @@
         {}
        ]
       ],
+      "negated-nth-child-when-ancestor-changes.html": [
+       "0d76146f19ad312d42a09cd89c14824424c193d3",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-nth-child-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-nth-last-child-when-ancestor-changes.html": [
+       "27f66ee3244dc58e4bb09a64222d8f2b55524ea0",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-nth-last-child-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "nth-child-containing-ancestor.html": [
        "a7f246328c8f5f48c7f32822ea8dfdecde474022",
        [
@@ -252538,26 +252706,13 @@
        ]
       },
       "layers": {
-       "2d.layer.endlayer.alone.html": [
-        "a7a5933b33d0d9e6a183d1bd5ab3a2e88d6a507f",
+       "2d.layer.cross-layer-paths.html": [
+        "7feebfdce6d1b8a712636654925fb6a143a8a839",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.endlayer.alone-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.endlayer.unmatched.html": [
-        "5f5398323264e5cc33b4f6ebb744128b92d18946",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.endlayer.unmatched-expected.html",
+           "/html/canvas/element/layers/2d.layer.cross-layer-paths-expected.html",
            "=="
           ]
          ],
@@ -252980,6 +253135,19 @@
          {}
         ]
        ],
+       "2d.layer.reset.html": [
+        "aabf74cc4d1dd216f69658b6e6ab97a29eeab3ae",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.reset-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.restore-style.html": [
         "2537f409d6d99e0175667725ffedd5c384071864",
         [
@@ -253036,6 +253204,19 @@
            ]
           ]
          }
+        ]
+       ],
+       "2d.layer.unclosed-nested.html": [
+        "c02aae4af116be203af40610444db1cf7b91624b",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.unclosed-nested-expected.html",
+           "=="
+          ]
+         ],
+         {}
         ]
        ],
        "2d.layer.unclosed.html": [
@@ -254064,52 +254245,26 @@
        ]
       },
       "layers": {
-       "2d.layer.endlayer.alone.html": [
-        "6a0e5cce71719615966c649a1623ed98e27637b6",
+       "2d.layer.cross-layer-paths.html": [
+        "f167ae00bdf18f985cab62f350466bc903dbddaf",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.endlayer.alone-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.cross-layer-paths-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.endlayer.alone.w.html": [
-        "ddb2671aaabf37d51b6f4167e8bd16bd2fb88998",
+       "2d.layer.cross-layer-paths.w.html": [
+        "5b1f7f949cc57e12c7477ef3229369407c20fc1f",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.endlayer.alone-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.endlayer.unmatched.html": [
-        "b204c49e5eb1d67dd4785b3cd2fc68afb2f90542",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.endlayer.unmatched-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.endlayer.unmatched.w.html": [
-        "2e1cb62c32a94ef4965b7cefdd5489055595acf7",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.endlayer.unmatched-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.cross-layer-paths-expected.html",
            "=="
           ]
          ],
@@ -254922,6 +255077,32 @@
          {}
         ]
        ],
+       "2d.layer.reset.html": [
+        "6fae595a84b7ac40ea0f38eed0edc2102024dec0",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.reset-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.reset.w.html": [
+        "d050b90841a2fec48142ea0d69d04cd5bb8b3a04",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.reset-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.restore-style.html": [
         "a3593cd2a82748df9db8bd74a67dbc29dcaefb31",
         [
@@ -255036,6 +255217,32 @@
            ]
           ]
          }
+        ]
+       ],
+       "2d.layer.unclosed-nested.html": [
+        "b7be6d82423805c7d138ea3ee53561a2a9cc9433",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.unclosed-nested-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.unclosed-nested.w.html": [
+        "dd1c36ea471975155643be51277562e3e3e785c6",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.unclosed-nested-expected.html",
+           "=="
+          ]
+         ],
+         {}
         ]
        ],
        "2d.layer.unclosed.html": [
@@ -273475,11 +273682,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "bee2d2937145e4785950537644e1ed4163ef9a7e",
+     "03cb5b45f30a53e9e58259a90f48345d556d94d4",
      []
     ],
     "mtime.json": [
-     "a905434e2fa727588949ba2e1242886f449afccf",
+     "f5dd3d52e0f3008eb37198eb28a647bd2d6395a5",
      []
     ]
    },
@@ -294656,6 +294863,10 @@
        "5e1e9bdde841828cbd4fc3d6cc165305361f4f36",
        []
       ],
+      "content-with-popover-top-layer-ref.html": [
+       "59b2304d9efff8796c1191c5f22627c0e18c60a7",
+       []
+      ],
       "content-with-top-layer-ref.html": [
        "eadc5f65d1e8bd875e271b0fd27540dac8d2ae5f",
        []
@@ -294704,6 +294915,10 @@
       ],
       "spacer-and-container-scrolled-ref.html": [
        "a3f8079595378781de584179beeb63072c50810a",
+       []
+      ],
+      "spacer-with-popover-top-layer-ref.html": [
+       "6c4c65f58c32679f7396cf6cf9ae094b32546c23",
        []
       ],
       "spacer-with-top-layer-ref.html": [
@@ -295551,7 +295766,11 @@
        []
       ],
       "css3-counter-styles-202-ref.html": [
-       "52712e3fd07fb6e243eb9855c32ffaa546ee75c7",
+       "e7abaad87e5373be2f2c3f101846e1c1c3ae0b97",
+       []
+      ],
+      "css3-counter-styles-202.html.ini": [
+       "701b06d1e98c82ff12a3af046d34ba71e55a1d62",
        []
       ],
       "css3-counter-styles-203-ref.html": [
@@ -295565,7 +295784,11 @@
        []
       ],
       "css3-counter-styles-205-ref.html": [
-       "7d8e6fb613e885c90bd12d9e09b2a176473743f1",
+       "45b7037a8c159aadfe01d8c9975de50a92e64cab",
+       []
+      ],
+      "css3-counter-styles-205.html.ini": [
+       "7f7b6e5e4d7385ee0bd09f599a2a004325698fd0",
        []
       ],
       "css3-counter-styles-206-ref.html": [
@@ -316201,6 +316424,10 @@
       "green-ref.html": [
        "bef7405e96f8181f88fb073ebd212b4af6382e33",
        []
+      ],
+      "overlay-transition-backdrop.html.ini": [
+       "3356a7fbe7f1235bfe1e472a4ca4a89d351b4105",
+       []
       ]
      },
      "position-absolute-center-007.html.ini": [
@@ -317893,6 +318120,10 @@
     "css-ruby": {
      "META.yml": [
       "b0098caea13c61def740fa706be68efb74b3bd9b",
+      []
+     ],
+     "abs-in-ruby-base-container.html.ini": [
+      "f9cf70a8cc1e44c87a64a3409cbad18267e6111a",
       []
      ],
      "abs-in-ruby-base-ref.html": [
@@ -331463,7 +331694,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-end-color-001.html.ini": [
-       "51de5a12c3fa70cb254d3ace474c8930f40fb352",
+       "e782abd992ced4be9dc67d31dcd03efc1d05e939",
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-end-style-001.html.ini": [
@@ -332164,6 +332395,10 @@
       ],
       "kind-of-widget-fallback-textarea-border-end-start-radius-001.html.ini": [
        "281ada39f9f5246188aa5de1bea16d461a646971",
+       []
+      ],
+      "kind-of-widget-fallback-textarea-border-image-outset-001.html.ini": [
+       "108ffffb8d78cf9ae2069e46c4412c22f0dcb044",
        []
       ],
       "kind-of-widget-fallback-textarea-border-image-slice-001.html.ini": [
@@ -338912,7 +339147,7 @@
       []
      ],
      "backdrop-filters-opacity.html.ini": [
-      "3d96073786c39e449d77e0de95734034decc3e92",
+      "492fcb290d808c2a01ad65c07d6cc15dc79176fe",
       []
      ],
      "backdrop-filters-saturate-ref.html": [
@@ -340114,20 +340349,12 @@
        "72cd2f9c91756992a282ff296743d16c3d4b09d1",
        []
       ],
-      "offset-path-computed-expected.txt": [
-       "626b0f317537a3e9e788e8f2c400b7b95c501b8a",
-       []
-      ],
       "offset-path-computed.html.ini": [
        "1a9fa900ced9face67141b17eebe48fdb974a97b",
        []
       ],
       "offset-path-parsing-invalid.html.ini": [
        "d52a1264506f57db77cc7136ecc812ed2457a8a3",
-       []
-      ],
-      "offset-path-parsing-valid-expected.txt": [
-       "321412c7d524274e96fca358a72466aea328d482",
        []
       ],
       "offset-path-parsing-valid.html.ini": [
@@ -340618,6 +340845,14 @@
       ],
       "modal-pseudo-class-in-has.html.ini": [
        "153ead5932ba240998e297aaf9c6cba2dbfac03f",
+       []
+      ],
+      "negated-nth-child-when-ancestor-changes-ref.html": [
+       "bfa9d00e1b6ce666b8b3dc667dd7db07de8c48ad",
+       []
+      ],
+      "negated-nth-last-child-when-ancestor-changes-ref.html": [
+       "27f51e6da2864293bf9daf7f4c11c31678ebd8d5",
        []
       ],
       "nth-child-containing-ancestor-ref.html": [
@@ -356729,12 +356964,8 @@
        ]
       },
       "layers": {
-       "2d.layer.endlayer.alone-expected.html": [
-        "607526e4376282dcb4b8a359ada7a23a5fdb3286",
-        []
-       ],
-       "2d.layer.endlayer.unmatched-expected.html": [
-        "e6dd85b7e261c50956d3018d6e2a56e4c3f87600",
+       "2d.layer.cross-layer-paths-expected.html": [
+        "c394ecdfe3904f0afb1e4879241cf38d985155e6",
         []
        ],
        "2d.layer.global-states.alpha-expected.html": [
@@ -356901,6 +357132,10 @@
         "22a9770331d82a0965e6f06f4f98dfe8c681da09",
         []
        ],
+       "2d.layer.reset-expected.html": [
+        "93131dca9cfee5953e4a06cee99ec1429d8f062d",
+        []
+       ],
        "2d.layer.restore-style-expected.html": [
         "1d0ac3558d1d4c15609c364a6e5678ed329fa272",
         []
@@ -356911,6 +357146,10 @@
        ],
        "2d.layer.unclosed-expected.html": [
         "c41b253c95ba2b4f970b6ae59b58e444df14d866",
+        []
+       ],
+       "2d.layer.unclosed-nested-expected.html": [
+        "5e90134a2505d39da1285122f2df86fe05c8f027",
         []
        ]
       },
@@ -357731,14 +357970,6 @@
        ]
       },
       "text-styles": {
-       "2d.text.draw.baseline.ideographic-expected.txt": [
-        "6ab15d63f9c02a1fae79703a9f491ec9937e112f",
-        []
-       ],
-       "2d.text.draw.baseline.ideographic.html.ini": [
-        "6666ef57b2113a299fd94f38ab17a7706ebd3638",
-        []
-       ],
        "2d.text.draw.space.collapse.end-expected.txt": [
         "2e4a7d0548fd45fdefc19a01326a297332ac5a06",
         []
@@ -357831,12 +358062,8 @@
        ]
       },
       "layers": {
-       "2d.layer.endlayer.alone-expected.html": [
-        "607526e4376282dcb4b8a359ada7a23a5fdb3286",
-        []
-       ],
-       "2d.layer.endlayer.unmatched-expected.html": [
-        "e6dd85b7e261c50956d3018d6e2a56e4c3f87600",
+       "2d.layer.cross-layer-paths-expected.html": [
+        "c394ecdfe3904f0afb1e4879241cf38d985155e6",
         []
        ],
        "2d.layer.global-states.alpha-expected.html": [
@@ -358027,6 +358254,10 @@
         "2833849da67f06693a228d9d3cec8c5ba56c8a8c",
         []
        ],
+       "2d.layer.reset-expected.html": [
+        "93131dca9cfee5953e4a06cee99ec1429d8f062d",
+        []
+       ],
        "2d.layer.restore-style-expected.html": [
         "1d0ac3558d1d4c15609c364a6e5678ed329fa272",
         []
@@ -358037,6 +358268,10 @@
        ],
        "2d.layer.unclosed-expected.html": [
         "c41b253c95ba2b4f970b6ae59b58e444df14d866",
+        []
+       ],
+       "2d.layer.unclosed-nested-expected.html": [
+        "5e90134a2505d39da1285122f2df86fe05c8f027",
         []
        ]
       },
@@ -358137,22 +358372,6 @@
        ]
       },
       "text": {
-       "2d.text.draw.baseline.ideographic-expected.txt": [
-        "88ea146f86d5e262d660fa57305c5c2eea1729cc",
-        []
-       ],
-       "2d.text.draw.baseline.ideographic.html.ini": [
-        "e47bad1da66cd1b2ec236672055aea6365b07307",
-        []
-       ],
-       "2d.text.draw.baseline.ideographic.worker-expected.txt": [
-        "dcc1552403b4ca0663f787e5cc22e2e70926fc28",
-        []
-       ],
-       "2d.text.draw.baseline.ideographic.worker.js.ini": [
-        "7cd81bd2b29001bdaef2c35f2cea0de02d95a4bf",
-        []
-       ],
        "2d.text.draw.fill.basic.png": [
         "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
         []
@@ -358391,7 +358610,7 @@
          []
         ],
         "text-styles.yaml": [
-         "d2481ea8881b1e8e0db5b9ca0f2d4128bf8e23bb",
+         "8ddb997db44023d899a143104a6c712908f5de23",
          []
         ],
         "the-canvas-element.yaml": [
@@ -358405,7 +358624,7 @@
          []
         ],
         "text.yaml": [
-         "90635ddb7ce311f5c9b4a1218c5ff38e651d6123",
+         "3ae68280ab777ec6c8855ce8199aaf84d4c25ebd",
          []
         ],
         "the-offscreen-canvas.yaml": [
@@ -358444,7 +358663,7 @@
         []
        ],
        "layers.yaml": [
-        "8ca05bec84d72f48fdde9aa90e0d6ad1efceccd1",
+        "63edf62e3b83b552d3a9cd0c04b5a29bec544c86",
         []
        ],
        "line-styles.yaml": [
@@ -358587,6 +358806,10 @@
        ],
        "iframeTest.js": [
         "501a864d4677e1c7e5ddc0b4c4868ac8712e4723",
+        []
+       ],
+       "redirect_none_to_credentialless.py": [
+        "7f0c35e93e69d7fe4c78a05d813b7f614e3e885d",
         []
        ]
       },
@@ -359482,7 +359705,7 @@
         []
        ],
        "reporting-redirect-with-same-origin-allow-popups.https.html.ini": [
-        "500341da5b9fc2ef2753a8c871cec3ec32521b9e",
+        "3c18de6fb9fdae1c8d9614a8087761bd51e0e9d4",
         []
        ]
       },
@@ -370516,7 +370739,7 @@
         []
        ],
        "disabled.html.ini": [
-        "e0f3ecbbbc126eff594b67b46836876f0c3a23e7",
+        "2bfe78b838d0def388f86b7cb51b1b83f48c016d",
         []
        ],
        "enabled-expected.txt": [
@@ -370524,7 +370747,7 @@
         []
        ],
        "enabled.html.ini": [
-        "6fb7187923ecee54e6bf365cc99ba66ee0ab8c19",
+        "2f546d0a339a9cb857aa02b70bbd4d2e3e982473",
         []
        ],
        "focus-iframe.html": [
@@ -382093,7 +382316,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "2e4dfd8b7cc257c142e712ddb2d7e4b2a659235b",
+     "9e2e99be10b0d2ef1dc37cff44db47639585e5fc",
      []
     ],
     "modulepreload-expected.txt": [
@@ -390814,7 +391037,7 @@
       []
      ],
      "response-code-successful.html.ini": [
-      "bf9c058e4cce7a3a4d57d1d479400282aa8e7589",
+      "e83b13607051412ef0f6a9836a157eb431fceb40",
       []
      ],
      "restriction-audio-setSinkId-with-invalid-sinkId.https.tentative.html.ini": [
@@ -397037,7 +397260,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "7ec5e55717c1f59fd217e3ad5788a35157aeef5b",
+     "3c78388560048c7c679723cb52a99252492152b8",
      []
     ],
     "h264.annexb": [
@@ -397073,7 +397296,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "5192422b6f210a5a297abb5bc48754e610496f42",
+     "0484154746ab5fed053d93907b739da3da12ed21",
      []
     ],
     "sfx-aac.mp4": [
@@ -397249,7 +397472,7 @@
          []
         ],
         "test_click_wdspec.html": [
-         "a9451ec82bec97654896f697704218bb6068d14e",
+         "7c6eb6e6e2ea5efa26f9c2e3feffd26d45fb83fe",
          []
         ]
        }
@@ -397631,11 +397854,11 @@
      },
      "support": {
       "__init__.py": [
-       "a7b33cc15f4652b9fec16cf202d0801e053beb55",
+       "0535edd2142e39aad37cc1a0ca58dca1fa01164a",
        []
       ],
       "asserts.py": [
-       "f5812bc8932360a68fa40237ca8a4e1b8ef2d205",
+       "04bd1993316be1bb449c81ccb22f0f623e38d215",
        []
       ],
       "defaults.py": [
@@ -397647,15 +397870,15 @@
        []
       ],
       "fixtures_bidi.py": [
-       "39ed3a5bbfd8f77bb71c9566ba7b5880af81689b",
+       "6e53bf7c24390d4bf24b019ddd6a9cbbb209e699",
        []
       ],
       "fixtures_http.py": [
-       "03be83a20e125257ed3d1b423fbc991de40660f6",
+       "1533dca2bd986e541b41f85e6e9dc07a38a06e18",
        []
       ],
       "helpers.py": [
-       "45f4f4d23922dc3bf28d4d3117208f70ef90ca7f",
+       "c0d0cb11dc4d5156b7fcb16f418acd6da8b4682a",
        []
       ],
       "html": {
@@ -397676,7 +397899,7 @@
         []
        ],
        "render.html": [
-        "d0408480dafbbeb34856553f176034489c51907a",
+        "6f1fadb64bee121740443089620ba68718d98855",
         []
        ],
        "subframe.html": [
@@ -397684,15 +397907,15 @@
         []
        ],
        "test_actions.html": [
-        "0253add960792f79bef8a8747dac26661c4a2f86",
+        "40e4b5aa37c2f4ebd14d10a476b44ff7dbd6799e",
         []
        ],
        "test_actions_pointer.html": [
-        "f1fd9b2da3f860a4c2afcd4176bfc2aee067d2f8",
+        "dd169f0c5bcc292a554a72035a49ae6cec25816a",
         []
        ],
        "test_actions_scroll.html": [
-        "b6e281e581816f7f42b5e92387adc3047fa4f891",
+        "cc9278954a0e0bb278f940b2f6e091e0c90a086b",
         []
        ]
       },
@@ -397702,7 +397925,7 @@
         []
        ],
        "authentication.py": [
-        "62067dd1667cd5535d4f90d35ae21474d4481666",
+        "db247af610a9b754920ee782e80330f15f26288c",
         []
        ],
        "cached.py": [
@@ -397710,7 +397933,7 @@
         []
        ],
        "headers.py": [
-        "ddae62dc6afabfaa9ceca93f5215d4afc5d002ed",
+        "71c4901c44522847ec93d5fc5b57c4720fadbce9",
         []
        ],
        "must-revalidate.py": [
@@ -397727,27 +397950,19 @@
        ]
       },
       "http_request.py": [
-       "242dc9c9188708eaceccd32c9379e5c9d14fbbd4",
+       "a936d7f1f0408133227245d86e8bc713e8c64675",
        []
       ],
       "image.py": [
-       "055ebe71fbc568741432a9c19344996286876a2a",
+       "9597b05a22fe29c9bd107d5ff7e1e9a41de802a0",
        []
       ],
       "inline.py": [
-       "6f08a7c463e53a8e65794c4b32c8b34e658d4e63",
+       "a0a8d3881ef5f48644c4ef1d6398dbad77dcc11f",
        []
       ],
       "keys.py": [
-       "337b586c77826f46dc0e26c017745bcb430bd4d2",
-       []
-      ],
-      "merge_dictionaries.py": [
-       "72f1cab352dec4f333aa9f5498d6115276a3f836",
-       []
-      ],
-      "pdf.py": [
-       "573ec1af4b284fdb015931c8c0a4436ae2af7e79",
+       "c353644dddfde4178829b0253c2c5064d7bd3fd5",
        []
       ],
       "screenshot.py": [
@@ -398168,7 +398383,7 @@
       []
      ],
      "020.html.ini": [
-      "a2275d79f0be6095ac032f5a50e1cf3f36a3849a",
+      "0575dba69a033c04583e4601d8a4d38636427ea6",
       []
      ],
      "021.html.ini": [
@@ -399983,6 +400198,10 @@
       "9c2e4709fdd48e82b52ae14b65a43be2478ea9e9",
       []
      ],
+     "receive-many-with-backpressure_wsh.py": [
+      "8e35beebdf5027fdcb034eda27ebfb2a4c2dbd4c",
+      []
+     ],
      "referrer_wsh.py": [
       "9df652dc3cbf12f6364462839e340848dec8e08f",
       []
@@ -400174,6 +400393,30 @@
       []
      ]
     },
+    "send-many-64K-messages-with-backpressure.any.js.ini": [
+     "430b307ebb261d6b228335dd5ab50ab808f25d4d",
+     []
+    ],
+    "send-many-64K-messages-with-backpressure.any.serviceworker-expected.txt": [
+     "8e9dece50b57df5b2b15ebc1ac989ca5a21eea6f",
+     []
+    ],
+    "send-many-64K-messages-with-backpressure.any.serviceworker_wpt_flags=h2-expected.txt": [
+     "f589fdd474ab316c633bdddb443fb366f81cac3b",
+     []
+    ],
+    "send-many-64K-messages-with-backpressure.any.sharedworker_wpt_flags=h2-expected.txt": [
+     "f589fdd474ab316c633bdddb443fb366f81cac3b",
+     []
+    ],
+    "send-many-64K-messages-with-backpressure.any.worker_wpt_flags=h2-expected.txt": [
+     "f589fdd474ab316c633bdddb443fb366f81cac3b",
+     []
+    ],
+    "send-many-64K-messages-with-backpressure.any_wpt_flags=h2-expected.txt": [
+     "f589fdd474ab316c633bdddb443fb366f81cac3b",
+     []
+    ],
     "stream": {
      "tentative": {
       "README.md": [
@@ -440556,63 +440799,63 @@
     ],
     "fedcm-multi-idp": {
      "abort-multiple-gets-through-first-idp.https.html": [
-      "48644f67a2310c8d8c31602cf791523209106e62",
+      "ed7c1300bd1b95cd3f7d233e7a0ee638829f2990",
       [
        null,
        {}
       ]
      ],
      "abort-multiple-gets-through-second-idp.https.html": [
-      "e95c13271a21758faa93551bc6e7ef97d7d8c989",
+      "dfe8969932b8a88ba9f52284c99a0fb1e4628a71",
       [
        null,
        {}
       ]
      ],
      "get-before-and-after-onload.https.html": [
-      "3c6aeb1a6f1ba6f68b102e119b5757f51eb9f0ba",
+      "dc332870abc729eb10069ccae02012278c178abe",
       [
        null,
        {}
       ]
      ],
      "get-before-and-during-onload.https.html": [
-      "34b4ed108fff4d1ba52ca9bb3b5557aa71423165",
+      "6a61891a3027c80d4ee6c360ad5b5f924b70f3ef",
       [
        null,
        {}
       ]
      ],
      "get-before-onload-and-during-dom-content-loaded.https.html": [
-      "926e7955753b291a89b2b04f8efae01c3faa5dcd",
+      "65aeb72dcf16f1e14f5720460160f12edb559b7c",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-after-abort.https.html": [
-      "f9db4a1f390da64698cc5a28069d5e2af1d1f4d8",
+      "12f88d3068e5847117242f511230d05e63c0b9fe",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-after-onload.https.html": [
-      "16d59e5307a1bf0931e497bf09df5652a2f5beed",
+      "bf8d717381b5c9d1c2864537d67f37ef7d997847",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-before-onload.https.html": [
-      "0fee4d4b972c802e03cc08eb219f5834a764c9ca",
+      "e754b86ec65c4b4ea41e3ada4f8e3f6ea51f1f83",
       [
        null,
        {}
       ]
      ],
      "multiple-gets-during-onload.https.html": [
-      "bc74cab9f216f67800c22519a5e01f5b26743fb4",
+      "252732c9643374b42bc688d65e2ac5d14a5a7de4",
       [
        null,
        {}
@@ -447137,6 +447380,13 @@
       ],
       "content-visibility-svg.html": [
        "568149ba7fb637082dd45523e9d20d322813b0e3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-with-popover-top-layer-006.html": [
+       "fbe8b9fbb777b2fdd632ddc0f17e69fbfed06bd7",
        [
         null,
         {}
@@ -475285,7 +475535,7 @@
        ]
       ],
       "offset-path-computed.html": [
-       "7cd4f3a6580686be7badb604a92b99716939c489",
+       "5bd857f62d2fffa40a630518e1fbd371e00c2c64",
        [
         null,
         {}
@@ -481721,7 +481971,7 @@
     },
     "parts": {
      "basic-dom-part-objects.tentative.html": [
-      "175f5d555b9b1ecd8e2d503f0e8e7eb22fdf3b7b",
+      "24067beb8fb355810f95c432e697ebfc515e2955",
       [
        null,
        {}
@@ -527769,6 +528019,106 @@
         ]
        ]
       },
+      "layers": {
+       "2d.layer.invalid-calls.beginLayer-reset-endLayer.html": [
+        "74e05e1e48e7901aa0e2383eb66af0a7e14def3e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-restore.html": [
+        "1979cb6c73a1097d4351ca80331d68f9ce853cfd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-save-endLayer.html": [
+        "c635ac75b99d8de628fa5d4fad4e04e286b99479",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.endLayer.html": [
+        "c39a352d65fa5f5d41d550f199a8d859aec6cdb8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.save-beginLayer-restore.html": [
+        "e2d4d5658904ccf8650309b7e9c27a57f1512cf7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.save-endLayer.html": [
+        "f4308e1191dddebd530f12b759b72c84c27ebabf",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer-endLayer.html": [
+        "609cb19a7d861b23ac1453ce7f0b6f1693827d2d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer-save.html": [
+        "965804029605fe048a81f9431b35db3e5921253e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer.html": [
+        "055668333179fc7a8908bd5437d123fdccbf4d62",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.restore.html": [
+        "b7a370306fd418d552b4b538a953c2cecabb4751",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save-beginLayer.html": [
+        "816398c7fc6c10d97996159e0b17f8ba42da620d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save.html": [
+        "d8df8cedcec37ba4505639141dbbff8b96574176",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save_reset_restore.html": [
+        "4c733263a636cdcad67c872744a9cbc13bc9883c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save_restore.html": [
+        "27ae70278e8d68e28038d278a76f0f4220cf158e",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "line-styles": {
        "2d.line.cap.butt.html": [
         "f8c7cab1f2ecd2b0020291ee836b1bd4019c2bc3",
@@ -530739,7 +531089,7 @@
         ]
        ],
        "2d.text.draw.baseline.ideographic.html": [
-        "8da9aabb942a17ad8cd63534539be447f9f4d09e",
+        "8d402223a4f213b5ecfedf78f7b5d292305177cc",
         [
          null,
          {}
@@ -536847,6 +537197,204 @@
         ]
        ]
       },
+      "layers": {
+       "2d.layer.invalid-calls.beginLayer-reset-endLayer.html": [
+        "c0b11aa6115b1526ebac823caace5bd489481223",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-reset-endLayer.worker.js": [
+        "1c147d6f349b0c6dbbd01322129ce8055899619f",
+        [
+         "html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-restore.html": [
+        "022532b329d4d657fb6c5eb56584989df1b077fe",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-restore.worker.js": [
+        "1aa86635e65cdecdc27766f5e4f60125bf938cf5",
+        [
+         "html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-restore.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-save-endLayer.html": [
+        "26dd0eee4bcfe01501b351248eed170f83e082a3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.beginLayer-save-endLayer.worker.js": [
+        "613921c67c2c0304ddf150b195a298e756b199ff",
+        [
+         "html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.endLayer.html": [
+        "440249980ad890359a9b857d3fb9408410d9cde5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.endLayer.worker.js": [
+        "b2ba231b9c7d13788029242d9c2a52cd72679cc4",
+        [
+         "html/canvas/offscreen/layers/2d.layer.invalid-calls.endLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.save-beginLayer-restore.html": [
+        "c2b09961acfa44a59f9f47559fd2566a4b12d585",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.save-beginLayer-restore.worker.js": [
+        "d155379fcb38acfa06d1cd09011343e9960d89b4",
+        [
+         "html/canvas/offscreen/layers/2d.layer.invalid-calls.save-beginLayer-restore.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.save-endLayer.html": [
+        "01b62d1e859d9f0bf1b98239f29ce88a21f60702",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.invalid-calls.save-endLayer.worker.js": [
+        "353c1b00cdc61bcdf3977a4f029eed1c2860edd4",
+        [
+         "html/canvas/offscreen/layers/2d.layer.invalid-calls.save-endLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer-endLayer.html": [
+        "0a6e195ca8636ea34cc488cb52c4a93a40c10ca1",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer-endLayer.worker.js": [
+        "a10bcd98b75e342ad647741e8d2cf91967abffe2",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.beginLayer-endLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer-save.html": [
+        "12abcc5270c845bf3e0bd0418375c93a49564c33",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer-save.worker.js": [
+        "03fbeeb4f4837af5f92ba150297bc43d5b2aa434",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.beginLayer-save.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer.html": [
+        "2178138e8d232348ad140353a88212f3002e48be",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.beginLayer.worker.js": [
+        "e64be136d786b682d92979b739ab237a6288242f",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.beginLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.restore.html": [
+        "156dd5abbdc0bbd7ca4caac605acf7b7e9944d76",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.restore.worker.js": [
+        "7417d12abe8412e5e13a1e58d262d466a6e3ce20",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.restore.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save-beginLayer.html": [
+        "afe735764ecebca789c41cdb49ce43dfdde4cdcd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save-beginLayer.worker.js": [
+        "773ba77a1578d3083de0e8e376776aa125c6845c",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.save-beginLayer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save.html": [
+        "2b2de23bb88de79c10320437e91967c50ba32b01",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save.worker.js": [
+        "5bbf0386fe9faf9c62b423f69db05931888988e4",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.save.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save_reset_restore.html": [
+        "ec5aa6455e30abcc63a03371911684f86f7d9f33",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save_reset_restore.worker.js": [
+        "3636c94357d6ec598535237260277cfe94ab2844",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.save_reset_restore.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save_restore.html": [
+        "1682bca91c8e1f663c4862a7fe4a93d06e554d30",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.valid-calls.save_restore.worker.js": [
+        "8607722df732b622597736bf8dd0407f06b91493",
+        [
+         "html/canvas/offscreen/layers/2d.layer.valid-calls.save_restore.worker.html",
+         {}
+        ]
+       ]
+      },
       "line-styles": {
        "2d.line.cap.butt.html": [
         "145e145cb419e97fa6906084c8bd6ee91c042be2",
@@ -542004,14 +542552,14 @@
         ]
        ],
        "2d.text.draw.baseline.ideographic.html": [
-        "c996444b860a079402dbeb20344578c94877e58d",
+        "3a1d6e5159c052eadc9fd3073fd3b6dbc70344ef",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.ideographic.worker.js": [
-        "0ffa6fe299a0cb9a03778f0f32a57141074d0b7c",
+        "b39c10b74f0c3ce27eb79f81bef5903616722bd7",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.ideographic.worker.html",
          {}
@@ -544618,6 +545166,79 @@
           [
            "script",
            "/common/subset-tests.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "iframe-coep-redirect.https.window.js": [
+       "a9f6a1c88e2c5ca62bfa3a8186ee44f0b138f81d",
+       [
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-redirect.https.window.html?1-4",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-redirect.https.window.html?5-last",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
           ]
          ]
         }
@@ -657907,6 +658528,393 @@
       ]
      ]
     },
+    "send-many-64K-messages-with-backpressure.any.js": [
+     "e93231f2df9e491f4a98d36cf21306f7bba12283",
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.html?wpt_flags=h2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.html?wss",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.serviceworker.html?wpt_flags=h2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.serviceworker.html?wss",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html?wpt_flags=h2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html?wss",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.worker.html?wpt_flags=h2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "websockets/send-many-64K-messages-with-backpressure.any.worker.html?wss",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "constants.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         ""
+        ],
+        [
+         "variant",
+         "?wss"
+        ],
+        [
+         "variant",
+         "?wpt_flags=h2"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "stream": {
      "tentative": {
       "abort.any.js": [
@@ -684351,21 +685359,21 @@
       },
       "print": {
        "background.py": [
-        "22b392db2e3c51dbf68fe616bb3340535adf53f8",
+        "4f2f85980bae434c04f536d2ea7a2e8a3c6065bf",
         [
          null,
          {}
         ]
        ],
        "orientation.py": [
-        "c2afacf94fb45adb7d163fd45974416b6a9fcc25",
+        "107cf380df6044d9b7fd335691efa7bd6b3181a1",
         [
          null,
          {}
         ]
        ],
        "printcmd.py": [
-        "f3fe50bd92d6a7dc4f8bf0c2290f2ecebc0dd1d7",
+        "aec7769c3e890406508544b3d84410abf6a7a84f",
         [
          null,
          {
@@ -684374,7 +685382,7 @@
         ]
        ],
        "user_prompts.py": [
-        "fb13ec2d65a25038641a42a67e48237fdef60c10",
+        "ade1c38a5c473037df15352ab119db57a728822c",
         [
          null,
          {

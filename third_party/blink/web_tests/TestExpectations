@@ -2847,6 +2847,8 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-counter-styles/cjk-earthly-branch/css3-counter-styles-202.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-counter-styles/cjk-heavenly-stem/css3-counter-styles-205.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-004.html [ Failure ]
