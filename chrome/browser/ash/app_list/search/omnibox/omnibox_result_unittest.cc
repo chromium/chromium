@@ -472,10 +472,7 @@ TEST_F(OmniboxResultTest, SearchResultText) {
 }
 
 TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchCutoff) {
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{search_features::kLauncherFuzzyMatchForOmnibox,
-                             {{"enable_cutoff", "true"}}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(search_features::kLauncherFuzzyMatchForOmnibox);
   std::unique_ptr<OmniboxResult> result_high_fuzzy_relevance =
       CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
                           GURL(), kExampleDescription);
@@ -487,29 +484,6 @@ TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchCutoff) {
   EXPECT_EQ(kAppListRelevance, result_low_fuzzy_relevance->relevance());
   EXPECT_TRUE(result_low_fuzzy_relevance->scoring().filtered());
   EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filtered());
-}
-
-TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchRelevance) {
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{search_features::kLauncherFuzzyMatchForOmnibox,
-                             {{"enable_relevance", "true"}}}},
-      /*disabled_features=*/{});
-  std::unique_ptr<OmniboxResult> result_high_fuzzy_relevance =
-      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
-                          GURL(), kExampleDescription);
-  std::unique_ptr<OmniboxResult> result_low_fuzzy_relevance =
-      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
-                          GURL(), u"bu");
-  std::unique_ptr<OmniboxResult> result_empty_query = CreateOmniboxResult(
-      kExampleUrl, AutocompleteMatchType::HISTORY_URL, GURL(), u"");
-
-  EXPECT_EQ((1 + kAppListRelevance) / 2,
-            result_high_fuzzy_relevance->relevance());
-  EXPECT_EQ(kAppListRelevance / 2, result_low_fuzzy_relevance->relevance());
-  EXPECT_EQ(kAppListRelevance / 2, result_empty_query->relevance());
-  EXPECT_FALSE(result_low_fuzzy_relevance->scoring().filtered());
-  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filtered());
-  EXPECT_FALSE(result_empty_query->scoring().filtered());
 }
 
 }  // namespace app_list::test
