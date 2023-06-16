@@ -3135,6 +3135,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testListObserver_OnItemRangeInserted() {
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
@@ -3152,6 +3153,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testListObserver_OnItemRangeRemoved() {
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
