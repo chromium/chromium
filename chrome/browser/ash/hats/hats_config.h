@@ -15,6 +15,13 @@ struct HatsConfig {
              const base::TimeDelta& new_device_threshold,
              const char* const is_selected_pref_name,
              const char* const cycle_end_timestamp_pref_name);
+  // Using this constructor will set the survey to opt out of global cap.
+  HatsConfig(const base::Feature& feature,
+             const base::TimeDelta& new_device_threshold,
+             const char* const is_selected_pref_name,
+             const char* const cycle_end_timestamp_pref_name,
+             const char* const survey_last_interaction_timestamp_pref_name,
+             const base::TimeDelta& threshold_time);
   HatsConfig(const HatsConfig&) = delete;
   HatsConfig& operator=(const HatsConfig&) = delete;
 
@@ -32,6 +39,18 @@ struct HatsConfig {
 
   // Preference name for an int64 that stores the current survey cycle end.
   const char* const cycle_end_timestamp_pref_name;
+
+  // Preference name for an int64 that stores the last time that the user
+  // has interacted with this particular survey.
+  const char* const survey_last_interaction_timestamp_pref_name;
+
+  // Minimum amount of time after a user interacts with this survey after which
+  // we can show this survey again.
+  const base::TimeDelta threshold_time;
+
+  // True if this survey should not be counted towards/limited by global cap.
+  // See kHatsThreshold in hats_notification_controller.cc
+  const bool global_cap_opt_out;
 };
 
 // CrOS HaTS configs are declared here and defined in hats_config.cc

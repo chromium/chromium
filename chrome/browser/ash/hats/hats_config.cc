@@ -20,7 +20,28 @@ HatsConfig::HatsConfig(const base::Feature& feature,
     : feature(feature),
       new_device_threshold(new_device_threshold),
       is_selected_pref_name(is_selected_pref_name),
-      cycle_end_timestamp_pref_name(cycle_end_timestamp_pref_name) {
+      cycle_end_timestamp_pref_name(cycle_end_timestamp_pref_name),
+      survey_last_interaction_timestamp_pref_name(nullptr),
+      threshold_time(base::TimeDelta()),
+      global_cap_opt_out(false) {
+  DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
+}
+
+HatsConfig::HatsConfig(
+    const base::Feature& feature,
+    const base::TimeDelta& new_device_threshold,
+    const char* const is_selected_pref_name,
+    const char* const cycle_end_timestamp_pref_name,
+    const char* const survey_last_interaction_timestamp_pref_name,
+    const base::TimeDelta& threshold_time)
+    : feature(feature),
+      new_device_threshold(new_device_threshold),
+      is_selected_pref_name(is_selected_pref_name),
+      cycle_end_timestamp_pref_name(cycle_end_timestamp_pref_name),
+      survey_last_interaction_timestamp_pref_name(
+          survey_last_interaction_timestamp_pref_name),
+      threshold_time(threshold_time),
+      global_cap_opt_out(true) {
   DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
 }
 

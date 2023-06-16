@@ -99,14 +99,26 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
 // Returns true if the given |profile| interacted with HaTS by either
 // dismissing the notification or taking the survey within a given
 // |threshold_time|.
-bool DidShowSurveyToProfileRecently(Profile* profile,
-                                    base::TimeDelta threshold_time) {
+bool DidShowHatsToProfileRecently(Profile* profile,
+                                  base::TimeDelta threshold_time) {
   int64_t serialized_timestamp =
       profile->GetPrefs()->GetInt64(prefs::kHatsLastInteractionTimestamp);
 
   base::Time previous_interaction_timestamp =
       base::Time::FromInternalValue(serialized_timestamp);
   return previous_interaction_timestamp + threshold_time > base::Time::Now();
+}
+
+// Returns true if the given |profile| interacted with survey |hats_config|
+// by either dismissing the notification or taking the survey within a given
+// |threshold_time|.
+bool DidShowSurveyToProfileRecently(Profile* profile,
+                                    const HatsConfig& hats_config) {
+  base::Time previous_interaction_timestamp = profile->GetPrefs()->GetTime(
+      hats_config.survey_last_interaction_timestamp_pref_name);
+
+  return previous_interaction_timestamp + hats_config.threshold_time >
+         base::Time::Now();
 }
 
 // Returns true if at least |new_device_threshold| time has passed since
@@ -266,14 +278,24 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
           ? kHatsGooglerThreshold
           : kHatsThreshold;
 
-  // Do not show survey to user if user has interacted with HaTS within the past
-  // |threshold_time| time delta.
-  if (DidShowSurveyToProfileRecently(profile, threshold_time)) {
-    base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus",
-                                  HatsState::kSurveyShownRecently);
-    return false;
+  if (hats_config.global_cap_opt_out) {
+    // Do not show survey to user if the survey has opted out of the global cap
+    // and the user has interacted with this particular survey within the
+    // threshold set in the config.
+    if (DidShowSurveyToProfileRecently(profile, hats_config)) {
+      return false;
+    }
+  } else {
+    // Do not show survey to user if user has interacted with HaTS within the
+    // past |threshold_time| time delta. This is a global cap applied across
+    // surveys that have not opted out of the global cap of 1 per kHatsThreshold
+    // days.
+    if (DidShowHatsToProfileRecently(profile, threshold_time)) {
+      base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus",
+                                    HatsState::kSurveyShownRecently);
+      return false;
+    }
   }
-
   return true;
 }
 
@@ -415,8 +437,14 @@ void HatsNotificationController::UpdateLastInteractionTime() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
-                         base::Time::Now().ToInternalValue());
+  if (!hats_config_->global_cap_opt_out) {
+    pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
+                           base::Time::Now().since_origin().InMicroseconds());
+  } else {
+    pref_service->SetTime(
+        hats_config_->survey_last_interaction_timestamp_pref_name,
+        base::Time::Now());
+  }
 }
 
 }  // namespace ash

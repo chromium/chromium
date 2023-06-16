@@ -75,6 +75,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   FRIEND_TEST_ALL_PREFIXES(
       HatsNotificationControllerTest,
       Disconnected_RemoveNotification_Connected_AddNotification);
+  FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
+                           DismissNotification_OptOutShouldUpdatePref);
 
   ~HatsNotificationController() override;
 
@@ -113,6 +115,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
       const std::string& user_locale,
       const base::flat_map<std::string, std::string>& product_specific_data);
   void UpdateLastInteractionTime();
+  void UpdateLastSurveyInteractionTime();
   void ShowDialog(const std::string& site_context);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
