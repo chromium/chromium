@@ -23,7 +23,6 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -372,9 +371,6 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
     // Add a flag to remember this tab originated in the ARC context.
     tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
                      std::make_unique<arc::ArcWebContentsData>(tab));
-
-    apps::IntentHandlingMetrics::RecordOpenBrowserMetrics(
-        apps::IntentHandlingMetrics::AppType::kArc);
   }
 }
 

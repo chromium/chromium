@@ -179,29 +179,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
-<histogram name="ChromeOS.Apps.ExternalProtocolDialog"
-    enum="ArcIntentHandlerAction" expires_after="2022-05-21">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
-  <summary>
-    Records the response when the intent picker is shown to the user on Chrome
-    OS to allow them to open an external protocol in an app.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Apps.ExternalProtocolDialog.Accepted"
-    enum="ArcExternalProtocolAction" expires_after="2022-05-21">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
-  <summary>
-    Records the response when users that are shown the intent picker accept
-    opening an external protocol in an app as well as whether the app is
-    persisted.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog.Rejected"
     enum="ArcExternalProtocolAction" expires_after="2022-05-21">
   <owner>dominickn@chromium.org</owner>
@@ -221,16 +198,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     Records the app platform shown as the result of link intent handling.
     Recorded when the user makes a choice in the Intent Picker dialog, and when
     the result of a previous user preference is applied during a link click.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Apps.OpenBrowser" enum="OpenBrowserType"
-    expires_after="2022-05-21">
-  <owner>ajlinker@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
-  <summary>
-    Records the type of app sending a link to the browser to be opened.
   </summary>
 </histogram>
 

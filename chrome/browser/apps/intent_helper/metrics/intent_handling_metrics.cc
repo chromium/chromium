@@ -87,61 +87,6 @@ Platform GetIntentPickerDestinationPlatform(IntentPickerAction action) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Converts the provided |entry_type|, |close_reason| and |should_persist|
-// boolean to a PickerAction value for recording in UMA.
-PickerAction GetExternalProtocolPickerAction(
-    apps::PickerEntryType entry_type,
-    apps::IntentPickerCloseReason close_reason,
-    bool should_persist) {
-  switch (close_reason) {
-    case apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER:
-      return PickerAction::ERROR_BEFORE_PICKER;
-    case apps::IntentPickerCloseReason::ERROR_AFTER_PICKER:
-      return PickerAction::ERROR_AFTER_PICKER;
-    case apps::IntentPickerCloseReason::DIALOG_DEACTIVATED:
-      return PickerAction::DIALOG_DEACTIVATED;
-    case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
-      switch (entry_type) {
-        case apps::PickerEntryType::kUnknown:
-          return PickerAction::PREFERRED_CHROME_BROWSER_FOUND;
-        case apps::PickerEntryType::kArc:
-          return PickerAction::PREFERRED_ARC_ACTIVITY_FOUND;
-        case apps::PickerEntryType::kWeb:
-          return PickerAction::PREFERRED_PWA_FOUND;
-        case apps::PickerEntryType::kDevice:
-        case apps::PickerEntryType::kMacOs:
-          NOTREACHED();
-          return PickerAction::INVALID;
-      }
-    case apps::IntentPickerCloseReason::STAY_IN_CHROME:
-      return should_persist ? PickerAction::CHROME_PREFERRED_PRESSED
-                            : PickerAction::CHROME_PRESSED;
-    case apps::IntentPickerCloseReason::OPEN_APP:
-      switch (entry_type) {
-        case apps::PickerEntryType::kUnknown:
-          NOTREACHED();
-          return PickerAction::INVALID;
-        case apps::PickerEntryType::kArc:
-          return should_persist ? PickerAction::ARC_APP_PREFERRED_PRESSED
-                                : PickerAction::ARC_APP_PRESSED;
-        case apps::PickerEntryType::kWeb:
-          return should_persist ? PickerAction::PWA_APP_PREFERRED_PRESSED
-                                : PickerAction::PWA_APP_PRESSED;
-        case apps::PickerEntryType::kDevice:
-          return PickerAction::DEVICE_PRESSED;
-        case apps::PickerEntryType::kMacOs:
-          return PickerAction::MAC_OS_APP_PRESSED;
-      }
-  }
-
-  NOTREACHED();
-  return PickerAction::INVALID;
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 }  // namespace
 
 namespace apps {
@@ -213,10 +158,7 @@ void IntentHandlingMetrics::RecordExternalProtocolMetrics(
     bool persisted) {
   arc::ProtocolAction action =
       arc::GetProtocolAction(scheme, entry_type, accepted, persisted);
-  if (accepted) {
-    UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.ExternalProtocolDialog.Accepted",
-                              action);
-  } else {
+  if (!accepted) {
     UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.ExternalProtocolDialog.Rejected",
                               action);
   }
@@ -233,18 +175,8 @@ void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
     arc::ArcMetricsService::RecordArcUserInteraction(
         context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
   }
-
-  // TODO(crbug.com/985233) For now External Protocol Dialog is only querying
-  // ARC apps, so there's no need to record a destination platform.
-  PickerAction action =
-      GetExternalProtocolPickerAction(entry_type, close_reason, should_persist);
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.ExternalProtocolDialog", action);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-void IntentHandlingMetrics::RecordOpenBrowserMetrics(AppType type) {
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.OpenBrowser", type);
-}
 
 }  // namespace apps

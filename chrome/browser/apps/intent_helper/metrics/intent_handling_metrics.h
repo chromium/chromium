@@ -162,8 +162,6 @@ class IntentHandlingMetrics {
       bool should_persist);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  static void RecordOpenBrowserMetrics(AppType type);
 };
 
 }  // namespace apps
