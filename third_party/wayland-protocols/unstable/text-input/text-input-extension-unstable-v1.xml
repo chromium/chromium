@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="11">
+  <interface name="zcr_text_input_extension_v1" version="12">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="11">
+  <interface name="zcr_extended_text_input_v1" version="12">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -407,6 +407,21 @@
       </description>
       <arg name="selection_behavior" type="uint" enum="confirm_preedit_selection_behavior" />
     </event>
+
+    <!-- Version 12 -->
+
+    <request name="set_large_surrounding_text" since="12">
+      <description summary="sets the large surrounding text">
+        Almost as same as text_input::set_surrounding_text. However, this takes handle
+        instead of string in order to avoid the limit of the size.
+
+        |size| is the size of surrounding text in Utf-8, i.e. bytes to be read from fd.
+      </description>
+      <arg name="text" type="fd"/>
+      <arg name="size" type="uint"/>
+      <arg name="cursor" type="uint"/>
+      <arg name="anchor" type="uint"/>
+    </request>
 
   </interface>
 </protocol>

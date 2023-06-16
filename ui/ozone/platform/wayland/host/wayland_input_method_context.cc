@@ -433,7 +433,7 @@ void WaylandInputMethodContext::SetSurroundingText(
       static_cast<uint32_t>(offsets_for_adjustment[1])};
 
   auto trimmed =
-      text_input_->HasOffsetSupport()
+      text_input_->HasAdvancedSurroundingTextSupport()
           ? TrimSurroundingTextForExtension(text_utf8, offsets_for_adjustment)
           : TrimSurroundingTextForStandard(text_utf8, selection_range_utf8);
   if (!trimmed.has_value()) {
@@ -468,7 +468,7 @@ void WaylandInputMethodContext::SetSurroundingText(
     // as surrounding text changes may trigger the IME to ask for the
     // autocorrect information.
     gfx::Range autocorrect_range = autocorrect->range;
-    if (text_input_->HasOffsetSupport()) {
+    if (text_input_->HasAdvancedSurroundingTextSupport()) {
       // The old implementation sent the original UTF-16 range as is, and
       // the compositor also assumed it.
       autocorrect_range =
