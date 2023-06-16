@@ -1042,7 +1042,6 @@
       # TODO(crbug.com/1171053): Enable the suite in 'Mac10.15 Tests' once it's
       # off CQ.
       'Mac10.13 Tests', # https://crbug.com/1042757
-      'Mac10.15 Tests', # https://crbug.com/1042757
       'Mac13 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
       'mac11-arm64-rel-tests', # https://crbug.com/1406364
@@ -1156,17 +1155,9 @@
       'Mac10.15 Tests': {
         # crbug.com/1042757
         'swarming': {
-          'dimension_sets': [
-            {
-              # These shards are liable to time out when running on macmini7,1.
-              'cores': '8|12',
-            }
-          ],
+          'shards': 30,
         },
-        # crbug.com/1196416
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
-        ],
+        'experiment_percentage': 100,
       },
       'Mac11 Tests': {
         'ci_only': True,
