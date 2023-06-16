@@ -73,6 +73,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     };
   }
 
+  activeTimeZoneDisplayName: string;
   private browserProxy_: TimeZoneBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;
 

@@ -27,7 +27,6 @@ build_webui_tests("build") {
     "cups_printer_landing_page_tests.js",
     "cups_printer_page_tests.js",
     "cups_printer_test_utils.js",
-    "date_time_page_tests.js",
     "esim_install_error_dialog_test.js",
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
@@ -116,6 +115,8 @@ build_webui_tests("build") {
     "app_management/test_util.js",
     "app_management/toggle_row_test.ts",
 
+    "date_time_page/date_time_page_test.ts",
+    "date_time_page/test_timezone_browser_proxy.ts",
     "date_time_page/timezone_selector_test.ts",
     "date_time_page/timezone_subpage_test.ts",
 

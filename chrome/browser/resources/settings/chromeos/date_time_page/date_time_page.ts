@@ -36,7 +36,8 @@ import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser
 const SettingsDateTimePageElementBase = DeepLinkingMixin(RouteObserverMixin(
     PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
-class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
+export class SettingsDateTimePageElement extends
+    SettingsDateTimePageElementBase {
   static get is() {
     return 'settings-date-time-page';
   }
