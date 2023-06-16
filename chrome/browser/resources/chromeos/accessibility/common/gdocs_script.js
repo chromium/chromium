@@ -4,7 +4,7 @@
 
 function triggerDocsCanvasAnnotationMode() {
   let extensionId = '';
-  if (!chrome.runtime) {
+  if (!chrome.runtime || !chrome.runtime.id) {
     // Manifest v3: Not running in extension's runtime.
     // Parse this script's URL to determine extension ID.
     // The URL will look like
