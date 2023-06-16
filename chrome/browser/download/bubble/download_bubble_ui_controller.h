@@ -75,9 +75,10 @@ class DownloadBubbleUIController {
   // Returns whether the guest account icon should be shown for the download.
   bool ShouldShowGuestIcon(const DownloadUIModel* model) const;
 
-  // Schedules the ephemeral warning download to be canceled. It will only be
-  // canceled if it continues to be an ephemeral warning that hasn't been acted
-  // on when the scheduled time arrives.
+  // Schedules the ephemeral warning download to be hidden from the bubble, and
+  // subsequently canceled. It will only be canceled if it continues to be an
+  // ephemeral warning that hasn't been acted on when the scheduled time
+  // arrives.
   void ScheduleCancelForEphemeralWarning(const std::string& guid);
 
   // Force the controller to hide the download UI entirely, including the bubble

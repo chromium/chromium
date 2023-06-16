@@ -1145,6 +1145,44 @@ bool DownloadBubbleUpdateService::IsMainCache(
   return &cache == &main_cache_;
 }
 
+void DownloadBubbleUpdateService::OnEphemeralWarningExpired(
+    const std::string& guid) {
+  if (IsShutDown()) {
+    return;
+  }
+  CHECK(download_item_notifier_ || original_download_item_notifier_);
+  if (!download_item_notifier_) {
+    return;
+  }
+  content::DownloadManager* download_manager = GetDownloadManager();
+  if (!download_manager) {
+    return;
+  }
+
+  download::DownloadItem* item = download_manager->GetDownloadByGuid(guid);
+  // The item might be from the original profile.
+  if (!item && original_download_item_notifier_ &&
+      original_download_item_notifier_->GetManager()) {
+    item =
+        original_download_item_notifier_->GetManager()->GetDownloadByGuid(guid);
+  }
+  if (!item) {
+    return;
+  }
+
+  GetCacheForItem(item).UpdateAllModelsInfo();
+
+  auto* web_app_data = DownloadItemWebAppData::Get(item);
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    if (browser->window() &&
+        browser->window()->GetDownloadBubbleUIController() &&
+        BrowserMatchesWebAppData(browser, web_app_data)) {
+      browser->window()->GetDownloadBubbleUIController()->OnDownloadItemRemoved(
+          item);
+    }
+  }
+}
+
 #if DCHECK_IS_ON()
 void DownloadBubbleUpdateService::CacheManager::ConsistencyCheckCaches() const {
   ConsistencyCheckImpl(download_items_, download_items_iter_map_);

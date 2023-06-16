@@ -294,6 +294,14 @@ void DownloadBubbleUIController::RetryDownload(
 
 void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
     const std::string& guid) {
+  // Schedule hiding the item from the download bubble.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DownloadBubbleUpdateService::OnEphemeralWarningExpired,
+                     update_service_->GetWeakPtr(), guid),
+      DownloadItemModel::kEphemeralWarningLifetimeOnBubble);
+
+  // Schedule cancelling the download altogether.
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile_);
   if (!download_core_service) {

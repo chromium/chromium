@@ -79,11 +79,6 @@ using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
-// How long an ephemeral warning is displayed on the download bubble.
-constexpr base::TimeDelta kEphemeralWarningLifetimeOnBubble = base::Minutes(5);
-#endif
-
 // Per DownloadItem data used by DownloadItemModel. The model doesn't keep any
 // state since there could be multiple models associated with a single
 // DownloadItem, and the lifetime of the model is shorter than the DownloadItem.
