@@ -271,6 +271,8 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
     const viz::FrameTimingDetailsMap& timing_details,
     bool frame_ack,
     std::vector<viz::ReturnedResource> resources) {
+  viz::BeginFrameArgs adjusted_args = args;
+  adjusted_args.client_arrival_time = base::TimeTicks::Now();
   if (features::IsOnBeginFrameAcksEnabled()) {
     if (frame_ack) {
       DidReceiveCompositorFrameAck(std::move(resources));
@@ -285,23 +287,24 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
 
   if (!needs_begin_frames_) {
     TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
-                           TRACE_ID_GLOBAL(args.trace_id),
+                           TRACE_ID_GLOBAL(adjusted_args.trace_id),
                            TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                            "step", "ReceiveBeginFrameDiscard");
     // We had a race with SetNeedsBeginFrame(false) and still need to let the
     // sink know that we didn't use this BeginFrame. OnBeginFrame() can also be
     // called to deliver presentation feedback.
-    DidNotProduceFrame(viz::BeginFrameAck(args, false),
+    DidNotProduceFrame(viz::BeginFrameAck(adjusted_args, false),
                        FrameSkippedReason::kNoDamage);
     return;
   }
-  TRACE_EVENT_WITH_FLOW2(
-      "viz,benchmark", "Graphics.Pipeline", TRACE_ID_GLOBAL(args.trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "ReceiveBeginFrame", "frame_sequence", args.frame_id.sequence_number);
+  TRACE_EVENT_WITH_FLOW2("viz,benchmark", "Graphics.Pipeline",
+                         TRACE_ID_GLOBAL(adjusted_args.trace_id),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "step", "ReceiveBeginFrame", "frame_sequence",
+                         adjusted_args.frame_id.sequence_number);
 
   if (begin_frame_source_)
-    begin_frame_source_->OnBeginFrame(args);
+    begin_frame_source_->OnBeginFrame(adjusted_args);
 }
 
 void AsyncLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {

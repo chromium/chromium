@@ -50,7 +50,9 @@ bool StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs>::
     Read(viz::mojom::BeginFrameArgsDataView data, viz::BeginFrameArgs* out) {
   if (!data.ReadFrameTime(&out->frame_time) ||
       !data.ReadDeadline(&out->deadline) ||
-      !data.ReadInterval(&out->interval) || !data.ReadType(&out->type)) {
+      !data.ReadInterval(&out->interval) || !data.ReadType(&out->type) ||
+      !data.ReadDispatchTime(&out->dispatch_time) ||
+      !data.ReadClientArrivalTime(&out->client_arrival_time)) {
     return false;
   }
   out->frame_id.source_id = data.source_id();

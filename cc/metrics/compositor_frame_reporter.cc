@@ -983,6 +983,50 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
                                 report_type);
     }
   }
+
+  // Only report the IPC and Thread latency when we have valid timestamps.
+  if (args_.frame_time.is_null() || args_.dispatch_time.is_null() ||
+      args_.client_arrival_time.is_null()) {
+    return;
+  }
+  // Only report if `frame_time` is earlier than `dispatch_time` to avoid cases
+  // where we are dispatching is advance of the expected frame start.
+  base::TimeDelta vsync_viz_delta;
+  if (args_.dispatch_time > args_.frame_time) {
+    vsync_viz_delta = args_.dispatch_time - args_.frame_time;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "CompositorLatency.IpcThread.FrameTimeToDispatch", vsync_viz_delta,
+        kCompositorLatencyHistogramMin, kCompositorLatencyHistogramMax,
+        kCompositorLatencyHistogramBucketCount);
+  }
+  const base::TimeDelta viz_cc_delta =
+      args_.client_arrival_time - args_.dispatch_time;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "CompositorLatency.IpcThread.DispatchToRenderer", viz_cc_delta,
+      kCompositorLatencyHistogramMin, kCompositorLatencyHistogramMax,
+      kCompositorLatencyHistogramBucketCount);
+
+  // If we don't have Main thread work, report just Impl-thread total latency.
+  if (begin_main_frame_start_.is_null() || blink_start_time_.is_null()) {
+    const base::TimeDelta impl_total_latency = vsync_viz_delta + viz_cc_delta;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "CompositorLatency.IpcThread.ImplThreadTotalLatency",
+        impl_total_latency, kCompositorLatencyHistogramMin,
+        kCompositorLatencyHistogramMax, kCompositorLatencyHistogramBucketCount);
+    return;
+  }
+  const base::TimeDelta impl_main_delta =
+      begin_main_frame_start_ - blink_start_time_;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "CompositorLatency.IpcThread.BeginMainFrameQueuing", impl_main_delta,
+      kCompositorLatencyHistogramMin, kCompositorLatencyHistogramMax,
+      kCompositorLatencyHistogramBucketCount);
+  const base::TimeDelta main_total_latency =
+      vsync_viz_delta + viz_cc_delta + impl_main_delta;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "CompositorLatency.IpcThread.MainThreadTotalLatency", main_total_latency,
+      kCompositorLatencyHistogramMin, kCompositorLatencyHistogramMax,
+      kCompositorLatencyHistogramBucketCount);
 }
 
 void CompositorFrameReporter::ReportStageHistogramWithBreakdown(

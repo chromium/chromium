@@ -50,6 +50,14 @@ struct StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs> {
     return args.trace_id;
   }
 
+  static base::TimeTicks dispatch_time(const viz::BeginFrameArgs& args) {
+    return args.dispatch_time;
+  }
+
+  static base::TimeTicks client_arrival_time(const viz::BeginFrameArgs& args) {
+    return args.client_arrival_time;
+  }
+
   static viz::BeginFrameArgs::BeginFrameArgsType type(
       const viz::BeginFrameArgs& args) {
     return args.type;

@@ -956,6 +956,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CompositorLatency.IpcThread.{LatencyType}"
+    units="microseconds" expires_after="2024-06-12">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Reports the overhead of IPC's and thread hops during the production of a
+    single frame. Measures {LatencyType}
+
+    This is reported by the Renderer, at a subsampled rate of effectively once
+    per 1000 frames. Non-Renderer clients do not report this. This metric drops
+    reports on low-resolution clocks, which will bias the Windows population.
+  </summary>
+  <token key="LatencyType">
+    <variant name="BeginMainFrameQueuing"
+        summary="the time from when the Compositor thread posts
+                 BeginMainFrame to when the task actually begins on the Main
+                 thread. This is a subset of
+                 CompositorLatency.*.SendBeginMainFrameToCommit."/>
+    <variant name="DispatchToRenderer"
+        summary="the time from when Viz dispatched the BeginFrameArgs to when
+                 it is received by the client."/>
+    <variant name="FrameTimeToDispatch"
+        summary="the time from the targeted frame start time to when Viz
+                 dispatches it to the client."/>
+    <variant name="ImplThreadTotalLatency"
+        summary="the total latency overhead for Compositor-only frames. Which
+                 excludes BeginMainFrameQueuing."/>
+    <variant name="MainThreadTotalLatency"
+        summary="the total latency overhead for frames which had Main-thread
+                 work."/>
+  </token>
+</histogram>
+
 <histogram name="CompositorLatency.Type" enum="FrameReportType"
     expires_after="2023-11-12">
   <owner>jonross@chromium.org</owner>

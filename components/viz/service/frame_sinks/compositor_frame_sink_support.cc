@@ -884,6 +884,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
   CheckPendingSurfaces();
 
   BeginFrameArgs adjusted_args = args;
+  adjusted_args.dispatch_time = base::TimeTicks::Now();
   if (begin_frame_interval_.is_positive() && ShouldAdjustBeginFrameArgs()) {
     adjusted_args.interval = begin_frame_interval_;
     // Deadline is not necessarily frame_time + interval. For example, it may
