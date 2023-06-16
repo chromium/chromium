@@ -52,7 +52,8 @@ ColorProviderManager::Key NativeTheme::GetColorProviderKey(
       system_theme_,
       use_custom_frame ? ui::ColorProviderManager::FrameType::kChromium
                        : ui::ColorProviderManager::FrameType::kNative,
-      user_color_, scheme_variant_, std::move(custom_theme));
+      user_color_, scheme_variant_, /*is_grayscale=*/false,
+      std::move(custom_theme));
 }
 
 SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {

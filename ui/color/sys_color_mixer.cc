@@ -91,6 +91,37 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
                                                 : kColorSysSurface4};
 }
 
+// Overrides for the grayscale baseline case.
+// TODO(tluk): This can probably be migrated to the kMonochrome SchemeVariant
+// when available.
+void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
+                                   const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
+
+  // Chrome surfaces.
+  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
+                                             : kColorRefNeutral90};
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
+                                      : kColorRefNeutral90};
+  mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefNeutral25
+                                               : kColorRefNeutral95};
+  mixer[kColorSysOnHeaderDivider] = {dark_mode ? kColorRefNeutral25
+                                               : kColorRefNeutral80};
+  mixer[kColorSysOnHeaderPrimary] = {dark_mode ? kColorRefNeutral80
+                                               : kColorRefNeutral40};
+
+  // States.
+  mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefNeutral90
+                                                  : kColorRefNeutral20};
+  mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefNeutral30
+                                                : kColorRefNeutral80};
+
+  // Experimentation.
+  mixer[kColorSysOmniboxContainer] = {dark_mode ? kColorRefNeutral15
+                                                : kColorRefNeutral94};
+}
+
 }  // namespace
 
 void AddSysColorMixer(ColorProvider* provider,
@@ -314,6 +345,13 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysStateHoverInverseCutout] = {
       dark_mode ? SetAlpha({kColorRefNeutral10}, 0x29)
                 : SetAlpha({kColorRefNeutral10}, 0x0F)};
+
+  // If grayscale is specified the design intention is to apply the grayscale
+  // overrides over the baseline palette.
+  if (key.is_grayscale) {
+    AddGrayscaleSysColorOverrides(mixer, key);
+    return;
+  }
 
   if (key.user_color.has_value()) {
     AddThemedSysColorOverrides(mixer, key);

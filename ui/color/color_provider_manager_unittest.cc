@@ -36,7 +36,7 @@ ColorProvider* GetLightNormalColorProvider() {
       {ColorProviderManager::ColorMode::kLight,
        ColorProviderManager::ContrastMode::kNormal, ui::SystemTheme::kDefault,
        ColorProviderManager::FrameType::kChromium, /*user_color=*/absl::nullopt,
-       /*scheme_variant=*/absl::nullopt, nullptr});
+       /*scheme_variant=*/absl::nullopt, /*is_grayscale=*/false, nullptr});
 }
 
 class TestInitializerSupplier
