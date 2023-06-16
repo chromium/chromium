@@ -29,21 +29,22 @@ class RangeInFlatTree;
 // bindings. Once removed, an agent cannot be reused.
 //
 // AnnotationAgentImpl allows its client to provide a selector that it uses to
-// "attach" to a particular Range in the Document. Once attached, the
-// annotation adds a visible marker to the content and enables the client to
-// scroll the attached content into view. An agent is considered attached if it
-// has found a Range and that Range is valid and uncollapsed. The range may
-// become invalid in response to changes in a Document's DOM.
+// attach to a particular Range in the Document. Once attached, the annotation
+// adds a visible marker to the content and enables the client to scroll the
+// attached content into view. An agent is considered attached if it has found
+// a Range and that Range is valid and uncollapsed. The range may become
+// invalid in response to changes in a Document's DOM.
 // TODO(bokan): Changes in the DOM affecting an annotation should be signaled
 // via the AnnotationAgentHost interface.
 //
 // This class is the renderer end of an annotation. It can be instantiated
-// directly from Blink as well in which case it need not be bound to a host on
-// the browser side. If bound to a corresponding AnnotationAgentHost in the
-// browser, it will notify the host of relevant events (e.g. attachment
-// succeeded/failed) and self-remove itself from the container if the mojo
-// bindings become disconnected (i.e. if the browser closes the connection, the
-// AnnotationAgentImpl will be removed).
+// directly from Blink as well (TODO(bokan): this will soon be the case when
+// TextFragmentAnchor is refactored to use this class) in which case it need not
+// be bound to a host on the browser side. If bound to a corresponding
+// AnnotationAgentHost in the browser, it will notify the host of relevant
+// events (e.g. attachment, marker clicked, etc.) and self-remove itself from
+// the container if the mojo bindings become disconnected (i.e. if the browser
+// closes the connection, the AnnotationAgentImpl will be removed)
 class CORE_EXPORT AnnotationAgentImpl final
     : public GarbageCollected<AnnotationAgentImpl>,
       public mojom::blink::AnnotationAgent {
@@ -73,15 +74,13 @@ class CORE_EXPORT AnnotationAgentImpl final
   // synchronously but if that match is in a hidden subtree
   // (content-visibility: auto, <details>, hidden=until-found) that can be
   // shown, attachment will complete asynchronously once the subtree is made
-  // visible. This is only called by the AnnotationAgentContainer immediately
-  // after layout is completed (clients should use SetNeedsAttachment to
-  // request an attachment if the initial one failed).
-  void Attach(base::PassKey<AnnotationAgentContainerImpl>);
+  // visible.  Otherwise, `did_finish_callback` will be invoked synchronously.
+  // TODO(bokan): Remove the parameterless signature.
+  void Attach();
+  void Attach(base::OnceClosure did_finish_callback);
 
-  // Clients can request an attachment (after the automatic first one has
-  // failed) to occur using this setter.
-  void SetNeedsAttachment() { needs_attachment_ = true; }
-  bool NeedsAttachment() const { return needs_attachment_; }
+  // Returns whether Attach() has been called at least once.
+  bool DidTryAttach() const { return did_try_attach_; }
 
   // Returns true if the agent has performed attachment and resulted in a valid
   // DOM Range. Note that Range is relocated, meaning that it will update in
@@ -109,7 +108,7 @@ class CORE_EXPORT AnnotationAgentImpl final
   void ScrollIntoView() const;
 
   const RangeInFlatTree& GetAttachedRange() const {
-    CHECK(attached_range_.Get());
+    DCHECK(attached_range_.Get());
     return *attached_range_.Get();
   }
 
@@ -163,10 +162,9 @@ class CORE_EXPORT AnnotationAgentImpl final
   // determine styling and context menu behavior.
   mojom::blink::AnnotationType type_;
 
-  // Attachment is expensive so it's called only once from
-  // PerformInitialAttachments. Clients can reset this value to try again (e.g.
-  // to try and attach to newly added content).
-  bool needs_attachment_ = true;
+  base::OnceClosure did_finish_attachment_callback_;
+
+  bool did_try_attach_ = false;
 };
 
 }  // namespace blink

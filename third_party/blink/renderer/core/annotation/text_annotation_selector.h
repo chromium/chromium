@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -34,7 +33,6 @@ class CORE_EXPORT TextAnnotationSelector : public AnnotationSelector,
   void FindRange(Document& document,
                  SearchType type,
                  FinishedCallback finished_cb) override;
-  bool IsTextSelector() const override { return true; }
 
   // TextFragmentFinder::Client Interface
   void DidFindMatch(const RangeInFlatTree& range, bool is_unique) override;
@@ -53,13 +51,6 @@ class CORE_EXPORT TextAnnotationSelector : public AnnotationSelector,
 
   FinishedCallback finished_callback_;
   Member<TextFragmentFinder> finder_;
-};
-
-template <>
-struct DowncastTraits<TextAnnotationSelector> {
-  static bool AllowFrom(const AnnotationSelector& selector) {
-    return selector.IsTextSelector();
-  }
 };
 
 }  // namespace blink

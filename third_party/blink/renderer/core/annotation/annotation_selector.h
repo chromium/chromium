@@ -74,8 +74,6 @@ class CORE_EXPORT AnnotationSelector
   virtual void FindRange(Document& document,
                          SearchType type,
                          FinishedCallback finished_cb) = 0;
-
-  virtual bool IsTextSelector() const { return false; }
 };
 
 }  // namespace blink

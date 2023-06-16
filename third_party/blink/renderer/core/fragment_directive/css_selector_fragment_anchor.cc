@@ -74,6 +74,8 @@ bool CssSelectorFragmentAnchor::InvokeSelector() {
   return true;
 }
 
+void CssSelectorFragmentAnchor::PerformScriptableActions() {}
+
 void CssSelectorFragmentAnchor::Installed() {}
 
 void CssSelectorFragmentAnchor::Trace(Visitor* visitor) const {

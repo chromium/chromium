@@ -151,7 +151,7 @@ String TextFragmentGenerationNavigationTest::GenerateSelector(
 }
 
 String TextFragmentGenerationNavigationTest::GetHighlightedText() {
-  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
   // Returns a null string, distinguishable from an empty string.
   if (!container)
     return String();
