@@ -404,6 +404,10 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
   }
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {
+    bool allow_transport_mode =
+        base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos) &&
+        base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage);
     controllers.push_back(
         std::make_unique<SyncableServiceBasedModelTypeController>(
             syncer::PREFERENCES,
@@ -411,11 +415,18 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             SyncableServiceForPrefs(sync_client_->GetPrefServiceSyncable(),
                                     syncer::PREFERENCES),
             dump_stack,
-            SyncableServiceBasedModelTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly));
+            allow_transport_mode
+                ? SyncableServiceBasedModelTypeController::DelegateMode::
+                      kTransportModeWithSingleModel
+                : SyncableServiceBasedModelTypeController::DelegateMode::
+                      kLegacyFullSyncModeOnly));
   }
 
   if (!disabled_types.Has(syncer::PRIORITY_PREFERENCES)) {
+    bool allow_transport_mode =
+        base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos) &&
+        base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage);
     controllers.push_back(
         std::make_unique<SyncableServiceBasedModelTypeController>(
             syncer::PRIORITY_PREFERENCES,
@@ -423,8 +434,11 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             SyncableServiceForPrefs(sync_client_->GetPrefServiceSyncable(),
                                     syncer::PRIORITY_PREFERENCES),
             dump_stack,
-            SyncableServiceBasedModelTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly));
+            allow_transport_mode
+                ? SyncableServiceBasedModelTypeController::DelegateMode::
+                      kTransportModeWithSingleModel
+                : SyncableServiceBasedModelTypeController::DelegateMode::
+                      kLegacyFullSyncModeOnly));
   }
 
   // Register reading list unless explicitly disabled.

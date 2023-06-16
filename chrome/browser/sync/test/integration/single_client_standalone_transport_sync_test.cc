@@ -279,6 +279,7 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
   SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/{syncer::kSyncEnableHistoryDataType,
+                              syncer::kEnablePreferencesAccountStorage,
                               syncer::kReplaceSyncPromosWithSignInPromos},
         /*disabled_features=*/{});
   }
@@ -296,9 +297,14 @@ IN_PROC_BROWSER_TEST_F(
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
   // Opt in to history.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
+  // Preferences are opted-into by default.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
@@ -308,6 +314,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
+
+  // With `kReplaceSyncPromosWithSignInPromos`, both PREFERENCES and
+  // PRIORITY_PREFERENCES should be enabled in transport mode.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
 }
 
 class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
@@ -315,7 +327,8 @@ class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
  public:
   SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncEnableHistoryDataType},
+        /*enabled_features=*/{syncer::kSyncEnableHistoryDataType,
+                              syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
   }
   ~SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest()
@@ -332,9 +345,14 @@ IN_PROC_BROWSER_TEST_F(
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
   // Opt in to history.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
+  // Preferences are opted-into by default.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
@@ -345,6 +363,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
+
+  // Without `kReplaceSyncPromosWithSignInPromos`, neither PREFERENCES nor
+  // PRIORITY_PREFERENCES should be enabled in transport mode (even if the user
+  // has opted in).
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
 }
 
 }  // namespace
