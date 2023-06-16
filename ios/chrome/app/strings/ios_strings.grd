@@ -1984,6 +1984,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS" desc="The password bottom sheet's long press menu item to open the password details page, which displays more information, like username, password and associated website.">
         Show Details
       </message>
+      <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PRIMARY_ACTION" desc="The text for the primary action button of the post restore default browser promo.">
+        Make Default in Settings…
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_SECONDARY_ACTION" desc="The text for the secondary action button of the post restore default browser promo.">
+        No Thanks
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_SUBTITLE_IPAD" desc="The text for the subtitle of the post restore default browser promo for iPad.">
+        Your iPad was recently restored, which might have changed your default browser.
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_SUBTITLE_IPHONE" desc="The text for the subtitle of the post restore default browser promo for iPhone.">
+        Your iPhone was recently restored, which might have changed your default browser.
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_CHIP" desc="Acessibility label to describe the UI which displays a product's price in the Price Tracking Item UI.">
           Price
       </message>
