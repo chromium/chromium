@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -16,6 +17,10 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+const CGFloat kSymbolSize = 22;
+}
 
 @interface SettingsCheckCell ()
 
@@ -111,8 +116,7 @@
     _infoButton = [UIButton buttonWithType:UIButtonTypeSystem];
     _infoButton.translatesAutoresizingMaskIntoConstraints = NO;
     _infoButton.hidden = YES;
-    UIImage* image = [[UIImage imageNamed:@"settings_info"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* image = DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolSize);
     [_infoButton setImage:image forState:UIControlStateNormal];
     [_infoButton setTintColor:[UIColor colorNamed:kBlueColor]];
     [contentView addSubview:_infoButton];

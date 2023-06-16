@@ -85,7 +85,6 @@ source_set("settings") {
     "resources:encryption_error",
     "resources:enterprise_icon",
     "resources:settings_accounts_add_account",
-    "resources:settings_info",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
