@@ -66,8 +66,13 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   absl::optional<int> borealis_id = GetBorealisAppId(window);
   if (borealis_id.has_value()) {
     std::string app_id = BorealisIdToAppId(profile, borealis_id.value());
-    if (!app_id.empty())
+    if (!app_id.empty()) {
       return app_id;
+    } else if (borealis_id.value() == 769) {
+      // TODO(b/287506770): Figure out why valve started doing this, come up
+      // with a more resilient solution.
+      return kClientAppId;
+    }
   }
 
   // Fall back to GuestOS's logic for associating windows with apps.
