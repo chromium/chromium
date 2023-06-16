@@ -819,6 +819,39 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
   EXPECT_TRUE(CompleteCustomTouchCalibration(id, std::move(calibration)));
 }
 
+TEST_F(CrosDisplayConfigTest, TabletModeAutoRotationInternalOnly) {
+  UpdateDisplay("500x600,400x520");
+
+  auto* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+  EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
+
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  ScreenOrientationControllerTestApi screen_orientation_controller_test_api(
+      screen_orientation_controller);
+  tablet_mode_controller_test_api.EnterTabletMode();
+  EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_TRUE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
+  EXPECT_TRUE(tablet_mode_controller_test_api.IsTabletModeStarted());
+
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> result =
+      GetDisplayUnitInfoList();
+  ASSERT_EQ(2u, result.size());
+
+  int64_t display_id;
+  ASSERT_TRUE(base::StringToInt64(result[0]->id, &display_id));
+  ASSERT_TRUE(DisplayExists(display_id));
+  const crosapi::mojom::DisplayUnitInfo& info_0 = *result[0];
+  EXPECT_TRUE(info_0.is_internal);
+  EXPECT_TRUE(info_0.is_auto_rotation_allowed);
+
+  ASSERT_TRUE(base::StringToInt64(result[1]->id, &display_id));
+  ASSERT_TRUE(DisplayExists(display_id));
+  const crosapi::mojom::DisplayUnitInfo& info_1 = *result[1];
+  EXPECT_FALSE(info_1.is_internal);
+  EXPECT_FALSE(info_1.is_auto_rotation_allowed);
+}
+
 TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   TestObserver observer;
   mojo::AssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>

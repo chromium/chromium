@@ -264,15 +264,17 @@ display::Display::Rotation DisplayRotationFromRotationOptions(
 }
 
 crosapi::mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
-    display::Display::Rotation rotation) {
+    display::Display::Rotation rotation,
+    bool is_internal) {
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
   const bool is_auto_rotation_allowed =
       screen_orientation_controller->IsAutoRotationAllowed();
   const bool is_auto_rotate_enabled =
       !screen_orientation_controller->user_rotation_locked();
-  if (is_auto_rotation_allowed && is_auto_rotate_enabled)
+  if (is_auto_rotation_allowed && is_auto_rotate_enabled && is_internal) {
     return crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+  }
 
   switch (rotation) {
     case display::Display::ROTATE_0:
@@ -314,7 +316,8 @@ crosapi::mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(
   info->is_internal = display.IsInternal();
   info->is_enabled = true;
   info->is_auto_rotation_allowed =
-      Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed();
+      Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed() &&
+      display.IsInternal();
   const bool has_accelerometer_support =
       display.accelerometer_support() ==
       display::Display::AccelerometerSupport::AVAILABLE;
@@ -328,8 +331,8 @@ crosapi::mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(
   info->dpi_y = device_dpi * display.size().height() /
                 display_info.bounds_in_native().height();
 
-  info->rotation_options =
-      RotationOptionsFromDisplayRotation(display.rotation());
+  info->rotation_options = RotationOptionsFromDisplayRotation(
+      display.rotation(), display.IsInternal());
   info->bounds = display.bounds();
   info->overscan = display_manager->GetOverscanInsets(display.id());
   info->work_area = display.work_area();
@@ -778,10 +781,11 @@ void CrosDisplayConfig::SetDisplayProperties(
 
     display::Display::Rotation rotation =
         DisplayRotationFromRotationOptions(properties->rotation->rotation);
-    if (display.id() == primary.id() && is_auto_rotation_allowed) {
+    if (is_auto_rotation_allowed && display.IsInternal()) {
       if (auto_rotate_requested) {
-        if (screen_orientation_controller->user_rotation_locked())
+        if (screen_orientation_controller->user_rotation_locked()) {
           screen_orientation_controller->ToggleUserRotationLock();
+        }
       } else {
         screen_orientation_controller->SetLockToRotation(rotation);
       }
