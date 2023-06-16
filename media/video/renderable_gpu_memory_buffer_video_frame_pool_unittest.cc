@@ -107,13 +107,11 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
 
  protected:
   void VerifySharedImageCreation(FakeContext* context) {
-#if BUILDFLAG(IS_MAC)
     if (GetParam()) {
       EXPECT_CALL(*context, DoCreateSharedImage(viz::MultiPlaneFormat::kNV12, _,
                                                 _, _, _, _, _));
       return;
     }
-#endif
     EXPECT_CALL(*context,
                 DoCreateSharedImage(_, gfx::BufferPlane::Y, _, _, _, _));
     EXPECT_CALL(*context,
@@ -121,11 +119,9 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
   }
 
   int NumSharedImagesPerFrame() {
-#if BUILDFLAG(IS_MAC)
     if (GetParam()) {
       return 1;
     }
-#endif
     return 2;
   }
 

@@ -202,6 +202,7 @@ bool FrameResources::Initialize() {
 #if BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/1311844): Use gpu::GetBufferTextureTarget() instead.
   texture_target = gpu::GetPlatformSpecificTextureTarget();
+#endif
 
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     context->CreateSharedImage(
@@ -211,7 +212,6 @@ bool FrameResources::Initialize() {
     mailbox_holders_[0].texture_target = texture_target;
     return true;
   }
-#endif
 
   // Bind SharedImages to each plane.
   constexpr size_t kNumPlanes = 2;
@@ -251,7 +251,6 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   // format.
   video_frame->metadata().allow_overlay = true;
 
-#if BUILDFLAG(IS_MAC)
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     // Tag this frame as having used a single SharedImage for multiplanar
     // formats (by default it sets this field to `kLegacy`, which causes the
@@ -260,7 +259,6 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
     video_frame->set_shared_image_format_type(
         SharedImageFormatType::kSharedImageFormat);
   }
-#endif
 
   // Only native (non shared memory) GMBs require waiting on GPU fences.
   const bool has_native_gmb =
