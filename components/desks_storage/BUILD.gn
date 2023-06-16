@@ -34,6 +34,8 @@ static_library("desks_storage") {
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//components/sync",
     "//components/sync/model",
     "//components/sync/protocol",

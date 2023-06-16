@@ -18,81 +18,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 
-namespace {
-
-void UpdateModelWithPolicy(
-    std::vector<std::unique_ptr<ash::DeskTemplate>> desk_templates,
-    desks_storage::DeskModel* desk_model) {
-  if (desk_model == nullptr) {
-    return;
-  }
-
-  // If templates exist that aren't in the current policy we should delete them.
-  std::vector<base::Uuid> desk_uuids_to_delete = desk_model->GetAllEntryUuids();
-  std::set<base::Uuid> desk_uuids_to_delete_set(desk_uuids_to_delete.begin(),
-                                                desk_uuids_to_delete.end());
-
-  for (auto& desk_template : desk_templates) {
-    // Something went wrong when parsing the template.
-    if (desk_template == nullptr) {
-      continue;
-    }
-
-    // Something has gone wrong if the field isn't a dict.
-    CHECK(desk_template->policy_definition().type() == base::Value::Type::DICT);
-
-    // Query model to determine if this entry exists already.
-    auto get_entry_result = desk_model->GetEntryByUUID(desk_template->uuid());
-    auto entry_status = get_entry_result.status;
-
-    // If this template exists in the current policy then don't delete it after
-    // updating the locally stored policy. Note: this call is a noop if the
-    // template in question is a new template.
-    if (entry_status == desks_storage::DeskModel::GetEntryByUuidStatus::kOk ||
-        entry_status ==
-            desks_storage::DeskModel::GetEntryByUuidStatus::kNotFound) {
-      desk_uuids_to_delete_set.erase(desk_template->uuid());
-
-      // There was an error when retrieving the template, do nothing and delete
-      // the template.
-    } else {
-      continue;
-    }
-
-    // If the policy template already exists in the model and has been unchanged
-    // since the last policy update don't overwrite the data.  This will
-    // preserve the user's window information for that template.
-    if (entry_status == desks_storage::DeskModel::GetEntryByUuidStatus::kOk &&
-        get_entry_result.entry->policy_definition() ==
-            desk_template->policy_definition()) {
-      continue;
-    }
-
-    // If the policy template exists in an updated form or is new then either
-    // add it to the model or overwrite the existing definition.
-    desk_model->AddOrUpdateEntry(std::move(desk_template), base::DoNothing());
-  }
-
-  // Remove all templates that aren't in the policy.  If the policy is empty
-  // then this will remove all admin templates from the device.
-  for (auto uuid : desk_uuids_to_delete_set) {
-    desk_model->DeleteEntry(uuid, base::DoNothing());
-  }
-}
-
-desks_storage::DeskModel* GetDeskModel() {
-  auto* admin_template_service =
-      ash::Shell::Get()->saved_desk_delegate()->GetAdminTemplateService();
-
-  if (admin_template_service == nullptr) {
-    return nullptr;
-  }
-
-  return admin_template_service->GetFullDeskModel();
-}
-
-}  // namespace
-
 namespace policy {
 
 AppLaunchAutomationPolicyHandler::AppLaunchAutomationPolicyHandler(
@@ -119,11 +44,6 @@ void AppLaunchAutomationPolicyHandler::ApplyPolicySettings(
       !policy_value || !policy_value->is_list()) {
     return;
   }
-
-  UpdateModelWithPolicy(
-      desks_storage::desk_template_conversion::
-          ParseAdminTemplatesFromPolicyValue(policy_value->Clone()),
-      GetDeskModel());
 
   prefs->SetValue(ash::prefs::kAppLaunchAutomation,
                   base::Value::FromUniquePtrValue(std::move(policy_value)));

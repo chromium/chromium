@@ -41,11 +41,10 @@ AdminTemplateServiceFactory::AdminTemplateServiceFactory()
 KeyedService* AdminTemplateServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  const AccountId account_id =
-      multi_user_util::GetAccountIdFromProfile(profile);
 
-  return new desks_storage::AdminTemplateService(profile->GetPath(),
-                                                 account_id);
+  return new desks_storage::AdminTemplateService(
+      profile->GetPath(), multi_user_util::GetAccountIdFromProfile(profile),
+      profile->GetPrefs());
 }
 
 }  // namespace ash

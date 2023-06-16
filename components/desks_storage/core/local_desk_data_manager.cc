@@ -21,6 +21,7 @@
 #include "components/account_id/account_id.h"
 #include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_model.h"
+#include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_storage_metrics_util.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
@@ -324,7 +325,13 @@ void LocalDeskDataManager::AddOrUpdateEntry(
 
   apps::AppRegistryCache* cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
-  DCHECK(cache);
+
+  // abort if the cache has failed to load.
+  if (cache == nullptr) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure,
+                            std::move(new_entry));
+    return;
+  }
   base::Value template_base_value =
       desk_template_conversion::SerializeDeskTemplateAsBaseValue(
           new_entry.get(), cache);
@@ -688,10 +695,15 @@ void LocalDeskDataManager::MoveEntriesIntoCache(LoadCacheResult cache_result) {
   // Do nothing if the cache isn't ready.
   if (cache_status_ != CacheStatus::kOk)
     return;
+
   for (auto& template_entry : cache_result.entries) {
     DCHECK(template_entry);
     saved_desks_list_[template_entry->type()][template_entry->uuid()] =
         std::move(template_entry);
+  }
+
+  for (auto& obs : observers_) {
+    obs.DeskModelLoaded();
   }
 }
 

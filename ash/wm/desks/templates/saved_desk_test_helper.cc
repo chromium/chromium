@@ -10,12 +10,15 @@
 #include "components/desks_storage/core/admin_template_service.h"
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/prefs/testing_pref_service.h"
 
 namespace ash {
 
 SavedDeskTestHelper::SavedDeskTestHelper()
     : account_id_(AccountId::FromUserEmail("test@gmail.com")) {
   CHECK(desk_model_data_dir_.CreateUniqueTempDir());
+
+  test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
   saved_desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
       desk_model_data_dir_.GetPath(), account_id_);
@@ -25,7 +28,8 @@ SavedDeskTestHelper::SavedDeskTestHelper()
   // client.
   admin_template_service_ =
       std::make_unique<desks_storage::AdminTemplateService>(
-          desk_model_data_dir_.GetPath(), account_id_);
+          desk_model_data_dir_.GetPath(), account_id_,
+          test_pref_service_.get());
 
   // Install desk model.
   static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
