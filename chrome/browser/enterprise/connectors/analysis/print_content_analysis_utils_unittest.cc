@@ -145,7 +145,7 @@ class PrintContentAnalysisUtilsTest
  public:
   PrintContentAnalysisUtilsTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        printing::features::kEnablePrintScanAfterPreview);
+        printing::features::kEnableLocalScanAfterPreview);
     ContentAnalysisDelegate::DisableUIForTesting();
   }
 

@@ -86,10 +86,14 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+BASE_FEATURE(kEnableCloudScanAfterPreview,
+             "EnableCloudScanAfterPreview",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables print scanning after preview options have been selected instead of
-// when the user initiates the printing to bring up the preview
-BASE_FEATURE(kEnablePrintScanAfterPreview,
+// The naming mismatch below is intentional to preserve compatibility while
+// making code usage clearer. This is temporary and will be removed once
+// b/216105729 is officially fix and the local workflow is supported.
+BASE_FEATURE(kEnableLocalScanAfterPreview,
              "EnablePrintScanAfterPreview",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

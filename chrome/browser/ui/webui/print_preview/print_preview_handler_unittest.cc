@@ -56,7 +56,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  //nogncheck
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
@@ -1551,7 +1551,7 @@ class ContentAnalysisPrintPreviewHandlerTest
       public testing::WithParamInterface<bool> {
  public:
   ContentAnalysisPrintPreviewHandlerTest() {
-    feature_list_.InitAndEnableFeature(features::kEnablePrintScanAfterPreview);
+    feature_list_.InitAndEnableFeature(features::kEnableLocalScanAfterPreview);
   }
 
   void SetUp() override {

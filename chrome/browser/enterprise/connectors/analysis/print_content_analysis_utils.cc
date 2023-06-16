@@ -64,7 +64,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
           initiator->GetLastCommittedURL(), &scanning_data,
           AnalysisConnector::PRINT) &&
       base::FeatureList::IsEnabled(
-          printing::features::kEnablePrintScanAfterPreview) &&
+          printing::features::kEnableLocalScanAfterPreview) &&
       scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
     // Populate print metadata.
     scanning_data.printer_name = std::move(printer_name);
@@ -92,9 +92,9 @@ absl::optional<ContentAnalysisDelegate::Data> GetBeforePrintPreviewAnalysisData(
     return absl::nullopt;
   }
 
-  if ((base::FeatureList::IsEnabled(
-           printing::features::kEnablePrintScanAfterPreview) &&
-       scanning_data.settings.cloud_or_local_settings.is_local_analysis())) {
+  if (base::FeatureList::IsEnabled(
+          printing::features::kEnableLocalScanAfterPreview) &&
+      scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
     return absl::nullopt;
   }
 
