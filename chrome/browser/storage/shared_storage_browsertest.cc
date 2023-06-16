@@ -17,6 +17,8 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -25,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -33,6 +36,7 @@
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +59,7 @@ namespace storage {
 
 namespace {
 
-constexpr char kSimpleTestHost[] = "a.test";
+constexpr char kMainHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
 constexpr char kCrossOriginHost[] = "b.test";
 constexpr char kThirdOriginHost[] = "c.test";
@@ -199,6 +203,20 @@ content::RenderFrameHost* CreateIframe(content::RenderFrameHost* parent_rfh,
   return LastChild(parent_rfh);
 }
 
+privacy_sandbox::PrivacySandboxAttestationsMap
+MakeSharedStoragePrivacySandboxAttestationsMap(
+    const std::vector<GURL>& enrollee_urls) {
+  privacy_sandbox::PrivacySandboxAttestationsMap attestations_map;
+  for (const auto& url : enrollee_urls) {
+    attestations_map[net::SchemefulSite(url)] = base::EnumSet<
+        privacy_sandbox::PrivacySandboxAttestationsGatedAPI,
+        privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics,
+        privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kMaxValue>(
+        {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage});
+  }
+  return attestations_map;
+}
+
 }  // namespace
 
 class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
@@ -206,12 +224,14 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   SharedStorageChromeBrowserTestBase() {
     base::test::TaskEnvironment task_environment;
 
-    // TODO(crbug.com/1378703): Update the tests to support Privacy Sandbox 4.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
+                              privacy_sandbox::kPrivacySandboxSettings4,
                               privacy_sandbox::kPrivacySandboxSettings3,
-                              features::kPrivacySandboxAdsAPIsOverride},
-        /*disabled_features=*/{privacy_sandbox::kPrivacySandboxSettings4});
+                              features::kPrivacySandboxAdsAPIsOverride,
+                              privacy_sandbox::
+                                  kOverridePrivacySandboxSettingsLocalTesting},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -222,12 +242,28 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     content::SetupCrossSiteRedirector(https_server());
     CHECK(https_server()->Start());
 
-    InitPrefs();
+    SetPrefs(EnablePrivacySandbox(), AllowThirdPartyCookies());
   }
 
   ~SharedStorageChromeBrowserTestBase() override = default;
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  Profile* GetProfile() {
+#if BUILDFLAG(IS_ANDROID)
+    return TabModelList::models()[0]->GetProfile();
+#else
+    return browser()->profile();
+#endif
+  }
+
+  privacy_sandbox::PrivacySandboxSettings* GetPrivacySandboxSettings() {
+    return PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
+  }
 
   void SetPrefs(bool enable_privacy_sandbox, bool allow_third_party_cookies) {
     GetProfile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
@@ -241,25 +277,56 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
             allow_third_party_cookies
                 ? content_settings::CookieControlsMode::kOff
                 : content_settings::CookieControlsMode::kBlockThirdParty));
+
+    // For `privacy_sandbox::kPrivacySandboxSettings4`, we also need to ensure
+    // the `PrivacySandboxDelegate::IsPrivacySandboxRestricted()` response
+    // returns the negation of `enable_privacy_sandbox`.
+    auto* privacy_sandbox_settings = GetPrivacySandboxSettings();
+    auto privacy_sandbox_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/!enable_privacy_sandbox);
+    privacy_sandbox_delegate->SetUpIsIncognitoProfileResponse(
+        /*incognito=*/GetProfile()->IsIncognitoProfile());
+    privacy_sandbox_settings->SetDelegateForTesting(
+        std::move(privacy_sandbox_delegate));
   }
 
-  // Virtual so derived classes can initialize differently. For the base class,
-  // enables Privacy Sandbox and allows 3P cookies.
-  virtual void InitPrefs() {
-    SetPrefs(/*enable_privacy_sandbox=*/true,
-             /*allow_third_party_cookies*/ true);
+  void SetThirdPartyCookieSetting(const GURL& main_url) {
+    // For `privacy_sandbox::kPrivacySandboxSettings4`, we also need to ensure
+    // the specific first-party URL `main_url` used by the test either has its
+    // third-party-cookie content setting set to
+    // `ContentSetting::CONTENT_SETTING_ALLOW` or
+    // `ContentSetting::CONTENT_SETTING_BLOCK`, according to
+    // `AllowThirdPartyCookies()`.
+    CookieSettingsFactory::GetForProfile(GetProfile())
+        ->SetThirdPartyCookieSetting(
+            main_url, AllowThirdPartyCookies()
+                          ? ContentSetting::CONTENT_SETTING_ALLOW
+                          : ContentSetting::CONTENT_SETTING_BLOCK);
   }
 
-  content::WebContents* GetActiveWebContents() {
-    return chrome_test_utils::GetActiveWebContents(this);
+  void SetAttestationsMap(
+      const privacy_sandbox::PrivacySandboxAttestationsMap& attestations_map) {
+    GetPrivacySandboxSettings()->SetPrivacySandboxAttestationsMapForTesting(
+        attestations_map);
   }
 
-  Profile* GetProfile() {
-#if BUILDFLAG(IS_ANDROID)
-    return TabModelList::models()[0]->GetProfile();
-#else
-    return browser()->profile();
-#endif
+  void MaybeEnrollMainHost(const GURL& main_url) {
+    privacy_sandbox::PrivacySandboxAttestationsMap attestations_map =
+        ShouldEnrollMainHost()
+            ? MakeSharedStoragePrivacySandboxAttestationsMap(
+                  std::vector<GURL>({main_url}))
+            : privacy_sandbox::PrivacySandboxAttestationsMap();
+    SetAttestationsMap(attestations_map);
+  }
+
+  void
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage() {
+    GURL main_url = https_server()->GetURL(kMainHost, kSimplePagePath);
+    SetThirdPartyCookieSetting(main_url);
+    MaybeEnrollMainHost(main_url);
+    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
   }
 
   void AddSimpleModule(const content::ToRenderFrameHost& execution_target) {
@@ -390,6 +457,10 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   virtual bool ResolveSelectURLToConfig() const { return false; }
+  virtual bool EnablePrivacySandbox() const { return true; }
+  virtual bool AllowThirdPartyCookies() const { return true; }
+  virtual bool EnforceAttestations() const { return false; }
+  virtual bool ShouldEnrollMainHost() const { return true; }
 
   std::string ExpectedSharedStorageDisabledMessage() {
     return "Error: " + content::GetSharedStorageDisabledMessage();
@@ -412,6 +483,9 @@ class SharedStorageChromeBrowserTest
         blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
 
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
+    attestation_feature_.InitWithFeatureState(
+        privacy_sandbox::kEnforcePrivacySandboxAttestations,
+        EnforceAttestations());
   }
   ~SharedStorageChromeBrowserTest() override = default;
 
@@ -420,12 +494,15 @@ class SharedStorageChromeBrowserTest
  private:
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
   base::test::ScopedFeatureList fenced_frame_feature_;
+  base::test::ScopedFeatureList attestation_feature_;
 };
 
 using SharedStorageChromeBrowserParams =
     std::tuple</*resolve_to_config=*/bool,
                /*enable_privacy_sandbox=*/bool,
-               /*allow_third_party_cookies=*/bool>;
+               /*allow_third_party_cookies=*/bool,
+               /*enforce_attestations=*/bool,
+               /*should_enroll_main_host=*/bool>;
 
 class SharedStoragePrefBrowserTest
     : public SharedStorageChromeBrowserTestBase,
@@ -435,24 +512,24 @@ class SharedStoragePrefBrowserTest
     fenced_frame_api_change_feature_.InitWithFeatureState(
         blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
+    attestation_feature_.InitWithFeatureState(
+        privacy_sandbox::kEnforcePrivacySandboxAttestations,
+        EnforceAttestations());
   }
 
   bool ResolveSelectURLToConfig() const override {
     return std::get<0>(GetParam());
   }
-  bool EnablePrivacySandbox() const { return std::get<1>(GetParam()); }
-  bool AllowThirdPartyCookies() const { return std::get<2>(GetParam()); }
+  bool EnablePrivacySandbox() const override { return std::get<1>(GetParam()); }
+  bool AllowThirdPartyCookies() const override {
+    return std::get<2>(GetParam());
+  }
+  bool EnforceAttestations() const override { return std::get<3>(GetParam()); }
+  bool ShouldEnrollMainHost() const override { return std::get<4>(GetParam()); }
 
   bool SuccessExpected() {
-    return EnablePrivacySandbox() && AllowThirdPartyCookies();
-  }
-
-  // Sets prefs as parametrized.
-  //
-  // TODO(crbug.com/1396748): We may need to update how preferences are set once
-  // the Privacy Sandbox settings release 4 is launched (crbug.com/1378703).
-  void InitPrefs() override {
-    SetPrefs(EnablePrivacySandbox(), AllowThirdPartyCookies());
+    return (ShouldEnrollMainHost() || !EnforceAttestations()) &&
+           EnablePrivacySandbox() && AllowThirdPartyCookies();
   }
 
   void AddSimpleModuleWithPermissionBypassed(
@@ -561,24 +638,29 @@ class SharedStoragePrefBrowserTest
  private:
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
   base::test::ScopedFeatureList fenced_frame_feature_;
+  base::test::ScopedFeatureList attestation_feature_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedStoragePrefBrowserTest,
-    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
     [](const testing::TestParamInfo<SharedStoragePrefBrowserTest::ParamType>&
            info) {
       return base::StrCat(
           {"ResolveSelectURLTo", std::get<0>(info.param) ? "Config" : "URN",
            "_PrivacySandbox", std::get<1>(info.param) ? "Enabled" : "Disabled",
-           "_3PCookies", std::get<2>(info.param) ? "Allowed" : "Blocked"});
+           "_3PCookies", std::get<2>(info.param) ? "Allowed" : "Blocked",
+           "_Attestations", std::get<3>(info.param) ? "Enforced" : "Unenforced",
+           "_MainHost", std::get<4>(info.param) ? "Enrolled" : "Unenrolled"});
     });
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
   console_observer.SetFilter(MakeFilter({"Finish executing simple_module.js"}));
@@ -618,9 +700,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   AddSimpleModuleWithPermissionBypassed(GetActiveWebContents());
   content::WebContentsConsoleObserver run_op_console_observer(
@@ -671,9 +751,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   AddSimpleModuleWithPermissionBypassed(GetActiveWebContents());
   content::WebContentsConsoleObserver run_url_op_console_observer(
@@ -774,9 +852,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::EvalJsResult set_result = content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.set('customKey', 'customValue');
@@ -797,9 +873,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::EvalJsResult append_result =
       content::EvalJs(GetActiveWebContents(), R"(
@@ -821,9 +895,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::EvalJsResult delete_result =
       content::EvalJs(GetActiveWebContents(), R"(
@@ -845,9 +917,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::EvalJsResult clear_result =
       content::EvalJs(GetActiveWebContents(), R"(
@@ -869,9 +939,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `set()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -897,9 +965,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `append()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -925,9 +991,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `delete()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -953,9 +1017,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `clear()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -981,9 +1043,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // To prevent failure in the case where Shared Storage is enabled, we set a
   // key before retrieving it; but in the case here we expect failure, we test
@@ -1020,9 +1080,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `keys()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -1050,9 +1108,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `entries()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -1080,9 +1136,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `length()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -1108,9 +1162,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `remainingBudget()` fails due to Shared Storage being disabled, there
   // will be a console message verified in the helper
@@ -1137,9 +1189,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIterated) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 150; ++i) {
@@ -1221,14 +1271,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 // TODO(crbug.com/1453981): fix and re-enable on Android.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
-                       DISABLED_WorkletKeysEntries_PartiallyIterated
+                       DISABLED_WorkletKeys_PartiallyIterated
 #else
-                       WorkletKeysEntries_PartiallyIterated
+                       WorkletKeys_PartiallyIterated
 #endif  // BUILDFLAG(IS_ANDROID)
 ) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 300; ++i) {
@@ -1240,15 +1290,96 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         let key_dict = await keys.next();
         console.log(key_dict['value']);
       }
-      var entries = sharedStorage.entries();
-      for (let i = 0; i < 101; ++i) {
-        let entry_dict = await entries.next();
-        console.log(entry_dict['value']);
-      }
       var keys2 = sharedStorage.keys();
       for (let i = 0; i < 243; ++i) {
         let key_dict = await keys2.next();
         console.log(key_dict['value']);
+      }
+      console.log('Finished script');
+    )",
+                                     "Finished script"));
+
+  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+  WaitForHistograms(
+      {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
+       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
+       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
+       kIteratedEntriesBenchmarksHistogram});
+
+  histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 150 + 243);
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 300, 2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 60,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 70,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 80,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 90,
+                                      0);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 100,
+                                      0);
+}
+
+// TODO(crbug.com/1453981): fix and re-enable on Android.
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+#if BUILDFLAG(IS_ANDROID)
+                       DISABLED_WorkletEntries_PartiallyIterated
+#else
+                       WorkletEntries_PartiallyIterated
+#endif  // BUILDFLAG(IS_ANDROID)
+) {
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+
+  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      for (let i = 0; i < 300; ++i) {
+        sharedStorage.set('key' + i.toString().padStart(3, '0'),
+                          'value' + i.toString().padStart(3, '0'));
+      }
+      var entries = sharedStorage.entries();
+      for (let i = 0; i < 101; ++i) {
+        let entry_dict = await entries.next();
+        console.log(entry_dict['value']);
       }
       var entries = sharedStorage.entries();
       for (let i = 0; i < 299; ++i) {
@@ -1264,57 +1395,55 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms(
       {kWorkletNumPerPageHistogram, kTimingDocumentAddModuleHistogram,
-       kTimingDocumentRunHistogram, kTimingWorkletKeysHistogram,
-       kTimingWorkletEntriesHistogram, kEntriesQueuedCountHistogram,
-       kReceivedEntriesBenchmarksHistogram,
+       kTimingDocumentRunHistogram, kTimingWorkletEntriesHistogram,
+       kEntriesQueuedCountHistogram, kReceivedEntriesBenchmarksHistogram,
        kIteratedEntriesBenchmarksHistogram});
 
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kTimingWorkletKeysHistogram, 150 + 243);
   histogram_tester_.ExpectTotalCount(kTimingWorkletEntriesHistogram, 101 + 299);
-  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 300, 4);
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 300, 2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 20,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 30,
-                                      4);
+                                      2);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 40,
-                                      3);
+                                      1);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 50,
-                                      3);
+                                      1);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 60,
-                                      2);
+                                      1);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 70,
-                                      2);
+                                      1);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 80,
-                                      2);
+                                      1);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 90,
                                       1);
   histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 100,
@@ -1323,9 +1452,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedLessThanTenKeys) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 5; ++i) {
@@ -1406,9 +1533,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_PartiallyIteratedLessThanTenKeys) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 5; ++i) {
@@ -1501,9 +1626,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedNoKeys) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       sharedStorage.set('key', 'value');
@@ -1564,9 +1687,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_InvalidScriptUrlError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   std::string invalid_url = "http://#";
   content::EvalJsResult result = content::EvalJs(
@@ -1589,9 +1710,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_CrossOriginScriptError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url = https_server()->GetURL(kCrossOriginHost,
                                            "/shared_storage/simple_module.js");
@@ -1616,12 +1735,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_LoadFailureError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/nonexistent_module.js");
+      kMainHost, "/shared_storage/nonexistent_module.js");
   content::EvalJsResult result = content::EvalJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
@@ -1639,12 +1756,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_UnexpectedRedirectError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/server-redirect?shared_storage/simple_module.js");
+      kMainHost, "/server-redirect?shared_storage/simple_module.js");
   content::EvalJsResult result = content::EvalJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
@@ -1662,12 +1777,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_EmptyResultError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module.js");
   content::EvalJsResult result = content::EvalJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
@@ -1684,12 +1797,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_MultipleAddModuleError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(kSimpleTestHost,
-                                           "/shared_storage/simple_module.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/simple_module.js");
 
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
@@ -1716,9 +1827,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
                               R"(
@@ -1733,12 +1842,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(kSimpleTestHost,
-                                           "/shared_storage/simple_module.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/simple_module.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -1762,12 +1869,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module2.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module2.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -1791,12 +1896,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module4.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module4.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -1821,12 +1924,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        Run_UnexpectedCustomDataError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module5.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module5.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -1851,9 +1952,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_NotLoadedError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecJs(GetActiveWebContents(),
                      content::JsReplace("window.resolveSelectURLToConfig = $1;",
@@ -1894,12 +1993,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_NotRegisteredError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(kSimpleTestHost,
-                                           "/shared_storage/simple_module.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/simple_module.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -1943,12 +2040,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_FunctionError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module2.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module2.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -1991,12 +2086,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module4.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module4.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -2040,12 +2133,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_UnexpectedCustomDataError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module5.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module5.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -2089,12 +2180,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_OutOfRangeError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module6.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module6.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -2138,12 +2227,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_ReturnValueToIntError) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(
-      kSimpleTestHost, "/shared_storage/erroneous_module6.js");
+  GURL script_url =
+      https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module6.js");
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
@@ -2188,9 +2275,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DocumentTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
                               R"(
@@ -2225,9 +2310,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DocumentTiming) {
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(),
                                      R"(
@@ -2289,9 +2372,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
 // Flaky: https://crbug.com/1406845
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        DISABLED_WorkletNumPerPage_Two) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::RenderFrameHost* main_frame =
       GetActiveWebContents()->GetPrimaryMainFrame();
@@ -2329,9 +2410,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 // Flaky: https://crbug.com/1406845
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        DISABLED_WorkletNumPerPage_Three) {
-  EXPECT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::RenderFrameHost* main_frame =
       GetActiveWebContents()->GetPrimaryMainFrame();
@@ -2401,11 +2480,30 @@ class SharedStorageFencedFrameChromeBrowserTest
         blink::features::kFencedFramesAPIChanges);
 
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
+
+    attestation_feature_.InitWithFeatureState(
+        privacy_sandbox::kEnforcePrivacySandboxAttestations,
+        EnforceAttestations());
   }
 
   ~SharedStorageFencedFrameChromeBrowserTest() override = default;
 
   bool ResolveSelectURLToConfig() const override { return true; }
+
+  bool EnforceAttestations() const override { return true; }
+
+  void Set3rdPartyCookieAndAttestationSettingsThenNavigateToMainHostPage() {
+    main_url_ = https_server()->GetURL(kMainHost, kSimplePagePath);
+    iframe_url_ = https_server()->GetURL(kCrossOriginHost, kSimplePagePath);
+    new_page_url1_ = https_server()->GetURL(kThirdOriginHost, kSimplePagePath);
+    new_page_url2_ = https_server()->GetURL(kFourthOriginHost, kSimplePagePath);
+
+    SetThirdPartyCookieSetting(main_url_);
+    SetAttestationsMap(
+        MakeSharedStoragePrivacySandboxAttestationsMap(std::vector<GURL>(
+            {main_url_, iframe_url_, new_page_url1_, new_page_url2_})));
+    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url_));
+  }
 
   content::RenderFrameHost* SelectURLAndCreateFencedFrame(
       content::RenderFrameHost* render_frame_host,
@@ -2493,36 +2591,39 @@ class SharedStorageFencedFrameChromeBrowserTest
             : content::FencedFrameNavigationTarget(observed_urn_uuid.value()));
   }
 
+ protected:
+  GURL main_url_;
+  GURL iframe_url_;
+  GURL new_page_url1_;
+  GURL new_page_url2_;
+
  private:
   base::test::ScopedFeatureList shared_storage_feature_;
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
   base::test::ScopedFeatureList fenced_frame_feature_;
+  base::test::ScopedFeatureList attestation_feature_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
                        FencedFrameNavigateTop_BudgetWithdrawal) {
-  GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
+  Set3rdPartyCookieAndAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL iframe_url = https_server()->GetURL(kCrossOriginHost, kSimplePagePath);
   content::RenderFrameHost* iframe =
-      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url_);
 
   content::RenderFrameHost* fenced_frame_root_node =
       SelectURLAndCreateFencedFrame(iframe);
   EXPECT_DOUBLE_EQ(RemainingBudget(iframe), kBudgetAllowed);
 
-  GURL new_page_url = https_server()->GetURL(kThirdOriginHost, kSimplePagePath);
-
   content::TestNavigationObserver top_navigation_observer(
       GetActiveWebContents());
   EXPECT_TRUE(ExecJs(
       fenced_frame_root_node,
-      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
+      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url1_)));
   top_navigation_observer.Wait();
 
   content::RenderFrameHost* new_iframe =
-      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url_);
 
   // After the top navigation, log(3) bits should have been withdrawn from the
   // original shared storage origin.
@@ -2550,29 +2651,24 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SharedStorageFencedFrameChromeBrowserTest,
     TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
-  GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
+  Set3rdPartyCookieAndAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL iframe_url = https_server()->GetURL(kCrossOriginHost, kSimplePagePath);
   content::RenderFrameHost* iframe1 =
-      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url_);
 
   content::RenderFrameHost* fenced_frame_root_node1 =
       SelectURLAndCreateFencedFrame(iframe1);
   EXPECT_DOUBLE_EQ(RemainingBudget(iframe1), kBudgetAllowed);
 
-  GURL new_page_url1 =
-      https_server()->GetURL(kThirdOriginHost, kSimplePagePath);
-
   content::TestNavigationObserver top_navigation_observer1(
       GetActiveWebContents());
   EXPECT_TRUE(ExecJs(
       fenced_frame_root_node1,
-      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url1)));
+      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url1_)));
   top_navigation_observer1.Wait();
 
   content::RenderFrameHost* iframe2 =
-      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url_);
 
   // After the top navigation, log(3) bits should have been withdrawn from the
   // original shared storage origin.
@@ -2583,18 +2679,15 @@ IN_PROC_BROWSER_TEST_F(
       SelectURLAndCreateFencedFrame(iframe2, /*should_add_module=*/false);
   EXPECT_DOUBLE_EQ(RemainingBudget(iframe2), kBudgetAllowed - std::log2(3));
 
-  GURL new_page_url2 =
-      https_server()->GetURL(kFourthOriginHost, kSimplePagePath);
-
   content::TestNavigationObserver top_navigation_observer2(
       GetActiveWebContents());
   EXPECT_TRUE(ExecJs(
       fenced_frame_root_node2,
-      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url2)));
+      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url2_)));
   top_navigation_observer2.Wait();
 
   content::RenderFrameHost* iframe3 =
-      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url_);
 
   // After the top navigation, another log(3) bits should have been withdrawn
   // from the original shared storage origin.
