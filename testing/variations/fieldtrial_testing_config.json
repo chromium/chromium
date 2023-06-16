@@ -6804,7 +6804,7 @@
                 {
                     "name": "AlwaysSlideToLeadingEdgeOnPhone_v1",
                     "params": {
-                        "ios-autofill-branding-frequency-type-phone": "dismiss-when-interacted",
+                        "ios-autofill-branding-frequency-type-phone": "always-show-and-dismiss",
                         "ios-autofill-branding-frequency-type-tablet": "always"
                     },
                     "enable_features": [
@@ -6814,7 +6814,7 @@
                 {
                     "name": "SlideToLeadingEdgeWhenInteractedOnPhone_v1",
                     "params": {
-                        "ios-autofill-branding-frequency-type-phone": "always-show-and-dismiss",
+                        "ios-autofill-branding-frequency-type-phone": "dismiss-when-interacted",
                         "ios-autofill-branding-frequency-type-tablet": "always"
                     },
                     "enable_features": [
