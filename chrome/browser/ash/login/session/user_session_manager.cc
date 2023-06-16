@@ -20,6 +20,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -178,6 +179,9 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "url/gurl.h"
+
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
 
@@ -1430,6 +1434,8 @@ void UserSessionManager::InitProfilePreferences(
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     std::string gaia_id = user_context.GetGaiaID();
+    // TODO(http://crbug.com/1454286): Remove.
+    bool used_extended_account_info = false;
     if (gaia_id.empty()) {
       const AccountInfo account_info =
           identity_manager->FindExtendedAccountInfoByEmailAddress(
@@ -1437,12 +1443,14 @@ void UserSessionManager::InitProfilePreferences(
 
       DCHECK(!account_info.IsEmpty() || IsRunningTest());
       gaia_id = account_info.gaia;
+      used_extended_account_info = true;
 
       // Use a fake gaia id for tests that do not have it.
       if (IsRunningTest() && gaia_id.empty())
         gaia_id = "fake_gaia_id_" + user_context.GetAccountId().GetUserEmail();
 
-      DCHECK(!gaia_id.empty());
+      // Update http://crbug.com/1454286 if the following line CHECKs.
+      CHECK(!gaia_id.empty());
     }
 
     // Set the Primary Account. Since `IdentityManager` requires that the
@@ -1498,8 +1506,37 @@ void UserSessionManager::InitProfilePreferences(
         accounts_mutator->SeedAccountInfo(gaia_id, user->GetDisplayEmail());
 
     // 3. Set it as the Primary Account.
-    identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-        account_id, ConsentLevel::kSync);
+    const signin::PrimaryAccountMutator::PrimaryAccountError
+        set_account_result =
+            identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+                account_id, ConsentLevel::kSync);
+    VLOG(1) << "SetPrimaryAccount result="
+            << static_cast<int>(set_account_result);
+
+    // TODO(http://crbug.com/1454286): Remove.
+    const CoreAccountInfo& identity_manager_account_info =
+        identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync);
+    if (identity_manager_account_info.gaia != gaia_id) {
+      signin::PrimaryAccountMutator::PrimaryAccountError
+          set_account_result_copy = set_account_result;
+      bool used_extended_account_info_copy = used_extended_account_info;
+      base::debug::Alias(&set_account_result_copy);
+      base::debug::Alias(&used_extended_account_info_copy);
+
+      DEBUG_ALIAS_FOR_CSTR(local_gaia_id_str, gaia_id.c_str(), 32);
+      DEBUG_ALIAS_FOR_CSTR(identity_manager_gaia_id_str,
+                           identity_manager_account_info.gaia.c_str(), 32);
+
+      DEBUG_ALIAS_FOR_CSTR(
+          account_id_str, user_context.GetAccountId().Serialize().c_str(), 128);
+      DEBUG_ALIAS_FOR_CSTR(core_account_id_str, account_id.ToString().c_str(),
+                           128);
+      DEBUG_ALIAS_FOR_CSTR(identity_manager_email_str,
+                           identity_manager_account_info.email.c_str(), 32);
+      DEBUG_ALIAS_FOR_CSTR(
+          identity_manager_id_str,
+          identity_manager_account_info.account_id.ToString().c_str(), 32);
+    }
 
     CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
     CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
