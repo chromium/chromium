@@ -10,6 +10,7 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/grit/ash_print_management_resources_map.h"
+#include "ash/webui/print_management/backend/print_management_handler.h"
 #include "ash/webui/print_management/url_constants.h"
 #include "base/feature_list.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
@@ -133,7 +134,8 @@ PrintManagementUI::PrintManagementUI(
     content::WebUI* web_ui,
     BindPrintingMetadataProviderCallback callback)
     : ui::MojoWebUIController(web_ui),
-      bind_pending_receiver_callback_(std::move(callback)) {
+      bind_pending_receiver_callback_(std::move(callback)),
+      print_management_handler_(std::make_unique<PrintManagementHandler>()) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),

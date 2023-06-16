@@ -23,6 +23,7 @@ namespace ash {
 namespace printing {
 namespace printing_manager {
 
+class PrintManagementHandler;
 class PrintManagementUI;
 
 // The WebUIConfig for chrome://print-management/.
@@ -65,6 +66,11 @@ class PrintManagementUI : public ui::MojoWebUIController {
 
  private:
   const BindPrintingMetadataProviderCallback bind_pending_receiver_callback_;
+
+  // The print management handler provides extra functionality such as opening
+  // Printer settings.
+  std::unique_ptr<ash::printing::printing_manager::PrintManagementHandler>
+      print_management_handler_;
 
   // The color change handler notifies the WebUI when the color provider
   // changes.
