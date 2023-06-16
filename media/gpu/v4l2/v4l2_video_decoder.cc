@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
@@ -63,6 +64,44 @@ const std::vector<uint32_t> kSupportedInputFourccs = {
     V4L2_PIX_FMT_VP9,
     V4L2_PIX_FMT_AV1,
 };
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "V4l2VideoDecoderFunctions" in src/tools/metrics/histograms/enums.xml.
+enum class V4l2VideoDecoderFunctions {
+  kInitializeBackend = 0,
+  kSetupInputFormat = 1,
+  kSetupOutputFormat = 2,
+  kStartStreamV4L2Queue = 3,
+  kStopStreamV4L2Queue = 4,
+  // Anything else is captured in this last entry.
+  kOtherV4l2VideoDecoderFunction = 5,
+  kMaxValue = kOtherV4l2VideoDecoderFunction,
+};
+
+constexpr std::array<const char*,
+                     static_cast<size_t>(V4l2VideoDecoderFunctions::kMaxValue) +
+                         1>
+    kV4l2VideoDecoderFunctionNames = {
+        "InitializeBackend",   "SetupInputFormat",
+        "SetupOutputFormat",   "StartStreamV4L2Queue",
+        "StopStreamV4L2Queue", "Other V4l2VideoDecoder functions"};
+
+// Translates |function| into a human readable string for logging.
+const char* V4l2VideoDecoderFunctionName(V4l2VideoDecoderFunctions function) {
+  CHECK(function <= V4l2VideoDecoderFunctions::kMaxValue);
+  return kV4l2VideoDecoderFunctionNames[static_cast<size_t>(function)];
+}
+
+// Logs and records UMA when member functions of V4l2VideoDecoder class fail.
+void LogAndRecordUMA(const base::Location& location,
+                     V4l2VideoDecoderFunctions function,
+                     const std::string& message = "") {
+  LOG(ERROR) << V4l2VideoDecoderFunctionName(function) << " failed at "
+             << location.ToString() << (message.empty() ? " " : " : ")
+             << message;
+  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.Error", function);
+}
 
 }  // namespace
 
@@ -129,7 +168,10 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
   }
 
   // Stop and Destroy device.
-  StopStreamV4L2Queue(true);
+  if (!StopStreamV4L2Queue(true)) {
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
+  }
+
   if (input_queue_) {
     if (!input_queue_->DeallocateBuffers())
       VLOGF(1) << "Failed to deallocate V4L2 input buffers";
@@ -183,6 +225,9 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // case.
   if (state_ == State::kDecoding) {
     if (!StopStreamV4L2Queue(true)) {
+      LogAndRecordUMA(FROM_HERE,
+                      V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
+
       // TODO(crbug/1103510): Make StopStreamV4L2Queue return a StatusOr, and
       // pipe that back instead.
       std::move(init_cb).Run(
@@ -357,7 +402,7 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   }
 
   if (!SetupInputFormat(input_format_fourcc)) {
-    VLOGF(1) << "Failed to setup input format.";
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kSetupInputFormat);
     return V4L2Status::Codes::kBadFormat;
   }
 
@@ -373,7 +418,8 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   // Start streaming input queue and polling. This is required for the stateful
   // decoder, and doesn't hurt for the stateless one.
   if (!StartStreamV4L2Queue(false)) {
-    VLOGF(1) << "Failed to start streaming.";
+    LogAndRecordUMA(FROM_HERE,
+                    V4l2VideoDecoderFunctions::kStartStreamV4L2Queue);
     return V4L2Status::Codes::kFailedToStartStreamQueue;
   }
 
@@ -600,7 +646,10 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (state_ == State::kInitialized) {
     V4L2Status status = InitializeBackend();
+
     if (status != V4L2Status::Codes::kOk) {
+      LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kInitializeBackend);
+
       SetState(State::kError);
       std::move(trampoline_decode_cb)
           .Run(DecoderStatus(DecoderStatus::Codes::kFailed)
@@ -696,13 +745,14 @@ void V4L2VideoDecoder::RestartStream() {
   const bool is_output_streaming = output_queue_->IsStreaming();
 
   if (!StopStreamV4L2Queue(true)) {
-    VLOGF(1) << "Failed to stop streaming.";
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
     return;
   }
 
   if (is_input_streaming) {
     if (!StartStreamV4L2Queue(is_output_streaming)) {
-      VLOGF(1) << "Failed to start streaming.";
+      LogAndRecordUMA(FROM_HERE,
+                      V4l2VideoDecoderFunctions::kStartStreamV4L2Queue);
       return;
     }
   }
@@ -771,8 +821,11 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
 
   // Stateful decoders require the input queue to keep running during resolution
   // changes, but stateless ones require it to be stopped.
-  if (!StopStreamV4L2Queue(backend_->StopInputQueueOnResChange()))
+  if (!StopStreamV4L2Queue(backend_->StopInputQueueOnResChange())) {
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
+
     return CroStatus::Codes::kFailedToChangeResolution;
+  }
 
   if (!output_queue_->DeallocateBuffers()) {
     SetState(State::kError);
@@ -787,12 +840,16 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
   const CroStatus status = SetupOutputFormat(
       pic_size, visible_rect, num_codec_reference_frames, bit_depth);
   if (status == CroStatus::Codes::kResetRequired) {
-    DVLOGF(2) << "SetupOutputFormat is aborted.";
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kSetupOutputFormat,
+                    "SetupOutputFormat is aborted");
+
     return CroStatus::Codes::kResetRequired;
   }
   if (status != CroStatus::Codes::kOk) {
-    VLOGF(1) << "Failed to setup output format, status="
-             << static_cast<int>(status.code());
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kSetupOutputFormat,
+                    "Failed to setup output format, status= " +
+                        base::NumberToString(static_cast<int>(status.code())));
+
     SetState(State::kError);
     return CroStatus::Codes::kFailedToChangeResolution;
   }
@@ -826,6 +883,9 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
   }
 
   if (!StartStreamV4L2Queue(true)) {
+    LogAndRecordUMA(FROM_HERE,
+                    V4l2VideoDecoderFunctions::kStartStreamV4L2Queue);
+
     SetState(State::kError);
     return CroStatus::Codes::kFailedToChangeResolution;
   }
@@ -983,7 +1043,11 @@ void V4L2VideoDecoder::SetState(State new_state) {
 
   if (new_state == State::kError) {
     VLOGF(1) << "Error occurred, stopping queues.";
-    StopStreamV4L2Queue(true);
+    if (!StopStreamV4L2Queue(true)) {
+      LogAndRecordUMA(FROM_HERE,
+                      V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
+    }
+
     if (backend_)
       backend_->ClearPendingRequests(DecoderStatus::Codes::kFailed);
   }

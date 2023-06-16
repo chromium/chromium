@@ -107618,6 +107618,15 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Arm D"/>
 </enum>
 
+<enum name="V4l2VideoDecoderFunctions">
+  <int value="0" label="InitializeBackend()"/>
+  <int value="1" label="SetupInputFormat()"/>
+  <int value="2" label="SetupOutputFormat()"/>
+  <int value="3" label="StartStreamV4L2Queue()"/>
+  <int value="4" label="StopStreamV4L2Queue()"/>
+  <int value="5" label="Other V4l2VideoDecoder function"/>
+</enum>
+
 <enum name="V8CacheBehaviour">
   <int value="0" label="kProduceCodeCache">
     The compilation produced a code cache
