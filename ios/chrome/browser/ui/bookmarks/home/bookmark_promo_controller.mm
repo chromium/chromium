@@ -26,24 +26,17 @@
 #endif
 
 @interface BookmarkPromoController () <SigninPromoViewConsumer,
-                                       IdentityManagerObserverBridgeDelegate> {
-  bool _isIncognito;
-  base::WeakPtr<Browser> _browser;
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityManagerObserverBridge;
-}
-
-// Mediator to use for the sign-in promo view displayed in the bookmark view.
-@property(nonatomic, readwrite, strong)
-    SigninPromoViewMediator* signinPromoViewMediator;
+                                       IdentityManagerObserverBridgeDelegate>
 
 @end
 
-@implementation BookmarkPromoController
-
-@synthesize delegate = _delegate;
-@synthesize shouldShowSigninPromo = _shouldShowSigninPromo;
-@synthesize signinPromoViewMediator = _signinPromoViewMediator;
+@implementation BookmarkPromoController {
+  base::WeakPtr<Browser> _browser;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
+  // Mediator to use for the sign-in promo view displayed in the bookmark view.
+  SigninPromoViewMediator* _signinPromoViewMediator;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
@@ -55,32 +48,24 @@
     _delegate = delegate;
     ChromeBrowserState* browserState =
         browser->GetBrowserState()->GetOriginalChromeBrowserState();
-    // TODO(crbug.com/1426262): Decide whether to show the signin promo in
-    // incognito mode and revisit this code.
-    // Incognito browser can go away before this class is released (once the
-    // last incognito winwdow is closed), this code avoids keeping a pointer to
-    // it.
-    _isIncognito = browserState->IsOffTheRecord();
-    if (!_isIncognito) {
-      _browser = browser->AsWeakPtr();
-      _identityManagerObserverBridge.reset(
-          new signin::IdentityManagerObserverBridge(
-              IdentityManagerFactory::GetForBrowserState(browserState), self));
-      _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-                initWithBrowser:browser
-          accountManagerService:ChromeAccountManagerServiceFactory::
-                                    GetForBrowserState(browserState)
-                    authService:AuthenticationServiceFactory::
-                                    GetForBrowserState(browserState)
-                    prefService:browserState->GetPrefs()
-                    accessPoint:signin_metrics::AccessPoint::
-                                    ACCESS_POINT_BOOKMARK_MANAGER
-                      presenter:presenter
-             baseViewController:baseViewController];
-      _signinPromoViewMediator.signInOnly = base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage);
-      _signinPromoViewMediator.consumer = self;
-    }
+    _browser = browser->AsWeakPtr();
+    _identityManagerObserverBridge.reset(
+        new signin::IdentityManagerObserverBridge(
+            IdentityManagerFactory::GetForBrowserState(browserState), self));
+    _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
+              initWithBrowser:browser
+        accountManagerService:ChromeAccountManagerServiceFactory::
+                                  GetForBrowserState(browserState)
+                  authService:AuthenticationServiceFactory::GetForBrowserState(
+                                  browserState)
+                  prefService:browserState->GetPrefs()
+                  accessPoint:signin_metrics::AccessPoint::
+                                  ACCESS_POINT_BOOKMARK_MANAGER
+                    presenter:presenter
+           baseViewController:baseViewController];
+    _signinPromoViewMediator.signInOnly =
+        base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage);
+    _signinPromoViewMediator.consumer = self;
     [self updateShouldShowSigninPromo];
   }
   return self;
@@ -98,7 +83,6 @@
 }
 
 - (void)hidePromoCell {
-  DCHECK(!_isIncognito);
   DCHECK(_browser);
   self.shouldShowSigninPromo = NO;
 }
@@ -111,10 +95,6 @@
 }
 
 - (void)updateShouldShowSigninPromo {
-  if (_isIncognito) {
-    self.shouldShowSigninPromo = NO;
-    return;
-  }
   DCHECK(_browser);
   ChromeBrowserState* browserState =
       _browser->GetBrowserState()->GetOriginalChromeBrowserState();
