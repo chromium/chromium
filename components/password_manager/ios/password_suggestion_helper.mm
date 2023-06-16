@@ -200,13 +200,21 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     _suggestionsAvailableCompletion = nil;
   }
 }
-- (void)processWithNoSavedCredentials {
+- (void)processWithNoSavedCredentialsWithFrame:(web::WebFrame*)frame {
   // Only update |_processedPasswordSuggestions| if PasswordManager was
   // queried for some forms. This is needed to protect against a case when
   // there are no forms on the pageload and they are added dynamically.
   if (_sentPasswordFormToPasswordManager) {
     _processedPasswordSuggestions = YES;
   }
+
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+  if (!fillData) {
+    auto it = _fillDataMap.insert(
+        std::make_pair(frame, std::make_unique<AccountSelectFillData>()));
+    fillData = it.first->second.get();
+  }
+  fillData->Reset();
 
   if (_suggestionsAvailableCompletion) {
     _suggestionsAvailableCompletion(nullptr);

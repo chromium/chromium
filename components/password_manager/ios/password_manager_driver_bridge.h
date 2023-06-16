@@ -32,7 +32,7 @@ class GURL;
                   forSecurityOrigin:(const GURL&)origin;
 
 // Informs delegate that there are no saved credentials for the current page.
-- (void)onNoSavedCredentials;
+- (void)onNoSavedCredentialsWithFrame:(web::WebFrame*)frame;
 
 // Informs delegate of form for password generation found.
 - (void)formEligibleForGenerationFound:

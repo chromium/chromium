@@ -581,6 +581,14 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   }
 }
 
+- (void)detachListenersForBottomSheet:(web::WebFrame*)frame {
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(_webState);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->DetachPasswordListenersAndRefocus(frame);
+  }
+}
+
 - (BOOL)shouldShowAccountStorageNotice {
   return _passwordManagerClient->GetPasswordFeatureManager()
              ->IsOptedInForAccountStorage() &&

@@ -118,7 +118,8 @@ TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
 
 // Tests the InformNoSavedCredentials method.
 TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
-  OCMExpect([password_controller_ onNoSavedCredentials]);
+  OCMExpect([password_controller_
+      onNoSavedCredentialsWithFrame:driver_->web_frame()]);
   driver_->InformNoSavedCredentials(true);
   [password_controller_ verify];
 }
