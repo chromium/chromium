@@ -85,7 +85,7 @@ BASE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON,
 
 // Not yet enabled by default.
 BASE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop,
-             "WebAuthnenticationRequireUpToDateJSONForRemoteDesktop",
+             "WebAuthenticationRequireUpToDateJSONForRemoteDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
