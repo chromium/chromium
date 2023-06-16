@@ -1148,6 +1148,11 @@
           'shards': 20,  # crbug.com/1419045
         },
       },
+      'Mac10.14 Tests': {
+        'swarming': {
+          'shards': 25,  # crbug.com/1455542
+        },
+      },
       'Mac10.15 Tests': {
         # crbug.com/1042757
         'swarming': {
