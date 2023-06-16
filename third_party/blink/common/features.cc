@@ -1868,6 +1868,10 @@ const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
 const base::FeatureParam<bool> kStorageAccessAPIRefreshGrantsOnUserInteraction{
     &kStorageAccessAPI, "storage_access_api_refresh_grants_on_user_interaction",
     true};
+const base::FeatureParam<base::TimeDelta>
+    kStorageAccessAPITopLevelUserInteractionBound{
+        &kStorageAccessAPI,
+        "storage_access_api_top_level_user_interaction_bound", base::Days(30)};
 
 BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
              "DisableThirdPartyStoragePartitioningDeprecationTrial",

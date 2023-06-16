@@ -2046,4 +2046,54 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithImplicitGrantsBrowserTest,
                                       /*sample=*/true, 3);
 }
 
+class StorageAccessAPIWithNoRequiredTopLevelInteractionBrowserTest
+    : public StorageAccessAPIBaseBrowserTest {
+ public:
+  StorageAccessAPIWithNoRequiredTopLevelInteractionBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(/*is_storage_partitioned=*/false) {}
+
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {blink::features::kStorageAccessAPI,
+         {
+             {
+                 blink::features::kStorageAccessAPIAutoGrantInFPS.name,
+                 "false",
+             },
+             {
+                 blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
+                 "false",
+             },
+             {
+                 blink::features::kStorageAccessAPITopLevelUserInteractionBound
+                     .name,
+                 "0s",
+             },
+         }},
+    };
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIWithNoRequiredTopLevelInteractionBrowserTest,
+    TopLevelUserInteractionNotRequired) {
+  SetBlockThirdPartyCookies(true);
+
+  // The test fixture pre-seeds kHostB with top-level user interaction, but not
+  // the other hosts. We intentionally use kHostA as the embed, since it has not
+  // been seeded with a top-level user interaction.
+
+  NavigateToPageWithFrame(kHostB);
+  NavigateFrameTo(EchoCookiesURL(kHostA));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostA), CookieBundle("cross-site=a.test"));
+}
+
 }  // namespace

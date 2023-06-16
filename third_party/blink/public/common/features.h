@@ -1161,6 +1161,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // in the relevant contexts.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kStorageAccessAPIRefreshGrantsOnUserInteraction;
+// How far back to look when requiring top-level user interaction on the
+// requesting site for Storage Access API permission grants. If this value is an
+// empty duration (e.g. "0s"), then no top-level user interaction is required.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kStorageAccessAPITopLevelUserInteractionBound;
 
 // This file is being reorganized to keep features sorted. Please do not add new
 // features here; please add them to the already-sorted section in the first

@@ -46,8 +46,6 @@ namespace {
 
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
 constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
-constexpr base::TimeDelta kTopLevelUserInteractionHeuristicBound =
-    base::Days(30);
 
 // Returns true iff the request was answered implicitly (assuming it met some
 // other baseline prerequisites).
@@ -294,10 +292,11 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
   // there's one more hurdle: the user must have interacted with the requesting
   // site in a top-level context recently.
   DIPSService* dips_service = DIPSService::Get(browser_context());
-  if (dips_service) {
+  const base::TimeDelta bound =
+      blink::features::kStorageAccessAPITopLevelUserInteractionBound.Get();
+  if (bound != base::TimeDelta() && dips_service) {
     dips_service->DidSiteHaveInteractionSince(
-        requesting_origin,
-        base::Time::Now() - kTopLevelUserInteractionHeuristicBound,
+        requesting_origin, base::Time::Now() - bound,
         base::BindOnce(&StorageAccessGrantPermissionContext::
                            OnCheckedUserInteractionHeuristic,
                        weak_factory_.GetWeakPtr(), id, requesting_origin,
@@ -305,8 +304,8 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
     return;
   }
 
-  // If we don't have access to this kind of historical info, we waive the
-  // requirement, and show the prompt.
+  // If we don't have access to this kind of historical info or the time bound
+  // is empty, we waive the requirement, and show the prompt.
   PermissionContextBase::DecidePermission(id, requesting_origin,
                                           embedding_origin, user_gesture,
                                           std::move(callback));
