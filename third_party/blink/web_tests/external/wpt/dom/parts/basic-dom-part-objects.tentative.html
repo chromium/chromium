@@ -46,9 +46,14 @@ test(() => {
   assert_equals(root.getParts().length,2);
   assert_equals(root.getParts()[1],childNodePart);
 
+  const nodeBefore = target.previousSibling || target.parentNode;
+  const nodePartBefore = new NodePart(root,nodeBefore);
+  assert_equals(root.getParts().length,3,'getParts() for the root should now have this nodePart');
+  assert_array_equals(root.getParts(),[nodePartBefore,nodePart,childNodePart],'getParts() should return nodes in tree order');
+
   const nodePart2 = new NodePart(childNodePart,target.children[2]);
   assert_equals(nodePart2.root,childNodePart);
-  assert_equals(root.getParts().length,2,'getParts() for the root DocumentPartRoot shouldn\'t change');
+  assert_equals(root.getParts().length,3,'getParts() for the root DocumentPartRoot shouldn\'t change');
   assert_equals(childNodePart.getParts().length,1);
   assert_equals(childNodePart.getParts()[0],nodePart2);
 }, 'Basic imperative DOM Parts object construction');

@@ -23,21 +23,24 @@ class CORE_EXPORT NodePart : public Part {
   static NodePart* Create(PartRoot* root,
                           Node* node,
                           const NodePartInit* init) {
-    return MakeGarbageCollected<NodePart>(*root, *node, init);
+    return MakeGarbageCollected<NodePart>(*root, node, init);
   }
   // TODO(crbug.com/1453291): Handle the init parameter.
-  NodePart(PartRoot& root, Node& node, const NodePartInit* init)
+  NodePart(PartRoot& root, Node* node, const NodePartInit* init)
       : Part(root), node_(node) {}
   NodePart(const NodePart&) = delete;
   ~NodePart() override = default;
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(node_);
-    Part::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
+  Node* RelevantNode() const override;
+  String ToString() const override;
 
   // NodePart API
   Node* node() const { return node_; }
+
+ protected:
+  bool IsValid() override;
+  Document* GetDocument() const override;
 
  private:
   Member<Node> node_;

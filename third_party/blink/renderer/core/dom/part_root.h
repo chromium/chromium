@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class Document;
+class DocumentPartRoot;
 class Part;
 
 // Implementation of the PartRoot class, which is part of the DOM Parts API.
@@ -27,7 +29,8 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // Adds a new part to this PartRoot's collection of maintained parts.
-  void addPart(Part& new_part);
+  void AddPart(Part& new_part);
+  virtual String ToString() const = 0;
 
   // PartRoot API
   HeapVector<Member<Part>> getParts();
@@ -36,10 +39,21 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
 
  protected:
   PartRoot() = default;
+  virtual bool IsPart() const { return false; }
+  virtual bool IsDocumentPartRoot() const { return false; }
+  virtual Document* GetDocument() const = 0;
 
  private:
-  HeapVector<Member<Part>> parts_;
+  DocumentPartRoot* GetDocumentPartRoot();
+  HeapVector<Member<Part>> RebuildPartsList();
+
+  HeapVector<Member<Part>> parts_unordered_;
+  HeapVector<Member<Part>> cached_ordered_parts_;
+  bool cached_parts_list_dirty_{false};
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const PartRoot&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const PartRoot*);
 
 }  // namespace blink
 

@@ -44,11 +44,9 @@ class CORE_EXPORT ChildNodePart : public Part {
   ChildNodePart(const ChildNodePart&) = delete;
   ~ChildNodePart() override = default;
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(previous_sibling_);
-    visitor->Trace(next_sibling_);
-    Part::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
+  Node* RelevantNode() const override;
+  String ToString() const override;
 
   // ChildNodePart API
   Node* previousSibling() const { return previous_sibling_; }
@@ -57,11 +55,18 @@ class CORE_EXPORT ChildNodePart : public Part {
   HeapVector<Member<Node>> children() const {
     return HeapVector<Member<Node>>();
   }
-
   // TODO(crbug.com/1453291) Implement this method.
   void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
 
+ protected:
+  bool IsValid() override;
+  Document* GetDocument() const override;
+
  private:
+  // Checks if this ChildNodePart is valid. This should only be called if the
+  // cached validity is dirty.
+  bool CheckValidity();
+
   Member<Node> previous_sibling_;
   Member<Node> next_sibling_;
 };

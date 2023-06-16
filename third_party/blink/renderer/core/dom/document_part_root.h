@@ -22,7 +22,12 @@ class CORE_EXPORT DocumentPartRoot : public PartRoot {
   DocumentPartRoot(const DocumentPartRoot&) = delete;
   ~DocumentPartRoot() override = default;
 
+  Document* GetDocument() const override { return document_; }
+  String ToString() const override { return "DocumentPartRoot"; }
   void Trace(Visitor*) const override;
+
+ protected:
+  bool IsDocumentPartRoot() const override { return true; }
 
  private:
   Member<Document> document_;

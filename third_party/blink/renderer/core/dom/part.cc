@@ -9,7 +9,7 @@
 namespace blink {
 
 Part::Part(PartRoot& root) : root_(root) {
-  root.addPart(*this);
+  root.AddPart(*this);
 }
 
 void Part::Trace(Visitor* visitor) const {

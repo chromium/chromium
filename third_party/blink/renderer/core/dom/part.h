@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class Node;
+
 // Implementation of the Part class, which is part of the DOM Parts API.
 // This is the base class for all Part types, and it does not have a JS-public
 // constructor. The Part class holds a reference to its root, which is never
@@ -25,6 +27,8 @@ class CORE_EXPORT Part : public PartRoot {
   ~Part() override = default;
 
   void Trace(Visitor* visitor) const override;
+  virtual bool IsValid() = 0;
+  virtual Node* RelevantNode() const = 0;
 
   // Part API
   PartRoot& root() const { return *root_; }
@@ -33,6 +37,7 @@ class CORE_EXPORT Part : public PartRoot {
 
  protected:
   explicit Part(PartRoot& root);
+  bool IsPart() const override { return true; }
 
  private:
   Member<PartRoot> root_;
