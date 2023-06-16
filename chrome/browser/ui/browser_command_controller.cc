@@ -81,6 +81,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -667,8 +668,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_VIRTUAL_CARD_ENROLL:
       ShowVirtualCardEnrollBubble(browser_);
       break;
-    case IDC_TRANSLATE_PAGE:
-      Translate(browser_);
+    case IDC_SHOW_TRANSLATE:
+      ShowTranslateBubble(browser_);
       break;
     case IDC_MANAGE_PASSWORDS_FOR_PAGE:
       ManagePasswordsForPage(browser_);
@@ -1538,6 +1539,15 @@ void BrowserCommandController::UpdateCommandsForTabState() {
                                         CanSendTabToSelf(browser_));
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR,
                                         CanGenerateQrCode(browser_));
+
+  if (features::IsChromeRefresh2023()) {
+    ChromeTranslateClient* chrome_translate_client =
+        ChromeTranslateClient::FromWebContents(current_web_contents);
+    command_updater_.UpdateCommandEnabled(
+        IDC_SHOW_TRANSLATE, chrome_translate_client &&
+                                chrome_translate_client->GetTranslateManager()
+                                    ->CanManuallyTranslate());
+  }
 
   bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
                              ->GetWebExposedIsolationLevel() >=

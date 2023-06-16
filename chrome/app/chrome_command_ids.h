@@ -106,7 +106,7 @@
 #define IDC_EMAIL_PAGE_LOCATION         35006
 #define IDC_BASIC_PRINT                 35007
 #define IDC_SAVE_CREDIT_CARD_FOR_PAGE   35008
-#define IDC_TRANSLATE_PAGE              35009
+#define IDC_SHOW_TRANSLATE              35009
 #define IDC_MANAGE_PASSWORDS_FOR_PAGE   35010
 #define IDC_ROUTE_MEDIA                 35011
 #define IDC_WINDOW_MUTE_SITE            35012

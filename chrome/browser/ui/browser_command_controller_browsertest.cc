@@ -7,6 +7,9 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -35,8 +39,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/network_change_notifier.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -56,7 +63,7 @@ class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
   BrowserCommandControllerBrowserTest& operator=(
       const BrowserCommandControllerBrowserTest&) = delete;
 
-  ~BrowserCommandControllerBrowserTest() override {}
+  ~BrowserCommandControllerBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -72,6 +79,37 @@ class BrowserCommandControllerBrowserTestRefreshOnly
  public:
   BrowserCommandControllerBrowserTestRefreshOnly() {
     scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
+  }
+  BrowserCommandControllerBrowserTestRefreshOnly(
+      const BrowserCommandControllerBrowserTestRefreshOnly&) = delete;
+  BrowserCommandControllerBrowserTestRefreshOnly& operator=(
+      const BrowserCommandControllerBrowserTestRefreshOnly&) = delete;
+
+  ~BrowserCommandControllerBrowserTestRefreshOnly() override = default;
+
+ protected:
+  void LoadAndWaitForLanguage(base::StringPiece relative_url) {
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    GURL url = embedded_test_server()->GetURL(relative_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    ChromeTranslateClient* chrome_translate_client =
+        ChromeTranslateClient::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+
+    std::unique_ptr<translate::TranslateWaiter> translate_waiter =
+        translate::CreateTranslateWaiter(
+            browser()->tab_strip_model()->GetActiveWebContents(),
+            translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
+
+    while (
+        chrome_translate_client->GetLanguageState().source_language().empty()) {
+      translate_waiter->Wait();
+    }
+    translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+    net::NetworkChangeNotifier::CreateMockIfNeeded();
+    browser()->command_controller()->TabStateChanged();
   }
 
  private:
@@ -361,4 +399,38 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
 }
 
 #endif
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ShowTranslateStatusChromePage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = GURL("chrome://new-tab-page/");
+  translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+  net::NetworkChangeNotifier::CreateMockIfNeeded();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  browser()->command_controller()->TabStateChanged();
+
+  EXPECT_FALSE(
+      browser()->command_controller()->IsCommandEnabled(IDC_SHOW_TRANSLATE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ShowTranslateStatusEnglishPage) {
+  LoadAndWaitForLanguage("/english_page.html");
+  EXPECT_TRUE(
+      browser()->command_controller()->IsCommandEnabled(IDC_SHOW_TRANSLATE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ShowTranslateStatusFrenchPage) {
+  LoadAndWaitForLanguage("/french_page.html");
+  EXPECT_TRUE(
+      browser()->command_controller()->IsCommandEnabled(IDC_SHOW_TRANSLATE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteShowTranslateBubble) {
+  LoadAndWaitForLanguage("/french_page.html");
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_TRANSLATE));
+}
+
 }  // namespace chrome

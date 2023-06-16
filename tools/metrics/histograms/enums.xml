@@ -115293,7 +115293,7 @@ Called by update_scheduler_enums.py.-->
   <int value="56" label="Menu opened"/>
   <int value="57" label="Visited Chrome Web Store via extensions sub menu."/>
   <int value="58" label="Password Manager"/>
-  <int value="59" label="Translate Page"/>
+  <int value="59" label="Show Translate bubble"/>
   <int value="60" label="Show Chrome Labs"/>
   <int value="61" label="Install PWA"/>
   <int value="62" label="Open in PWA window"/>

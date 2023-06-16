@@ -133,6 +133,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/page_zoom.h"
@@ -1412,14 +1413,23 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
     controller->ReshowBubble();
 }
 
-void Translate(Browser* browser) {
-  if (!browser->window()->IsActive())
+void ShowTranslateBubble(Browser* browser) {
+  if (!browser->window()->IsActive()) {
     return;
+  }
 
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(web_contents);
+
+  if (!chrome_translate_client) {
+    return;
+  }
+
+  // The Translate bubble will not show if a text field is focused, so we clear
+  // focus here as the user has intentionally opened the bubble.
+  web_contents->ClearFocusedElement();
 
   std::string source_language;
   std::string target_language;
@@ -1427,13 +1437,15 @@ void Translate(Browser* browser) {
                                                  &target_language);
 
   translate::TranslateStep step = translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
-  if (chrome_translate_client) {
-    if (chrome_translate_client->GetLanguageState().translation_pending())
-      step = translate::TRANSLATE_STEP_TRANSLATING;
-    else if (chrome_translate_client->GetLanguageState().translation_error())
-      step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
-    else if (chrome_translate_client->GetLanguageState().IsPageTranslated())
-      step = translate::TRANSLATE_STEP_AFTER_TRANSLATE;
+  auto* language_state =
+      chrome_translate_client->GetTranslateManager()->GetLanguageState();
+
+  if (language_state->translation_pending()) {
+    step = translate::TRANSLATE_STEP_TRANSLATING;
+  } else if (language_state->translation_error()) {
+    step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
+  } else if (language_state->IsPageTranslated()) {
+    step = translate::TRANSLATE_STEP_AFTER_TRANSLATE;
   }
   browser->window()->ShowTranslateBubble(
       web_contents, step, source_language, target_language,

@@ -965,12 +965,12 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_PRINT);
       break;
 
-    case IDC_TRANSLATE_PAGE:
+    case IDC_SHOW_TRANSLATE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.TranslatePage",
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowTranslate",
                                    delta);
       }
-      LogMenuAction(MENU_ACTION_TRANSLATE_PAGE);
+      LogMenuAction(MENU_ACTION_SHOW_TRANSLATE);
       break;
 
     // Edit menu.
@@ -1491,7 +1491,7 @@ void AppMenuModel::Build() {
       AddItemWithStringId(IDC_SHOW_SEARCH_COMPANION, IDS_SHOW_SEARCH_COMPANION);
     }
 #endif
-    AddItemWithStringId(IDC_TRANSLATE_PAGE, IDS_SHOW_TRANSLATE);
+    AddItemWithStringId(IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE);
 
     sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
@@ -1623,7 +1623,7 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_VIEW_PASSWORDS, kKeyChromeRefreshIcon);
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
     SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
-    SetCommandIcon(this, IDC_TRANSLATE_PAGE, kTranslateIcon);
+    SetCommandIcon(this, IDC_SHOW_TRANSLATE, kTranslateIcon);
     SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     SetCommandIcon(this, IDC_SAVE_AND_SHARE_MENU, kFileSaveChromeRefreshIcon);
     SetCommandIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
