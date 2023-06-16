@@ -1816,7 +1816,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="WebContentsAPI" label="WebContentsAPI."/>
   <affected-histogram name="Download.Counts"/>
   <affected-histogram name="Download.InterruptedReason"/>
-  <affected-histogram name="Download.NetworkConnectionType.Complete"/>
   <affected-histogram name="Download.NetworkConnectionType.StartNew"/>
 </histogram_suffixes>
 
