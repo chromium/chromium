@@ -1908,6 +1908,27 @@ std::vector<base::FilePath> WebAppIntegrationTestDriver::GetTestFilePaths(
   return file_paths;
 }
 
+void WebAppIntegrationTestDriver::NavigateAppHome() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  GURL app_home_url = GURL(chrome::kChromeUIAppsURL);
+  WindowOpenDisposition win_disposition;
+  content::TestNavigationObserver url_observer(app_home_url);
+  if (BrowserList::IsOffTheRecordBrowserInUse(browser()->profile())) {
+    win_disposition = WindowOpenDisposition::OFF_THE_RECORD;
+    url_observer.StartWatchingNewWebContents();
+  } else {
+    win_disposition = WindowOpenDisposition::CURRENT_TAB;
+    url_observer.WatchExistingWebContents();
+  }
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), app_home_url, win_disposition,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  url_observer.Wait();
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::NavigateBrowser(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
@@ -2656,6 +2677,16 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
   EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + app_id));
   AfterStateCheckAction();
 #endif
+}
+
+void WebAppIntegrationTestDriver::CheckBrowserNotAtAppHome() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  GURL current_url =
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL();
+  EXPECT_NE(current_url, GURL(chrome::kChromeUIAppsURL));
+  AfterStateCheckAction();
 }
 
 void WebAppIntegrationTestDriver::CheckAppNotInList(Site site) {

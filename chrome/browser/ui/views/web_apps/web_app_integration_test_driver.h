@@ -302,6 +302,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void OpenAppSettingsFromAppMenu(Site site);
   void OpenAppSettingsFromCommand(Site site);
   void CreateShortcutsFromList(Site site);
+  void NavigateAppHome();
   void NavigateBrowser(Site site);
   void NavigatePwa(Site app, Site to);
   void NavigateNotfoundUrl();
@@ -341,6 +342,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppNavigationIsStartUrl();
   void CheckBrowserNavigation(Site site);
   void CheckBrowserNavigationIsAppSettings(Site site);
+  void CheckBrowserNotAtAppHome();
   void CheckAppNotInList(Site site);
   void CheckAppIcon(Site site, Color color);
   void CheckAppTitle(Site site, Title title);
