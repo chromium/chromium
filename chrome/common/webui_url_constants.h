@@ -238,7 +238,6 @@ extern const char kChromeUIInternalsQueryTilesPath[];
 extern const char kChromeUIJavaCrashURL[];
 extern const char kChromeUINativeBookmarksURL[];
 extern const char kChromeUINativeExploreURL[];
-extern const char kChromeUINativeHistoryURL[];
 extern const char kChromeUINativeNewTabURL[];
 extern const char kChromeUISnippetsInternalsHost[];
 extern const char kChromeUIUntrustedVideoTutorialsHost[];

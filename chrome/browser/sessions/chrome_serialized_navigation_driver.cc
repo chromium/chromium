@@ -73,11 +73,6 @@ void ChromeSerializedNavigationDriver::Sanitize(
        navigation->virtual_url().host_piece() == chrome::kChromeUINewTabHost)) {
     ChangeDestination(GURL(chrome::kChromeUINativeNewTabURL), navigation);
   }
-
-  if (navigation->virtual_url().SchemeIs(content::kChromeUIScheme) &&
-      navigation->virtual_url().host_piece() == chrome::kChromeUIHistoryHost) {
-    ChangeDestination(GURL(chrome::kChromeUINativeHistoryURL), navigation);
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

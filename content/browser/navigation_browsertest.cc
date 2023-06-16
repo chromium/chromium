@@ -3136,8 +3136,8 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
   EXPECT_EQ(0u, response_2.http_request()->headers.count("Cookie"));
 }
 
-// Tests for validating URL rewriting behavior like chrome://history to
-// chrome-native://history.
+// Tests for validating URL rewriting behavior like chrome://newtab to
+// chrome-native://newtab.
 class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
  protected:
   static constexpr const char* kRewriteURL = "http://a.com/rewrite";
