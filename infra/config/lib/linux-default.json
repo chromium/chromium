@@ -87,6 +87,7 @@
     "Lacros FYI x64 Release (AMD)": "Ubuntu-22.04",
     "Lacros FYI x64 Release (Intel)": "Ubuntu-22.04",
     "Leak Detection Linux": "Ubuntu-22.04",
+    "Libfuzzer Upload Chrome OS ASan": "Ubuntu-22.04",
     "Libfuzzer Upload Linux ASan": "Ubuntu-22.04",
     "Libfuzzer Upload Linux ASan Debug": "Ubuntu-22.04",
     "Libfuzzer Upload Linux UBSan": "Ubuntu-22.04",
