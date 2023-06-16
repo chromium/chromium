@@ -376,8 +376,11 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
 
-  cc::ElementId element_id =
-      widget_->client()->FrameWidget()->GetScrollableContainerIdAt(point);
+  cc::ElementId element_id;
+  if (widget_) {
+    element_id =
+        widget_->client()->FrameWidget()->GetScrollableContainerIdAt(point);
+  }
 
   InputThreadTaskRunner(TaskRunnerType::kInputBlocking)
       ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), element_id));
