@@ -3,8 +3,9 @@
 The tests are run with the flag:
 
 ```
---enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivateAggregationApi
+--enable-privacy-sandbox-ads-apis
 ```
 
-You can run these tests by targeting the following directory:
-`virtual/private-aggregation/external/wpt/private-aggregation.
+You can run these tests by targeting the following directories:
+`virtual/private-aggregation/external/wpt/private-aggregation` and
+`virtual/private-aggregation/wpt_internal/private-aggregation`.

@@ -1,0 +1,65 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/shared-storage/resources/util.js"></script>
+
+<body>
+<script>
+'use strict';
+
+// Payload with contributions [{bucket: 1n, value: 2}]
+const ONE_CONTRIBUTION_EXAMPLE_PAYLOAD =
+    'omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt';
+
+// Payload with contributions [{bucket: 1n, value: 2}, {bucket: 3n, value: 4}]
+const MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD =
+    'omRkYXRhgqJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAaJldmFsdWVEAAAABGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAA2lvcGVyYXRpb25paGlzdG9ncmFt';
+
+promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  const data = {enableDebugMode: true, contributions: [{bucket: 1n, value: 2}]};
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage")
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+               /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage")
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'run() that calls Private Aggregation with one contribution');
+
+promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  const data = {enableDebugMode: true,
+                contributions: [{bucket: 1n, value: 2}, {bucket: 3n, value: 4}]};
+
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage")
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+               /*expected_cleartext_payload=*/MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage")
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+}, 'run() that calls Private Aggregation with multiple contributions');
+
+</script>
+</body>
