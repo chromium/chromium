@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        CheckCorrectEventsAvailable) {
   constexpr char kEnabledEvents[] =
       "['onAudioJackEvent', 'onLidEvent', 'onUsbEvent', "
-      "'onKeyboardDiagnosticEvent']";
+      "'onKeyboardDiagnosticEvent', 'onSdCardEvent', 'onPowerEvent']";
 
   CreateExtensionAndRunServiceWorker(base::StringPrintf(R"(
     chrome.test.runTests([
@@ -427,85 +427,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckSdCardApiWithoutFeatureFlagFail) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function sdCardNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onSdCardEvent.addListener((event) => {
-            // unreachable.
-          });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckPowerApiWithoutFeatureFlagFail) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function powerNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onPowerEvent.addListener((event) => {
-            // unreachable.
-          });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusGarageApiWithoutFeatureFlagFail) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function stylusGarageNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onStylusGarageEvent.addListener((event) => {
-            // unreachable.
-          });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class PendingApprovalTelemetryExtensionEventsApiBrowserTest
-    : public TelemetryExtensionEventsApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckSdCardApiWithFeatureFlagWork) {
+                       OnSdCardEvent_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
@@ -537,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckPowerApiWithFeatureFlagWork) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       OnPowerEvent_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
@@ -570,6 +492,18 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     ]);
   )");
 }
+
+class PendingApprovalTelemetryExtensionEventsApiBrowserTest
+    : public TelemetryExtensionEventsApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // TODO(crbug.com/1454755): Flaky on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
