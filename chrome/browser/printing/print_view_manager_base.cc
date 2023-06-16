@@ -208,6 +208,19 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
   return true;
 }
 
+void PrintViewManagerBase::PrintNodeUnderContextMenu(
+    content::RenderFrameHost* rfh) {
+  if (!StartPrintCommon(rfh)) {
+    return;
+  }
+
+  GetPrintRenderFrame(rfh)->PrintNodeUnderContextMenu();
+
+  for (auto& observer : GetTestObservers()) {
+    observer.OnPrintNow(rfh);
+  }
+}
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::PrintForPrintPreview(
     base::Value::Dict job_settings,

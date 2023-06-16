@@ -239,7 +239,6 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/print_view_manager_common.h"
-#include "components/printing/common/print.mojom.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_preview_context_menu_observer.h"
@@ -4066,23 +4065,21 @@ void RenderViewContextMenu::ExecRestartPackagedApp() {
 
 void RenderViewContextMenu::ExecPrint() {
 #if BUILDFLAG(ENABLE_PRINTING)
+  const bool print_preview_disabled =
+      GetPrefs(browser_context_)->GetBoolean(prefs::kPrintPreviewDisabled);
   if (params_.media_type != ContextMenuDataMediaType::kNone) {
     RenderFrameHost* rfh = GetRenderFrameHost();
     if (rfh) {
-      mojo::AssociatedRemote<printing::mojom::PrintRenderFrame> remote;
-      rfh->GetRemoteAssociatedInterfaces()->GetInterface(&remote);
-      remote->PrintNodeUnderContextMenu();
+      printing::StartPrintNodeUnderContextMenu(rfh, print_preview_disabled);
     }
     return;
   }
 
-  printing::StartPrint(
-      source_web_contents_,
+  printing::StartPrint(source_web_contents_,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      mojo::NullAssociatedRemote(),
+                       mojo::NullAssociatedRemote(),
 #endif
-      GetPrefs(browser_context_)->GetBoolean(prefs::kPrintPreviewDisabled),
-      !params_.selection_text.empty());
+                       print_preview_disabled, !params_.selection_text.empty());
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 

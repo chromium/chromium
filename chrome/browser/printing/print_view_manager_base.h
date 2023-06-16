@@ -82,6 +82,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // this function. Returns false if printing is impossible at the moment.
   virtual bool PrintNow(content::RenderFrameHost* rfh);
 
+  // Like PrintNow(), but for the node under the context menu, instead of the
+  // entire frame.
+  void PrintNodeUnderContextMenu(content::RenderFrameHost* rfh);
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Prints the document in `print_data` with settings specified in
   // `job_settings`. Runs `callback` with an error string on failure and with an

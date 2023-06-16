@@ -159,6 +159,22 @@ bool PrintViewManager::PrintPreviewWithPrintRenderer(
 }
 #endif
 
+void PrintViewManager::PrintPreviewForNodeUnderContextMenu(
+    content::RenderFrameHost* rfh) {
+  if (print_preview_state_ != NOT_PREVIEWING) {
+    return;
+  }
+
+  // Don't print / print preview crashed tabs.
+  if (IsCrashed() || !rfh->IsRenderFrameLive()) {
+    return;
+  }
+
+  // This will indirectly trigger PrintPreviewForWebNode() below, which sets
+  // `print_preview_state_`.
+  GetPrintRenderFrame(rfh)->PrintNodeUnderContextMenu();
+}
+
 void PrintViewManager::PrintPreviewForWebNode(content::RenderFrameHost* rfh) {
   if (print_preview_state_ != NOT_PREVIEWING)
     return;

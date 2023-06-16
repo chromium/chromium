@@ -13,6 +13,7 @@
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -289,3 +290,37 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 INSTANTIATE_TEST_SUITE_P(All, PDFExtensionPrintingTest, testing::Bool());
+
+class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
+ public:
+  PDFExtensionBasicPrintingTest() = default;
+  ~PDFExtensionBasicPrintingTest() override = default;
+
+  // PDFExtensionPrintingTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisablePrintPreview);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
+                       ContextMenuPrintCommandExtensionMainFrame) {
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+  ASSERT_TRUE(plugin_frame);
+
+  // Makes sure that the correct frame invoked the context menu.
+  content::ContextMenuInterceptor menu_interceptor(plugin_frame);
+
+  // Executes the print command as soon as the context menu is shown.
+  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
+
+  PrintObserver print_observer(plugin_frame);
+  SetInputFocusOnPlugin(guest);
+  plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  print_observer.WaitForPrintNow();
+  menu_interceptor.Wait();
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFExtensionBasicPrintingTest, testing::Bool());
