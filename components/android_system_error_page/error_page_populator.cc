@@ -8,7 +8,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/content_relationship_verification/content_relationship_verification_constants.h"
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/net_errors.h"
@@ -45,18 +44,6 @@ void PopulateErrorPageHtml(const blink::WebURLError& error,
     reason_id = IDS_ANDROID_ERROR_PAGE_WEBPAGE_TEMPORARILY_DOWN;
 
   std::string escaped_url = base::EscapeForHTML(url_string);
-
-  // Restrict webview content error.
-  if (error.reason() == net::ERR_ACCESS_DENIED &&
-      error.extended_reason() ==
-          static_cast<int>(
-              content_relationship_verification::kExtendedErrorReason)) {
-    *error_html = base::ReplaceStringPlaceholders(
-        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-            IDR_ANDROID_ERROR_CONTENT_BLOCKED_ERROR_HTML),
-        {escaped_url}, nullptr);
-    return;
-  }
 
   std::vector<std::string> replacements;
 

@@ -638,17 +638,6 @@ AwSettings::UpdateXRequestedWithAllowListOriginMatcher(
   return base::android::ToJavaArrayOfStrings(env, bad_rules);
 }
 
-void AwSettings::SetRestrictSensitiveWebContentEnabled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean enabled) {
-  restrict_sensitive_web_content_enabled_ = enabled;
-}
-
-bool AwSettings::GetRestrictSensitiveWebContentEnabled() {
-  return restrict_sensitive_web_content_enabled();
-}
-
 scoped_refptr<AwContentsOriginMatcher> AwSettings::xrw_allowlist_matcher() {
   return xrw_allowlist_matcher_;
 }

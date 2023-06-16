@@ -24,7 +24,6 @@
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
-#include "android_webview/browser/content_relationship_verification/aw_origin_verification_scheduler_bridge.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "android_webview/browser/network_service/aw_proxying_restricted_cookie_manager.h"
@@ -596,19 +595,6 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
-
-  content::WebContents* web_contents = wc_getter.Run();
-  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
-  if (request.is_outermost_main_frame &&
-      ((aw_settings && aw_settings->GetRestrictSensitiveWebContentEnabled()) ||
-       base::FeatureList::IsEnabled(
-           features::kWebViewRestrictSensitiveContent))) {
-    auto* origin_verification_bridge =
-        AwOriginVerificationSchedulerBridge::GetInstance();
-    result.push_back(
-        BrowserURLLoaderThrottle::Create(origin_verification_bridge));
-  }
-
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindOnce(
           [](AwContentBrowserClient* client) {

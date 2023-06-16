@@ -127,15 +127,6 @@ class AwSettings : public content::WebContentsObserver {
     return enterprise_authentication_app_link_policy_enabled_;
   }
 
-  void SetRestrictSensitiveWebContentEnabled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean enabled);
-  bool GetRestrictSensitiveWebContentEnabled();
-  inline bool restrict_sensitive_web_content_enabled() {
-    return restrict_sensitive_web_content_enabled_;
-  }
-
   base::android::ScopedJavaLocalRef<jobjectArray>
   UpdateXRequestedWithAllowListOriginMatcher(
       JNIEnv* env,
@@ -159,7 +150,6 @@ class AwSettings : public content::WebContentsObserver {
   // TODO(b/222053757,ayushsha): Change this policy to be by
   // default false from next Android version(Maybe Android U).
   bool enterprise_authentication_app_link_policy_enabled_{true};
-  bool restrict_sensitive_web_content_enabled_{false};
   MixedContentMode mixed_content_mode_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;

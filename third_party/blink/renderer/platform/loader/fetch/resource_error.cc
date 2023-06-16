@@ -298,9 +298,6 @@ String DescriptionForBlockedByClientOrResponse(
     case ResourceRequestBlockedReason::kContentType:
       detail = "ContentType";
       break;
-    case ResourceRequestBlockedReason::kContentRelationshipVerification:
-      detail = "ContentRelationshipVerification";
-      break;
     case ResourceRequestBlockedReason::kCoepFrameResourceNeedsCoepHeader:
       detail = "ResponseNeedsCrossOriginEmbedderPolicy";
       break;

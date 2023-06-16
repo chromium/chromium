@@ -16,7 +16,6 @@ enum class ResourceRequestBlockedReason {
   kInspector,
   kSubresourceFilter,
   kContentType,
-  kContentRelationshipVerification,
   kCoepFrameResourceNeedsCoepHeader,
   kCoopSandboxedIFrameCannotNavigateToCoopPage,
   kCorpNotSameOrigin,

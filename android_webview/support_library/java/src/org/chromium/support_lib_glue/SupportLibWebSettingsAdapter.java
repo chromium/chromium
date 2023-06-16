@@ -238,13 +238,4 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
         }
     }
-
-    @Override
-    public void enableRestrictSensitiveWebContent() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.RESTRICT_SENSITIVE_WEB_CONTENT")) {
-            recordApiCall(ApiCall.RESTRICT_SENSITIVE_WEB_CONTENT);
-            mAwSettings.enableRestrictSensitiveWebContent();
-        }
-    }
 }

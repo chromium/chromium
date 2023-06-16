@@ -121,10 +121,6 @@ source_set("browser") {
     "component_updater/registration.h",
     "component_updater/trust_token_key_commitments_component_loader.cc",
     "component_updater/trust_token_key_commitments_component_loader.h",
-    "content_relationship_verification/aw_origin_verification_scheduler_bridge.cc",
-    "content_relationship_verification/aw_origin_verification_scheduler_bridge.h",
-    "content_relationship_verification/browser_url_loader_throttle.cc",
-    "content_relationship_verification/browser_url_loader_throttle.h",
     "cookie_manager.cc",
     "cookie_manager.h",
     "enterprise_authentication_app_link_policy_handler.cc",
@@ -238,7 +234,6 @@ source_set("browser") {
     "//components/url_matcher",
 
     # Called via JNI in CrashpadMain
-    "//components/content_relationship_verification",
     "//components/crash/android:crashpad_main",
     "//components/crash/content/browser",
     "//components/crash/core/app",

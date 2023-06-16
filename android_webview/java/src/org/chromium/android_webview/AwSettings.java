@@ -2015,22 +2015,6 @@ public class AwSettings {
         }
     }
 
-    /**
-     * Enable sensitive web content restrictions per WebView.
-     */
-    public void enableRestrictSensitiveWebContent() {
-        synchronized (mAwSettingsLock) {
-            mEventHandler.runOnUiThreadBlockingAndLocked(() -> {
-                assert Thread.holdsLock(mAwSettingsLock);
-                AwOriginVerificationScheduler.initAndScheduleAll(null);
-                if (mNativeAwSettings != 0) {
-                    AwSettingsJni.get().setRestrictSensitiveWebContentEnabled(
-                            mNativeAwSettings, AwSettings.this, true);
-                }
-            });
-        }
-    }
-
     @NativeMethods
     interface Natives {
         long init(AwSettings caller, WebContents webContents);
@@ -2056,7 +2040,5 @@ public class AwSettings {
         boolean getEnterpriseAuthenticationAppLinkPolicyEnabled(
                 long nativeAwSettings, AwSettings caller);
         String[] updateXRequestedWithAllowListOriginMatcher(long nativeAwSettings, String[] rules);
-        void setRestrictSensitiveWebContentEnabled(
-                long nativeAwSettings, AwSettings caller, boolean enabled);
     }
 }

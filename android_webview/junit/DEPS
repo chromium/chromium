@@ -1,4 +1,0 @@
-include_rules = [
-    "+components/content_relationship_verification/android/java",
-    "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test/util/TestThreadUtils.java",
-]

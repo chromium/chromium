@@ -3139,7 +3139,7 @@ Unknown properties are collapsed to zero. -->
     WebViewProviderFactory#getDropDataProviderImplementation()
   </int>
   <int value="73" label="RESTRICT_SENSITIVE_WEB_CONTENT">
-    WebSettingsCompat#enableRestrictSensitiveWebContent()
+    WebSettingsCompat#enableRestrictSensitiveWebContent() (deprecated)
   </int>
   <int value="74" label="JS_REPLY_POST_MESSAGE_WITH_PAYLOAD">
     JsReplyProxy#postMessageWithPayload(WebMessagePayload)

@@ -4,8 +4,6 @@
 
 source_set("content_relationship_verification") {
   sources = [
-    "content_relationship_verification_constants.cc",
-    "content_relationship_verification_constants.h",
     "digital_asset_links_handler.cc",
     "digital_asset_links_handler.h",
     "response_header_verifier.cc",
