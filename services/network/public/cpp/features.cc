@@ -310,6 +310,12 @@ BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
              "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When kPrivateNetworkAccessPermissionPrompt is enabled, public secure websites
+// are allowed to access private insecure subresources with user's permission.
+BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
+             "PrivateNetworkAccessPermissionPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables out-of-process system DNS resolution so getaddrinfo() never runs in
 // the network service sandbox. System DNS resolution will instead be brokered
 // out over Mojo, likely to run in the browser process.

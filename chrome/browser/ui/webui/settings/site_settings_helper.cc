@@ -67,6 +67,7 @@
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -571,7 +572,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
     }
 
     if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateNetworkAccessPermissionPrompt)) {
+            network::features::kPrivateNetworkAccessPermissionPrompt)) {
       base_types->push_back(ContentSettingsType::PRIVATE_NETWORK_GUARD);
     }
 
