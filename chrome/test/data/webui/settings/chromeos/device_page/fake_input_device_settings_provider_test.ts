@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, ModifierKey} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeStyluses, fakeTouchpads, ModifierKey} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
@@ -34,6 +34,18 @@ suite('FakeInputDeviceSettings', () => {
     provider.setFakePointingSticks(fakePointingSticks);
     const result = await provider.getConnectedPointingStickSettings();
     assertDeepEquals(fakePointingSticks, result);
+  });
+
+  test('setFakeStyluses', async () => {
+    provider.setFakeStyluses(fakeStyluses);
+    const result = await provider.getConnectedStylusSettings();
+    assertDeepEquals(fakeStyluses, result);
+  });
+
+  test('setFakeGraphicsTablets', async () => {
+    provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+    const result = await provider.getConnectedGraphicsTabletSettings();
+    assertDeepEquals(fakeGraphicsTablets, result);
   });
 
   test('setKeyboardSettings', async () => {

@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {GraphicsTablet, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Stylus, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -17,6 +17,8 @@ interface InputDeviceType {
   fakeTouchpads: Touchpad[];
   fakeMice: Mouse[];
   fakePointingSticks: PointingStick[];
+  fakeStyluses: Stylus[];
+  fakeGraphicsTablets: GraphicsTablet[];
 }
 
 class FakeMethodState {
@@ -86,6 +88,8 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeTouchpads');
     this.methods.register('fakeMice');
     this.methods.register('fakePointingSticks');
+    this.methods.register('fakeStyluses');
+    this.methods.register('fakeGraphicsTablets');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -122,6 +126,22 @@ export class FakeInputDeviceSettingsProvider implements
 
   getConnectedPointingStickSettings(): Promise<PointingStick[]> {
     return this.methods.resolveMethod('fakePointingSticks');
+  }
+
+  setFakeStyluses(styluses: Stylus[]): void {
+    this.methods.setResult('fakeStyluses', styluses);
+  }
+
+  getConnectedStylusSettings(): Promise<Stylus[]> {
+    return this.methods.resolveMethod('fakeStyluses');
+  }
+
+  setFakeGraphicsTablets(graphicsTablets: GraphicsTablet[]): void {
+    this.methods.setResult('fakeGraphicsTablets', graphicsTablets);
+  }
+
+  getConnectedGraphicsTabletSettings(): Promise<GraphicsTablet[]> {
+    return this.methods.resolveMethod('fakeGraphicsTablets');
   }
 
   restoreDefaultKeyboardModifierRemappings(id: number): void {

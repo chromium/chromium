@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Touchpad} from './input_device_settings_types.js';
+import {GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -281,5 +281,31 @@ export const fakePointingSticks2: PointingStick[] = [
       sensitivity: 5,
       accelerationEnabled: true,
     },
+  },
+];
+
+export const fakeStyluses: Stylus[] = [
+  {
+    id: 13,
+    deviceKey: 'test:key',
+    name: 'Apple Pencil 2nd generation',
+  },
+  {
+    id: 14,
+    deviceKey: 'test:key',
+    name: 'Zebra ET8X',
+  },
+];
+
+export const fakeGraphicsTablets: GraphicsTablet[] = [
+  {
+    id: 15,
+    deviceKey: 'test:key',
+    name: 'Wacom Cintiq 16',
+  },
+  {
+    id: 16,
+    deviceKey: 'test:key',
+    name: 'XPPen Artist13.3 Pro',
   },
 ];

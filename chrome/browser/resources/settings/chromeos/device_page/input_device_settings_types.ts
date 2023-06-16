@@ -38,6 +38,26 @@ export type Touchpad = InputDeviceSettingsTypes.Touchpad;
 export type Mouse = InputDeviceSettingsTypes.Mouse;
 export type PointingStick = InputDeviceSettingsTypes.PointingStick;
 
+export interface Stylus {
+  // Unique per device based on this VID/PID pair as follows: "<vid>:<pid>"
+  // where VID/PID are represented in lowercase hex
+  deviceKey: string;
+  id: number;
+  name: string;
+  // TODO(yyhyyh@): Add Stylus settings with buttonRemapping: ButtonRemapping[]
+  // setting.
+}
+
+export interface GraphicsTablet {
+  // Unique per device based on this VID/PID pair as follows: "<vid>:<pid>"
+  // where VID/PID are represented in lowercase hex
+  deviceKey: string;
+  id: number;
+  name: string;
+  // TODO(yyhyyh@): Add GraphicsTablet settings with
+  // buttonRemapping: ButtonRemapping[] setting.
+}
+
 export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
 export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;
 export type MouseSettings = InputDeviceSettingsTypes.MouseSettings;

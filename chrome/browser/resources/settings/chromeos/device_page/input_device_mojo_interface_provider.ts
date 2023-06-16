@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {InputDeviceSettingsProvider} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 
-import {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './fake_input_device_data.js';
+import {fakeGraphicsTablets, fakeKeyboards, fakeMice, fakePointingSticks, fakeStyluses, fakeTouchpads} from './fake_input_device_data.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 
@@ -29,6 +29,8 @@ export function setupFakeInputDeviceSettingsProvider(): void {
   provider.setFakeTouchpads(fakeTouchpads);
   provider.setFakeMice(fakeMice);
   provider.setFakePointingSticks(fakePointingSticks);
+  provider.setFakeStyluses(fakeStyluses);
+  provider.setFakeGraphicsTablets(fakeGraphicsTablets);
   inputDeviceSettingsProvider = provider;
 }
 
