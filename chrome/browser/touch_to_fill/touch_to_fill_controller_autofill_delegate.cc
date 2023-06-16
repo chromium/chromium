@@ -6,10 +6,13 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
@@ -18,9 +21,12 @@
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/android/window_android.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace {
@@ -39,18 +45,24 @@ bool ContainsNonEmptyUsername(
 
 }  // namespace
 
+// No-op constructor for tests.
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     base::PassKey<TouchToFillControllerAutofillTest>,
     password_manager::PasswordManagerClient* password_client,
+    content::WebContents* web_contents,
     scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
     base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
         webauthn_delegate,
     std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
-    ShowHybridOption should_show_hybrid_option)
+    ShowHybridOption should_show_hybrid_option,
+    ShowPasswordMigrationWarningCallback show_password_migration_warning)
     : password_client_(password_client),
+      web_contents_(web_contents),
       authenticator_(std::move(authenticator)),
       webauthn_delegate_(webauthn_delegate),
       filler_(std::move(filler)),
+      show_password_migration_warning_(
+          std::move(show_password_migration_warning)),
       should_show_hybrid_option_(should_show_hybrid_option) {}
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
@@ -61,9 +73,16 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
     ShowHybridOption should_show_hybrid_option)
     : password_client_(password_client),
+      // |TouchToFillControllerTest| doesn't provide an instance of
+      // |ChromePasswordManagerClient|, so the test-only constructor should
+      // be used there.
+      web_contents_(static_cast<ChromePasswordManagerClient*>(password_client_)
+                        ->web_contents()),
       authenticator_(std::move(authenticator)),
       webauthn_delegate_(webauthn_delegate),
       filler_(std::move(filler)),
+      show_password_migration_warning_(
+          base::BindRepeating(&password_manager::ShowWarning)),
       should_show_hybrid_option_(should_show_hybrid_option),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
@@ -207,11 +226,7 @@ bool TouchToFillControllerAutofillDelegate::ShouldShowHybridOption() {
 }
 
 gfx::NativeView TouchToFillControllerAutofillDelegate::GetNativeView() {
-  // It is not a |ChromePasswordManagerClient| only in
-  // TouchToFillControllerTest.
-  return static_cast<ChromePasswordManagerClient*>(password_client_)
-      ->web_contents()
-      ->GetNativeView();
+  return web_contents_->GetNativeView();
 }
 
 void TouchToFillControllerAutofillDelegate::OnReauthCompleted(
@@ -237,8 +252,13 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
   CHECK(action_complete_);
   CHECK(filler_->IsReadyToFill());
 
+  // Do not trigger autosubmission if the password migration warning is being
+  // shown because it interrupts the nomal workflow.
+  filler_->UpdateTriggerSubmission(ShouldTriggerSubmission() &&
+                                   !password_manager::ShouldShowWarning());
   filler_->FillUsernameAndPassword(credential.username(),
                                    credential.password());
+  ShowPasswordMigrationWarningIfNeeded();
 
   if (ShouldTriggerSubmission()) {
     password_client_->StartSubmissionTrackingAfterTouchToFill(
@@ -255,4 +275,14 @@ void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
     bool show_virtual_keyboard) {
   filler_->CleanUp(ToShowVirtualKeyboard(show_virtual_keyboard));
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
+}
+
+void TouchToFillControllerAutofillDelegate::
+    ShowPasswordMigrationWarningIfNeeded() {
+  if (!password_manager::ShouldShowWarning()) {
+    return;
+  }
+  show_password_migration_warning_.Run(
+      web_contents_->GetTopLevelNativeWindow(),
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }

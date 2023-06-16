@@ -26,8 +26,13 @@ class UiCredential;
 class WebAuthnCredentialsDelegate;
 }  // namespace password_manager
 
+namespace content {
+class WebContents;
+}
+
 class ChromePasswordManagerClient;
 class TouchToFillController;
+class Profile;
 
 // Delegate interface for TouchToFillController being used in an autofill
 // context.
@@ -35,6 +40,8 @@ class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
   using ShowHybridOption = base::StrongAlias<struct ShowHybridOptionTag, bool>;
+  using ShowPasswordMigrationWarningCallback =
+      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>;
 
   // The action a user took when interacting with the Touch To Fill sheet.
   //
@@ -71,11 +78,13 @@ class TouchToFillControllerAutofillDelegate
   TouchToFillControllerAutofillDelegate(
       base::PassKey<class TouchToFillControllerAutofillTest>,
       password_manager::PasswordManagerClient* password_client,
+      content::WebContents* web_contents,
       scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
       base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
           webauthn_delegate,
       std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
-      ShowHybridOption should_show_hybrid_option);
+      ShowHybridOption should_show_hybrid_option,
+      ShowPasswordMigrationWarningCallback show_password_migration_warning);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
@@ -121,6 +130,8 @@ class TouchToFillControllerAutofillDelegate
   void CleanUpFillerAndReportOutcome(TouchToFillOutcome outcome,
                                      bool show_virtual_keyboard);
 
+  void ShowPasswordMigrationWarningIfNeeded();
+
   // Callback to the controller to be invoked when a finalizing action has
   // completed. This will result in the destruction of the delegate so
   // no internal state should be touched after its invocation.
@@ -128,6 +139,8 @@ class TouchToFillControllerAutofillDelegate
 
   // Weak pointer to the PasswordManagerClient this class is tied to.
   raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;
+
+  raw_ptr<content::WebContents> web_contents_;
 
   // Authenticator used to trigger a biometric auth before filling.
   scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
@@ -141,6 +154,10 @@ class TouchToFillControllerAutofillDelegate
   // to fill the username and password. PasswordCredentialFiller also submits
   // the form if required.
   std::unique_ptr<password_manager::PasswordCredentialFiller> filler_;
+
+  // Shows the password migration warning (expected to be shown after filing
+  // user's credentials).
+  ShowPasswordMigrationWarningCallback show_password_migration_warning_;
 
   // Whether the controller should show an option for passkey hybrid sign-in.
   ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);

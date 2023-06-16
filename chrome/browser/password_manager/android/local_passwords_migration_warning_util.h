@@ -10,6 +10,7 @@
 
 namespace password_manager {
 void ShowWarning(const gfx::NativeWindow window, Profile* profile);
+bool ShouldShowWarning();
 }
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_LOCAL_PASSWORDS_MIGRATION_WARNING_UTIL_H_
