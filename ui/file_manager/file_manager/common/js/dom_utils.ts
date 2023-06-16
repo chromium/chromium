@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 // Only import types from the DirectoryTree/DirectoryItem/XfTree/XfTreeItem to
 // prevent circular imports.
 import type {DirectoryItem, DirectoryTree} from '../../foreground/js/ui/directory_tree.js';
@@ -121,6 +121,26 @@ export function queryDecoratedElement<T>(
   const element = queryRequiredElement(query);
   decorate(element, type);
   return element as any as T;
+}
+
+/**
+ * Returns an array of elements, based on the `selectors`. Exactly one of these
+ *  elements is required to exist. The rest will be null.
+ * @param selectors A list of CSS selectors to query for elements.
+ * @param {(!Document|!DocumentFragment|!Element)=} context An optional
+ *     context object for querySelector.
+ * @returns A list of query results, with the same indices as the provided
+ *     `selectors`. One element will exist, and the rest will be null padding.
+ */
+export function queryRequiredExactlyOne(
+    selectors: string[], context: Document|DocumentFragment|Element = document):
+    Array<HTMLElement|null> {
+  const elements = selectors.map(
+      selector => context.querySelector(selector) as HTMLElement | null);
+  assert(
+      elements.filter(el => !!el).length === 1,
+      'Exactly one of the elements should exist.');
+  return elements;
 }
 
 /**

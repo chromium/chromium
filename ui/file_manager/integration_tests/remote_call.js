@@ -1030,6 +1030,18 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Whether the Jellybean UI is enabled.
+   * @param {string} appId app window ID
+   * @returns {Promise<boolean>}
+   */
+  async isJellybean(appId) {
+    return await sendTestMessage({
+             appId,
+             name: 'isJellybean',
+           }) === 'true';
+  }
+
+  /**
    * Wait for the nudge with the given text to be visible.
    *
    * @param {string} appId app window ID.
@@ -1158,5 +1170,41 @@ export class RemoteCallFilesApp extends RemoteCall {
     console.log(freeSpace);
     await sendTestMessage(
         {name: 'setSpacedFreeSpace', freeSpace: String(freeSpace)});
+  }
+
+  /**
+   * Waits for the specified element appearing in the DOM. `query_jelly` or
+   * `query_old` are used depending on the state of the migration to
+   * cros_components.
+   * @param  {string} appId App window Id.
+   * @param {string|!Array<string>} query_jelly Used when cros_components are
+   *     used. See `waitForElement` for details.
+   * @param {string|!Array<string>} query_old Used when cros_components are not
+   *     used. See `waitForElement` for details.
+   * @returns {Promise<ElementObject>} Promise to be fulfilled when the
+   *     element appears.
+   */
+  waitForElementJelly(appId, query_jelly, query_old) {
+    return this.isJellybean(appId).then(
+        isJellybean =>
+            this.waitForElement(appId, isJellybean ? query_jelly : query_old));
+  }
+
+  /**
+   * Shorthand for clicking the appropriate element, depending the state of the
+   * Jellybean experiment.
+   * @param {string} appId App window Id.
+   * @param {string|!Array<string>} query_jelly The query when using
+   *     cros_components. See `waitAndClickElement` for details.
+   * @param {string|!Array<string>} query_old The query when not using
+   *     cros_components. See `waitAndClickElement` for details.
+   * @param {KeyModifiers=} opt_keyModifiers Object
+   * @return {Promise} Promise to be fulfilled with the clicked element.
+   */
+  async waitAndClickElementJelly(
+      appId, query_jelly, query_old, opt_keyModifiers) {
+    const isJellybean = await this.isJellybean(appId);
+    return await this.waitAndClickElement(
+        appId, isJellybean ? query_jelly : query_old, opt_keyModifiers);
   }
 }

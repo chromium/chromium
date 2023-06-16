@@ -7,7 +7,9 @@
  */
 
 import '../../common/js/error_counter.js';
+import '../../widgets/xf_jellybean.js';
 import './metrics_start.js';
+import 'chrome://resources/cros_components/switch/switch.js';
 
 import {util} from '../../common/js/util.js';
 

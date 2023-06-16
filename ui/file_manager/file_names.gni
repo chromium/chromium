@@ -296,6 +296,7 @@ ts_files = [
   "file_manager/widgets/xf_conflict_dialog.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
   "file_manager/widgets/xf_icon.ts",
+  "file_manager/widgets/xf_jellybean.ts",
   "file_manager/widgets/xf_nudge.ts",
   "file_manager/widgets/xf_search_options.ts",
   "file_manager/widgets/xf_select.ts",

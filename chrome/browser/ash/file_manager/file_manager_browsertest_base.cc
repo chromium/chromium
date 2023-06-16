@@ -2220,6 +2220,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFilesDriveShortcuts);
   }
 
+  if (options.enable_jellybean) {
+    enabled_features.push_back(chromeos::features::kJelly);
+  } else {
+    disabled_features.push_back(chromeos::features::kJelly);
+  }
+
   if (options.feature_ids.size() > 0) {
     for (const std::string& feature_id : options.feature_ids) {
       base::AddTagToTestResult("feature_id", feature_id);
@@ -3650,6 +3656,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     const std::string* path = value.FindString("path");
     ASSERT_TRUE(path) << "No supplied path to sendDriveFilesChangedEvent";
     drive_volume_->SendCloudDeleteEvent(*path);
+    return;
+  }
+
+  if (name == "isJellybean") {
+    *output = options.enable_jellybean ? "true" : "false";
     return;
   }
 

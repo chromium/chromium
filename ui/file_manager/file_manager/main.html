@@ -356,9 +356,20 @@ found in the LICENSE file.
           <div id="action-bar">
             <div id="pinned-toggle-wrapper" hidden>
               <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
-              <cr-toggle id="pinned-toggle" command="#toggle-pinned"
-                         aria-labelledby="pinned-toggle-label">
-              </cr-toggle>
+              <xf-jellybean>
+                <cros-switch
+                    slot="jelly"
+                    id="pinned-toggle-jelly"
+                    command="#toggle-pinned"
+                    aria-labelledby="pinned-toggle-label">
+                </cros-switch>
+                <cr-toggle
+                    slot="old"
+                    id="pinned-toggle"
+                    command="#toggle-pinned"
+                    aria-labelledby="pinned-toggle-label">
+                </cr-toggle>
+              </xf-jellybean>
             </div>
             <cr-button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
                     tabindex="0" hidden

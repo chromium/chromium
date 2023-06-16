@@ -240,6 +240,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableJellybean() {
+    options.enable_jellybean = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -313,6 +318,10 @@ struct TestCase {
 
     if (options.enable_drive_shortcuts) {
       full_name += "_DriveShortcuts";
+    }
+
+    if (options.enable_jellybean) {
+      full_name += "_Jellybean";
     }
 
     switch (options.device_mode) {
@@ -1560,8 +1569,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TODO(b/189173190): Enable
         // TestCase("drivePinFileMobileNetwork"),
         TestCase("drivePinToggleUpdatesInFakeEntries"),
+        TestCase("drivePinToggleUpdatesInFakeEntries").EnableJellybean(),
         TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
             .EnableBulkPinning(),
+        TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
+            .EnableBulkPinning()
+            .EnableJellybean(),
         TestCase("driveClickFirstSearchResult"),
         TestCase("drivePressEnterToSearch"),
         TestCase("drivePressClearSearch"),
@@ -1570,6 +1583,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveAvailableOfflineGearMenu"),
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
         TestCase("driveAvailableOfflineActionBar"),
+        TestCase("driveAvailableOfflineActionBar").EnableJellybean(),
         TestCase("driveLinkToDirectory"),
         TestCase("driveLinkToDirectory").EnableDriveShortcuts(),
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
@@ -1590,6 +1604,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
             .EnableBulkPinning(),
+        TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
+            .EnableBulkPinning()
+            .EnableJellybean(),
         TestCase("driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin")
             .EnableBulkPinning(),
         TestCase("driveItemsOutOfViewportShouldUpdateTheirSyncStatus")
@@ -1875,6 +1892,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexFocusDownloads"),
         TestCase("tabindexFocusDownloads").InGuestMode(),
         TestCase("tabindexFocusDirectorySelected"),
+        TestCase("tabindexFocusDirectorySelected").EnableJellybean(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser()
         // TODO(b/189173190): Enable
         // TestCase("tabindexOpenDialogDownloads").WithBrowser(),

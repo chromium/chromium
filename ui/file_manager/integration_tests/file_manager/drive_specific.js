@@ -500,7 +500,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
       appId, '#file-list [file-name="test.txt"]');
 
   // The pinned toggle should update to be checked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle[checked]');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly[selected]', '#pinned-toggle[checked]');
 
   // Unpin the file.
   await remoteCall.waitAndClickElement(
@@ -509,7 +510,9 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
           '[command="#toggle-pinned"][checked]');
 
   // The pinned toggle should change to be unchecked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle:not([checked])');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly:not([selected])',
+      '#pinned-toggle:not([checked])');
 
   // Navigate to the Shared with me fake entry.
   await navigateWithDirectoryTree(appId, '/Shared with me');
@@ -519,7 +522,9 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
       appId, '#file-list [file-name="test.txt"]');
 
   // The pinned toggle should remain unchecked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle:not([checked])');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly:not([selected])',
+      '#pinned-toggle:not([checked])');
 
   // Pin the file.
   await remoteCall.waitAndClickElement(
@@ -528,7 +533,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
           '[command="#toggle-pinned"]:not([checked])');
 
   // The pinned toggle should change to be checked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle[checked]');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly[selected]', '#pinned-toggle[checked]');
 };
 
 /**
@@ -663,8 +669,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
 
   // Check the "Available Offline" toggle is shown in the action bar, but
   // disabled.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[disabled]:not([selected])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[disabled]:not([checked])');
 
@@ -673,8 +681,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Check the "Available Offline" toggle is now enabled, and pin the file.
-  await remoteCall.waitAndClickElement(
+  remoteCall.waitAndClickElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly:not([disabled]):not([selected])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle:not([disabled]):not([checked])');
 
@@ -694,8 +704,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
   chrome.test.assertEq('Available offline', tooltip.text);
 
   // Check the "Available Offline" toggle is enabled and checked.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[selected]:not([disabled])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[checked]:not([disabled])');
 
@@ -704,8 +716,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
       appId, '#file-list [file-name="world.ogv"]');
 
   // Check the "Available Offline" toggle is enabled and unchecked.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly:not([disabled]):not([selected])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle:not([disabled]):not([checked])');
 
@@ -714,8 +728,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Check the "Available Offline" toggle is enabled and checked.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[selected]:not([disabled])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[checked]:not([disabled])');
 
@@ -723,8 +739,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
   await remoteCall.focus(appId, ['#directory-tree']);
 
   // Check the "Available Offline" toggle is still available in the action bar.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[selected]:not([disabled])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[checked]:not([disabled])');
 };
@@ -1474,6 +1492,10 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
+
+  const toggleId = await remoteCall.isJellybean(appId) ? 'pinned-toggle-jelly' :
+                                                         'pinned-toggle';
+
   // Bring up the context menu for test.txt.
   await remoteCall.waitAndRightClick(
       appId, '#file-list [file-name="hello.txt"]');
@@ -1481,7 +1503,7 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   // The pinned toggle should be visible along with the command.
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
@@ -1493,7 +1515,7 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   // Wait for both the pinned toggle and the pinned command to become hidden and
   // disabled.
   await remoteCall.waitForElement(
-      appId, '#pinned-toggle-wrapper[hidden] #pinned-toggle[disabled]');
+      appId, `#pinned-toggle-wrapper[hidden] #${toggleId}[disabled]`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"][hidden][disabled]');
 
@@ -1502,7 +1524,7 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 };
@@ -1622,6 +1644,9 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
     ENTRIES.sharedWithMeDirectoryFile,
   ]);
 
+  const toggleId = await remoteCall.isJellybean(appId) ? 'pinned-toggle-jelly' :
+                                                         'pinned-toggle';
+
   // Click the Shared with me volume, it has no children so navigating using the
   // directory tree doesn't work.
   chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
@@ -1637,7 +1662,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   // The pinned toggle should be visible along with the command.
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
@@ -1651,7 +1676,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   // still be visible and enabled.
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
@@ -1661,7 +1686,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   await remoteCall.waitForBulkPinningStage('Stopped');
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 };

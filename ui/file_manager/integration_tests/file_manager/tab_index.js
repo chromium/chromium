@@ -159,11 +159,15 @@ testcase.tabindexFocusDirectorySelected = async () => {
         appId, ['#delete-button:not([hidden]):not([disabled])']),
   ]);
 
+  const pinnedToggleId = await remoteCall.isJellybean(appId) ?
+      'pinned-toggle-jelly' :
+      'pinned-toggle';
+
   // Send Tab key events to cycle through the tabable elements.
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
   chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'pinned-toggle'));
+      await remoteCall.checkNextTabFocus(appId, pinnedToggleId));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'sharesheet-button'));
   chrome.test.assertTrue(

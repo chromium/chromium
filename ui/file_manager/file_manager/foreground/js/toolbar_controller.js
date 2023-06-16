@@ -4,7 +4,7 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
-import {queryRequiredElement} from '../../common/js/dom_utils.js';
+import {queryRequiredElement, queryRequiredExactlyOne} from '../../common/js/dom_utils.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -111,10 +111,19 @@ export class ToolbarController {
         queryRequiredElement('#pinned-toggle-wrapper', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private {HTMLElement}
      * @const
      */
-    this.pinnedToggle_ = queryRequiredElement('#pinned-toggle', this.toolbar_);
+    this.pinnedToggle_;
+
+    /**
+     * @private {HTMLElement}
+     * @const
+     */
+    this.pinnedToggleJelly_;
+
+    [this.pinnedToggle_, this.pinnedToggleJelly_] = queryRequiredExactlyOne(
+        ['#pinned-toggle', '#pinned-toggle-jelly'], this.toolbar_);
 
     /**
      * @private {!HTMLElement}
@@ -322,8 +331,8 @@ export class ToolbarController {
     this.togglePinnedCommand_.addEventListener(
         'hiddenChange', this.updatePinnedToggle_.bind(this));
 
-    this.pinnedToggle_.addEventListener(
-        'change', this.onPinnedToggleChanged_.bind(this));
+    (this.pinnedToggleJelly_ || this.pinnedToggle_)
+        .addEventListener('change', this.onPinnedToggleChanged_.bind(this));
 
     this.directoryModel_.addEventListener(
         'directory-changed', this.updateCurrentDirectoryButtons_.bind(this));
@@ -507,8 +516,13 @@ export class ToolbarController {
   /** @private */
   updatePinnedToggle_() {
     this.pinnedToggleWrapper_.hidden = this.togglePinnedCommand_.hidden;
-    this.pinnedToggle_.checked = this.togglePinnedCommand_.checked;
-    this.pinnedToggle_.disabled = this.togglePinnedCommand_.disabled;
+    if (util.isJellyEnabled()) {
+      this.pinnedToggleJelly_.selected = this.togglePinnedCommand_.checked;
+      this.pinnedToggleJelly_.disabled = this.togglePinnedCommand_.disabled;
+    } else {
+      this.pinnedToggle_.checked = this.togglePinnedCommand_.checked;
+      this.pinnedToggle_.disabled = this.togglePinnedCommand_.disabled;
+    }
   }
 
   /** @private */
@@ -517,7 +531,9 @@ export class ToolbarController {
 
     // Optimistally update the command's properties so we get notified if they
     // change back.
-    this.togglePinnedCommand_.checked = this.pinnedToggle_.checked;
+    this.togglePinnedCommand_.checked = util.isJellyEnabled() ?
+        this.pinnedToggleJelly_.selected :
+        this.pinnedToggle_.checked;
   }
 
   /** @private */

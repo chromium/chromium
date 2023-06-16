@@ -183,6 +183,9 @@ class FileManagerBrowserTestBase
     // Whether to enable Drive shortcuts showing a badge or not.
     bool enable_drive_shortcuts = false;
 
+    // Whether to enable jellybean UI elements and styles.
+    bool enable_jellybean = false;
+
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;
   };
