@@ -1658,6 +1658,11 @@ enum class ToolbarKind {
   [self.choiceCoordinator start];
 }
 
+- (void)dismissChoice {
+  [self.choiceCoordinator stop];
+  self.choiceCoordinator = nil;
+}
+
 #pragma mark - DefaultBrowserPromoCommands
 
 - (void)hidePromo {
