@@ -517,6 +517,8 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kRealboxWidthBehavior,
                         ntp_features::kNtpRealboxWidthBehaviorParam));
+  source->AddBoolean("realboxIsTall", base::FeatureList::IsEnabled(
+                                          ntp_features::kRealboxIsTall));
 
   source->AddString(
       "realboxDefaultIcon",
