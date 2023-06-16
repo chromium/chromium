@@ -86,8 +86,7 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
 
 class FooterView : public views::View {
  public:
-  explicit FooterView(bool is_using_alternate_layout)
-      : is_using_alternate_layout_(is_using_alternate_layout) {
+  FooterView() {
     flex_layout_ =
         views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
     flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
@@ -123,7 +122,6 @@ class FooterView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  bool is_using_alternate_layout_ = false;
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>>
       alert_row_ = nullptr;

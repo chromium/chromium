@@ -234,7 +234,6 @@ const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
     "crossfade_preview_at";
 const char kTabHoverCardAdditionalMaxWidthDelay[] =
     "additional_max_width_delay";
-const char kTabHoverCardAlternateFormat[] = "alternate_format";
 
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",

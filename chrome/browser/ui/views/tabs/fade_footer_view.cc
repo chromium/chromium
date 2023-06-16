@@ -161,8 +161,7 @@ void FooterView::OnThemeChanged() {
   SetBackground(views::CreateSolidBackground(
       color_provider->GetColor(ui::kColorBubbleFooterBackground)));
   views::View::SetBorder(views::CreateSolidSidedBorder(
-      is_using_alternate_layout_ ? gfx::Insets::TLBR(0, 0, 1, 0)
-                                 : gfx::Insets::TLBR(1, 0, 0, 0),
+      gfx::Insets::TLBR(1, 0, 0, 0),
       color_provider->GetColor(ui::kColorBubbleFooterBorder)));
 }
 
