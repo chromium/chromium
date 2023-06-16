@@ -13,10 +13,15 @@
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
@@ -59,6 +64,8 @@
 #error "This file requires ARC support."
 #endif
 
+using set_up_list_prefs::SetUpListItemState;
+
 @protocol ContentSuggestionsMediatorDispatcher <BrowserCoordinatorCommands,
                                                 SnackbarCommands>
 @end
@@ -85,6 +92,13 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
     chrome_browser_state_ = test_cbs_builder.Build();
+
+    scoped_feature_list_.InitWithFeatures({kIOSSetUpList}, {});
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    FirstRun::RemoveSentinel();
+    base::File::Error fileError;
+    FirstRun::CreateSentinel(&fileError);
+    FirstRun::LoadSentinelInfo();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -154,6 +168,8 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
     histogram_tester_.reset(new base::HistogramTester());
   }
+
+  ~ContentSuggestionsMediatorTest() override { [mediator_ disconnect]; }
 
  protected:
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
@@ -294,9 +310,27 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
 // Tests that the reload logic (e.g. setting the consumer) triggers the correct
 // consumer calls when the Magic Stack feature is enabled.
 TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
+  scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
   OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
   OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
   mediator_.consumer = consumer_;
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that when the user changes the setting to disable signin, the
+// SetUpList signin item is marked complete.
+TEST_F(ContentSuggestionsMediatorTest, TestOnServiceStatusChanged) {
+  // Verify the initial state.
+  SetUpListItemState item_state = set_up_list_prefs::GetItemState(
+      local_state_.Get(), SetUpListItemType::kSignInSync);
+  EXPECT_EQ(item_state, SetUpListItemState::kNotComplete);
+
+  // Simulate the user disabling signin.
+  chrome_browser_state_.get()->GetPrefs()->SetBoolean(prefs::kSigninAllowed,
+                                                      false);
+  // Verify that the signin item is complete.
+  item_state = set_up_list_prefs::GetItemState(local_state_.Get(),
+                                               SetUpListItemType::kSignInSync);
+  EXPECT_EQ(item_state, SetUpListItemState::kCompleteInList);
 }

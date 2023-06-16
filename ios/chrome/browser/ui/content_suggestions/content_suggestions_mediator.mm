@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
@@ -110,7 +111,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 }  // namespace
 
-@interface ContentSuggestionsMediator () <IdentityManagerObserverBridgeDelegate,
+@interface ContentSuggestionsMediator () <AuthenticationServiceObserving,
+                                          IdentityManagerObserverBridgeDelegate,
                                           MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
@@ -190,6 +192,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Used by SetUpList to observe changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 #pragma mark - Public
@@ -233,6 +238,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     if (IsIOSSetUpListEnabled() &&
         set_up_list_utils::IsSetUpListActive(_localState)) {
       _authenticationService = authenticationService;
+      _authServiceObserverBridge =
+          std::make_unique<AuthenticationServiceObserverBridge>(
+              _authenticationService, self);
       _identityObserverBridge =
           std::make_unique<signin::IdentityManagerObserverBridge>(
               identityManager, self);
@@ -268,16 +276,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
   _readingListModelBridge.reset();
-  if (IsIOSSetUpListEnabled()) {
-    _authenticationService = nullptr;
-    _identityObserverBridge.reset();
-    if (_prefObserverBridge) {
-      _prefChangeRegistrar.RemoveAll();
-      _prefObserverBridge.reset();
-    }
-    [_setUpList disconnect];
-    _setUpList = nil;
+  _authenticationService = nullptr;
+  _authServiceObserverBridge.reset();
+  _identityObserverBridge.reset();
+  if (_prefObserverBridge) {
+    _prefChangeRegistrar.RemoveAll();
+    _prefObserverBridge.reset();
   }
+  [_setUpList disconnect];
+  _setUpList = nil;
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   [sceneState removeObserver:self];
@@ -962,6 +969,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (self.readingListItem) {
     self.readingListItem.count = self.readingListUnreadCount;
     [self.consumer updateShortcutTileConfig:self.readingListItem];
+  }
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (_setUpList) {
+    switch (_authenticationService->GetServiceStatus()) {
+      case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+      case AuthenticationService::ServiceStatus::SigninAllowed:
+        break;
+      case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+      case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+        // Signin is now disabled, so mark the SetUpList item complete so that
+        // it cannot be used again.
+        set_up_list_prefs::MarkItemComplete(_localState,
+                                            SetUpListItemType::kSignInSync);
+    }
   }
 }
 

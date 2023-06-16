@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -131,6 +132,15 @@ class SetUpListTest : public PlatformTest {
 // Tests that the SetUpList uses the correct criteria when including the
 // SyncInSync item.
 TEST_F(SetUpListTest, BuildListWithSignInSync) {
+  // Set sign-in disabled by policy.
+  local_state_.Get()->SetInteger(
+      prefs::kBrowserSigninPolicy,
+      static_cast<int>(BrowserSigninMode::kDisabled));
+  BuildSetUpList();
+  ExpectListToNotInclude(SetUpListItemType::kSignInSync);
+  // Re-enable signin policy.
+  local_state_.Get()->SetInteger(prefs::kBrowserSigninPolicy,
+                                 static_cast<int>(BrowserSigninMode::kEnabled));
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
 
