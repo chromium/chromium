@@ -33,7 +33,8 @@ async def get_webdriver_session():
                                             "webSocketUrl": True
                                         }
                                     }
-                                }).json()
+                                },
+                                timeout=10).json()
 
     return new_session["value"]
 

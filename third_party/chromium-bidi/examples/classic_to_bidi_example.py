@@ -44,21 +44,25 @@ async def main():
     classic_session_prefix = f'http://localhost:{port}/session/{session_id}'
 
     # Get browsing context (window handle in WebDriver Classic).
-    window_response = requests.get(f'{classic_session_prefix}/window').json()
+    window_response = requests.get(f'{classic_session_prefix}/window',
+                                   timeout=10).json()
     browsing_context = window_response["value"]
 
     # WebDriver Classic: navigate to page.
     page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
-    requests.post(f'{classic_session_prefix}/url', json={
-        "url": page_url
-    }).json()
+    requests.post(f'{classic_session_prefix}/url',
+                  json={
+                      "url": page_url
+                  },
+                  timeout=10).json()
 
     # WebDriver Classic: find all titles' links.
     classic_result = requests.post(f'{classic_session_prefix}/elements',
                                    json={
                                        "using": "css selector",
                                        "value": ".titleline > a"
-                                   }).json()
+                                   },
+                                   timeout=10).json()
 
     # `classic_result` has the following format:
     # {'value':

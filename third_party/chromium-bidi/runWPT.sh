@@ -75,7 +75,8 @@ declare -a WPT_RUN_ARGS=(
   --log-wptreport "$WPT_REPORT"
   --manifest "$MANIFEST"
   --metadata "$WPT_METADATA"
-  --skip-implementation-status=backlog
+  --no-manifest-download
+  --skip-implementation-status backlog
   --timeout-multiplier "$TIMEOUT_MULTIPLIER"
 )
 
@@ -84,6 +85,11 @@ if [[ "$VERBOSE" == "true" ]]; then
     --debug-test
     --log-mach -
     --log-mach-level info
+  )
+elif [[ "$HEADLESS" == "true" ]]; then
+  # Parallelization is flaky in headful mode.
+  WPT_RUN_ARGS+=(
+    --processes "$(nproc)"
   )
 fi
 

@@ -1,0 +1,2 @@
+[bandit]
+skips = B101

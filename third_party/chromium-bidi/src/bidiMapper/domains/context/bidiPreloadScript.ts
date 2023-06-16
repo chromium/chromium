@@ -18,6 +18,7 @@
 
 import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
+
 import type {CdpTarget} from './cdpTarget.js';
 
 type CdpPreloadScript = {
@@ -47,7 +48,7 @@ export class BidiPreloadScript {
   /** Browsing context ID. */
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
   /** Targets, in which the preload script is initialized. */
-  readonly #targetIds: Set<string> = new Set();
+  readonly #targetIds = new Set<string>();
 
   get id(): string {
     return this.#id;

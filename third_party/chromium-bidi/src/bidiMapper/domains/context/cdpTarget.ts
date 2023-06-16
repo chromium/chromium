@@ -24,6 +24,7 @@ import type {IEventManager} from '../events/EventManager.js';
 import {CDP} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
+
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
 
 export class CdpTarget {
