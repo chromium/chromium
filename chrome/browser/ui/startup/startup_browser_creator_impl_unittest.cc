@@ -201,8 +201,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
   FakeStartupTabProvider provider(kOnboardingTabs | kResetTriggerTabs |
                                   kPinnedTabs | kPreferencesTabs |
                                   kNewTabPageTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   auto output = impl.DetermineStartupTabs(
@@ -251,8 +251,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_Incognito) {
                                   kResetTriggerTabs | kPinnedTabs |
                                   kPreferencesTabs | kNewTabPageTabs |
                                   kNewFeaturesTabs | kPrivacySandboxTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   auto output = impl.DetermineStartupTabs(
@@ -273,8 +273,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_Crash) {
       kOnboardingTabs | kDistributionFirstRunTabs | kResetTriggerTabs |
       kPinnedTabs | kPreferencesTabs | kNewTabPageTabs | kNewFeaturesTabs |
       kPostCrashTabs | kPrivacySandboxTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   // Regular Crash Recovery case:
@@ -306,8 +306,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_InitialPrefs) {
                                   kResetTriggerTabs | kPinnedTabs |
                                   kPreferencesTabs | kNewTabPageTabs |
                                   kNewFeaturesTabs | kPrivacySandboxTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   auto output = impl.DetermineStartupTabs(
@@ -327,8 +327,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
       kOnboardingTabs | kDistributionFirstRunTabs | kResetTriggerTabs |
       kPinnedTabs | kPreferencesTabs | kNewTabPageTabs | kNewFeaturesTabs |
       kCommandLineTabs | kPrivacySandboxTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   auto output = impl.DetermineStartupTabs(
@@ -376,8 +376,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
 TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewTabPage) {
   FakeStartupTabProvider provider_allows_ntp(kPinnedTabs | kResetTriggerTabs |
                                              kNewTabPageTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   auto output = impl.DetermineStartupTabs(
@@ -397,8 +397,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
   using LaunchResult = Creator::LaunchResult;
 
   FakeStartupTabProvider provider(kNewTabPageTabs | kNewFeaturesTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kNo);
 
   auto output = impl.DetermineStartupTabs(
@@ -422,8 +422,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
   EXPECT_EQ("pinned", output.tabs[2].url.host());
 
   // Onboarding overrides What's New.
-  Creator first_run_impl(base::FilePath(),
-                         base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine first_run_command_line(base::CommandLine::NO_PROGRAM);
+  Creator first_run_impl(base::FilePath(), first_run_command_line,
                          chrome::startup::IsFirstRun::kYes);
   FakeStartupTabProvider provider_with_onboarding(
       kOnboardingTabs | kNewTabPageTabs | kNewFeaturesTabs);
@@ -450,8 +450,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
 // If required, a tab for the Privacy Sandbox dialog should be added.
 TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
   FakeStartupTabProvider provider(kNewTabPageTabs | kPrivacySandboxTabs);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kNo);
 
   auto output = impl.DetermineStartupTabs(
@@ -490,8 +490,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
   // Any onboarding tabs should prevent a Privacy Sandbox tab being added.
   FakeStartupTabProvider provider_with_onboarding(
       kOnboardingTabs | kNewTabPageTabs | kPrivacySandboxTabs);
-  Creator first_run_impl(base::FilePath(),
-                         base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine first_run_command_line(base::CommandLine::NO_PROGRAM);
+  Creator first_run_impl(base::FilePath(), first_run_command_line,
                          chrome::startup::IsFirstRun::kYes);
   output = first_run_impl.DetermineStartupTabs(
       provider_with_onboarding, chrome::startup::IsProcessStartup::kYes, false,
@@ -515,8 +515,8 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_WelcomeBackPage) {
 
   FakeStartupTabProvider provider_allows_ntp(kPinnedTabs | kPreferencesTabs |
                                              kWelcomeBackTab);
-  Creator impl(base::FilePath(),
-               base::CommandLine(base::CommandLine::NO_PROGRAM),
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
                chrome::startup::IsFirstRun::kYes);
 
   auto output = impl.DetermineStartupTabs(
