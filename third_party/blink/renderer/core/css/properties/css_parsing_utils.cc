@@ -944,6 +944,7 @@ class MathFunctionParser {
       CSSParserTokenRange& range,
       const CSSParserContext& context,
       CSSPrimitiveValue::ValueRange value_range,
+      const bool is_percentage_allowed = true,
       CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone)
       : source_range_(range), range_(range) {
     const CSSParserToken& token = range.Peek();
@@ -951,7 +952,7 @@ class MathFunctionParser {
       calc_value_ = CSSMathFunctionValue::Create(
           CSSMathExpressionNode::ParseMathFunction(
               token.FunctionId(), ConsumeFunction(range_), context,
-              allowed_anchor_queries),
+              is_percentage_allowed, allowed_anchor_queries),
           value_range);
     }
     if (calc_value_ && calc_value_->HasComparisons()) {
@@ -1259,7 +1260,7 @@ CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenRange& range,
                                 CSSPrimitiveValue::ValueRange::kAll);
 }
 
-bool CanConsumeCalcValue(CalculationCategory category,
+bool CanConsumeCalcValue(CalculationResultCategory category,
                          CSSParserMode css_parser_mode) {
   return category == kCalcLength || category == kCalcPercent ||
          category == kCalcPercentLength ||
@@ -1280,6 +1281,7 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     return ConsumePercent(range, context, value_range);
   }
   MathFunctionParser math_parser(range, context, value_range,
+                                 true /* is_percentage_allowed */,
                                  allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode())) {
@@ -2953,7 +2955,7 @@ static CSSPrimitiveValue* ConsumeGradientAngleOrPercent(
   }
   MathFunctionParser math_parser(range, context, value_range);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
-    CalculationCategory category = calculation->Category();
+    CalculationResultCategory category = calculation->Category();
     // TODO(fs): Add and support kCalcPercentAngle?
     if (category == kCalcAngle || category == kCalcPercent) {
       return math_parser.ConsumeValue();

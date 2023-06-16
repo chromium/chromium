@@ -163,7 +163,7 @@ static bool IsSupportedCSSUnitType(CSSPrimitiveValue::UnitType type) {
          type != CSSPrimitiveValue::UnitType::kQuirkyEms;
 }
 
-static bool IsSupportedCalculationCategory(CalculationCategory category) {
+static bool IsSupportedCalculationCategory(CalculationResultCategory category) {
   switch (category) {
     case kCalcLength:
     case kCalcNumber:

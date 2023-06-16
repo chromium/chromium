@@ -53,7 +53,7 @@ class CSSParserContext;
 
 // The order of this enum should not change since its elements are used as
 // indices in the addSubtractResult matrix.
-enum CalculationCategory {
+enum CalculationResultCategory {
   kCalcNumber,
   kCalcLength,
   kCalcPercent,
@@ -79,6 +79,7 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSValueID function_id,
       CSSParserTokenRange tokens,
       const CSSParserContext&,
+      const bool is_percentage_allowed,
       CSSAnchorQueryTypes allowed_anchor_queries);
 
   virtual bool IsNumericLiteral() const { return false; }
@@ -127,9 +128,12 @@ class CORE_EXPORT CSSMathExpressionNode
 
   virtual bool IsComputationallyIndependent() const = 0;
 
-  CalculationCategory Category() const { return category_; }
+  CalculationResultCategory Category() const { return category_; }
   bool HasPercentage() const {
     return category_ == kCalcPercent || category_ == kCalcPercentLength;
+  }
+  bool CanBeResolvedWithConversionData() const {
+    return can_be_resolved_with_conversion_data_;
   }
 
   // Returns the unit type of the math expression *without doing any type
@@ -164,16 +168,20 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
-  CSSMathExpressionNode(CalculationCategory category,
+  CSSMathExpressionNode(CalculationResultCategory category,
+                        const bool can_be_resolved_with_conversion_data,
                         bool has_comparisons,
                         bool needs_tree_scope_population)
       : category_(category),
+        can_be_resolved_with_conversion_data_(
+            can_be_resolved_with_conversion_data),
         has_comparisons_(has_comparisons),
         needs_tree_scope_population_(needs_tree_scope_population) {
     DCHECK_NE(category, kCalcOther);
   }
 
-  CalculationCategory category_;
+  CalculationResultCategory category_;
+  bool can_be_resolved_with_conversion_data_;
   bool is_nested_calc_ = false;
   bool has_comparisons_;
   bool needs_tree_scope_population_;
@@ -272,13 +280,17 @@ class CORE_EXPORT CSSMathExpressionOperation final
   CSSMathExpressionOperation(const CSSMathExpressionNode* left_side,
                              const CSSMathExpressionNode* right_side,
                              CSSMathOperator op,
-                             CalculationCategory category);
+                             CalculationResultCategory category,
+                             const bool can_be_resolved_with_conversion_data);
 
-  CSSMathExpressionOperation(CalculationCategory category,
+  CSSMathExpressionOperation(CalculationResultCategory category,
+                             const bool can_be_resolved_with_conversion_data,
                              Operands&& operands,
                              CSSMathOperator op);
 
-  CSSMathExpressionOperation(CalculationCategory category, CSSMathOperator op);
+  CSSMathExpressionOperation(CalculationResultCategory category,
+                             const bool can_be_resolved_with_conversion_data,
+                             CSSMathOperator op);
 
   const Operands& GetOperands() const { return operands_; }
   CSSMathOperator OperatorType() const { return operator_; }
