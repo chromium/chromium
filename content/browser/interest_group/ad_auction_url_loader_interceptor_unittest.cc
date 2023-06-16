@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base64url.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -27,10 +28,17 @@ namespace content {
 namespace {
 
 constexpr char kLegitimateAdAuctionResponse[] =
-    "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+    "ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0=";
 
 using FollowRedirectParams =
     network::TestURLLoaderFactory::TestURLLoader::FollowRedirectParams;
+
+std::string base64Decode(base::StringPiece input) {
+  std::string bytes;
+  CHECK(base::Base64UrlDecode(
+      input, base::Base64UrlDecodePolicy::IGNORE_PADDING, &bytes));
+  return bytes;
+}
 
 class InterceptingContentBrowserClient : public ContentBrowserClient {
  public:
@@ -280,7 +288,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedBeforeCommit) {
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedAfterCommit) {
@@ -327,7 +335,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedAfterCommit) {
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -378,7 +386,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromMainFrame) {
@@ -425,7 +433,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromMainFrame) {
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromSubframe) {
@@ -483,7 +491,72 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromSubframe) {
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
+}
+
+TEST_F(AdAuctionURLLoaderInterceptorTest, MultipleResults) {
+  const char kLegitimateAdAuctionResponse2[] =
+      "8oX0szl-BNWitSuE3ZK5Npt05t83A1wrl94oBtlZHFs=";
+  const char kLegitimateAdAuctionResponse3[] =
+      "lIcI37kQp_ArBk_1JfdEjyQ0suSLUpYDIKO906THBdk=";
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` will cause an empty ad auction header value to be
+  // added.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_TRUE(has_ad_auction_request_header);
+  EXPECT_EQ(ad_auction_request_header_value, "?1");
+
+  auto head = CreateResponseHead(
+      /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+      /*ad_auction_signals_header_value=*/absl::nullopt);
+
+  head->headers->AddHeader(
+      "Ad-Auction-Result",
+      base::StrCat({kLegitimateAdAuctionResponse2, ",", "invalid", ",",
+                    kLegitimateAdAuctionResponse3}));
+  head->headers->AddHeader("Ad-Auction-Result", "alsonotValid");
+  // The ad auction result from the response header will be stored in the page.
+  pending_request->client->OnReceiveResponse(std::move(head), /*body=*/{},
+                                             absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(GURL("https://foo1.com")),
+      base64Decode(kLegitimateAdAuctionResponse)));
+
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(GURL("https://foo1.com")),
+      base64Decode(kLegitimateAdAuctionResponse2)));
+
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(GURL("https://foo1.com")),
+      base64Decode(kLegitimateAdAuctionResponse3)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -532,7 +605,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
@@ -583,7 +656,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
@@ -684,7 +757,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromInactiveFrame) {
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -730,7 +803,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo2.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -784,7 +857,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},
@@ -814,7 +887,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo2.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest, AdAuctionSignalsResponseHeader) {
@@ -1026,7 +1099,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
-      kLegitimateAdAuctionResponse));
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},

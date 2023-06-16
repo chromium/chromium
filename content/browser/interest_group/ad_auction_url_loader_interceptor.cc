@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/ad_auction_url_loader_interceptor.h"
 
+#include "base/base64url.h"
+#include "base/strings/string_split.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -143,11 +145,21 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
-    std::string ad_auction_result;
-    if (headers->GetNormalizedHeader("Ad-Auction-Result", &ad_auction_result) &&
-        ad_auction_result.size() == 64) {
-      ad_auction_page_data->AddAuctionResultWitnessForOrigin(request_origin_,
-                                                             ad_auction_result);
+    std::string ad_auction_results;
+    if (headers->GetNormalizedHeader("Ad-Auction-Result",
+                                     &ad_auction_results)) {
+      for (const auto& result :
+           base::SplitString(ad_auction_results, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY)) {
+        std::string result_bytes;
+        if (base::Base64UrlDecode(result,
+                                  base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                                  &result_bytes) &&
+            result_bytes.size() == 32) {
+          ad_auction_page_data->AddAuctionResultWitnessForOrigin(
+              request_origin_, result_bytes);
+        }
+      }
     }
   }
 

@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -102,7 +103,7 @@ using ::testing::HasSubstr;
 using ::testing::Optional;
 
 constexpr char kLegitimateAdAuctionResponse[] =
-    "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+    "ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0=";
 
 // Returned by test Javascript code when join or leave promises complete without
 // throwing an exception.
@@ -123,6 +124,13 @@ const char kFeedPromise[] = R"(
     });
   }
 )";
+
+std::string base64Decode(base::StringPiece input) {
+  std::string bytes;
+  CHECK(base::Base64UrlDecode(
+      input, base::Base64UrlDecodePolicy::IGNORE_PADDING, &bytes));
+  return bytes;
+}
 
 // Convenience helper to parse JSON to a base::Value. CHECKs on failure, rather
 // than letting callers handle it.
@@ -13055,8 +13063,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ad_auction_header_value);
   EXPECT_EQ(*ad_auction_header_value, "?1");
 
-  EXPECT_TRUE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                              kLegitimateAdAuctionResponse));
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
@@ -13108,8 +13117,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ad_auction_header_value);
   EXPECT_EQ(*ad_auction_header_value, "?1");
 
-  EXPECT_TRUE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                              kLegitimateAdAuctionResponse));
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
@@ -13161,8 +13171,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ad_auction_header_value);
   EXPECT_EQ(*ad_auction_header_value, "?1");
 
-  EXPECT_TRUE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                              kLegitimateAdAuctionResponse));
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
@@ -13201,8 +13212,9 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_FALSE(ad_auction_header_value);
 
-  EXPECT_FALSE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                               kLegitimateAdAuctionResponse));
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -13236,8 +13248,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ad_auction_header_value);
   EXPECT_EQ(*ad_auction_header_value, "?1");
 
-  EXPECT_FALSE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                               kLegitimateAdAuctionResponse));
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 }
 
 // On site a.test, test fetch request to b.test that gets redirected to c.test.
@@ -13301,8 +13314,9 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_FALSE(ad_auction_header_value);
   }
 
-  EXPECT_FALSE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                               kLegitimateAdAuctionResponse));
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
@@ -14284,8 +14298,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(*ad_auction_header_value, "?1");
 
   // No witness is stored as `kFledgeBiddingAndAuctionServer` is disabled.
-  EXPECT_FALSE(WitnessedAuctionResultForOrigin(url::Origin::Create(fetch_url),
-                                               kLegitimateAdAuctionResponse));
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(fetch_url),
+      base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
       GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
