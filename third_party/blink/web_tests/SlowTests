@@ -1462,3 +1462,5 @@ crbug.com/1376679 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scrol
 crbug.com/1271091 http/tests/security/frameNavigation/xss-ALLOWED-same-etld-plus-1-top-navigation-without-user-gesture.html [ Slow ]
 
 crbug.com/1453341 fast/frames/frame-limit.html [ Slow ]
+
+crbug.com/626703 external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
