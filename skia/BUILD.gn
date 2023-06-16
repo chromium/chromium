@@ -7,6 +7,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/rust/rust_static_library.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
@@ -30,6 +31,38 @@ buildflag_header("buildflags") {
   ]
 }
 
+if (use_typeface_fontations) {
+  static_library("path_bridge_headers") {
+    sources = [
+      "//third_party/skia/src/ports/fontations/src/skpath_bridge.cpp",
+      "//third_party/skia/src/ports/fontations/src/skpath_bridge.h",
+    ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":skia_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
+  }
+
+  rust_static_library("bridge_rust_side") {
+    allow_unsafe = true
+    crate_root = "//third_party/skia/src/ports/fontations/src/ffi.rs"
+    sources = [ "//third_party/skia/src/ports/fontations/src/ffi.rs" ]
+    cxx_bindings = [ "//third_party/skia/src/ports/fontations/src/ffi.rs" ]
+    deps = [
+      ":path_bridge_headers",
+      "//third_party/rust/font_types/v0_1:lib",
+      "//third_party/rust/read_fonts/v0_3:lib",
+      "//third_party/rust/skrifa/v0_2:lib",
+    ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":skia_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
+  }
+}
+
 # External-facing config for dependent code.
 config("skia_config") {
   defines = [
@@ -46,7 +79,10 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_SKSURFACE_DISPLAYLIST",
   ]
 
-  include_dirs = [ "//third_party/skia" ]
+  include_dirs = [
+    "//third_party/skia",
+    "$root_gen_dir/third_party/skia",
+  ]
 
   if (use_blink) {
     defines += [
@@ -406,6 +442,18 @@ component("skia") {
     sources += [
       "//third_party/skia/src/ports/SkFontHost_FreeType.cpp",
       "//third_party/skia/src/ports/SkFontHost_FreeType_common.cpp",
+    ]
+  }
+
+  if (use_typeface_fontations) {
+    sources += [
+      "//third_party/skia/src/ports/SkTypeface_fontations.cpp",
+      "//third_party/skia/src/ports/SkTypeface_fontations_priv.h",
+    ]
+    deps += [
+      ":bridge_rust_side",
+      "//third_party/rust/read_fonts/v0_3:lib",
+      "//third_party/rust/skrifa/v0_2:lib",
     ]
   }
 

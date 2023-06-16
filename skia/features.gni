@@ -18,6 +18,10 @@ declare_args() {
   # TODO(rivr): Remove this and enable the tests by default once a software
   # path for D3D12 is available.
   enable_skia_graphite_gtests = false
+
+  # Enable usage of the Rust-based Fontations SkTypeface backend.
+  # See https://crbug.com/skia/14259
+  use_typeface_fontations = false
 }
 
 # Skia only needs to support GPU rasterization if we use the full Chromium

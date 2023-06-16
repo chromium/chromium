@@ -8,6 +8,7 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/fonts/fontations_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -25,6 +26,9 @@ class WebFontTypefaceFactory {
  private:
   static sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData>);
   static sk_sp<SkTypeface> MakeTypefaceFreeType(sk_sp<SkData>);
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+  static sk_sp<SkTypeface> MakeTypefaceFontations(sk_sp<SkData>);
+#endif
 
   static sk_sp<SkTypeface> MakeVariationsTypeface(sk_sp<SkData>);
   static sk_sp<SkTypeface> MakeSbixTypeface(sk_sp<SkData>);

@@ -24,6 +24,10 @@
 #include "third_party/blink/renderer/platform/fonts/mac/core_text_font_format_support.h"
 #endif
 
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+#include "third_party/skia/include/ports/SkTypeface_fontations.h"
+#endif
+
 namespace blink {
 
 bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> data,
@@ -116,6 +120,12 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> data,
 
 sk_sp<SkTypeface> WebFontTypefaceFactory::MakeTypefaceDefaultFontMgr(
     sk_sp<SkData> data) {
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+  if (RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
+    return MakeTypefaceFontations(data);
+  }
+#endif
+
   sk_sp<SkFontMgr> font_manager;
 #if BUILDFLAG(IS_WIN)
   font_manager = FontCache::Get().FontManager();
@@ -133,6 +143,14 @@ sk_sp<SkTypeface> WebFontTypefaceFactory::MakeTypefaceFreeType(
   return MakeTypefaceDefaultFontMgr(data);
 #endif
 }
+
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+sk_sp<SkTypeface> WebFontTypefaceFactory::MakeTypefaceFontations(
+    sk_sp<SkData> data) {
+  std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(data));
+  return SkTypeface_Make_Fontations(std::move(stream), SkFontArguments());
+}
+#endif
 
 sk_sp<SkTypeface> WebFontTypefaceFactory::MakeVariationsTypeface(
     sk_sp<SkData> data) {
