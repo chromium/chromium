@@ -385,10 +385,10 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   GrGLTextureInfo texture_info;
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
-  texture_info.fFormat = viz::TextureStorageFormat(
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_image_info_.colorType())
-          .resource_format(),
-      capabilities.angle_rgbx_internal_format);
+  texture_info.fFormat =
+      context_provider_wrapper->ContextProvider()->GetGrGLTextureFormat(
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(
+              sk_image_info_.colorType()));
   GrBackendTexture backend_texture(sk_image_info_.width(),
                                    sk_image_info_.height(), GrMipMapped::kNo,
                                    texture_info);

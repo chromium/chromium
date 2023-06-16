@@ -61,9 +61,7 @@ class ScopedAcceleratedSkImage {
     GrGLTextureInfo gl_info = {
         mailbox_holder.texture_target,
         texture_id,
-        viz::TextureStorageFormat(
-            format.resource_format(),
-            provider->ContextCapabilities().angle_rgbx_internal_format),
+        provider->GetGrGLTextureFormat(format),
     };
     GrBackendTexture backend_texture(size.width(), size.height(),
                                      GrMipmapped::kNo, gl_info);

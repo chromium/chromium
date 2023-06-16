@@ -64,6 +64,8 @@ class WebGraphicsContext3DProviderImpl
                       media::VideoFrame* video_frame,
                       cc::PaintCanvas* canvas) override;
   viz::RasterContextProvider* RasterContextProvider() const override;
+  unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const override;
 
  private:
   // viz::ContextLostObserver implementation.

@@ -33,6 +33,7 @@
 
 #include <cstdint>
 #include "base/functional/callback_forward.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 class GrDirectContext;
@@ -118,6 +119,8 @@ class WebGraphicsContext3DProvider {
                               media::VideoFrame* video_frame,
                               cc::PaintCanvas* canvas) = 0;
   virtual viz::RasterContextProvider* RasterContextProvider() const = 0;
+  virtual unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const = 0;
 };
 
 }  // namespace blink

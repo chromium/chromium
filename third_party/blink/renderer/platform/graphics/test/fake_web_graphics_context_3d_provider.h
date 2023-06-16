@@ -105,6 +105,10 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   viz::RasterContextProvider* RasterContextProvider() const override {
     return raster_context_provider_;
   }
+  unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const override {
+    return raster_context_provider_->GetGrGLTextureFormat(format);
+  }
 
  private:
   cc::StubDecodeCache stub_image_decode_cache_;

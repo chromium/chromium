@@ -25,6 +25,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_trace_implementation.h"
 #include "gpu/command_buffer/client/gpu_switches.h"
@@ -504,6 +505,12 @@ void ContextProviderCommandBuffer::AddObserver(ContextLostObserver* obs) {
 void ContextProviderCommandBuffer::RemoveObserver(ContextLostObserver* obs) {
   CheckValidSequenceOrLockAcquired();
   observers_.RemoveObserver(obs);
+}
+
+unsigned int ContextProviderCommandBuffer::GetGrGLTextureFormat(
+    SharedImageFormat format) const {
+  return TextureStorageFormat(format.resource_format(),
+                              ContextCapabilities().angle_rgbx_internal_format);
 }
 
 gpu::webgpu::WebGPUInterface* ContextProviderCommandBuffer::WebGPUInterface() {

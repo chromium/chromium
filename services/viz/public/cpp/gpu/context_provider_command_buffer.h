@@ -101,6 +101,7 @@ class ContextProviderCommandBuffer
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
+  unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
 
   gpu::webgpu::WebGPUInterface* WebGPUInterface();
 

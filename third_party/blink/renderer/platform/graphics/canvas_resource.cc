@@ -560,15 +560,12 @@ void CanvasResourceRasterSharedImage::EndWriteAccess() {
 }
 
 GrBackendTexture CanvasResourceRasterSharedImage::CreateGrTexture() const {
-  const auto& capabilities =
-      context_provider_wrapper_->ContextProvider()->GetCapabilities();
-
   GrGLTextureInfo texture_info = {};
   texture_info.fID = GetTextureIdForWriteAccess();
   texture_info.fTarget = TextureTarget();
   texture_info.fFormat =
-      viz::TextureStorageFormat(GetSharedImageFormat().resource_format(),
-                                capabilities.angle_rgbx_internal_format);
+      context_provider_wrapper_->ContextProvider()->GetGrGLTextureFormat(
+          GetSharedImageFormat());
   return GrBackendTexture(Size().width(), Size().height(),
                           skgpu::Mipmapped::kNo, texture_info);
 }

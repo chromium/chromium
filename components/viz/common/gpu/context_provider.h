@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
@@ -110,6 +111,9 @@ class VIZ_COMMON_EXPORT ContextProvider {
   // Get a GLES2 interface to the 3d context.  The context provider must have
   // been successfully bound to a thread before calling this.
   virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
+
+  // Returns the format that should be used for GL texture storage.
+  virtual unsigned int GetGrGLTextureFormat(SharedImageFormat format) const = 0;
 
  protected:
   virtual ~ContextProvider() = default;
