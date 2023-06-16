@@ -126,7 +126,6 @@ void WebGLWebCodecsVideoFrame::Trace(Visitor* visitor) const {
 }
 
 WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
-    ExecutionContext* execution_context,
     VideoFrame* video_frame,
     ExceptionState& exception_state) {
   WebGLExtensionScopedContext scoped(this);
@@ -256,7 +255,6 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
 }
 
 bool WebGLWebCodecsVideoFrame::releaseVideoFrame(
-    ExecutionContext* execution_context,
     WebGLWebCodecsVideoFrameHandle* handle,
     ExceptionState& exception_state) {
   DCHECK(handle);

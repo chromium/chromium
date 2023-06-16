@@ -12,7 +12,7 @@
 namespace blink {
 
 class ExceptionState;
-class ExecutionContext;
+class ScriptState;
 class HTMLVideoElement;
 class VideoFrameMetadata;
 struct WebGLVideoFrameUploadMetadata;
@@ -32,12 +32,12 @@ class WebGLVideoTexture final : public WebGLExtension {
 
   // Get video frame from video frame compositor and bind it to platform
   // texture.
-  VideoFrameMetadata* shareVideoImageWEBGL(ExecutionContext*,
+  VideoFrameMetadata* shareVideoImageWEBGL(ScriptState*,
                                            unsigned,
                                            HTMLVideoElement*,
                                            ExceptionState&);
 
-  bool releaseVideoImageWEBGL(ExecutionContext*, unsigned, ExceptionState&);
+  bool releaseVideoImageWEBGL(unsigned, ExceptionState&);
 
   // Helper method for filling in WebGLVideoFrameUploadMetadata. Will be default
   // initialized (skipped = false) if the metadata API is disabled.

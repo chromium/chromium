@@ -43,7 +43,7 @@ void WebGLVideoTexture::Trace(Visitor* visitor) const {
 }
 
 VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     unsigned target,
     HTMLVideoElement* video,
     ExceptionState& exception_state) {
@@ -56,6 +56,7 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
                                         "invalid texture target");
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!scoped.Context()->ValidateHTMLVideoElement(
           execution_context->GetSecurityOrigin(), "WEBGLVideoTexture", video,
           exception_state)) {
@@ -146,7 +147,6 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
 }
 
 bool WebGLVideoTexture::releaseVideoImageWEBGL(
-    ExecutionContext* execution_context,
     unsigned target,
     ExceptionState& exception_state) {
   // NOTE: In current WEBGL_video_texture status, there is no lock on video

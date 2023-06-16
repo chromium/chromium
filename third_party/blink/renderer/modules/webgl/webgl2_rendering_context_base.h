@@ -107,7 +107,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   GLenum,
                   ImageData*);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -118,7 +118,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   HTMLImageElement*,
                   ExceptionState&);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -129,7 +129,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   CanvasRenderingContextHost*,
                   ExceptionState&);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -140,7 +140,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   HTMLVideoElement*,
                   ExceptionState&);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -190,7 +190,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      GLenum,
                      ImageData*);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -201,7 +201,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      HTMLImageElement*,
                      ExceptionState&);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -212,7 +212,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      CanvasRenderingContextHost*,
                      ExceptionState&);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -223,7 +223,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      HTMLVideoElement*,
                      ExceptionState&);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -259,7 +259,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   // base class.  This is because the above tex{Sub}Image2D() hides the name
   // from base class.
   void texImage2D(GLenum, GLint, GLint, GLenum, GLenum, ImageData*);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -267,7 +267,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   HTMLImageElement*,
                   ExceptionState&);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -275,7 +275,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   CanvasRenderingContextHost*,
                   ExceptionState&);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -283,7 +283,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   HTMLVideoElement*,
                   ExceptionState&);
-  void texImage2D(ExecutionContext*,
+  void texImage2D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -299,7 +299,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   ImageBitmap*,
                   ExceptionState&);
   void texSubImage2D(GLenum, GLint, GLint, GLint, GLenum, GLenum, ImageData*);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -308,7 +308,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      HTMLImageElement*,
                      ExceptionState&);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -317,7 +317,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      CanvasRenderingContextHost*,
                      ExceptionState&);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -326,7 +326,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      HTMLVideoElement*,
                      ExceptionState&);
-  void texSubImage2D(ExecutionContext*,
+  void texSubImage2D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -377,7 +377,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   GLenum,
                   ImageData*);
-  void texImage3D(ExecutionContext*,
+  void texImage3D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -389,7 +389,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   HTMLImageElement*,
                   ExceptionState&);
-  void texImage3D(ExecutionContext*,
+  void texImage3D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -401,7 +401,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   CanvasRenderingContextHost*,
                   ExceptionState&);
-  void texImage3D(ExecutionContext*,
+  void texImage3D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -413,7 +413,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   HTMLVideoElement*,
                   ExceptionState&);
-  void texImage3D(ExecutionContext*,
+  void texImage3D(ScriptState*,
                   GLenum,
                   GLint,
                   GLint,
@@ -480,7 +480,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      GLenum,
                      ImageData*);
-  void texSubImage3D(ExecutionContext*,
+  void texSubImage3D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -493,7 +493,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      HTMLImageElement*,
                      ExceptionState&);
-  void texSubImage3D(ExecutionContext*,
+  void texSubImage3D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -506,7 +506,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      CanvasRenderingContextHost*,
                      ExceptionState&);
-  void texSubImage3D(ExecutionContext*,
+  void texSubImage3D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,
@@ -519,7 +519,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      HTMLVideoElement*,
                      ExceptionState&);
-  void texSubImage3D(ExecutionContext*,
+  void texSubImage3D(ScriptState*,
                      GLenum,
                      GLint,
                      GLint,

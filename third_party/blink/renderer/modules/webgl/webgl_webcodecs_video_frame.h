@@ -38,13 +38,10 @@ class WebGLWebCodecsVideoFrame final : public WebGLExtension {
 
   void Trace(Visitor*) const override;
 
-  WebGLWebCodecsVideoFrameHandle* importVideoFrame(ExecutionContext*,
-                                                   blink::VideoFrame*,
+  WebGLWebCodecsVideoFrameHandle* importVideoFrame(blink::VideoFrame*,
                                                    ExceptionState&);
 
-  bool releaseVideoFrame(ExecutionContext*,
-                         WebGLWebCodecsVideoFrameHandle*,
-                         ExceptionState&);
+  bool releaseVideoFrame(WebGLWebCodecsVideoFrameHandle*, ExceptionState&);
 
  private:
   void OnHardwareVideoFrameCreated(
