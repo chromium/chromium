@@ -11,11 +11,11 @@ set -x
 PREFIX="$1"
 
 mv current/bin/java current/bin/java.orig
-echo """#!/bin/sh
+echo '#!/bin/sh
 
 # https://crbug.com/1441023
 exec "$0.orig" -XX:+PerfDisableSharedMem "$@"
-""" > current/bin/java
+' > current/bin/java
 chmod a+x current/bin/java
 
 mv current "$PREFIX"
