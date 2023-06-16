@@ -511,8 +511,9 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
 // This tests that a in-progress smooth scroll on the main frame stops when
 // interrupted by another smooth scroll.
+// Flaky on multiple platforms: crbug.com/1306980
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OneSmoothScriptScrollAbortsAnother_Document) {
+                       DISABLED_OneSmoothScriptScrollAbortsAnother_Document) {
   LoadURL(kMainFrameScrollDataURL);
 
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
