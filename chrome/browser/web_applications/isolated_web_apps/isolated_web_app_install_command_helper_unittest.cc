@@ -235,8 +235,8 @@ using IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest =
 TEST_F(IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest,
        DevProxySucceeds) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->CheckTrustAndSignatures(
@@ -250,8 +250,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest,
   scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebAppDevMode);
 
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->CheckTrustAndSignatures(
@@ -343,8 +343,8 @@ using IsolatedWebAppInstallCommandHelperStoragePartitionTest =
 TEST_F(IsolatedWebAppInstallCommandHelperStoragePartitionTest,
        CreateIfNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   command_helper->CreateStoragePartitionIfNotPresent(*profile());
   EXPECT_THAT(profile()->GetStoragePartition(
@@ -356,8 +356,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperStoragePartitionTest,
 TEST_F(IsolatedWebAppInstallCommandHelperStoragePartitionTest,
        CreateIfPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   auto* partition = profile()->GetStoragePartition(
       url_info.storage_partition_config(profile()),
@@ -376,8 +376,8 @@ using IsolatedWebAppInstallCommandHelperLoadUrlTest =
 TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
        URLLoaderIsCalledWithUrlGivenToTheInstallCommand) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   auto url_loader = std::make_unique<TestWebAppUrlLoader>();
   url_loader->SetNextLoadUrlResult(
@@ -404,8 +404,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
 TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
        SetDevModeLocationBeforeUrlLoading) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   auto url_loader = std::make_unique<TestWebAppUrlLoader>();
   url_loader->SetNextLoadUrlResult(
@@ -437,8 +437,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
 TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
        SetInstalledBundleLocationBeforeUrlLoading) {
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   auto url_loader = std::make_unique<TestWebAppUrlLoader>();
   url_loader->SetNextLoadUrlResult(
@@ -471,8 +471,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
 
 TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest, HandlesFailure) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   auto url_loader = std::make_unique<TestWebAppUrlLoader>();
   url_loader->SetNextLoadUrlResult(
@@ -493,8 +493,8 @@ using IsolatedWebAppInstallCommandHelperRetrieveManifestTest =
 TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
        ServiceWorkerIsNotRequired) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
@@ -517,8 +517,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
        FailsWhenAppIsNotInstallable) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
@@ -541,8 +541,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
        FailsWhenAppIsInstallableButManifestIsNull) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
@@ -576,8 +576,8 @@ class InstallIsolatedWebAppCommandHelperInvalidVersionTest
 TEST_P(InstallIsolatedWebAppCommandHelperInvalidVersionTest,
        InstallationFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
@@ -615,8 +615,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
        FailsWhenAppVersionDoesNotMatchExpectedVersion) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
@@ -632,8 +632,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
        SucceedsWhenManifestIdIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
@@ -647,8 +647,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
        FailsWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
@@ -667,8 +667,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
        FailsWhenManifestScopeIsNotSlash) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
@@ -687,8 +687,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
        ScopeIsResolvedToRootWhenManifestScopeIsSlash) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
@@ -707,8 +707,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
        UntranslatedNameIsEmptyWhenNameAndShortNameAreNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
@@ -761,8 +761,8 @@ class InstallIsolatedWebAppCommandHelperManifestIconsTest
 TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
        ManifestIconIsDownloaded) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   kSomeTestApplicationUrl = url_info.origin().GetURL();
   GURL img_url = url_info.origin().GetURL().Resolve("icon.png");
@@ -822,8 +822,8 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
        InstallationFailsWhenIconDownloadingFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper =
-      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info, nullptr);
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, /*response_reader_factory=*/nullptr);
 
   kSomeTestApplicationUrl = url_info.origin().GetURL();
   GURL img_url = url_info.origin().GetURL().Resolve("icon.png");

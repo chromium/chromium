@@ -39,8 +39,6 @@ class WebAppDataRetriever;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
-// TODO: Sequence Checker??
-
 // This is a helper class that contains methods which are shared between both
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {
