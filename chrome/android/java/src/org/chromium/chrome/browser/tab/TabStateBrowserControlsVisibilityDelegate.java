@@ -20,7 +20,6 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -41,6 +40,7 @@ public class TabStateBrowserControlsVisibilityDelegate
     private WebContents mWebContents;
 
     private boolean mIsFullscreenWaitingForLoad;
+    private boolean mIsFocusedNodeEditable;
 
     /**
      * Basic constructor.
@@ -148,6 +148,11 @@ public class TabStateBrowserControlsVisibilityDelegate
             }
 
             @Override
+            public void onCrash(Tab tab) {
+                mIsFocusedNodeEditable = false;
+            }
+
+            @Override
             public void onDestroyed(Tab tab) {
                 super.onDestroyed(tab);
 
@@ -183,8 +188,7 @@ public class TabStateBrowserControlsVisibilityDelegate
 
         enableHidingBrowserControls &=
                 !SecurityStateModel.isContentDangerous(mTab.getWebContents());
-        enableHidingBrowserControls &=
-                !SelectionPopupController.fromWebContents(webContents).isFocusedNodeEditable();
+        enableHidingBrowserControls &= !mIsFocusedNodeEditable;
         enableHidingBrowserControls &= !mTab.isShowingErrorPage();
         enableHidingBrowserControls &= !mTab.isRendererUnresponsive();
         enableHidingBrowserControls &= !mTab.isHidden();
@@ -224,6 +228,7 @@ public class TabStateBrowserControlsVisibilityDelegate
 
     @Override
     public void onNodeAttributeUpdated(boolean editable, boolean password) {
+        mIsFocusedNodeEditable = editable;
         updateVisibilityConstraints();
     }
 }
