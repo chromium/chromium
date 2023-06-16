@@ -408,7 +408,6 @@ public class CustomTabsConnectionTest {
      */
     @Test
     @SmallTest
-    @DisabledTest
     public void testNoMayLaunchUrlWithInvalidScheme() throws Exception {
         assertWarmupAndMayLaunchUrl(null, INVALID_SCHEME_URL, false);
     }
