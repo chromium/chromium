@@ -56,6 +56,18 @@ if (is_apple) {
   assert(false, "Platform not supported")
 }
 
+# Same extension but for the host platform. We have significantly fewer host
+# platforms.
+if (host_os == "mac") {
+  host_shlib_extension = ".dylib"
+} else if (host_os == "win") {
+  host_shlib_extension = ".dll"
+} else if (host_os == "linux") {
+  host_shlib_extension = ".so"
+} else {
+  assert(false, "Host platform not supported")
+}
+
 # Prefix for shared library files.
 if (is_posix || is_fuchsia) {
   shlib_prefix = "lib"

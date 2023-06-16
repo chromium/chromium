@@ -81,8 +81,8 @@ env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" 
         expected = '''
 @echo off
 vpython3 "%~dp0\\../../../testing/scripts/rust\\rust_main_program.py" ^
-    "--rust-test-executable=%~dp0\\..\\bar" ^
-    "--rust-test-executable=%~dp0\\..\\foo" ^
+    "--rust-test-executable=%~dp0\\..\\bar.exe" ^
+    "--rust-test-executable=%~dp0\\..\\foo.exe" ^
     %*
 '''.strip()
 
