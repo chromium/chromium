@@ -25,7 +25,6 @@ class LocationBarView;
 class OmniboxEditModel;
 class OmniboxResultView;
 class OmniboxViewViews;
-class WebUIOmniboxPopupView;
 
 // A view representing the contents of the autocomplete popup.
 class OmniboxPopupViewViews : public views::View,
@@ -57,12 +56,6 @@ class OmniboxPopupViewViews : public views::View,
   // Returns current popup selection (includes line index).
   virtual OmniboxPopupSelection GetSelection() const;
 
-  // Gets the OmniboxResultView for match |i|.
-  OmniboxResultView* result_view_at(size_t i);
-
-  // Currently selected OmniboxResultView, or nullptr if nothing is selected.
-  OmniboxResultView* GetSelectedResultView();
-
   // OmniboxPopupView:
   bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
@@ -88,13 +81,23 @@ class OmniboxPopupViewViews : public views::View,
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, ClickOmnibox);
   friend class OmniboxPopupViewViewsTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;
 
+  // Add and update any child views; called by `UpdatePopupAppearance`.
+  virtual void UpdateChildViews();
+
+  // Called by `UpdatePopupAppearance` after popup is created.
+  virtual void OnPopupCreated();
+
   // Returns the target popup bounds in screen coordinates based on the bounds
   // of |location_bar_view_|.
-  gfx::Rect GetTargetBounds() const;
+  virtual gfx::Rect GetTargetBounds() const;
+
+  // Gets the OmniboxResultView for match |i|.
+  OmniboxResultView* result_view_at(size_t i);
 
   // Returns true if the model has a match at the specified index.
   bool HasMatchAt(size_t index) const;
@@ -113,6 +116,8 @@ class OmniboxPopupViewViews : public views::View,
   // Gets the pref service for this view. May return nullptr in tests.
   PrefService* GetPrefService() const;
 
+  LocationBarView* location_bar_view() const { return location_bar_view_; }
+
  private:
   // The popup that contains this view.  We create this, but it deletes itself
   // when its window is destroyed.  This is a WeakPtr because it's possible for
@@ -126,24 +131,10 @@ class OmniboxPopupViewViews : public views::View,
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
   raw_ptr<LocationBarView> location_bar_view_;
 
-  // The reference to the child suggestions WebView. Added only if
-  // omnibox::kWebUIOmniboxPopup is enabled.
-  raw_ptr<WebUIOmniboxPopupView> webui_view_;
-
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;
 
   raw_ptr<OmniboxEditModel> edit_model_;
-};
-
-class OmniboxPopupViewWebUI : public OmniboxPopupViewViews {
- public:
-  OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
-                        OmniboxEditModel* edit_model,
-                        LocationBarView* location_bar_view)
-      : OmniboxPopupViewViews(omnibox_view, edit_model, location_bar_view) {}
-  explicit OmniboxPopupViewWebUI(const OmniboxPopupViewViews&) = delete;
-  OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewViews&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_
