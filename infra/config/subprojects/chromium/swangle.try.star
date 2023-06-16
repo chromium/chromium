@@ -60,6 +60,19 @@ swangle_linux_builder(
 )
 
 swangle_linux_builder(
+    name = "linux-swangle-chromium-try-x64-exp",
+    executable = "recipe:chromium_trybot",
+    mirrors = [
+        "ci/linux-swangle-chromium-x64-exp",
+    ],
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    pool = "luci.chromium.swangle.chromium.linux.x64.try",
+    execution_timeout = 6 * time.hour,
+)
+
+swangle_linux_builder(
     name = "linux-swangle-try-tot-swiftshader-x64",
     mirrors = [
         "ci/linux-swangle-tot-swiftshader-x64",
@@ -75,6 +88,18 @@ swangle_linux_builder(
     executable = "recipe:chromium_trybot",
     mirrors = [
         "ci/linux-swangle-x64",
+    ],
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    pool = "luci.chromium.swangle.deps.linux.x64.try",
+)
+
+swangle_linux_builder(
+    name = "linux-swangle-try-x64-exp",
+    executable = "recipe:chromium_trybot",
+    mirrors = [
+        "ci/linux-swangle-x64-exp",
     ],
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,

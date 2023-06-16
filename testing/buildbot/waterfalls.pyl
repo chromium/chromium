@@ -5690,6 +5690,20 @@
           'gpu_telemetry_tests': 'gpu_swangle_telemetry_tests',
         },
       },
+      'linux-swangle-chromium-x64-exp' : {
+        'os_type': 'linux',
+        'browser_config': 'release',
+        'mixins': [
+          'gpu-swarming-pool',
+          'isolate_profile_data',
+          'linux-jammy',
+          'no_gpu',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_swangle_telemetry_tests',
+        },
+      },
       'linux-swangle-tot-swiftshader-x64' : {
         'os_type': 'linux',
         'mixins': [
@@ -5710,6 +5724,20 @@
           'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-bionic',
+          'no_gpu',
+          'timeout_15m',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'swangle_gtests',
+        },
+      },
+      'linux-swangle-x64-exp' : {
+        'os_type': 'linux',
+        'mixins': [
+          'gpu-swarming-pool',
+          'isolate_profile_data',
+          'linux-jammy',
           'no_gpu',
           'timeout_15m',
           'x86-64',

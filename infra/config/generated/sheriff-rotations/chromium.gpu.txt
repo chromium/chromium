@@ -68,8 +68,10 @@ ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/linux-swangle-chromium-x64
+ci/linux-swangle-chromium-x64-exp
 ci/linux-swangle-tot-swiftshader-x64
 ci/linux-swangle-x64
+ci/linux-swangle-x64-exp
 ci/mac-swangle-chromium-x64
 ci/win-swangle-chromium-x86
 ci/win-swangle-tot-swiftshader-x64
