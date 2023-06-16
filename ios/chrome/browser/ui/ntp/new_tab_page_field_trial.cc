@@ -30,7 +30,7 @@ const char kTrialPrefName[] = "new_tab_page.trial_version";
 // The current trial version of
 // kNewTabPageFieldTrial; should be updated when
 // the experiment is modified.
-const int kCurrentTrialVersion = 1;
+const int kCurrentTrialVersion = 2;
 
 // Returns a map of the group weights for each arm.
 std::map<variations::VariationID, int> GetGroupWeights() {
@@ -38,7 +38,7 @@ std::map<variations::VariationID, int> GetGroupWeights() {
       // Tile ablation groups
       {field_trial_constants::kTileAblationHideAllID, 0},
       {field_trial_constants::kTileAblationHideOnlyMVTID, 0},
-      {field_trial_constants::kTileAblationControlID, 0}};
+      {field_trial_constants::kTileAblationControlID, 100}};
 
   switch (GetChannel()) {
     case version_info::Channel::UNKNOWN:
