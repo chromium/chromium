@@ -64,7 +64,7 @@ HRESULT LoadAppCommandFormat(UpdaterScope scope,
 // REG_SZ `cmd`. Along with `cmd`, there are other properties of the app
 // registered, such as the version "pv"="107.0.5304.107". So, `pv` is also a
 // potential "command" for `IProcessLauncher`, which is unexpected.
-// TODO(crbug/1399177): Parameterize `LoadLegacyProcessLauncherFormat`.
+// TODO(crbug.com/1399177): Parameterize `LoadLegacyProcessLauncherFormat`.
 HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
                                         const std::wstring& command_id,
                                         std::wstring& command_format) {

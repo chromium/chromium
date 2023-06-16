@@ -643,9 +643,9 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             state_update.Run(state);
             VLOG(1) << app_id << " installation completed: " << result.error;
 
-            // TODO(crbug.com/1286574, crbug.com/1286581): Perform post-install
-            // actions, such as send pings (if `enterprise` is not set in
-            // install_settings) with the given `sessionid`.
+            // TODO(crbug.com/1286581): Perform post-install actions, such as
+            // send pings (if `enterprise` is not set in install_settings) with
+            // the given `sessionid`.
 
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);
