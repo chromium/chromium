@@ -25,6 +25,7 @@ extern const char kPageLoadTimedOut[];
 extern const char kSetAccountsInCookieFailure[];
 extern const char kInvalidConsentResult[];
 extern const char kCanceled[];
+extern const char kCannotCreateWindow[];
 
 extern const int kCachedRemoteConsentTTLSeconds;
 }  // namespace identity_constants

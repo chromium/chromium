@@ -684,6 +684,10 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
     case GaiaRemoteConsentFlow::NONE:
       NOTREACHED();
       break;
+
+    case GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW:
+      error = IdentityGetAuthTokenError(
+          IdentityGetAuthTokenError::State::kCannotCreateWindow);
   }
 
   CompleteFunctionWithError(error);

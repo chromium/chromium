@@ -45900,6 +45900,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Failed to set accounts in cookies"/>
   <int value="4" label="Failed to parse the consent result"/>
   <int value="5" label="Consent wasn't granted"/>
+  <int value="6" label="User navigated away"/>
+  <int value="7" label="Cannot create a window"/>
 </enum>
 
 <enum name="GaiaServiceType">
@@ -48246,6 +48248,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="26" label="kInvalidConsentResult"/>
   <int value="27" label="kCanceled"/>
   <int value="28" label="kInteractivityDenied"/>
+  <int value="29" label="kCannotCreateWindow"/>
 </enum>
 
 <enum name="GetChangePasswordUrlMetric">
@@ -57530,6 +57533,8 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="3" label="kInteractionRequired"/>
   <int value="4" label="kPageLoadFailure"/>
   <int value="5" label="kUnexpectedError"/>
+  <int value="6" label="kPageLoadTimedOut"/>
+  <int value="7" label="kCannotCreateWindow"/>
 </enum>
 
 <enum name="LazyCSSParseUsage">

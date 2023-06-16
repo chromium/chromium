@@ -72,6 +72,8 @@ std::string IdentityGetAuthTokenError::ToString() const {
       return identity_constants::kCanceled;
     case State::kInteractivityDenied:
       return identity_constants::kGetAuthTokenInteractivityDeniedError;
+    case State::kCannotCreateWindow:
+      return identity_constants::kCannotCreateWindow;
   }
 }
 

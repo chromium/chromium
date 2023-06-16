@@ -36,7 +36,8 @@ class GaiaRemoteConsentFlow
     INVALID_CONSENT_RESULT = 4,
     NO_GRANT = 5,
     USER_NAVIGATED_AWAY = 6,
-    kMaxValue = USER_NAVIGATED_AWAY
+    CANNOT_CREATE_WINDOW = 7,
+    kMaxValue = CANNOT_CREATE_WINDOW
   };
 
   class Delegate {

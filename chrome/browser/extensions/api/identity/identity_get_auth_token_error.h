@@ -45,7 +45,8 @@ class IdentityGetAuthTokenError {
     kInvalidConsentResult = 26,
     kCanceled = 27,
     kInteractivityDenied = 28,
-    kMaxValue = kInteractivityDenied,
+    kCannotCreateWindow = 29,
+    kMaxValue = kCannotCreateWindow,
   };
 
   // Constructs a |State::kMintTokenAuthFailure| error with an

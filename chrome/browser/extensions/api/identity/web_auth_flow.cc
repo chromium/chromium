@@ -353,7 +353,8 @@ void WebAuthFlow::AfterUrlLoaded() {
       case features::WebAuthFlowInBrowserTabMode::kPopupWindow: {
         bool is_auth_page_displayed = DisplayAuthPageInPopupWindow();
         if (!is_auth_page_displayed) {
-          delegate_->OnAuthFlowFailure(WebAuthFlow::Failure::LOAD_FAILED);
+          delegate_->OnAuthFlowFailure(
+              WebAuthFlow::Failure::CANNOT_CREATE_WINDOW);
           return;
         }
         break;

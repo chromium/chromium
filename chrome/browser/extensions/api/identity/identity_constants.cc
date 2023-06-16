@@ -28,6 +28,8 @@ const char kPageLoadTimedOut[] = "Authorization page load timed out.";
 const char kSetAccountsInCookieFailure[] = "Account cookies could not be set.";
 const char kInvalidConsentResult[] = "Returned an invalid consent result.";
 const char kCanceled[] = "canceled";
+const char kCannotCreateWindow[] =
+    "Couldn't create a browser window to display an authorization page.";
 
 const int kCachedRemoteConsentTTLSeconds = 1;
 }  // namespace identity_constants

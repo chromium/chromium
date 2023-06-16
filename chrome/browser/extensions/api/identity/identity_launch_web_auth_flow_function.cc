@@ -34,6 +34,8 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadFailure;
     case WebAuthFlow::TIMED_OUT:
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut;
+    case WebAuthFlow::CANNOT_CREATE_WINDOW:
+      return IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow;
     default:
       NOTREACHED() << "Unexpected error from web auth flow: " << failure;
       return IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError;
@@ -58,6 +60,8 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kInvalidRedirect;
     case IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut:
       return identity_constants::kPageLoadTimedOut;
+    case IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow:
+      return identity_constants::kCannotCreateWindow;
   }
 }
 

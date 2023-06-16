@@ -37,7 +37,8 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kPageLoadFailure = 4,
     kUnexpectedError = 5,
     kPageLoadTimedOut = 6,
-    kMaxValue = kPageLoadTimedOut,
+    kCannotCreateWindow = 7,
+    kMaxValue = kCannotCreateWindow,
   };
 
   IdentityLaunchWebAuthFlowFunction();

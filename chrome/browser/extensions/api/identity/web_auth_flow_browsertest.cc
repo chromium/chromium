@@ -15,6 +15,8 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -861,6 +863,27 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
   //---------------------------------------------------------------------
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
   CloseBrowserSynchronously(popup_window_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAuthFlowWithBrowserTabBrowserTest,
+    Interactive_MarkedForDeletionProfileNotAllowedToCreatePopupWindow) {
+  // Marking active profile for deletion.
+  MarkProfileDirectoryForDeletion(browser()->profile()->GetPath());
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // Profiles marked for deletion are not allowed to create a popup window and
+  // should return an error.
+  EXPECT_CALL(mock(),
+              OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::GET_AUTH_TOKEN,
+                   WebAuthFlow::Mode::INTERACTIVE);
+  navigation_observer.Wait();
 }
 
 class WebAuthFlowWithBrowserTabInNewTabBrowserTest

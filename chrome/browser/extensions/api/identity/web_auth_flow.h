@@ -72,7 +72,8 @@ class WebAuthFlow : public content::WebContentsObserver,
     INTERACTION_REQUIRED,  // Non-redirect page load in silent mode.
     LOAD_FAILED,
     USER_NAVIGATED_AWAY,  // The user navigated away from the auth page.
-    TIMED_OUT
+    TIMED_OUT,
+    CANNOT_CREATE_WINDOW  // Couldn't create a browser window.
   };
 
   enum class AbortOnLoad {
