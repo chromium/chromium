@@ -81,6 +81,7 @@ namespace recordreplay { extern void InitBindings(); }
 #endif
 
 #include "base/power_monitor/power_monitor.h"
+#include "base/record_replay.h"
 
 #if BUILDFLAG(IS_WIN)
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
@@ -131,7 +132,7 @@ int ChromeMain(int argc, const char** argv) {
 
   if (recordreplay::IsRecordingOrReplaying("eager-initialization", "ChromeMain")) {
     // Force initialization that can otherwise happen at non-deterministic points.
-    PowerMonitor::GetInstance();
+    base::PowerMonitor::GetInstance();
   }
 
 #if BUILDFLAG(IS_WIN)

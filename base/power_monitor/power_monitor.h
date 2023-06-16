@@ -118,7 +118,11 @@ class BASE_EXPORT PowerMonitor {
       PowerThermalObserver::DeviceThermalState new_state);
   static void NotifySpeedLimitChange(int speed_limit);
 
+ // Note: This is public so that it can be called when eagerly initializing
+ // state while recording/replaying.
+ public:
   static PowerMonitor* GetInstance();
+ private:
 
   bool is_system_suspended_ GUARDED_BY(is_system_suspended_lock_) = false;
   Lock is_system_suspended_lock_;
