@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -82,7 +83,7 @@ base::OnceClosure AppServer::ModeCheck() {
 #endif
   }
 
-  if (active_version != base::Version("0") && active_version != this_version) {
+  if (active_version != base::Version("0") && this_version > active_version) {
     scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(updater_scope());
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
@@ -109,6 +110,9 @@ base::OnceClosure AppServer::ModeCheck() {
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
     }
   }
+
+  CHECK_EQ(base::Version(global_prefs->GetActiveVersion()),
+           base::Version(kUpdaterVersion));
 
   if (IsInternalService()) {
     prefs_ = CreateLocalPrefs(updater_scope());
