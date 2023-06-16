@@ -296,11 +296,10 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              enabled_by_default_android_only);
 
 // If enabled, clipboard suggestion for distinct clip data will not show after
-// first use. Do not submit: Enabled by default for bots/testing; revert before
-// submitting.
+// first use.
 BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
              "SuppressClipboardSuggestionAfterFirstUsed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, uses the Chrome Refresh 2023 design's shape for action chips in
 // the omnibox suggestion popup.
