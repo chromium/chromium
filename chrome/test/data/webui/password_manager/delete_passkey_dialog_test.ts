@@ -7,6 +7,7 @@ import 'chrome://password-manager/password_manager.js';
 import {DeletePasskeyDialogElement, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
@@ -50,10 +51,12 @@ suite('DeletePasskeyDialogTest', function() {
   });
 
   test('clicking delete deletes the passkey', async function() {
+    const deleteEvent = eventToPromise('passkey-removed', dialog);
     dialog.$.deleteButton.click();
 
     const {id} = await passwordManager.whenCalled('removeCredential');
 
+    await deleteEvent;
     assertEquals(id, passkey.id);
     assertFalse(dialog.$.dialog.open);
   });

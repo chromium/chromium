@@ -146,7 +146,7 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(url, loadTimeData.getString('passwordManagerLearnMoreURL'));
   });
 
-  test('Test removal toast', async () => {
+  test('Test password removal toast', async () => {
     const group = createCredentialGroup({
       name: 'test.com',
       credentials: [
@@ -174,9 +174,40 @@ suite('PasswordManagerAppTest', function() {
     const undoButton =
         app.shadowRoot!.querySelector<HTMLElement>('#undo-removal');
     assertTrue(!!undoButton);
+    assertFalse(undoButton.hidden);
     undoButton.click();
 
     await passwordManager.whenCalled('undoRemoveSavedPasswordOrException');
+  });
+
+  test('Test passkey removal toast', async () => {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1', isPasskey: true}),
+      ],
+    });
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    await flushTasks();
+
+    assertFalse(app.$.removalToast.open);
+    const detailsSection =
+        app.shadowRoot!.querySelector('password-details-section');
+    assertTrue(!!detailsSection);
+
+    detailsSection.dispatchEvent(new CustomEvent('passkey-removed', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    assertTrue(app.$.removalToast.open);
+
+    // The undo button should be hidden for passkeys.
+    const undoButton =
+        app.shadowRoot!.querySelector<HTMLElement>('#undo-removal');
+    assertTrue(!!undoButton);
+    assertTrue(undoButton.hidden);
   });
 
   test('import can be triggered from empty state', async function() {

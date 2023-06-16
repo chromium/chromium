@@ -260,6 +260,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"noteLabel", IDS_PASSWORD_MANAGER_UI_NOTE_LABEL},
     {"noPasswordsFound", IDS_PASSWORD_MANAGER_UI_NO_PASSWORDS_FOUND},
     {"opensInNewTab", IDS_PASSWORD_MANAGER_UI_OPENS_IN_NEW_TAB},
+    {"passkeyDeleted", IDS_PASSWORD_MANAGER_UI_PASSKEY_DELETED},
     {"passkeyManagementInfoLabel",
      IDS_PASSWORD_MANAGER_UI_PASSKEY_MANAGEMENT_INFO_LABEL},
     {"passwordCopiedToClipboard",

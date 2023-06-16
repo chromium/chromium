@@ -55,6 +55,10 @@ export class DeletePasskeyDialogElement extends DeletePasskeyDialogElementBase {
   private onDelete_() {
     PasswordManagerImpl.getInstance().removeCredential(
         this.passkey.id, this.passkey.storedIn);
+    this.dispatchEvent(new CustomEvent('passkey-removed', {
+      bubbles: true,
+      composed: true,
+    }));
     this.$.dialog.close();
   }
 
