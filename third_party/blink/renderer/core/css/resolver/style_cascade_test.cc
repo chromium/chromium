@@ -2047,7 +2047,7 @@ TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationProperty) {
   cascade.Apply();
 
   EXPECT_EQ("20s", cascade.ComputedValue("--y"));
-  EXPECT_EQ("auto", cascade.ComputedValue("animation-duration"));
+  EXPECT_EQ("0s", cascade.ComputedValue("animation-duration"));
 }
 
 TEST_F(StyleCascadeTest, IndirectlyAnimationTainted) {
@@ -2059,7 +2059,7 @@ TEST_F(StyleCascadeTest, IndirectlyAnimationTainted) {
 
   EXPECT_EQ("20s", cascade.ComputedValue("--x"));
   EXPECT_EQ("20s", cascade.ComputedValue("--y"));
-  EXPECT_EQ("auto", cascade.ComputedValue("animation-duration"));
+  EXPECT_EQ("0s", cascade.ComputedValue("animation-duration"));
 }
 
 TEST_F(StyleCascadeTest, AnimationTaintedFallback) {

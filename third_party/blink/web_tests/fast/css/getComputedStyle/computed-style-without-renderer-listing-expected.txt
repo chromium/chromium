@@ -56,7 +56,7 @@ anchor-scroll: default
 animation-composition: replace
 animation-delay: 0s
 animation-direction: normal
-animation-duration: auto
+animation-duration: 0s
 animation-fill-mode: none
 animation-iteration-count: 1
 animation-name: none
