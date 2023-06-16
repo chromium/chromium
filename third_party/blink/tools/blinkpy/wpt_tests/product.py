@@ -65,7 +65,10 @@ class Product:
 
     def product_specific_options(self):
         """Product-specific wptrunner parameters needed to run tests."""
-        return {}
+        return {
+            'processes': (self._options.child_processes
+                          or self._port.default_child_processes()),
+        }
 
     def additional_webdriver_args(self):
         """Additional webdriver parameters for the product"""
@@ -91,9 +94,9 @@ class Chrome(Product):
     def product_specific_options(self):
         """Product-specific wptrunner parameters needed to run tests."""
         return {
+            **super().product_specific_options(),
             'binary': self.default_binary,
             'webdriver_binary': self.default_webdriver_binary,
-            'processes': self._port.default_child_processes()
         }
 
     @property
@@ -122,8 +125,8 @@ class ContentShell(Product):
     def product_specific_options(self):
         """Product-specific wptrunner parameters needed to run tests."""
         return {
+            **super().product_specific_options(),
             'binary': self.default_binary,
-            'processes': self._port.default_child_processes()
         }
 
     @property

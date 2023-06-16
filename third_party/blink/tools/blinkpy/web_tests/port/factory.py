@@ -358,6 +358,7 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
     testing_group.add_argument('--child-processes',
                                '--jobs',
                                '-j',
+                               type=int,
                                help='Number of drivers to run in parallel.')
     testing_group.add_argument(
         '--enable-leak-detection',
