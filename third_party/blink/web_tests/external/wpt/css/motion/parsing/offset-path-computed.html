@@ -90,7 +90,11 @@ test_computed_value("offset-path", "view-box");
 test_computed_value("offset-path", "inset(10% 20% 30% 40%) border-box", "inset(10% 20% 30% 40%)");
 test_computed_value("offset-path", "fill-box ellipse(at 50% 60%)", "ellipse(at 50% 60%) fill-box");
 test_computed_value("offset-path", "ray(0deg) stroke-box");
-test_computed_value("offset-path", 'path("m 20 0 h -100") view-box');
+// Mentionted above above.
+test_computed_value("offset-path", 'path("m 20 0 h -100") view-box', [
+    'path("M 20 0 H -80") view-box',
+    'path("m 20 0 h -100") view-box'
+]);
 </script>
 </body>
 </html>

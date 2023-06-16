@@ -6652,7 +6652,9 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
   if (offset_path) {
     list->Append(*offset_path);
   }
-  if (coord_box) {
+  if (!offset_path ||
+      (coord_box && To<CSSIdentifierValue>(coord_box)->GetValueID() !=
+                        CSSValueID::kBorderBox)) {
     list->Append(*coord_box);
   }
 
