@@ -267,6 +267,7 @@ Server::Server(Display* display,
 
 void Server::Initialize() {
   serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
+  rotation_serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
   wl_global_create(wl_display_.get(), &wl_shm_interface, 1, display_, bind_shm);
@@ -404,8 +405,8 @@ void Server::Initialize() {
                    zcr_text_input_extension_data_.get(),
                    bind_text_input_extension);
 
-  xdg_shell_data_ =
-      std::make_unique<WaylandXdgShell>(display_, serial_tracker_.get());
+  xdg_shell_data_ = std::make_unique<WaylandXdgShell>(
+      display_, serial_tracker_.get(), rotation_serial_tracker_.get());
   wl_global_create(wl_display_.get(), &xdg_wm_base_interface, 3,
                    xdg_shell_data_.get(), bind_xdg_shell);
 

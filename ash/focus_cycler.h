@@ -42,7 +42,7 @@ class ASH_EXPORT FocusCycler {
   void RemoveWidget(views::Widget* widget);
 
   // Move focus to the next widget.
-  void RotateFocus(Direction direction);
+  void RotateFocus(Direction direction, bool move_onto_next_widget = false);
 
   // Moves focus the specified widget. Returns true if the widget was activated.
   bool FocusWidget(views::Widget* widget);
