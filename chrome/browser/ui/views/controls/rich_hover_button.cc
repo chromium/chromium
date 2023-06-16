@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -105,6 +106,9 @@ RichHoverButton::RichHoverButton(
   title_ = AddChildView(std::move(title_label));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetCanProcessEventsWithinSubtree(false);
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  }
 
   auto secondary_label = std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,

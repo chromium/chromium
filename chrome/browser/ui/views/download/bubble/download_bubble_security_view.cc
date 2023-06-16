@@ -102,6 +102,9 @@ void DownloadBubbleSecurityView::AddHeader() {
   title_->SetProperty(views::kMarginsKey,
                       gfx::Insets::VH(0, icon_label_spacing));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_HEADLINE_4);
+  }
 
   auto* close_button =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
@@ -260,6 +263,9 @@ void DownloadBubbleSecurityView::AddIconAndText() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
+  if (features::IsChromeRefresh2023()) {
+    styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+  }
 
   checkbox_ = wrapper->AddChildView(std::make_unique<views::Checkbox>(
       std::u16string(),
@@ -335,6 +341,9 @@ void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
+  if (features::IsChromeRefresh2023()) {
+    secondary_styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+  }
 }
 
 void DownloadBubbleSecurityView::AddProgressBar() {

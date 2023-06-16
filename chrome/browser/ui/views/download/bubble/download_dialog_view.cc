@@ -138,6 +138,9 @@ void DownloadDialogView::AddHeader() {
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  if (features::IsChromeRefresh2023()) {
+    title->SetTextStyle(views::style::STYLE_HEADLINE_4);
+  }
 
   auto* close_button =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(

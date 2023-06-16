@@ -458,6 +458,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   primary_label_->SetCanProcessEventsWithinSubtree(false);
   primary_label_->SetMultiLine(true);
   primary_label_->SetAllowCharacterBreak(true);
+  if (features::IsChromeRefresh2023()) {
+    primary_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  }
 
   main_button_holder_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   cancel_button_ =
@@ -530,6 +533,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   secondary_label_->SetCanProcessEventsWithinSubtree(false);
   secondary_label_->SetMultiLine(true);
   secondary_label_->SetAllowCharacterBreak(true);
+  if (features::IsChromeRefresh2023()) {
+    secondary_label_->SetTextStyle(views::style::STYLE_BODY_5);
+  }
 
   // TODO(crbug.com/1379447): Remove the progress bar holder view here.
   // Currently the animation does not show up on deep scanning without
