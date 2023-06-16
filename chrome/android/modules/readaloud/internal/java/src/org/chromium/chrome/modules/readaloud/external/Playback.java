@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud;
+package org.chromium.chrome.modules.readaloud.external;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /** Represents a single audio playback session. */
-public interface ReadAloudPlaybackController {
+public interface Playback {
     /**
-     * @return Metadata represented by this playback. Serialized ReadAloudMetadata proto message.
+     * Returns metadata represented by this playback. Serialized ReadAloudMetadata proto message.
      */
     default byte[] getMetadata() {
         return null;
@@ -20,13 +20,13 @@ public interface ReadAloudPlaybackController {
      * Add a listener to be called on playback events.
      * @param listener Listener.
      */
-    default void addListener(ReadAloudPlaybackControllerListener listener) {}
+    default void addListener(PlaybackListener listener) {}
 
     /**
      * Remove a listener.
      * @param listener Listener.
      */
-    default void removeListener(ReadAloudPlaybackControllerListener listener) {}
+    default void removeListener(PlaybackListener listener) {}
 
     /**
      * Play the media. If already playing, does nothing. If paused, resume playback from paused
@@ -41,8 +41,8 @@ public interface ReadAloudPlaybackController {
 
     /** Helper class to hold a time duration in terms of seconds and nanoseconds. */
     public class Duration {
-        public long mSeconds;
-        public int mNanos;
+        public long seconds;
+        public int nanos;
     }
 
     /**
@@ -80,7 +80,7 @@ public interface ReadAloudPlaybackController {
      */
     default void setRate(float rate) {}
 
-    /** @return ListenableFuture returning serialized ReadAloudPlaybackData proto message. */
+    /** Returns ListenableFuture returning serialized ReadAloudPlaybackData proto message. */
     default ListenableFuture<byte[]> getPlaybackData() {
         return Futures.immediateFuture(null);
     }

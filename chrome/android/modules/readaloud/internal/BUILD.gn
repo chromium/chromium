@@ -6,9 +6,9 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloud.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPlaybackController.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPlaybackControllerListener.java",
+    "java/src/org/chromium/chrome/modules/readaloud/external/Playback.java",
+    "java/src/org/chromium/chrome/modules/readaloud/external/PlaybackListener.java",
+    "java/src/org/chromium/chrome/modules/readaloud/external/ReadAloud.java",
   ]
   deps = [
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
