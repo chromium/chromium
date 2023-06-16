@@ -27,6 +27,7 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -591,6 +592,256 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
         NOTREACHED();
         break;
     }
+  }
+}
+
+bool SkipSearchKeyRemapping(EventRewriterAsh::Delegate* delegate,
+                            ui::mojom::SixPackShortcutModifier modifier) {
+  return delegate && delegate->IsSearchKeyAcceleratorReserved() &&
+         modifier == ui::mojom::SixPackShortcutModifier::kSearch;
+}
+
+bool ShouldBlockSixPackEventRewrite(
+    EventRewriterAsh::Delegate* delegate,
+    absl::optional<ui::mojom::SixPackShortcutModifier> modifier,
+    int flags) {
+  if (!modifier.has_value() ||
+      *modifier == ui::mojom::SixPackShortcutModifier::kNone) {
+    return true;
+  }
+
+  const auto flag_mask = *modifier == ui::mojom::SixPackShortcutModifier::kAlt
+                             ? EF_ALT_DOWN
+                             : EF_COMMAND_DOWN;
+
+  if (!AreFlagsSet(flags, flag_mask)) {
+    return true;
+  }
+
+  if (SkipSearchKeyRemapping(delegate, *modifier)) {
+    return true;
+  }
+
+  return false;
+}
+
+// Returns true when the incoming key event matches one of the search-based
+// Six Pack (PageUp, PageDown, Home, End, Insert, Delete) key rewrites.
+bool MaybeRewriteSearchBasedShortcutToSixPackKeyAction(
+    EventRewriterAsh::Delegate* delegate,
+    const KeyEvent& key_event,
+    EventRewriterAsh::MutableKeyState* state) {
+  EventRewriterAsh::MutableKeyState incoming = *state;
+  CHECK(incoming.flags & EF_COMMAND_DOWN);
+  bool strict = false;
+  bool skip_search_key_remapping =
+      delegate && delegate->IsSearchKeyAcceleratorReserved();
+
+  if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
+    // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
+    // are deprecated.
+    strict = ::features::IsNewShortcutMappingEnabled();
+    if (strict) {
+      // These two keys are used to select to Home/End.
+      static const KeyboardRemapping kNewSearchRemappings[] = {
+          {// Search+Shift+Left -> select to home.
+           {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_LEFT},
+           {EF_SHIFT_DOWN, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+          {// Search+Shift+Right -> select to end.
+           {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_RIGHT},
+           {EF_SHIFT_DOWN, DomCode::END, DomKey::END, VKEY_END}},
+      };
+      if (!skip_search_key_remapping &&
+          RewriteWithKeyboardRemappings(kNewSearchRemappings,
+                                        std::size(kNewSearchRemappings),
+                                        incoming, state, /*strict=*/true)) {
+        return true;
+      }
+    }
+  }
+
+  // The new Search+Shift+Backspace rewrite is only active when
+  // IsImprovedKeyboardShortcutsEnabled() is true.
+  // TODO(crbug.com/1179893): Merge this entry into kSixPackRemappings
+  // once the flag is removed.
+  static const KeyboardRemapping kOldInsertRemapping[] = {
+      {// Search+Period -> Insert
+       {EF_COMMAND_DOWN, VKEY_OEM_PERIOD},
+       {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
+  };
+
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    static const KeyboardRemapping kNewInsertRemapping[] = {
+        {// Search+Shift+BackSpace -> Insert
+         {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_BACK},
+         {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
+    };
+
+    if (!skip_search_key_remapping &&
+        RewriteWithKeyboardRemappings(kNewInsertRemapping,
+                                      std::size(kNewInsertRemapping), incoming,
+                                      state, strict)) {
+      RecordSixPackEventRewrites(/*delegate=*/nullptr, key_event.type(),
+                                 state->key_code,
+                                 /*legacy_variant=*/false);
+      return true;
+    }
+
+    // Test for the deprecated insert rewrite in order to show a notification.
+    const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
+        kOldInsertRemapping, std::size(kOldInsertRemapping), incoming);
+    if (deprecated_key != VKEY_UNKNOWN) {
+      // If the key would have matched prior to being deprecated then notify
+      // the delegate to show a notification.
+      delegate->NotifyDeprecatedSixPackKeyRewrite(deprecated_key);
+    }
+  } else {
+    if (!skip_search_key_remapping &&
+        RewriteWithKeyboardRemappings(kOldInsertRemapping,
+                                      std::size(kOldInsertRemapping), incoming,
+                                      state, strict)) {
+      RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
+                                 /*legacy_variant=*/true);
+      return true;
+    }
+  }
+
+  static const KeyboardRemapping kSixPackRemappings[] = {
+      {// Search+BackSpace -> Delete
+       {EF_COMMAND_DOWN, VKEY_BACK},
+       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+      {// Search+Left -> Home
+       {EF_COMMAND_DOWN, VKEY_LEFT},
+       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+      {// Search+Up -> Prior (aka PageUp)
+       {EF_COMMAND_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+      {// Search+Right -> End
+       {EF_COMMAND_DOWN, VKEY_RIGHT},
+       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+      {// Search+Down -> Next (aka PageDown)
+       {EF_COMMAND_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
+
+  if (!skip_search_key_remapping &&
+      RewriteWithKeyboardRemappings(kSixPackRemappings,
+                                    std::size(kSixPackRemappings), incoming,
+                                    state, strict)) {
+    RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
+                               /*legacy_variant=*/false);
+    return true;
+  }
+  return false;
+}
+
+// Returns true when the incoming key event matches one of the alt-based
+// Six Pack (PageUp, PageDown, Home, End, Insert, Delete) key rewrites.
+bool MaybeRewriteAltBasedShortcutToSixPackKeyAction(
+    EventRewriterAsh::Delegate* delegate,
+    const KeyEvent& key_event,
+    EventRewriterAsh::MutableKeyState* state) {
+  EventRewriterAsh::MutableKeyState incoming = *state;
+  CHECK(incoming.flags & EF_ALT_DOWN);
+  static const KeyboardRemapping kLegacySixPackRemappings[] = {
+      {// Alt+BackSpace -> Delete
+       {EF_ALT_DOWN, VKEY_BACK},
+       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+      {// Control+Alt+Up -> Home
+       {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+      {// Alt+Up -> Prior (aka PageUp)
+       {EF_ALT_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+      {// Control+Alt+Down -> End
+       {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+      {// Alt+Down -> Next (aka PageDown)
+       {EF_ALT_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
+  if (!::features::IsImprovedKeyboardShortcutsEnabled() ||
+      !::features::IsDeprecateAltBasedSixPackEnabled()) {
+    if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings,
+                                      std::size(kLegacySixPackRemappings),
+                                      incoming, state)) {
+      RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
+                                 /*legacy_variant=*/true);
+      return true;
+    }
+  } else {
+    const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
+        kLegacySixPackRemappings, std::size(kLegacySixPackRemappings),
+        incoming);
+    if (deprecated_key != VKEY_UNKNOWN) {
+      // If the key would have matched prior to being deprecated then notify
+      // the delegate to show a notification.
+      delegate->NotifyDeprecatedSixPackKeyRewrite(deprecated_key);
+    }
+  }
+  return false;
+}
+
+// Rewrites the incoming key event to a Six Pack (PageUp, PageDown, Home, End,
+// Insert, Delete) key action when a matching Alt/Search rewrite is found
+// and the user's setting for the Six Pack key is consistent with the matched
+// shortcut.
+void MaybeRewriteKeyEventToSixPackKeyAction(
+    EventRewriterAsh::Delegate* delegate,
+    const KeyEvent& key_event,
+    EventRewriterAsh::MutableKeyState* state) {
+  EventRewriterAsh::MutableKeyState incoming = *state;
+  static const KeyboardRemapping kMergedSixPackRemappings[] = {
+      {// Search+Shift+BackSpace -> Insert
+       {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_BACK},
+       {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
+      {// Search+BackSpace -> Delete
+       {EF_COMMAND_DOWN, VKEY_BACK},
+       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+      {// Alt+BackSpace -> Delete
+       {EF_ALT_DOWN, VKEY_BACK},
+       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+      {// Search+Left -> Home
+       {EF_COMMAND_DOWN, VKEY_LEFT},
+       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+      {// Control+Alt+Up -> Home
+       {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+      {// Search+Up -> Prior (aka PageUp)
+       {EF_COMMAND_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+      {// Alt+Up -> Prior (aka PageUp)
+       {EF_ALT_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+      {// Search+Right -> End
+       {EF_COMMAND_DOWN, VKEY_RIGHT},
+       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+      {// Control+Alt+Down -> End
+       {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+      {// Search+Down -> Next (aka PageDown)
+       {EF_COMMAND_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}},
+      {// Alt+Down -> Next (aka PageDown)
+       {EF_ALT_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
+
+  for (const auto& map : kMergedSixPackRemappings) {
+    if (!MatchKeyboardRemapping(incoming, map.condition, state)) {
+      continue;
+    }
+
+    const auto modifier_flag = delegate->GetShortcutModifierForSixPackKey(
+        key_event.source_device_id(), map.result.key_code);
+    if (ShouldBlockSixPackEventRewrite(delegate, modifier_flag,
+                                       map.condition.flags)) {
+      break;
+    }
+
+    state->flags = (incoming.flags & ~map.condition.flags);
+    ApplyRemapping(map.result, state);
+    RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
+                               /*legacy_variant=*/*modifier_flag ==
+                                   ui::mojom::SixPackShortcutModifier::kAlt);
+    return;
   }
 }
 
@@ -1421,146 +1672,29 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
     }
   }
 
-  if (incoming.flags & EF_COMMAND_DOWN) {
-    bool strict = false;
-    bool skip_search_key_remapping =
-        delegate_ && delegate_->IsSearchKeyAcceleratorReserved();
-
-    if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
-      // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
-      // are deprecated.
-      strict = ::features::IsNewShortcutMappingEnabled();
-      if (strict) {
-        DCHECK(!::features::IsImprovedKeyboardShortcutsEnabled());
-
-        // These two keys are used to select to Home/End.
-        static const KeyboardRemapping kNewSearchRemappings[] = {
-            {// Search+Shift+Left -> select to home.
-             {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_LEFT},
-             {EF_SHIFT_DOWN, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
-            {// Search+Shift+Right -> select to end.
-             {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_RIGHT},
-             {EF_SHIFT_DOWN, DomCode::END, DomKey::END, VKEY_END}},
-        };
-        if (!skip_search_key_remapping &&
-            RewriteWithKeyboardRemappings(kNewSearchRemappings,
-                                          std::size(kNewSearchRemappings),
-                                          incoming, state, /*strict=*/true)) {
-          return;
-        }
-      }
-    }
-
-    // The new Search+Shift+Backspace rewrite is only active when
-    // IsImprovedKeyboardShortcutsEnabled() is true.
-    // TODO(crbug.com/1179893): Merge this entry into kSixPackRemappings
-    // once the flag is removed.
-    static const KeyboardRemapping kOldInsertRemapping[] = {
-        {// Search+Period -> Insert
-         {EF_COMMAND_DOWN, VKEY_OEM_PERIOD},
-         {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
-    };
-
-    if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-      static const KeyboardRemapping kNewInsertRemapping[] = {
-          {// Search+Shift+BackSpace -> Insert
-           {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_BACK},
-           {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
-      };
-
-      if (!skip_search_key_remapping &&
-          RewriteWithKeyboardRemappings(kNewInsertRemapping,
-                                        std::size(kNewInsertRemapping),
-                                        incoming, state, strict)) {
-        RecordSixPackEventRewrites(/*delegate=*/nullptr, key_event.type(),
-                                   state->key_code,
-                                   /*legacy_variant=*/false);
-        return;
-      }
-
-      // Test for the deprecated insert rewrite in order to show a notification.
-      const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
-          kOldInsertRemapping, std::size(kOldInsertRemapping), incoming);
-      if (deprecated_key != VKEY_UNKNOWN) {
-        // If the key would have matched prior to being deprecated then notify
-        // the delegate to show a notification.
-        delegate_->NotifyDeprecatedSixPackKeyRewrite(deprecated_key);
-      }
-    } else {
-      if (!skip_search_key_remapping &&
-          RewriteWithKeyboardRemappings(kOldInsertRemapping,
-                                        std::size(kOldInsertRemapping),
-                                        incoming, state, strict)) {
-        RecordSixPackEventRewrites(delegate_, key_event.type(), state->key_code,
-                                   /*legacy_variant=*/true);
-        return;
-      }
-    }
-
-    static const KeyboardRemapping kSixPackRemappings[] = {
-        {// Search+BackSpace -> Delete
-         {EF_COMMAND_DOWN, VKEY_BACK},
-         {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
-        {// Search+Left -> Home
-         {EF_COMMAND_DOWN, VKEY_LEFT},
-         {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
-        {// Search+Up -> Prior (aka PageUp)
-         {EF_COMMAND_DOWN, VKEY_UP},
-         {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
-        {// Search+Right -> End
-         {EF_COMMAND_DOWN, VKEY_RIGHT},
-         {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
-        {// Search+Down -> Next (aka PageDown)
-         {EF_COMMAND_DOWN, VKEY_DOWN},
-         {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
-
-    if (!skip_search_key_remapping &&
-        RewriteWithKeyboardRemappings(kSixPackRemappings,
-                                      std::size(kSixPackRemappings), incoming,
-                                      state, strict)) {
-      RecordSixPackEventRewrites(delegate_, key_event.type(), state->key_code,
-                                 /*legacy_variant=*/false);
-      return;
-    }
+  // TODO(b/279503977): Show a notification when the incoming event matches
+  // a "six pack" key remapping but the user's setting is inconsistent with
+  // the matched shortcut.
+  if (ash::features::IsAltClickAndSixPackCustomizationEnabled() &&
+      incoming.flags & (EF_COMMAND_DOWN | EF_ALT_DOWN)) {
+    MaybeRewriteKeyEventToSixPackKeyAction(delegate_, key_event, state);
+    return;
   }
 
-  // TODO(crbug.com/1179893): Remove block once Alt rewrites are deprecated.
-  if ((incoming.flags & EF_ALT_DOWN) && is_alt_down_remapping_enabled_) {
-    static const KeyboardRemapping kLegacySixPackRemappings[] = {
-        {// Alt+BackSpace -> Delete
-         {EF_ALT_DOWN, VKEY_BACK},
-         {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
-        {// Control+Alt+Up -> Home
-         {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_UP},
-         {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
-        {// Alt+Up -> Prior (aka PageUp)
-         {EF_ALT_DOWN, VKEY_UP},
-         {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
-        {// Control+Alt+Down -> End
-         {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_DOWN},
-         {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
-        {// Alt+Down -> Next (aka PageDown)
-         {EF_ALT_DOWN, VKEY_DOWN},
-         {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
-    if (!::features::IsImprovedKeyboardShortcutsEnabled() ||
-        !::features::IsDeprecateAltBasedSixPackEnabled()) {
-      if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings,
-                                        std::size(kLegacySixPackRemappings),
-                                        incoming, state)) {
-        RecordSixPackEventRewrites(delegate_, key_event.type(), state->key_code,
-                                   /*legacy_variant=*/true);
-        return;
-      }
-    } else {
-      const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
-          kLegacySixPackRemappings, std::size(kLegacySixPackRemappings),
-          incoming);
-      if (deprecated_key != VKEY_UNKNOWN) {
-        // If the key would have matched prior to being deprecated then notify
-        // the delegate to show a notification.
-        delegate_->NotifyDeprecatedSixPackKeyRewrite(deprecated_key);
-      }
-    }
+  // TODO(b/279503977): Remove block once `kAltClickAndSixPackCustomization`
+  // flag is enabled by default.
+  if (incoming.flags & EF_COMMAND_DOWN &&
+      MaybeRewriteSearchBasedShortcutToSixPackKeyAction(delegate_, key_event,
+                                                        state)) {
+    return;
+  }
+
+  // TODO(b/279503977): Remove block once `kAltClickAndSixPackCustomization`
+  // flag is enabled by default.
+  if (incoming.flags & EF_ALT_DOWN && is_alt_down_remapping_enabled_ &&
+      MaybeRewriteAltBasedShortcutToSixPackKeyAction(delegate_, key_event,
+                                                     state)) {
+    return;
   }
 }
 

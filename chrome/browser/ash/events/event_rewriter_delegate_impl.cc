@@ -10,6 +10,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
@@ -20,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -224,6 +226,33 @@ EventRewriterDelegateImpl::GetRemapRightClickModifier(int device_id) {
     return absl::nullopt;
   }
   return settings->simulate_right_click;
+}
+
+absl::optional<ui::mojom::SixPackShortcutModifier>
+EventRewriterDelegateImpl::GetShortcutModifierForSixPackKey(
+    int device_id,
+    ui::KeyboardCode key_code) {
+  const mojom::KeyboardSettings* settings =
+      input_device_settings_controller_->GetKeyboardSettings(device_id);
+  if (!settings) {
+    return absl::nullopt;
+  }
+  switch (key_code) {
+    case ui::KeyboardCode::VKEY_DELETE:
+      return settings->six_pack_key_remappings->del;
+    case ui::KeyboardCode::VKEY_HOME:
+      return settings->six_pack_key_remappings->home;
+    case ui::KeyboardCode::VKEY_PRIOR:
+      return settings->six_pack_key_remappings->page_up;
+    case ui::KeyboardCode::VKEY_END:
+      return settings->six_pack_key_remappings->end;
+    case ui::KeyboardCode::VKEY_NEXT:
+      return settings->six_pack_key_remappings->page_down;
+    case ui::KeyboardCode::VKEY_INSERT:
+      return settings->six_pack_key_remappings->insert;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {

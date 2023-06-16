@@ -5254,6 +5254,12 @@ class DesksAcceleratorsTest : public DesksTest,
     return absl::nullopt;
   }
 
+  absl::optional<ui::mojom::SixPackShortcutModifier>
+  GetShortcutModifierForSixPackKey(int device_id,
+                                   ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
+
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
     ui::test::EventGenerator* generator = GetEventGenerator();
     generator->PressKey(key_code, flags);

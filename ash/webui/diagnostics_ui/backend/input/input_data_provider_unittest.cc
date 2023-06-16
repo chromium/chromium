@@ -642,6 +642,12 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
     return absl::nullopt;
   }
 
+  absl::optional<ui::mojom::SixPackShortcutModifier>
+  GetShortcutModifierForSixPackKey(int device_id,
+                                   ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
+
  protected:
   bool suppress_modifier_key_rewrites_ = false;
 };

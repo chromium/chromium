@@ -17,6 +17,7 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -151,9 +152,22 @@ class EventRewriterAsh : public EventRewriter {
                                            bool alt_based) = 0;
 
     // Returns the modifier (Alt/Search) that must be pressed when remapping
-    // an event to right click.
+    // an event to right click for `device_id` or `absl::nullopt` if settings
+    // for the device are unable to be retrieved. If the return value is
+    // `SimulateRightClickModifier::kNone` or `absl::nullopt`, the event
+    // will not be rewritten to a right click.
     virtual absl::optional<ui::mojom::SimulateRightClickModifier>
     GetRemapRightClickModifier(int device_id) = 0;
+
+    // Returns whether the Alt or Search based shortcut variant must be used
+    // to perform a Six Pack (PageUp, PageDown, Home, End, Insert, Delete) key
+    // action for `device_id`. The key event will not be rewritten if the
+    // return value is either absl::nullopt (settings for `device_id`
+    // weren't found) or the key is mapped to `SixPackShortcutModifier::kNone`.
+    // `key_code` is used to look up the correct modifier for the Six Pack key.
+    virtual absl::optional<ui::mojom::SixPackShortcutModifier>
+    GetShortcutModifierForSixPackKey(int device_id,
+                                     ui::KeyboardCode key_code) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

@@ -45,6 +45,7 @@
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -5417,6 +5418,12 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
     return absl::nullopt;
   }
 
+  absl::optional<ui::mojom::SixPackShortcutModifier>
+  GetShortcutModifierForSixPackKey(int device_id,
+                                   ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
+
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
 };
@@ -5793,6 +5800,171 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
       modifier_key_usage_mapping_, 0);
+}
+
+class EventRewriterSixPackKeysTest : public EventRewriterTest {
+ public:
+  void SetUp() override {
+    EventRewriterTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
+
+    controller_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
+    mock_controller_ = std::make_unique<MockInputDeviceSettingsController>();
+    auto deprecation_controller =
+        std::make_unique<DeprecationNotificationController>(&message_center_);
+    deprecation_controller_ = deprecation_controller.get();
+    delegate_ = std::make_unique<EventRewriterDelegateImpl>(
+        nullptr, std::move(deprecation_controller), mock_controller_.get());
+    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+        delegate_.get(), Shell::Get()->keyboard_capability(), nullptr, false,
+        &fake_ime_keyboard_);
+  }
+
+  void TearDown() override {
+    mock_controller_.reset();
+    controller_resetter_.reset();
+    EventRewriterTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      controller_resetter_;
+  std::unique_ptr<MockInputDeviceSettingsController> mock_controller_;
+};
+
+TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysSearchVariants) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  mojom::KeyboardSettings settings;
+  settings.six_pack_key_remappings = ash::mojom::SixPackKeyInfo::New();
+  EXPECT_CALL(*mock_controller_, GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+  TestNonAppleKeyboardVariants({
+      // Search+Shift+Backspace -> Insert
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::DomKey::BACKSPACE},
+       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_NONE, ui::DomKey::INSERT}},
+      // Search+Backspace -> Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
+      // Search+Up -> Prior (aka PageUp)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_NONE,
+        ui::DomKey::PAGE_UP}},
+      // Search+Down -> Next (aka PageDown)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_NONE,
+        ui::DomKey::PAGE_DOWN}},
+      // Search+Left -> Home
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ARROW_LEFT},
+       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_NONE, ui::DomKey::HOME}},
+      // Search+Right -> End
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ARROW_RIGHT},
+       {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
+  });
+}
+
+TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysAltVariants) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  mojom::KeyboardSettings settings;
+  settings.six_pack_key_remappings = ash::mojom::SixPackKeyInfo::New();
+  settings.six_pack_key_remappings->del =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+  settings.six_pack_key_remappings->end =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+  settings.six_pack_key_remappings->home =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+  settings.six_pack_key_remappings->page_down =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+  settings.six_pack_key_remappings->page_up =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+
+  EXPECT_CALL(*mock_controller_, GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+  TestNonAppleKeyboardVariants({
+      // Alt+Backspace -> Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
+      // Alt+Up -> Prior
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_NONE,
+        ui::DomKey::PAGE_UP}},
+      // Alt+Down -> Next
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_NONE,
+        ui::DomKey::PAGE_DOWN}},
+      // Ctrl+Alt+Up -> Home
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_UP},
+       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_NONE, ui::DomKey::HOME}},
+      // Ctrl+Alt+Down -> End
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
+  });
+}
+
+TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  mojom::KeyboardSettings settings;
+  // "six pack" key settings use the search modifier by default.
+  settings.six_pack_key_remappings = ash::mojom::SixPackKeyInfo::New();
+  EXPECT_CALL(*mock_controller_, GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+  // No rewrite should occur since the search-based rewrite is the setting for
+  // the "Delete" 6-pack key.
+  TestNonAppleKeyboardVariants({
+      {
+          ui::ET_KEY_PRESSED,
+          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+           ui::DomKey::BACKSPACE},
+          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+           ui::DomKey::BACKSPACE},
+      },
+  });
+  settings.six_pack_key_remappings->del =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+  // Rewrite should occur now that the alt rewrite is the current setting.
+  TestNonAppleKeyboardVariants({
+      // Alt+Backspace -> Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
+  });
+  settings.six_pack_key_remappings->del =
+      ui::mojom::SixPackShortcutModifier::kNone;
+  // No rewrite should occur since remapping a key event to the "Delete"
+  // 6-pack key is disabled.
+  TestNonAppleKeyboardVariants({
+      {
+          ui::ET_KEY_PRESSED,
+          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+           ui::DomKey::BACKSPACE},
+          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+           ui::DomKey::BACKSPACE},
+      },
+  });
 }
 
 class EventRewriterSettingsSplitTest : public EventRewriterTest {
