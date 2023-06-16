@@ -23,8 +23,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -51,6 +52,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for GoogleServicesSettings.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DoNotBatch(reason = "A subset of tests requires adding a new account that could fail if batched.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GoogleServicesSettingsTest {
     private static final String CHILD_ACCOUNT_NAME =
@@ -254,8 +256,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q,
-            message = "Digital Wellbeing is only available from Q.")
+    @MinAndroidSdkLevel(
+            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
     public void
     testUsageStatsReportingShown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -275,8 +277,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q,
-            message = "Digital Wellbeing is only available from Q.")
+    @MinAndroidSdkLevel(
+            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
     public void
     testUsageStatsReportingNotShown_FeatureEnabledPrefDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -296,8 +298,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q,
-            message = "Digital Wellbeing is only available from Q.")
+    @MinAndroidSdkLevel(
+            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
     public void
     testUsageStatsReportingNotShown_FeatureDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
