@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOHostService.h"
@@ -46,6 +47,11 @@ bool DisableMainThreadFreezeDetection() {
 }
 bool DelayAppLaunchPromos() {
   return true;
+}
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  return nullptr;
 }
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;

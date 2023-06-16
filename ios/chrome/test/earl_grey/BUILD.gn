@@ -30,6 +30,8 @@ source_set("hooks") {
     ":switches",
     "//base",
     "//components/policy/core/common:test_support",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/internal/identity_manager:test_support",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/policy:test_support",

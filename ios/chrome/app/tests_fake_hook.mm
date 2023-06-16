@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -30,6 +32,11 @@ bool DisableGeolocation() {
 }
 bool DisablePromoManagerFullScreenPromos() {
   return false;
+}
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  return nullptr;
 }
 bool DisableUpgradeSigninPromo() {
   return false;

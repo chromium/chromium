@@ -44,5 +44,8 @@ source_set("hooks") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "xcuitests_hook.mm" ]
-  deps = [ "//ios/chrome/app:tests_hook" ]
+  deps = [
+    "//components/signin/internal/identity_manager",
+    "//ios/chrome/app:tests_hook",
+  ]
 }

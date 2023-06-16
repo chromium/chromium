@@ -137,6 +137,7 @@ source_set("app_support") {
     ":cwt_constants",
     "//base",
     "//base/test:test_support",
+    "//components/signin/internal/identity_manager",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",

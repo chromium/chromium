@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -41,6 +43,11 @@ bool DisableGeolocation() {
 bool DisablePromoManagerFullScreenPromos() {
   // Always disable full-screen promos for perf tests.
   return true;
+}
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  return nullptr;
 }
 bool DisableUpgradeSigninPromo() {
   // Always disable upgrade sign-in promo for perf tests.

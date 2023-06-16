@@ -6,6 +6,9 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -49,6 +52,24 @@ bool DisableGeolocation() {
 bool DisablePromoManagerFullScreenPromos() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnablePromoManagerFullscreenPromos);
+}
+
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  // Do not fake account tracking and authentication services if the user has
+  // requested a real identity manager.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          test_switches::kForceRealSystemIdentityManager)) {
+    return nullptr;
+  }
+  std::unique_ptr<FakeProfileOAuth2TokenService> token_service =
+      std::make_unique<FakeProfileOAuth2TokenService>(user_prefs,
+                                                      std::move(delegate));
+  // Posts auth token requests immediately on request instead of waiting for an
+  // explicit `IssueTokenForScope` call.
+  token_service->set_auto_post_fetch_response_on_message_loop(true);
+  return token_service;
 }
 
 bool DisableUpgradeSigninPromo() {

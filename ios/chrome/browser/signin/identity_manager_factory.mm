@@ -12,9 +12,12 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/internal/identity_manager/account_tracker_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
 #import "components/signin/public/base/signin_client.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_manager_builder.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/account_capabilities_fetcher_factory_ios.h"
@@ -92,6 +95,19 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   params.pref_service = browser_state->GetPrefs();
   params.profile_path = base::FilePath();
   params.signin_client = SigninClientFactory::GetForBrowserState(browser_state);
+  params.account_tracker_service = std::make_unique<AccountTrackerService>();
+  params.account_tracker_service->Initialize(params.pref_service,
+                                             params.profile_path);
+
+  std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate =
+      std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(
+          params.signin_client,
+          std::make_unique<DeviceAccountsProviderImpl>(
+              ChromeAccountManagerServiceFactory::GetForBrowserState(
+                  browser_state)),
+          params.account_tracker_service.get());
+  params.token_service = tests_hook::GetOverriddenTokenService(
+      params.pref_service, std::move(delegate));
 
   std::unique_ptr<signin::IdentityManager> identity_manager =
       signin::BuildIdentityManager(&params);

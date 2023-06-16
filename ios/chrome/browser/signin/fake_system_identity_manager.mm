@@ -110,6 +110,7 @@ void FakeSystemIdentityManager::SetCapabilities(
   DCHECK([storage_ containsIdentity:identity]);
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
   details.capabilities = capabilities;
+  FireIdentityUpdatedNotification(identity);
 }
 
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
