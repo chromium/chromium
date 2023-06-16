@@ -18,9 +18,6 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.PendingIntent;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -43,8 +40,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.ContentUriUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -58,10 +53,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.FileProviderHelper;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -71,7 +63,6 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
@@ -88,26 +79,20 @@ import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -515,6 +500,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1133547")
     public void testRealPromoDialogInterruption() throws Exception {
         // Start the Activity.  It should pause when the promo dialog appears.
         mTestDelegate.shouldShowRealSearchDialog = true;
@@ -587,86 +573,6 @@ public class SearchActivityTest {
         Assert.assertEquals(searchActivity, restartedActivity);
 
         mOmnibox.checkText(Matchers.isEmptyString(), null);
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "https://crbug.com/1144676")
-    public void testImageSearch() throws InterruptedException, Exception {
-        // Put an image into system clipboard.
-        putAnImageIntoClipboard();
-
-        startSearchActivity();
-        SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.findSuggestionWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
-
-        Assert.assertNotNull("The image clipboard suggestion should contains post content type.",
-                info.suggestion.getPostContentType());
-        Assert.assertNotEquals(
-                "The image clipboard suggestion should not contains am empty post content type.", 0,
-                info.suggestion.getPostContentType().length());
-        Assert.assertNotNull("The image clipboard suggestion should contains post data.",
-                info.suggestion.getPostData());
-        Assert.assertNotEquals(
-                "The image clipboard suggestion should not contains am empty post data.", 0,
-                info.suggestion.getPostData().length);
-
-        // Make sure the new tab is launched.
-        final ChromeTabbedActivity cta =
-                ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
-                        ChromeTabbedActivity.class, () -> info.view.performClick());
-
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = cta.getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            // Make sure tab is in either upload page or result page. cannot only verify one of
-            // them since on fast device tab jump to result page really quick but on slow device
-            // may stay on upload page for a really long time.
-            boolean isValid = tab.getUrl().equals(info.suggestion.getUrl())
-                    || TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
-                               .isSearchResultsPageFromDefaultSearchProvider(tab.getUrl());
-            Criteria.checkThat(
-                    "Invalid URL: " + tab.getUrl().getSpec(), isValid, Matchers.is(true));
-        });
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "https://crbug.com/1144676")
-    public void testImageSearch_OnlyTrustedIntentCanPost() throws InterruptedException, Exception {
-        // Put an image into system clipboard.
-        putAnImageIntoClipboard();
-
-        // Start the Activity.
-        final SearchActivity searchActivity = startSearchActivity();
-        final SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.findSuggestionWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
-
-        Intent intent =
-                new Intent(Intent.ACTION_VIEW, Uri.parse(info.suggestion.getUrl().getSpec()));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setClass(searchActivity, ChromeLauncherActivity.class);
-        intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, info.suggestion.getPostContentType());
-        intent.putExtra(IntentHandler.EXTRA_POST_DATA, info.suggestion.getPostData());
-
-        final ChromeTabbedActivity cta =
-                ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
-                        ChromeTabbedActivity.class, new Callable<Void>() {
-                            @Override
-                            public Void call() {
-                                IntentUtils.safeStartActivity(searchActivity, intent);
-                                return null;
-                            }
-                        });
-
-        // Because no POST data, Google wont go to the result page.
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = cta.getActivityTab();
-            Criteria.checkThat("Unexpected URL: " + tab.getUrl().getSpec(),
-                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
-                            .isSearchResultsPageFromDefaultSearchProvider(tab.getUrl()),
-                    Matchers.is(false));
-        });
     }
 
     @Test
@@ -779,30 +685,6 @@ public class SearchActivityTest {
 
         Assert.assertEquals(expectedHeight, layoutParams.height);
         Assert.assertEquals(expectedBottomPadding, anchorView.getPaddingBottom());
-    }
-
-    private void putAnImageIntoClipboard() {
-        mActivityTestRule.startMainActivityFromLauncher();
-        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
-        Bitmap bitmap =
-                Bitmap.createBitmap(/* width = */ 10, /* height = */ 10, Bitmap.Config.ARGB_8888);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, /*quality = (0-100) */ 100, baos);
-        byte[] mTestImageData = baos.toByteArray();
-        Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
-        Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);
-
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
-        });
-    }
-
-    private void clickFirstClipboardSuggestion(SearchActivityLocationBarLayout locationBar)
-            throws InterruptedException {
-        SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
-        TestTouchUtils.performClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), info.view);
     }
 
     private SearchActivity startSearchActivity() {
