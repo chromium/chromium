@@ -382,6 +382,7 @@
     "Linux Builder reclient staging untrusted": "Ubuntu-22.04",
     "Linux Builder reclient test": "Ubuntu-22.04",
     "Linux Builder reclient test (unified uploads)": "Ubuntu-22.04",
+    "Linux Builder reclient test untrusted": "Ubuntu-22.04",
     "Simple Chrome Builder reclient staging": "Ubuntu-22.04"
   },
   "reviver": {
