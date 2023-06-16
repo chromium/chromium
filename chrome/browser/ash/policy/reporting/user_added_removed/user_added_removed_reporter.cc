@@ -8,7 +8,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -23,13 +22,11 @@ namespace reporting {
 // static
 std::unique_ptr<UserAddedRemovedReporter> UserAddedRemovedReporter::Create(
     base::flat_map<AccountId, bool> users_to_be_removed,
-    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service) {
   return base::WrapUnique(new UserAddedRemovedReporter(
       std::make_unique<UserEventReporterHelper>(
           Destination::ADDED_REMOVED_EVENTS),
-      std::move(users_to_be_removed), reporting_user_tracker,
-      managed_session_service));
+      std::move(users_to_be_removed), managed_session_service));
 }
 
 // static
@@ -37,10 +34,9 @@ std::unique_ptr<UserAddedRemovedReporter>
 UserAddedRemovedReporter::CreateForTesting(
     std::unique_ptr<UserEventReporterHelper> helper,
     base::flat_map<AccountId, bool> users_to_be_removed,
-    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service) {
   return base::WrapUnique(new UserAddedRemovedReporter(
-      std::move(helper), std::move(users_to_be_removed), reporting_user_tracker,
+      std::move(helper), std::move(users_to_be_removed),
       managed_session_service));
 }
 
@@ -77,7 +73,7 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
   auto email = user->GetAccountId().GetUserEmail();
   auto record = std::make_unique<UserAddedRemovedRecord>();
   record->mutable_user_added_event();
-  if (reporting_user_tracker_->ShouldReportUser(email)) {
+  if (helper_->ShouldReportUser(email)) {
     record->mutable_affiliated_user()->set_user_email(email);
   }
   record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
@@ -98,8 +94,8 @@ void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
   }
 
   const std::string email = account_id.GetUserEmail();
-  users_to_be_removed_.insert_or_assign(
-      account_id, reporting_user_tracker_->ShouldReportUser(email));
+  users_to_be_removed_.insert_or_assign(account_id,
+                                        helper_->ShouldReportUser(email));
 }
 
 void UserAddedRemovedReporter::OnUserRemoved(
@@ -124,11 +120,9 @@ void UserAddedRemovedReporter::OnUserRemoved(
 UserAddedRemovedReporter::UserAddedRemovedReporter(
     std::unique_ptr<UserEventReporterHelper> helper,
     base::flat_map<AccountId, bool> users_to_be_removed,
-    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service)
     : helper_(std::move(helper)),
-      users_to_be_removed_(std::move(users_to_be_removed)),
-      reporting_user_tracker_(reporting_user_tracker) {
+      users_to_be_removed_(std::move(users_to_be_removed)) {
   managed_session_observation_.Observe(managed_session_service);
 }
 

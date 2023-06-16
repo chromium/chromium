@@ -15,12 +15,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
@@ -38,11 +35,17 @@ class TestHelper : public UserEventReporterHelper {
                              base::OnTaskRunnerDeleter> report_queue,
              base::WeakPtr<::reporting::MockReportQueueStrict> mock_queue,
              bool should_report_event,
+             bool should_report_user,
              bool is_user_new)
       : UserEventReporterHelper(std::move(report_queue)),
         mock_queue_(mock_queue),
         should_report_event_(should_report_event),
+        should_report_user_(should_report_user),
         is_user_new_(is_user_new) {}
+
+  bool ShouldReportUser(const std::string& user_email) const override {
+    return should_report_user_;
+  }
 
   bool ReportingEnabled(const std::string& policy_path) const override {
     return should_report_event_;
@@ -62,6 +65,8 @@ class TestHelper : public UserEventReporterHelper {
 
   bool should_report_event_;
 
+  bool should_report_user_;
+
   bool is_user_new_;
 
   bool event_reported_;
@@ -77,35 +82,28 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
 
-    reporting_user_tracker_ =
-        std::make_unique<policy::ReportingUserTracker>(user_manager_);
-
     mock_queue_ = new ::reporting::MockReportQueueStrict();
     weak_mock_queue_factory_ = std::make_unique<
         base::WeakPtrFactory<::reporting::MockReportQueueStrict>>(mock_queue_);
   }
 
   void TearDown() override {
-    reporting_user_tracker_.reset();
-    user_manager_enabler_.reset();
     chromeos::PowerManagerClient::Shutdown();
     delete mock_queue_;
   }
 
   std::unique_ptr<TestingProfile> LoginRegularProfile(
       base::StringPiece user_email,
-      bool is_affiliated,
       policy::ManagedSessionService* managed_session_service) {
     const AccountId account_id =
         AccountId::FromUserEmail(std::string(user_email));
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     auto profile = profile_builder.Build();
-    user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::USER_TYPE_REGULAR,
-        profile.get());
-
+    auto* const user = user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id, true);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 profile.get());
     managed_session_service->OnUserProfileLoaded(account_id);
     return profile;
   }
@@ -142,18 +140,10 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
   std::unique_ptr<base::WeakPtrFactory<::reporting::MockReportQueueStrict>>
       weak_mock_queue_factory_;
 
-  policy::ReportingUserTracker* reporting_user_tracker() {
-    return reporting_user_tracker_.get();
-  }
-
  private:
-  ScopedTestingLocalState local_state{TestingBrowserProcess::GetGlobal()};
-
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  std::unique_ptr<policy::ReportingUserTracker> reporting_user_tracker_;
 
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -180,16 +170,15 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/true);
+                                   /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
-  LoginRegularProfile(user_email, /*is_affiliated=*/true,
-                      managed_session_service.get());
+  LoginRegularProfile(user_email, managed_session_service.get());
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -220,16 +209,15 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/true);
+                                   /*report_user=*/false, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
-  LoginRegularProfile(user_email, /*is_affiliated=*/false,
-                      managed_session_service.get());
+  LoginRegularProfile(user_email, managed_session_service.get());
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -252,16 +240,15 @@ TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/false,
-                                   /*user_new=*/true);
+                                   /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
-  auto profile = LoginRegularProfile(user_email, /*is_affiliated=*/true,
-                                     managed_session_service.get());
+  auto profile = LoginRegularProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
@@ -279,16 +266,15 @@ TEST_F(UserAddedRemovedReporterTest, TestExistingUserLogin) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/false);
+                                   /*report_user=*/true, /*user_new=*/false);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
-  LoginRegularProfile(user_email, /*is_affiliated=*/true,
-                      managed_session_service.get());
+  LoginRegularProfile(user_email, managed_session_service.get());
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
@@ -302,13 +288,13 @@ TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/true);
+                                   /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
   LoginGuestProfile(managed_session_service.get());
 }
@@ -327,13 +313,13 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/true);
+                                   /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
   LoginKioskProfile(user_email, managed_session_service.get());
 }
@@ -362,16 +348,15 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/false);
+                                   /*report_user=*/true, /*user_new=*/false);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
-  auto profile = LoginRegularProfile(user_email, /*is_affiliated=*/true,
-                                     managed_session_service.get());
+  auto profile = LoginRegularProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
@@ -410,16 +395,15 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/false);
+                                   /*report_user=*/false, /*user_new=*/false);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
-  auto profile = LoginRegularProfile(user_email, /*is_affiliated=*/false,
-                                     managed_session_service.get());
+  auto profile = LoginRegularProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
@@ -446,13 +430,13 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/true);
+                                   /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
 
   auto profile = LoginKioskProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
@@ -483,13 +467,13 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
   auto test_helper =
       std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
                                    /*report_event=*/true,
-                                   /*user_new=*/true);
+                                   /*report_user=*/false, /*user_new=*/true);
   auto managed_session_service =
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
       std::move(test_helper), /*users_to_be_removed=*/{},
-      reporting_user_tracker(), managed_session_service.get());
+      managed_session_service.get());
   reporter->ProcessRemovedUser(
       user_email, user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED);
 

@@ -13,16 +13,20 @@ class UserEventReporterHelperTesting : public UserEventReporterHelper {
  public:
   UserEventReporterHelperTesting(
       bool reporting_enabled,
+      bool should_report_user,
       bool is_kiosk_user,
       std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue);
   ~UserEventReporterHelperTesting() override;
 
   bool ReportingEnabled(const std::string&) const override;
 
+  bool ShouldReportUser(const std::string&) const override;
+
   bool IsKioskUser() const override;
 
  private:
   const bool reporting_enabled_;
+  const bool should_report_user_;
   const bool is_kiosk_user_;
 };
 }  // namespace reporting
