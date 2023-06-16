@@ -15,6 +15,7 @@ import threading
 import time
 import zipfile
 
+from concurrent.futures import ThreadPoolExecutor
 from six.moves import range  # pylint: disable=redefined-builtin
 from devil.utils import cmd_helper
 from py_utils import tempfile_ext
@@ -343,81 +344,64 @@ def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
   """
   num_shards = len(shard_list)
   assert num_shards > 0
-  procs = []
   temp_files = []
   first_shard = shard_list[0]
   for i, cmd in zip(shard_list, cmd_list):
     # Shard 0 yields results immediately, the rest write to files.
     if i == first_shard:
       temp_files.append(None)  # Placeholder.
-      procs.append(
-          cmd_helper.Popen(
-              cmd,
-              stdout=subprocess.PIPE,
-              stderr=subprocess.STDOUT,
-          ))
     else:
       temp_file = tempfile.TemporaryFile(mode='w+t', encoding='utf-8')
       temp_files.append(temp_file)
-      procs.append(cmd_helper.Popen(
-          cmd,
-          stdout=temp_file,
-          stderr=temp_file,
-      ))
 
   deadline = time.time() + (_SHARD_TIMEOUT / (num_shards // 2 + 1))
 
   yield '\n'
   yield f'Shard {first_shard} output:\n'
 
-  # The following will be run from a thread to pump Shard 0 results, allowing
-  # live output while allowing timeout.
-  def pump_stream_to_queue(f, q):
-    for line in f:
-      q.put(line)
-    q.put(None)
-
-  shard_0_q = queue.Queue()
-  shard_0_pump = threading.Thread(target=pump_stream_to_queue,
-                                  args=(procs[0].stdout, shard_0_q))
-  shard_0_pump.start()
-
   timeout_dumps = {}
 
-  # Print the first process until timeout or completion.
-  while shard_0_pump.is_alive():
-    try:
-      line = shard_0_q.get(timeout=deadline - time.time())
-      if line is None:
-        break
-      yield f'{first_shard:2}| {line}'
-    except queue.Empty:
-      if time.time() > deadline:
-        break
+  def run_proc(cmd, idx):
+    if idx == 0:
+      s_out = subprocess.PIPE
+      s_err = subprocess.STDOUT
+    else:
+      s_out = temp_files[idx]
+      s_err = temp_files[idx]
 
-  # Wait for remaining processes to finish.
-  for i, proc in enumerate(procs):
+    proc = cmd_helper.Popen(cmd, stdout=s_out, stderr=s_err)
+    # Need to return process so that output can be displayed on stdout
+    # in real time.
+    if idx == first_shard:
+      return proc
+
     try:
       proc.wait(timeout=deadline - time.time())
     except subprocess.TimeoutExpired:
-      timeout_dumps[i] = _DumpJavaStacks(proc.pid)
+      timeout_dumps[idx] = _DumpJavaStacks(proc.pid)
       proc.kill()
 
-  # Output any remaining output from a timed-out first shard.
-  shard_0_pump.join()
-  while not shard_0_q.empty():
-    line = shard_0_q.get()
-    if line:
-      yield f'{first_shard:2}| {line}'
+    # Not needed, but keeps pylint happy.
+    return None
 
-  for i, shard in enumerate(shard_list[1:]):
-    f = temp_files[i + 1]
-    yield '\n'
-    yield f'Shard {shard} output:\n'
-    f.seek(0)
-    for line in f.readlines():
-      yield f'{shard:2}| {line}'
-    f.close()
+  with ThreadPoolExecutor(max_workers=num_shards) as pool:
+    futures = []
+    for i, cmd in enumerate(cmd_list):
+      futures.append(pool.submit(run_proc, cmd=cmd, idx=i))
+
+    yield from _StreamFirstShardOutput(futures[0].result(), deadline)
+
+    for i, shard in enumerate(shard_list[1:]):
+      # Shouldn't cause timeout as run_proc terminates the process with
+      # a proc.wait().
+      futures[i + 1].result()
+      f = temp_files[i + 1]
+      yield '\n'
+      yield f'Shard {shard} output:\n'
+      f.seek(0)
+      for line in f.readlines():
+        yield f'{shard:2}| {line}'
+      f.close()
 
   # Output stacks
   if timeout_dumps:
@@ -432,6 +416,37 @@ def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
       yield '\n'
 
     raise cmd_helper.TimeoutError('Junit shards timed out.')
+
+
+def _StreamFirstShardOutput(shard_proc, deadline):
+  # The following will be run from a thread to pump Shard 0 results, allowing
+  # live output while allowing timeout.
+  shard_queue = queue.Queue()
+
+  def pump_stream_to_queue():
+    for line in shard_proc.stdout:
+      shard_queue.put(line)
+    shard_queue.put(None)
+
+  shard_0_pump = threading.Thread(target=pump_stream_to_queue)
+  shard_0_pump.start()
+  # Print the first process until timeout or completion.
+  while shard_0_pump.is_alive():
+    try:
+      line = shard_queue.get(timeout=deadline - time.time())
+      if line is None:
+        break
+      yield f'0| {line}'
+    except queue.Empty:
+      if time.time() > deadline:
+        break
+
+  # Output any remaining output from a timed-out first shard.
+  shard_0_pump.join()
+  while not shard_queue.empty():
+    line = shard_queue.get()
+    if line:
+      yield f'0| {line}'
 
 
 def _GetTestClasses(file_path):
