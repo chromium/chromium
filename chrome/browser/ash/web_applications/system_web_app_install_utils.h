@@ -26,15 +26,7 @@ struct IconResourceInfo {
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
     const std::initializer_list<IconResourceInfo>& manifest_icons,
-    WebAppInstallInfo& web_app_info);
-
-// Create shortcuts menu item for a system web app from a resource id. The icons
-// aren't downloaded, `icon_name` in IconResourceInfo is used as a key.
-void CreateShortcutsMenuItemForSystemWebApp(
-    const std::u16string& name,
-    const GURL& shortcut_url,
-    const std::initializer_list<IconResourceInfo>& shortcut_menu_item_icons,
-    WebAppInstallInfo& web_app_info);
+    WebAppInstallInfo& web_app);
 
 // Get correct ChromeOS background color based on if dark mode is requested and
 // if kSemanticColorsDebugOverride is enabled.
