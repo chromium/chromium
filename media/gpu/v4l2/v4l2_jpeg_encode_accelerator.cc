@@ -281,7 +281,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
 
     if (device_->Ioctl(VIDIOC_S_FMT, &format) == 0 &&
         format.fmt.pix_mp.pixelformat == input_pix_fmt) {
-      device_input_layout_ = V4L2Device::V4L2FormatToVideoFrameLayout(format);
+      device_input_layout_ = V4L2FormatToVideoFrameLayout(format);
 
       // Save V4L2 returned values.
       input_buffer_pixelformat_ = format.fmt.pix_mp.pixelformat;

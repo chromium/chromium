@@ -41,6 +41,13 @@ class V4L2BuffersList;
 class V4L2RequestRef;
 class V4L2BufferRefFactory;
 
+// Wrapper for the 'v4l2_ext_control' structure.
+struct V4L2ExtCtrl {
+  V4L2ExtCtrl(uint32_t id);
+  V4L2ExtCtrl(uint32_t id, int32_t val);
+  struct v4l2_ext_control ctrl;
+};
+
 // A unique reference to a buffer for clients to prepare and submit.
 //
 // Clients can prepare a buffer for queuing using the methods of this class, and

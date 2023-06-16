@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/v4l2_device.h"
 
 namespace media {
 
@@ -299,7 +298,7 @@ size_t V4L2Buffer::GetMemoryUsage() const {
 }
 
 scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
-  auto layout = V4L2Device::V4L2FormatToVideoFrameLayout(format_);
+  auto layout = V4L2FormatToVideoFrameLayout(format_);
   if (!layout) {
     VLOGF(1) << "Cannot create frame layout for V4L2 buffers";
     return nullptr;

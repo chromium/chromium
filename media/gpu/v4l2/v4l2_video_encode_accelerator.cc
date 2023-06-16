@@ -1703,7 +1703,7 @@ V4L2VideoEncodeAccelerator::NegotiateInputFormat(VideoPixelFormat input_format,
       continue;
 
     DVLOGF(3) << "Success: S_FMT with " << FourccToString(pix_fmt);
-    device_input_layout_ = V4L2Device::V4L2FormatToVideoFrameLayout(*format);
+    device_input_layout_ = V4L2FormatToVideoFrameLayout(*format);
     if (!device_input_layout_) {
       LOG(ERROR) << "Invalid device_input_layout_";
       return absl::nullopt;

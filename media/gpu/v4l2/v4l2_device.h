@@ -78,10 +78,6 @@
 #ifndef V4L2_PIX_FMT_MT2T
 #define V4L2_PIX_FMT_MT2T v4l2_fourcc('M', 'T', '2', 'T')
 #endif
-#ifndef V4L2_PIX_FMT_QC08C
-#define V4L2_PIX_FMT_QC08C \
-  v4l2_fourcc('Q', '0', '8', 'C') /* Qualcomm 8-bit compressed */
-#endif
 #ifndef V4L2_PIX_FMT_QC10C
 #define V4L2_PIX_FMT_QC10C \
   v4l2_fourcc('Q', '1', '0', 'C') /* Qualcomm 10-bit compressed */
@@ -95,12 +91,7 @@ class V4L2Queue;
 class V4L2RequestRef;
 class V4L2RequestsQueue;
 
-// Wrapper for the 'v4l2_ext_control' structure.
-struct V4L2ExtCtrl {
-  V4L2ExtCtrl(uint32_t id);
-  V4L2ExtCtrl(uint32_t id, int32_t val);
-  struct v4l2_ext_control ctrl;
-};
+struct V4L2ExtCtrl;
 
 class MEDIA_GPU_EXPORT V4L2Device
     : public base::RefCountedThreadSafe<V4L2Device> {
@@ -117,11 +108,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Convert required H264 profile and level to V4L2 enums.
   static int32_t VideoCodecProfileToV4L2H264Profile(VideoCodecProfile profile);
   static int32_t H264LevelIdcToV4L2H264Level(uint8_t level_idc);
-
-  // Composes VideoFrameLayout based on v4l2_format.
-  // If error occurs, it returns absl::nullopt.
-  static absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
-      const struct v4l2_format& format);
 
   enum class Type {
     kDecoder,
