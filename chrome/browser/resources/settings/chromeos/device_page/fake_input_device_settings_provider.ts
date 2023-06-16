@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {GraphicsTablet, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Stylus, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -81,6 +81,8 @@ export class FakeInputDeviceSettingsProvider implements
   private pointingStickObservers: PointingStickObserverInterface[] = [];
   private mouseObservers: MouseObserverInterface[] = [];
   private touchpadObservers: TouchpadObserverInterface[] = [];
+  private stylusObservers: StylusObserverInterface[] = [];
+  private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
 
   constructor() {
     // Setup method resolvers.
@@ -231,6 +233,20 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
+  notifyStylusListUpdated(): void {
+    const styluses = this.methods.getResult('fakeStyluses');
+    for (const observer of this.stylusObservers) {
+      observer.onStylusListUpdated(styluses);
+    }
+  }
+
+  notifyGraphicsTabletUpdated(): void {
+    const graphicsTablets = this.methods.getResult('fakeGraphicsTablets');
+    for (const observer of this.graphicsTabletObservers) {
+      observer.onGraphicsTabletListUpdated(graphicsTablets);
+    }
+  }
+
   observeKeyboardSettings(observer: KeyboardObserverInterface): void {
     this.keyboardObservers.push(observer);
     this.notifyKeboardListUpdated();
@@ -249,5 +265,16 @@ export class FakeInputDeviceSettingsProvider implements
   observePointingStickSettings(observer: PointingStickObserverInterface): void {
     this.pointingStickObservers.push(observer);
     this.notifyPointingStickListUpdated();
+  }
+
+  observeStylusSettings(observer: StylusObserverInterface): void {
+    this.stylusObservers.push(observer);
+    this.notifyStylusListUpdated();
+  }
+
+  observeGraphicsTabletSettings(observer: GraphicsTabletObserverInterface):
+      void {
+    this.graphicsTabletObservers.push(observer);
+    this.notifyGraphicsTabletUpdated();
   }
 }

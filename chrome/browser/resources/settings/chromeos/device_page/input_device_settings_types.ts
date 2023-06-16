@@ -91,6 +91,16 @@ export interface PointingStickObserverInterface {
   onPointingStickListUpdated(pointingSticks: PointingStick[]): void;
 }
 
+export interface StylusObserverInterface {
+  // Fired when the stylus list is updated.
+  onStylusListUpdated(styluses: Stylus[]): void;
+}
+
+export interface GraphicsTabletObserverInterface {
+  // Fired when the graphics tablet list is updated.
+  onGraphicsTabletListUpdated(graphicsTablet: GraphicsTablet[]): void;
+}
+
 interface FakeInputDeviceSettingsProviderInterface extends
     InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {
   RestoreDefaultKeyboardModifierRemappings(id: number): void;
