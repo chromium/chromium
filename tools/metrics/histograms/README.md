@@ -707,7 +707,8 @@ entry became obsolete will be automatically recorded.
 
 * Add the obsoletion message in the CL description in the format
   OBSOLETE_HISTOGRAM[histogram name]=obsoletion message (e.g. OBSOLETE_HISTOGRAM
-  [Tab.Count]=Replaced by Tab.Count2).
+  [Tab.Count]=Replaced by Tab.Count2). The full tag should be put on a single
+  line, even if it is longer than the maximum CL description width.
   * Note: currently, it is not possible to add the same obsoletion message
     to multiple histograms in a single tag. But you can add multiple obsoletion
     message tags in one changelist. The Chrome Metrics team is in the process
