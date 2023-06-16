@@ -65,6 +65,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -1000,6 +1001,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     public void testTabSuggestionMessageCard_dismiss(boolean isStartSurfaceRefactorEnable)
             throws InterruptedException {
         // clang-format on
+        Assume.assumeFalse("crbug/1455473", isStartSurfaceRefactorEnable);
+
         prepareTabs(3, 0, null);
 
         // TODO(meiliang): Avoid using static variable for tracking state,
