@@ -31,6 +31,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -146,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
             content::PAGE_TYPE_NORMAL);
 
   // Construct the new redirected URL.
-  std::string expected_url = kChromeUITrustedProjectorUrl;
+  std::string expected_url = kChromeUIUntrustedProjectorUrl;
   expected_url += kFilePath;
   // The timestamp corresponds to 21 Jan 2022 10:00:00 GMT in microseconds since
   // Unix epoch (Jan 1 1970).
@@ -219,41 +220,19 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 
-  std::string expected_url = kChromeUITrustedProjectorUrl;
+  std::string expected_url = kChromeUIUntrustedProjectorUrl;
   expected_url += "?timestamp=1642759200000000%20bogo-microseconds";
   EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
 }
 
-// Verifies that navigating to chrome-untrusted://projector does not redirect.
-IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
-                       UntrustedNavigationNoRedirect) {
-  GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), untrusted_url));
-
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
-  // Projector SWA is not open. We don't capture navigations to
-  // chrome-untrusted://projector.
-  EXPECT_FALSE(app_browser);
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(tab);
-  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
-            content::PAGE_TYPE_NORMAL);
-
-  // URL remains unchanged.
-  EXPECT_EQ(tab->GetVisibleURL(), untrusted_url);
-}
-
-// Verifies that navigating to chrome://projector/app/ does not redirect but
-// launches the SWA.
+// Verifies that navigating to chrome-untrusted://projector/app/ does not
+// redirect but launches the SWA.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        TrustedNavigationNoRedirect) {
-  GURL trusted_url(kChromeUITrustedProjectorUrl);
+  GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), trusted_url, WindowOpenDisposition::NEW_WINDOW,
+      browser(), untrusted_url, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   Browser* app_browser =
@@ -267,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
             content::PAGE_TYPE_NORMAL);
 
   // URL remains unchanged.
-  EXPECT_EQ(tab->GetVisibleURL(), trusted_url);
+  EXPECT_EQ(tab->GetVisibleURL(), untrusted_url);
 }
 
 // Verifies that navigating to chrome-untrusted://projector-annotator does not
@@ -345,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
 // disabled.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
                        TrustedNavigationInvalidUrl) {
-  GURL trusted_url(kChromeUITrustedProjectorUrl);
+  GURL trusted_url(kChromeUIUntrustedProjectorUrl);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), trusted_url));
 
@@ -391,10 +370,21 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
 
   GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), untrusted_url));
+  content::TestNavigationObserver navigation_observer(untrusted_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  LaunchSystemWebAppAsync(profile(), SystemWebAppType::PROJECTOR);
+
+  navigation_observer.Wait();
+
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
+
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      app_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
+  EXPECT_TRUE(WaitForLoadStop(tab));
+
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 

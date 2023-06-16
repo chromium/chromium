@@ -53,7 +53,7 @@ class ProjectorAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 };
 
 IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest, ProjectorApp) {
-  const GURL url(ash::kChromeUITrustedProjectorUrl);
+  const GURL url(ash::kChromeUIUntrustedProjectorUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::PROJECTOR, url, "Screencast"));
 }

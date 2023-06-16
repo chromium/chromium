@@ -182,7 +182,6 @@ class ProjectorClientTest : public InProcessBrowserTest {
 // This test verifies that the (un)trusted Projector app and annotator WebUI
 // URLs are valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
-  VerifyUrlValid(kChromeUITrustedProjectorUrl);
   VerifyUrlValid(kChromeUIUntrustedProjectorUrl);
   VerifyUrlValid(kChromeUIUntrustedAnnotatorUrl);
 }
@@ -458,9 +457,10 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   // We can't uninstall the Projector SWA until the next session, but the icon
   // is greyed out and disabled.
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(kChromeUITrustedProjectorSwaAppId));
-  EXPECT_TRUE(apps::IconEffects::kBlocked &
-              GetAppIconKey(kChromeUITrustedProjectorSwaAppId)->icon_effects);
+            GetAppReadiness(ash::kChromeUIUntrustedProjectorSwaAppId));
+  EXPECT_TRUE(
+      apps::IconEffects::kBlocked &
+      GetAppIconKey(ash::kChromeUIUntrustedProjectorSwaAppId)->icon_effects);
 
   // The app can re-enable too if it's already installed and the policy flips to
   // true.
@@ -472,9 +472,10 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   web_app_provider->command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(kChromeUITrustedProjectorSwaAppId));
-  EXPECT_FALSE(apps::IconEffects::kBlocked &
-               GetAppIconKey(kChromeUITrustedProjectorSwaAppId)->icon_effects);
+            GetAppReadiness(ash::kChromeUIUntrustedProjectorSwaAppId));
+  EXPECT_FALSE(
+      apps::IconEffects::kBlocked &
+      GetAppIconKey(ash::kChromeUIUntrustedProjectorSwaAppId)->icon_effects);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

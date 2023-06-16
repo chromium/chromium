@@ -157,6 +157,8 @@ class ChromeShelfPrefsTest : public testing::Test {
         prefs::kPolicyPinnedLauncherApps);
     pref_service_.registry()->RegisterBooleanPref(
         ash::prefs::kFilesAppUIPrefsMigrated, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        ash::prefs::kProjectorSWAUIPrefsMigrated, true);
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_.get()));

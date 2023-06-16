@@ -66,6 +66,9 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ash::prefs::kProjectorExcludeTranscriptDialogShown,
       /*default_value=*/false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kProjectorSWAUIPrefsMigrated, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 ProjectorAppClientImpl::ProjectorAppClientImpl()
@@ -141,7 +144,7 @@ void ProjectorAppClientImpl::OnSodaInstalled() {
 void ProjectorAppClientImpl::OpenFeedbackDialog() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   constexpr char kProjectorAppFeedbackCategoryTag[] = "FromProjectorApp";
-  chrome::ShowFeedbackPage(GURL(ash::kChromeUITrustedProjectorUrl), profile,
+  chrome::ShowFeedbackPage(GURL(ash::kChromeUIUntrustedProjectorUrl), profile,
                            chrome::kFeedbackSourceProjectorApp,
                            /*description_template=*/std::string(),
                            /*description_placeholder_text=*/std::string(),

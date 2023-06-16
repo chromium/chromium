@@ -430,7 +430,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://personalization",
     "chrome://power",
     "chrome://print-management",
-    "chrome://projector",
+    "chrome-untrusted://projector",
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
     "chrome://shimless-rma",

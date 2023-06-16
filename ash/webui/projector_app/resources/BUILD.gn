@@ -12,7 +12,6 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     "//ash/webui/projector_app/resources/annotator/untrusted:untrusted_annotator_library",
-    "//ash/webui/projector_app/resources/app/trusted:trusted_app",
     "//ash/webui/projector_app/resources/app/untrusted:untrusted_app",
     "//ash/webui/projector_app/resources/common:message_types",
     "//ash/webui/projector_app/resources/mock:mock_app",

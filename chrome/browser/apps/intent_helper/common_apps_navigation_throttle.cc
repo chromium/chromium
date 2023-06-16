@@ -94,8 +94,9 @@ bool IsAppDisabled(const std::string& app_id) {
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
   for (const auto& app_id : app_ids) {
-    if (app_id == ash::kChromeUITrustedProjectorSwaAppId)
+    if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
       return false;
+    }
   }
   return true;
 }
@@ -122,9 +123,9 @@ GURL RedirectUrlIfSwa(Profile* profile,
     return url;
 
   // Projector:
-  if (app_id == ash::kChromeUITrustedProjectorSwaAppId &&
+  if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId &&
       url.GetWithEmptyPath() == GURL(ash::kChromeUIUntrustedProjectorPwaUrl)) {
-    std::string override_url = ash::kChromeUITrustedProjectorUrl;
+    std::string override_url = ash::kChromeUIUntrustedProjectorUrl;
     if (url.path().length() > 1)
       override_url += url.path().substr(1);
     std::stringstream ss;

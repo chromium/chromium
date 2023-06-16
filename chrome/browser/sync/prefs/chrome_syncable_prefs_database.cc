@@ -255,6 +255,7 @@ enum {
   kAccessibilityColorVisionDeficiencyType = 100202,
   kShowDeskButtonInShelf = 100203,
   kOsDogfoodGroupsSyncPrefName = 100204,
+  kProjectorSWAUIPrefsMigrated = 100205,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -558,6 +559,9 @@ const auto& SyncablePreferences() {
           syncer::OS_PREFERENCES, false}},
         {ash::prefs::kProjectorViewerOnboardingShowCount,
          {syncable_prefs_ids::kProjectorViewerOnboardingShowCount,
+          syncer::OS_PREFERENCES, false}},
+        {ash::prefs::kProjectorSWAUIPrefsMigrated,
+         {syncable_prefs_ids::kProjectorSWAUIPrefsMigrated,
           syncer::OS_PREFERENCES, false}},
         {ash::prefs::kShelfAlignment,
          {syncable_prefs_ids::kShelfAlignment, syncer::OS_PREFERENCES, false}},

@@ -1318,6 +1318,11 @@ const char kProjectorAllowByPolicy[] = "ash.projector.allow_by_policy";
 const char kProjectorDogfoodForFamilyLinkEnabled[] =
     "ash.projector.dogfood_for_family_link_enabled";
 
+// A boolean pref to keep track that the shelf-pin preferences have been
+// migrated to the new app id based on chrome-untrusted://projector.
+const char kProjectorSWAUIPrefsMigrated[] =
+    "ash.projector.swa_ui_prefs_migrated_to_chrome_untrusted";
+
 // A boolean pref that indicates whether the migration of Chromad devices to
 // cloud management can be started.
 const char kChromadToCloudMigrationEnabled[] =

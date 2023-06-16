@@ -4,8 +4,6 @@
 
 import {assert} from '//resources/ash/common/assert.js';
 
-import {AppTrustedCommFactory} from './trusted_app_comm_factory.js';
-
 const VIDEO_EXTENSIONS = [
   'webm',
 ];
@@ -15,13 +13,25 @@ const VIDEO_MIME_TYPES = [
 ];
 
 /**
- * Installs the handler for launch files, if window.launchQueue is available.
+ * Callback to pass the launched file to application.
+ * Callback is set when installLaunchHelper is called once
+ * when communication is initialized in untrusted_app_comm_factory.js.
+ * @type {Function<string, ?File, ?DOMException>}
  */
-export function installLaunchHandler() {
+let sendVideoFile;
+
+/**
+ * Installs the handler for launch files, if window.launchQueue is available.
+ * @param {!Function<string, ?File, ?DOMException>} callback
+ */
+export function installLaunchHandler(callback) {
   if (!window.launchQueue) {
     console.error('FileHandling API missing.');
     return;
   }
+
+  sendVideoFile = callback;
+
   window.launchQueue.setConsumer(wrappedLaunchConsumer);
 }
 
@@ -61,17 +71,18 @@ async function launchConsumer(params) {
 }
 
 /**
- * Sends the provided video file to the untrusted context.
+ * Sends the provided video file to the.app via the
+ * sendVideoFile callback.
  * @param {string} fileId
  * @param {!FileSystemHandle} handle
  */
 async function launchVideoFile(fileId, handle) {
   try {
     const file = await getVideoFileFromHandle(handle);
-    sendVideoFileToUntrusted(fileId, file, /*error=*/ null);
+    sendVideoFile(fileId, file, /*error=*/ null);
   } catch (/** @type {!DOMException} */ e) {
     console.error(`${handle.name}: ${e.message}`);
-    sendVideoFileToUntrusted(fileId, /*file=*/ null, /*error=*/ e);
+    sendVideoFile(fileId, /*file=*/ null, /*error=*/ e);
   }
 }
 
@@ -97,15 +108,4 @@ async function getVideoFileFromHandle(fileSystemHandle) {
     throw new DOMException('Not a video.', 'NotAVideo');
   }
   return video;
-}
-
-/**
- * Loads the provided file into the untrusted context.
- * @param {string} fileId
- * @param {?File} file
- * @param {?DOMException} error
- */
-function sendVideoFileToUntrusted(fileId, file, error) {
-  const client = AppTrustedCommFactory.getPostMessageAPIClient();
-  client.onFileLoaded(fileId, file, error);
 }

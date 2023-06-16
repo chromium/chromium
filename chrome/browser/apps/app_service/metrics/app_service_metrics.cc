@@ -321,7 +321,7 @@ const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
     return apps::DefaultAppName::kSettings;
   } else if (app_id == web_app::kPrintManagementAppId) {
     return apps::DefaultAppName::kPrintManagementApp;
-  } else if (app_id == ash::kChromeUITrustedProjectorSwaAppId) {
+  } else if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
     return apps::DefaultAppName::kProjector;
   } else if (app_id == web_app::kScanningAppId) {
     return apps::DefaultAppName::kScanningApp;

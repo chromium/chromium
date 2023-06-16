@@ -383,8 +383,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   EXPECT_EQ(first_browser, second_browser);
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
-  content::EvalJsResult result =
-      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  content::EvalJsResult result = EvalJs(app, script);
   VerifyResponse(result);
 }
 
@@ -406,8 +405,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   EXPECT_TRUE(WaitForLoadStop(app));
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
-  content::EvalJsResult result =
-      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  content::EvalJsResult result = EvalJs(app, script);
   VerifyResponse(result);
 }
 
@@ -421,8 +419,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   EXPECT_TRUE(WaitForLoadStop(app));
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
-  content::EvalJsResult result =
-      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  content::EvalJsResult result = EvalJs(app, script);
   const std::string& expected_error = base::StringPrintf(
       "a JavaScript error: \"Failed to fetch DriveFS file with video file "
       "id=%s and error code=%d\"\n",
@@ -448,8 +445,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   SendFilesToProjectorApp({fake_path, absolute_path});
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
-  content::EvalJsResult result =
-      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  content::EvalJsResult result = EvalJs(app, script);
   EXPECT_EQ(
       result.error,
       "a JavaScript error: \"NotFoundError: A requested file or directory "
@@ -474,8 +470,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
                                   /*shared_with_me=*/true);
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
-  content::EvalJsResult result =
-      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  content::EvalJsResult result = EvalJs(app, script);
   EXPECT_EQ(result.error, "a JavaScript error: \"NotAVideo: Not a video.\"\n");
 }
 

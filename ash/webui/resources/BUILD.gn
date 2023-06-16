@@ -262,12 +262,6 @@ ash_generated_grit("projector_app_untrusted_resources") {
   ]
 }
 
-# Resources used by chrome://projector SWA.
-ash_generated_grit("projector_app_trusted_resources") {
-  source = "$root_gen_dir/ash/webui/projector_app/resources/app/trusted/ash_projector_app_trusted_resources.grd"
-  deps = [ "//ash/webui/projector_app/resources/app/trusted:build_trusted_grd" ]
-}
-
 # Resources automatically served by the chrome-untrusted://projector bundle, obtained via DEPS.
 # TODO(b/216523790): Split up the projector_app_bundle_resource into app_bundle and annotator_bundle.
 grit("projector_app_bundle_resources") {

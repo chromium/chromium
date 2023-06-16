@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
 
-#include "ash/webui/grit/ash_projector_app_trusted_resources.h"
+#include "ash/webui/grit/ash_projector_app_untrusted_resources.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
@@ -17,7 +17,7 @@
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::PROJECTOR,
                                 "Projector",
-                                GURL(ash::kChromeUITrustedProjectorUrl),
+                                GURL(ash::kChromeUIUntrustedProjectorUrl),
                                 profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
@@ -25,8 +25,8 @@ ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 std::unique_ptr<WebAppInstallInfo>
 ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUITrustedProjectorUrl);
-  info->scope = GURL(ash::kChromeUITrustedProjectorUrl);
+  info->start_url = GURL(ash::kChromeUIUntrustedProjectorUrl);
+  info->scope = GURL(ash::kChromeUIUntrustedProjectorUrl);
 
   info->title = l10n_util::GetStringUTF16(IDS_PROJECTOR_APP_NAME);
 
@@ -34,21 +34,21 @@ ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
       info->start_url,
       {
           {"app_icon_16.png", 16,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_16_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_16_PNG},
           {"app_icon_32.png", 32,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_32_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_32_PNG},
           {"app_icon_48.png", 48,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_48_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_48_PNG},
           {"app_icon_64.png", 64,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_64_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_64_PNG},
           {"app_icon_96.png", 96,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_96_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_96_PNG},
           {"app_icon_128.png", 128,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_128_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_128_PNG},
           {"app_icon_192.png", 192,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_192_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_192_PNG},
           {"app_icon_256.png", 256,
-           IDR_ASH_PROJECTOR_APP_TRUSTED_ASSETS_ICON_256_PNG},
+           IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_256_PNG},
       },
       *info);
 

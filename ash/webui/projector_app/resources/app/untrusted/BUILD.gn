@@ -10,25 +10,36 @@ assert(is_chromeos_ash, "Projector is ChromeOS only")
 
 js_library("untrusted_app") {
   sources = [
+    "launch.js",
     "untrusted_app_comm_factory.js",
     "untrusted_projector_browser_proxy.js",
   ]
   deps = [
-    "//ash/webui/common/resources/post_message_api:post_message_api_client",
-    "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
     "//ash/webui/projector_app/mojom:projector_mojo_bindings_webui_js",
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings_webui_js",
     "//ash/webui/projector_app/resources/common:message_types",
   ]
-  externs_list = [ "../../common/projector_app.externs.js" ]
+  externs_list = [
+    "../../common/projector_app.externs.js",
+    "//ash/webui/web_applications/externs/file_handling.externs.js",
+  ]
 }
 
 generate_grd("build_untrusted_grd") {
   input_files = [
     "index.html",
+    "launch.js",
     "sandboxed_load_time_data.js",
     "untrusted_app_comm_factory.js",
     "untrusted_projector_browser_proxy.js",
+    "assets/icon_16.png",
+    "assets/icon_32.png",
+    "assets/icon_48.png",
+    "assets/icon_64.png",
+    "assets/icon_96.png",
+    "assets/icon_128.png",
+    "assets/icon_192.png",
+    "assets/icon_256.png",
   ]
 
   input_files_base_dir = rebase_path(".", "//")

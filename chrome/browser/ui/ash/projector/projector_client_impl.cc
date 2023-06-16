@@ -362,7 +362,7 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
       ash::SystemWebAppManager::Get(profile);
   CHECK(swa_manager);
   const bool is_installed =
-      swa_manager->IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
+      swa_manager->IsSystemWebApp(ash::kChromeUIUntrustedProjectorSwaAppId);
   // We can't enable or disable the app if it's not already installed.
   if (!is_installed)
     return;
@@ -388,5 +388,5 @@ void ProjectorClientImpl::SetAppIsDisabled(bool disabled) {
   CHECK(web_app_provider);
 
   web_app_provider->scheduler().SetAppIsDisabled(
-      ash::kChromeUITrustedProjectorSwaAppId, disabled, base::DoNothing());
+      ash::kChromeUIUntrustedProjectorSwaAppId, disabled, base::DoNothing());
 }

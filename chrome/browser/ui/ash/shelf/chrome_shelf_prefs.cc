@@ -16,6 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
@@ -369,6 +370,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     needs_consistency_migrations_ = false;
     MigrateFilesChromeAppToSWA(syncable_service);
     EnsureChromePinned(syncable_service);
+    EnsureProjectorShelfPinConsistency(syncable_service);
   }
 
   // This migration must be run outside of the consistency migrations block
@@ -558,6 +560,18 @@ void ChromeShelfPrefs::MigrateFilesChromeAppToSWA(
 
   base::UmaHistogramEnumeration(file_manager::kPrefsMigrationStatusUMA,
                                 MigrationStatus::kSuccess);
+}
+
+void ChromeShelfPrefs::EnsureProjectorShelfPinConsistency(
+    app_list::AppListSyncableService* syncable_service) {
+  if (GetPrefs()->GetBoolean(ash::prefs::kProjectorSWAUIPrefsMigrated)) {
+    return;
+  }
+
+  GetPrefs()->SetBoolean(ash::prefs::kProjectorSWAUIPrefsMigrated, true);
+  syncable_service->TransferItemAttributes(
+      ash::kChromeUITrustedProjectorSwaAppIdDeprecated,
+      ash::kChromeUIUntrustedProjectorSwaAppId);
 }
 
 void ChromeShelfPrefs::EnsureChromePinned(

@@ -84,6 +84,11 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   void MigrateFilesChromeAppToSWA(
       app_list::AppListSyncableService* syncable_service);
 
+  // Ensure that Projector app pinned positions are appropriatley migrated after
+  // the change to its app-id.
+  void EnsureProjectorShelfPinConsistency(
+      app_list::AppListSyncableService* syncable_service);
+
   // This is run each time ash launches and each time new data is obtained from
   // sync. It ensures that both ash-chrome and lacros-chrome are properly
   // pinned or unpinned.
