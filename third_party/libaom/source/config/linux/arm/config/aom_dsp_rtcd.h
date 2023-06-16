@@ -1482,12 +1482,6 @@ unsigned int aom_variance16x32_c(const uint8_t *src_ptr, int source_stride, cons
 unsigned int aom_variance16x8_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
 #define aom_variance16x8 aom_variance16x8_c
 
-unsigned int aom_variance2x2_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
-#define aom_variance2x2 aom_variance2x2_c
-
-unsigned int aom_variance2x4_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
-#define aom_variance2x4 aom_variance2x4_c
-
 unsigned int aom_variance32x16_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
 #define aom_variance32x16 aom_variance32x16_c
 
@@ -1496,9 +1490,6 @@ unsigned int aom_variance32x32_c(const uint8_t *src_ptr, int source_stride, cons
 
 unsigned int aom_variance32x64_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
 #define aom_variance32x64 aom_variance32x64_c
-
-unsigned int aom_variance4x2_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
-#define aom_variance4x2 aom_variance4x2_c
 
 unsigned int aom_variance4x4_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
 #define aom_variance4x4 aom_variance4x4_c
