@@ -60,13 +60,16 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateFile"/>
   <variant name="CreateUploadSession"/>
   <variant name="DeleteEntry"/>
+  <variant name="DownloadContent"/>
   <variant name="GetAccessTokenFromCode"/>
   <variant name="GetAccessTokenFromRefreshToken"/>
   <variant name="GetAuthCode"/>
   <variant name="GetDelta"/>
   <variant name="GetDrive"/>
   <variant name="GetProfile"/>
+  <variant name="ListDirectory"/>
   <variant name="MoveEntry"/>
+  <variant name="UploadContent"/>
 </variants>
 
 <!-- Do not confuse this with FileManagerVolumeType, which is an enum
