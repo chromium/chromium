@@ -280,12 +280,8 @@ crbug.com/459009 [ Mac11 Release ] crypto/subtle/* [ Slow ]
 crbug.com/459009 [ Mac12 ] crypto/subtle/* [ Slow ]
 crbug.com/459009 [ Release Win ] crypto/subtle/* [ Slow ]
 
-crbug.com/802029 [ Linux ] fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
-crbug.com/802029 [ Mac10.13 Release ] fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
-crbug.com/802029 [ Mac10.15 Release ] fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
-crbug.com/802029 [ Mac11 Release ] fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
-crbug.com/802029 [ Mac12 ] fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
-crbug.com/802029 [ Release Win ] fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
+# This test is slow across platforms.
+crbug.com/802029 fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
 
 crbug.com/614910 virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-filter.html [ Slow ]
 
