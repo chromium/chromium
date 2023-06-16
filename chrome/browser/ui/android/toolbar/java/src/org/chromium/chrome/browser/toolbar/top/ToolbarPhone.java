@@ -1198,6 +1198,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         setAncestorsShouldClipChildren(true);
+        setClipToPadding(true);
         mNtpSearchBoxScrollFraction = UNINITIALIZED_FRACTION;
         updateUrlExpansionFraction();
     }
@@ -1212,6 +1213,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         boolean isExpanded = mUrlExpansionFraction > 0f;
         setAncestorsShouldClipChildren(!isExpanded);
+        setClipToPadding(!isExpanded);
         if (!mUrlFocusChangeInProgress) {
             float alpha = 0.f;
             if (!mUrlBar.hasFocus() && mNtpSearchBoxScrollFraction == 1.f) {
