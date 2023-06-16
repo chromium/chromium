@@ -32,6 +32,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorAppMenuProfileRowChipHovered] = {
       ui::GetResultingPaintColor(kColorAppMenuProfileRowBackgroundHovered,
                                  kColorAppMenuProfileRowChipBackground)};
+  mixer[kColorAvatarIconGuest] = {kColorSysOnSurfaceSecondary};
   mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
   mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};
   mixer[kColorBadgeInCocoaMenuBackground] = {kColorSysPrimary};

@@ -138,11 +138,12 @@ void AvatarToolbarButton::UpdateText() {
   std::u16string text;
 
   const auto* const color_provider = GetColorProvider();
+  CHECK(color_provider);
 
   if (features::IsChromeRefresh2023()) {
+    color = color_provider->GetColor(kColorAvatarButtonHighlightDefault);
     UpdateLayoutInsets();
   }
-
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
       const int incognito_window_count = delegate_->GetWindowCount();
@@ -150,6 +151,11 @@ void AvatarToolbarButton::UpdateText() {
           IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE, incognito_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_INCOGNITO,
                                               incognito_window_count);
+      // TODO(shibalik): Remove this condition to make it generic by refactoring
+      // `ToolbarButton::HighlightColorAnimation`.
+      if (features::IsChromeRefresh2023()) {
+        color = color_provider->GetColor(kColorAvatarButtonHighlightIncognito);
+      }
       break;
     }
     case State::kAnimatedUserIdentity: {
@@ -202,6 +208,125 @@ void AvatarToolbarButton::UpdateText() {
   // take over.
   SizeToPreferredSize();
   InvalidateLayout();
+}
+
+absl::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
+  if (features::IsChromeRefresh2023()) {
+    absl::optional<SkColor> color;
+    const auto* const color_provider = GetColorProvider();
+    CHECK(color_provider);
+
+    switch (delegate_->GetState()) {
+      case State::kIncognitoProfile:
+        color = color_provider->GetColor(
+            kColorAvatarButtonHighlightIncognitoForeground);
+        break;
+      case State::kSyncError:
+        color = color_provider->GetColor(
+            kColorAvatarButtonHighlightSyncErrorForeground);
+        break;
+      case State::kSyncPaused:
+        color = color_provider->GetColor(
+            kColorAvatarButtonHighlightNormalForeground);
+        break;
+      case State::kGuestSession:
+        color = color_provider->GetColor(
+            kColorAvatarButtonHighlightDefaultForeground);
+        break;
+      case State::kAnimatedUserIdentity:
+        color = color_provider->GetColor(
+            kColorAvatarButtonHighlightDefaultForeground);
+        break;
+      case State::kNormal:
+        if (delegate_->IsHighlightAnimationVisible()) {
+          color = color_provider->GetColor(
+              kColorAvatarButtonHighlightNormalForeground);
+        } else {
+          color = color_provider->GetColor(
+              kColorAvatarButtonHighlightDefaultForeground);
+        }
+        break;
+      default:
+        // All the states should be defined in this switch statement.
+        NOTREACHED_NORETURN();
+    }
+
+    return color;
+  }
+
+  return absl::nullopt;
+}
+
+absl::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
+  if (features::IsChromeRefresh2023()) {
+    const auto* const color_provider = GetColorProvider();
+    CHECK(color_provider);
+    return color_provider->GetColor(kColorToolbarButtonBorder);
+  }
+
+  return absl::nullopt;
+}
+
+void AvatarToolbarButton::UpdateInkdrop() {
+  CHECK(features::IsChromeRefresh2023());
+  ChromeColorIds hover_color_id = kColorToolbarInkDropHover;
+  ChromeColorIds ripple_color_id = kColorToolbarInkDropRipple;
+
+  if (IsLabelPresentAndVisible()) {
+    switch (delegate_->GetState()) {
+      case State::kIncognitoProfile:
+        hover_color_id = kColorAvatarButtonIncognitoHover;
+        ripple_color_id = kColorToolbarInkDropRipple;
+        break;
+      case State::kSyncError:
+        hover_color_id = kColorToolbarInkDropHover;
+        ripple_color_id = kColorToolbarInkDropRipple;
+        break;
+      case State::kSyncPaused:
+        hover_color_id = kColorToolbarInkDropHover;
+        ripple_color_id = kColorAvatarButtonNormalRipple;
+        break;
+      case State::kGuestSession:
+        hover_color_id = kColorToolbarInkDropHover;
+        ripple_color_id = kColorToolbarInkDropRipple;
+        break;
+      case State::kAnimatedUserIdentity:
+        hover_color_id = kColorToolbarInkDropHover;
+        ripple_color_id = kColorToolbarInkDropRipple;
+        break;
+      case State::kNormal:
+        hover_color_id = kColorToolbarInkDropHover;
+
+        if (delegate_->IsHighlightAnimationVisible()) {
+          ripple_color_id = kColorAvatarButtonNormalRipple;
+        } else {
+          ripple_color_id = kColorToolbarInkDropRipple;
+        }
+        break;
+      default:
+        // All the states should be defined in this switch statement.
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  ConfigureToolbarInkdropForRefresh2023(this, hover_color_id, ripple_color_id);
+}
+
+bool AvatarToolbarButton::ShouldPaintBorder() const {
+  AvatarToolbarButton::State state = delegate_->GetState();
+  return (!features::IsChromeRefresh2023()) ||
+         (IsLabelPresentAndVisible() &&
+          (state == State::kGuestSession ||
+           state == State::kAnimatedUserIdentity ||
+           (state == State::kNormal &&
+            !delegate_->IsHighlightAnimationVisible())));
+}
+
+bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
+  bool has_custom_theme =
+      this->GetWidget() && this->GetWidget()->GetCustomTheme();
+
+  return !features::IsChromeRefresh2023() || has_custom_theme;
 }
 
 void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
@@ -262,6 +387,9 @@ void AvatarToolbarButton::OnBlur() {
 void AvatarToolbarButton::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
   UpdateText();
+  if (features::IsChromeRefresh2023()) {
+    UpdateInkdrop();
+  }
 }
 
 // static
@@ -310,6 +438,27 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
   NOTREACHED_NORETURN();
 }
 
+SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
+  bool has_custom_theme =
+      this->GetWidget() && this->GetWidget()->GetCustomTheme();
+
+  // If there is a custom theme use the `ToolbarButton` version of
+  // `GetForegroundColor()` This is to avoid creating new colorIds for icons for
+  // all the different states. With chrome refresh and without any custom theme,
+  // the color would be same as the label color.
+  if (features::IsChromeRefresh2023() && !has_custom_theme &&
+      IsLabelPresentAndVisible()) {
+    const absl::optional<SkColor> foreground_color = GetHighlightTextColor();
+    const auto* const color_provider = GetColorProvider();
+    return foreground_color.has_value()
+               ? foreground_color.value()
+               : color_provider->GetColor(
+                     kColorAvatarButtonHighlightDefaultForeground);
+  }
+
+  return ToolbarButton::GetForegroundColor(state);
+}
+
 ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     ButtonState state,
     const gfx::Image& gaia_account_image) const {
@@ -318,8 +467,10 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
 
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile:
-      return ui::ImageModel::FromVectorIcon(kIncognitoIcon, icon_color,
-                                            icon_size);
+      return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                                ? kIncognitoRefreshMenuIcon
+                                                : kIncognitoIcon,
+                                            icon_color, icon_size);
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
     case State::kAnimatedUserIdentity:
@@ -372,10 +523,6 @@ int AvatarToolbarButton::GetIconSize() const {
 
   return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
                                          : kIconSizeForNonTouchUi;
-}
-
-bool AvatarToolbarButton::ShouldDirectlyUseHighlightAsBackground() const {
-  return false;
 }
 
 BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)

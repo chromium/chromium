@@ -670,6 +670,20 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                     : SK_ColorWHITE};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] =
       ui::SetAlpha(ui::GetColorWithMaxContrast(kColorToolbarButtonText), 0xCC);
+  mixer[kColorAvatarButtonHighlightIncognito] = {
+      kColorToolbarButtonBackgroundHighlightedDefault};
+  mixer[kColorAvatarButtonHighlightDefault] = {kColorToolbar};
+  mixer[kColorAvatarButtonHighlightNormalForeground] =
+      AdjustHighlightColorForContrast(ui::kColorAccent, kColorToolbar);
+  mixer[kColorAvatarButtonHighlightDefaultForeground] = {
+      kColorToolbarButtonText};
+  mixer[kColorAvatarButtonHighlightSyncErrorForeground] =
+      AdjustHighlightColorForContrast(ui::kColorAlertMediumSeverityIcon,
+                                      kColorToolbar);
+  mixer[kColorAvatarButtonHighlightIncognitoForeground] = {
+      kColorToolbarButtonText};
+  mixer[kColorAvatarButtonIncognitoHover] = {kColorToolbarInkDropHover};
+  mixer[kColorAvatarButtonNormalRipple] = {kColorToolbarInkDropRipple};
   mixer[kColorToolbarButtonBorder] = ui::SetAlpha(kColorToolbarInkDrop, 0x20);
   mixer[kColorToolbarButtonIcon] = {kColorToolbarButtonIconDefault};
   mixer[kColorToolbarButtonIconDefault] = ui::HSLShift(
