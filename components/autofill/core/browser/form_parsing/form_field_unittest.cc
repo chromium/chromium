@@ -276,8 +276,9 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
 
   // Construct n parsers from `testcase.field_matches_parser`.
   AutofillScanner scanner(fields);
-  std::vector<AutofillField*> matched_fields(n);
-  std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+  std::vector<raw_ptr<AutofillField>> matched_fields(n);
+  std::vector<
+      std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
       fields_and_parsers;
   for (size_t i = 0; i < n; i++) {
     fields_and_parsers.emplace_back(

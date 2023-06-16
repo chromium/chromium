@@ -29,6 +29,7 @@ class LogManager;
 // - number
 class PhoneField : public FormField {
  public:
+  ~PhoneField() override;
   PhoneField(const PhoneField&) = delete;
   PhoneField& operator=(const PhoneField&) = delete;
 
@@ -75,7 +76,7 @@ class PhoneField : public FormField {
     FIELD_EXTENSION,
     FIELD_MAX,
   };
-  using ParsedPhoneFields = std::array<AutofillField*, FIELD_MAX>;
+  using ParsedPhoneFields = std::array<raw_ptr<AutofillField>, FIELD_MAX>;
 
   explicit PhoneField(ParsedPhoneFields fields);
 
@@ -103,7 +104,7 @@ class PhoneField : public FormField {
   // Convenient wrapper for ParseFieldSpecifics().
   static bool ParsePhoneField(AutofillScanner* scanner,
                               base::StringPiece16 regex,
-                              AutofillField** field,
+                              raw_ptr<AutofillField>* field,
                               const RegExLogging& logging,
                               const bool is_country_code_field,
                               const std::string& json_field_type,
@@ -124,7 +125,7 @@ class PhoneField : public FormField {
   // "Augmented" refers to the fact that we are looking for select options that
   // contain not only a country code but also further text like "Germany (+49)".
   static bool LikelyAugmentedPhoneCountryCode(AutofillScanner* scanner,
-                                              AutofillField** match);
+                                              raw_ptr<AutofillField>* match);
 
   // FIELD_PHONE is always present; holds suffix if prefix is present.
   // The rest could be NULL.

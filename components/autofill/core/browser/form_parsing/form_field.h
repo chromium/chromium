@@ -77,7 +77,8 @@ class FormField {
 
   static bool ParseInAnyOrderForTesting(
       AutofillScanner* scanner,
-      std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+      std::vector<
+          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
           fields_and_parsers) {
     return FormField::ParseInAnyOrder(scanner, fields_and_parsers);
   }
@@ -124,7 +125,7 @@ class FormField {
   static bool ParseField(AutofillScanner* scanner,
                          base::StringPiece16 pattern,
                          base::span<const MatchPatternRef> patterns,
-                         AutofillField** match,
+                         raw_ptr<AutofillField>* match,
                          const RegExLogging& logging = {});
 
   // TODO(crbug/1142936): Remove `projection` if it's not needed anymore.
@@ -133,13 +134,14 @@ class FormField {
       base::StringPiece16 pattern,
       const MatchParams& match_type,
       base::span<const MatchPatternRef> patterns,
-      AutofillField** match,
+      raw_ptr<AutofillField>* match,
       const RegExLogging& logging,
       MatchingPattern (*projection)(const MatchingPattern&) = nullptr);
 
-  // Attempts to parse a field with an empty label.  Returns true
+  // Attempts to parse a field with an empty label. Returns true
   // on success and fills |match| with a pointer to the field.
-  static bool ParseEmptyLabel(AutofillScanner* scanner, AutofillField** match);
+  static bool ParseEmptyLabel(AutofillScanner* scanner,
+                              raw_ptr<AutofillField>* match);
 
   // Attempts to parse several fields using the specified parsing functions in
   // arbitrary order. This is useful e.g. when parsing dates, where both dd/mm
@@ -150,7 +152,8 @@ class FormField {
   // reset to nullptr and the scanner is rewound to it's original position.
   static bool ParseInAnyOrder(
       AutofillScanner* scanner,
-      std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+      std::vector<
+          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
           fields_and_parsers);
 
   // Adds an association between a |field| and a |type| into |field_candidates|.
@@ -190,7 +193,7 @@ class FormField {
   static bool ParseFieldSpecificsWithNewPatterns(
       AutofillScanner* scanner,
       base::span<const MatchPatternRef> patterns,
-      AutofillField** match,
+      raw_ptr<AutofillField>* match,
       const RegExLogging& logging,
       MatchingPattern (*projection)(const MatchingPattern&));
 
@@ -199,11 +202,12 @@ class FormField {
   // matches, |match| will be set to the matched field, and the scanner would
   // advance by one step. A |true| result is returned in the case of a
   // successful match, false otherwise.
-  static bool ParseFieldSpecificsWithLegacyPattern(AutofillScanner* scanner,
-                                                   base::StringPiece16 pattern,
-                                                   MatchParams match_type,
-                                                   AutofillField** match,
-                                                   const RegExLogging& logging);
+  static bool ParseFieldSpecificsWithLegacyPattern(
+      AutofillScanner* scanner,
+      base::StringPiece16 pattern,
+      MatchParams match_type,
+      raw_ptr<AutofillField>* match,
+      const RegExLogging& logging);
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.
@@ -217,7 +221,7 @@ class FormField {
   static bool MatchAndAdvance(AutofillScanner* scanner,
                               base::StringPiece16 pattern,
                               MatchParams match_type,
-                              AutofillField** match,
+                              raw_ptr<AutofillField>* match,
                               const RegExLogging& logging = {});
 
   // Matches the regular expression |pattern| against the components of

@@ -63,21 +63,11 @@ class FirstTwoLastNamesField : public NameField {
  private:
   FirstTwoLastNamesField();
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* honorific_prefix_{nullptr};  // Optional.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* first_name_{nullptr};
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* middle_name_{nullptr};  // Optional.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* first_last_name_{nullptr};
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* second_last_name_{nullptr};
+  raw_ptr<AutofillField> honorific_prefix_{nullptr};  // Optional.
+  raw_ptr<AutofillField> first_name_{nullptr};
+  raw_ptr<AutofillField> middle_name_{nullptr};  // Optional.
+  raw_ptr<AutofillField> first_last_name_{nullptr};
+  raw_ptr<AutofillField> second_last_name_{nullptr};
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
 
@@ -127,18 +117,10 @@ class FirstLastNameField : public NameField {
  private:
   FirstLastNameField();
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* honorific_prefix_{nullptr};  // Optional
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* first_name_{nullptr};
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* middle_name_{nullptr};  // Optional.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* last_name_{nullptr};
+  raw_ptr<AutofillField> honorific_prefix_{nullptr};  // Optional
+  raw_ptr<AutofillField> first_name_{nullptr};
+  raw_ptr<AutofillField> middle_name_{nullptr};  // Optional.
+  raw_ptr<AutofillField> last_name_{nullptr};
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
 
@@ -198,7 +180,7 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
   // Searching for any label containing the word "name" is too general;
   // for example, Travelocity_Edit travel profile.html contains a field
   // "Travel Profile Name".
-  AutofillField* field = nullptr;
+  raw_ptr<AutofillField> field = nullptr;
 
   base::span<const MatchPatternRef> name_patterns =
       GetMatchPatterns("FULL_NAME", page_language, pattern_source);
@@ -398,7 +380,7 @@ FirstLastNameField::ParseSharedNameLabelSequence(
   auto v = base::WrapUnique(new FirstLastNameField());
   scanner->SaveCursor();
 
-  AutofillField* next = nullptr;
+  raw_ptr<AutofillField> next = nullptr;
   base::span<const MatchPatternRef> name_specific_patterns =
       GetMatchPatterns("NAME_GENERIC", page_language, pattern_source);
 

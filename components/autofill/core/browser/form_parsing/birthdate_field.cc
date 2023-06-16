@@ -41,9 +41,9 @@ std::unique_ptr<FormField> BirthdateField::Parse(
     PatternSource pattern_source,
     LogManager* log_manager) {
   // Currently only <select> elements are considered.
-  AutofillField* day = nullptr;
-  AutofillField* month = nullptr;
-  AutofillField* year = nullptr;
+  raw_ptr<AutofillField> day = nullptr;
+  raw_ptr<AutofillField> month = nullptr;
+  raw_ptr<AutofillField> year = nullptr;
   // Expect at most 31 days/12 months plus one placeholder.
   if (FormField::ParseInAnyOrder(
           scanner,

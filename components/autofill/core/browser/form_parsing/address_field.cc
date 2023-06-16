@@ -22,7 +22,8 @@ namespace autofill {
 
 namespace {
 
-bool SetFieldAndAdvanceCursor(AutofillScanner* scanner, AutofillField** field) {
+bool SetFieldAndAdvanceCursor(AutofillScanner* scanner,
+                              raw_ptr<AutofillField>* field) {
   *field = scanner->Cursor();
   scanner->Advance();
   return true;
@@ -496,12 +497,12 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     const std::u16string& pattern,
     MatchParams match_type,
     base::span<const MatchPatternRef> patterns,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging) {
   if (scanner->IsEnd())
     return RESULT_MATCH_NONE;
 
-  AutofillField* cur_match = nullptr;
+  raw_ptr<AutofillField> cur_match = nullptr;
   size_t saved_cursor = scanner->SaveCursor();
   bool parsed_name = ParseFieldSpecifics(
       scanner, pattern, WithoutAttribute(match_type, MatchAttribute::kLabel),

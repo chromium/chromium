@@ -192,7 +192,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
 
     // TODO(crbug.com/591816): Make sure parsing cc-numbers of type password
     // doesn't have bad side effects.
-    AutofillField* current_number_field;
+    raw_ptr<AutofillField> current_number_field;
     base::span<const MatchPatternRef> patterns =
         GetMatchPatterns(CREDIT_CARD_NUMBER, page_language, pattern_source);
     if (ParseFieldSpecifics(scanner, kCardNumberRe, kMatchNumTelAndPwd,

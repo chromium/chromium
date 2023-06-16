@@ -118,9 +118,7 @@ class CreditCardField : public FormField {
 
   raw_ptr<LogManager> log_manager_;  // Optional.
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* cardholder_;  // Optional.
+  raw_ptr<AutofillField> cardholder_;  // Optional.
 
   // Occasionally pages have separate fields for the cardholder's first and
   // last names; for such pages |cardholder_| holds the first name field and
@@ -129,29 +127,19 @@ class CreditCardField : public FormField {
   // because the text patterns for matching a cardholder name are different
   // than for ordinary names, and because cardholder names never have titles,
   // middle names or suffixes.)
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* cardholder_last_;
+  raw_ptr<AutofillField> cardholder_last_;
 
   raw_ptr<AutofillField> type_;          // Optional.
   std::vector<AutofillField*> numbers_;  // Required.
 
   // The 3-digit card verification number; we don't currently fill this.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* verification_;
+  raw_ptr<AutofillField> verification_;
 
   // Either |expiration_date_| or both |expiration_month_| and
   // |expiration_year_| are required.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* expiration_month_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* expiration_year_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* expiration_date_;
+  raw_ptr<AutofillField> expiration_month_;
+  raw_ptr<AutofillField> expiration_year_;
+  raw_ptr<AutofillField> expiration_date_;
 
   // For combined expiration field having year as 2-digits we store here
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store

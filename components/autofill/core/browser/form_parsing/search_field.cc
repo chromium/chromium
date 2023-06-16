@@ -16,7 +16,7 @@ std::unique_ptr<FormField> SearchField::Parse(AutofillScanner* scanner,
                                               const LanguageCode& page_language,
                                               PatternSource pattern_source,
                                               LogManager* log_manager) {
-  AutofillField* field;
+  raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> patterns =
       GetMatchPatterns(SEARCH_TERM, page_language, pattern_source);
 

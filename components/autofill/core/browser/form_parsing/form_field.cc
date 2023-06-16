@@ -219,7 +219,7 @@ void FormField::ParseSingleFieldForms(
 bool FormField::ParseField(AutofillScanner* scanner,
                            base::StringPiece16 pattern,
                            base::span<const MatchPatternRef> patterns,
-                           AutofillField** match,
+                           raw_ptr<AutofillField>* match,
                            const RegExLogging& logging) {
   return ParseFieldSpecifics(scanner, pattern, kDefaultMatchParams, patterns,
                              match, logging);
@@ -230,7 +230,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
     AutofillScanner* scanner,
     base::StringPiece16 pattern,
     MatchParams match_type,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging) {
   if (scanner->IsEnd())
     return false;
@@ -249,7 +249,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 bool FormField::ParseFieldSpecificsWithNewPatterns(
     AutofillScanner* scanner,
     base::span<const MatchPatternRef> patterns,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
   if (scanner->IsEnd())
@@ -301,7 +301,7 @@ bool FormField::ParseFieldSpecifics(
     base::StringPiece16 pattern,
     const MatchParams& match_type,
     base::span<const MatchPatternRef> patterns,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
   return base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)
@@ -314,7 +314,8 @@ bool FormField::ParseFieldSpecifics(
 // static
 bool FormField::ParseInAnyOrder(
     AutofillScanner* scanner,
-    std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+    std::vector<
+        std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
         fields_and_parsers) {
   if (scanner->IsEnd())
     return fields_and_parsers.empty();
@@ -349,7 +350,7 @@ bool FormField::ParseInAnyOrder(
 
 // static
 bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
-                                AutofillField** match) {
+                                raw_ptr<AutofillField>* match) {
   return ParseFieldSpecificsWithLegacyPattern(
       scanner, kEmptyLabelRegex,
       MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match,
@@ -394,7 +395,7 @@ std::vector<AutofillField*> FormField::RemoveCheckableFields(
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
                                 base::StringPiece16 pattern,
                                 MatchParams match_type,
-                                AutofillField** match,
+                                raw_ptr<AutofillField>* match,
                                 const RegExLogging& logging) {
   AutofillField* field = scanner->Cursor();
   if (FormField::Match(field, pattern, match_type, logging)) {

@@ -17,7 +17,7 @@ std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
     const LanguageCode& page_language,
     PatternSource pattern_source,
     LogManager* log_manager) {
-  AutofillField* field;
+  raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> merchant_promo_code_patterns =
       GetMatchPatterns("MERCHANT_PROMO_CODE", page_language, pattern_source);
 
