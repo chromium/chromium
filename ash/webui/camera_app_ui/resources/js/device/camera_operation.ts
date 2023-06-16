@@ -31,7 +31,6 @@ import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
 import {StreamConstraints} from './stream_constraints.js';
 import {StreamManager} from './stream_manager.js';
-import {StreamManagerChrome} from './stream_manager_chrome.js';
 import {
   CameraConfig,
   CameraConfigCandidate,
@@ -311,11 +310,6 @@ class Reconfigurer {
    * Stop extra stream and preview stream.
    */
   private async stopStreams() {
-    if (expert.isEnabled(
-            expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
-      StreamManagerChrome.getInstance().stopCaptureStream();
-    }
-
     await this.modes.clear();
     await this.preview.close();
   }
