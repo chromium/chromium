@@ -22,6 +22,53 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="API-FSP">
+  <variant name="onAbortRequested"/>
+  <variant name="onAddWatcherRequested"/>
+  <variant name="onCloseFileRequested"/>
+  <variant name="onConfigureRequested"/>
+  <variant name="onCopyEntryRequested"/>
+  <variant name="onCreateDirectoryRequested"/>
+  <variant name="onCreateFileRequested"/>
+  <variant name="onDeleteEntryRequested"/>
+  <variant name="onExecuteActionRequested"/>
+  <variant name="onGetActionsRequested"/>
+  <variant name="onGetMetadataRequested"/>
+  <variant name="onMountRequested"/>
+  <variant name="onMoveEntryRequested"/>
+  <variant name="onOpenFileRequested"/>
+  <variant name="onReadDirectoryRequested"/>
+  <variant name="onReadFileRequested"/>
+  <variant name="onRemoveWatcherRequested"/>
+  <variant name="onTruncateRequested"/>
+  <variant name="onUnmountRequested"/>
+  <variant name="onWriteFileRequested"/>
+</variants>
+
+<variants name="CloudProvider">
+  <variant name="GoogleDrive"
+      summary="The file was opened using the file task for Google
+               Drive/Workspace"/>
+  <variant name="MicrosoftOneDrive"
+      summary="The file was opened using the file task for OneDrive/Microsoft
+               365"/>
+</variants>
+
+<variants name="GraphAPIMethod">
+  <variant name="CopyEntry"/>
+  <variant name="CreateDirectory"/>
+  <variant name="CreateFile"/>
+  <variant name="CreateUploadSession"/>
+  <variant name="DeleteEntry"/>
+  <variant name="GetAccessTokenFromCode"/>
+  <variant name="GetAccessTokenFromRefreshToken"/>
+  <variant name="GetAuthCode"/>
+  <variant name="GetDelta"/>
+  <variant name="GetDrive"/>
+  <variant name="GetProfile"/>
+  <variant name="MoveEntry"/>
+</variants>
+
 <!-- Do not confuse this with FileManagerVolumeType, which is an enum
      defined in enums.xml, and can be emitted as the value of a given
      UMA. This is a list of variants that can be used to pattern UMAs
@@ -788,6 +835,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.FileOpen.Time.{Transfer}.{Size}.To.{CloudProvider}"
+    units="ms" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File app: Latency to open a Office file in the {CloudProvider}.
+
+    Measured from the time after the user confirmed the copy/move, to ignore the
+    time waiting for user confirmation. If no confirmation is required, it
+    starts from the time that the confirmation would be displayed. The end time
+    is just before asking the browser to open the file/URL in tab/PWA.
+  </summary>
+  <token key="Transfer">
+    <variant name="Copy"
+        summary="The files have been copied to {CloudProvider}"/>
+    <variant name="Move"
+        summary="The files have been moved to {CloudProvider}"/>
+  </token>
+  <token key="Size">
+<!-- CL format sorts by name, thus padding the names with 0000 to preserve the
+     ordering. Lower bound is inclusive, upper bound is exclusive.
+  -->
+
+    <variant name="0000MB-to-1MB"/>
+    <variant name="0001MB-to-10MB"/>
+    <variant name="0010MB-to-100MB"/>
+    <variant name="0100MB-to-1GB"/>
+    <variant name="1000MB-and-above"/>
+  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
     expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
@@ -802,7 +882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Completion.{Handler}"
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Completion.{API-FSP}"
     enum="FileSystemProviderOperationCompletion" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -811,32 +891,11 @@ chromium-metrics-reviews@google.com.
     fileSystemProviderHandler handler completed successfully, completed after a
     warning is shown, aborted via the notification or aborted automatically.
   </summary>
-  <token key="Handler">
-    <variant name="onAbortRequested"/>
-    <variant name="onAddWatcherRequested"/>
-    <variant name="onCloseFileRequested"/>
-    <variant name="onConfigureRequested"/>
-    <variant name="onCopyEntryRequested"/>
-    <variant name="onCreateDirectoryRequested"/>
-    <variant name="onCreateFileRequested"/>
-    <variant name="onDeleteEntryRequested"/>
-    <variant name="onExecuteActionRequested"/>
-    <variant name="onGetActionsRequested"/>
-    <variant name="onGetMetadataRequested"/>
-    <variant name="onMountRequested"/>
-    <variant name="onMoveEntryRequested"/>
-    <variant name="onOpenFileRequested"/>
-    <variant name="onReadDirectoryRequested"/>
-    <variant name="onReadFileRequested"/>
-    <variant name="onRemoveWatcherRequested"/>
-    <variant name="onTruncateRequested"/>
-    <variant name="onUnmountRequested"/>
-    <variant name="onWriteFileRequested"/>
-  </token>
+  <token key="API-FSP" variants="API-FSP"/>
 </histogram>
 
 <histogram
-    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Error.{Handler}"
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Error.{API-FSP}"
     enum="PlatformFileError" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -844,32 +903,11 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: Result returned by ODFS fileSystemProviderHandler
     handler.
   </summary>
-  <token key="Handler">
-    <variant name="onAbortRequested"/>
-    <variant name="onAddWatcherRequested"/>
-    <variant name="onCloseFileRequested"/>
-    <variant name="onConfigureRequested"/>
-    <variant name="onCopyEntryRequested"/>
-    <variant name="onCreateDirectoryRequested"/>
-    <variant name="onCreateFileRequested"/>
-    <variant name="onDeleteEntryRequested"/>
-    <variant name="onExecuteActionRequested"/>
-    <variant name="onGetActionsRequested"/>
-    <variant name="onGetMetadataRequested"/>
-    <variant name="onMountRequested"/>
-    <variant name="onMoveEntryRequested"/>
-    <variant name="onOpenFileRequested"/>
-    <variant name="onReadDirectoryRequested"/>
-    <variant name="onReadFileRequested"/>
-    <variant name="onRemoveWatcherRequested"/>
-    <variant name="onTruncateRequested"/>
-    <variant name="onUnmountRequested"/>
-    <variant name="onWriteFileRequested"/>
-  </token>
+  <token key="API-FSP" variants="API-FSP"/>
 </histogram>
 
 <histogram
-    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Time.{Handler}"
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Time.{API-FSP}"
     units="ms" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -877,32 +915,11 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: ODFS fileSystemProviderHandler handler execution
     time.
   </summary>
-  <token key="Handler">
-    <variant name="onAbortRequested"/>
-    <variant name="onAddWatcherRequested"/>
-    <variant name="onCloseFileRequested"/>
-    <variant name="onConfigureRequested"/>
-    <variant name="onCopyEntryRequested"/>
-    <variant name="onCreateDirectoryRequested"/>
-    <variant name="onCreateFileRequested"/>
-    <variant name="onDeleteEntryRequested"/>
-    <variant name="onExecuteActionRequested"/>
-    <variant name="onGetActionsRequested"/>
-    <variant name="onGetMetadataRequested"/>
-    <variant name="onMountRequested"/>
-    <variant name="onMoveEntryRequested"/>
-    <variant name="onOpenFileRequested"/>
-    <variant name="onReadDirectoryRequested"/>
-    <variant name="onReadFileRequested"/>
-    <variant name="onRemoveWatcherRequested"/>
-    <variant name="onTruncateRequested"/>
-    <variant name="onUnmountRequested"/>
-    <variant name="onWriteFileRequested"/>
-  </token>
+  <token key="API-FSP" variants="API-FSP"/>
 </histogram>
 
 <histogram
-    name="FileBrowser.OfficeFiles.ODFS.GraphAPI.ResponseCode.{Operation}"
+    name="FileBrowser.OfficeFiles.ODFS.GraphAPI.ResponseCode.{GraphAPIMethod}"
     enum="OfficeGraphAPIResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -910,43 +927,17 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: HTTP response code of select Microsoft GraphAPI
     calls.
   </summary>
-  <token key="Operation">
-    <variant name="CopyEntry"/>
-    <variant name="CreateDirectory"/>
-    <variant name="CreateFile"/>
-    <variant name="CreateUploadSession"/>
-    <variant name="DeleteEntry"/>
-    <variant name="GetAccessTokenFromCode"/>
-    <variant name="GetAccessTokenFromRefreshToken"/>
-    <variant name="GetAuthCode"/>
-    <variant name="GetDelta"/>
-    <variant name="GetDrive"/>
-    <variant name="GetProfile"/>
-    <variant name="MoveEntry"/>
-  </token>
+  <token key="GraphAPIMethod" variants="GraphAPIMethod"/>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.ODFS.GraphAPI.Time.{Operation}"
+<histogram name="FileBrowser.OfficeFiles.ODFS.GraphAPI.Time.{GraphAPIMethod}"
     units="ms" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS File Browser: latency of select Microsoft GraphAPI calls.
   </summary>
-  <token key="Operation">
-    <variant name="CopyEntry"/>
-    <variant name="CreateDirectory"/>
-    <variant name="CreateFile"/>
-    <variant name="CreateUploadSession"/>
-    <variant name="DeleteEntry"/>
-    <variant name="GetAccessTokenFromCode"/>
-    <variant name="GetAccessTokenFromRefreshToken"/>
-    <variant name="GetAuthCode"/>
-    <variant name="GetDelta"/>
-    <variant name="GetDrive"/>
-    <variant name="GetProfile"/>
-    <variant name="MoveEntry"/>
-  </token>
+  <token key="GraphAPIMethod" variants="GraphAPIMethod"/>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.MimeType.{Direction}"
@@ -975,7 +966,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{ProviderName}"
+<histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{CloudProvider}"
     enum="OfficeFilesSourceVolume" expires_after="M124">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -983,14 +974,7 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: Records the source volume an office file is opened
     from.
   </summary>
-  <token key="ProviderName">
-    <variant name="GoogleDrive"
-        summary="The file was opened using the file task for Google
-                 Drive/Workspace"/>
-    <variant name="MicrosoftOneDrive"
-        summary="The file was opened using the file task for
-                 OneDrive/Microsoft 365"/>
-  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{ProviderName}"
