@@ -6,7 +6,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrIconButtonElement, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -37,9 +37,6 @@ suite('translate page settings', function() {
   const neverTranslatePref = 'translate_blocked_languages';
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableDesktopDetailedLanguageSettings: true,
-    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrSettingsPrefs.deferInitialization = true;
   });

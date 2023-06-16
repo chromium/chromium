@@ -162,16 +162,13 @@
                 </settings-spell-check-page>
               </settings-section>
             </template>
-            <template is="dom-if"
-                if="[[enableDesktopDetailedLanguageSettings_]]" restamp>
-              <settings-section page-title="$i18n{translatePageTitle}"
-                  section="translate" nest-under-section="languages">
-                <settings-translate-page prefs="{{prefs}}"
-                    languages="{{languages}}"
-                    language-helper="{{languageHelper}}">
-                </settings-translate-page>
-              </settings-section>
-            </template>
+            <settings-section page-title="$i18n{translatePageTitle}"
+                section="translate" nest-under-section="languages">
+              <settings-translate-page prefs="{{prefs}}"
+                  languages="{{languages}}"
+                  language-helper="{{languageHelper}}">
+              </settings-translate-page>
+            </settings-section>
 </if>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"
                 restamp>
