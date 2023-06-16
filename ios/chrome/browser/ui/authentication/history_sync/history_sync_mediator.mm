@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 
+#import "base/check.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -12,6 +14,10 @@
 
 - (void)disconnect {
   self.consumer = nil;
+}
+
+- (void)dealloc {
+  CHECK(!self.consumer);
 }
 
 @end
