@@ -28,12 +28,14 @@ namespace {
 
 constexpr char kFakeDlcId[] = "FakeDlc";
 constexpr char kSupportedLocale[] = "es";
-constexpr char kHistogramInstallPackSuccess[] =
-    "ChromeOS.LanguagePacks.InstallPack.Success";
 constexpr char kHistogramGetPackStateFeatureId[] =
     "ChromeOS.LanguagePacks.GetPackState.FeatureId";
+constexpr char kHistogramInstallPackSuccess[] =
+    "ChromeOS.LanguagePacks.InstallPack.Success";
 constexpr char kHistogramInstallBasePackFeatureId[] =
     "ChromeOS.LanguagePacks.InstallBasePack.FeatureId";
+constexpr char kHistogramOobeValidLocale[] =
+    "ChromeOS.LanguagePacks.Oobe.ValidLocale";
 constexpr char kHistogramUninstallCompleteSuccess[] =
     "ChromeOS.LanguagePacks.UninstallComplete.Success";
 
@@ -507,6 +509,13 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccessTest) {
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
 
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+
   manager_->UpdatePacksForOobe(
       "en-au", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
                               base::Unretained(this)));
@@ -516,6 +525,12 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccessTest) {
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, "en-au");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     1);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
 }
 
 TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
@@ -523,6 +538,13 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
 
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
 
   manager_->UpdatePacksForOobe(
       "it-it", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
@@ -533,6 +555,40 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, "it");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     1);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeWrongLocaleTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+
+  manager_->UpdatePacksForOobe(
+      "xxx", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                            base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInvalidDlc);
+  EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     1);
 }
 
 TEST_F(LanguagePackManagerTest, UpdatePacksForOobeFailureTest) {

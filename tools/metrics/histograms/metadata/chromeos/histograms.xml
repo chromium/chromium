@@ -1906,6 +1906,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LanguagePacks.Oobe.ValidLocale" enum="BooleanSuccess"
+    expires_after="2023-09-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records whether LanguagePackManager is called with a valid locale when
+    updating packs in OOBE.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LanguagePacks.UninstallComplete.Success"
     enum="BooleanSuccess" expires_after="2023-09-01">
   <owner>claudiomagni@chromium.org</owner>

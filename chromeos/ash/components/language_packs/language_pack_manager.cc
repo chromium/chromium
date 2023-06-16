@@ -376,11 +376,14 @@ void LanguagePackManager::UpdatePacksForOobe(
       GetDlcIdForLanguagePack(kTtsFeatureId, locale);
 
   if (dlc_id) {
+    base::UmaHistogramBoolean("ChromeOS.LanguagePacks.Oobe.ValidLocale", true);
     InstallDlc(*dlc_id,
                base::BindOnce(&OnInstallDlcComplete, std::move(callback),
                               kTtsFeatureId, locale));
   } else {
+    base::UmaHistogramBoolean("ChromeOS.LanguagePacks.Oobe.ValidLocale", false);
     DLOG(ERROR) << "Language Packs: UpdatePacksForOobe locale does not exist";
+    std::move(callback).Run(CreateInvalidDlcPackResult());
   }
 }
 
