@@ -11,29 +11,7 @@
 <title>Credits</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="/credits.css">
-<script>
-//<![CDATA[
-// TODO(b/284974354): Synced with chrome://credits/credits.js for now.
-function $(id) {
-  return document.getElementById(id);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  $('print-link').hidden = false;
-  $('print-link').onclick = function() {
-    window.print();
-    return false;
-  };
-
-  document.addEventListener('keypress', function(e) {
-    // Make the license show/hide toggle when the Enter is pressed.
-    if (e.keyCode === 0x0d && e.target.tagName === 'LABEL') {
-      e.target.previousElementSibling.click();
-    }
-  });
-});
-//]]>
-</script>
+<script src="/credits.js"></script>
 </head>
 <body>
 <span class="page-title">Credits</span>
