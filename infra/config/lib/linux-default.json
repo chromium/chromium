@@ -556,6 +556,7 @@
     "linux_optional_gpu_tests_rel": "Ubuntu-22.04",
     "linux_vr": "Ubuntu-22.04",
     "mac-rel": "Ubuntu-22.04",
+    "mac13-arm64-rel": "Ubuntu-22.04",
     "network_service_linux": "Ubuntu-22.04",
     "tricium-clang-tidy": "Ubuntu-22.04",
     "tricium-metrics-analysis": "Ubuntu-22.04",
