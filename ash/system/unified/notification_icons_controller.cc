@@ -32,7 +32,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
 
@@ -44,7 +43,6 @@ constexpr int kIconsViewDisplaySizeThreshold = 768;
 
 // Maximum number of notification icons shown in the system tray button.
 constexpr int kMaxNotificationIconsShown = 2;
-constexpr int kNotificationIconSpacing = 1;
 
 const char kCapsLockNotifierId[] = "ash.caps-lock";
 const char kBatteryNotificationNotifierId[] = "ash.battery";
@@ -91,8 +89,6 @@ NotificationIconTrayItemView::NotificationIconTrayItemView(
     NotificationIconsController* controller)
     : TrayItemView(shelf), controller_(controller) {
   CreateImageView();
-  image_view()->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(0, kNotificationIconSpacing)));
 }
 
 NotificationIconTrayItemView::~NotificationIconTrayItemView() = default;

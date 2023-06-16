@@ -21,6 +21,7 @@
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -70,6 +71,8 @@ class NetworkTrayViewTest : public AshTestBase {
 
   FakeCrosNetworkConfig* cros_network() { return cros_network_.get(); }
 
+  NetworkTrayView* network_tray_view() { return network_tray_view_; }
+
   std::u16string get_tooltip() { return network_tray_view_->tooltip_; }
 
  private:
@@ -100,6 +103,24 @@ TEST_F(NetworkTrayViewTest, NetworkIconTooltip) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED,
                                        u"wifi"),
             get_tooltip());
+}
+
+// Regression test for http://b/284983806
+TEST_F(NetworkTrayViewTest, EthernetVpnIconIsNotClipped) {
+  // Set up an Ethernet network with a VPN.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "ethernet", NetworkType::kEthernet, ConnectionStateType::kConnected));
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "vpn", NetworkType::kVPN, ConnectionStateType::kConnected));
+
+  // The view's preferred size is as least as large as the image (so it doesn't
+  // clip).
+  gfx::Size view_size = network_tray_view()->CalculatePreferredSize();
+  gfx::Size image_size = network_tray_view()->image_view()->GetImage().size();
+  EXPECT_GE(view_size.width(), image_size.width());
+  EXPECT_GE(view_size.height(), image_size.height());
 }
 
 }  // namespace ash

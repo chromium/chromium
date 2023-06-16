@@ -231,6 +231,9 @@ gfx::Size TrayItemView::CalculatePreferredSize() const {
   gfx::Size size = views::View::CalculatePreferredSize();
   if (image_view_) {
     size = gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
+    // Some TrayItemViews have slightly larger icons (e.g. Ethernet with VPN
+    // badge).
+    size.SetToMax(image_view_->CalculatePreferredSize());
   }
 
   if (!animation_.get() || !animation_->is_animating() ||

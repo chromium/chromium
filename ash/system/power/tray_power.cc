@@ -57,7 +57,9 @@ gfx::Size PowerTrayView::CalculatePreferredSize() const {
   gfx::Size standard_size = TrayItemView::CalculatePreferredSize();
   if (IsHorizontalAlignment())
     return gfx::Size(kUnifiedTrayBatteryWidth, standard_size.height());
-  return standard_size;
+
+  // Ensure battery isn't too tall in side shelf.
+  return gfx::Size(standard_size.width(), kUnifiedTrayIconSize);
 }
 
 void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

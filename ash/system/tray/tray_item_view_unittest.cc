@@ -4,11 +4,15 @@
 
 #include "ash/system/tray/tray_item_view.h"
 
+#include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -141,6 +145,21 @@ TEST_F(TrayItemViewTest, ShowDuringZeroDurationAnimation) {
   // The item should be visible and opaque.
   EXPECT_TRUE(tray_item()->GetVisible());
   EXPECT_EQ(tray_item()->layer()->opacity(), 1.0f);
+}
+
+TEST_F(TrayItemViewTest, LargeImageIcon) {
+  // Use a size that is larger than the default tray icon size.
+  const int kLargeSize = 24;
+  static_assert(kLargeSize > kUnifiedTrayIconSize);
+
+  // Set the image to a large image.
+  gfx::Size kLargeImageSize(kLargeSize, kLargeSize);
+  tray_item()->image_view()->SetImage(
+      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED));
+
+  // The preferred size is the size of the larger image (which is not the
+  // default tray icon size, see static_assert above).
+  EXPECT_EQ(tray_item()->CalculatePreferredSize(), kLargeImageSize);
 }
 
 }  // namespace ash

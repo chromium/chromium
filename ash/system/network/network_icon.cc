@@ -150,7 +150,7 @@ const int kNumFadeImages = 10;
 
 bool IsTrayIcon(IconType icon_type) {
   return icon_type == ICON_TYPE_TRAY_REGULAR ||
-         icon_type == ICON_TYPE_TRAY_OOBE;
+         icon_type == ICON_TYPE_TRAY_ACTIVE || icon_type == ICON_TYPE_TRAY_OOBE;
 }
 
 bool IconTypeHasVPNBadge(IconType icon_type) {
@@ -291,8 +291,10 @@ gfx::ImageSkia GetIcon(const ui::ColorProvider* color_provider,
                        IconType icon_type,
                        int strength_index) {
   if (network->type == NetworkType::kEthernet) {
+    // The system tray uses a smaller icon.
     return gfx::CreateVectorIcon(
-        vector_icons::kEthernetIcon,
+        IsTrayIcon(icon_type) ? kNetworkEthernetIcon
+                              : vector_icons::kEthernetIcon,
         GetDefaultColorForIconType(color_provider, icon_type));
   }
   if (network->type == NetworkType::kVPN) {
