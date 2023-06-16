@@ -96,8 +96,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // location icon isn't offset by the chip and the bubble is hidden.
   EXPECT_FALSE(lbv->chip_controller()->IsPermissionPromptChipVisible());
   EXPECT_FALSE(lbv->chip_controller()->IsBubbleShowing());
-  EXPECT_EQ(lbv->location_icon_view()->bounds().x(),
-            GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
+  if (!features::IsChromeRefresh2023()) {
+    // CR2023 has a few experimental flavors of LocationIconView positioning.
+    // It does not make sense to test them here.
+    // See LocationBarView::Layout().
+    EXPECT_EQ(lbv->location_icon_view()->bounds().x(),
+              GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
+  }
 
   // Ensure no callbacks are pending.
   EXPECT_FALSE(lbv->chip_controller()->is_collapse_timer_running_for_testing());
