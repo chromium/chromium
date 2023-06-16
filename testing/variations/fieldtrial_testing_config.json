@@ -12051,7 +12051,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230614",
                     "enable_features": [
                         "CrOSLateBootSecagentdCoalesceTerminates"
                     ]
