@@ -163,6 +163,7 @@
 /libaom/source/libaom
 /libassistant
 /libavif/src
+/libavifinfo/src
 /libc++-static/libc++.a
 /libdrm/src
 /libei/bin
