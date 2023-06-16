@@ -10,10 +10,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,7 +41,8 @@ class StoragePartitionImpl;
 // coordinates report requests, and interfaces with other directories. Lifetime
 // is bound to lifetime of the `StoragePartitionImpl`.
 class CONTENT_EXPORT PrivateAggregationManagerImpl
-    : public PrivateAggregationManager {
+    : public PrivateAggregationManager,
+      public PrivateAggregationDataModel {
  public:
   // `storage_partition` must outlive this.
   PrivateAggregationManagerImpl(bool exclusively_run_in_memory,
@@ -63,6 +66,12 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
                        StoragePartition::StorageKeyMatcherFunction filter,
                        base::OnceClosure done) override;
 
+  // PrivateAggregationDataModel:
+  void GetAllDataKeys(
+      base::OnceCallback<void(std::set<DataKey>)> callback) override;
+  void RemovePendingDataKey(const DataKey& data_key,
+                            base::OnceClosure callback) override;
+
  protected:
   // Protected for testing.
   PrivateAggregationManagerImpl(
@@ -85,11 +94,17 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       PrivateAggregationBudgeter::RequestResult request_result);
 
+  virtual void OnBudgeterGetAllDataKeysReturned(
+      base::OnceCallback<void(std::set<DataKey>)> callback,
+      std::set<DataKey> all_keys);
+
   std::unique_ptr<PrivateAggregationBudgeter> budgeter_;
   std::unique_ptr<PrivateAggregationHost> host_;
 
   // Can be nullptr in unit tests.
   raw_ptr<StoragePartitionImpl> storage_partition_;
+
+  base::WeakPtrFactory<PrivateAggregationManagerImpl> weak_factory_{this};
 };
 
 }  // namespace content

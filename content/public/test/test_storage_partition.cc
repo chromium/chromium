@@ -145,6 +145,11 @@ AttributionDataModel* TestStoragePartition::GetAttributionDataModel() {
   return nullptr;
 }
 
+PrivateAggregationDataModel*
+TestStoragePartition::GetPrivateAggregationDataModel() {
+  return nullptr;
+}
+
 BrowsingTopicsSiteDataManager*
 TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
   return browsing_topics_site_data_manager_;

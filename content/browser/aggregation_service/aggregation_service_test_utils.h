@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -185,6 +186,11 @@ class MockAggregationService : public AggregationService {
               SendReportsForWebUI,
               (const std::vector<AggregationServiceStorage::RequestId>& ids,
                base::OnceClosure reports_sent_callback),
+              (override));
+
+  MOCK_METHOD(void,
+              GetPendingReportReportingOrigins,
+              (base::OnceCallback<void(std::set<url::Origin>)> callback),
               (override));
 
   void AddObserver(AggregationServiceObserver* observer) override;

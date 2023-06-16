@@ -78,6 +78,7 @@ class HostZoomLevelContext;
 class HostZoomMap;
 class InterestGroupManager;
 class PlatformNotificationContext;
+class PrivateAggregationDataModel;
 class ServiceWorkerContext;
 class SharedWorkerService;
 class StoragePartitionConfig;
@@ -163,6 +164,7 @@ class CONTENT_EXPORT StoragePartition {
   virtual InterestGroupManager* GetInterestGroupManager() = 0;
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
   virtual AttributionDataModel* GetAttributionDataModel() = 0;
+  virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new

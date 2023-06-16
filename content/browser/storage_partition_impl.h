@@ -88,7 +88,9 @@ class LockManager;
 class MediaLicenseManager;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class PaymentAppContextImpl;
+class PrivateAggregationDataModel;
 class PrivateAggregationManager;
+class PrivateAggregationManagerImpl;
 class PushMessagingContext;
 class ResourceCacheManager;
 class QuotaContext;
@@ -151,7 +153,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverrideAttributionManagerForTesting(
       std::unique_ptr<AttributionManager> attribution_manager);
   void OverridePrivateAggregationManagerForTesting(
-      std::unique_ptr<PrivateAggregationManager> private_aggregation_manager);
+      std::unique_ptr<PrivateAggregationManagerImpl>
+          private_aggregation_manager);
 
   // StoragePartition interface.
   const StoragePartitionConfig& GetConfig() override;
@@ -203,6 +206,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
   // Use outside content.
   AttributionDataModel* GetAttributionDataModel() override;
+  PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
 
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
@@ -692,7 +696,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Owning pointer to the `SharedStorageHeaderObserver` for this partition.
   std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;
 
-  std::unique_ptr<PrivateAggregationManager> private_aggregation_manager_;
+  std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
 
   std::unique_ptr<ResourceCacheManager> resource_cache_manager_;
 

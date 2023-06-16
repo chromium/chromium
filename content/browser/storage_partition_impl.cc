@@ -110,6 +110,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -1009,7 +1010,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       InterestGroupManagerImpl* interest_group_manager,
       AttributionManager* attribution_manager,
       AggregationService* aggregation_service,
-      PrivateAggregationManager* private_aggregation_manager,
+      PrivateAggregationManagerImpl* private_aggregation_manager,
       storage::SharedStorageManager* shared_storage_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
@@ -1864,6 +1865,12 @@ StoragePartitionImpl::GetPrivateAggregationManager() {
   return private_aggregation_manager_.get();
 }
 
+PrivateAggregationDataModel*
+StoragePartitionImpl::GetPrivateAggregationDataModel() {
+  DCHECK(initialized_);
+  return private_aggregation_manager_.get();
+}
+
 ResourceCacheManager* StoragePartitionImpl::GetResourceCacheManager() {
   CHECK(initialized_);
   return resource_cache_manager_.get();
@@ -2565,7 +2572,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     InterestGroupManagerImpl* interest_group_manager,
     AttributionManager* attribution_manager,
     AggregationService* aggregation_service,
-    PrivateAggregationManager* private_aggregation_manager,
+    PrivateAggregationManagerImpl* private_aggregation_manager,
     storage::SharedStorageManager* shared_storage_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
@@ -3094,7 +3101,8 @@ void StoragePartitionImpl::OverrideAttributionManagerForTesting(
 }
 
 void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(
-    std::unique_ptr<PrivateAggregationManager> private_aggregation_manager) {
+    std::unique_ptr<PrivateAggregationManagerImpl>
+        private_aggregation_manager) {
   DCHECK(initialized_);
   private_aggregation_manager_ = std::move(private_aggregation_manager);
 }

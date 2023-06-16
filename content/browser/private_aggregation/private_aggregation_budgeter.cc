@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,6 +29,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -239,19 +242,23 @@ void PrivateAggregationBudgeter::ConsumeBudget(
   }
 }
 
+void PrivateAggregationBudgeter::OnUserVisibleTaskStarted() {
+  // When a user visible task is queued or running, we use a higher priority.
+  // We do this even if the storage hasn't finished initializing.
+  ++num_pending_user_visible_tasks_;
+  db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+}
+
 void PrivateAggregationBudgeter::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  // When a clear data task is queued or running, we use a higher priority. We
-  // do this even if the storage hasn't finished initializing.
-  ++num_pending_clear_data_tasks_;
-  db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+  OnUserVisibleTaskStarted();
 
   EnsureStorageInitializationBegun();
 
-  done = base::BindOnce(&PrivateAggregationBudgeter::OnClearDataComplete,
+  done = base::BindOnce(&PrivateAggregationBudgeter::OnUserVisibleTaskComplete,
                         weak_factory_.GetWeakPtr())
              .Then(std::move(done));
 
@@ -268,12 +275,12 @@ void PrivateAggregationBudgeter::ClearData(
   }
 }
 
-void PrivateAggregationBudgeter::OnClearDataComplete() {
-  DCHECK_GT(num_pending_clear_data_tasks_, 0);
-  --num_pending_clear_data_tasks_;
+void PrivateAggregationBudgeter::OnUserVisibleTaskComplete() {
+  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  --num_pending_user_visible_tasks_;
 
-  // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0) {
+  // No more pending tasks, so we can reset the priority.
+  if (num_pending_user_visible_tasks_ == 0) {
     db_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
   }
 }
@@ -302,22 +309,70 @@ void PrivateAggregationBudgeter::ProcessAllPendingCalls() {
   pending_calls_.clear();
 }
 
+void PrivateAggregationBudgeter::GetAllDataKeys(
+    base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+        callback) {
+  OnUserVisibleTaskStarted();
+
+  base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+      impl_callback = std::move(callback).Then(
+          base::BindOnce(&PrivateAggregationBudgeter::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr()));
+
+  if (storage_status_ == StorageStatus::kInitializing) {
+    // `base::Unretained` is safe as `pending_calls_` is owned by `this`.
+    pending_calls_.push_back(
+        base::BindOnce(&PrivateAggregationBudgeter::GetAllDataKeysImpl,
+                       base::Unretained(this), std::move(impl_callback)));
+  } else {
+    return GetAllDataKeysImpl(std::move(impl_callback));
+  }
+}
+
+void PrivateAggregationBudgeter::GetAllDataKeysImpl(
+    base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+        callback) {
+  if (!DidStorageInitializationSucceed()) {
+    std::move(callback).Run(std::set<PrivateAggregationDataModel::DataKey>());
+    return;
+  }
+
+  std::set<PrivateAggregationDataModel::DataKey> keys;
+  for (const auto& [site_key, budgets] :
+       storage_->budgets_data()->GetAllCached()) {
+    for (const proto::ReportingOrigin& elem :
+         budgets.reporting_origins_for_deletion()) {
+      url::Origin reporting_origin = url::Origin::Create(GURL(elem.origin()));
+      if (reporting_origin.opaque()) {
+        continue;
+      }
+      keys.emplace(std::move(reporting_origin));
+    }
+  }
+  std::move(callback).Run(std::move(keys));
+}
+
+void PrivateAggregationBudgeter::DeleteByDataKey(
+    const PrivateAggregationDataModel::DataKey& key,
+    base::OnceClosure callback) {
+  ClearData(/*delete_begin=*/base::Time::Min(),
+            /*delete_end=*/base::Time::Max(),
+            /*filter=*/
+            base::BindRepeating(
+                std::equal_to<blink::StorageKey>(),
+                blink::StorageKey::CreateFirstParty(key.reporting_origin())),
+            std::move(callback));
+}
+
 // TODO(crbug.com/1336733): Consider enumerating different error cases and log
 // metrics and/or expose to callers.
 void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
-  switch (storage_status_) {
-    case StorageStatus::kPendingInitialization:
-    case StorageStatus::kInitializing:
-      NOTREACHED();
-      break;
-    case StorageStatus::kInitializationFailed:
-      std::move(on_done).Run(RequestResult::kStorageInitializationFailed);
-      return;
-    case StorageStatus::kOpen:
-      break;
+  if (!DidStorageInitializationSucceed()) {
+    std::move(on_done).Run(RequestResult::kStorageInitializationFailed);
+    return;
   }
 
   if (additional_budget <= 0) {
@@ -469,16 +524,9 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  switch (storage_status_) {
-    case StorageStatus::kPendingInitialization:
-    case StorageStatus::kInitializing:
-      NOTREACHED();
-      break;
-    case StorageStatus::kInitializationFailed:
-      std::move(done).Run();
-      return;
-    case StorageStatus::kOpen:
-      break;
+  if (!DidStorageInitializationSucceed()) {
+    std::move(done).Run();
+    return;
   }
 
   // Treat null times as unbounded lower or upper range. This is used by
@@ -591,6 +639,18 @@ void PrivateAggregationBudgeter::ClearDataImpl(
   // `PrivateAggregationBudgetStorage::kFlushDelay`. Runs the `done` callback
   // once flushing is complete.
   storage_->budgets_data()->FlushDataToDisk(std::move(done));
+}
+
+bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() {
+  switch (storage_status_) {
+    case StorageStatus::kPendingInitialization:
+    case StorageStatus::kInitializing:
+      NOTREACHED_NORETURN();
+    case StorageStatus::kInitializationFailed:
+      return false;
+    case StorageStatus::kOpen:
+      return true;
+  }
 }
 
 }  // namespace content

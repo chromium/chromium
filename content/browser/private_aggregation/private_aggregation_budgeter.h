@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_BUDGETER_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -14,6 +15,7 @@
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace base {
@@ -168,6 +170,17 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
                          StoragePartition::StorageKeyMatcherFunction filter,
                          base::OnceClosure done);
 
+  // Runs `callback` with all reporting origins as DataKeys for the Browsing
+  // Data Model. Partial data will still be returned in the event of an error.
+  virtual void GetAllDataKeys(
+      base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+          callback);
+
+  // Deletes all data in storage for storage keys matching the provided
+  // reporting origin in the data key.
+  virtual void DeleteByDataKey(const PrivateAggregationDataModel::DataKey& key,
+                               base::OnceClosure callback);
+
   // TODO(crbug.com/1449005): Clear stale data periodically and on startup.
 
  protected:
@@ -194,9 +207,17 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
                      base::Time delete_end,
                      StoragePartition::StorageKeyMatcherFunction filter,
                      base::OnceClosure done);
-  void OnClearDataComplete();
+  void GetAllDataKeysImpl(
+      base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+          callback);
+
+  void OnUserVisibleTaskComplete();
 
   void ProcessAllPendingCalls();
+
+  bool DidStorageInitializationSucceed();
+
+  void OnUserVisibleTaskStarted();
 
   // While the storage initializes, queues calls (e.g. to `ConsumeBudget()`) in
   // the order the calls are received. Should be empty after storage is
@@ -209,9 +230,9 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // clear data task is queued or running. Otherwise `BEST_EFFORT` is used.
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
 
-  // How many clear data storage tasks are queued or running currently, i.e.
+  // How many user visible storage tasks are queued or running currently, i.e.
   // have been posted but the reply has not been run.
-  int num_pending_clear_data_tasks_ = 0;
+  int num_pending_user_visible_tasks_ = 0;
 
   // `nullptr` until initialization is complete or if initialization failed.
   // Otherwise, owned by this class until destruction. Iff present,

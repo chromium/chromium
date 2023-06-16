@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -26,6 +27,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -581,6 +583,58 @@ TEST_F(PrivateAggregationManagerImplTest,
         }));
     manager_.ClearBudgetData(kExampleTime - base::Days(10), kExampleTime,
                              example_filter, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+}
+
+TEST_F(PrivateAggregationManagerImplTest,
+       BrowsingDataModel_CallbacksProperlyCalled) {
+  AggregatableReportRequest expected_request =
+      aggregation_service::CreateExampleRequest();
+
+  std::vector<PrivateAggregationDataModel::DataKey> expected = {
+      PrivateAggregationDataModel::DataKey(
+          url::Origin::Create(GURL("https://example.com"))),
+      PrivateAggregationDataModel::DataKey(
+          url::Origin::Create(GURL("https://example2.com")))};
+
+  {
+    base::RunLoop run_loop;
+    std::set<PrivateAggregationDataModel::DataKey> data_keys;
+    auto cb = base::BindLambdaForTesting(
+        [&](std::set<PrivateAggregationDataModel::DataKey> returned_keys) {
+          data_keys = std::move(returned_keys);
+        });
+
+    EXPECT_CALL(*budgeter_, GetAllDataKeys)
+        .WillOnce(base::test::RunOnceCallback<0>(
+            std::set<PrivateAggregationDataModel::DataKey>{expected[0]}));
+    EXPECT_CALL(*aggregation_service_, GetPendingReportReportingOrigins)
+        .WillOnce(testing::DoAll(
+            base::test::RunOnceClosure(run_loop.QuitClosure()),
+            base::test::RunOnceCallback<0>(
+                std::set<url::Origin>{expected[1].reporting_origin()})));
+
+    manager_.GetAllDataKeys(cb);
+    run_loop.Run();
+
+    EXPECT_THAT(data_keys,
+                testing::UnorderedElementsAre(expected[0], expected[1]));
+  }
+
+  {
+    base::RunLoop run_loop;
+
+    PrivateAggregationDataModel::DataKey data_key(
+        expected_request.shared_info().reporting_origin);
+
+    EXPECT_CALL(*budgeter_, DeleteByDataKey)
+        .WillOnce(base::test::RunOnceCallback<1>());
+    EXPECT_CALL(*aggregation_service_, ClearData)
+        .WillOnce(base::test::RunOnceCallback<3>());
+
+    manager_.RemovePendingDataKey(data_key, run_loop.QuitClosure());
+
     run_loop.Run();
   }
 }

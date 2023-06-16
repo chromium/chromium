@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_H_
 
+#include <set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -19,6 +20,10 @@ namespace base {
 class Time;
 class Value;
 }  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -100,6 +105,11 @@ class AggregationService {
   virtual void SendReportsForWebUI(
       const std::vector<AggregationServiceStorage::RequestId>& ids,
       base::OnceClosure reports_sent_callback) = 0;
+
+  // Runs `callback` with a set containing all the distinct reporting origins
+  // stored in the report request table.
+  virtual void GetPendingReportReportingOrigins(
+      base::OnceCallback<void(std::set<url::Origin>)> callback) = 0;
 
   virtual void AddObserver(AggregationServiceObserver* observer) = 0;
 

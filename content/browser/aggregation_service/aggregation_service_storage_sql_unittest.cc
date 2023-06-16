@@ -843,6 +843,32 @@ TEST_F(AggregationServiceStorageSqlTest,
   EXPECT_EQ(stored_reports[0].id, RequestId(3));
 }
 
+TEST_F(AggregationServiceStorageSqlTest, GetReportRequestReportingOrigins) {
+  const url::Origin origins[] = {
+      url::Origin::Create(GURL("https://a.example")),
+      url::Origin::Create(GURL("https://b.example")),
+      url::Origin::Create(GURL("https://c.example"))};
+
+  OpenDatabase();
+
+  for (const url::Origin& origin : origins) {
+    AggregatableReportRequest example_request =
+        aggregation_service::CreateExampleRequest();
+    AggregatableReportSharedInfo shared_info =
+        example_request.shared_info().Clone();
+    shared_info.reporting_origin = origin;
+    storage_->StoreRequest(
+        AggregatableReportRequest::Create(example_request.payload_contents(),
+                                          std::move(shared_info))
+            .value());
+  }
+
+  ASSERT_EQ(storage_->GetReportRequestReportingOrigins().size(), 3u);
+  EXPECT_THAT(
+      storage_->GetReportRequestReportingOrigins(),
+      testing::UnorderedElementsAre(origins[0], origins[1], origins[2]));
+}
+
 TEST_F(AggregationServiceStorageSqlTest,
        AdjustOfflineReportTimes_AffectsPastReportsOnly) {
   OpenDatabase();
