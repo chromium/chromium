@@ -246,7 +246,7 @@
 <translation id="2023558322300866873">你隨時可以停止封包擷取作業</translation>
 <translation id="2034971124472263449">繼續儲存</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
-<translation id="206377500836174974">100%</translation>
+<translation id="206377500836174974">完全</translation>
 <translation id="2064048859448024834">已開啟攝影機預覽畫面</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
@@ -1105,7 +1105,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受監管的使用者</translation>
-<translation id="5961960957587052807">亮度</translation>
+<translation id="5961960957587052807">輕微</translation>
 <translation id="5965524703725988602">切換深色主題。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">按下 Enter 鍵以錄製視窗畫面</translation>
 <translation id="5978382165065462689">透過遠端協助分享螢幕控制功能。</translation>
