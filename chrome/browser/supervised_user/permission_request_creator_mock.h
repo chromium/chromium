@@ -49,7 +49,7 @@ class PermissionRequestCreatorMock
   bool delay_handling_ = false;
   int last_url_request_handled_index_ = 0;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   std::vector<GURL> url_requests_;
 };
