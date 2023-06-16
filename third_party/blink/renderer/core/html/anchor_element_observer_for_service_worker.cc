@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
 
+#include <algorithm>
+
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "third_party/blink/public/common/features.h"
@@ -52,16 +54,12 @@ AnchorElementObserverForServiceWorker::AnchorElementObserverForServiceWorker(
     base::PassKey<AnchorElementObserverForServiceWorker>,
     Document& document)
     : Supplement<Document>(document),
-      warm_up_request_cache_(
-          blink::features::kSpeculativeServiceWorkerWarmUpRequestCacheSize
-              .Get()),
       batch_timer_(
           document.GetTaskRunner(TaskType::kInternalDefault),
           this,
           &AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests) {
   CHECK(document.IsInOutermostMainFrame());
-  if (blink::features::kSpeculativeServiceWorkerWarmUpIntersectionObserver
-          .Get()) {
+  if (features::kSpeculativeServiceWorkerWarmUpIntersectionObserver.Get()) {
     intersection_observer_ = IntersectionObserver::Create(
         {}, {std::numeric_limits<float>::min()}, &document,
         WTF::BindRepeating(
@@ -71,15 +69,14 @@ AnchorElementObserverForServiceWorker::AnchorElementObserverForServiceWorker(
         IntersectionObserver::kPostTaskToDeliver,
         IntersectionObserver::kFractionOfTarget,
         /*delay=*/
-        blink::features::
-            kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay.Get());
+        features::kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay
+            .Get());
   }
 }
 
 void AnchorElementObserverForServiceWorker::ObserveAnchorElementVisibility(
     HTMLAnchorElement& element) {
-  if (blink::features::kSpeculativeServiceWorkerWarmUpIntersectionObserver
-          .Get()) {
+  if (features::kSpeculativeServiceWorkerWarmUpIntersectionObserver.Get()) {
     TRACE_EVENT0("ServiceWorker",
                  "AnchorElementObserverForServiceWorker::"
                  "ObserveAnchorElementVisibility");
@@ -89,14 +86,14 @@ void AnchorElementObserverForServiceWorker::ObserveAnchorElementVisibility(
 
 void AnchorElementObserverForServiceWorker::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  if (!blink::features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
+  if (!features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
     return;
   }
 
   TRACE_EVENT0("ServiceWorker",
                "AnchorElementObserverForServiceWorker::UpdateVisibleAnchors");
 
-  Vector<KURL> urls;
+  Links links;
   for (const auto& entry : entries) {
     if (!entry->isIntersecting()) {
       continue;
@@ -115,52 +112,38 @@ void AnchorElementObserverForServiceWorker::UpdateVisibleAnchors(
     if (!anchor) {
       anchor = DynamicTo<HTMLAreaElement>(element);
     }
-    if (anchor && anchor->IsLink()) {
-      urls.push_back(anchor->Url());
+    if (anchor && anchor->IsLink() &&
+        !already_handled_links_.Contains(anchor)) {
+      links.push_back(anchor);
     }
   }
 
-  MaybeSendNavigationTargetUrls(urls);
+  MaybeSendNavigationTargetLinks(links);
 }
 
-void AnchorElementObserverForServiceWorker::MaybeSendNavigationTargetUrls(
-    const Vector<KURL>& candidate_urls) {
-  if (candidate_urls.empty()) {
+void AnchorElementObserverForServiceWorker::MaybeSendNavigationTargetLinks(
+    const Links& candidate_links) {
+  if (candidate_links.empty()) {
     return;
   }
 
   TRACE_EVENT0("ServiceWorker",
                "AnchorElementObserverForServiceWorker::"
-               "MaybeSendNavigationTargetUrls");
+               "MaybeSendNavigationTargetLinks");
 
-  const base::TimeDelta kReWarmUpThreshold =
-      blink::features::kSpeculativeServiceWorkerWarmUpReWarmUpThreshold.Get();
   const int kWarmUpRequestLimit =
-      blink::features::kSpeculativeServiceWorkerWarmUpRequestLimit.Get();
+      features::kSpeculativeServiceWorkerWarmUpRequestLimit.Get();
 
-  const KURL& document_url = GetSupplementable()->Url();
-  for (KURL url : candidate_urls) {
-    if (!url.IsValid() || !url.ProtocolIsInHTTPFamily() ||
-        EqualIgnoringFragmentIdentifier(document_url, url)) {
-      continue;
-    }
-
-    url.RemoveFragmentIdentifier();
-    url.SetUser(String());
-    url.SetPass(String());
-
+  for (const auto& link : candidate_links) {
     // Prevents excessive duplicate warm-up requests.
-    base::TimeTicks now = base::TimeTicks::Now();
-    auto found = warm_up_request_cache_.Get(url.GetString());
-    if (found != warm_up_request_cache_.end() &&
-        now - found->second < kReWarmUpThreshold) {
+    if (already_handled_links_.Contains(link)) {
       continue;
     }
 
     if (total_request_count_ < kWarmUpRequestLimit) {
-      warm_up_request_cache_.Put(url.GetString(), now);
-      pending_warm_up_requests_.push_back(std::move(url));
       ++total_request_count_;
+      already_handled_links_.insert(link);
+      pending_warm_up_links_.push_back(link);
     }
   }
 
@@ -171,17 +154,25 @@ void AnchorElementObserverForServiceWorker::MaybeSendPendingWarmUpRequests() {
   TRACE_EVENT0(
       "ServiceWorker",
       "AnchorElementObserverForServiceWorker::MaybeSendPendingWarmUpRequests");
-  if (!pending_warm_up_requests_.empty() &&
-      GetSupplementable()->LoadEventFinished() && !batch_timer_.IsActive()) {
+
+  if (features::kSpeculativeServiceWorkerWarmUpWaitForLoad.Get() &&
+      !GetDocument().LoadEventFinished()) {
+    return;
+  }
+
+  if (!pending_warm_up_links_.empty() && !batch_timer_.IsActive()) {
     batch_timer_.StartOneShot(
-        blink::features::kSpeculativeServiceWorkerWarmUpBatchTimer.Get(),
+        is_first_batch_
+            ? features::kSpeculativeServiceWorkerWarmUpFirstBatchTimer.Get()
+            : features::kSpeculativeServiceWorkerWarmUpBatchTimer.Get(),
         FROM_HERE);
+    is_first_batch_ = false;
   }
 }
 
 void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
     TimerBase*) {
-  LocalFrame* local_frame = GetSupplementable()->GetFrame();
+  LocalFrame* local_frame = GetDocument().GetFrame();
 
   if (!local_frame) {
     return;
@@ -190,16 +181,49 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
   TRACE_EVENT1(
       "ServiceWorker",
       "AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests",
-      "url_count", pending_warm_up_requests_.size());
+      "pending_link_count", pending_warm_up_links_.size());
 
+  const uint32_t kMaxBatchSize =
+      features::kSpeculativeServiceWorkerWarmUpBatchSize.Get();
+
+  const KURL& document_url = GetDocument().Url();
+  HashSet<KURL> url_set;
   Vector<KURL> urls;
-  pending_warm_up_requests_.swap(urls);
+  urls.reserve(std::min(pending_warm_up_links_.size(), kMaxBatchSize));
+  while (!pending_warm_up_links_.empty()) {
+    KURL url = pending_warm_up_links_.back()->Url();
+    pending_warm_up_links_.pop_back();
+
+    if (!url.IsValid() || !url.ProtocolIsInHTTPFamily() ||
+        EqualIgnoringFragmentIdentifier(document_url, url)) {
+      continue;
+    }
+
+    url.RemoveFragmentIdentifier();
+    url.SetUser(String());
+    url.SetPass(String());
+
+    if (url_set.Contains(url)) {
+      continue;
+    }
+    url_set.insert(url);
+    urls.push_back(std::move(url));
+    if (urls.size() >= kMaxBatchSize) {
+      break;
+    }
+  }
+  urls.Reverse();
   local_frame->MaybeStartOutermostMainFrameNavigation(std::move(urls));
+
+  // Send remaining requests later.
+  MaybeSendPendingWarmUpRequests();
 }
 
 void AnchorElementObserverForServiceWorker::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
   visitor->Trace(intersection_observer_);
+  visitor->Trace(already_handled_links_);
+  visitor->Trace(pending_warm_up_links_);
   visitor->Trace(batch_timer_);
 }
 

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_OBSERVER_FOR_SERVICE_WORKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_OBSERVER_FOR_SERVICE_WORKER_H_
 
-#include "base/containers/lru_cache.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -15,8 +14,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 
 namespace blink {
 
@@ -43,8 +40,9 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
   AnchorElementObserverForServiceWorker& operator=(
       const AnchorElementObserverForServiceWorker&) = delete;
   virtual ~AnchorElementObserverForServiceWorker() = default;
+  using Links = HeapVector<Member<HTMLAnchorElement>>;
 
-  void MaybeSendNavigationTargetUrls(const Vector<KURL>& candidate_urls);
+  void MaybeSendNavigationTargetLinks(const Links& candidate_links);
   void MaybeSendPendingWarmUpRequests();
   void ObserveAnchorElementVisibility(HTMLAnchorElement& element);
   void Trace(Visitor* visitor) const override;
@@ -53,16 +51,17 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
   void UpdateVisibleAnchors(
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
   void SendPendingWarmUpRequests(TimerBase*);
+  Document& GetDocument() { return *GetSupplementable(); }
 
   Member<IntersectionObserver> intersection_observer_;
 
-  // Remember recent warm-up requests to prevent excessive duplicate warm-up
-  // requests.
-  base::HashingLRUCache<String, base::TimeTicks> warm_up_request_cache_;
+  // Remember already handled links to prevent excessive duplicate
+  // warm-up requests.
+  HeapHashSet<WeakMember<HTMLAnchorElement>> already_handled_links_;
 
-  // The following Vector keeps the pending warm-up requests until the document
+  // The following Links keeps the pending warm-up requests until the document
   // is loaded to prioritize loading the document.
-  Vector<KURL> pending_warm_up_requests_;
+  Links pending_warm_up_links_;
 
   // Sent URL count to browser process.
   int total_request_count_ = 0;
@@ -71,6 +70,9 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
   // sending URL candidates, we wait for a while to accept more requests, and
   // then send the accumulated URL candidates in one batch.
   HeapTaskRunnerTimer<AnchorElementObserverForServiceWorker> batch_timer_;
+
+  // `true` indicates the timer hasn't used.
+  bool is_first_batch_ = true;
 };
 
 }  // namespace blink

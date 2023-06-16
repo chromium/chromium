@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -630,6 +631,10 @@ BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpDryRun{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_dry_run", false};
 
+// If true, warm-up immediately without waiting for load event.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpWaitForLoad{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_wait_for_load", false};
+
 // kSpeculativeServiceWorkerWarmUp observes anchor events such as visibility,
 // pointerover, and pointerdown. These events could be triggered very often. To
 // reduce the frequency of processing, kSpeculativeServiceWorkerWarmUp uses a
@@ -637,18 +642,25 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpDryRun{
 const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpBatchTimer{&kSpeculativeServiceWorkerWarmUp,
                                               "sw_warm_up_batch_timer",
-                                              base::Milliseconds(100)};
+                                              base::Milliseconds(300)};
+
+// Similar to 'kSpeculativeServiceWorkerWarmUpBatchTimer`. But this is used for
+// the first batch in the page.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpFirstBatchTimer{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_first_batch_timer",
+        base::Seconds(1)};
+
+// The maximum URL candidate count (batch size) to notify URL candidates
+// from renderer process to browser process. If URL candidate count
+// exceeds batch size, the remaining URL candidate will be sent later.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpBatchSize{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_batch_size", 10};
 
 // kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
 // count.
 const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_max_count", 10};
-
-// kSpeculativeServiceWorkerWarmUp remembers recent warm-up requests to prevent
-// excessive duplicate warm-up. The following cache size is the cache size for
-// duplicated request checks.
-const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestCacheSize{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_cache_size", 1000};
 
 // kSpeculativeServiceWorkerWarmUp enqueues navigation candidate URLs. This is
 // the queue length of the candidate URLs.
@@ -665,12 +677,6 @@ const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpDuration{&kSpeculativeServiceWorkerWarmUp,
                                             "sw_warm_up_duration",
                                             base::Minutes(10)};
-// Duration to re-warmup service worker. This duration must be shorter than
-// sw_warm_up_duration.
-const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpReWarmUpThreshold{
-        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_re_warm_up_threshold",
-        base::Minutes(7)};
 
 // Enable IntersectionObserver to detect anchor's visibility.
 const base::FeatureParam<bool>

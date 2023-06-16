@@ -206,22 +206,20 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
     if (base::FeatureList::IsEnabled(
-            blink::features::kSpeculativeServiceWorkerWarmUp) &&
-        Url().IsValid()) {
+            features::kSpeculativeServiceWorkerWarmUp)) {
       Document& top_document = GetDocument().TopDocument();
       if (auto* observer =
               AnchorElementObserverForServiceWorker::From(top_document)) {
-        if (blink::features::kSpeculativeServiceWorkerWarmUpOnPointerover
-                .Get() &&
+        if (features::kSpeculativeServiceWorkerWarmUpOnPointerover.Get() &&
             (event.type() == event_type_names::kMouseover ||
              event.type() == event_type_names::kPointerover)) {
-          observer->MaybeSendNavigationTargetUrls(Vector<KURL>({Url()}));
-        } else if (blink::features::kSpeculativeServiceWorkerWarmUpOnPointerdown
+          observer->MaybeSendNavigationTargetLinks({this});
+        } else if (features::kSpeculativeServiceWorkerWarmUpOnPointerdown
                        .Get() &&
                    (event.type() == event_type_names::kMousedown ||
                     event.type() == event_type_names::kPointerdown ||
                     event.type() == event_type_names::kTouchstart)) {
-          observer->MaybeSendNavigationTargetUrls(Vector<KURL>({Url()}));
+          observer->MaybeSendNavigationTargetLinks({this});
         }
       }
     }
@@ -668,9 +666,8 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
     AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculativeServiceWorkerWarmUp) &&
-      blink::features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
+  if (base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp) &&
+      features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
     if (auto* observer =
             AnchorElementObserverForServiceWorker::From(top_document)) {
       observer->ObserveAnchorElementVisibility(*this);

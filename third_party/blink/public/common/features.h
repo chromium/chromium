@@ -949,20 +949,22 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerWarmUp);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpDryRun;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpWaitForLoad;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpBatchTimer;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpFirstBatchTimer;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpBatchSize;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSpeculativeServiceWorkerWarmUpMaxCount;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSpeculativeServiceWorkerWarmUpRequestCacheSize;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSpeculativeServiceWorkerWarmUpRequestQueueLength;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSpeculativeServiceWorkerWarmUpRequestLimit;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpDuration;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpReWarmUpThreshold;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpIntersectionObserver;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
