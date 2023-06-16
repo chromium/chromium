@@ -370,6 +370,9 @@
     "win11-updater-tester-dbg-uac": "Ubuntu-22.04",
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
+  "flakiness": {
+    "flakiness-data-packager": "Ubuntu-22.04"
+  },
   "goma": {
     "android-archive-dbg-goma-rbe-ats-canary": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel-goma-rbe-canary": "Ubuntu-22.04",
