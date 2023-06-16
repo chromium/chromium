@@ -46,6 +46,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
+#include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -362,10 +363,11 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
             save_and_recall_desks_storage_manager_.get());
   }
 
-  auto policy_desk_templates_it =
-      preconfigured_desk_templates_json_.find(account_id);
-  if (policy_desk_templates_it != preconfigured_desk_templates_json_.end())
-    GetDeskModel()->SetPolicyDeskTemplates(policy_desk_templates_it->second);
+  // Ensure that admin templates are ready to go.  This will only query from the
+  // primary profile but it happens early enough to ensure that the model is
+  // loaded when the user logs in.
+  ash::AdminTemplateServiceFactory::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
 }
 
 // TODO(aprilzhou): Refactor DesksClient to remove unnecessary callback. It's
