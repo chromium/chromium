@@ -271,9 +271,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
 
   void Cancel() override {
     consumer_->Cancel();
-    // Cancelling triggers a state change. This resets the {streaming_} member
-    // via {AbortCompilation}. Check that this happened.
-    CHECK_EQ(nullptr, streaming_);
+    return AbortCompilation("Cancellation requested");
   }
 
   void Trace(Visitor* visitor) const override {
