@@ -266,31 +266,6 @@ void ChromeAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
   NOTREACHED();
 }
 
-void ChromeAutofillClientIOS::AttachListenersForPaymentsBottomSheet(
-    const std::vector<FormStructure*>& forms,
-    web::WebFrame* frame) const {
-  AutofillBottomSheetTabHelper* helper =
-      AutofillBottomSheetTabHelper::FromWebState(web_state_);
-  if (!helper) {
-    return;
-  }
-
-  std::vector<autofill::FieldRendererId> renderer_ids;
-  for (const FormStructure* form : forms) {
-    if (form->IsCompleteCreditCardForm()) {
-      for (const auto& field : form->fields()) {
-        if (helper->IsPaymentsBottomSheetTriggeringField(
-                field->Type().GetStorableType())) {
-          renderer_ids.emplace_back(field->unique_renderer_id);
-        }
-      }
-    }
-  }
-  if (!renderer_ids.empty()) {
-    helper->AttachPaymentsListeners(renderer_ids, frame);
-  }
-}
-
 void ChromeAutofillClientIOS::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
@@ -496,7 +471,14 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictions(
   if (!frame) {
     return;
   }
-  AttachListenersForPaymentsBottomSheet(forms, frame);
+
+  // Attach listeners to fields which may open the payments bottom sheet if
+  // there are any credit cards to suggest.
+  AutofillBottomSheetTabHelper* helper =
+      AutofillBottomSheetTabHelper::FromWebState(web_state_);
+  if (helper && !personal_data_manager_->GetCreditCardsToSuggest().empty()) {
+    helper->AttachPaymentsListeners(forms, frame);
+  }
 
   // If the frame exists, then the driver will exist/be created.
   IOSPasswordManagerDriver* password_manager_driver =

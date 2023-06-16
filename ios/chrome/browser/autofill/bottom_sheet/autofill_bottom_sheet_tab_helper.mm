@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
+#import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_account_storage_notice_handler.h"
@@ -24,6 +25,27 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Whether the provided field type is one which can trigger the Payments Bottom
+// Sheet.
+bool IsPaymentsBottomSheetTriggeringField(autofill::ServerFieldType type) {
+  switch (type) {
+    case autofill::CREDIT_CARD_NAME_FULL:
+    case autofill::CREDIT_CARD_NUMBER:
+    case autofill::CREDIT_CARD_EXP_MONTH:
+    case autofill::CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case autofill::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
 
 AutofillBottomSheetTabHelper::~AutofillBottomSheetTabHelper() = default;
 
@@ -80,14 +102,28 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
 }
 
 void AutofillBottomSheetTabHelper::AttachPaymentsListeners(
-    const std::vector<autofill::FieldRendererId>& renderer_ids,
+    const std::vector<autofill::FormStructure*>& forms,
     web::WebFrame* frame) {
   // Verify that the payments bottom sheet feature is enabled
   if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
     return;
   }
 
-  AttachListeners(renderer_ids, registered_payments_renderer_ids_, frame);
+  std::vector<autofill::FieldRendererId> renderer_ids;
+  for (const autofill::FormStructure* form : forms) {
+    if (form->IsCompleteCreditCardForm()) {
+      for (const auto& field : form->fields()) {
+        if (IsPaymentsBottomSheetTriggeringField(
+                field->Type().GetStorableType())) {
+          renderer_ids.emplace_back(field->unique_renderer_id);
+        }
+      }
+    }
+  }
+
+  if (!renderer_ids.empty()) {
+    AttachListeners(renderer_ids, registered_payments_renderer_ids_, frame);
+  }
 }
 
 void AutofillBottomSheetTabHelper::AttachListeners(
@@ -111,22 +147,6 @@ void AutofillBottomSheetTabHelper::AttachListeners(
     std::copy(
         new_renderer_ids.begin(), new_renderer_ids.end(),
         std::inserter(registered_renderer_ids, registered_renderer_ids.end()));
-  }
-}
-
-bool AutofillBottomSheetTabHelper::IsPaymentsBottomSheetTriggeringField(
-    autofill::ServerFieldType type) const {
-  switch (type) {
-    case autofill::CREDIT_CARD_NAME_FULL:
-    case autofill::CREDIT_CARD_NUMBER:
-    case autofill::CREDIT_CARD_EXP_MONTH:
-    case autofill::CREDIT_CARD_EXP_2_DIGIT_YEAR:
-    case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
-    case autofill::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
-    case autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-      return true;
-    default:
-      return false;
   }
 }
 

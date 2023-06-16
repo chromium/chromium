@@ -10,6 +10,10 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+namespace autofill {
+class FormStructure;
+}  // namespace autofill
+
 namespace web {
 class ScriptMessage;
 class WebFrame;
@@ -47,13 +51,8 @@ class AutofillBottomSheetTabHelper
 
   // Prepare bottom sheet using data from the credit card form prediction.
   void AttachPaymentsListeners(
-      const std::vector<autofill::FieldRendererId>& renderer_ids,
+      const std::vector<autofill::FormStructure*>& forms,
       web::WebFrame* frame);
-
-  // Whether the provided field type is one which can trigger the Payments
-  // Bottom Sheet.
-  bool IsPaymentsBottomSheetTriggeringField(
-      autofill::ServerFieldType type) const;
 
   // Detach the password listeners, which will deactivate the bottom sheet.
   void DetachPasswordListenersAndRefocus(web::WebFrame* frame);

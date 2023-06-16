@@ -33,7 +33,6 @@
 @class UIViewController;
 
 namespace web {
-class WebFrame;
 class WebState;
 }
 
@@ -150,11 +149,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
  private:
-  // Attach listeners to fields which may open the payments bottom sheet.
-  void AttachListenersForPaymentsBottomSheet(
-      const std::vector<FormStructure*>& forms,
-      web::WebFrame* frame) const;
-
   // Returns the account email if the account is syncing.
   absl::optional<std::u16string> SyncingUserEmail();
 
